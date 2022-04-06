@@ -1,0 +1,34 @@
+{
+  "name": "sudobot",
+  "version": "0.0.1",
+  "description": "A discord bot for moderation purposes.",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/virtual-designer/sudobot.git"
+  },
+  "keywords": [
+    "bot",
+    "discord-js"
+  ],
+  "author": "Ar Rakin <rakinar2@gmail.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/virtual-designer/sudobot/issues"
+  },
+  "homepage": "https://github.com/virtual-designer/sudobot#readme",
+  "dependencies": {
+    "discord.js": "^13.6.0",
+    "sqlite3": "^5.0.2"
+  },
+  "engines": {
+    "npm": ">=7.0.0",
+    "node": ">=16.0.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.0.0"
+  }
+}
