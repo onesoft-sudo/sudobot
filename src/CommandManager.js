@@ -12,6 +12,8 @@ class CommandManager {
         this.commandName = "";
         this.argv = [];
         this.args = [];
+        this.options = [];
+        this.normalArgs = [];
         this.loadCommands();
         this.snippetManager = new SnippetManager();
     }
@@ -66,7 +68,14 @@ class CommandManager {
     }
 
     async exec() {
-        return await this.commands[this.commandName].handle(this.msg, this);
+        let cmd = this.commands[this.commandName];
+
+        if (cmd.needsOptionParse) {
+            this.normalArgs = await this.args.filter(arg => arg[0] !== '-');
+            this.options = await this.args.filter(arg => arg[0] === '-');
+        }
+
+        return await cmd.handle(this.msg, this);
     }
 }
 
