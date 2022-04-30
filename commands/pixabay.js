@@ -16,10 +16,8 @@ async function image(msg, cm, type) {
     if (cm.args[1] !== undefined) {
         let args = [...cm.args];
         args.shift();
-        genurl += `&q=${args.join(' ')}`;
+        genurl += `&q=${escape(args.join(' '))}`;
     }
-
-    console.log(genurl);
 
     axios.get(genurl)
     .then(res => {

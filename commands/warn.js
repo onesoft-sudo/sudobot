@@ -70,8 +70,8 @@ module.exports = {
             console.log(data);
         });
     },
-    async warn(user, reason, msg, callback) {
-        await app.db.get('INSERT INTO warnings(user_id, guild_id, strike, reason, warned_by) VALUES(?, ?, 1, ?, ?)', [user.id, msg.guild.id, reason === undefined ? '\c\b\c' : reason, msg.author.id], async (err) => {
+    async warn(user, reason, msg, callback, warned_by1) {
+        await app.db.get('INSERT INTO warnings(user_id, guild_id, strike, reason, warned_by) VALUES(?, ?, 1, ?, ?)', [user.id, msg.guild.id, reason === undefined ? '\c\b\c' : reason, warned_by1 === undefined ? msg.author.id : warned_by1], async (err) => {
             if (err) {
                 console.log(err);
             }

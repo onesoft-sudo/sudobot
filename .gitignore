@@ -2,3 +2,6 @@
 node_modules/
 .vscode/
 .idea/
+config/apiguilds.json
+routes/
+src/*-old.js

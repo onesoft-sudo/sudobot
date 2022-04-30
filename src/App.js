@@ -7,12 +7,15 @@ const Config = require("./Config");
 const Database = require("./Database");
 const Logger = require("./Logger");
 const SpamFilter = require("./SpamFilter");
+const server = require("./server");
+const AntiRaid = require("./AntiRaid");
 
 class App {
     constructor(rootdir) {
         global.app = App.app = this;
         this.rootdir = rootdir;
         this.loadConfig();
+        this.env = process.env;
 
         this.client = new Client({
             partials: ["CHANNEL"],
@@ -20,7 +23,9 @@ class App {
                 Intents.FLAGS.GUILDS,
                 Intents.FLAGS.GUILD_MESSAGES,
                 Intents.FLAGS.DIRECT_MESSAGES, 
-                Intents.FLAGS.DIRECT_MESSAGE_TYPING
+                Intents.FLAGS.DIRECT_MESSAGE_TYPING,
+                Intents.FLAGS.GUILD_PRESENCES,
+                Intents.FLAGS.GUILD_MEMBERS,
             ]
         });
 
@@ -29,12 +34,14 @@ class App {
         this.commandManager = new CommandManager(path.resolve(__dirname, rootdir, "commands"));
         this.logger = new Logger();
         this.spamFilter = new SpamFilter();
+        this.antiRaid = new AntiRaid();
         this.boot();
     }
 
     boot() {
         this.on('ready', () => {
             console.log("Logged in as " + this.client.user.tag);
+            server();
         });
 
         this.on('messageCreate', async (message) => {
@@ -44,7 +51,7 @@ class App {
 
             await (this.msg = message);
             
-            //await this.spamFilter.start(message);
+           // await this.spamFilter.start(message);
 
             await this.commandManager.setMessage(message);
 
@@ -95,6 +102,11 @@ class App {
             delete this.config.props[guild.id];
             this.config.write();
         })
+
+        this.on('guildMemberAdd', async (member) => {
+            console.log('Joined');
+            await this.antiRaid.start(member);
+        });
     }
 
     loadConfig() {
@@ -114,6 +126,16 @@ class App {
 
     run() {
         this.client.login(process.env.TOKEN);
+    }
+
+    tempFileCreate(name) {
+        const fullname = path.join(__dirname, '..', 'tmp', name);
+        const file = fs.createWriteStream(fullname);
+
+        return {
+            name: fullname,
+            file
+        };
     }
 }
 

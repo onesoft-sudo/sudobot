@@ -1,17 +1,27 @@
+const { warn } = require("../commands/warn");
 const MessageEmbed = require("./MessageEmbed");
 
 class SpamFilter {
     constructor() {
         this.users = new Map();
-        this.usersMute = new Map();
-        this.LIMIT = 8;    
-        this.DIFF = 2000;
-        this.timeout = null;
-        this.charDiffs = 5;
+    }
+
+    load() {
+        this.config = app.config.get('spam_filter');
+        this.LIMIT = this.config.limit;    
+        this.DIFF = this.config.diff;
+        this.TIME = this.config.time;
+        this.charDiffs = this.config.chars;
+        global.reset = true;
+        global.reset1 = true;
     }
 
     almostSameChars(str) {
-        return /(.)\1{10,}/.test(str.trim());
+        return (new RegExp('(.+)\\1{' + this.charDiffs + ',}', 'gm')).test(str.trim());
+    } 
+
+    almostSameText(str) {
+        return (new RegExp('^(.+)(?: +\\1){' + this.charDiffs + '}', 'gm')).test(str.trim());
     } 
 
     filter(msg) {
@@ -19,11 +29,17 @@ class SpamFilter {
             return false;
         }
 
+        if (this.almostSameText(msg.content)) {
+            return false;
+        }
+
         return true;
     }
 
     async start(msg) {
-        if(msg.author.bot) 
+        this.load();
+        
+        if(msg.author.bot || this.config.exclude.indexOf(msg.channel.id) !== -1) 
             return;
 
         if (!this.filter(msg)) {
@@ -38,76 +54,70 @@ class SpamFilter {
             return;
         }
 
-        let user;
-        
-        if (!this.users.has(msg.author.id)) {
-            user = {
-                count: 1,
-                delAt: new Date((new Date().getTime() + this.DIFF))
-            };
+        if (this.users.has(msg.author.id)) {
+            const user = this.users.get(msg.author.id);
+            const interval = msg.createdTimestamp - user.lastmsg.createdTimestamp;
 
-            this.users.set(msg.author.id, user);
-            console.log('Key added');
+            console.log(interval);
 
-            this.timeout = setTimeout(() => {
-                this.users.forEach((value, key) => {
-                    if (value.delAt.getTime() <= (new Date()).getTime()) {
-                        this.users.delete(key);
-                        console.log('Key deleted');
-                    }
-                });
-            }, this.DIFF);
-        }
-        else {
-            user = this.users.get(msg.author.id);
-            user.count++;
+            user.lastmsg = msg;
 
-            if (user.count >= this.LIMIT) {
-                msg.channel.send({
-                    embeds: [
-                        new MessageEmbed()
-                        .setColor('#f14a60')
-                        .setDescription('Whoa man! Spamming is not allowed here.')
-                    ]
-                });
+            if (interval > this.DIFF) {
+                clearTimeout(user.timeout);
+                console.log('Cleared timeout');
 
                 user.count = 1;
+
+                user.timeout = setTimeout(() => {
+                    this.users.delete(msg.author.id);
+                    console.log('deleted (RESET)');
+                    reset = true;
+                }, this.TIME);
+
                 this.users.set(msg.author.id, user);
-
-                const messages = await msg.channel.messages.fetch({
-                    limit: this.LIMIT
-                });
-
-                const botMessages = [];
-
-                messages.filter(m => m.author.id === msg.author.id).forEach(msg1 => botMessages.push(msg1));
-
-                msg.channel.bulkDelete(botMessages).then(() => {
-                    msg.channel.send({
-                        embeds: [
-                            new MessageEmbed()
-                            .setDescription('Deleted ' + botMessages.length + ' messages (Spam filter)')
-                        ]
-                    });
-                    // .then(msg => msg.delete({
-                    //     timeout: 3000
-                    // }))
-                });
             }
+            else {
+                user.count++;
 
-            clearTimeout(this.timeout);
+                if (user.count === this.LIMIT) {
+                    await app.db.get("SELECT * FROM spam WHERE user_id = ?", [msg.author.id], async (err, data) => {
+                        console.log(data);
+                        if (data !== undefined && data !== null) {
+                            if (data.strike >= 1) {
+                                await warn(msg.author, "Spamming", msg, () => {
+                                    console.log('warned');
+                                }, app.client.user);
+                            }                            
+                        }
+                        else {
+                            await app.db.get("INSERT INTO spam(user_id, date) VALUES(?, ?)", [msg.author.id, (new Date()).toISOString()], async (err) => {
+                                if (err) {
+                                    console.log(err);
+                                }
 
-            this.timeout = setTimeout(() => {
-                this.users.forEach((value, key) => {
-                    if (value.delAt.getTime() <= (new Date()).getTime()) {
-                        this.users.delete(key);
-                        console.log('Key deleted');
-                    }
-                });
-            }, this.DIFF);
-
-            this.users.set(msg.author.id, user);
-            console.log('Key modified');
+                                
+                                await msg.channel.send({
+                                    content: "Spam detected."
+                                });
+                            });
+                        }
+                    });
+                    
+                }
+                else {
+                    this.users.set(msg.author.id, user);
+                }
+            }
+        }
+        else {
+            this.users.set(msg.author.id, {
+                count: 1,
+                lastmsg: msg,
+                timeout: setTimeout(() => {
+                    this.users.delete(msg.author.id);
+                    console.log('deleted');
+                }, this.TIME)
+            });
         }
     }
 }
