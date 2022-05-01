@@ -20,6 +20,9 @@ module.exports = {
         if (!general_role) {
             general_role = cm.args[0].trim();
         }
+        else {
+            general_role = general_role.id;
+        }
 
         app.config.set("gen_role", general_role.id);
         app.config.write();

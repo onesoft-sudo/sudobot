@@ -48,7 +48,7 @@ module.exports = {
         await msg.reply({
             embeds: [
                 new MessageEmbed()
-                .setDescription(`A note has been added for ${user.user.tag}`)
+                .setDescription(`A note has been added for ${user.user.tag}`) // TODO
             ]
         });
     },

@@ -45,21 +45,22 @@ class App {
         });
 
         this.on('messageCreate', async (message) => {
-            if (message.author.bot) {
+            if (message.author.bot || !message.guild || message.channel.type == 'dm') {
                 return;
             }
 
             await (this.msg = message);
             
-           // await this.spamFilter.start(message);
+            //await this.spamFilter.start(message);
 
             await this.commandManager.setMessage(message);
 
             const valid = await this.commandManager.valid();
             const has = await this.commandManager.has();
             const snippet = await this.commandManager.snippet();
+            const allowed = await this.commandManager.verify();
             
-            if (valid && has) {
+            if (valid && has && allowed) {
                 await this.exec();
             }
             else if (valid && snippet !== undefined) {
@@ -69,6 +70,9 @@ class App {
             }
             else if (valid && !has) {
                 await this.commandManager.notFound();
+            }
+            else if (valid && has && !allowed) {
+                await this.commandManager.notAllowed();
             }
         });
 

@@ -18,7 +18,7 @@ class Config {
     }
 
     write() {
-        fs.writeFile(path.resolve(__dirname, app.rootdir, "config", "config.json"), JSON.stringify(this.props), (err) => {
+        fs.writeFile(path.resolve(__dirname, app.rootdir, "config", "config.json"), JSON.stringify(this.props, undefined, ' '), (err) => {
             console.log(err);
         });
     }

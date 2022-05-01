@@ -15,22 +15,23 @@ module.exports = {
             return;
         }
 
-        let mute_role = msg.mentions.roles?.first();
+        let modrole = msg.mentions.roles?.first();
 
-        if (!mute_role) {
-            mute_role = cm.args[0].trim();
+        if (!modrole) {
+            modrole = cm.args[0].trim();
         }
         else {
-            mute_role = mute_role.id;
+            modrole = modrole.id;
         }
 
-        app.config.set("mute_role", mute_role.id);
+        app.config.set("mod_role", modrole);
+
         app.config.write();
 
         await msg.reply({
             embeds: [
                 new MessageEmbed()
-                .setDescription(`The role has been updated.`)
+                .setDescription(`The moderator role has been updated.`)
             ]
         });
     }

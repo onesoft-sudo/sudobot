@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const MessageEmbed = require("./MessageEmbed");
 const SnippetManager = require("./SnippetManager");
+const Shield = require("./Shield");
 const { escapeRegex } = require("./util");
 
 class CommandManager {
@@ -16,6 +17,7 @@ class CommandManager {
         this.normalArgs = [];
         this.loadCommands();
         this.snippetManager = new SnippetManager();
+        this.shield = new Shield();
     }
 
     setMessage(msg) {
@@ -67,6 +69,18 @@ class CommandManager {
         }
     }
 
+    async notAllowed() {
+        if (app.config.get('warn_notallowed')) {
+            await app.msg.reply({
+                embeds: [
+                    new MessageEmbed()
+                    .setColor('#f14a60')
+                    .setDescription(`:x: You don't have permission to run this command.`)
+                ]
+            });
+        }
+    }
+
     async exec() {
         let cmd = this.commands[this.commandName];
 
@@ -76,6 +90,10 @@ class CommandManager {
         }
 
         return await cmd.handle(this.msg, this);
+    }
+
+    verify() {
+        return this.shield.verify(this.msg, this);
     }
 }
 

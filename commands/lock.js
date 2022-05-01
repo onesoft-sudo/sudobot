@@ -26,7 +26,7 @@ module.exports = {
                     channel.send({
                         embeds: [
                             new MessageEmbed()
-                            .setDescription('This channel has been locked.')
+                            .setDescription(':lock: This channel has been locked.')
                         ]
                     });
                 }

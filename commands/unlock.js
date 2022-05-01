@@ -26,7 +26,7 @@ module.exports = {
                     channel.send({
                         embeds: [
                             new MessageEmbed()
-                            .setDescription('This channel has been unlocked.')
+                            .setDescription(':closed_lock_with_key: This channel has been unlocked.')
                         ]
                     });
                 }

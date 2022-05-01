@@ -1,3 +1,5 @@
+const { mute } = require("../commands/mute");
+const { unmute } = require("../commands/unmute");
 const { warn } = require("../commands/warn");
 const MessageEmbed = require("./MessageEmbed");
 
@@ -83,11 +85,45 @@ class SpamFilter {
                     await app.db.get("SELECT * FROM spam WHERE user_id = ?", [msg.author.id], async (err, data) => {
                         console.log(data);
                         if (data !== undefined && data !== null) {
-                            if (data.strike >= 1) {
-                                await warn(msg.author, "Spamming", msg, () => {
+                            if (data.strike === 1) {
+                                await warn(msg.author, "Spamming\nThe next violations will cause mutes.", msg, () => {
                                     console.log('warned');
                                 }, app.client.user);
-                            }                            
+                            }
+                            if (data.strike >= 2) {
+                                await mute(await msg.guild.members.fetch(msg.author.id), "Spamming", msg);
+
+                                let timeMs = 20 * 1000;
+                                let time = (new Date()).getTime() + timeMs;
+
+                                await app.db.get("INSERT INTO unmutes(user_id, guild_id, time) VALUES(?, ?, ?)", [msg.author.id, msg.guild.id, new Date(time).toISOString()], async (err) => {
+                                    if (err) 
+                                        console.log(err);
+                                    
+                                        console.log('A timeout has been set.');
+                    
+                                        setTimeout(async () => {
+                                            await app.db.get("SELECT * FROM unmutes WHERE time = ?", [new Date(time).toISOString()], async (err, data) => {
+                                                if (err)
+                                                    console.log(err);
+                                                
+                                                if (data) {
+                                                    await app.db.get('DELETE FROM unmutes WHERE id = ?', [data.id], async (err) => {
+                                                        let guild = await app.client.guilds.cache.find(g => g.id === data.guild_id);
+                                                        let member = await guild?.members.cache.find(m => m.id === data.user_id);
+                            
+                                                        if (member)
+                                                            await unmute(member, null, guild);
+                            
+                                                        console.log(data);
+                                                    });
+                                                }
+                                            });
+                                        }, timeMs);
+                                });
+                            }
+                            
+                            await app.db.get("UPDATE spam SET strike = strike + 1 WHERE id = ?", [data.id], () => null);
                         }
                         else {
                             await app.db.get("INSERT INTO spam(user_id, date) VALUES(?, ?)", [msg.author.id, (new Date()).toISOString()], async (err) => {
