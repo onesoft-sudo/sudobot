@@ -9,6 +9,8 @@ app.use(express.urlencoded({
     extended: true
 }))
 
+app.get('/', (req, res) => res.send('Bot is running...'));
+
 if (fs.existsSync(path.join(__dirname, '..', 'routes', 'api.js'))) {
     const router = require('../routes/api');
     app.use('/api', router);
