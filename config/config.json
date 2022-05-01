@@ -8,6 +8,7 @@
   "mod_role": "961172512937508896",
   "announcement_channel": "911987536883245078",
   "spam_filter": {
+      "enabled": false,
    "limit": 5,
    "time": 5000,
    "diff": 2000,
@@ -15,6 +16,7 @@
    "exclude": []
   },
   "raid": {
+      "enabled": false,
    "max_joins": 2,
    "time": 60000,
    "included": [

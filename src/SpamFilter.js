@@ -14,6 +14,7 @@ class SpamFilter {
         this.DIFF = this.config.diff;
         this.TIME = this.config.time;
         this.charDiffs = this.config.chars;
+        this.enabled = this.config.enabled;
         global.reset = true;
         global.reset1 = true;
     }
@@ -41,7 +42,7 @@ class SpamFilter {
     async start(msg) {
         this.load();
         
-        if(msg.author.bot || this.config.exclude.indexOf(msg.channel.id) !== -1) 
+        if(msg.author.bot || this.config.exclude.indexOf(msg.channel.id) !== -1 || !this.enabled) 
             return;
 
         if (!this.filter(msg)) {

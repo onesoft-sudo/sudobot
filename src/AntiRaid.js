@@ -9,10 +9,14 @@ module.exports = class AntiRaid {
         this.maxJoins = app.config.props[guild.id].raid.max_joins;
         this.included = app.config.props[guild.id].raid.included;
         this.time = app.config.props[guild.id].raid.time;
+        this.enabled = app.config.props[guild.id].raid.enabled;
     }
 
     async start(member) {
         await this.load(member.guild);
+
+        if (!this.enabled)
+            return;
 
         console.log('Joined');
 

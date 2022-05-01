@@ -5,3 +5,4 @@ node_modules/
 config/apiguilds.json
 routes/
 src/*-old.js
+database.db
