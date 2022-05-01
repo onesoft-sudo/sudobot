@@ -6,3 +6,4 @@ config/apiguilds.json
 routes/
 src/*-old.js
 database.db
+config/
