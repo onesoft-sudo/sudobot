@@ -5,14 +5,21 @@ module.exports = class Shield {
         }
 
         if (!msg.member.roles.cache.has(app.config.props[msg.guild.id].mod_role)) {
-            return false;
+          //console.log('mod-role not found: ' + msg.author.tag);  
+          return false;
         }
 
         const roles = app.config.props[msg.guild.id].role_commands;
 
         for (let roleID in roles) {
-            if (msg.member.roles.cache.has(roleID) && roles[roleID].indexOf(cm.commandName) === -1) {
+           // console.log(roleID + ' search');  
+            if (msg.member.roles.cache.has(roleID)) {
+              if (roles[roleID].indexOf(cm.commandName) === -1) {
                 return true;
+              }
+              else {
+                return false;
+              }   
             }
         }
         
