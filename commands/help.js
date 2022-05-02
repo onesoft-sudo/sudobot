@@ -3,7 +3,7 @@ const MessageEmbed = require("../src/MessageEmbed");
 const { escapeRegex } = require("../src/util");
 
 module.exports = {
-    version: "1.0.0-beta",
+    version: "1.0.0-beta1",
     commands: [
         {
             name: 'addsnippet',
@@ -177,14 +177,6 @@ module.exports = {
             notes: null
         },
         {
-            name: 'note',
-            shortBrief: "Take a note about an user.",
-            description: null,
-            structure: "<UserID|UserMention> <note>",
-            example: "`%%note @Someone Simple note.`",
-            notes: null
-        },
-        {
             name: 'notedel',
             shortBrief: "Delete a note.",
             description: null,
@@ -250,14 +242,14 @@ module.exports = {
         },
         {
             name: 'unlock',
-            shortBrief: "Unock a specific channel.",
+            shortBrief: "Unlock a specific channel.",
             description: "Makes the given channel writable for the general members. If no channel is present, the current channel is unlocked.",
             structure: "[ChannelID|ChannelMention] [...options]",
             example: "`%%unlock 385753607325075320`\n`%%unlock #general`\n`%%unlock`",
             notes: null,
             options: {
                 "--no-send": "Do not send a confirmation message to the locked channel",
-                "--everyone": "Unock the channels for @everyone rather than the general role",
+                "--everyone": "Unlock the channels for @everyone rather than the general role",
             }
         },
         {
@@ -274,7 +266,7 @@ module.exports = {
         },
         {
             name: 'unmute',
-            shortBrief: "Unute someone in this server.",
+            shortBrief: "Unmute someone in this server.",
             description: null,
             structure: "<UserID|Mention>",
             example: "`%%unmute 385753607325075320`\n`%%unmute @Someone You are spamming a lot`",
