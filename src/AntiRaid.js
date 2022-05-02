@@ -7,7 +7,7 @@ module.exports = class AntiRaid {
 
     load(guild) {
         this.maxJoins = app.config.props[guild.id].raid.max_joins;
-        this.included = app.config.props[guild.id].raid.included;
+        this.excluded = app.config.props[guild.id].raid.excluded;
         this.time = app.config.props[guild.id].raid.time;
         this.enabled = app.config.props[guild.id].raid.enabled;
     }
@@ -34,7 +34,7 @@ module.exports = class AntiRaid {
 
         if (this.joins >= this.maxJoins) {
             let role = member.guild.roles.cache.find(r => r.id === app.config.props[member.guild.id].gen_role);
-            let channels = member.guild.channels.cache.filter(channel => this.included.indexOf(channel.id) !== -1);
+            let channels = member.guild.channels.cache.filter(channel => this.excluded.indexOf(channel.id) === -1 && this.excluded.indexOf(channel.parent?.id) === -1 && channel.type === 'GUILD_TEXT');
 
             await lockAll(role, channels, true);
         }
