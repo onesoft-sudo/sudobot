@@ -51,7 +51,7 @@ class App {
 
             await (this.msg = message);
             
-            //await this.spamFilter.start(message);
+            await this.spamFilter.start(message);
 
             await this.commandManager.setMessage(message);
 

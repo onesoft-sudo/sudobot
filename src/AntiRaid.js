@@ -13,6 +13,11 @@ module.exports = class AntiRaid {
     }
 
     async start(member) {
+        if (member.user.bot) {
+            console.log('bot');
+            return;
+        }
+
         await this.load(member.guild);
 
         if (!this.enabled)

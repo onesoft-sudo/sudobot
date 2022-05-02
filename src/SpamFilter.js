@@ -11,9 +11,12 @@ class SpamFilter {
     load() {
         this.config = app.config.get('spam_filter');
         this.LIMIT = this.config.limit;    
+        this.SAMELIMIT = this.config.samelimit;    
         this.DIFF = this.config.diff;
         this.TIME = this.config.time;
+        this.UNMUTE = this.config.unmute_in;
         this.charDiffs = this.config.chars;
+        this.wordDiffs = this.config.words;
         this.enabled = this.config.enabled;
         global.reset = true;
         global.reset1 = true;
@@ -24,7 +27,7 @@ class SpamFilter {
     } 
 
     almostSameText(str) {
-        return (new RegExp('^(.+)(?: +\\1){' + this.charDiffs + '}', 'gm')).test(str.trim());
+        return (new RegExp('^(.+)(?: +\\1){' + this.wordDiffs + '}', 'gm')).test(str.trim());
     } 
 
     filter(msg) {
@@ -63,6 +66,13 @@ class SpamFilter {
 
             console.log(interval);
 
+            if (user.lastmsg && user.lastmsg.content.trim() === msg.content.trim() && user.matched) {
+                user.matched = true;
+            }
+            else {
+                user.matched = false;
+            }
+
             user.lastmsg = msg;
 
             if (interval > this.DIFF) {
@@ -82,7 +92,7 @@ class SpamFilter {
             else {
                 user.count++;
 
-                if (user.count === this.LIMIT) {
+                const muteOuter = async () => {
                     await app.db.get("SELECT * FROM spam WHERE user_id = ?", [msg.author.id], async (err, data) => {
                         console.log(data);
                         if (data !== undefined && data !== null) {
@@ -94,7 +104,7 @@ class SpamFilter {
                             if (data.strike >= 2) {
                                 await mute(await msg.guild.members.fetch(msg.author.id), "Spamming", msg);
 
-                                let timeMs = 20 * 1000;
+                                let timeMs = this.UNMUTE;
                                 let time = (new Date()).getTime() + timeMs;
 
                                 await app.db.get("INSERT INTO unmutes(user_id, guild_id, time) VALUES(?, ?, ?)", [msg.author.id, msg.guild.id, new Date(time).toISOString()], async (err) => {
@@ -127,19 +137,29 @@ class SpamFilter {
                             await app.db.get("UPDATE spam SET strike = strike + 1 WHERE id = ?", [data.id], () => null);
                         }
                         else {
-                            await app.db.get("INSERT INTO spam(user_id, date) VALUES(?, ?)", [msg.author.id, (new Date()).toISOString()], async (err) => {
+                            await app.db.get("INSERT INTO spam(user_id, date, strike) VALUES(?, ?, 1)", [msg.author.id, (new Date()).toISOString()], async (err) => {
                                 if (err) {
                                     console.log(err);
                                 }
 
                                 
-                                await msg.channel.send({
-                                    content: "Spam detected."
+                                await msg.reply({
+                                    content: "Whoa there! Calm down and please don't spam!"
                                 });
                             });
                         }
                     });
                     
+                    user.count = 1;
+                    this.users.set(msg.author.id, user);
+                };
+
+                if (user.count === this.SAMELIMIT && user.matched) {
+                    await muteOuter();
+                    console.log('here <3');
+                }
+                else if (user.count === this.LIMIT) {
+                    await muteOuter();
                 }
                 else {
                     this.users.set(msg.author.id, user);
@@ -153,7 +173,8 @@ class SpamFilter {
                 timeout: setTimeout(() => {
                     this.users.delete(msg.author.id);
                     console.log('deleted');
-                }, this.TIME)
+                }, this.TIME),
+                matched: true
             });
         }
     }
