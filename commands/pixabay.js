@@ -16,19 +16,30 @@ async function image(msg, cm, type) {
     if (cm.args[1] !== undefined) {
         let args = [...cm.args];
         args.shift();
-        genurl += `&q=${escape(args.join(' '))}`;
+        let q = new URLSearchParams({q: args.join(' ')}).toString();
+        console.log(q);
+        genurl += `&${q}`;
     }
 
     axios.get(genurl)
     .then(res => {
         if (res && res.status === 200) {
-            //console.log(res.data);
+            //console.log(res.data.hits);
+            if (!res.data.hits || res.data.hits?.length < 1) {
+              msg.reply({
+                content: ":x: No search result found from the API."
+              });
+              
+              return;
+            }
+            
             msg.reply({
                 content: random(res.data.hits).largeImageURL
             });
         }
     })
     .catch(err => {
+        console.log(err.message);
         msg.reply({
             embeds: [
                 new MessageEmbed()

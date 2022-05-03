@@ -9,6 +9,7 @@ const Logger = require("./Logger");
 const SpamFilter = require("./SpamFilter");
 const server = require("./server");
 const AntiRaid = require("./AntiRaid");
+const MessageFilter = require("./MessageFilter");
 
 class App {
     constructor(rootdir) {
@@ -35,6 +36,7 @@ class App {
         this.logger = new Logger();
         this.spamFilter = new SpamFilter();
         this.antiRaid = new AntiRaid();
+        this.messageFilter = new MessageFilter();
         this.boot();
     }
 
@@ -52,6 +54,7 @@ class App {
             await (this.msg = message);
             
             await this.spamFilter.start(message);
+            await this.messageFilter.start(message, this.commandManager);
 
             await this.commandManager.setMessage(message);
 
