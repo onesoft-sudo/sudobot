@@ -10,6 +10,7 @@ const SpamFilter = require("./SpamFilter");
 const server = require("./server");
 const AntiRaid = require("./AntiRaid");
 const MessageFilter = require("./MessageFilter");
+const { random } = require("../commands/pixabay");
 
 class App {
     constructor(rootdir) {
@@ -43,6 +44,10 @@ class App {
     boot() {
         this.on('ready', () => {
             console.log("Logged in as " + this.client.user.tag);
+
+            this.client.user.setStatus(random(['dnd', 'idle']));
+            this.client.user.setActivity("over the server", { type: "WATCHING" });
+
             server();
         });
 

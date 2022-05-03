@@ -97,5 +97,6 @@ module.exports = {
                 ]
             });
         }     
-    }
+    },
+    random
 };
