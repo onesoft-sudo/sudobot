@@ -1,3 +1,4 @@
+const History = require("../src/History");
 const MessageEmbed = require("../src/MessageEmbed");
 
 module.exports = {
@@ -35,6 +36,23 @@ module.exports = {
                 if (err) {
                     console.log(err);
                 }
+
+                let user = {
+                    user: {
+                        tag: data.user_id
+                    }
+                };
+
+                await History.create(data.user_id, msg.guild, 'warndel', msg.author.id, async (data2) => {});
+
+                try {
+                    user = await msg.guild.members.fetch(data.user_id);
+                }
+                catch(e) {
+                    
+                }
+
+                await app.logger.logWarndel(msg, user, data, msg.author);
 
                 await msg.reply({
                     embeds: [

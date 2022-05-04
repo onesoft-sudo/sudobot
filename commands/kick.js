@@ -1,3 +1,4 @@
+const History = require("../src/History");
 const MessageEmbed = require("../src/MessageEmbed");
 
 module.exports = {
@@ -58,7 +59,10 @@ module.exports = {
                 return;
             }
 
-            await user.kick(reason);
+            
+            await History.create(user.id, msg.guild, 'kick', msg.author.id, async (data2) => {
+                await user.kick(reason);
+            });
         }
         catch(e) {
             console.log(e);

@@ -1,3 +1,4 @@
+const History = require("../src/History");
 const MessageEmbed = require("../src/MessageEmbed");
 
 module.exports = {
@@ -15,7 +16,7 @@ module.exports = {
         }
 
         try {
-            await msg.guild.members.unban(cm.args[0]);
+            await msg.guild.bans.remove(cm.args[0]);
         }
         catch(e) {
             console.log(e);
@@ -24,12 +25,16 @@ module.exports = {
                 embeds: [
                     new MessageEmbed()
                     .setColor('#f14a60')
-                    .setDescription(`Invalid user ID or missing permissions.`)
+                    .setDescription(`Invalid user ID or missing permissions or user not banned.`)
                 ]
             });
 
             return;
         }
+        
+        await History.create(cm.args[0], msg.guild, 'unban', msg.author.id, async (data2) => {
+            
+        });
 
         await msg.reply({
             embeds: [

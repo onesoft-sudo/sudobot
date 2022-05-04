@@ -28,6 +28,7 @@ class App {
                 Intents.FLAGS.DIRECT_MESSAGE_TYPING,
                 Intents.FLAGS.GUILD_PRESENCES,
                 Intents.FLAGS.GUILD_MEMBERS,
+                Intents.FLAGS.GUILD_BANS
             ]
         });
 
@@ -85,10 +86,21 @@ class App {
         });
 
         this.on("messageUpdate", async (oldMessage, newMessage) => {
-            if (oldMessage.author.bot)
+            if (oldMessage.author.bot || oldMessage.content === newMessage.content)
                 return;
 
             await this.logger.logEdit(oldMessage, newMessage);
+        });
+
+
+        this.on('guildBanAdd', async (ban) => {
+            console.log('test');
+            await this.logger.logBanned(ban);
+        });
+
+        this.on('guildBanRemove', async (ban) => {
+            console.log('test');
+            await this.logger.logUnbanned(ban);
         });
 
         this.on("messageDelete", async (message) => {
@@ -118,6 +130,11 @@ class App {
         this.on('guildMemberAdd', async (member) => {
             console.log('Joined');
             await this.antiRaid.start(member);
+            await this.logger.logJoined(member);
+        });
+
+        this.on('guildMemberRemove', async (member) => {
+            await this.logger.logLeft(member);
         });
     }
 

@@ -1,3 +1,4 @@
+const History = require("../src/History");
 const MessageEmbed = require("../src/MessageEmbed");
 
 module.exports = {
@@ -36,11 +37,14 @@ module.exports = {
                     console.log(err);
                 }
 
-                await msg.reply({
-                    embeds: [
-                        new MessageEmbed()
-                        .setDescription('Note has been deleted')
-                    ]
+                
+                await History.create(user.id, msg.guild, 'notedel', msg.author.id, async (data2) => {
+                    await msg.reply({
+                        embeds: [
+                            new MessageEmbed()
+                            .setDescription('Note has been deleted')
+                        ]
+                    });
                 });
             });
         });

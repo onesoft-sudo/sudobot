@@ -1,3 +1,4 @@
+const History = require("../src/History");
 const MessageEmbed = require("../src/MessageEmbed");
 
 module.exports = {
@@ -39,7 +40,7 @@ module.exports = {
 
         this.unmute(user, msg);
     },
-    async unmute(user, msg, guild) {
+    async unmute(user, msg, guild, log, t) {
         if (guild === undefined) {
             guild = msg.guild;
         }
@@ -72,8 +73,15 @@ module.exports = {
                 return;
             }
 
+            if (!log)
+                await History.create(user.id, guild, 'unmute', msg.author.id, async (data2) => {});
+
             await user.roles.add(generalRole);
             await user.roles.remove(mutedRole);
+
+        
+            await app.logger.logUnmute(user, t === undefined ? msg.author : t);
+            
         }
         catch(e) {
             console.log(e);

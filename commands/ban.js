@@ -1,3 +1,4 @@
+const History = require("../src/History");
 const MessageEmbed = require("../src/MessageEmbed");
 
 module.exports = {
@@ -14,7 +15,7 @@ module.exports = {
             return;
         }
 
-        var user = await msg.mentions.members.first();
+        var user = await msg.mentions.users.first();
         let reason = {};
 
         if (typeof cm.args[1] !== 'undefined') {
@@ -26,7 +27,7 @@ module.exports = {
 
         if (typeof user !== 'object') {
             try {
-                user = await msg.guild.members.fetch(cm.args[0]);
+                user = await app.client.users.fetch(cm.args[0]);
             }
             catch(e) {
 
@@ -58,7 +59,9 @@ module.exports = {
                 return;
             }
 
-            await user.ban(reason);
+            await History.create(user.id, msg.guild, 'ban', msg.author.id, async (data2) => {
+                await msg.guild.bans.create(user.id, reason);
+            });
         }
         catch(e) {
             console.log(e);
@@ -77,7 +80,7 @@ module.exports = {
         await msg.reply({
             embeds: [
                 new MessageEmbed()
-                .setDescription(`The user ${user.user.tag} has been banned`)
+                .setDescription(`The user ${user.tag} has been banned`)
                 .addFields([
                     {
                         name: "Reason",

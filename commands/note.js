@@ -1,3 +1,4 @@
+const History = require("../src/History");
 const MessageEmbed = require("../src/MessageEmbed");
 
 module.exports = {
@@ -42,8 +43,10 @@ module.exports = {
 
             return;
         }
-
-        this.note(user, content, msg);
+        
+        await History.create(user.id, msg.guild, 'note', msg.author.id, async (data2) => {
+            this.note(user, content, msg);
+        });
 
         await msg.reply({
             embeds: [

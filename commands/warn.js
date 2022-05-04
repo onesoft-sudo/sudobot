@@ -1,3 +1,4 @@
+const History = require("../src/History");
 const MessageEmbed = require("../src/MessageEmbed");
 
 module.exports = {
@@ -81,27 +82,33 @@ module.exports = {
                     console.log(err);
                 }
 
-                await user.send({
-                    embeds: [
-                        new MessageEmbed()
-                        .setAuthor({
-                            iconURL: msg.guild.iconURL(),
-                            name: `\tYou have been warned in ${msg.guild.name}`
-                        })
-                        .addFields([
-                            {
-                                name: "Reason",
-                                value: typeof reason === 'undefined' ? '*No reason provided*' : reason
-                            },
-                            {
-                                name: "Strike",
-                                value: data.count + ' time(s)'
-                            }
-                        ])
-                    ]
-                });
+                console.log('fr');
 
-                callback(data);
+                await app.logger.logWarn(msg, user, warned_by1 === undefined ? msg.author : warned_by1, typeof reason === 'undefined' ? '*No reason provided*' : reason);
+                
+                await History.create(user.id, msg.guild, 'warn', warned_by1 === undefined ? msg.author.id : warned_by1.id, async (data2) => {
+                    await user.send({
+                        embeds: [
+                            new MessageEmbed()
+                            .setAuthor({
+                                iconURL: msg.guild.iconURL(),
+                                name: `\tYou have been warned in ${msg.guild.name}`
+                            })
+                            .addFields([
+                                {
+                                    name: "Reason",
+                                    value: typeof reason === 'undefined' ? '*No reason provided*' : reason
+                                },
+                                {
+                                    name: "Strike",
+                                    value: data.count + ' time(s)'
+                                }
+                            ])
+                        ]
+                    });
+    
+                    callback(data);
+                });
             });
         });
     }

@@ -1,3 +1,4 @@
+const History = require("../src/History");
 const MessageEmbed = require("../src/MessageEmbed");
 
 module.exports = {
@@ -61,20 +62,24 @@ module.exports = {
         });
     },
     async bean(user, reason, msg) {
-        await user.send({
-            embeds: [
-                new MessageEmbed()
-                .setAuthor({
-                    iconURL: msg.guild.iconURL(),
-                    name: `\tYou have been beaned in ${msg.guild.name}`
-                })
-                .addFields([
-                    {
-                        name: "Reason",
-                        value: typeof reason === 'undefined' ? '*No reason provided*' : reason
-                    }
-                ])
-            ]
+        await History.create(user.id, msg.guild, 'bean', msg.author.id, async (data2) => {
+            await user.send({
+                embeds: [
+                    new MessageEmbed()
+                    .setAuthor({
+                        iconURL: msg.guild.iconURL(),
+                        name: `\tYou have been beaned in ${msg.guild.name}`
+                    })
+                    .addFields([
+                        {
+                            name: "Reason",
+                            value: typeof reason === 'undefined' ? '*No reason provided*' : reason
+                        }
+                    ])
+                ]
+            });
+
+            await app.logger.logBeaned(user, typeof reason === 'undefined' ? '*No reason provided*' : reason, msg.author);
         });
     }
 };

@@ -1,6 +1,7 @@
 const { mute } = require("../commands/mute");
 const { unmute } = require("../commands/unmute");
 const { warn } = require("../commands/warn");
+const History = require("./History");
 const MessageEmbed = require("./MessageEmbed");
 
 class SpamFilter {
@@ -102,7 +103,10 @@ class SpamFilter {
                                 }, app.client.user);
                             }
                             if (data.strike >= 2) {
-                                await mute(await msg.guild.members.fetch(msg.author.id), "Spamming", msg);
+                                let u = await msg.guild.members.fetch(msg.author.id);
+                                await mute(u, "Spamming", msg, true, false);
+                                
+                                await History.create(u.id, msg.guild, 'mute', app.client.user.id, async (data2) => {});
 
                                 let timeMs = this.UNMUTE;
                                 let time = (new Date()).getTime() + timeMs;
@@ -123,8 +127,10 @@ class SpamFilter {
                                                         let guild = await app.client.guilds.cache.find(g => g.id === data.guild_id);
                                                         let member = await guild?.members.cache.find(m => m.id === data.user_id);
                             
-                                                        if (member)
-                                                            await unmute(member, null, guild);
+                                                        if (member) {
+                                                            await unmute(member, null, guild, true, app.client.user);
+                                                            await History.create(u.id, msg.guild, 'unmute', app.client.user.id, async (data2) => {});
+                                                        }
                             
                                                         console.log(data);
                                                     });

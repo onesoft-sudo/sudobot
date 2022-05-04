@@ -1,6 +1,7 @@
 const MessageEmbed = require("../src/MessageEmbed");
 const ms = require('ms');
 const { unmute } = require("./unmute");
+const History = require("../src/History");
 
 module.exports = {
     async handle(msg, cm) {
@@ -96,8 +97,10 @@ module.exports = {
                                     let guild = await app.client.guilds.cache.find(g => g.id === data.guild_id);
                                     let member = await guild?.members.cache.find(m => m.id === data.user_id);
         
-                                    if (member)
-                                        await unmute(member, null, guild);
+                                    if (member) {
+                                        await unmute(member, null, guild, true, app.client.user);
+                                        await History.create(member.id, msg.guild, 'unmute', app.client.user.id, async (data2) => {});
+                                    }
         
                                     console.log(data);
                                 });
@@ -107,9 +110,9 @@ module.exports = {
             });
         }
 
-        this.mute(user, reason, msg);
+        this.mute(user, reason, msg, true, timeMs !== undefined ? timeMs : undefined);
     },
-    async mute(user, reason, msg) {
+    async mute(user, reason, msg, log, timeMs) {
         try {
             let mutedRole = await msg.guild.roles.cache.find(role => role.id === app.config.get('mute_role'));
             let generalRole = await msg.guild.roles.cache.find(role => role.id === app.config.get('gen_role'));
@@ -138,8 +141,14 @@ module.exports = {
                 return;
             }
 
+            if (!log)
+                await History.create(user.id, msg.guild, 'mute', msg.author.id, async (data2) => {});
+
             await user.roles.add(mutedRole);
             await user.roles.remove(generalRole);
+
+            if (timeMs !== false)
+                await app.logger.logMute(user, typeof reason === 'undefined' || reason.trim() === '' ? '*No reason provided*' : reason, timeMs, msg.author);
         }
         catch(e) {
             console.log(e);
