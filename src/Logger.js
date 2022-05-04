@@ -21,8 +21,7 @@ class Logger {
                     new MessageEmbed()
                     .setColor('#007bff')
                     .setTitle('Message Edited in #' + newMsg.channel.name + " (" + newMsg.channel.id + ")")
-                    .addField('Before', oldMsg.content)
-                    .addField('After', newMsg.content)
+                    .setDescription('**Before**\n' + oldMsg.content + '\n\**nAfter**\n', newMsg.content)
                     .addField('ID', newMsg.id)
                     .setAuthor({
                         name: newMsg.author.tag,

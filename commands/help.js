@@ -3,7 +3,7 @@ const MessageEmbed = require("../src/MessageEmbed");
 const { escapeRegex } = require("../src/util");
 
 module.exports = {
-    version: "1.1.0-beta",
+    version: "1.1.0-beta1",
     commands: [
         {
             name: 'addsnippet',
