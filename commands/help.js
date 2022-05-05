@@ -3,7 +3,7 @@ const MessageEmbed = require("../src/MessageEmbed");
 const { escapeRegex } = require("../src/util");
 
 module.exports = {
-    version: "1.4.0",
+    version: "1.4.1",
     commands: [
         {
             name: 'addsnippet',
@@ -11,6 +11,14 @@ module.exports = {
             description: null,
             structure: "<Name> <Content>",
             example: "`%%addsnippet roles There are 2 roles`\n`%%addsnippet roles There are 2 roles\nAdmin - Administrator\nMod - Moderator`",
+            notes: null
+        },
+        {
+            name: 'afk',
+            shortBrief: "Keeps track of your mentions and tells other users that you're AFK.",
+            description: null,
+            structure: "[Reason]",
+            example: "`%%afk`\n`%%afk Having dinner`",
             notes: null
         },
         {

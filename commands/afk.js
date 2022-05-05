@@ -7,7 +7,7 @@ module.exports = {
                 this.notAFK(msg, data);
             }
             else {
-                this.AFK(msg);
+                this.AFK(msg, cm);
             }
         });
     },
@@ -21,12 +21,12 @@ module.exports = {
             });
         });
     },
-    async AFK(msg) {
-        app.db.get('INSERT INTO afk(user_id, date, mentions) VALUES(?, ?, ?)', [msg.author.id, new Date().toISOString(), '0'], async (err) => {
+    async AFK(msg, cm) {
+        app.db.get('INSERT INTO afk(user_id, date, mentions, reason) VALUES(?, ?, ?, ?)', [msg.author.id, new Date().toISOString(), '0', cm.args[0] === undefined ? '' : cm.args.join(' ')], async (err) => {
             await msg.channel.send({
                 embeds: [
                     new MessageEmbed()
-                    .setDescription('Your status has been updated to AFK.')
+                    .setDescription('Your\'re AFK now.' + (cm.args[0] === undefined ? '' : ` Your status has been updated to: **${cm.args.join(' ').replace(/\*/g, '\\*')}**`))
                 ]
             });
         });

@@ -9,7 +9,7 @@ module.exports = class AFKEngine {
                     msg.channel.send({
                         embeds: [
                             new MessageEmbed()
-                            .setDescription(`**${user.user.tag}** is AFK right now.`)
+                            .setDescription(`**${user.user.tag}** is AFK right now${data.reason.trim() == '' ? '.' : (' for reason: **' + data.reason.replace(/\*/g, '\\*') + '**')}`)
                         ]
                     });
                 }
