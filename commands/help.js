@@ -3,7 +3,7 @@ const MessageEmbed = require("../src/MessageEmbed");
 const { escapeRegex } = require("../src/util");
 
 module.exports = {
-    version: "1.2.0-beta",
+    version: "1.3.0-beta",
     commands: [
         {
             name: 'addsnippet',
@@ -46,6 +46,14 @@ module.exports = {
             notes: null
         },
         {
+            name: 'clear',
+            shortBrief: "Clear all messages from a user.",
+            description: "Clear all messages from a user, in the current channel. This might take a while.",
+            structure: "<UserID|UserMention>",
+            example: "`%%clear 83474924191884727`\n`%%clear @Someone`",
+            notes: null
+        },
+        {
             name: 'delsnippet',
             shortBrief: "Deletes a snippet.",
             description: null,
@@ -83,6 +91,14 @@ module.exports = {
             description: null,
             structure: "[command]",
             example: "`%%help`\n`%%help mute`",
+            notes: null
+        },
+        {
+            name: 'history',
+            shortBrief: "Show moderation history for a user.",
+            description: null,
+            structure: "<UserMention|UserID>",
+            example: "`%%history 27372628277272625`\n`%%history @Someone`",
             notes: null
         },
         {

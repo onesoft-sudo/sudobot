@@ -11,6 +11,7 @@ const server = require("./server");
 const AntiRaid = require("./AntiRaid");
 const MessageFilter = require("./MessageFilter");
 const { random } = require("../commands/pixabay");
+const AFKEngine = require("./AFKEngine");
 
 class App {
     constructor(rootdir) {
@@ -39,6 +40,7 @@ class App {
         this.spamFilter = new SpamFilter();
         this.antiRaid = new AntiRaid();
         this.messageFilter = new MessageFilter();
+        this.afkEngine = new AFKEngine();
         this.boot();
     }
 
@@ -82,6 +84,9 @@ class App {
             }
             else if (valid && has && !allowed) {
                 await this.commandManager.notAllowed();
+            }
+            else if(!valid) {
+                await this.afkEngine.start(message);
             }
         });
 

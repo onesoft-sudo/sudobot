@@ -81,6 +81,9 @@ module.exports = {
                 else if (row.type === 'unmute') {
                     type = 'Unmuted';
                 }
+                else if (row.type === 'bean') {
+                    type = 'Beaned';
+                }
                 else if (row.type === 'warn') {
                     type = 'Warned';
                 }
