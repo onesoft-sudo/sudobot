@@ -14,11 +14,11 @@ module.exports = {
             return;
         }
         
-        let snippet = cm.snippetManager.find(cm.args[0]);
+        let snippet = cm.snippetManager.find(msg.guild.id, cm.args[0]);
         
         if (snippet) {
-            cm.snippetManager.delete(snippet.name);
-            cm.snippetManager.create(cm.args[1], snippet.content);
+            cm.snippetManager.delete(msg.guild.id, snippet.name);
+            cm.snippetManager.create(msg.guild.id, cm.args[1], snippet.content);
 
             await msg.reply({
                 embeds: [
