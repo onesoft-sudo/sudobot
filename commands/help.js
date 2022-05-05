@@ -3,7 +3,7 @@ const MessageEmbed = require("../src/MessageEmbed");
 const { escapeRegex } = require("../src/util");
 
 module.exports = {
-    version: "1.3.0-beta",
+    version: "1.4.0",
     commands: [
         {
             name: 'addsnippet',
@@ -238,6 +238,14 @@ module.exports = {
             description: null,
             structure: "<key> <value>",
             example: "`%%setconfig debug true`",
+            notes: null
+        },
+        {
+            name: 'send',
+            shortBrief: "Send a DM to a user.",
+            description: null,
+            structure: "<UserID|Mention> <content>",
+            example: "`%%send 278358918549759428 Hello world`\n`%%send @Someone Hello world`",
             notes: null
         },
         {

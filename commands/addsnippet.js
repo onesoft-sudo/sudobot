@@ -17,8 +17,18 @@ module.exports = {
         let args = [...cm.args];
         args.shift();
         let content = args.join(' ');
+
+        let files = msg.attachments.map(a => {
+            return {
+                name: a.name,
+                attachment: a.attachment,
+                proxyURL: a.proxyURL,
+            }
+        });
+
+        console.log(files);
         
-        let status = cm.snippetManager.create(cm.args[0], content);
+        let status = await cm.snippetManager.create(msg.guild.id, cm.args[0], content, files);
         
         if (status) {
             await msg.reply({

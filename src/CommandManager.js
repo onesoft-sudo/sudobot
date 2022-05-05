@@ -46,7 +46,7 @@ class CommandManager {
     }
 
     snippet() {
-        return this.snippetManager.find(this.commandName);
+        return this.snippetManager.find(this.msg.guild.id, this.commandName);
     }
 
     hasValid() {

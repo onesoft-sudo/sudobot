@@ -76,7 +76,12 @@ class App {
             }
             else if (valid && snippet !== undefined) {
                 await message.channel.send({
-                    content: snippet.content
+                    content: snippet.content,
+                    files: snippet.files.map(f => {
+                        return {
+                            attachment: path.resolve(__dirname, '..', 'storage', f)
+                        }
+                    })
                 });
             }
             else if (valid && !has) {

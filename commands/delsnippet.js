@@ -14,7 +14,7 @@ module.exports = {
             return;
         }
         
-        let status = cm.snippetManager.delete(cm.args[0]);
+        let status = cm.snippetManager.delete(msg.guild.id, cm.args[0]);
         
         if (status) {
             await msg.reply({

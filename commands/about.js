@@ -9,7 +9,7 @@ module.exports = {
                 .setTitle('SudoBot')
                 .setDescription('A free and open source discord moderation bot, specially created for **The Everything Server**.')
                 .addField('Version', version)
-                .addField('Support', 'rakinar2@onesoftnet.ml')
+                .addField('Support', 'rakinar2@gmail.com')
                 .setFooter({
                     text: 'Copyright © Ar Rakin 2022, all rights reserved'
                 })
