@@ -12,6 +12,7 @@ const AntiRaid = require("./AntiRaid");
 const MessageFilter = require("./MessageFilter");
 const { random } = require("../commands/pixabay");
 const AFKEngine = require("./AFKEngine");
+const Starboard = require("./Starboard");
 
 class App {
     constructor(rootdir) {
@@ -29,7 +30,9 @@ class App {
                 Intents.FLAGS.DIRECT_MESSAGE_TYPING,
                 Intents.FLAGS.GUILD_PRESENCES,
                 Intents.FLAGS.GUILD_MEMBERS,
-                Intents.FLAGS.GUILD_BANS
+                Intents.FLAGS.GUILD_BANS,
+                Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+                Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
             ]
         });
 
@@ -41,10 +44,15 @@ class App {
         this.antiRaid = new AntiRaid();
         this.messageFilter = new MessageFilter();
         this.afkEngine = new AFKEngine();
+        this.starboard = new Starboard();
         this.boot();
     }
 
     boot() {
+        const events = {
+            MESSAGE_REACTION_ADD: 'messageReactionAdd',
+        };
+        
         this.on('ready', () => {
             console.log("Logged in as " + this.client.user.tag);
 
@@ -52,6 +60,25 @@ class App {
             this.client.user.setActivity("over the server", { type: "WATCHING" });
 
             server();
+        });
+
+        this.on('raw', async event => {
+            if (!events.hasOwnProperty(event.t))
+                return;
+        
+            const { d: data } = event;
+            const user = this.client.users.cache.find(i => i.id === data.user_id);
+            const channel = this.client.channels.cache.find(i => i.id === data.channel_id) || await user.createDM();
+        
+            if (channel.messages.cache.has(data.message_id)) 
+                return;
+        
+            const message = await channel.messages.fetch(data.message_id);
+        
+            const emojiKey = (data.emoji.id) ? `${data.emoji.name}:${data.emoji.id}` : data.emoji.name;
+            const reaction = message.reactions.cache.get(emojiKey);
+        
+            this.client.emit(events[event.t], reaction, user);
         });
 
         this.on('messageCreate', async (message) => {
@@ -102,6 +129,16 @@ class App {
             await this.logger.logEdit(oldMessage, newMessage);
         });
 
+        this.on("messageReactionAdd", async (reaction, message) => {
+            console.log('inside');
+
+            if (!reaction || !reaction.message) {
+                return;
+            }
+            
+            await (this.msg = reaction.message);
+            await this.starboard.handle(reaction, message);
+        });
 
         this.on('guildBanAdd', async (ban) => {
             console.log('test');
