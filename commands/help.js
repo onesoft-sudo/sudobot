@@ -3,7 +3,7 @@ const MessageEmbed = require("../src/MessageEmbed");
 const { escapeRegex } = require("../src/util");
 
 module.exports = {
-    version: "1.4.1",
+    version: "1.5.1",
     commands: [
         {
             name: 'addsnippet',
@@ -262,6 +262,14 @@ module.exports = {
             description: null,
             structure: "<key> <value>",
             example: "`%%spamfilter include #general`",
+            notes: null
+        },
+        {
+            name: 'stats',
+            shortBrief: "Show the server stats.",
+            description: null,
+            structure: "",
+            example: "`%%stats",
             notes: null
         },
         {
