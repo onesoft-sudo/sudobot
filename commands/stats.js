@@ -37,7 +37,7 @@ module.exports = {
                     }
                 ])
                 .addField('Roles', msg.guild.roles.cache.size + '')
-                .addField('Channels', msg.guild.channels.cache.size + '')
+                .addField('Channels', msg.guild.channels.cache.filter(c => c.type === 'GUILD_TEXT').size + '')
                 .addField('Emojis', msg.guild.emojis.cache.size + '')
                 .addField('Stickers', msg.guild.stickers?.cache.size + '')
             ]
