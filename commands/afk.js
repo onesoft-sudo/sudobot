@@ -26,7 +26,7 @@ module.exports = {
             await msg.channel.send({
                 embeds: [
                     new MessageEmbed()
-                    .setDescription('Your\'re AFK now.' + (cm.args[0] === undefined ? '' : ` Your status has been updated to: **${cm.args.join(' ').replace(/\*/g, '\\*')}**`))
+                    .setDescription('You\'re AFK now.' + (cm.args[0] === undefined ? '' : ` Your status has been updated to: **${cm.args.join(' ').replace(/\*/g, '\\*')}**`))
                 ]
             });
         });

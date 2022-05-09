@@ -14,7 +14,7 @@ module.exports = {
             return;
         }
 
-        var ch = await msg.mentions?.channels?.first();
+        var ch = await msg.mentions?.channels?.last();
         let text;
         let args = [...cm.args];
 
