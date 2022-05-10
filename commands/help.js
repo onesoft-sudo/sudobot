@@ -142,7 +142,6 @@ module.exports = {
             notes: null,
             options: {
                 "--no-send": "Do not send a confirmation message to the locked channel",
-                "--everyone": "Lock the channels for @everyone rather than the general role",
             }
         },
         {
@@ -154,7 +153,6 @@ module.exports = {
             notes: null,
             options: {
                 "--no-send": "Do not send a confirmation message to the locked channel",
-                "--everyone": "Lock the channels for @everyone rather than the general role",
             }
         },
         {
@@ -289,7 +287,6 @@ module.exports = {
             notes: null,
             options: {
                 "--no-send": "Do not send a confirmation message to the locked channel",
-                "--everyone": "Unlock the channels for @everyone rather than the general role",
             }
         },
         {
@@ -301,7 +298,6 @@ module.exports = {
             notes: null,
             options: {
                 "--no-send": "Do not send a confirmation message to the locked channel",
-                "--everyone": "Lock the channels for @everyone rather than the general role",
                 "--raid": "Unlock all Raid-locked channels"
             }
         },
