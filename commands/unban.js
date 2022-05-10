@@ -32,7 +32,7 @@ module.exports = {
             return;
         }
         
-        await History.create(cm.args[0], msg.guild, 'unban', msg.author.id, async (data2) => {
+        await History.create(cm.args[0], msg.guild, 'unban', msg.author.id, null, async (data2) => {
             
         });
 

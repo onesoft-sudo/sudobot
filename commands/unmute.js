@@ -47,7 +47,7 @@ module.exports = {
 
         try {
             let mutedRole = await guild.roles.cache.find(role => role.id === app.config.get('mute_role'));
-            let generalRole = await guild.roles.cache.find(role => role.id === app.config.get('gen_role'));
+            // let generalRole = await guild.roles.cache.find(role => role.id === app.config.get('gen_role'));
 
             if (typeof mutedRole !== 'object' || mutedRole === null) {
                 await msg?.reply({
@@ -61,25 +61,24 @@ module.exports = {
                 return;
             }
 
-            if (typeof generalRole !== 'object' || generalRole === null) {
-                await msg?.reply({
-                    embeds: [
-                        new MessageEmbed()
-                        .setColor('#f14a60')
-                        .setDescription(`No general role is set.`)
-                    ]
-                });
+            // if (typeof generalRole !== 'object' || generalRole === null) {
+            //     await msg?.reply({
+            //         embeds: [
+            //             new MessageEmbed()
+            //             .setColor('#f14a60')
+            //             .setDescription(`No general role is set.`)
+            //         ]
+            //     });
     
-                return;
-            }
+            //     return;
+            // }
 
             if (!log)
-                await History.create(user.id, guild, 'unmute', msg.author.id, async (data2) => {});
+                await History.create(user.id, guild, 'unmute', msg.author.id, null, async (data2) => {});
 
-            await user.roles.add(generalRole);
+            // await user.roles.add(generalRole);
             await user.roles.remove(mutedRole);
 
-        
             await app.logger.logUnmute(user, t === undefined ? msg.author : t);
             
         }

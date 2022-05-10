@@ -60,7 +60,7 @@ module.exports = {
             }
 
             
-            await History.create(user.id, msg.guild, 'kick', msg.author.id, async (data2) => {
+            await History.create(user.id, msg.guild, 'kick', msg.author.id, typeof raeson.reason === 'undefined' ? null : reason.reason, async (data2) => {
                 await user.kick(reason);
             });
         }

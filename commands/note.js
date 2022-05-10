@@ -44,7 +44,7 @@ module.exports = {
             return;
         }
         
-        await History.create(user.id, msg.guild, 'note', msg.author.id, async (data2) => {
+        await History.create(user.id, msg.guild, 'note', msg.author.id, null, async (data2) => {
             this.note(user, content, msg);
         });
 

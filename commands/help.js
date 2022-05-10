@@ -3,7 +3,7 @@ const MessageEmbed = require("../src/MessageEmbed");
 const { escapeRegex } = require("../src/util");
 
 module.exports = {
-    version: "1.6.2",
+    version: "1.6.3",
     commands: [
         {
             name: 'addsnippet',
@@ -32,9 +32,9 @@ module.exports = {
         {
             name: 'ban',
             shortBrief: "Ban someone in this server.",
-            description: null,
-            structure: "<UserID|Mention> [Reason]",
-            example: "`%%ban 385753607325075320`\n`%%ban @Someone You are spamming a lot`",
+            description: "Ban a user. `-d` is the number days old messages to  delete. It must be in range 0-7. If `-d` is passed then an argument after it is required.",
+            structure: "<UserID|Mention> [-d=DAYS] [Reason]",
+            example: "`%%ban 385753607325075320`\n`%%ban @Someone You are spamming a lot`\n`%%ban @Someone -d 5`\n`%%ban 385753607325075320 -d 5 You are spamming a lot`",
             notes: null
         },
         {
@@ -357,14 +357,6 @@ module.exports = {
     },
     async handle(msg, cm) {
         if (typeof cm.args[0] === 'undefined') {
-            // await msg.reply({
-            //     embeds: [
-            //         new MessageEmbed()
-            //         .setColor('#f14a60')
-            //         .setDescription(`This command requires at least one argument.`)
-            //     ]
-            // });
-
             await msg.reply({
                 embeds: [
                     new MessageEmbed()

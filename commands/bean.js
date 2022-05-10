@@ -62,7 +62,7 @@ module.exports = {
         });
     },
     async bean(user, reason, msg) {
-        await History.create(user.id, msg.guild, 'bean', msg.author.id, async (data2) => {
+        await History.create(user.id, msg.guild, 'bean', msg.author.id, typeof reason === 'undefined' ? null : reason, async (data2) => {
             await user.send({
                 embeds: [
                     new MessageEmbed()

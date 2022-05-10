@@ -46,7 +46,7 @@ class SpamFilter {
     async start(msg) {
         this.load();
         
-        if(msg.author.bot || this.config.exclude.indexOf(msg.channel.id) !== -1 || !this.enabled || msg.member.roles.cache.has(app.config.get('mod_role'))) 
+        if(msg.author.bot || this.config.exclude.indexOf(msg.channel.id) !== -1 || this.config.exclude.indexOf(msg.channel.parent?.id) !== -1 || !this.enabled || msg.member.roles.cache.has(app.config.get('mod_role'))) 
             return;
 
         if (!this.filter(msg)) {

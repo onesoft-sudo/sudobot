@@ -63,7 +63,7 @@ module.exports = {
                     user = row.user_id;
                 }
 
-                str += `\`[${new Date(row.date).toLocaleString()}] [${mod}]`;
+                str += `**[${new Date(row.date).toLocaleString()}] [${mod}]**\n`;
                 let type;
 
                 if (row.type === 'ban') {
@@ -91,7 +91,7 @@ module.exports = {
                     type = 'Deleted warning for';
                 }
 
-                str += ` ${type} ${user}\`\n`;
+                str += ` ${type} ${user} [Reason: ${row.reason == null ? 'No reason' : row.reason}]\n\n`;
             }
 
             let a = {

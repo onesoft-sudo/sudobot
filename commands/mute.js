@@ -115,7 +115,7 @@ module.exports = {
     async mute(user, reason, msg, log, timeMs) {
         try {
             let mutedRole = await msg.guild.roles.cache.find(role => role.id === app.config.get('mute_role'));
-            let generalRole = await msg.guild.roles.cache.find(role => role.id === app.config.get('gen_role'));
+            // let generalRole = await msg.guild.roles.cache.find(role => role.id === app.config.get('gen_role'));
 
             if (typeof mutedRole !== 'object' || mutedRole === null) {
                 await msg.reply({
@@ -129,23 +129,23 @@ module.exports = {
                 return;
             }
 
-            if (typeof generalRole !== 'object' || generalRole === null) {
-                await msg.reply({
-                    embeds: [
-                        new MessageEmbed()
-                        .setColor('#f14a60')
-                        .setDescription(`No general role is set.`)
-                    ]
-                });
+            // if (typeof generalRole !== 'object' || generalRole === null) {
+            //     await msg.reply({
+            //         embeds: [
+            //             new MessageEmbed()
+            //             .setColor('#f14a60')
+            //             .setDescription(`No general role is set.`)
+            //         ]
+            //     });
     
-                return;
-            }
+            //     return;
+            // }
 
             if (!log)
-                await History.create(user.id, msg.guild, 'mute', msg.author.id, async (data2) => {});
+                await History.create(user.id, msg.guild, 'mute', msg.author.id, typeof reason === 'undefined' || reason.trim() === '' ? null : reason, async (data2) => {});
 
             await user.roles.add(mutedRole);
-            await user.roles.remove(generalRole);
+            // await user.roles.remove(generalRole);
 
             if (timeMs !== false)
                 await app.logger.logMute(user, typeof reason === 'undefined' || reason.trim() === '' ? '*No reason provided*' : reason, timeMs, msg.author);

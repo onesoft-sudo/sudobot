@@ -86,7 +86,7 @@ module.exports = {
 
                 await app.logger.logWarn(msg, user, warned_by1 === undefined ? msg.author : warned_by1, typeof reason === 'undefined' ? '*No reason provided*' : reason);
                 
-                await History.create(user.id, msg.guild, 'warn', warned_by1 === undefined ? msg.author.id : warned_by1.id, async (data2) => {
+                await History.create(user.id, msg.guild, 'warn', warned_by1 === undefined ? msg.author.id : warned_by1.id, typeof reason === 'undefined' ? null : reason, async (data2) => {
                     await user.send({
                         embeds: [
                             new MessageEmbed()

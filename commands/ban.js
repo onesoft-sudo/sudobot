@@ -16,35 +16,80 @@ module.exports = {
         }
 
         var user = await msg.mentions.users.first();
-        let reason = {};
+        const argFirst = cm.args.slice(0, 3);
 
-        if (typeof cm.args[1] !== 'undefined') {
-            let args = [...cm.args];
-            args.shift();
+        const banOptions = {};
 
-            await (reason.reason = args.join(' '));
-        }
+        console.log(argFirst);
+        
+        // log to #mod-logs
+        // update help command
 
-        if (typeof user !== 'object') {
+        if (!user) {
             try {
-                user = await app.client.users.fetch(cm.args[0]);
+                user = await app.client.users.fetch(argFirst[0]);
             }
-            catch(e) {
+            catch (e) {
+                console.log(e);
 
+                await msg.reply({
+                    embeds: [
+                        new MessageEmbed()
+                        .setColor('#f14a60')
+                        .setDescription(`Invalid user given.`)
+                    ]
+                });
+    
+                return;
             }
         }
 
-        if (typeof user !== 'object') {
-            await msg.reply({
-                embeds: [
-                    new MessageEmbed()
-                    .setColor('#f14a60')
-                    .setDescription(`Invalid user given.`)
-                ]
-            });
+        const pos = argFirst.indexOf('-d');
+        let length = argFirst.length;
+        
+        if (pos !== -1) {
+            const days = argFirst[pos + 1];
 
-            return;
+            if (days === undefined || !parseInt(days)) {
+                await msg.reply({
+                    embeds: [
+                        new MessageEmbed()
+                        .setColor('#f14a60')
+                        .setDescription(`Option \`-d\` requires a valid numeric argument.`)
+                    ]
+                });
+    
+                return;
+            }
+
+            if (days < 0 || days > 7) {
+                await msg.reply({
+                    embeds: [
+                        new MessageEmbed()
+                        .setColor('#f14a60')
+                        .setDescription(`Days must be in range 0-7.`)
+                    ]
+                });
+    
+                return;
+            }
+
+            banOptions.days = parseInt(days);
+            argFirst.splice(1, 2);
         }
+        else {
+            length = 1;
+        }
+
+        const args1 = [...cm.args];
+        args1.splice(0, length);
+        const reason = args1.join(' ');
+
+        if (reason.trim() !== '') {
+            banOptions.reason = reason;
+        }
+
+        console.log(argFirst, banOptions);
 
         try {
             if (typeof user.bannable === 'boolean' && user.bannable === false) {
@@ -59,8 +104,8 @@ module.exports = {
                 return;
             }
 
-            await History.create(user.id, msg.guild, 'ban', msg.author.id, async (data2) => {
-                await msg.guild.bans.create(user.id, reason);
+            await History.create(user.id, msg.guild, 'ban', msg.author.id, typeof banOptions.reason === 'undefined' ? null : banOptions.reason, async (data2) => {
+                await msg.guild.bans.create(user.id, banOptions);
             });
         }
         catch(e) {
@@ -84,7 +129,7 @@ module.exports = {
                 .addFields([
                     {
                         name: "Reason",
-                        value: typeof reason.reason === 'undefined' ? '*No reason provided*' : reason.reason
+                        value: typeof banOptions.reason === 'undefined' ? '*No reason provided*' : banOptions.reason
                     }
                 ])
             ]

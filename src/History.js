@@ -1,6 +1,6 @@
 module.exports = class History {
     static get(user_id, guild, callback) {
-        app.db.all('SELECT * FROM history WHERE guild_id = ? AND user_id = ?', [guild.id, user_id], (err, data) => {
+        app.db.all('SELECT * FROM history WHERE guild_id = ? AND user_id = ? ORDER BY id DESC', [guild.id, user_id], (err, data) => {
             if (err) {
                 console.log(err);
             }
@@ -9,8 +9,8 @@ module.exports = class History {
         });
     }
 
-    static create(user_id, guild, type, mod, callback) {
-        app.db.get('INSERT INTO history(type, user_id, guild_id, date, mod_id) VALUES(?, ?, ?, ?, ?)', [type, user_id, guild.id, new Date().toISOString(), mod], (err) => {
+    static create(user_id, guild, type, mod, reason, callback) {
+        app.db.get('INSERT INTO history(type, user_id, guild_id, date, mod_id, reason) VALUES(?, ?, ?, ?, ?, ?)', [type, user_id, guild.id, new Date().toISOString(), mod, reason], (err) => {
             if (err) {
                 console.log(err);
             }

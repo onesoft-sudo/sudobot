@@ -43,7 +43,7 @@ module.exports = {
                     }
                 };
 
-                await History.create(data.user_id, msg.guild, 'warndel', msg.author.id, async (data2) => {});
+                await History.create(data.user_id, msg.guild, 'warndel', msg.author.id, null, async (data2) => {});
 
                 try {
                     user = await msg.guild.members.fetch(data.user_id);
