@@ -9,3 +9,4 @@ commands/*-old.js
 database.db
 config/*
 commands/a.js
+test.js

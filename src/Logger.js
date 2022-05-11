@@ -57,7 +57,7 @@ class Logger {
                 let str = '';
 
                 msg.attachments.forEach(a => {
-                    str += `**${a.name}** ${a.proxyURL}\n`;
+                    str += `**${a.name}** ${a.url}\n`;
                 });
 
                 embed.addField('Attachments', str);

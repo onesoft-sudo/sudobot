@@ -43,6 +43,25 @@ class SpamFilter {
         return true;
     }
 
+    async basic(msg) {
+        this.load();
+        
+        if(msg.author.bot || this.config.exclude.indexOf(msg.channel.id) !== -1 || this.config.exclude.indexOf(msg.channel.parent?.id) !== -1 || !this.enabled || msg.member.roles.cache.has(app.config.get('mod_role'))) 
+            return;
+
+        if (!this.filter(msg)) {
+            await msg.delete();
+            await msg.channel.send({
+                embeds: [
+                    new MessageEmbed()
+                    .setDescription("Deleted a message (Spam filter)")
+                ]
+            });
+            
+            return;
+        }
+    }
+
     async start(msg) {
         this.load();
         

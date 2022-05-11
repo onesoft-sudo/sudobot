@@ -38,8 +38,6 @@ module.exports = class MessageFilter {
     }
 
     async filterInvites(msg, callback) {
-        console.log(0);
-
         if (!this.config.invite_enabled) 
             return true;
 
@@ -54,11 +52,8 @@ module.exports = class MessageFilter {
            try {
                 const invites = await msg.guild.invites.fetch();
 
-                console.log(1);
-
                 if (!invites.size) {
                     callback(matches);
-                    console.log(2);
                     return;
                 }
 
@@ -71,7 +66,6 @@ module.exports = class MessageFilter {
                     console.log(3);
                         
                     if (!filtered) {
-                        console.log('yes');
                         callback(matches);
                         return;
                     }
@@ -83,6 +77,28 @@ module.exports = class MessageFilter {
         }
     }
 
+    async filterFiles(msg) {
+        for await (const a of Array.from(msg.attachments.values())) {
+            console.log(a);
+
+            for await (const t of app.config.get('filters').file_types_excluded) {
+                console.log(t, a.name.toLowerCase());
+
+                if (a.name.toLowerCase().endsWith('.' + t)) {
+                    return t;
+                }
+            }
+
+            for await (const t of app.config.get('filters').file_mimes_excluded) {
+                if (a.contentType == t) {
+                    return t;
+                }
+            }
+        }
+
+        return true;
+    }
+
     async start(msg, cm) {
         this.load();
 
@@ -90,6 +106,7 @@ module.exports = class MessageFilter {
             return;
         
         const blockedPass = await this.filterBlockedWords(msg, cm);
+        const files = await this.filterFiles(msg);
 
         await this.filterInvites(msg, async (matches) => {
             // if (bool !== true) {
@@ -132,9 +149,7 @@ module.exports = class MessageFilter {
            //  }
          });
 
-        if (blockedPass === true)
-            return;
-        else if (blockedPass !== true) {
+        if (blockedPass !== true) {
             try {
                 await msg.delete();
                 const channel = await msg.guild.channels.fetch(app.config.get('logging_channel'));
@@ -165,5 +180,38 @@ module.exports = class MessageFilter {
                 console.log(e);
             }
         }
+        else if (msg.attachments.size > 0 && files !== true) {
+            try {
+                await msg.delete();
+                const channel = await msg.guild.channels.fetch(app.config.get('logging_channel'));
+
+                await channel.send({
+                    embeds: [
+                        new MessageEmbed()
+                        .setColor('#f14a60')
+                        .setAuthor({
+                            name: msg.author.tag,
+                            iconURL: msg.author.displayAvatarURL()
+                        })
+                        .setTitle(`Blocked files types detected`)
+                        .addFields([
+                            {
+                                name: "File Type/Extension",
+                                value: files + ""
+                            },
+                        ])
+                        .setFooter({
+                            text: "Deleted"
+                        })
+                        .setTimestamp()
+                    ]
+                });
+            }
+            catch(e) {
+                console.log(e);
+            }
+        }
+
+        console.log(files);
     }
 };

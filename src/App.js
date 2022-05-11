@@ -123,10 +123,17 @@ class App {
         });
 
         this.on("messageUpdate", async (oldMessage, newMessage) => {
-            if (oldMessage.author.bot || oldMessage.content === newMessage.content)
+            if (oldMessage.author.bot || !oldMessage.guild || oldMessage.channel.type == 'dm' || oldMessage.content === newMessage.content)
                 return;
 
+            let msg = await this.msg;
+            await (this.msg = newMessage);
+        
+            await this.spamFilter.basic(newMessage);
+            await this.messageFilter.start(newMessage, this.commandManager);
+
             await this.logger.logEdit(oldMessage, newMessage);
+            await (this.msg = msg);
         });
 
         this.on("messageReactionAdd", async (reaction, message) => {
@@ -151,7 +158,7 @@ class App {
         });
 
         this.on("messageDelete", async (message) => {
-            if (message.author.bot)
+            if (message.author.bot || !message.guild || message.channel.type == 'dm')
                 return;
 
             await this.logger.logDelete(message);

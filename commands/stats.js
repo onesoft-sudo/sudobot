@@ -31,13 +31,13 @@ module.exports = {
                         value: bots + ''
                     },
                     {
-                        name: "Total",
+                        name: "Total Members",
                         inline: true,
                         value: (members + bots) + ''
                     }
                 ])
                 .addField('Roles', msg.guild.roles.cache.size + '')
-                .addField('Channels', msg.guild.channels.cache.filter(c => c.type === 'GUILD_TEXT').size + '')
+                .addField('Text Channels', msg.guild.channels.cache.filter(c => c.type === 'GUILD_TEXT').size + '')
                 .addField('Emojis', msg.guild.emojis.cache.size + '')
                 .addField('Stickers', msg.guild.stickers?.cache.size + '')
             ]
