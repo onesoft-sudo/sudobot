@@ -139,7 +139,7 @@ class App {
         this.on("messageReactionAdd", async (reaction, message) => {
             console.log('inside');
 
-            if (!reaction || !reaction.message) {
+            if (!reaction || !reaction.message || !message.guild || message.channel.type == 'dm') {
                 return;
             }
             
