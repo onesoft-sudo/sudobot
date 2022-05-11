@@ -10,7 +10,7 @@ module.exports = {
             channels = msg.mentions.channels;
         }
         else {
-            channels = await msg.guild.channels.cache.filter(c => channels.indexOf(c.id) !== -1);
+            channels = await msg.guild.channels.cache.filter(c => channels.indexOf(c.id) !== -1 && c.type === 'GUILD_TEXT');
         }
         
         let role = msg.guild.roles.everyone;
