@@ -1,6 +1,6 @@
 {
   "name": "sudobot",
-  "version": "1.6.4",
+  "version": "1.7.0",
   "description": "A discord bot for moderation purposes.",
   "main": "src/app.js",
   "scripts": {
