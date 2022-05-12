@@ -13,6 +13,7 @@ const MessageFilter = require("./MessageFilter");
 const { random } = require("../commands/pixabay");
 const AFKEngine = require("./AFKEngine");
 const Starboard = require("./Starboard");
+const { runTimeouts, setTimeoutv2 } = require("./setTimeout");
 
 class App {
     constructor(rootdir) {
@@ -60,6 +61,10 @@ class App {
             this.client.user.setActivity("over the server", { type: "WATCHING" });
 
             server();
+            
+            runTimeouts();
+
+            // setTimeoutv2(path.resolve(__dirname, '../queues/send.js'), 10000, "Hello world");
         });
 
         this.on('raw', async event => {

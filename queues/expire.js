@@ -1,0 +1,18 @@
+async function expire(message_id, channel_id, guild_id) {
+    console.log(channel_id, guild_id);
+    const guild = await app.client.guilds.cache.get(guild_id);
+
+    if (guild) {
+        const channel = await guild.channels.fetch(channel_id);
+
+        if (channel) {
+            const message = await channel.messages.fetch(message_id);
+
+            if (message) {
+                await message.delete();
+            }
+        }
+    }
+}
+
+module.exports = expire;

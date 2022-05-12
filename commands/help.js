@@ -3,7 +3,7 @@ const MessageEmbed = require("../src/MessageEmbed");
 const { escapeRegex } = require("../src/util");
 
 module.exports = {
-    version: "1.7.0",
+    version: "1.8.0",
     commands: [
         {
             name: 'addsnippet',
@@ -83,6 +83,22 @@ module.exports = {
             description: "Re-send a message from the bot.",
             structure: "<content> [channelMention]",
             example: "`%%echo Something\nVery Cool`\n`%%echo Something\nVery Cool #general`",
+            notes: null
+        },
+        {
+            name: 'expire',
+            shortBrief: "Echo (re-send) a message and delete it after the given time.",
+            description: "Re-send a message from the bot and delete it automatically after the given time interval.",
+            structure: "<timeInterval> <content> [channelMention]",
+            example: "`%%echo 25m Something\nVery Cool`\n`%%echo 1h Something\nVery Cool #general`",
+            notes: null
+        },
+        {
+            name: 'expiresc',
+            shortBrief: "Schedule a message and delete it after the given time.",
+            description: "Schedule a message from the bot and delete it automatically after the given time interval.",
+            structure: "<scheduleTimeInterval> <expireTimeInterval> <content> [channelMention]",
+            example: "`%%echo 25m 5h Something\nVery Cool`\n`%%echo 1h 7d Something\nVery Cool #general`",
             notes: null
         },
         {
@@ -239,6 +255,14 @@ module.exports = {
             notes: null
         },
         {
+            name: 'schedule',
+            shortBrief: "Echo (re-send) a message after the given time.",
+            description: "Re-send a message from the bot automatically after the given time interval.",
+            structure: "<timeInterval> <content> [channelMention]",
+            example: "`%%echo 25m Something\nVery Cool`\n`%%echo 1h Something\nVery Cool #general`",
+            notes: null
+        },
+        {
             name: 'setconfig',
             shortBrief: "Change the bot configuration keys.",
             description: null,
@@ -356,7 +380,7 @@ module.exports = {
             await msg.reply({
                 embeds: [
                     new MessageEmbed()
-                    .setDescription("The command list. Run `" + app.config.get('prefix') + "help <commandName>` for more information about a specific command.\n" + await this.render())
+                    .setDescription("The command list.\n\n`<...>` means required argument, `[...]` means optional argument.\n\nRun `" + app.config.get('prefix') + "help <commandName>` for more information about a specific command.\n" + await this.render())
                     .setTitle('Help')
                 ],
             });
@@ -414,7 +438,7 @@ module.exports = {
             embeds: [
                 new MessageEmbed()
                 .setTitle(`${app.config.get('prefix')}${cmd.name}`)
-                .setDescription(cmd.description !== null ? cmd.description : cmd.shortBrief)
+                .setDescription("`<...>` means required argument, `[...]` means optional argument.\n\n" + (cmd.description !== null ? cmd.description : cmd.shortBrief))
                 .addFields(fields)
             ]
         });
