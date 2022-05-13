@@ -50,7 +50,17 @@ module.exports = {
                 content: text
             });
 
-            await setTimeoutv2('expire.js', time, message.id, ch.id, msg.guild.id);
+            const timeout = await setTimeoutv2('expire.js', time, message.id, ch.id, msg.guild.id);
+
+            await msg.reply({
+                embeds: [
+                    new MessageEmbed()
+                    .setDescription('A queue job has been added.')
+                    .setFooter({
+                        text: 'ID: ' + timeout.row.id
+                    })
+                ]
+            });
         }
         catch(e) {
             console.log(e);

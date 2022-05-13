@@ -6,7 +6,7 @@ const Shield = require("./Shield");
 const { escapeRegex } = require("./util");
 
 class CommandManager {
-    constructor(cmdDir) {
+    constructor(cmdDir, loadCommands = true, loadSnippets = true) {
         this.msg = null;
         this.commandsDirectory = cmdDir;
         this.commands = [];
@@ -15,8 +15,13 @@ class CommandManager {
         this.args = [];
         this.options = [];
         this.normalArgs = [];
-        this.loadCommands();
-        this.snippetManager = new SnippetManager();
+
+        if (loadCommands)
+            this.loadCommands();
+        
+        if (loadSnippets) 
+            this.snippetManager = new SnippetManager();
+        
         this.shield = new Shield();
     }
 
@@ -24,7 +29,7 @@ class CommandManager {
         this.msg = msg;
         this.argv = msg.content.split(/ +/g);
         this.args = this.argv;
-        this.commandName = this.args.shift().trim().replace(new RegExp(`^${escapeRegex(app.config.get('prefix'))}`), "");
+        this.commandName = this.args.shift().trim().replace(new RegExp(`^${escapeRegex(app.config.props[msg.guild.id].prefix)}`), "");
     }
 
     loadCommands() {
@@ -54,7 +59,7 @@ class CommandManager {
     }
 
     valid() {
-        return this.msg.content.startsWith(app.config.get('prefix'));
+        return this.msg.content.startsWith(app.config.props[this.msg.guild.id].prefix);
     }
 
     async notFound() {

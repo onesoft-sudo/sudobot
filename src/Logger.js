@@ -15,6 +15,15 @@ class Logger {
         }
     }
 
+    channelJoinLeft(callback, msg) {
+        let channelID = app.config.props[msg.guild.id].logging_channel_join_leave;
+        let channel = msg.guild.channels.cache.find(c => c.id === channelID);
+
+        if (channel) {
+            return callback(channel);
+        }
+    }
+
     logEdit(oldMsg, newMsg) {
         this.channel(async (channel) => {
             await channel.send({
@@ -121,7 +130,7 @@ class Logger {
     }
 
     logJoined(member) {
-        this.channel(async (channel) => {
+        this.channelJoinLeft(async (channel) => {
             await channel.send({
                 embeds: [
                     new MessageEmbed()
@@ -146,7 +155,7 @@ class Logger {
     }
 
     logLeft(member) {
-        this.channel(async (channel) => {
+        this.channelJoinLeft(async (channel) => {
             await channel.send({
                 embeds: [
                     new MessageEmbed()
