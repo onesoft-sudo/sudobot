@@ -3,8 +3,24 @@ const MessageEmbed = require("../src/MessageEmbed");
 const { escapeRegex } = require("../src/util");
 
 module.exports = {
-    version: "1.8.0",
+    version: "1.9.0",
     commands: [
+        {
+            name: 'about',
+            shortBrief: "Show information about the bot.",
+            description: null,
+            structure: "",
+            example: "`%%about`",
+            notes: null
+        },
+        {
+            name: 'addqueue',
+            shortBrief: "Add a queue job.",
+            description: 'Adds a queued command to the bot\'s memory and after the given amount of time it gets executed.',
+            structure: "<time> <command>",
+            example: "`%%addqueue 15m echo Hello world`\n`%%addqueue 12h kick 875275828247255`",
+            notes: null
+        },
         {
             name: 'addsnippet',
             shortBrief: "Adds a snippet.",
@@ -59,6 +75,14 @@ module.exports = {
             description: "Clear all messages from a user, in the current channel. This might take a while.",
             structure: "<UserID|UserMention>",
             example: "`%%clear 83474924191884727`\n`%%clear @Someone`",
+            notes: null
+        },
+        {
+            name: 'Delete a queue job.',
+            shortBrief: "Delete a queued command by its ID.",
+            description: null,
+            structure: "<QueueID>",
+            example: "`%%delqueue 80`",
             notes: null
         },
         {
