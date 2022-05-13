@@ -78,9 +78,9 @@ module.exports = {
             notes: null
         },
         {
-            name: 'Delete a queue job.',
-            shortBrief: "Delete a queued command by its ID.",
-            description: null,
+            name: 'delqueue',
+            shortBrief: "Delete a queue job.",
+            description: "Delete a queued command by its ID.",
             structure: "<QueueID>",
             example: "`%%delqueue 80`",
             notes: null
