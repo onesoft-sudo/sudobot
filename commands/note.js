@@ -1,5 +1,6 @@
 const History = require("../src/History");
 const MessageEmbed = require("../src/MessageEmbed");
+const { getUser } = require("../src/UserInput");
 
 module.exports = {
     async handle(msg, cm) {
@@ -14,25 +15,18 @@ module.exports = {
 
             return;
         }
+        try {
+            var user = await getUser(cm.args[0], msg);
 
-        var user = await msg.mentions.members.first();
-        let content;
+            console.log(user);
 
-        let args = [...cm.args];
-        args.shift();
-
-        await (content = args.join(' '));
-
-        if (typeof user !== 'object') {
-            try {
-                user = await msg.guild.members.fetch(cm.args[0]);
-            }
-            catch(e) {
-
+            if (!user) {
+                throw new Error('Invalid User');
             }
         }
+        catch (e) {
+            console.log(e);
 
-        if (typeof user !== 'object') {
             await msg.reply({
                 embeds: [
                     new MessageEmbed()
@@ -43,6 +37,13 @@ module.exports = {
 
             return;
         }
+        
+        let content;
+
+        let args = [...cm.args];
+        args.shift();
+
+        await (content = args.join(' '));
         
         await History.create(user.id, msg.guild, 'note', msg.author.id, null, async (data2) => {
             this.note(user, content, msg);

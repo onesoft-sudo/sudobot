@@ -37,6 +37,7 @@ class SpamFilter {
         }
 
         if (this.almostSameText(msg.content)) {
+            console.log('Almost same text');
             return false;
         }
 
@@ -125,7 +126,7 @@ class SpamFilter {
                                 let u = await msg.guild.members.fetch(msg.author.id);
                                 await mute(u, "Spamming", msg, true, false);
                                 
-                                await History.create(u.id, msg.guild, 'mute', app.client.user.id, async (data2) => {});
+                                await History.create(u.id, msg.guild, 'mute', app.client.user.id, "Spam detected", async (data2) => {});
 
                                 let timeMs = this.UNMUTE;
                                 let time = (new Date()).getTime() + timeMs;
@@ -148,7 +149,7 @@ class SpamFilter {
                             
                                                         if (member) {
                                                             await unmute(member, null, guild, true, app.client.user);
-                                                            await History.create(u.id, msg.guild, 'unmute', app.client.user.id, async (data2) => {});
+                                                            await History.create(u.id, msg.guild, 'unmute', app.client.user.id, '', async (data2) => {});
                                                         }
                             
                                                         console.log(data);

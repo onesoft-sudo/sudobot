@@ -1,4 +1,5 @@
 const MessageEmbed = require("../src/MessageEmbed");
+const { getUser } = require("../src/UserInput");
 
 module.exports = {
     needsOptionParse: true,
@@ -15,18 +16,23 @@ module.exports = {
             return;
         }
 
-        let user = msg.mentions.members.first();
+        try {
+            var user = await getUser(cm.args[0], msg);
 
-        if (!user) {
-            user = msg.guild.members.cache.find(m => m.id === cm.normalArgs[0]);
+            console.log(user);
+
+            if (!user) {
+                throw new Error('Invalid User');
+            }
         }
+        catch (e) {
+            console.log(e);
 
-        if (!user) {
             await msg.reply({
                 embeds: [
                     new MessageEmbed()
                     .setColor('#f14a60')
-                    .setDescription('Invalid user given.')
+                    .setDescription(`Invalid user given.`)
                 ]
             });
 
@@ -48,9 +54,9 @@ module.exports = {
             fetched = await msg.channel.messages.fetch({ limit: 100 });
             fetched = await fetched.filter(m => m.author.id === user.id);
             await msg.channel.bulkDelete(fetched);
-            count += fetched.size;
+            count += await fetched.size;
         }
-        while(fetched.size >= 2);
+        while (fetched.size >= 2);
 
         const guild = await app.client.guilds.fetch(app.config.props.global.id);
         let emoji = ':white_check_mark:';

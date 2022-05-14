@@ -48,7 +48,7 @@ module.exports = {
         text = args.join(' ');
 
         try {
-            const timeout = await setTimeoutv2('send-expire.js', time1, text, ch.id, msg.guild.id, time2);
+            const timeout = await setTimeoutv2('send-expire.js', time1, msg.guild.id, `expiresc ${cm.args.join(' ')}`, text, ch.id, msg.guild.id, time2);
 
             await msg.reply({
                 embeds: [

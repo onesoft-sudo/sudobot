@@ -50,7 +50,7 @@ module.exports = {
                 content: text
             });
 
-            const timeout = await setTimeoutv2('expire.js', time, message.id, ch.id, msg.guild.id);
+            const timeout = await setTimeoutv2('expire.js', time, msg.guild.id, `expire ${cm.args.join(' ')}`, message.id, ch.id, msg.guild.id);
 
             await msg.reply({
                 embeds: [

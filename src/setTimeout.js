@@ -26,9 +26,9 @@ const runTimeouts = async () => {
     }
 };
 
-const setTimeoutv2 = async (file, time, ...params) => {
+const setTimeoutv2 = async (file, time, guild_id, cmd, ...params) => {
     await console.log('SETTING');
-    await app.db.allAsync("INSERT INTO timeouts(created_at, filePath, time, params) VALUES(?, ?, ?, ?)", [new Date().toISOString(), path.resolve(__dirname, '../queues', file), new Date(Date.now() + time).toISOString(), JSON.stringify(params)]);
+    await app.db.allAsync("INSERT INTO timeouts(created_at, filePath, time, params, guild_id, cmd) VALUES(?, ?, ?, ?, ?, ?)", [new Date().toISOString(), path.resolve(__dirname, '../queues', file), new Date(Date.now() + time).toISOString(), JSON.stringify(params), guild_id, cmd]);
     const row = await app.db.getAsync('SELECT * FROM timeouts ORDER BY id DESC LIMIT 0, 1');
 
     const timeout = await setTimeout(async () => {

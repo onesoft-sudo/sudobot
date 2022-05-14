@@ -18,7 +18,7 @@ module.exports = {
         const timeout = await getTimeout(parseInt(cm.args[0]));
         console.log(getTimeouts());
 
-        if (!timeout) {
+        if (!timeout || timeout.row.guild_id !== msg.guild.id) {
             await msg.reply({
                 embeds: [
                     new MessageEmbed()
@@ -37,6 +37,7 @@ module.exports = {
                 new MessageEmbed()
                 .setColor('#f14a60')
                 .setDescription(`The queue has been deleted.`)
+                .addField('Command', `\`${timeout.row.cmd}\``)
                 .setFooter({
                     text: '' + timeout.row.id
                 })

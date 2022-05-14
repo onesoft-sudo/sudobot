@@ -3,7 +3,7 @@ const MessageEmbed = require("../src/MessageEmbed");
 const { escapeRegex } = require("../src/util");
 
 module.exports = {
-    version: "1.9.0",
+    version: "1.10.0",
     commands: [
         {
             name: 'about',
@@ -48,16 +48,19 @@ module.exports = {
         {
             name: 'ban',
             shortBrief: "Ban someone in this server.",
-            description: "Ban a user. `-d` is the number days old messages to  delete. It must be in range 0-7. If `-d` is passed then an argument after it is required.",
-            structure: "<UserID|Mention> [-d=DAYS] [Reason]",
+            description: "Ban a user in this server.",
+            structure: "<UserID|UserTag|Mention> [-d=DAYS] [Reason]",
             example: "`%%ban 385753607325075320`\n`%%ban @Someone You are spamming a lot`\n`%%ban @Someone -d 5`\n`%%ban 385753607325075320 -d 5 You are spamming a lot`",
-            notes: null
+            notes: null,
+            options: {
+                "-d": "The number of days old messages to delete. It must be in range 0-7. An argument is required.",
+            }
         },
         {
             name: 'bean',
             shortBrief: "Bean someone in this server.",
             description: "Bean someone. It doesn't do anything except pretending.",
-            structure: "<UserID|Mention> [Reason]",
+            structure: "<UserID|UserTag|Mention> [Reason]",
             example: "`%%bean 385753607325075320`\n`%%bean @Someone You are spamming a lot`",
             notes: null
         },
@@ -73,7 +76,7 @@ module.exports = {
             name: 'clear',
             shortBrief: "Clear all messages from a user.",
             description: "Clear all messages from a user, in the current channel. This might take a while.",
-            structure: "<UserID|UserMention>",
+            structure: "<UserID|UserTag|UserMention>",
             example: "`%%clear 83474924191884727`\n`%%clear @Someone`",
             notes: null
         },
@@ -166,10 +169,18 @@ module.exports = {
             notes: null
         },
         {
+            name: 'joke',
+            shortBrief: "Fetch a random joke from The Joke API.",
+            description: null,
+            structure: "",
+            example: "`%%joke`",
+            notes: null
+        },
+        {
             name: 'kick',
             shortBrief: "Kick someone from this server.",
             description: null,
-            structure: "<UserID|Mention> [Reason]",
+            structure: "<UserID|UserTag|Mention> [Reason]",
             example: "`%%kick 385753607325075320`\n`%%kick @Someone You are spamming a lot`",
             notes: null
         },
@@ -207,7 +218,7 @@ module.exports = {
             name: 'mute',
             shortBrief: "Mute someone in this server.",
             description: null,
-            structure: "<UserID|Mention> [-t=DURATION] [Reason]",
+            structure: "<UserID|UserTag|Mention> [-t=DURATION] [Reason]",
             example: "`%%mute 385753607325075320`\n`%%mute @Someone You are spamming a lot`\n`%%mute @Someone -t 10m You are spamming a lot`",
             options: {
                 "-t": "Set the mute duration"
@@ -234,7 +245,7 @@ module.exports = {
             name: 'note',
             shortBrief: "Take a note about an user.",
             description: null,
-            structure: "<UserID|UserMention> <note>",
+            structure: "<UserID|UserTag|UserMention> <note>",
             example: "`%%note @Someone Simple note.`",
             notes: null
         },
@@ -258,7 +269,7 @@ module.exports = {
             name: 'notes',
             shortBrief: "Get all notes for a specific user.",
             description: null,
-            structure: "<UserID|UserMention>",
+            structure: "<UserID|UserTag|UserMention>",
             example: "`%%notes @Someone`",
             notes: null
         },
@@ -276,6 +287,14 @@ module.exports = {
             description: null,
             structure: "<NewPrefix>",
             example: "`%%prefix -`",
+            notes: null
+        },
+        {
+            name: 'queues',
+            shortBrief: "Show a list of all queue jobs.",
+            description: null,
+            structure: "",
+            example: "`%%queues`",
             notes: null
         },
         {
@@ -298,7 +317,7 @@ module.exports = {
             name: 'send',
             shortBrief: "Send a DM to a user.",
             description: null,
-            structure: "<UserID|Mention> <content>",
+            structure: "<UserID|UserTag|Mention> <content>",
             example: "`%%send 278358918549759428 Hello world`\n`%%send @Someone Hello world`",
             notes: null
         },
@@ -353,7 +372,7 @@ module.exports = {
             name: 'unmute',
             shortBrief: "Unmute someone in this server.",
             description: null,
-            structure: "<UserID|Mention>",
+            structure: "<UserID|UserTag|Mention>",
             example: "`%%unmute 385753607325075320`\n`%%unmute @Someone You are spamming a lot`",
             notes: null
         },
@@ -361,7 +380,7 @@ module.exports = {
             name: 'warn',
             shortBrief: "Warn someone in this server.",
             description: null,
-            structure: "<UserID|Mention> [Reason]",
+            structure: "<UserID|UserTag|Mention> [Reason]",
             example: "`%%warn 385753607325075320`\n`%%warn @Someone You are spamming a lot`",
             notes: null
         },
@@ -385,7 +404,7 @@ module.exports = {
             name: 'warnings',
             shortBrief: "Show all warnings.",
             description: "Show all warnings in this server. Passing an user will only show their warnings.",
-            structure: "[UserId|Mention]",
+            structure: "[UserId|UserTag|Mention]",
             example: "`%%warnings`\n`%%warnings 948489127957979253978538`",
             notes: null
         },

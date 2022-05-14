@@ -2,6 +2,7 @@ const MessageEmbed = require("../src/MessageEmbed");
 const ms = require('ms');
 const { unmute } = require("./unmute");
 const History = require("../src/History");
+const { getUser } = require("../src/UserInput");
 
 module.exports = {
     async handle(msg, cm) {
@@ -16,8 +17,29 @@ module.exports = {
 
             return;
         }
+        try {
+            var user = await getUser(cm.args[0], msg);
 
-        var user = await msg.mentions.members.first();
+            console.log(user);
+
+            if (!user) {
+                throw new Error('Invalid User');
+            }
+        }
+        catch (e) {
+            console.log(e);
+
+            await msg.reply({
+                embeds: [
+                    new MessageEmbed()
+                    .setColor('#f14a60')
+                    .setDescription(`Invalid user given.`)
+                ]
+            });
+
+            return;
+        }
+        
         let reason;
         let tmp = false;
         let timeMs, time2;
@@ -57,27 +79,6 @@ module.exports = {
 
         if (args.length > 0) {
             await (reason = args.join(' '));
-        }
-
-        if (typeof user !== 'object') {
-            try {
-                user = await msg.guild.members.fetch(cm.args[0]);
-            }
-            catch(e) {
-
-            }
-        }
-
-        if (typeof user !== 'object') {
-            await msg.reply({
-                embeds: [
-                    new MessageEmbed()
-                    .setColor('#f14a60')
-                    .setDescription(`Invalid user given.`)
-                ]
-            });
-
-            return;
         }
 
         if (time) {

@@ -14,6 +14,7 @@ const { random } = require("../commands/pixabay");
 const AFKEngine = require("./AFKEngine");
 const Starboard = require("./Starboard");
 const { runTimeouts, setTimeoutv2 } = require("./setTimeout");
+const autoRole = require("./AutoRole");
 
 class App {
     constructor(rootdir) {
@@ -188,6 +189,7 @@ class App {
 
         this.on('guildMemberAdd', async (member) => {
             console.log('Joined');
+            await autoRole(member, member.guild);
             await this.antiRaid.start(member);
             await this.logger.logJoined(member);
         });

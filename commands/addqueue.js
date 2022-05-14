@@ -48,7 +48,7 @@ module.exports = {
 
         const command = await args.join(' ');
 
-        const queue = await setTimeoutv2('queue.js', time, command, msg.id, msg.channel.id, msg.guild.id);
+        const queue = await setTimeoutv2('queue.js', time, msg.guild.id, command, command, msg.id, msg.channel.id, msg.guild.id);
 
         await msg.reply({
             embeds: [

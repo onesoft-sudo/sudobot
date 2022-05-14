@@ -1,5 +1,6 @@
 const History = require("../src/History");
 const MessageEmbed = require("../src/MessageEmbed");
+const { getUser } = require("../src/UserInput");
 
 module.exports = {
     async handle(msg, cm) {
@@ -15,34 +16,34 @@ module.exports = {
             return;
         }
 
-        var user = await msg.mentions.users.first();
+        try {
+            var user = await getUser(cm.args[0], msg, false);
+
+            console.log(user);
+
+            if (!user) {
+                throw new Error('Invalid User');
+            }
+        }
+        catch (e) {
+            console.log(e);
+
+            await msg.reply({
+                embeds: [
+                    new MessageEmbed()
+                    .setColor('#f14a60')
+                    .setDescription(`Invalid user given.`)
+                ]
+            });
+
+            return;
+        }
+
         const argFirst = cm.args.slice(0, 3);
 
         const banOptions = {};
 
         console.log(argFirst);
-        
-        // log to #mod-logs
-        // update help command
-
-        if (!user) {
-            try {
-                user = await app.client.users.fetch(argFirst[0]);
-            }
-            catch (e) {
-                console.log(e);
-
-                await msg.reply({
-                    embeds: [
-                        new MessageEmbed()
-                        .setColor('#f14a60')
-                        .setDescription(`Invalid user given.`)
-                    ]
-                });
-    
-                return;
-            }
-        }
 
         const pos = argFirst.indexOf('-d');
         let length = argFirst.length;

@@ -1,4 +1,5 @@
 const MessageEmbed = require("../src/MessageEmbed");
+const { getUser } = require("../src/UserInput");
 
 module.exports = {
     async handle(msg, cm) {
@@ -11,18 +12,18 @@ module.exports = {
             };
         }
         else {
-            var user = await msg.mentions.members.first();
-
-            if (typeof user !== 'object') {
-                try {
-                    user = await msg.guild.members.fetch(cm.args[0]);
-                }
-                catch(e) {
+            try {
+                var user = await getUser(cm.args[0], msg);
     
+                console.log(user);
+    
+                if (!user) {
+                    throw new Error('Invalid User');
                 }
             }
+            catch (e) {
+                console.log(e);
     
-            if (typeof user !== 'object') {
                 await msg.reply({
                     embeds: [
                         new MessageEmbed()
