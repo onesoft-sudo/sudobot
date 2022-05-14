@@ -141,7 +141,7 @@ class Logger {
                         iconURL: member.user.displayAvatarURL(),
                     })
                     .setDescription(`<@${member.user.id}> just joined the server!`)
-                    .addField('Account Created', `${member.user.createdAt.toLocaleString()} (${util.timeSince(member.user.createdAt.getTime())} ago)`)
+                    .addField('Account Created', `${member.user.createdAt.toLocaleString()} (${util.timeSince(member.user.createdAt.getTime())})`)
                     .addField('New Account?', (new Date().getTime() - member.user.createdAt.getTime()) <= 3 * 24 * 60 * 60 * 1000 ? ":warning: Yes :warning:" : "No")
                     .addField('Bot?', member.user.bot === true ? 'Yes' : 'No')
                     .addField('User ID', member.user.id)
@@ -165,7 +165,7 @@ class Logger {
                         name: member.user.tag,
                         iconURL: member.user.displayAvatarURL(),
                     })
-                    .addField('Joined at', `${member.joinedAt.toLocaleString()} (${util.timeSince(member.joinedAt.getTime())} ago)`)
+                    .addField('Joined at', `${member.joinedAt.toLocaleString()} (${util.timeSince(member.joinedAt.getTime())})`)
                     .addField('User ID', member.user.id)
                     .addField('Bot?', member.user.bot === true ? 'Yes' : 'No')
                     .setFooter({
