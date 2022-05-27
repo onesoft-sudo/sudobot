@@ -2,11 +2,9 @@
 node_modules/
 .vscode/
 .idea/
-config/apiguilds.json
-routes/
-src/*-old.js
-commands/*-old.js
+src/api/
 database.db
 config/*
-commands/a.js
 test.js
+src/commands/test/
+yarn-error.log

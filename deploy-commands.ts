@@ -1,0 +1,205 @@
+#!/bin/ts-node
+
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { REST } from '@discordjs/rest';
+import { Routes } from 'discord-api-types/v9';
+import { config } from 'dotenv';
+import { existsSync } from 'fs';
+import path from 'path';
+
+if (existsSync(path.join(__dirname, '.env'))) {
+    config();
+}
+else {
+    process.env.ENV = 'prod';
+}
+
+const { CLIENT_ID, GUILD_ID, TOKEN } = process.env;
+
+const commands = [
+	new SlashCommandBuilder().setName('about').setDescription('Show information about the bot'),
+	new SlashCommandBuilder().setName('test').setDescription('Test command'),
+	new SlashCommandBuilder().setName('system').setDescription('Show the system status'),
+
+	// ABOUT
+	new SlashCommandBuilder().setName('help').setDescription('A short documentation about the commands')
+		.addStringOption(option => option.setName('command').setDescription("The command")),
+
+	// INFORMATION
+	new SlashCommandBuilder().setName('stats').setDescription('Show the server statistics'),
+
+	// AUTOMATION
+	new SlashCommandBuilder().setName('queues').setDescription('List all queued jobs'),
+
+	new SlashCommandBuilder().setName('schedule').setDescription('Schedule a message for sending later')
+		.addStringOption(option => option.setName('time').setDescription('The time interval').setRequired(true))
+		.addStringOption(option => option.setName('content').setDescription('Message content').setRequired(true))
+		.addChannelOption(option => option.setName('channel').setDescription('The channel where the message should be sent')),
+
+	new SlashCommandBuilder().setName('expire').setDescription('Expire (delete) a message after a certain amount of time')
+		.addStringOption(option => option.setName('time').setDescription('The time interval').setRequired(true))
+		.addStringOption(option => option.setName('content').setDescription('Message content').setRequired(true))
+		.addChannelOption(option => option.setName('channel').setDescription('The channel where the message should be sent')),
+
+	new SlashCommandBuilder().setName('expiresc').setDescription('Schedule and expire (delete) a message after a certain amount of time')
+		.addStringOption(option => option.setName('send-after').setDescription('The time after the message should be sent').setRequired(true))
+		.addStringOption(option => option.setName('delete-after').setDescription('The time after the message should be deleted').setRequired(true)) // (the system will start counting this after the message gets sent)
+		.addStringOption(option => option.setName('content').setDescription('Message content').setRequired(true))
+		.addChannelOption(option => option.setName('channel').setDescription('The channel where the message should be sent')),
+
+	// FUN
+	new SlashCommandBuilder().setName('cat').setDescription('Fetch a random kitty image'),
+
+	new SlashCommandBuilder().setName('dog').setDescription('Fetch a random doggy image'),
+
+	new SlashCommandBuilder().setName('joke').setDescription('Fetch a random joke from the Joke API'),
+
+	new SlashCommandBuilder().setName('httpcat').setDescription('Fetch a funny cat meme associated with an HTTP status code')
+		.addIntegerOption(option => option.setName('status').setDescription('The HTTP status Code').setRequired(true).setMinValue(100).setMaxValue(599)),
+
+	new SlashCommandBuilder().setName('httpdog').setDescription('Fetch a funny dog meme associated with an HTTP status code')
+		.addIntegerOption(option => option.setName('status').setDescription('The HTTP status Code').setRequired(true).setMinValue(100).setMaxValue(599)),
+		
+	new SlashCommandBuilder().setName('pixabay').setDescription('Search & fetch images from the Pixabay API')
+		.addSubcommand(subcommand =>
+			subcommand
+				.setName('image')
+				.setDescription('Get any type of image')
+				.addStringOption(option => option.setName('query').setDescription('Search query')))
+		.addSubcommand(subcommand =>
+			subcommand
+				.setName('photo')
+				.setDescription('Get photos')
+				.addStringOption(option => option.setName('query').setDescription('Search query')))
+		.addSubcommand(subcommand =>
+			subcommand
+				.setName('illustration')
+				.setDescription('Get illustrations')
+				.addStringOption(option => option.setName('query').setDescription('Search query')))
+		.addSubcommand(subcommand =>
+			subcommand
+				.setName('vector')
+				.setDescription('Get vectors')
+				.addStringOption(option => option.setName('query').setDescription('Search query'))),
+
+	// UTILS
+	new SlashCommandBuilder().setName('snippet').setDescription('Snippets are instant custom messages')
+		.addSubcommand(subcommand =>
+			subcommand
+				.setName('get')
+				.setDescription('Get a snippet')
+				.addStringOption(option => option.setName('name').setDescription('The snippet name').setRequired(true)))
+		.addSubcommand(subcommand =>
+			subcommand
+				.setName('create')
+				.setDescription('Create a snippet')
+				.addStringOption(option => option.setName('name').setDescription('The snippet name').setRequired(true))
+				.addStringOption(option => option.setName('content').setDescription('Snippet message content').setRequired(true))
+				.addAttachmentOption(option => option.setName('file').setDescription('Snippet message file')))
+		.addSubcommand(subcommand =>
+			subcommand
+				.setName('rename')
+				.setDescription('Rename a snippet')
+				.addStringOption(option => option.setName('old-name').setDescription('The old snippet name').setRequired(true))
+				.addStringOption(option => option.setName('new-name').setDescription('The new name').setRequired(true)))
+		.addSubcommand(subcommand =>
+			subcommand
+				.setName('delete')
+				.setDescription('Delete a snippet')
+				.addStringOption(option => option.setName('name').setDescription('The snippet name').setRequired(true))),
+	
+	new SlashCommandBuilder().setName('afk').setDescription('Set your AFK status')
+		.addStringOption(option => option.setName('reason').setDescription("The reason for going AFK")),
+	
+	new SlashCommandBuilder().setName('announce').setDescription('Announce something')
+		.addStringOption(option => option.setName('content').setDescription("The announcemnt message content")),
+
+	// MODERATION
+	new SlashCommandBuilder().setName('ban').setDescription('Ban a user')
+		.addUserOption(option => option.setName('user').setDescription("The user").setRequired(true))
+		.addStringOption(option => option.setName('reason').setDescription("The reason for banning this user"))
+		.addIntegerOption(option => option.setName('days').setDescription("The days old messages to delete of this user").setMinValue(0).setMaxValue(7)),
+
+	new SlashCommandBuilder().setName('kick').setDescription('Kick a member')
+		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true))
+		.addStringOption(option => option.setName('reason').setDescription("The reason for kicking this user")),
+
+	new SlashCommandBuilder().setName('bean').setDescription('Bean a member')
+		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true))
+		.addStringOption(option => option.setName('reason').setDescription("The reason for beaning this user")),
+
+	new SlashCommandBuilder().setName('warn').setDescription('Warn a member')
+		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true))
+		.addStringOption(option => option.setName('reason').setDescription("The reason for warning this user")),
+
+	new SlashCommandBuilder().setName('note').setDescription('Take a note for a member')
+		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true))
+		.addStringOption(option => option.setName('note').setDescription("The note content").setRequired(true)),
+
+	new SlashCommandBuilder().setName('mute').setDescription('Mute a member')
+		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true))
+		.addStringOption(option => option.setName('reason').setDescription("The reason for muting this user"))
+		.addStringOption(option => option.setName('time').setDescription("Mute duration")),
+
+	new SlashCommandBuilder().setName('unmute').setDescription('Unmute a member')
+		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true)),
+
+	new SlashCommandBuilder().setName('unban').setDescription('Unban a user')
+		.addUserOption(option => option.setName('user').setDescription("The user").setRequired(true)),
+
+	new SlashCommandBuilder().setName('warndel').setDescription('Delete a warning')
+		.addNumberOption(option => option.setName('id').setDescription("The warning ID").setRequired(true)),
+
+	new SlashCommandBuilder().setName('warning').setDescription('Get information about a warning')
+		.addNumberOption(option => option.setName('id').setDescription("The warning ID").setRequired(true)),
+
+	new SlashCommandBuilder().setName('noteget').setDescription('Get information about a note')
+		.addNumberOption(option => option.setName('id').setDescription("The note ID").setRequired(true)),
+
+	new SlashCommandBuilder().setName('notedel').setDescription('Delete a note')
+		.addNumberOption(option => option.setName('id').setDescription("The note ID").setRequired(true)),
+
+	new SlashCommandBuilder().setName('warnings').setDescription('Fetch all warnings')
+		.addUserOption(option => option.setName('member').setDescription("Show warnings for only this member")),
+
+	new SlashCommandBuilder().setName('notes').setDescription('Fetch all notes for a user')
+		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true)),
+
+	new SlashCommandBuilder().setName('history').setDescription('Fetch all moderation history for a user')
+		.addUserOption(option => option.setName('user').setDescription("The user").setRequired(true)),
+
+	new SlashCommandBuilder().setName('clear').setDescription('Clear all messages in the current channel for a user')
+		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true)),
+
+	new SlashCommandBuilder().setName('echo').setDescription('Re-send a message from the bot system')
+		.addStringOption(option => option.setName('content').setDescription("The message content").setRequired(true))
+		.addChannelOption(option => option.setName('channel').setDescription("The channel where the message should be sent")),
+
+	new SlashCommandBuilder().setName('lock').setDescription('Lock a channel')
+		.addRoleOption(option => option.setName('role').setDescription("Lock channel for the given role. Default is @everyone"))
+		.addChannelOption(option => option.setName('channel').setDescription("The channel that will be locked. Default is the current channel")),
+
+	new SlashCommandBuilder().setName('lockall').setDescription('Lock multiple channels')
+		.addRoleOption(option => option.setName('role').setDescription("Lock channels for the given role. Default is @everyone"))
+		.addBooleanOption(option => option.setName('raid').setDescription("The raid protected channels will be locked. Default is `false`")),
+
+	new SlashCommandBuilder().setName('unlockall').setDescription('Unlock multiple channels')
+		.addRoleOption(option => option.setName('role').setDescription("Unlock channels for the given role. Default is @everyone"))
+		.addBooleanOption(option => option.setName('force').setDescription("Force set the channel permissions to `true`"))
+		.addBooleanOption(option => option.setName('raid').setDescription("The raid protected channels will be unlocked. Default is `false`")),
+
+	new SlashCommandBuilder().setName('unlock').setDescription('Unlock a channel')
+		.addRoleOption(option => option.setName('role').setDescription("Unlock channel for the given role. Default is @everyone"))
+		.addBooleanOption(option => option.setName('force').setDescription("Force set the channel permission to `true`"))
+		.addChannelOption(option => option.setName('channel').setDescription("The channel that will be unlocked. Default is the current channel")),
+
+	new SlashCommandBuilder().setName('send').setDescription('Send a DM to a user')
+		.addStringOption(option => option.setName('content').setDescription("The message content").setRequired(true))
+		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true)),
+].map(command => command.toJSON());
+
+const rest = new REST({ version: '9' }).setToken(TOKEN!);
+
+rest.put(Routes.applicationGuildCommands(CLIENT_ID!, GUILD_ID!), { body: commands })
+	.then(() => console.log('Successfully registered application commands.'))
+	.catch(console.error);

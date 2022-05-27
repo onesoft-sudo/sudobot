@@ -1,37 +1,34 @@
 {
-  "name": "sudobot",
-  "version": "1.10.0",
-  "description": "A discord bot for moderation purposes.",
-  "main": "src/app.js",
-  "scripts": {
-    "start": "node src/bot.js",
-    "watch": "nodemon src/bot.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/virtual-designer/sudobot.git"
-  },
-  "keywords": [
-    "bot",
-    "discord-js"
-  ],
-  "author": "Ar Rakin <rakinar2@gmail.com>",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/virtual-designer/sudobot/issues"
-  },
-  "homepage": "https://github.com/virtual-designer/sudobot#readme",
-  "dependencies": {
-    "axios": "^0.26.1",
-    "discord.js": "^13.6.0",
-    "dotenv": "^16.0.0",
-    "express": "^4.18.0",
-    "ms": "^2.1.3",
-    "sqlite3": "^5.0.2",
-    "tar": "^4.4.18"
-  },
-  "engines": {
-    "npm": ">=7.0.0",
-    "node": ">=16.0.0"
-  }
+    "name": "sudobot-v2",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT",
+    "dependencies": {
+        "@discordjs/builders": "^0.13.0",
+        "@discordjs/rest": "^0.4.1",
+        "@types/express": "^4.17.13",
+        "@types/ms": "^0.7.31",
+        "@types/sqlite3": "^3.1.8",
+        "axios": "^0.27.2",
+        "discord-api-types": "^0.32.1",
+        "discord.js": "^13.7.0",
+        "dotenv": "^16.0.1",
+        "express": "^4.18.1",
+        "express-router": "^0.0.1",
+        "ms": "^2.1.3",
+        "sqlite3": "^5.0.8",
+        "zod": "^3.17.2"
+    },
+    "devDependencies": {
+        "@types/node": "^17.0.33",
+        "nodemon": "^2.0.16",
+        "typescript": "^4.6.4"
+    },
+    "scripts": {
+        "watch": "nodemon ./src/index.ts",
+        "dev": "ts-node ./src/index.ts",
+        "deploy": "ts-node ./deploy-commands.ts",
+        "start": "node ./build/index.js",
+        "build": "tsc"
+    }
 }

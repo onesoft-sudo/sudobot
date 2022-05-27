@@ -1,0 +1,7 @@
+{
+  "name": "sudobot-v2",
+  "language": "typescript",
+  "manager": "yarn",
+  "token": "1234",
+  "prefix": "-"
+}
