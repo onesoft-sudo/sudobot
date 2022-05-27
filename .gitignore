@@ -2,7 +2,6 @@
 node_modules/
 .vscode/
 .idea/
-src/api/
 database.db
 config/*
 test.js
