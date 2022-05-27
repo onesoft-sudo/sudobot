@@ -64,6 +64,15 @@ export default class ScheduleCommand extends BaseCommand {
 
             text = args.join(' ');
         }
+        
+        if (!channel.send) {
+            await msg.reply({
+                content: 'Invalid text channel.',
+                ephemeral: true
+            });
+
+            return;
+        }
 
         try {
             const timeout = await setTimeoutv2('send.ts', time, msg.guild!.id, `schedule ${time} ${text!} #${channel.name}`, text!, channel.id, msg.guild!.id);

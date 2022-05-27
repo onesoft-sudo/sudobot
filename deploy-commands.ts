@@ -31,6 +31,20 @@ const commands = [
 		.addUserOption(option => option.setName('user').setDescription('The user')),
 
 	// AUTOMATION
+	new SlashCommandBuilder().setName('ballot').setDescription('Ballot engine')
+		.addSubcommand(subcommand =>
+			subcommand
+				.setName('create')
+				.setDescription('Send a ballot/poll message for collecting votes')
+				.addStringOption(option => option.setName('content').setDescription('Message content').setRequired(true))
+				.addBooleanOption(option => option.setName('anonymous').setDescription('If this is set to true then the syetem won\'t show your username'))
+				.addChannelOption(option => option.setName('channel').setDescription('The channel where the message should be sent')))
+		.addSubcommand(subcommand =>
+			subcommand
+				.setName('view')
+				.setDescription('Get information/stats about a ballot')
+				.addIntegerOption(option => option.setName('id').setDescription('The ballot ID'))),
+		
 	new SlashCommandBuilder().setName('queues').setDescription('List all queued jobs'),
 
 	new SlashCommandBuilder().setName('schedule').setDescription('Schedule a message for sending later')

@@ -79,6 +79,15 @@ export default class ExpireScheduleCommand extends BaseCommand {
             text = args.join(' ');
         }
 
+        if (!channel.send) {
+            await msg.reply({
+                content: 'Invalid text channel.',
+                ephemeral: true
+            });
+
+            return;
+        }
+
         try {
             const timeout = await setTimeoutv2('send-expire.ts', time1, msg.guild!.id, `expiresc ${time1} ${time2} ${text!} #${channel.name}`, text!, channel.id, msg.guild!.id, time2);
 

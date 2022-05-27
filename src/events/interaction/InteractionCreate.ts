@@ -32,11 +32,16 @@ export default class InteractionCreateEvent extends BaseEvent {
                     return;
                 }
 
-                await command.run(client, interaction, {
+                const options = {
                     cmdName: commandName,
                     options: interaction.options,
                     isInteraction: true
-                } as InteractionOptions);
+                } as InteractionOptions;
+
+                if (!await client.cooldown.start(interaction, options))
+                    return;
+
+                await command.run(client, interaction, options);
             }
         }
     }

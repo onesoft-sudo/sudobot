@@ -64,6 +64,15 @@ export default class ExpireCommand extends BaseCommand {
             
             text = args.join(' ');
         }
+        
+        if (!channel.send) {
+            await msg.reply({
+                content: 'Invalid text channel.',
+                ephemeral: true
+            });
+
+            return;
+        }
 
         try {
             const message = await channel.send({

@@ -47,6 +47,15 @@ export default class EchoCommand extends BaseCommand {
 
             content = await options.args.join(' ');
         }
+        
+        if (!channel.send) {
+            await msg.reply({
+                content: 'Invalid text channel.',
+                ephemeral: true
+            });
+
+            return;
+        }
 
         try {
             await channel.send({
