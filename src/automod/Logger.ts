@@ -1,3 +1,4 @@
+import { roleMention } from '@discordjs/builders';
 import { GuildBan, GuildMember, Message, MessageEmbed, TextChannel, User } from 'discord.js';
 import DiscordClient from '../client/Client';
 import { timeProcess, timeSince } from '../utils/util';
@@ -159,6 +160,8 @@ class Logger {
 
     logLeft(member: GuildMember) {
         this.channelJoinLeft(async (channel) => {
+            const roles = await member.roles.cache.filter(role => role.id !== member.guild.id).reduce((acc, val) => ` ${acc} ${roleMention(val.id)}`, '');
+
             await channel.send({
                 embeds: [
                     new MessageEmbed()
@@ -168,6 +171,7 @@ class Logger {
                         name: member.user.tag,
                         iconURL: member.user.displayAvatarURL(),
                     })
+                    .setDescription(`**Roles**\n${roles}`)
                     .addField('Joined at', `${member.joinedAt!.toLocaleString()} (${timeSince(member.joinedAt!.getTime())})`)
                     .addField('User ID', member.user.id)
                     .addField('Bot?', member.user.bot === true ? 'Yes' : 'No')

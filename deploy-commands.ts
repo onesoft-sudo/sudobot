@@ -17,16 +17,18 @@ else {
 const { CLIENT_ID, GUILD_ID, TOKEN } = process.env;
 
 const commands = [
-	new SlashCommandBuilder().setName('about').setDescription('Show information about the bot'),
-	new SlashCommandBuilder().setName('test').setDescription('Test command'),
-	new SlashCommandBuilder().setName('system').setDescription('Show the system status'),
-
-	// ABOUT
+	// SETTINGS
 	new SlashCommandBuilder().setName('help').setDescription('A short documentation about the commands')
 		.addStringOption(option => option.setName('command').setDescription("The command")),
+	new SlashCommandBuilder().setName('about').setDescription('Show information about the bot'),
+	new SlashCommandBuilder().setName('system').setDescription('Show the system status'),
 
 	// INFORMATION
 	new SlashCommandBuilder().setName('stats').setDescription('Show the server statistics'),
+	new SlashCommandBuilder().setName('profile').setDescription('Show someone\'s profile')
+		.addUserOption(option => option.setName('user').setDescription('The user')),
+	new SlashCommandBuilder().setName('avatar').setDescription('Show someone\'s avatar')
+		.addUserOption(option => option.setName('user').setDescription('The user')),
 
 	// AUTOMATION
 	new SlashCommandBuilder().setName('queues').setDescription('List all queued jobs'),

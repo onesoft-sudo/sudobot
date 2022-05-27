@@ -13,6 +13,7 @@ import MessageFilter from '../automod/MessageFilter';
 import AntiRaid from '../automod/AntiRaid';
 import Starboard from '../services/Starboard';
 import Server from '../api/Server';
+import Cooldown from '../automod/Cooldown';
 
 export default class DiscordClient extends Client {
     private _commands = new Collection<string, BaseCommand>();
@@ -32,6 +33,7 @@ export default class DiscordClient extends Client {
     antiraid: AntiRaid;
     starboard: Starboard;
     server: Server;
+    cooldown: Cooldown;
 
     static client: DiscordClient;
 
@@ -58,6 +60,7 @@ export default class DiscordClient extends Client {
         this.antiraid = new AntiRaid(this);
         this.starboard = new Starboard(this);
         this.server = new Server(this);
+        this.cooldown = new Cooldown(this);
         
         DiscordClient.client = this;
     }

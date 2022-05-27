@@ -10,8 +10,6 @@ export default class InteractionCreateEvent extends BaseEvent {
     }
 
     async run(client: DiscordClient, interaction: Interaction) {
-        console.log('inside');
-        
         if (interaction.isCommand()) {
             await client.setMessage(interaction);
 

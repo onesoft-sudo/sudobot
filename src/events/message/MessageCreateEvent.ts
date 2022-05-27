@@ -30,14 +30,19 @@ export default class MessageCreateEvent extends BaseEvent {
 
             if (command && command.supportsLegacy) {
                 if (allowed) {
-                    await command.run(client, message, {
+                    const options = {
                         cmdName,
                         args,
                         argv: [cmdName, ...args],
                         normalArgs: args.filter(a => a[0] !== '-'),
                         options: args.filter(a => a[0] === '-'),
                         isInteraction: false
-                    } as CommandOptions);    
+                    } as CommandOptions;
+
+                    if (!await client.cooldown.start(message, options))
+                        return;
+                    
+                    await command.run(client, message, options);    
                 }
                 else {
                     await message.reply({

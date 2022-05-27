@@ -8,7 +8,7 @@ import { fetchEmoji } from '../../utils/Emoji';
 
 export default class SystemCommand extends BaseCommand {
     constructor() {
-        super('system', 'testing', []);
+        super('system', 'settings', []);
         this.supportsInteractions = true;
     }
 
