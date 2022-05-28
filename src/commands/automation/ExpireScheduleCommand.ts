@@ -89,7 +89,7 @@ export default class ExpireScheduleCommand extends BaseCommand {
         }
 
         try {
-            const timeout = await setTimeoutv2('send-expire.ts', time1, msg.guild!.id, `expiresc ${time1} ${time2} ${text!} #${channel.name}`, text!, channel.id, msg.guild!.id, time2);
+            const timeout = await setTimeoutv2('send-expire', time1, msg.guild!.id, `expiresc ${time1} ${time2} ${text!} #${channel.name}`, text!, channel.id, msg.guild!.id, time2);
 
             await msg.reply({
                 embeds: [

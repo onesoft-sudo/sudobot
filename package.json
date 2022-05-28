@@ -27,7 +27,7 @@
     "scripts": {
         "watch": "nodemon ./src/index.ts",
         "dev": "ts-node ./src/index.ts",
-        "deploy": "ts-node ./deploy-commands.ts",
+        "deploy": "node ./deploy-commands.ts",
         "start": "node ./build/index.js",
         "build": "tsc"
     }

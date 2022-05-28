@@ -7,3 +7,4 @@ config/*
 test.js
 src/commands/test/
 yarn-error.log
+build/

@@ -1,11 +1,11 @@
-#!/bin/ts-node
+#!/bin/node
 
-import { SlashCommandBuilder } from '@discordjs/builders';
-import { REST } from '@discordjs/rest';
-import { Routes } from 'discord-api-types/v9';
-import { config } from 'dotenv';
-import { existsSync } from 'fs';
-import path from 'path';
+const { SlashCommandBuilder } = require('@discordjs/builders');
+const { REST } = require('@discordjs/rest');
+const { Routes } = require('discord-api-types/v9');
+const { config } = require('dotenv');
+const { existsSync } = require('fs');
+const path = require('path');
 
 if (existsSync(path.join(__dirname, '.env'))) {
     config();
@@ -214,8 +214,8 @@ const commands = [
 		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true)),
 ].map(command => command.toJSON());
 
-const rest = new REST({ version: '9' }).setToken(TOKEN!);
+const rest = new REST({ version: '9' }).setToken(TOKEN);
 
-rest.put(Routes.applicationGuildCommands(CLIENT_ID!, GUILD_ID!), { body: commands })
+rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), { body: commands })
 	.then(() => console.log('Successfully registered application commands.'))
 	.catch(console.error);

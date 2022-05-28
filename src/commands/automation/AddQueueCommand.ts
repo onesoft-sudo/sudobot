@@ -73,7 +73,7 @@ export default class AddQueueCommand extends BaseCommand {
 
         const command = await cmd.join(' ');
 
-        const queue = await setTimeoutv2('queue.ts', time, msg.guild!.id, command, command, msg.id, msg.channel!.id, msg.guild!.id);
+        const queue = await setTimeoutv2('queue', time, msg.guild!.id, command, command, msg.id, msg.channel!.id, msg.guild!.id);
 
         await msg.reply({
             embeds: [

@@ -75,7 +75,7 @@ export default class ScheduleCommand extends BaseCommand {
         }
 
         try {
-            const timeout = await setTimeoutv2('send.ts', time, msg.guild!.id, `schedule ${time} ${text!} #${channel.name}`, text!, channel.id, msg.guild!.id);
+            const timeout = await setTimeoutv2('send', time, msg.guild!.id, `schedule ${time} ${text!} #${channel.name}`, text!, channel.id, msg.guild!.id);
 
             await msg.reply({
                 embeds: [
