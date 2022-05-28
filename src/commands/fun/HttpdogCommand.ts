@@ -9,6 +9,7 @@ import { deleteFile, download } from '../../utils/util';
 
 export default class HttpdogCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    coolDown = 4000;
 
     constructor() {
         super('httpdog', 'fun', []);

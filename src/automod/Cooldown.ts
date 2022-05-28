@@ -13,39 +13,35 @@ export type CooldownConfig = {
     }
 };
 
-export type RegistryData = {
-    user: User;
-    guilds: {
-        [id: string]: {
-            date: Date;
-            timeout: NodeJS.Timeout;
-        }
-    }
-};
 
 export default class Cooldown {
     config: CooldownConfig;
-    cmdRegistry: Map <string, RegistryData>;
+    cooldownCommands: Array <string> = [];
+    cooldownTimes: Array <Date> = [];
 
     constructor(protected client: DiscordClient) {
         this.config = {} as CooldownConfig;
-        this.cmdRegistry = new Map();
     }
 
     async start(msg: Message | CommandInteraction, options: CommandOptions | InteractionOptions): Promise <boolean> {
         this.config = this.client.config.get('cooldown');
 
-        if (!this.config.enabled) {
+        const { cmdName } = options;
+        const command = this.client.commands.get(cmdName)!;
+
+        if (!this.config.enabled && !command.coolDown) {
             return true;
         }
 
-        if ((msg.member as GuildMember).roles.cache.has(this.client.config.get('mod_role')))
+        if (!command.coolDown && (msg.member as GuildMember).roles.cache.has(this.client.config.get('mod_role')))
             return true;
 
-        const { cmdName } = options;
         let time = null;
 
-        if (this.config.cmds[cmdName]) {
+        if (command.coolDown) {
+            time = command.coolDown;
+        }
+        else if (this.config.cmds[cmdName]) {
             time = this.config.cmds[cmdName];
         }
         else {
@@ -57,47 +53,39 @@ export default class Cooldown {
         }
 
         console.log(time);
+        const index = this.cooldownCommands.indexOf(`${msg.member!.user.id}/${msg.guild!.id}/${cmdName}`);
         
-
-        if (!this.cmdRegistry.has(msg.member!.user.id) || this.cmdRegistry.get(msg.member!.user.id)?.guilds[msg.guild!.id] === undefined) {
-            let prevData: any = {};
-
-            if (this.cmdRegistry.has(msg.member!.user.id)) {
-                prevData = this.cmdRegistry.get(msg.member!.user.id)?.guilds;
-            }
-            
-            this.cmdRegistry.set(msg.member!.user.id, {
-                user: msg.member!.user as User,
-                guilds: {
-                    ...prevData,
-                    [msg.guild!.id]: {
-                        date: new Date(),
-                        timeout: setTimeout(() => {
-                            console.log('Cleared');
-                            this.cmdRegistry.delete(msg.member!.user.id);
-                        }, time)
-                    }
-                }
+        if (index !== -1) {
+            await msg.reply({
+                embeds: [
+                    new MessageEmbed()
+                    .setColor('#f14a60')
+                    .setDescription(':clock: Please try again in ' + timeProcess((time - ((new Date()).getTime() - this.cooldownTimes[index].getTime())) / 1000))
+                ]
             });
-        }
-        else {
-            const registry = this.cmdRegistry.get(msg.member!.user.id);
 
-            console.log(new Date(registry?.guilds[msg.guild!.id].date.getTime()! + time), new Date);
+            return false;
+        }
+
+        this.cooldownCommands.push(`${msg.member!.user.id}/${msg.guild!.id}/${cmdName}`);
+        this.cooldownTimes.push(new Date());
+        
+        setTimeout(() => {
+            console.log('Clearing...');
+            console.log(this.cooldownCommands, this.cooldownTimes);
             
+            this.cooldownCommands = this.cooldownCommands.filter((val, index) => {
+                if (val === `${msg.member!.user.id}/${msg.guild!.id}/${cmdName}`) {
+                    this.cooldownTimes.splice(index, 1);
+                    return false;
+                }
 
-            if ((registry?.guilds[msg.guild!.id].date.getTime()! + time)! > Date.now()) {
-                await msg.reply({
-                    embeds: [
-                        new MessageEmbed()
-                        .setColor('#f14a60')
-                        .setDescription(":clock: Please try again in " + timeSince(registry?.guilds[msg.guild!.id].date.getTime()!).replace(/ ago$/g, ''))
-                    ]
-                });
+                return true;
+            });
 
-                return false;
-            }
-        }
+            console.log(this.cooldownCommands, this.cooldownTimes);
+            
+        }, time);
 
         return true;
     }

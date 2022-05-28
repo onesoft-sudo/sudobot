@@ -9,6 +9,7 @@ import { deleteFile, download } from '../../utils/util';
 
 export default class JokeCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    coolDown = 4000;
 
     constructor() {
         super('joke', 'fun', []);

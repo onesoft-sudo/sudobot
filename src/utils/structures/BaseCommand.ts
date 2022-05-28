@@ -6,6 +6,7 @@ import InteractionOptions from '../../types/InteractionOptions';
 export default abstract class BaseCommand {
     supportsInteractions: boolean = false;
     supportsLegacy: boolean = true;
+    coolDown?: number;
 
     constructor(private name: string, private category: string, private aliases: Array<string>) {
 

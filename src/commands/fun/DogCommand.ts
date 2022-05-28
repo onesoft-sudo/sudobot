@@ -9,6 +9,7 @@ import { deleteFile, download } from '../../utils/util';
 
 export default class DogCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    coolDown = 4000;
 
     constructor() {
         super('dog', 'fun', []);
