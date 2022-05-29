@@ -30,7 +30,7 @@
         "watch": "nodemon ./src/index.ts",
         "dev": "ts-node ./src/index.ts",
         "dev-prod": "ts-node ./src/index.ts --prod",
-        "deploy": "node ./deploy-commands.ts",
+        "deploy": "node ./deploy-commands.js",
         "start": "node ./build/index.js",
         "prod-dev": "node ./build/index.js --dev",
         "build": "tsc",

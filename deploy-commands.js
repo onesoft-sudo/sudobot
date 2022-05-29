@@ -30,6 +30,8 @@ const commands = [
 		.addUserOption(option => option.setName('user').setDescription('The user')),
 	new SlashCommandBuilder().setName('avatar').setDescription('Show someone\'s avatar')
 		.addUserOption(option => option.setName('user').setDescription('The user')),
+	new SlashCommandBuilder().setName('rolelist').setDescription('List all roles or show info about a role')
+		.addUserOption(option => option.setName('role').setDescription('The role')),
 
 	// AUTOMATION
 	new SlashCommandBuilder().setName('ballot').setDescription('Ballot engine')
