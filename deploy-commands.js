@@ -139,6 +139,11 @@ const commands = [
 		.addStringOption(option => option.setName('reason').setDescription("The reason for banning this user"))
 		.addIntegerOption(option => option.setName('days').setDescription("The days old messages to delete of this user").setMinValue(0).setMaxValue(7)),
 
+	new SlashCommandBuilder().setName('massban').setDescription('Ban multiple users')
+		.addStringOption(option => option.setName('users').setDescription("The user IDs (separated by spaces)").setRequired(true))
+		.addStringOption(option => option.setName('reason').setDescription("The reason for banning"))
+		.addIntegerOption(option => option.setName('days').setDescription("The days old messages to delete of these users").setMinValue(0).setMaxValue(7)),
+
 	new SlashCommandBuilder().setName('kick').setDescription('Kick a member')
 		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true))
 		.addStringOption(option => option.setName('reason').setDescription("The reason for kicking this user")),

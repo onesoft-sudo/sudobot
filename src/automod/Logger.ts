@@ -95,8 +95,22 @@ class Logger {
         this.channel(async (channel) => {
             let r = '*No reason provided*';
 
+            const auditLog = (await ban.guild.fetchAuditLogs({
+                limit: 1,
+                type: 'MEMBER_BAN_ADD',
+            })).entries.first();           
+      
+
             if (ban.reason) {
                 r = ban.reason;
+            }
+            else if (auditLog) {
+                console.log(auditLog);  
+                const { target, reason } = await auditLog;
+
+                if (target!.id === ban.user.id && reason) {
+                    r = await reason;
+                }
             }
 
             await channel.send({
