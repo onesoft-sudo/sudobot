@@ -1,5 +1,5 @@
 import { roleMention } from '@discordjs/builders';
-import { GuildBan, GuildMember, Message, MessageEmbed, TextChannel, User } from 'discord.js';
+import { FileOptions, GuildBan, GuildMember, Message, MessageEmbed, TextChannel, User } from 'discord.js';
 import DiscordClient from '../client/Client';
 import { timeProcess, timeSince } from '../utils/util';
 
@@ -65,21 +65,28 @@ class Logger {
                     text: "Deleted",
                 })
                 .setTimestamp();
+            
+            const files: FileOptions[] = [];
 
             if (msg.attachments.size > 0) {
                 let str = '';
 
                 msg.attachments.forEach(a => {
-                    str += `**${a.name}** ${a.url}\n`;
+                    str += `${a.name}\n`;
+                    files.push({
+                        name: a.name!,
+                        attachment: a.proxyURL
+                    });
                 });
 
-                embed.addField('Attachments', str);
+                embed.addField('Attachments (top)', str);
             }
 
             await channel.send({
                 embeds: [
                     embed
-                ]
+                ],
+                files
             });
         }, msg);
     }

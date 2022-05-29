@@ -14,6 +14,7 @@ import AntiRaid from '../automod/AntiRaid';
 import Starboard from '../services/Starboard';
 import Server from '../api/Server';
 import Cooldown from '../automod/Cooldown';
+import StartupManager from '../services/StartupManager';
 
 export default class DiscordClient extends Client {
     private _commands = new Collection<string, BaseCommand>();
@@ -34,6 +35,7 @@ export default class DiscordClient extends Client {
     starboard: Starboard;
     server: Server;
     cooldown: Cooldown;
+    startupManager: StartupManager;
 
     static client: DiscordClient;
 
@@ -61,6 +63,7 @@ export default class DiscordClient extends Client {
         this.starboard = new Starboard(this);
         this.server = new Server(this);
         this.cooldown = new Cooldown(this);
+        this.startupManager = new StartupManager(this);
         
         DiscordClient.client = this;
     }

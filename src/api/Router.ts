@@ -37,8 +37,6 @@ export function loadRoutes(dir: string = __dirname) {
             return;
         }
 
-        console.log(data);
-
         for await (const file of data) {
             if (file === '.' || file === '..')
                 continue;

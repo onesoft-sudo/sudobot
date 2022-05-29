@@ -4,6 +4,8 @@ import { Intents } from 'discord.js';
 import { config } from 'dotenv';
 import { existsSync } from 'fs';
 import path from 'path';
+import { registrationEnd, registrationStart } from './utils/debug';
+import { yellow } from './utils/util';
 
 const client = new DiscordClient({
     partials: ["CHANNEL"],
@@ -27,8 +29,24 @@ else {
     process.env.ENV = 'prod';
 }
 
+if (process.argv.includes('--prod')) {
+    console.warn(yellow('WARNING: Forcing production mode (--prod option passed)'));
+    process.env.ENV = 'prod';
+}
+
+if (process.argv.includes('--dev')) {
+    console.warn(yellow('WARNING: Forcing development mode (--dev option passed)'));
+    process.env.ENV = 'dev';
+}
+
 (async () => {
+    await registrationStart();
     await registerCommands(client, '../commands');
+    await registrationEnd();
+    
+    await registrationStart();
     await registerEvents(client, '../events');
+    await registrationEnd();
+    
     await client.login(process.env.token);
 })();

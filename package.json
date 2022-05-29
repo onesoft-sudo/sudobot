@@ -27,8 +27,11 @@
     "scripts": {
         "watch": "nodemon ./src/index.ts",
         "dev": "ts-node ./src/index.ts",
+        "dev-prod": "ts-node ./src/index.ts --prod",
         "deploy": "node ./deploy-commands.ts",
         "start": "node ./build/index.js",
-        "build": "tsc"
+        "prod-dev": "node ./build/index.js --dev",
+        "build": "tsc",
+        "clean": "rm -r build"
     }
 }

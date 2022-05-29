@@ -5,6 +5,7 @@ import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import { fetchEmoji } from '../../utils/Emoji';
+import { timeProcess } from '../../utils/util';
 
 export default class SystemCommand extends BaseCommand {
     constructor() {
@@ -65,8 +66,12 @@ export default class SystemCommand extends BaseCommand {
                 .setDescription((latencyIcon !== '🔴' ? (await fetchEmoji('check'))?.toString() + ' All systems operational' : ':x: Some systems are down/slow'))
                 .addFields([
                     {
-                        name: 'Type',
+                        name: 'Command Type',
                         value: `${msg instanceof Message ? 'Legacy (Message-based)' : 'Slash Command'}`
+                    },
+                    {
+                        name: 'Uptime',
+                        value: `${timeProcess(parseInt(process.uptime().toFixed(2)))}`
                     },
                     {
                         name: 'Latency',

@@ -16,9 +16,10 @@ export default class InteractionCreateEvent extends BaseEvent {
             const { commandName } = interaction;
 
             const command = await client.commands.get(commandName);
-            const allowed = await client.auth.verify(interaction.member! as GuildMember, commandName);
 
             if (command && command.supportsInteractions) {
+                const allowed = await client.auth.verify(interaction.member! as GuildMember, command);
+
                 if (!allowed) {
                     await interaction.reply({
                         embeds: [

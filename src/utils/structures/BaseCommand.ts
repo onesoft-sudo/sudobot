@@ -7,6 +7,7 @@ export default abstract class BaseCommand {
     supportsInteractions: boolean = false;
     supportsLegacy: boolean = true;
     coolDown?: number;
+    ownerOnly: boolean = false;
 
     constructor(private name: string, private category: string, private aliases: Array<string>) {
 

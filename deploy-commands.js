@@ -22,6 +22,7 @@ const commands = [
 		.addStringOption(option => option.setName('command').setDescription("The command")),
 	new SlashCommandBuilder().setName('about').setDescription('Show information about the bot'),
 	new SlashCommandBuilder().setName('system').setDescription('Show the system status'),
+	new SlashCommandBuilder().setName('restart').setDescription('Restart the system'),
 
 	// INFORMATION
 	new SlashCommandBuilder().setName('stats').setDescription('Show the server statistics'),

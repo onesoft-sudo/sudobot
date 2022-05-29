@@ -80,3 +80,33 @@ export function random(arr: Array <any>) {
     let index = Math.floor(Math.random() * arr.length);
     return arr[index];
 }
+
+export function fill(length: number, string: string, token: string = ' ') {
+    let safe = 0;
+
+    if (length < string.length)
+        return string;
+
+    const diff = length - string.length;
+
+    for (let i = 1; i <= diff; i++, safe++) {
+        if (safe >= 500)
+            break;        
+
+        string += ' ';
+    }   
+
+    return string;
+}
+
+export function green(string: string) {
+    return '\u001b[1;32m' + string + '\u001b[0m';
+}
+
+export function yellow(string: string) {
+    return '\u001b[1;33m' + string + '\u001b[0m';
+}
+
+export function red(string: string) {
+    return '\u001b[1;31m' + string + '\u001b[0m';
+}

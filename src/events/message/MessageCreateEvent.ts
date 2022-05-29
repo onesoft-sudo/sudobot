@@ -26,9 +26,10 @@ export default class MessageCreateEvent extends BaseEvent {
                 .split(/ +/);
                 
             const command = await client.commands.get(cmdName);
-            const allowed = await client.auth.verify(message.member!, cmdName);
 
             if (command && command.supportsLegacy) {
+                const allowed = await client.auth.verify(message.member!, command);
+                
                 if (allowed) {
                     const options = {
                         cmdName,

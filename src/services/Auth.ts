@@ -1,16 +1,21 @@
 import { GuildMember } from "discord.js";
 import DiscordClient from "../client/Client";
+import BaseCommand from "../utils/structures/BaseCommand";
 
 export default class Auth {
     constructor(protected client: DiscordClient) {
 
     }
 
-    async verify(member: GuildMember, command: string): Promise<boolean> {
+    async verify(member: GuildMember, command: BaseCommand): Promise<boolean> {
         const cmds: string[] = await this.client.config.get('global_commands');
 
-        if (cmds.indexOf(command) !== -1) {
+        if (cmds.indexOf(command.getName()) !== -1) {
             return true;
+        }
+
+        if (command.ownerOnly && !this.client.config.props.global.owners.includes(member.user.id)) {
+            return false;
         }
 
         if (await member.roles.cache.has(await this.client.config.get('mod_role'))) {
@@ -24,7 +29,7 @@ export default class Auth {
                 }
             }
 
-            return restricted.indexOf(command) === -1;
+            return restricted.indexOf(command.getName()) === -1;
         }
 
         return false;

@@ -8,8 +8,9 @@ export default class ReadyEvent extends BaseEvent {
     }
     
     async run(client: DiscordClient) {
-        console.log(`Logged in as ${client.user!.tag}!`);
+        console.log(`\nLogged in as ${client.user!.tag}!`);
         client.server.run();
         runTimeouts();
+        client.startupManager.boot();
     }
 }
