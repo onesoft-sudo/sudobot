@@ -1,10 +1,11 @@
 import path from "path";
 import DiscordClient from "../client/Client";
+import Timeout from "../models/Timeout";
 
 const timeouts = new Map();
 
 export const runTimeouts = async () => {
-    const data = await DiscordClient.client.db.allAsync("SELECT * FROM timeouts");
+    const data = (await Timeout.findAll());
 
     // await console.log(data);
 
@@ -15,12 +16,12 @@ export const runTimeouts = async () => {
 
             let timeout = await setTimeout(async () => {
                 await console.log('TIMEOUT');
-                await DiscordClient.client.db.runAsync("DELETE FROM timeouts WHERE id = ?", [row.id]);
-                await timeouts.delete(row.id);
-                (await import(row.filePath)).default(DiscordClient.client, ...JSON.parse(row.params));
-            }, new Date(row.time).getTime() - Date.now());
+                await DiscordClient.client.db.runAsync("DELETE FROM timeouts WHERE id = ?", [row.get('id')]);
+                await timeouts.delete(row.get('id'));
+                (await import(row.get('filePath') as string)).default(DiscordClient.client, ...JSON.parse(row.get('params') as string));
+            }, new Date(row.get('time') as string).getTime() - Date.now());
 
-            await timeouts.set(row.id, {
+            await timeouts.set(row.get('id'), {
                 row,
                 timeout
             });

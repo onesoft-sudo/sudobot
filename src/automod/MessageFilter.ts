@@ -1,4 +1,4 @@
-import { Message, TextChannel } from "discord.js";
+import { Message, TextChannel, MessageMentions } from "discord.js";
 import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
 
@@ -13,6 +13,7 @@ export type MessageFilterConfig = {
     invite_message: string;
     words_repeated: number;
     chars_repeated: number;
+    pings: number;
 };
 
 export default class MessageFilter {
@@ -26,6 +27,19 @@ export default class MessageFilter {
     
     async filterAlmostSameChars(str: string) {
         return (new RegExp('(.+)\\1{' + this.config.chars_repeated + ',}', 'gm')).test(str.trim());
+    } 
+
+    async filterPings(str: string) {
+        console.log(str);
+        
+        let data = [...str.matchAll(new RegExp(`[(${MessageMentions.USERS_PATTERN})]+`, 'gm'))];
+
+        if (data.length >= this.config.pings)
+            return false;
+        
+        data = [...str.matchAll(new RegExp(`[(${MessageMentions.ROLES_PATTERN})]+`, 'gm'))];
+
+        return data.length >= this.config.pings;
     } 
 
     async filterAlmostSameText(str: string) {
@@ -258,6 +272,28 @@ export default class MessageFilter {
                         iconURL: msg.author.displayAvatarURL()
                     })
                     .setTitle(`Repeated text detected`)
+                    .setDescription(msg.content)
+                    .setFooter({
+                        text: "Deleted"
+                    })
+                    .setTimestamp()
+                ]
+            });
+        }
+        else if ((await this.filterPings(msg.content))) {
+            await msg.delete();
+
+            const channel = <TextChannel> await msg.guild!.channels.fetch(this.client.config.get('logging_channel'));
+
+            await channel!.send({
+                embeds: [
+                    new MessageEmbed()
+                    .setColor('#f14a60')
+                    .setAuthor({
+                        name: msg.author.tag,
+                        iconURL: msg.author.displayAvatarURL()
+                    })
+                    .setTitle(`Mass mention detected`)
                     .setDescription(msg.content)
                     .setFooter({
                         text: "Deleted"

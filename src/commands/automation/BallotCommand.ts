@@ -5,6 +5,7 @@ import MessageEmbed from '../../client/MessageEmbed';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import { fetchEmoji } from '../../utils/Emoji';
+import Ballot from '../../models/Ballot';
 
 export default class BallotCommand extends BaseCommand {
     supportsInteractions = true;
@@ -73,14 +74,25 @@ export default class BallotCommand extends BaseCommand {
             ]
         });
 
-        await client.db.runAsync('INSERT INTO ballots(content, author, msg_id, guild_id, date, channel_id) VALUES(?, ?, ?, ?, ?, ?)', [content, anonymous ? null : msg.member?.user.id, message.id, msg.guild!.id, new Date().toISOString(), msg.channel!.id]);
-        const ballot = await client.db.getAsync("SELECT * FROM ballots WHERE msg_id = ? AND guild_id = ? ORDER BY id DESC LIMIT 0, 1", [message.id, msg.guild!.id]);
+        const ballot = new Ballot({
+            content,
+            author: anonymous ? null : msg.member?.user.id,
+            msg_id: message.id,
+            guild_id: msg.guild!.id,
+            date: new Date(),
+            channel_id: msg.channel!.id
+        });
+
+        await ballot.save();
+
+        // await client.db.runAsync('INSERT INTO ballots(content, author, msg_id, guild_id, date, channel_id) VALUES(?, ?, ?, ?, ?, ?)', [content, anonymous ? null : msg.member?.user.id, message.id, msg.guild!.id, new Date().toISOString(), msg.channel!.id]);
+        // const ballot = await client.db.getAsync("SELECT * FROM ballots WHERE msg_id = ? AND guild_id = ? ORDER BY id DESC LIMIT 0, 1", [message.id, msg.guild!.id]);
 
         await message.react(<EmojiIdentifierResolvable> await fetchEmoji('check'));
         await message.react(<EmojiIdentifierResolvable> await fetchEmoji('error'));
 
         await this.deferReply(msg, {
-            content: `${(await fetchEmoji('check'))!.toString()} Your message has been delivered. The ballot ID is ${ballot.id}.`,
+            content: `${(await fetchEmoji('check'))!.toString()} Your message has been delivered. The ballot ID is ${ballot.get('id')}.`,
         });
     }
 
@@ -99,7 +111,12 @@ export default class BallotCommand extends BaseCommand {
         
         try {
             const id = options.isInteraction ? options.options.getInteger('id') : options.args[0];
-            const ballot = await client.db.getAsync("SELECT * FROM ballots WHERE id = ? ORDER BY id DESC LIMIT 0, 1", [id]);
+            //const ballot = await client.db.getAsync("SELECT * FROM ballots WHERE id = ? ORDER BY id DESC LIMIT 0, 1", [id]);
+            const ballot = (await Ballot.findOne({
+                where: {
+                    id
+                }
+            }))?.get();
 
             if (!ballot)
                 throw new Error();

@@ -1,3 +1,4 @@
+import { Sequelize } from 'sequelize';
 import { Database as DB } from 'sqlite3';
 import DiscordClient from './Client';
 
@@ -5,10 +6,17 @@ export default class Database {
     client: DiscordClient;
     dbpath: string;
     db: DB;
+    sequelize: Sequelize;
 
     constructor(dbpath: string, client: DiscordClient) {
         this.client = client;
         this.dbpath = dbpath;
+
+        this.sequelize = new Sequelize({
+            dialect: 'sqlite',
+            storage: dbpath
+        });
+
         this.db = new DB(dbpath, (err) => {
             if (err) {
                 console.log(err);
@@ -61,5 +69,9 @@ export default class Database {
                 resolve(data);
             });
         });
+    }
+
+    get s(): Sequelize {
+        return this.sequelize;
     }
 };

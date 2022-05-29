@@ -4,6 +4,7 @@ node_modules/
 .idea/
 database.db
 config/*
+test.ts
 test.js
 src/commands/test/
 yarn-error.log

@@ -60,11 +60,11 @@ export default class SpamFilter {
 
             console.log(interval);
 
-            if (user.lastmsg && user.lastmsg.content.trim() === msg.content.trim() && user.matched) {
-                user.matched = true;
+            if (user.lastmsg && user.lastmsg.content.trim() === msg.content.trim()) {
+                user.samecount++;
             }
             else {
-                user.matched = false;
+                user.samecount = 1;
             }
 
             user.lastmsg = msg;
@@ -123,7 +123,7 @@ export default class SpamFilter {
                     users.set(msg.author.id, user);
                 };
 
-                if (user.count === this.SAMELIMIT && user.matched) {
+                if (user.samecount === this.SAMELIMIT) {
                     await muteOuter();
                     console.log('here <3');
                 }
@@ -143,7 +143,7 @@ export default class SpamFilter {
                     users.delete(msg.author.id);
                     console.log('deleted');
                 }, this.TIME),
-                matched: true
+                samecount: 1,
             });
         }
     }
