@@ -62,6 +62,16 @@ export default class BanCommand extends BaseCommand {
             }
 
             permKey = <PermissionString> options.options.getString('permission');
+            
+            if (FLAGS[permKey] === undefined) {
+                await this.deferReply(msg, {
+                    content: (await fetchEmoji('error'))?.toString() + ' Invalid permission key given.',
+                    embeds: []
+                }, true);
+
+                return;
+            }
+
             const permValueInput = <string> options.options.getString('value');
 
             if (permValueInput === 'true')

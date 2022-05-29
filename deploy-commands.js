@@ -5,6 +5,7 @@ const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const { config } = require('dotenv');
 const { existsSync } = require('fs');
+const { Permissions } = require('discord.js');
 const path = require('path');
 
 if (existsSync(path.join(__dirname, '.env'))) {
@@ -202,6 +203,25 @@ const commands = [
 	new SlashCommandBuilder().setName('lock').setDescription('Lock a channel')
 		.addRoleOption(option => option.setName('role').setDescription("Lock channel for the given role. Default is @everyone"))
 		.addChannelOption(option => option.setName('channel').setDescription("The channel that will be locked. Default is the current channel")),
+
+	new SlashCommandBuilder().setName('setchperms').setDescription('Set permissions for channels')
+		.addChannelOption(option => option.setName('channel').setDescription("The channel that (or its children) will be updated").setRequired(true))
+		.addRoleOption(option => option.setName('role').setDescription("Lock channel for the given role.").setRequired(true))
+		.addStringOption(option => option.setName('permission').setDescription("The permission codename").setRequired(true))
+		.addStringOption(option => option.setName('value').setDescription("The permission value").addChoices(...[
+			{
+				name: 'Allow',
+				value: 'true'
+			},
+			{
+				name: 'Deny',
+				value: 'false',
+			},
+			{
+				name: 'Default',
+				value: 'null',
+			}
+		]).setRequired(true)),
 
 	new SlashCommandBuilder().setName('lockall').setDescription('Lock multiple channels')
 		.addRoleOption(option => option.setName('role').setDescription("Lock channels for the given role. Default is @everyone"))
