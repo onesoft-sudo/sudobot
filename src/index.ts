@@ -48,5 +48,5 @@ const client = new DiscordClient({
     await registerEvents(client, '../events');
     await registrationEnd();
     
-    await client.login(process.env.token);
+    await client.login(process.env.TOKEN);
 })();

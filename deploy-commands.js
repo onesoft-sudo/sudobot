@@ -17,7 +17,7 @@ else {
 
 const { CLIENT_ID, GUILD_ID, TOKEN } = process.env;
 
-const commands = [
+let commands = [
 	// SETTINGS
 	new SlashCommandBuilder().setName('help').setDescription('A short documentation about the commands')
 		.addStringOption(option => option.setName('command').setDescription("The command")),
@@ -242,8 +242,12 @@ const commands = [
 		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true)),
 ].map(command => command.toJSON());
 
+if (process.argv.includes('--clear')) {
+	commands = [];
+}
+
 const rest = new REST({ version: '9' }).setToken(TOKEN);
 
-rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), { body: commands })
-	.then(() => console.log('Successfully registered application commands.'))
+rest.put(Routes[process.argv.includes('--guild') ? 'applicationGuildCommands' : 'applicationCommands'](CLIENT_ID, GUILD_ID), { body: commands })
+	.then(() => console.log('Successfully registered application ' + (process.argv.includes('--guild') ? 'guild ' : '') + 'commands.'))
 	.catch(console.error);

@@ -11,6 +11,16 @@ export default class InteractionCreateEvent extends BaseEvent {
     }
 
     async run(client: DiscordClient, interaction: Interaction) {
+        if (!interaction.guild || !interaction.channel || interaction.channel.type === 'DM') {
+            if (interaction.isRepliable())
+                await interaction.reply({
+                    content: 'You cannot use this bot on DMs.',
+                    ephemeral: true
+                }); 
+
+            return;
+        }
+        
         if (interaction.isCommand()) {
             await client.setMessage(interaction);
 
