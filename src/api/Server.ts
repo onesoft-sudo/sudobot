@@ -16,7 +16,18 @@ export default class Server {
 
     constructor(protected client: DiscordClient) {
         this.app = express();
-        this.guildData = JSON.parse(readFileSync(path.resolve(__dirname, '..', '..', 'config', 'apiguilds.json')).toString());
+        const data: typeof this.guildData = {};
+
+        for (const key of Object.keys(process.env)) {
+            if (key.startsWith('TOKEN_')) {
+                data[key.replace(/^TOKEN_/g, '')] = {
+                    token: process.env[key]!
+                };
+            }
+        }
+
+        this.guildData = data;
+        console.log(data);        
     }
 
     verifyToken(guild: string, token: string): boolean {

@@ -19,6 +19,10 @@ export default <Route> {
             logging_channel_join_leave: z.string(),
             mod_role: z.string(),
             announcement_channel: z.string(),
+            autoclear: z.object({
+                enabled: z.boolean(),
+                channels: dataArray
+            }),
             spam_filter: z.object({
                 enabled: z.boolean(),
                 limit: z.number().int(),
@@ -111,7 +115,9 @@ export default <Route> {
             return;
         }
         
-        const { spam_filter, raid, filters } = body;
+        const { spam_filter, raid, filters, autoclear } = body;
+
+        console.log(autoclear);        
 
         for (const id of body.spam_filter.exclude) {
             if (!await isChannel(id, req.params.guild)) {
@@ -168,6 +174,17 @@ export default <Route> {
             }
         }
 
+        for (const id of autoclear.channels) {
+            if (!await isChannel(id, req.params.guild)) {
+                res.status(422).json({
+                    status: 422,
+                    message: "Invalid channels (7)"
+                });
+    
+                return;
+            }
+        }
+
         // for (const cmd of body.global_commands) {
         //     if (!DiscordClient.client.commands.has(cmd)) {
         //         res.status(422).json({
@@ -189,6 +206,10 @@ export default <Route> {
             logging_channel_join_leave: body.logging_channel_join_leave,
             mod_role: body.mod_role,
             announcement_channel: body.announcement_channel,
+            autoclear: {
+                enabled: autoclear.enabled,
+                channels: autoclear.channels
+            },
             spam_filter: {
                 enabled: spam_filter.enabled,
                 limit: parseInt(spam_filter.limit),
