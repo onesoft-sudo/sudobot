@@ -19,9 +19,9 @@ class Logger {
         }
     }
 
-    channelJoinLeft(callback: (channel: TextChannel) => any, msg: Message | GuildBan) {
+    channelJoinLeft(callback: (channel: TextChannel) => any, msg: any) {
         let channelID = this.client.config.props[msg.guild!.id].logging_channel_join_leave;
-        let channel = msg.guild!.channels.cache.find(c => c.id === channelID) as TextChannel;
+        let channel = msg.guild!.channels.cache.find((c: any) => c.id === channelID) as TextChannel;
 
         if (channel) {
             return callback(channel);

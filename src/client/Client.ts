@@ -15,6 +15,7 @@ import Starboard from '../services/Starboard';
 import Server from '../api/Server';
 import Cooldown from '../automod/Cooldown';
 import StartupManager from '../services/StartupManager';
+import AutoClear from '../automod/AutoClear';
 
 export default class DiscordClient extends Client {
     private _commands = new Collection<string, BaseCommand>();
@@ -36,6 +37,7 @@ export default class DiscordClient extends Client {
     server: Server;
     cooldown: Cooldown;
     startupManager: StartupManager;
+    autoClear: AutoClear;
 
     static client: DiscordClient;
 
@@ -64,6 +66,7 @@ export default class DiscordClient extends Client {
         this.server = new Server(this);
         this.cooldown = new Cooldown(this);
         this.startupManager = new StartupManager(this);
+        this.autoClear = new AutoClear(this);
         
         DiscordClient.client = this;
     }
