@@ -1,5 +1,6 @@
-import { CommandInteraction, CommandInteractionOption, Interaction, Message, MessageEditOptions, MessageOptions, MessagePayload, WebhookEditMessageOptions } from 'discord.js';
+import { AutocompleteInteraction, CommandInteraction, CommandInteractionOption, Interaction, Message, MessageEditOptions, MessageOptions, MessagePayload, WebhookEditMessageOptions } from 'discord.js';
 import DiscordClient from '../../client/Client';
+import AutoCompleteOptions from '../../types/AutoCompleteOptions';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 
@@ -23,6 +24,10 @@ export default abstract class BaseCommand {
 
     getAliases(): Array<string> { 
         return this.aliases; 
+    }
+
+    async autoComplete(client: DiscordClient, interaction: AutocompleteInteraction, options: AutoCompleteOptions): Promise <void> {
+
     }
 
     async deferReply(msg: Message | CommandInteraction, options: MessageOptions | string | MessagePayload | WebhookEditMessageOptions, edit: boolean = false): Promise<Message | CommandInteraction> {

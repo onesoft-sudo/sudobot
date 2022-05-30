@@ -1,4 +1,4 @@
-import { CategoryChannel, CommandInteraction, Message, TextChannel, Permissions, PermissionFlags, PermissionString, GuildChannel, Role } from 'discord.js';
+import { CategoryChannel, CommandInteraction, Message, TextChannel, Permissions, PermissionFlags, PermissionString, GuildChannel, Role, AutocompleteInteraction, Interaction, Collection } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -9,15 +9,52 @@ import History from '../../automod/History';
 import { fetchEmoji } from '../../utils/Emoji';
 import getRole, { getRoleRaw } from '../../utils/getRole';
 import { channelMention } from '@discordjs/builders';
+import AutoCompleteOptions from '../../types/AutoCompleteOptions';
 
-export default class BanCommand extends BaseCommand {
+export default class SetChPermsCommand extends BaseCommand {
     supportsInteractions: boolean = true;
 
     constructor() {
         super('setchperms', 'moderation', []);
     }
 
-    async run(client: DiscordClient, msg: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
+    async autoComplete(client: DiscordClient, interaction: AutocompleteInteraction, options: AutoCompleteOptions) {
+        if (interaction.commandName === this.getName()) {
+            const focused = interaction.options.getFocused(true);
+
+            console.log(focused);            
+
+            if (focused.name === 'permission') {
+                const { FLAGS } = Permissions;
+                const responseArray = [];
+                const perms: (keyof typeof FLAGS)[] = [
+                    'SEND_MESSAGES',
+                    'ATTACH_FILES',
+                    'EMBED_LINKS',
+                    'MANAGE_MESSAGES',
+                    'MENTION_EVERYONE',
+                    'USE_APPLICATION_COMMANDS',
+                    'USE_EXTERNAL_EMOJIS',
+                    'USE_EXTERNAL_STICKERS'
+                ];
+
+                for await (const key of perms) {
+                    if (key.includes(focused.value.toString())) {
+                        responseArray.push({
+                            name: key,
+                            value: key
+                        });
+                    }
+                }
+
+                console.log(responseArray);                
+
+                await interaction.respond(responseArray);
+            }
+        }
+    }
+
+    async run(client: DiscordClient, msg: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {        
         if (!options.isInteraction && typeof options.args[3] === 'undefined') {
             await msg.reply({
                 embeds: [
@@ -59,6 +96,13 @@ export default class BanCommand extends BaseCommand {
                 }, true);
 
                 return;
+            }
+            else if (channels[0].type === 'GUILD_CATEGORY') {
+                const ch = channels[0];
+                channels = [];
+
+                const matching = <Collection<string, TextChannel>> await msg.guild!.channels.cache.filter(c => c.parent?.id === ch.id && c.type === 'GUILD_TEXT');
+                channels = matching.toJSON();
             }
 
             permKey = <PermissionString> options.options.getString('permission');

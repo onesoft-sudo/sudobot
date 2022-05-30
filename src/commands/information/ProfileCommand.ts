@@ -55,13 +55,29 @@ export default class ProfileCommand extends BaseCommand {
             }
         }
 
+        const status = (s: 'idle' | 'online' | 'dnd' | 'invisible' | null | undefined): string => {
+            if (s === 'idle')
+                return 'Idle';
+            else if (s === 'dnd') 
+                return 'Do not disturb';
+            else if (s === 'online')
+                return 'Online';
+            else if (s === undefined || s === null || s === 'invisible') 
+                return 'Offline/Invisible';
+
+            return s;
+        };    
+
+        const statusText = '' + ((user?.presence?.clientStatus?.desktop ? 'Desktop (' + status(user?.presence?.clientStatus?.desktop) + ')\n' : '') + (user?.presence?.clientStatus?.web ? 'Web (' + status(user?.presence?.clientStatus?.web) + ')\n' : '') + (user?.presence?.clientStatus?.mobile ? 'Mobile (' + status(user?.presence?.clientStatus?.mobile) + ')' : ''));
+        const state = user?.presence?.activities.find(a => a.type === 'CUSTOM')?.state;
+
         await msg.reply({
             embeds: [
                 new MessageEmbed()
                 .setColor(user!.user!.hexAccentColor ? user!.user!.hexAccentColor! : '#007bff')
                 .setAuthor({
                     name: user?.user.tag!,
-                    iconURL: user!.displayAvatarURL()
+                    iconURL: user!.user.displayAvatarURL()
                 })
                 .setImage(user!.displayAvatarURL({
                     size: 4096
@@ -81,6 +97,18 @@ export default class ProfileCommand extends BaseCommand {
                     {
                         name: "Account Created",
                         value: `${user!.user.createdAt.toLocaleDateString('en-US')} (${timeSince(user!.user.createdTimestamp)})`
+                    },
+                    {
+                        name: "Joined at",
+                        value: `${user!.joinedAt!.toLocaleDateString('en-US')} (${timeSince(user!.joinedTimestamp!)})`
+                    },
+                    {
+                        name: 'Active Devices',
+                        value: `${statusText === '' ? 'Offline/Invisible' : statusText}`
+                    },
+                    {
+                        name: 'Custom Status',
+                        value: `${state ?? '*No custom status set*'}`
                     },
                     {
                         name: 'Roles',

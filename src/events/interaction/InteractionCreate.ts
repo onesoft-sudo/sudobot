@@ -3,6 +3,7 @@ import { GuildMember, Interaction, Message, MessageEmbed } from 'discord.js';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
+import AutoCompleteOptions from '../../types/AutoCompleteOptions';
 
 export default class InteractionCreateEvent extends BaseEvent {
     constructor() {
@@ -43,6 +44,31 @@ export default class InteractionCreateEvent extends BaseEvent {
                     return;
 
                 await command.run(client, interaction, options);
+            }
+        }
+        else if (interaction.isAutocomplete()) {
+            await client.setMessage(interaction);
+
+            const { commandName } = interaction;
+
+            const command = await client.commands.get(commandName);
+
+            if (command && command.supportsInteractions) {
+                const allowed = await client.auth.verify(interaction.member! as GuildMember, command);
+
+                if (!allowed) {
+                    return;
+                }
+
+                const options = {
+                    cmdName: commandName,
+                    options: interaction.options,
+                    isInteraction: true,
+                    optionName: interaction.options.getFocused(true).name,
+                    query: interaction.options.getFocused(true).value.toString()
+                } as AutoCompleteOptions;
+
+                await command.autoComplete(client, interaction, options);
             }
         }
     }

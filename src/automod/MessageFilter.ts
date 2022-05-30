@@ -29,9 +29,7 @@ export default class MessageFilter {
         return (new RegExp('(.+)\\1{' + this.config.chars_repeated + ',}', 'gm')).test(str.trim());
     } 
 
-    async filterPings(str: string) {
-        console.log(str);
-        
+    async filterPings(str: string) {        
         let data = [...str.matchAll(new RegExp(`[(${MessageMentions.USERS_PATTERN})]+`, 'gm'))];
 
         if (data.length >= this.config.pings)

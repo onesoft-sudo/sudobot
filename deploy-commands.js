@@ -207,7 +207,7 @@ const commands = [
 	new SlashCommandBuilder().setName('setchperms').setDescription('Set permissions for channels')
 		.addChannelOption(option => option.setName('channel').setDescription("The channel that (or its children) will be updated").setRequired(true))
 		.addRoleOption(option => option.setName('role').setDescription("Lock channel for the given role.").setRequired(true))
-		.addStringOption(option => option.setName('permission').setDescription("The permission codename").setRequired(true))
+		.addStringOption(option => option.setName('permission').setDescription("The permission codename").setRequired(true).setAutocomplete(true))
 		.addStringOption(option => option.setName('value').setDescription("The permission value").addChoices(...[
 			{
 				name: 'Allow',
