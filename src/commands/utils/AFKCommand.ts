@@ -30,7 +30,7 @@ export async function AFK(client: DiscordClient, msg: Message | CommandInteracti
     }
 
     client.db.get('INSERT INTO afk(user_id, date, mentions, reason) VALUES(?, ?, ?, ?)', [msg.member!.user.id, new Date().toISOString(), '0', reason === undefined ? '' : reason], async (err: any) => {
-        await msg.channel!.send({
+        await msg.reply({
             embeds: [
                 new MessageEmbed()
                 .setDescription('You\'re AFK now.' + (reason === undefined ? '' : ` Your status has been updated to: **${reason.replace(/\*/g, '\\*')}**`))

@@ -31,6 +31,9 @@ export default class AFKEngine {
     }
 
     start(msg: Message) {
+        if (msg.author.bot)
+            return;
+        
         const mention = msg.mentions.members!.first();
 
         if (mention) {
