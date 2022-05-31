@@ -67,7 +67,7 @@ export default class SystemCommand extends BaseCommand {
                 .addFields([
                     {
                         name: 'Command Type',
-                        value: `${msg instanceof Message ? 'Legacy (Message-based)' : 'Slash Command'}`
+                        value: `${!options.isInteraction ? 'Legacy (Message-based)' : 'Slash Command'}`
                     },
                     {
                         name: 'Uptime',
