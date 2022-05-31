@@ -7,6 +7,7 @@ const { config } = require('dotenv');
 const { existsSync } = require('fs');
 const { Permissions } = require('discord.js');
 const path = require('path');
+const { ActivityType } = require('discord-api-types/v10');
 
 if (existsSync(path.join(__dirname, '.env'))) {
     config();
@@ -24,6 +25,40 @@ let commands = [
 	new SlashCommandBuilder().setName('about').setDescription('Show information about the bot'),
 	new SlashCommandBuilder().setName('system').setDescription('Show the system status'),
 	new SlashCommandBuilder().setName('restart').setDescription('Restart the system'),
+	new SlashCommandBuilder().setName('setstatus').setDescription('Set status for the bot system')
+		.addStringOption(option => option.setName('activity').setDescription('The activity').setRequired(true))
+		.addStringOption(option => option.setName('status').setDescription('The status').setChoices(...[
+			{
+				name: 'Online',
+				value: 'online'
+			},
+			{
+				name: 'Idle',
+				value: 'idle'
+			},
+			{
+				name: 'DND',
+				value: 'dnd'
+			},
+			{
+				name: 'Invisible',
+				value: 'invisible'
+			}
+		]))
+		.addStringOption(option => option.setName('type').setDescription('The activity type').setChoices(...[
+			{
+				name: 'Playing',
+				value: 'PLAYING'
+			},
+			{
+				name: 'Watching',
+				value: 'WATCHING'
+			},
+			{
+				name: 'Competing',
+				value: 'COMPETING'
+			}
+		])),
 
 	// INFORMATION
 	new SlashCommandBuilder().setName('stats').setDescription('Show the server statistics'),

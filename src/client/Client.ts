@@ -16,6 +16,7 @@ import Server from '../api/Server';
 import Cooldown from '../automod/Cooldown';
 import StartupManager from '../services/StartupManager';
 import AutoClear from '../automod/AutoClear';
+import RandomStatus from '../services/RandomStatus';
 
 export default class DiscordClient extends Client {
     private _commands = new Collection<string, BaseCommand>();
@@ -38,6 +39,7 @@ export default class DiscordClient extends Client {
     cooldown: Cooldown;
     startupManager: StartupManager;
     autoClear: AutoClear;
+    randomStatus: RandomStatus;
 
     static client: DiscordClient;
 
@@ -67,6 +69,7 @@ export default class DiscordClient extends Client {
         this.cooldown = new Cooldown(this);
         this.startupManager = new StartupManager(this);
         this.autoClear = new AutoClear(this);
+        this.randomStatus = new RandomStatus(this);
         
         DiscordClient.client = this;
     }

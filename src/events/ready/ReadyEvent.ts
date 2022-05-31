@@ -12,5 +12,6 @@ export default class ReadyEvent extends BaseEvent {
         client.server.run();
         runTimeouts();
         client.startupManager.boot();
+        client.randomStatus.update();
     }
 }
