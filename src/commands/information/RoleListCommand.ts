@@ -1,4 +1,4 @@
-import { CommandInteraction, Message, Role } from 'discord.js';
+import { CommandInteraction, InteractionCollector, Message, MessageActionRow, MessageButton, Role } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -8,55 +8,53 @@ import getRole from '../../utils/getRole';
 
 export default class RoleListCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    supportsLegacy = false;
 
     constructor() {
         super('rolelist', 'information', []);
     }
 
-    async run(client: DiscordClient, msg: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
-        let role: Role | null = null;
+    async run(client: DiscordClient, msg: CommandInteraction, options: InteractionOptions) {
+        let role: Role | null = null, page = 1;
 
-        if (options.isInteraction) {
-            if (options.options.getRole('role'))
-                role = <Role> options.options.getRole('role');
-        }
-        else {
-            if (options.args[0])
-                try {
-                    role = <Role> await getRole(<Message> msg, options);
+        if (options.options.getRole('role'))
+            role = <Role> options.options.getRole('role');
 
-                    if (!role) {
-                        throw new Error();
-                    }
-                }
-                catch (e) {
-                    console.log(e);
-                    
-                    await msg.reply({
-                        embeds: [
-                            new MessageEmbed()
-                            .setColor('#f14a60')
-                            .setDescription('Failed to fetch role info. Maybe invalid role ID?')
-                        ]
-                    });
-
-                    return;
-                }
-        }
-
+        if (options.options.getInteger('page'))
+            page = <number> options.options.getInteger('page');
+        
         if (!role) {
             const roles = await msg.guild!.roles.cache.toJSON();
+
             let str = ``;
+            let limit = 15, i = 1, offset = (page - 1) * limit;
+
+            if (offset >= roles.length) {
+                await msg.reply({
+                    content: "Invalid page number.",
+                    ephemeral: true
+                });
+
+                return;
+            }
 
             for await (const role of roles) {
                 if (role.id === msg.guild!.id)
                     continue;
                 
+                i++;
+                
+                if (offset >= (i - 1))
+                    continue;
+                    
+                if ((limit + offset) < (i - 1))   
+                    break;
+
                 str += `${role.name} - ${role.id} - ${role.members.size} Members - ${role.hexColor}\n`;
             }
 
             await msg.reply({
-                content: "**Role List**:\n\n```" + str + '```'
+                content: "**Role List (" + page + ")**:\n\n```" + str + '```',
             });
         }
         else {

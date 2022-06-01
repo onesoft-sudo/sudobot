@@ -67,7 +67,8 @@ let commands = [
 	new SlashCommandBuilder().setName('avatar').setDescription('Show someone\'s avatar')
 		.addUserOption(option => option.setName('user').setDescription('The user')),
 	new SlashCommandBuilder().setName('rolelist').setDescription('List all roles or show info about a role')
-		.addUserOption(option => option.setName('role').setDescription('The role')),
+		.addUserOption(option => option.setName('role').setDescription('The role'))
+		.addIntegerOption(option => option.setName('page').setDescription('The page number')),
 
 	// AUTOMATION
 	new SlashCommandBuilder().setName('ballot').setDescription('Ballot engine')
