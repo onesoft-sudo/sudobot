@@ -83,7 +83,7 @@ export default class SystemCommand extends BaseCommand {
                     },
                     {
                         name: 'Available Memory',
-                        value: `${memoryFree}MB / 1.0GB`
+                        value: `${1024 - memoryFree}MB / 1.0GB`
                     },
                     {
                         name: 'System Platform',
