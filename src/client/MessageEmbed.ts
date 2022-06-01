@@ -1,8 +1,8 @@
-import { MessageEmbed as MessageEmbedDiscord } from 'discord.js';
+import { MessageEmbed as MessageEmbedDiscord, MessageEmbedOptions } from 'discord.js';
 
 export default class MessageEmbed extends MessageEmbedDiscord {
-    constructor() {
-        super();
+    constructor(options?: MessageEmbedDiscord | MessageEmbedOptions) {
+        super(options);
         this.setColor('#007bff');
     }
 }

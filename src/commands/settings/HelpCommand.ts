@@ -1,10 +1,11 @@
 import { CommandInteraction, Interaction, Message } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
-import Help from '../../utils/help';
+import Help from '../../utils/Help';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
+import { renderCommandList, renderCommandMeta } from '../../services/CommandMetaDataManager';
 
 export default class HelpCommand extends BaseCommand {
     constructor() {
@@ -15,7 +16,7 @@ export default class HelpCommand extends BaseCommand {
     async render() {
         let string = '';
 
-        for (let cmd of Help.commands) {
+        for (let cmd of Help) {
             string += `\n\n**${cmd.name}**\n${cmd.shortBrief}`;
         }
 
@@ -26,9 +27,12 @@ export default class HelpCommand extends BaseCommand {
         if ((options.isInteraction && !options.options.getString('command')) || (!options.isInteraction && options.args[0] === undefined)) {
             await message.reply({
                 embeds: [
-                    new MessageEmbed()
-                    .setDescription("The command list.\n\n`<...>` means required argument, `[...]` means optional argument.\n\nRun `" + client.config.get('prefix') + "help <commandName>` for more information about a specific command.\n" + await this.render())
-                    .setTitle('Help')
+                    new MessageEmbed({
+                        title: 'Help',
+                        description: renderCommandList()
+                    })
+                    // .setDescription("The command list.\n\n`<...>` means required argument, `[...]` means optional argument.\n\nRun `" + client.config.get('prefix') + "help <commandName>` for more information about a specific command.\n" + await this.render())
+                    // .setTitle('Help')
                 ],
             });
 
@@ -36,7 +40,7 @@ export default class HelpCommand extends BaseCommand {
         }
 
         const commandName = options.isInteraction ? options.options.getString('command') : options.args[0];
-        const cmd = Help.commands.find(c => c.name === commandName);
+        const cmd = Help.find(c => c.name === commandName);
 
         if (!cmd) {
             await message.reply({
@@ -50,45 +54,49 @@ export default class HelpCommand extends BaseCommand {
             return;
         }
 
-        let fields = [
-            {
-                name: "Usage",
-                value: `\`${client.config.get('prefix')}${cmd.name}\`` + (cmd.structure.trim() !== '' ? ` \`${cmd.structure}\`` : '')
-            },
-            {
-                name: 'Examples',
-                value: cmd.example.replace(/\%\%/g, client.config.get('prefix'))
-            }
-        ];
-
-        if (cmd.options !== undefined) {
-            let str = '';
-
-            for (let opt in cmd.options)
-                str += `\`${opt}\` - ${cmd.options[opt]}\n`;
-
-            str = str.substring(0, str.length - 1);
-
-            fields.push({
-                name: 'Options',
-                value: str
-            });
-        }
-
-        if (cmd.notes !== null) {
-            fields.push({
-                name: "Notes",
-                value: cmd.notes
-            });
-        }
-
         await message.reply({
-            embeds: [
-                new MessageEmbed()
-                .setTitle(`${client.config.get('prefix')}${cmd.name}`)
-                .setDescription("`<...>` means required argument, `[...]` means optional argument.\n\n" + (cmd.description !== null ? cmd.description : cmd.shortBrief))
-                .addFields(fields)
-            ]
+            embeds: [renderCommandMeta(cmd)]
         });
+
+        // let fields = [
+        //     {
+        //         name: "Usage",
+        //         value: `\`${client.config.get('prefix')}${cmd.name}\`` + (cmd.structure.trim() !== '' ? ` \`${cmd.structure}\`` : '')
+        //     },
+        //     {
+        //         name: 'Examples',
+        //         value: cmd.example.replace(/\%\%/g, client.config.get('prefix'))
+        //     }
+        // ];
+
+        // if (cmd.options !== undefined) {
+        //     let str = '';
+
+        //     for (let opt in cmd.options)
+        //         str += `\`${opt}\` - ${cmd.options[opt]}\n`;
+
+        //     str = str.substring(0, str.length - 1);
+
+        //     fields.push({
+        //         name: 'Options',
+        //         value: str
+        //     });
+        // }
+
+        // if (cmd.notes !== null) {
+        //     fields.push({
+        //         name: "Notes",
+        //         value: cmd.notes
+        //     });
+        // }
+
+        // await message.reply({
+        //     embeds: [
+        //         new MessageEmbed()
+        //         .setTitle(`${client.config.get('prefix')}${cmd.name}`)
+        //         .setDescription("`<...>` means required argument, `[...]` means optional argument.\n\n" + (cmd.description !== null ? cmd.description : cmd.shortBrief))
+        //         .addFields(fields)
+        //     ]
+        // });
     }
 }

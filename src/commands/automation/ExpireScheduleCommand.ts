@@ -4,7 +4,6 @@ import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
-import Help from '../../utils/help';
 import ms from 'ms';
 import { timeSince } from '../../utils/util';
 import { setTimeoutv2 } from '../../utils/setTimeout';

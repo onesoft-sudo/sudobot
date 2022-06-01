@@ -4,7 +4,6 @@ import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
-import Help from '../../utils/help';
 import { MessageButtonStyles } from 'discord.js/typings/enums';
 import { fetchEmoji } from '../../utils/Emoji';
 

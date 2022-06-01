@@ -52,17 +52,11 @@ export default class RoleListCommand extends BaseCommand {
                 if (role.id === msg.guild!.id)
                     continue;
                 
-                str += `**${role.name}**\nID: ${role.id}\nMembers: ${role.members.size}\nColor: ${role.hexColor}\n\n`;
+                str += `${role.name} - ${role.id} - ${role.members.size} Members - ${role.hexColor}\n`;
             }
 
             await msg.reply({
-                embeds: [
-                    new MessageEmbed()
-                    .setAuthor({
-                        name: `Role List`
-                    })
-                    .setDescription(str)
-                ]
+                content: "**Role List**:\n\n```" + str + '```'
             });
         }
         else {
