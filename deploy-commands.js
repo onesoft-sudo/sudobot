@@ -230,7 +230,9 @@ let commands = [
 		.addUserOption(option => option.setName('user').setDescription("The user").setRequired(true)),
 
 	new SlashCommandBuilder().setName('clear').setDescription('Clear all messages in the current channel for a user')
-		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true)),
+		.addUserOption(option => option.setName('user').setDescription("The user"))
+		.addIntegerOption(option => option.setName('count').setDescription("The amount of messages to delete").setMaxValue(400).setMinValue(0))
+		.addChannelOption(option => option.setName('channel').setDescription("The channel where the messages will be deleted")),
 
 	new SlashCommandBuilder().setName('echo').setDescription('Re-send a message from the bot system')
 		.addStringOption(option => option.setName('content').setDescription("The message content").setRequired(true))
