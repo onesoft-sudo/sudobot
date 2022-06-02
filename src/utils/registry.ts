@@ -3,6 +3,29 @@ import { promises as fs } from 'fs';
 import DiscordClient from '../client/Client';
 import { registered, registrationStart } from './debug';
 
+export async function registerCLICommands(client: DiscordClient, dir: string = '') {
+    const filePath = path.join(__dirname, dir);
+    const files = await fs.readdir(filePath);
+
+    for (const file of files) {
+        const stat = await fs.lstat(path.join(filePath, file));
+
+        if (stat.isDirectory()) 
+            await registerCLICommands(client, path.join(dir, file));
+        
+        if (file.endsWith('.js') || file.endsWith('.ts')) {
+            const { default: Command } = await import(path.join(dir, file));
+            const command = new Command();
+
+            client.cliCommands.set(command.getName(), command);
+            
+            command.getAliases().forEach((alias: string) => {
+                client.cliCommands.set(alias, command);
+            });
+        }
+    }
+}
+
 export async function registerCommands(client: DiscordClient, dir: string = '') {
     const filePath = path.join(__dirname, dir);
     const files = await fs.readdir(filePath);

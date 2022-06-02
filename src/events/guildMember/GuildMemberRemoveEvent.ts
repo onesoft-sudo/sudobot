@@ -8,6 +8,9 @@ export default class GuildMemberRemoveEvent extends BaseEvent {
     }
     
     async run(client: DiscordClient, member: GuildMember) {
+        if (member.user.id === client.user!.id)
+            return;
+
         await client.logger.logLeft(member);
         await client.autoClear.start(member, member.guild);
     }

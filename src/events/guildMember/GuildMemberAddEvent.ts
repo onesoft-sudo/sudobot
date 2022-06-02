@@ -9,6 +9,9 @@ export default class GuildMemberAddEvent extends BaseEvent {
     }
     
     async run(client: DiscordClient, member: GuildMember) {
+        if (member.user.id === client.user!.id)
+            return;
+        
         await client.antiraid.start(member);
         await autoRole(client, member);
         await client.logger.logJoined(member);

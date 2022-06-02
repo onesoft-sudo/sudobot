@@ -10,7 +10,7 @@ import { fetchEmoji } from '../../utils/Emoji';
 
 export async function notAFK(client: DiscordClient, msg: Message | CommandInteraction, data: any) {
     client.db.get('DELETE FROM afk WHERE user_id = ?', [msg.member!.user.id], async (err: any) => {
-        await msg.channel!.send({
+        await msg.reply({
             embeds: [
                 new MessageEmbed()
                 .setDescription('You\'re no longer AFK. You had **' + data.mentions + '** mentions in the servers where SudoBot is joined.')

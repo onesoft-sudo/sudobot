@@ -17,9 +17,12 @@ import Cooldown from '../automod/Cooldown';
 import StartupManager from '../services/StartupManager';
 import AutoClear from '../automod/AutoClear';
 import RandomStatus from '../services/RandomStatus';
+import DebugLogger from '../services/DebugLogger';
+import BaseCLICommand from '../utils/structures/BaseCLICommand';
 
 export default class DiscordClient extends Client {
     private _commands = new Collection<string, BaseCommand>();
+    private _cliCommands = new Collection<string, BaseCLICommand>();
     private _events = new Collection<string, BaseEvent>();
 
     rootdir: string;
@@ -40,6 +43,7 @@ export default class DiscordClient extends Client {
     startupManager: StartupManager;
     autoClear: AutoClear;
     randomStatus: RandomStatus;
+    debugLogger: DebugLogger;
 
     static client: DiscordClient;
 
@@ -70,12 +74,17 @@ export default class DiscordClient extends Client {
         this.startupManager = new StartupManager(this);
         this.autoClear = new AutoClear(this);
         this.randomStatus = new RandomStatus(this);
+        this.debugLogger = new DebugLogger(this);
         
         DiscordClient.client = this;
     }
 
     get commands(): Collection<string, BaseCommand> {
         return this._commands; 
+    }
+
+    get cliCommands(): Collection<string, BaseCLICommand> {
+        return this._cliCommands; 
     }
 
     get events(): Collection<string, BaseEvent> {
