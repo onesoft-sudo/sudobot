@@ -5,7 +5,6 @@ import { Config } from './Config';
 import Database from './Database';
 import path from 'path';
 import Logger from '../automod/Logger';
-import SpamFilter from '../automod/SpamFilter';
 import SnippetManager from '../services/SnippetManager';
 import AFKEngine from '../services/AFKEngine';
 import Auth from '../services/Auth';
@@ -20,6 +19,7 @@ import RandomStatus from '../services/RandomStatus';
 import DebugLogger from '../services/DebugLogger';
 import BaseCLICommand from '../utils/structures/BaseCLICommand';
 import discordModals from 'discord-modals';
+import SpamFilter from '../automod/SpamFilter';
 
 export default class DiscordClient extends Client {
     private _commands = new Collection<string, BaseCommand>();
@@ -51,14 +51,18 @@ export default class DiscordClient extends Client {
     constructor(options: ClientOptions, rootdir: string = __dirname) {
         super({
             ws: {
-                properties: { 
-                    $browser: "Discord iOS" 
+                properties: {
+                    $browser: "Discord iOS"
                 }
             },
             ...options
         });
+        
+        console.log('init');        
 
         this.rootdir = rootdir;
+        
+        DiscordClient.client = this;
 
         this.config = new Config(this);
         this.db = new Database(path.resolve(rootdir, 'database.db'), this);
@@ -77,8 +81,7 @@ export default class DiscordClient extends Client {
         this.randomStatus = new RandomStatus(this);
         this.debugLogger = new DebugLogger(this);
         
-        DiscordClient.client = this;
-        discordModals(this);
+        discordModals(this);        
     }
 
     get commands(): Collection<string, BaseCommand> {

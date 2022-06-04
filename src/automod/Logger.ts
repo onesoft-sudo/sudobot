@@ -1,5 +1,5 @@
 import { roleMention } from '@discordjs/builders';
-import { FileOptions, GuildBan, GuildMember, Message, MessageEmbed, TextChannel, User } from 'discord.js';
+import { CommandInteraction, FileOptions, GuildBan, GuildMember, Message, MessageEmbed, TextChannel, User } from 'discord.js';
 import DiscordClient from '../client/Client';
 import { timeProcess, timeSince } from '../utils/util';
 
@@ -10,9 +10,9 @@ class Logger {
         this.client = client;
     }
 
-    channel(callback: (channel: TextChannel) => any, msg: Message | GuildBan) {
+    channel(callback: (channel: TextChannel) => any, msg: any) {
         let channelID = this.client.config.props[msg.guild!.id].logging_channel;
-        let channel = msg.guild!.channels.cache.find(c => c.id === channelID) as TextChannel;
+        let channel = msg.guild!.channels.cache.find((c: any) => c.id === channelID) as TextChannel;
 
         if (channel) {
             return callback(channel);
@@ -274,7 +274,7 @@ class Logger {
         }, member);
     }
 
-    logWarn(msg: Message, member: GuildMember | User, d: User, reason: string, id: number | string) {
+    logWarn(msg: Message | CommandInteraction, member: GuildMember | User, d: User, reason: string | undefined, id: number | string) {
         if ((member as GuildMember).user)
             member = (member as GuildMember).user;
 
@@ -288,10 +288,10 @@ class Logger {
                         name: (member as User).tag,
                         iconURL: member.displayAvatarURL(),
                     })
-                    .addField('Reason', reason)
+                    .addField('Reason', reason ?? '*No reason provided*')
                     .addField('Warned by', d.tag)
                     .addField('User ID', member.id)
-                    .addField('Warning ID', id + '')
+                    .addField('Case ID', id + '')
                     .setFooter({
                         text: "Warned",
                     })

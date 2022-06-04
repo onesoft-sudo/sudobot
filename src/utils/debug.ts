@@ -1,4 +1,3 @@
-import DiscordClient from "../client/Client";
 import BaseCommand from "./structures/BaseCommand";
 import BaseEvent from "./structures/BaseEvent";
 import { fill, green, red, timeProcess, yellow } from "./util";

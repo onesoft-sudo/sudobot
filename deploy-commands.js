@@ -208,20 +208,25 @@ let commands = [
 	new SlashCommandBuilder().setName('unban').setDescription('Unban a user')
 		.addUserOption(option => option.setName('user').setDescription("The user").setRequired(true)),
 
-	new SlashCommandBuilder().setName('warndel').setDescription('Delete a warning')
-		.addNumberOption(option => option.setName('id').setDescription("The warning ID").setRequired(true)),
-
-	new SlashCommandBuilder().setName('warning').setDescription('Get information about a warning')
-		.addNumberOption(option => option.setName('id').setDescription("The warning ID").setRequired(true)),
+	new SlashCommandBuilder().setName('warning').setDescription('Clear, remove or view warnings')
+		.addSubcommand(subcmd => {
+			return subcmd.setName('view').setDescription('View information about a warning').addNumberOption(option => option.setName('id').setDescription("The warning ID").setRequired(true));
+		})
+		.addSubcommand(subcmd => {
+			return subcmd.setName('remove').setDescription('Remove a warning').addNumberOption(option => option.setName('id').setDescription("The warning ID").setRequired(true));
+		})
+		.addSubcommand(subcmd => {
+			return subcmd.setName('list').setDescription('List warnings for a user').addUserOption(option => option.setName('user').setDescription("The user").setRequired(true));
+		})
+		.addSubcommand(subcmd => {
+			return subcmd.setName('clear').setDescription('Clear all warnings for a user').addUserOption(option => option.setName('user').setDescription("The user").setRequired(true));
+		}),
 
 	new SlashCommandBuilder().setName('noteget').setDescription('Get information about a note')
 		.addNumberOption(option => option.setName('id').setDescription("The note ID").setRequired(true)),
 
 	new SlashCommandBuilder().setName('notedel').setDescription('Delete a note')
 		.addNumberOption(option => option.setName('id').setDescription("The note ID").setRequired(true)),
-
-	new SlashCommandBuilder().setName('warnings').setDescription('Fetch all warnings')
-		.addUserOption(option => option.setName('member').setDescription("Show warnings for only this member")),
 
 	new SlashCommandBuilder().setName('notes').setDescription('Fetch all notes for a user')
 		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true)),

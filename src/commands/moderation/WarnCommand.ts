@@ -4,53 +4,54 @@ import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
-import getUser from '../../utils/getUser';
-import History from '../../automod/History';
 import getMember from '../../utils/getMember';
-import ms from 'ms';
+import PunishmentType from '../../types/PunishmentType';
+import Punishment from '../../types/Punishment';
+import History from '../../automod/History';
 
-export async function warn(client: DiscordClient, user: User, reason: string | undefined, msg: Message | CommandInteraction, callback: Function, warned_by1?: User) {
-    await client.db.get('INSERT INTO warnings(user_id, guild_id, strike, reason, warned_by) VALUES(?, ?, 1, ?, ?)', [user.id, msg.guild!.id, reason === undefined ? '\c\b\c' : reason, warned_by1 === undefined ? msg.member!.user.id : warned_by1.id], async (err: any) => {
-        if (err) {
-            console.log(err);
-        }
-
-        await client.db.get('SELECT * FROM warnings WHERE user_id = ? AND guild_id = ? ORDER BY id DESC LIMIT 0, 1', [user.id, msg.guild!.id], async (err: any, data: any) => {
-            if (err) {
-                console.log(err);
-            }
-
-            await client.db.get('SELECT id, COUNT(*) as count, guild_id, user_id FROM warnings WHERE user_id = ? AND guild_id = ?', [user.id, msg.guild!.id], async (err: any, data3: any) => {
-                await client.logger.logWarn(msg as Message, user, warned_by1 === undefined ? msg.member!.user as User : warned_by1, typeof reason === 'undefined' ? '*No reason provided*' : reason, data.id);
-            
-                await History.create(user.id, msg.guild!, 'warn', warned_by1 === undefined ? msg.member!.user.id : warned_by1.id, typeof reason === 'undefined' ? null : reason, async () => {
-                    await user.send({
-                        embeds: [
-                            new MessageEmbed()
-                            .setAuthor({
-                                iconURL: msg.guild!.iconURL() as string,
-                                name: `\tYou have been warned in ${msg.guild!.name}`
-                            })
-                            .addFields([
-                                {
-                                    name: "Reason",
-                                    value: typeof reason === 'undefined' ? '*No reason provided*' : reason
-                                },
-                                {
-                                    name: "Strike",
-                                    value: data3.count + ' time(s)'
-                                }
-                            ])
-                        ]
-                    });
-
-                    console.log(data3);                    
-
-                    callback({count: data3.count, ...data});
-                });
-            });
-        });
+export async function warn(client: DiscordClient, user: User, reason: string | undefined, msg: Message | CommandInteraction, warned_by?: User) {    
+    const warning = await Punishment.create({
+        guild_id: msg.guild!.id,
+        user_id: user.id,
+        reason,
+        mod_id: warned_by?.id ?? msg.member!.user.id,
+        type: PunishmentType.WARNING,
     });
+
+    const strike = await Punishment.count({
+        where: {
+            guild_id: msg.guild!.id,
+            user_id: user.id,
+            type: PunishmentType.WARNING,
+        }
+    });
+
+    await History.create(user.id, msg.guild!, 'warn', warned_by?.id ?? msg.member!.user.id, reason ?? null);
+
+    await user.send({
+        embeds: [
+            new MessageEmbed({
+                author: {
+                    name: `You have been warned in ${msg.guild!.name}`,
+                    iconURL: msg.guild!.iconURL()!
+                },
+                fields: [
+                    {
+                        name: 'Reason',
+                        value: reason ?? '*No reason provided*'
+                    },
+                    {
+                        name: 'Strike',
+                        value: `${strike} time(s)`
+                    }
+                ]
+            })
+        ]
+    });
+
+    await client.logger.logWarn(msg, user, (warned_by ?? msg.member!.user) as User, reason, warning.get('id') as number);
+
+    return { warning, strike };
 }
 
 export default class WarnCommand extends BaseCommand {
@@ -126,32 +127,32 @@ export default class WarnCommand extends BaseCommand {
         }
 
         try {
-            await warn(client, user.user, reason, msg, async (data: any) => {
-                await msg.reply({
-                    embeds: [
-                        new MessageEmbed()
-                        .setDescription(`The user ${user.user.tag} has been warned`)
-                        .addFields([
-                            {
-                                name: "Reason",
-                                value: typeof reason === 'undefined' ? '*No reason provided*' : reason
-                            },
-                            {
-                                name: "Strike",
-                                value: data.count + ' time(s)'
-                            },
-                            {
-                                name: "Warned by",
-                                value: (msg.member?.user as User).tag
-                            },
-                            {
-                                name: "ID",
-                                value: data.id + ''
-                            }
-                        ])
-                    ]
-                });
-            }, msg.member?.user as User);
+            const { warning, strike } = await warn(client, user.user, reason, msg, msg.member?.user as User);
+
+            await msg.reply({
+                embeds: [
+                    new MessageEmbed()
+                    .setDescription(`The user ${user.user.tag} has been warned`)
+                    .addFields([
+                        {
+                            name: "Reason",
+                            value: typeof reason === 'undefined' ? '*No reason provided*' : reason
+                        },
+                        {
+                            name: "Strike",
+                            value: strike + ' time(s)'
+                        },
+                        {
+                            name: "Warned by",
+                            value: (msg.member?.user as User).tag
+                        },
+                        {
+                            name: "ID",
+                            value: warning.get('id') + ''
+                        }
+                    ])
+                ]
+            });
         }
         catch (e) {
             console.log(e);            

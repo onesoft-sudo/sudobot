@@ -1,10 +1,11 @@
 import { mute } from "../commands/moderation/MuteCommand";
 import { unmute } from "../commands/moderation/UnmuteCommand";
-import { warn } from "../commands/moderation/WarnCommand";
 import History from "./History";
 import MessageEmbed from "../client/MessageEmbed";
 import DiscordClient from "../client/Client";
 import { Message, TextChannel } from "discord.js";
+
+let warn: Function;
 
 export type SpamFilterConfig = {
     limit: number;
@@ -28,6 +29,7 @@ export default class SpamFilter {
 
     constructor(private client: DiscordClient) {
         this.config = {} as any;
+        warn = require("../commands/moderation/WarnCommand").warn;
     }
 
     load() {
@@ -91,9 +93,8 @@ export default class SpamFilter {
                         console.log(data);
                         if (data !== undefined && data !== null) {
                             if (data.strike === 1) {
-                                await warn(this.client, msg.author, "Spamming\nThe next violations will cause mutes.", msg, () => {
-                                    console.log('warned');
-                                }, this.client.user!);
+                                await warn(this.client, msg.author, "Spamming\nThe next violations will cause mutes.", msg, this.client.user!);
+                                console.log('warned');                                
                             }
                             if (data.strike >= 2) {
                                 let u = await msg.guild!.members.fetch(msg.author.id);
