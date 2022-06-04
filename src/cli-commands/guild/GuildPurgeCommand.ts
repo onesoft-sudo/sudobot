@@ -5,7 +5,7 @@ import BaseCLICommand from "../../utils/structures/BaseCLICommand";
 
 export default class GuildPurgeCommand extends BaseCLICommand {
     constructor() {
-        super('guildpurge', 'guildBans');
+        super('guildpurge', 'guild');
     }
 
     async run(client: DiscordClient, argv: string[], args: string[]) {

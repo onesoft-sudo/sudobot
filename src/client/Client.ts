@@ -19,6 +19,7 @@ import AutoClear from '../automod/AutoClear';
 import RandomStatus from '../services/RandomStatus';
 import DebugLogger from '../services/DebugLogger';
 import BaseCLICommand from '../utils/structures/BaseCLICommand';
+import discordModals from 'discord-modals';
 
 export default class DiscordClient extends Client {
     private _commands = new Collection<string, BaseCommand>();
@@ -77,6 +78,7 @@ export default class DiscordClient extends Client {
         this.debugLogger = new DebugLogger(this);
         
         DiscordClient.client = this;
+        discordModals(this);
     }
 
     get commands(): Collection<string, BaseCommand> {

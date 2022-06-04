@@ -20,7 +20,7 @@ export default class InteractionCreateEvent extends BaseEvent {
 
             return;
         }
-        
+
         if (interaction.isCommand()) {
             await client.setMessage(interaction);
 
@@ -54,6 +54,7 @@ export default class InteractionCreateEvent extends BaseEvent {
                     return;
 
                 await command.run(client, interaction, options);
+                (global as any).lastCommand = commandName;
             }
         }
         else if (interaction.isAutocomplete()) {
@@ -79,6 +80,25 @@ export default class InteractionCreateEvent extends BaseEvent {
                 } as AutoCompleteOptions;
 
                 await command.autoComplete(client, interaction, options);
+                (global as any).lastCommand = commandName;
+            }
+        }
+        else {
+            if (!(global as any).commandName)
+                return;
+
+            await client.setMessage(interaction);
+
+            const command = await client.commands.get((global as any).commandName);
+
+            if (command && command.supportsInteractions) {
+                const allowed = await client.auth.verify(interaction.member! as GuildMember, command);
+
+                if (!allowed) {
+                    return;
+                }
+
+                await command.default(client, interaction);
             }
         }
     }

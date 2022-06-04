@@ -7,7 +7,7 @@ export default class BanGuildCommand extends BaseCLICommand {
     requiredArgs = 1;
 
     constructor() {
-        super('banguild', 'guildBans');
+        super('banguild', 'guild');
     }
 
     async run(client: DiscordClient, argv: string[], args: string[]) {

@@ -278,6 +278,9 @@ let commands = [
 	new SlashCommandBuilder().setName('send').setDescription('Send a DM to a user')
 		.addStringOption(option => option.setName('content').setDescription("The message content").setRequired(true))
 		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true)),
+
+
+	new SlashCommandBuilder().setName('appeal').setDescription('Send us a messages about a punishment appeal')
 ].map(command => command.toJSON());
 
 if (process.argv.includes('--clear')) {

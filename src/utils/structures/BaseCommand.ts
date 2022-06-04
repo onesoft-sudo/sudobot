@@ -1,3 +1,4 @@
+import { ModalSubmitInteraction } from 'discord-modals';
 import { AutocompleteInteraction, CommandInteraction, CommandInteractionOption, Interaction, Message, MessageEditOptions, MessageOptions, MessagePayload, WebhookEditMessageOptions } from 'discord.js';
 import DiscordClient from '../../client/Client';
 import AutoCompleteOptions from '../../types/AutoCompleteOptions';
@@ -28,6 +29,14 @@ export default abstract class BaseCommand {
 
     async autoComplete(client: DiscordClient, interaction: AutocompleteInteraction, options: AutoCompleteOptions): Promise <void> {
 
+    }
+
+    async default(client: DiscordClient, interaction: Interaction): Promise <void> {
+        
+    }
+
+    async modalSubmit(client: DiscordClient, interaction: ModalSubmitInteraction): Promise <void> {
+        
     }
 
     async deferReply(msg: Message | CommandInteraction, options: MessageOptions | string | MessagePayload | WebhookEditMessageOptions, edit: boolean = false): Promise<Message | CommandInteraction> {
