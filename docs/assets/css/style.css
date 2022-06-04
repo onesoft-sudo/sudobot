@@ -1,0 +1,18 @@
+.md-logo img {
+    border-radius: 5px;
+}
+
+.rounded {
+    border-radius: 5px;
+}
+
+.center {
+    margin: 0 auto;
+    display: block;
+}
+
+:root > * {
+    --md-primary-fg-color:#007bff;
+    --md-primary-fg-color--light:#b4d0ee;
+    --md-primary-fg-color--dark: #106aca;
+  }
