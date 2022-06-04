@@ -2,6 +2,9 @@
 
 Sudobot has `-clear` command which can delete messages in bulk.
 
+!!! warning
+    Messages deleted using this command won't be logged.
+
 ##### Legacy Command
 ```
 -clear <UserID|UserMention>
@@ -17,3 +20,10 @@ Sudobot has `-clear` command which can delete messages in bulk.
 
 !!! info
     This operation might take some time depending on the amount of messages.
+
+#### Examples
+
+```
+-clear @Someone
+-clear 347382275362482
+```
