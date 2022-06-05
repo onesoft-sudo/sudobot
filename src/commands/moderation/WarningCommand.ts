@@ -8,7 +8,7 @@ import getUser from '../../utils/getUser';
 import History from '../../automod/History';
 import getMember from '../../utils/getMember';
 import ms from 'ms';
-import Punishment from '../../types/Punishment';
+import Punishment from '../../models/Punishment';
 import { fetchEmoji } from '../../utils/Emoji';
 import PunishmentType from '../../types/PunishmentType';
 

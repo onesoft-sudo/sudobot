@@ -9,12 +9,24 @@ import History from '../../automod/History';
 import getMember from '../../utils/getMember';
 import ms from 'ms';
 
+import PunishmentType from '../../types/PunishmentType';
+
 export async function unmute(client: DiscordClient, user: GuildMember, msg: Message | CommandInteraction, d: User) {
     try {            
         await History.create(user.id, msg.guild!, 'unmute', msg.member!.user.id, null);
 
         const role = await msg.guild!.roles.fetch(client.config.get('mute_role'));
         await user.roles.remove(role!);
+
+        const { default: Punishment } = await import('../../models/Punishment');
+
+        await Punishment.create({
+            type: PunishmentType.UNMUTE,
+            user_id: user.id,
+            guild_id: msg.guild!.id,
+            mod_id: d.id,
+            mod_tag: d.tag,
+        });
 
         await user.send({
             embeds: [

@@ -193,8 +193,8 @@ let commands = [
 		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true))
 		.addStringOption(option => option.setName('reason').setDescription("The reason for warning this user")),
 
-	new SlashCommandBuilder().setName('note').setDescription('Take a note for a member')
-		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true))
+	new SlashCommandBuilder().setName('note').setDescription('Take a note for a user')
+		.addUserOption(option => option.setName('user').setDescription("The user").setRequired(true))
 		.addStringOption(option => option.setName('note').setDescription("The note content").setRequired(true)),
 
 	new SlashCommandBuilder().setName('mute').setDescription('Mute a member')
@@ -229,7 +229,7 @@ let commands = [
 		.addNumberOption(option => option.setName('id').setDescription("The note ID").setRequired(true)),
 
 	new SlashCommandBuilder().setName('notes').setDescription('Fetch all notes for a user')
-		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true)),
+		.addUserOption(option => option.setName('user').setDescription("The user").setRequired(true)),
 
 	new SlashCommandBuilder().setName('history').setDescription('Fetch all moderation history for a user')
 		.addUserOption(option => option.setName('user').setDescription("The user").setRequired(true)),

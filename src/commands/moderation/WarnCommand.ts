@@ -6,7 +6,7 @@ import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import getMember from '../../utils/getMember';
 import PunishmentType from '../../types/PunishmentType';
-import Punishment from '../../types/Punishment';
+import Punishment from '../../models/Punishment';
 import History from '../../automod/History';
 
 export async function warn(client: DiscordClient, user: User, reason: string | undefined, msg: Message | CommandInteraction, warned_by?: User) {    
@@ -15,6 +15,7 @@ export async function warn(client: DiscordClient, user: User, reason: string | u
         user_id: user.id,
         reason,
         mod_id: warned_by?.id ?? msg.member!.user.id,
+        mod_tag: warned_by?.tag ?? (msg.member!.user as User).tag,
         type: PunishmentType.WARNING,
     });
 

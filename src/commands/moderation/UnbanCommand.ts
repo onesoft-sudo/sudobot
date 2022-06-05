@@ -8,6 +8,8 @@ import getUser from '../../utils/getUser';
 import History from '../../automod/History';
 import getMember from '../../utils/getMember';
 import ms from 'ms';
+import Punishment from '../../models/Punishment';
+import PunishmentType from '../../types/PunishmentType';
 
 export default class UnbanCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -73,6 +75,15 @@ export default class UnbanCommand extends BaseCommand {
 
         try {
             await msg.guild?.bans.remove(user);
+
+            await Punishment.create({
+                type: PunishmentType.UNBAN,
+                user_id: user.id,
+                guild_id: msg.guild!.id,
+                mod_id: msg.member!.user.id,
+                mod_tag: (msg.member!.user as User).tag,
+            });
+
             await History.create(user.id, msg.guild!, 'unban', (msg.member!.user as User).id, null);
         }
         catch (e) {

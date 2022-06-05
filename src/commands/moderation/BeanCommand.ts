@@ -7,6 +7,8 @@ import MessageEmbed from '../../client/MessageEmbed';
 import getUser from '../../utils/getUser';
 import getMember from '../../utils/getMember';
 import History from '../../automod/History';
+import Punishment from '../../models/Punishment';
+import PunishmentType from '../../types/PunishmentType';
 
 export default class BeanCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -82,6 +84,15 @@ export default class BeanCommand extends BaseCommand {
         }
 
         try {            
+            await Punishment.create({
+                type: PunishmentType.BEAN,
+                user_id: user.id,
+                guild_id: msg.guild!.id,
+                mod_id: msg.member!.user.id,
+                mod_tag: (msg.member!.user as User).tag,
+                reason
+            });
+
             await History.create(user.id, msg.guild!, 'bean', msg.member!.user.id, typeof reason === 'undefined' ? null : reason);
 
             await user.send({

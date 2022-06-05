@@ -1,45 +1,39 @@
 import { DataTypes, Model } from 'sequelize';
 import DiscordClient from '../client/Client';
 
-class Punishment extends Model {}
+class Note extends Model {}
 
-Punishment.init({
+Note.init({
     id: {
         type: DataTypes.INTEGER,
-        primaryKey: true,
         autoIncrement: true,
+        primaryKey: true,
+    },
+    content: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    author: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    mod_tag: {
+        type: DataTypes.STRING,
         allowNull: false,
     },
     user_id: {
         type: DataTypes.STRING,
-        allowNull: false,
-    },
-    mod_id: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: false
     },
     guild_id: {
         type: DataTypes.STRING,
-        allowNull: false,
-    },
-    reason: {
-        type: DataTypes.TEXT,
-        allowNull: true
-    },
-    type: {
-        type: DataTypes.STRING,
         allowNull: false
-    },
-    meta: {
-        type: DataTypes.JSON,
-        allowNull: false,
-        defaultValue: {}
     },
 }, {
     sequelize: DiscordClient.client.db.sequelize,
-    modelName: 'Punishment',
+    modelName: 'Note',
     updatedAt: false,
-    tableName: 'punishments'
+    tableName: 'notes'
 });
 
-export default Punishment;
+export default Note;

@@ -2,7 +2,7 @@
 node_modules/
 .vscode/
 .idea/
-database.db
+*.db
 config/*
 test.ts
 test.js

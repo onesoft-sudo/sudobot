@@ -7,6 +7,8 @@ import MessageEmbed from '../../client/MessageEmbed';
 import getUser from '../../utils/getUser';
 import History from '../../automod/History';
 import { fetchEmoji } from '../../utils/Emoji';
+import Punishment from '../../models/Punishment';
+import PunishmentType from '../../types/PunishmentType';
 
 export default class MassBanCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -96,6 +98,16 @@ export default class MassBanCommand extends BaseCommand {
 
                 try {
                     console.log(banOptions.reason);
+
+                    await Punishment.create({
+                        type: PunishmentType.BAN,
+                        user_id: user.id,
+                        guild_id: msg.guild!.id,
+                        mod_id: msg.member!.user.id,
+                        mod_tag: (msg.member!.user as User).tag,
+                        reason: banOptions.reason ?? undefined
+                    });
+
                     await msg.guild!.bans.create(user, banOptions);
                     
                     usersStr += user.tag + ' (' + user.id + ')\n';

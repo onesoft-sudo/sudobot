@@ -7,6 +7,8 @@ import MessageEmbed from '../../client/MessageEmbed';
 import getUser from '../../utils/getUser';
 import getMember from '../../utils/getMember';
 import History from '../../automod/History';
+import Punishment from '../../models/Punishment';
+import PunishmentType from '../../types/PunishmentType';
 
 export default class KickCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -86,6 +88,16 @@ export default class KickCommand extends BaseCommand {
                 throw new Error('User not kickable');
             
             await user.kick(reason);
+
+            await Punishment.create({
+                type: PunishmentType.KICK,
+                user_id: user.id,
+                guild_id: msg.guild!.id,
+                mod_id: msg.member!.user.id,
+                mod_tag: (msg.member!.user as User).tag,
+                reason
+            });
+
             await History.create(user.id, msg.guild!, 'kick', msg.member!.user.id, typeof reason === 'undefined' ? null : reason);
         }
         catch (e) {

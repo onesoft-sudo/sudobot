@@ -6,6 +6,8 @@ import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import getUser from '../../utils/getUser';
 import History from '../../automod/History';
+import Punishment from '../../models/Punishment';
+import PunishmentType from '../../types/PunishmentType';
 
 export default class BanCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -104,6 +106,16 @@ export default class BanCommand extends BaseCommand {
 
         try {
             await msg.guild?.bans.create(user, banOptions);
+
+            await Punishment.create({
+                type: PunishmentType.BAN,
+                user_id: user.id,
+                guild_id: msg.guild!.id,
+                mod_id: msg.member!.user.id,
+                mod_tag: (msg.member!.user as User).tag,
+                reason: banOptions.reason ?? undefined
+            });
+
             await History.create(user.id, msg.guild!, 'ban', msg.member!.user.id, typeof banOptions.reason === 'undefined' ? null : banOptions.reason, async (data: any) => undefined);
         }
         catch (e) {

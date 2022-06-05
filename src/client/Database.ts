@@ -14,7 +14,7 @@ export default class Database {
 
         this.sequelize = new Sequelize({
             dialect: 'sqlite',
-            storage: dbpath
+            storage: dbpath,
         });
 
         this.db = new DB(dbpath, (err) => {

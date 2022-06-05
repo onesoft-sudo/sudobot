@@ -8,12 +8,17 @@ import getUser from '../../utils/getUser';
 import History from '../../automod/History';
 import getMember from '../../utils/getMember';
 import ms from 'ms';
+import { fetchEmoji } from '../../utils/Emoji';
 
-export async function note(client: DiscordClient, user: GuildMember | User, content: string, msg: Message | CommandInteraction) {
-    await client.db.get("INSERT INTO notes(user_id, guild_id, content, date) VALUES(?, ?, ?, ?)", [user.id, msg.guild!.id, content, (new Date().toISOString())], async (err: any) => {
-        if (err) {
-            console.log(err);
-        }
+export async function note(user: GuildMember | User, content: string, msg: Message | CommandInteraction) {
+    const { default: Note } = await import('../../models/Note');
+
+    return await Note.create({
+        content,
+        author: msg.member!.user.id,
+        mod_tag: (msg.member!.user as User).tag,
+        user_id: user.id,
+        guild_id: msg.guild!.id
     });
 }
 
@@ -37,11 +42,11 @@ export default class NoteCommand extends BaseCommand {
             return;
         }
 
-        let user: GuildMember;
+        let user: User;
         let content: string | undefined;
 
         if (options.isInteraction) {
-            user = await <GuildMember> options.options.getMember('member');
+            user = await <User> options.options.getUser('user');
 
             if (!user) {
                 await msg.reply({
@@ -59,7 +64,7 @@ export default class NoteCommand extends BaseCommand {
         }
         else {
             try {
-                const user2 = await getMember((msg as Message), options);
+                const user2 = await getUser(client, (msg as Message), options);
 
                 if (!user2) {
                     throw new Error('Invalid user');
@@ -85,14 +90,15 @@ export default class NoteCommand extends BaseCommand {
             content = options.args.join(' ');
         }
 
-        await History.create(user.id, msg.guild!, 'note', msg.member!.user.id, null, async (data2) => {
-            await note(client, user, content as string, msg);
-        });
+        const n = await note(user, content as string, msg);
 
         await msg.reply({
             embeds: [
                 new MessageEmbed()
-                .setDescription(`A note has been added for ${user.user.tag}`) // TODO
+                .setDescription(`${(await fetchEmoji('check'))?.toString()} A note has been added for ${user.tag}`)
+                .setFooter({
+                    text: `ID: ${n.get().id}`
+                })
             ]
         });
     }

@@ -9,9 +9,12 @@ import History from '../../automod/History';
 import getMember from '../../utils/getMember';
 import ms from 'ms';
 import { unmute } from './UnmuteCommand';
+import PunishmentType from '../../types/PunishmentType';
 
 export async function mute(client: DiscordClient, dateTime: number | undefined, user: GuildMember, msg: Message | CommandInteraction, timeInterval: number | undefined, reason: string | undefined) {
     try {
+        const { default: Punishment } = await import('../../models/Punishment');
+        
         if (dateTime) {
             await client.db.get("INSERT INTO unmutes(user_id, guild_id, time) VALUES(?, ?, ?)", [user.id, msg.guild!.id, new Date(dateTime).toISOString()], async (err: any) => {
                 if (err) 
@@ -44,6 +47,19 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
 
         const role = await msg.guild!.roles.fetch(client.config.get('mute_role'));
         await user.roles.add(role!);
+
+        await Punishment.create({
+            type: PunishmentType.MUTE,
+            user_id: user.id,
+            guild_id: msg.guild!.id,
+            mod_id: msg.member!.user.id,
+            mod_tag: (msg.member!.user as User).tag,
+            reason,
+            meta: {
+                time: timeInterval ? ms(timeInterval) : undefined
+            }
+        });
+
         await History.create(user.id, msg.guild!, 'mute', msg.member!.user.id, typeof reason === 'undefined' ? null : reason);
         await client.logger.logMute(user, reason === undefined || reason.trim() === '' ? "*No reason provided*" : reason, timeInterval, msg.member!.user as User);
         await user.send({

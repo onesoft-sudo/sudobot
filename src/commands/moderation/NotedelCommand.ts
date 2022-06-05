@@ -8,6 +8,8 @@ import getUser from '../../utils/getUser';
 import History from '../../automod/History';
 import getMember from '../../utils/getMember';
 import ms from 'ms';
+import Note from '../../models/Note';
+import { fetchEmojiStr } from '../../utils/Emoji';
 
 export default class NotedelCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -38,38 +40,26 @@ export default class NotedelCommand extends BaseCommand {
             id = await options.args[0];
         }
 
-        await client.db.get("SELECT * FROM notes WHERE id = ? AND guild_id = ?", [id, msg.guild!.id], async (err: any, data: any) => {
-            if (err) {
-                console.log(err);
+        const note = await Note.findOne({
+            where: {
+                guild_id: msg.guild!.id,
+                id
             }
+        });
 
-            if (data === undefined) {
-                await msg.reply({
-                    embeds: [
-                        new MessageEmbed()
-                        .setColor('#f14a60')
-                        .setDescription('No note found')
-                    ]
-                });
+        if (!note) {
+            await msg.reply(`${await fetchEmojiStr('error')} Invalid note ID.`);
+            return;
+        }
 
-                return;
-            }
+        await note.destroy();
 
-            await client.db.get('DELETE FROM notes WHERE id = ? AND guild_id = ?', [id, msg.guild!.id], async (err: any) => {
-                if (err) {
-                    console.log(err);
-                }
-
-                
-                await History.create(data.user_id, msg.guild!, 'notedel', msg.member?.user.id!, '', async (data2: any) => {
-                    await msg.reply({
-                        embeds: [
-                            new MessageEmbed()
-                            .setDescription('The note has been deleted')
-                        ]
-                    });
-                });
-            });
+        await msg.reply({
+            embeds: [
+                new MessageEmbed({
+                    description: `${await fetchEmojiStr('check')} Note deleted.`
+                })
+            ]
         });
     }
 }
