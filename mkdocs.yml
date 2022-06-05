@@ -33,6 +33,10 @@ edit_uri: edit/main/docs/
 
 extra_css:
   - 'assets/css/style.css'
+  
+extra:
+  version:
+    provider: mike
 
 markdown_extensions:
   - admonition
