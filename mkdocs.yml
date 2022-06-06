@@ -40,7 +40,7 @@ extra:
     provider: mike
 
 plugins:
-  - social
+  - social:
       cards: true
 
 markdown_extensions:
