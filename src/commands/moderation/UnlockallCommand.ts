@@ -7,47 +7,33 @@ import MessageEmbed from '../../client/MessageEmbed';
 
 export async function unlockAll(client: DiscordClient, role: Role, msg: Message | CommandInteraction, options: CommandOptions | InteractionOptions, channels: Collection <string, TextChannel>, force: boolean) {
 	if (role) {
-		const gen = await msg.guild!.roles.fetch(client.config.props[msg.guild!.id].gen_role);
-
 		channels.forEach(async channel => {
 			try {
-				await channel.send({
-					embeds: [
-						new MessageEmbed()
-						.setDescription(':closed_lock_with_key: This channel has been unlocked.')
-					]
-				});
-
 				client.db.get('SELECT * FROM locks WHERE channel_id = ?', [channel.id], async (err: any, data: any) => {
 					if (data || force) {
-						let perm1;
+						await channel.send({
+							embeds: [
+								new MessageEmbed()
+								.setDescription(':closed_lock_with_key: This channel has been unlocked.')
+							]
+						});
+						
 						let perm;
-						const data1 = data?.perms?.split(',');
+						const data1 = data?.perms;
 
 						if (data1) {
-							if (data1[0] === 'DENY') {
+							if (data1 === 'DENY') {
 								await (perm = false);
 							}
-							else if (data1[0] === 'NULL') {
+							else if (data1 === 'NULL') {
 								await (perm = null);
 							}
-							else if (data1[0] === 'ALLOW') {
+							else if (data1 === 'ALLOW') {
 								await (perm = true);
-							}
-
-							if (data1[1] === 'DENY') {
-								await (perm1 = false);
-							}
-							else if (data1[1] === 'NULL') {
-								await (perm1 = null);
-							}
-							else if (data1[1] === 'ALLOW') {
-								await (perm1 = true);
 							}
 						}
 						
 						if (force) {
-							await (perm1 = true);
 							await (perm = true);
 						}
 
@@ -58,15 +44,12 @@ export async function unlockAll(client: DiscordClient, role: Role, msg: Message 
 								SEND_MESSAGES: perm,
 							});
 
-							await channel.permissionOverwrites.edit(gen!, {
-								SEND_MESSAGES: perm1,
-							});
 						}
 						catch (e) {
 							console.log(e);
 						}
 
-						await console.log(perm, perm1);
+						await console.log(perm);
 
 						if (data) {
 							await client.db.get('DELETE FROM locks WHERE id = ?', [data?.id], async (err: any) => {});
@@ -89,9 +72,22 @@ export default class UnlockallCommand extends BaseCommand {
 	}
 
 	async run(client: DiscordClient, msg: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
+		if (!options.isInteraction && typeof options.args[0] === 'undefined') {
+            await msg.reply({
+                embeds: [
+                    new MessageEmbed()
+                    .setColor('#f14a60')
+                    .setDescription(`This command requires at least one argument.`)
+                ]
+            });
+
+            return;
+        }
+
 		const raid = options.isInteraction ? options.options.getBoolean('raid') === true : (options.options.indexOf('--raid') !== -1);
 
 		let role: Role = <Role> msg.guild!.roles.everyone;
+		let unlockall: string[] = [];
 		const force = options.isInteraction ? options.options.getBoolean('force') === true : (options.options.indexOf('--force') !== -1);
 
 		if (options.isInteraction) {
@@ -101,11 +97,11 @@ export default class UnlockallCommand extends BaseCommand {
 		}
 		else {
 			if ((msg as Message).mentions.roles.first()) {
-				role = await <Role> (msg as Message).mentions.roles.first();
-			}
-			else if (options.normalArgs[0] && options.normalArgs[0] !== 'everyone') {
-				role = <Role> await (msg as Message).guild?.roles.fetch(options.normalArgs[0]);
-			}
+                role = await <Role> (msg as Message).mentions.roles.first();
+            }
+            else if (options.options.includes('-r') && options.normalArgs[options.options.indexOf('-r') + 1]) {
+                role = <Role> await (msg as Message).guild?.roles.fetch(options.normalArgs[options.options.indexOf('-r') + 1]);
+            }
 
 			if (!role) {
 				await msg.reply({
@@ -119,15 +115,24 @@ export default class UnlockallCommand extends BaseCommand {
 	
 				return;
 			}
+
+			for (const a of options.args) {
+                if (/^\d+$/g.test(a)) {
+                    unlockall.push(a);
+                }
+            }
 		}
 
-		const channels: Collection <string, GuildBasedChannel> = await msg.guild!.channels.cache.filter(c => (
-            (!raid && (client.config.props[msg.guild!.id].lockall.indexOf(c.id) !== -1 || client.config.props[msg.guild!.id].lockall.indexOf(c.parent?.id) !== -1)) ||
+		let channels = raid ? await msg.guild!.channels.cache.filter(c => (
             (raid && (
 				(client.config.props[msg.guild!.id].raid.exclude && (client.config.props[msg.guild!.id].raid.channels.indexOf(c.id) === -1 && client.config.props[msg.guild!.id].raid.channels.indexOf(c.parent?.id) === -1)) || 
 				(!client.config.props[msg.guild!.id].raid.exclude && (client.config.props[msg.guild!.id].raid.channels.indexOf(c.id) !== -1 || client.config.props[msg.guild!.id].raid.channels.indexOf(c.parent?.id) !== -1))
 			))) && c.type === 'GUILD_TEXT'
-        );
+        ) : null;
+
+        if (channels === null && !raid) {
+            channels = msg.guild!.channels.cache.filter(c2 => (unlockall.includes(c2.id) || unlockall.includes(c2.parent?.id!)) && c2.type === 'GUILD_TEXT')!;
+        }
 
 		await unlockAll(client, role, msg, options, channels as Collection <string, TextChannel>, force);
 

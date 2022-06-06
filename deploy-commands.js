@@ -267,10 +267,12 @@ let commands = [
 		]).setRequired(true)),
 
 	new SlashCommandBuilder().setName('lockall').setDescription('Lock multiple channels')
+		.addStringOption(option => option.setName('channels').setDescription("The channels, must be separated by spaces").setRequired(true))
 		.addRoleOption(option => option.setName('role').setDescription("Lock channels for the given role. Default is @everyone"))
 		.addBooleanOption(option => option.setName('raid').setDescription("The raid protected channels will be locked. Default is `false`")),
 
 	new SlashCommandBuilder().setName('unlockall').setDescription('Unlock multiple channels')
+		.addStringOption(option => option.setName('channels').setDescription("The channels, must be separated by spaces").setRequired(true))
 		.addRoleOption(option => option.setName('role').setDescription("Unlock channels for the given role. Default is @everyone"))
 		.addBooleanOption(option => option.setName('force').setDescription("Force set the channel permissions to `true`"))
 		.addBooleanOption(option => option.setName('raid').setDescription("The raid protected channels will be unlocked. Default is `false`")),

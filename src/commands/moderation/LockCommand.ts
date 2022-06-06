@@ -73,17 +73,10 @@ export default class LockCommand extends BaseCommand {
 
         try {
             let dbPerms;
-            let dbPerms1;
 
             let overWrites = await channel.permissionOverwrites.cache.get(role.id);
             let allowperms = await overWrites?.allow?.has(Permissions.FLAGS.SEND_MESSAGES);
             let denyperms = await overWrites?.deny?.has(Permissions.FLAGS.SEND_MESSAGES);
-
-            let role1 = await channel.guild.roles.fetch(client.config.props[channel.guild.id].gen_role);
-
-            let overWrites1 = await channel.permissionOverwrites.cache.get(role1!.id);
-            let allowperms1 = await overWrites1?.allow?.has(Permissions.FLAGS.SEND_MESSAGES);
-            let denyperms1 = await overWrites1?.deny?.has(Permissions.FLAGS.SEND_MESSAGES);
 
             if (allowperms && !denyperms) {
                 await (dbPerms = 'ALLOW');
@@ -95,31 +88,13 @@ export default class LockCommand extends BaseCommand {
                 await (dbPerms = 'NULL');
             }
 
-            if (allowperms1 && !denyperms1) {
-                await (dbPerms1 = 'ALLOW');
-            }
-            else if (!allowperms1 && denyperms1) {
-                await (dbPerms1 = 'DENY');
-            }
-            else if (!allowperms1 && !denyperms1) {
-                await (dbPerms1 = 'NULL');
-            }
             
-            await client.db.get('INSERT INTO locks(channel_id, perms, date) VALUES(?, ?, ?)', [channel.id, dbPerms + ',' + dbPerms1, new Date().toISOString()], async (err: any) => {
+            await client.db.get('INSERT INTO locks(channel_id, perms, date) VALUES(?, ?, ?)', [channel.id, dbPerms, new Date().toISOString()], async (err: any) => {
                 if (err)
                     console.log(err);
                 
                 try {
                     await channel.permissionOverwrites.edit(role, {
-                        SEND_MESSAGES: false,
-                    });
-                }
-                catch (e) {
-                    console.log(e);
-                }
-
-                try {
-                    await channel.permissionOverwrites.edit(role1!, {
                         SEND_MESSAGES: false,
                     });
                 }

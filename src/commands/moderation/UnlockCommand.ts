@@ -73,80 +73,74 @@ export default class UnlockCommand extends BaseCommand {
         }
 
         try {
-            client.db.get('SELECT * FROM locks WHERE channel_id = ?', [channel.id], async (err: any, data: any) => {
+            await client.db.get('SELECT * FROM locks WHERE channel_id = ?', [channel.id], async (err: any, data: any) => {
                 if (data || force) {
-                    let perm1;
                     let perm;
-                    const data1 = data?.perms?.split(',');
+                    const data1 = data?.perms;
 
                     if (data1) {
-                        if (data1[0] === 'DENY') {
+                        if (data1 === 'DENY') {
                             await (perm = false);
                         }
-                        else if (data1[0] === 'NULL') {
+                        else if (data1 === 'NULL') {
                             await (perm = null);
                         }
-                        else if (data1[0] === 'ALLOW') {
+                        else if (data1 === 'ALLOW') {
                             await (perm = true);
                         }
-
-                        if (data1[1] === 'DENY') {
-                            await (perm1 = false);
-                        }
-                        else if (data1[1] === 'NULL') {
-                            await (perm1 = null);
-                        }
-                        else if (data1[1] === 'ALLOW') {
-                            await (perm1 = true);
-                        }
                     }
+
+                    console.log(data1, perm);                    
                     
                     if (force) {
-                        await (perm1 = true);
                         await (perm = true);
                     }
 
-                    await console.log(channel.name);
+                    await console.log(channel.name, role.name);
 
                     try {
                         await channel.permissionOverwrites.edit(role, {
                             SEND_MESSAGES: perm,
-                        });
-
-                        const gen = await msg.guild!.roles.fetch(client.config.props[msg.guild!.id].gen_role);
-
-                        await channel.permissionOverwrites.edit(gen!, {
-                            SEND_MESSAGES: perm1,
                         });
                     }
                     catch (e) {
                         console.log(e);
                     }
 
-                    await console.log(perm, perm1);
-
                     if (data) {
                         await client.db.get('DELETE FROM locks WHERE id = ?', [data?.id], async (err: any) => {});
                     }
                 }
-            });
-            
-            if (options.isInteraction) {
-                await msg.reply({
-                    content: "Channel unlocked.",
-                    ephemeral: true
-                });
-            }
-            else {
-                await (msg as Message).react('🔓');
-            }
+                else {
+                    await msg.reply({
+                        embeds: [
+                            new MessageEmbed()
+                            .setColor('#007bff')
+                            .setDescription(`:closed_lock_with_key: This channel wasn't locked.`)
+                        ],
+                        ephemeral: true
+                    });
 
-            await channel.send({
-                embeds: [
-                    new MessageEmbed()
-                    .setColor('#007bff')
-                    .setDescription(`:closed_lock_with_key: This channel has been unlocked.`)
-                ]
+                    return;
+                }
+
+                if (options.isInteraction) {
+                    await msg.reply({
+                        content: "Channel unlocked.",
+                        ephemeral: true
+                    });
+                }
+                else {
+                    await (msg as Message).react('🔓');
+                }
+
+                await channel.send({
+                    embeds: [
+                        new MessageEmbed()
+                        .setColor('#007bff')
+                        .setDescription(`:closed_lock_with_key: This channel has been unlocked.`)
+                    ]
+                });
             });
         }
         catch (e) {
