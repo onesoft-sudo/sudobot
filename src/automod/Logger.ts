@@ -1,6 +1,8 @@
 import { roleMention } from '@discordjs/builders';
-import { CommandInteraction, FileOptions, GuildBan, GuildMember, Message, MessageEmbed, TextChannel, User } from 'discord.js';
+import { BanOptions, CommandInteraction, FileOptions, Guild, GuildBan, GuildMember, Message, MessageEmbed, TextChannel, User } from 'discord.js';
+import ms from 'ms';
 import DiscordClient from '../client/Client';
+import Punishment from '../models/Punishment';
 import { timeProcess, timeSince } from '../utils/util';
 
 class Logger {
@@ -131,6 +133,95 @@ class Logger {
                 ]
             });
         }, ban);
+    }
+
+    logSoftBan(banOptions: BanOptions, guild: Guild, user: User, model: Punishment) {
+        this.channel(async (channel) => {
+            let r = '*No reason provided*';
+
+            const auditLog = (await guild.fetchAuditLogs({
+                limit: 1,
+                type: 'MEMBER_BAN_ADD',
+            })).entries.first();         
+
+            if (banOptions.reason) {
+                r = banOptions.reason;
+            }
+            else if (auditLog) {
+                console.log(auditLog);  
+                const { target, reason } = await auditLog;
+
+                if (target!.id === user.id && reason) {
+                    r = await reason;
+                }
+            }
+
+            await channel.send({
+                embeds: [
+                    new MessageEmbed()
+                    .setColor('#f14a60')
+                    .setTitle("A user was softbanned")
+                    .setAuthor({
+                        name: user.tag,
+                        iconURL: user.displayAvatarURL(),
+                    })
+                    .addField('Reason', r)
+                    .addField('Softbanned by', model.get().mod_tag)
+                    .addField('User ID', user.id)
+                    .setFooter({
+                        text: "Softbanned",
+                    })
+                    .setTimestamp()
+                ]
+            });
+        }, {
+            guild
+        });
+    }
+
+    logTempBan(banOptions: BanOptions, guild: Guild, user: User, model: Punishment) {
+        this.channel(async (channel) => {
+            let r = '*No reason provided*';
+
+            const auditLog = (await guild.fetchAuditLogs({
+                limit: 1,
+                type: 'MEMBER_BAN_ADD',
+            })).entries.first();         
+
+            if (banOptions.reason) {
+                r = banOptions.reason;
+            }
+            else if (auditLog) {
+                console.log(auditLog);  
+                const { target, reason } = await auditLog;
+
+                if (target!.id === user.id && reason) {
+                    r = await reason;
+                }
+            }
+
+            await channel.send({
+                embeds: [
+                    new MessageEmbed()
+                    .setColor('#f14a60')
+                    .setTitle("A user was temporarily banned")
+                    .setAuthor({
+                        name: user.tag,
+                        iconURL: user.displayAvatarURL(),
+                    })
+                    .addField('Reason', r)
+                    .addField('Banned by', model.get().mod_tag)
+                    .addField('User ID', user.id)
+                    .addField('Duration', ms(model.get().meta?.time))
+                    .setFooter({
+                        text: "Temporarily banned",
+                    })
+                    .setTimestamp()
+                ]
+            });
+        }, {
+            guild
+        });
     }
 
     logUnbanned(ban: GuildBan) {

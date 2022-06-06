@@ -15,7 +15,7 @@ export async function unmute(client: DiscordClient, user: GuildMember, d: User) 
     try {            
         await History.create(user.id, user.guild!, 'unmute', d.id, null);
 
-        const role = await user.guild!.roles.fetch(client.config.get('mute_role'));
+        const role = await user.guild!.roles.fetch(client.config.props[user.guild.id].mute_role);
         await user.roles.remove(role!);
 
         const { default: Punishment } = await import('../../models/Punishment');
@@ -30,7 +30,7 @@ export async function unmute(client: DiscordClient, user: GuildMember, d: User) 
                     const json = JSON.parse(timeout.row.params);
 
                     if (json) {
-                        if (json[1] === user.id) {
+                        if (json[1] === user.id && timeout.row.filePath.endsWith('unmute-job')) {
                             await clearTimeoutv2(timeout);
                         }
                     }

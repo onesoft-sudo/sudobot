@@ -41,10 +41,16 @@ export default class HistoryCommand extends BaseCommand {
             switch (type) {
                 case PunishmentType.BAN:
                     return 'Ban';
+                case PunishmentType.SOFTBAN:
+                    return 'Soft Ban';
+                case PunishmentType.TEMPBAN:
+                    return 'Temporary Ban';
                 case PunishmentType.BEAN:
                     return 'Bean';
                 case PunishmentType.MUTE:
                     return 'Mute';
+                case PunishmentType.HARDMUTE:
+                    return 'Hardmute';
                 case PunishmentType.KICK:
                     return 'Kick';
                 case PunishmentType.WARNING:

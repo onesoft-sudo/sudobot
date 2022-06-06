@@ -25,7 +25,7 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
                     const json = JSON.parse(timeout.row.params);
 
                     if (json) {
-                        if (json[1] === user.id) {
+                        if (json[1] === user.id && timeout.row.filePath.endsWith('unmute-job')) {
                             await clearTimeoutv2(timeout);
                         }
                     }
