@@ -85,7 +85,7 @@ export default class HistoryCommand extends BaseCommand {
             // }
 
             if (log.get().meta) {
-                const json = JSON.parse(log.get().meta);
+                const json = typeof log.get().meta === 'string' ? JSON.parse(log.get().meta) : log.get().meta;
 
                 if (Object.keys(json).length > 0) {
                     str += "Additional Attributes:\n```\n";
