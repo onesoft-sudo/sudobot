@@ -158,9 +158,13 @@ export default class MessageFilter {
     
                 const content = this.config.invite_message.replace(':mention:', `<@${msg.author.id}>`);
     
-                await msg.channel.send({
+                const message = await msg.channel.send({
                     content
                 });
+
+                setTimeout(async () => {
+                    await message.delete();
+                }, 10000);
     
                 try {
                     const channel = <TextChannel> await msg.guild!.channels.fetch(this.client.config.get('logging_channel'));

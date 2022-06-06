@@ -11,19 +11,40 @@ import ms from 'ms';
 
 import PunishmentType from '../../types/PunishmentType';
 
-export async function unmute(client: DiscordClient, user: GuildMember, msg: Message | CommandInteraction, d: User) {
+export async function unmute(client: DiscordClient, user: GuildMember, d: User) {
     try {            
-        await History.create(user.id, msg.guild!, 'unmute', msg.member!.user.id, null);
+        await History.create(user.id, user.guild!, 'unmute', d.id, null);
 
-        const role = await msg.guild!.roles.fetch(client.config.get('mute_role'));
+        const role = await user.guild!.roles.fetch(client.config.get('mute_role'));
         await user.roles.remove(role!);
 
         const { default: Punishment } = await import('../../models/Punishment');
 
+        const { getTimeouts, clearTimeoutv2 } = await import('../../utils/setTimeout');
+
+        const timeouts = getTimeouts();
+        
+        for (const timeout of timeouts.values()) {
+            if (timeout.row.params) {
+                try {
+                    const json = JSON.parse(timeout.row.params);
+
+                    if (json) {
+                        if (json[1] === user.id) {
+                            await clearTimeoutv2(timeout);
+                        }
+                    }
+                }
+                catch (e) {
+                    console.log(e);                    
+                }
+            }
+        }
+
         await Punishment.create({
             type: PunishmentType.UNMUTE,
             user_id: user.id,
-            guild_id: msg.guild!.id,
+            guild_id: user.guild!.id,
             mod_id: d.id,
             mod_tag: d.tag,
         });
@@ -32,8 +53,8 @@ export async function unmute(client: DiscordClient, user: GuildMember, msg: Mess
             embeds: [
                 new MessageEmbed()
                 .setAuthor({
-                    iconURL: <string> msg.guild!.iconURL(),
-                    name: `\tYou have been unmuted in ${msg.guild!.name}`
+                    iconURL: <string> user.guild!.iconURL(),
+                    name: `\tYou have been unmuted in ${user.guild!.name}`
                 })
             ]
         });
@@ -107,7 +128,7 @@ export default class UnmuteCommand extends BaseCommand {
             console.log(user);
         }
 
-        await unmute(client, user, msg, msg.member!.user as User);
+        await unmute(client, user, msg.member!.user as User);
 
         await msg.reply({
             embeds: [

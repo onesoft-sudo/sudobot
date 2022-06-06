@@ -15,36 +15,38 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
     try {
         const { default: Punishment } = await import('../../models/Punishment');
         
-        if (dateTime) {
+        const { getTimeouts, clearTimeoutv2, setTimeoutv2 } = await import('../../utils/setTimeout');
+
+        const timeouts = getTimeouts();
+        
+        for (const timeout of timeouts.values()) {
+            if (timeout.row.params) {
+                try {
+                    const json = JSON.parse(timeout.row.params);
+
+                    if (json) {
+                        if (json[1] === user.id) {
+                            await clearTimeoutv2(timeout);
+                        }
+                    }
+                }
+                catch (e) {
+                    console.log(e);                    
+                }
+            }
+        }
+
+        if (dateTime && timeInterval) {
             await client.db.get("INSERT INTO unmutes(user_id, guild_id, time) VALUES(?, ?, ?)", [user.id, msg.guild!.id, new Date(dateTime).toISOString()], async (err: any) => {
                 if (err) 
                     console.log(err);
                 
                     console.log('A timeout has been set.');
 
-                    setTimeout(async () => {
-                        await client.db.get("SELECT * FROM unmutes WHERE time = ?", [new Date(dateTime!).toISOString()], async (err: any, data: any) => {
-                            if (err)
-                                console.log(err);
-                            
-                            if (data) {
-                                await client.db.get('DELETE FROM unmutes WHERE id = ?', [data.id], async (err: any) => {
-                                    let guild = await client.guilds.cache.find(g => g.id === data.guild_id);
-                                    let member = await guild?.members.cache.find(m => m.id === data.user_id);
-        
-                                    if (member) {
-                                        await unmute(client, member, msg, client.user!);
-                                        await History.create(member.id, msg.guild!, 'unmute', client.user!.id, null);
-                                    }
-        
-                                    console.log(data);
-                                });
-                            }
-                        });
-                    }, timeInterval);
+                    await setTimeoutv2('unmute-job', timeInterval, msg.guild!.id, `unmute ${user.id}`, msg.guild!.id, user.id);
             });
         }
-
+        
         const role = await msg.guild!.roles.fetch(client.config.get('mute_role'));
         await user.roles.add(role!);
 
