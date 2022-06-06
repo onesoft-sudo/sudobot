@@ -12,13 +12,13 @@ export default class SyncDBCommand extends BaseCLICommand {
     }
 
     async run(client: DiscordClient, argv: string[], args: string[]) {
-        const files = await readdir(path.join(client.rootdir, '/src/models'));
+        const files = await readdir(path.join(__dirname, '/../../models'));
 
         for await (const file of files) {
             if (file === '..' || file === '.')
                 continue;
             
-            const { default: model } = await import(path.join(client.rootdir, '/src/models', file));
+            const { default: model } = await import(path.join(__dirname, '/../../models', file));
             await model.sync({
                 logging: console.log
             });
