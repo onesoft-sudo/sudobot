@@ -10,7 +10,7 @@ Use the `-ban` command to ban a user, regardless if they are in the server or no
 
 **Options**: 
 
-- `-d`: Specify the how many days old messages to delete. Must be in range of 0-9. Default is - "Don't delete any".
+- `-d`: Specify the how many days old messages to delete. Must be in range of 0-7. Default is - "Don't delete any".
 
 ##### Slash Command
 ```
