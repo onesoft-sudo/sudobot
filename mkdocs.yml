@@ -41,7 +41,7 @@ extra:
 
 plugins:
   - social
-    cards: true
+      cards: true
 
 markdown_extensions:
   - admonition
