@@ -1,5 +1,4 @@
 site_name: SudoBot Docs
-site_url: https://virtual-designer.github.io/sudobot
 
 theme: 
   name: 'material'
@@ -39,10 +38,6 @@ extra_css:
 extra:
   version:
     provider: mike
-
-plugins:
-  - social:
-      cards: true
 
 markdown_extensions:
   - admonition
