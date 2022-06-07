@@ -191,10 +191,20 @@ export default class ClearCommand extends BaseCommand {
         }
 
         setTimeout(async () => {
-            if (msg instanceof Message)
-                await msg.delete();
-            
-            await message!.delete();
+            try {
+                if (msg instanceof Message)
+                    await msg.delete();
+            }
+            catch (e) {
+                console.log(e);                
+            }
+
+            try {
+                await message!.delete();
+            }
+            catch (e) {
+                console.log(e);                
+            }
         }, 5500);
 
         (global as any).deletingMessages = false;

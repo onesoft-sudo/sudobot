@@ -178,7 +178,12 @@ export default class MessageFilter {
                 });
 
                 setTimeout(async () => {
-                    await message.delete();
+                    try {
+                        await message.delete();
+                    }
+                    catch (e) {
+                        console.log(e);                        
+                    }
                 }, 10000);
     
                 try {
