@@ -3,14 +3,10 @@
 <html lang="en" class="no-js">
   <head>
     
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width,initial-scale=1">
-      
-      
-      
-      <link rel="icon" href="../../assets/images/sudobot.png">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.3">
-    
+  <meta name="description" content="SudoBot Docs. The ultimate solution for discord server moderation.">
+  <meta name="og:description" content="SudoBot Docs. The ultimate solution for discord server moderation.">
+  <meta name="og:image" content="None/assets/images/sudobot.png">
+
     
       
         <title>Other moderation commands - SudoBot Docs</title>
@@ -464,6 +460,40 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#beaning-members" class="md-nav__link">
+    Beaning members
+  </a>
+  
+    <nav class="md-nav" aria-label="Beaning members">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#legacy-command_1" class="md-nav__link">
+    Legacy Command
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#slash-command_1" class="md-nav__link">
+    Slash Command
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples_1" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -481,6 +511,20 @@
     <li class="md-nav__item">
       <a href="../taking_notes/" class="md-nav__link">
         Taking notes for a user
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../warning_members/" class="md-nav__link">
+        Warning members
       </a>
     </li>
   
@@ -524,6 +568,20 @@
 -kick 34738227536248
 -kick @Someone Spamming
 -kick 34738227536248 Spamming
+</code></pre></div>
+<h2 id="beaning-members">Beaning members<a class="headerlink" href="#beaning-members" title="Permanent link">#</a></h2>
+<p>Beaning members actually do nothing except sending a message to the user that says <code>You've been beaned</code>. This can be used for fun purposes, or a moderation reminder.</p>
+<h5 id="legacy-command_1">Legacy Command<a class="headerlink" href="#legacy-command_1" title="Permanent link">#</a></h5>
+<div class="highlight"><pre><span></span><code>-bean &lt;UserID|UserMention|UserTag&gt; [Reason]
+</code></pre></div>
+<h5 id="slash-command_1">Slash Command<a class="headerlink" href="#slash-command_1" title="Permanent link">#</a></h5>
+<div class="highlight"><pre><span></span><code>/bean &lt;Member&gt; [Reason]
+</code></pre></div>
+<h4 id="examples_1">Examples<a class="headerlink" href="#examples_1" title="Permanent link">#</a></h4>
+<div class="highlight"><pre><span></span><code>-bean @Someone
+-bean 34738227536248
+-bean @Someone Spamming
+-bean 34738227536248 Spamming
 </code></pre></div>
 
               
