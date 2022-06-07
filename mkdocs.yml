@@ -1,4 +1,5 @@
 site_name: SudoBot Docs
+
 theme: 
   name: 'material'
   logo: 'assets/images/sudobot.png'
