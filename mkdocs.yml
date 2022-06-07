@@ -2,6 +2,7 @@ site_name: SudoBot Docs
 
 theme: 
   name: 'material'
+  custom_dir: docs/overrides
   logo: 'assets/images/sudobot.png'
   favicon:
     'assets/images/sudobot.png'
