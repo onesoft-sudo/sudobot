@@ -2,6 +2,14 @@
 
 {% block site_meta %}
   <meta name="description" content="SudoBot Docs. The ultimate solution for discord server moderation.">
+  {% if page and page.meta and page.meta.title %}
+    <meta name="og:title" content="{{ page.meta.title }} - {{ config.site_name }}">
+  {% elif page and page.title and not page.is_homepage %}
+    <meta name="og:title" content="{{ page.title | striptags }} - {{ config.site_name }}">
+  {% else %}
+    <meta name="og:title" content="{{ config.site_name }}">
+  {% endif %}
   <meta name="og:description" content="SudoBot Docs. The ultimate solution for discord server moderation.">
   <meta name="og:image" content="{{ page.canonical_url }}/assets/images/sudobot.png">
+  <meta name="og:color" content="#007bff">
 {% endblock %}
