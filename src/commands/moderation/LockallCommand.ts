@@ -83,7 +83,7 @@ export default class LockallCommand extends BaseCommand {
         const raid = options.isInteraction ? options.options.getBoolean('raid') === true : (options.options.indexOf('--raid') !== -1);
 
         let role: Role = <Role> msg.guild!.roles.everyone;
-        let lockall: string[] = [];
+        let lockall: string[] = [], lockallChannels: Collection<string, TextChannel> = new Collection();
         // const force = options.isInteraction ? options.options.getBoolean('force') === true : (options.options.indexOf('--force') !== -1);
 
         if (options.isInteraction) {
@@ -114,9 +114,18 @@ export default class LockallCommand extends BaseCommand {
                 return;
             }
 
-            for (const a of options.args) {
-                if (/^\d+$/g.test(a)) {
-                    lockall.push(a);
+            if (!raid) {
+                for (const a of options.args) {
+                    if (/^\d+$/g.test(a)) {
+                        lockall.push(a);
+                    }
+                }
+    
+                if ((msg as Message).mentions.channels.first()) {
+                    (msg as Message).mentions.channels.forEach(c => {
+                        if (c instanceof TextChannel)
+                            lockallChannels.set(c.id, c);
+                    });
                 }
             }
         }
@@ -130,6 +139,7 @@ export default class LockallCommand extends BaseCommand {
 
         if (channels === null && !raid) {
             channels = msg.guild!.channels.cache.filter(c2 => (lockall.includes(c2.id) || lockall.includes(c2.parent?.id!)) && c2.type === 'GUILD_TEXT')!;
+            channels = channels.merge(lockallChannels, c => ({ keep: true, value: c }), c => ({ keep: true, value: c }), (c1, c2) => ({ keep: true, value: c2 }));
         }
 
 		await lockAll(client, role, channels as Collection <string, TextChannel>, true);

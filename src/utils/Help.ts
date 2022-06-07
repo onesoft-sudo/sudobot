@@ -52,6 +52,16 @@ export default <CommandHelpData[]> [
         legacyCommand: true
     },
     {
+        name: 'appeal',
+        shortBrief: "Send a message to staff members about a punishment appeal.",
+        description: null,
+        structure: "",
+        example: "`%%appeal`",
+        notes: null,
+        slashCommand: true,
+        legacyCommand: false
+    },
+    {
         name: 'avatar',
         shortBrief: "Show someone's avatar.",
         description: null,
@@ -265,11 +275,11 @@ export default <CommandHelpData[]> [
         name: 'lockall',
         shortBrief: "Lock all the channels given in the configuration.",
         description: "Makes the given channels read-only for the general members.",
-        structure: "[...options]",
-        example: "`%%lockall --no-send\n`%%lockall`\n`%%lockall --everyone`",
+        structure: "<...ChannelMention|ChannelIDs> [--raid] [-r=ROLEMENTION|ROLEID]",
+        example: "`%%lockall 2572562578247841786\n`%%lockall 2572562578247841786 2572562578247841782 2572562578247841783`\n`%%lockall 2572562578247841786 2572562578247841785 -r @General`",
         notes: null,
         options: {
-            "--no-send": "Do not send a confirmation message to the locked channel",
+            "--raid": "Lock all raid protected channels",
         },
         slashCommand: true,
         legacyCommand: true
@@ -378,6 +388,16 @@ export default <CommandHelpData[]> [
         legacyCommand: true
     },
     {
+        name: 'rolelist',
+        shortBrief: 'List all roles in the server',
+        description: null,
+        structure: "[Page] [Role]",
+        example: "`%%rolelist`",
+        notes: null,
+        slashCommand: true,
+        legacyCommand: false
+    },
+    {
         name: 'schedule',
         shortBrief: "Echo (re-send) a message after the given time.",
         description: "Re-send a message from the bot automatically after the given time interval.",
@@ -408,6 +428,16 @@ export default <CommandHelpData[]> [
         legacyCommand: true
     },
     {
+        name: 'softban',
+        shortBrief: "Softban a user.",
+        description: "A softban means banning and unbanning a user immediately so that their messages gets deleted.",
+        structure: "<UserID|UserTag|UserMention> [-d=DAYS] [Reason]",
+        example: "`%%softban @Someone`\n`%%softban 44347362235774742 Hello world`",
+        notes: null,
+        slashCommand: true,
+        legacyCommand: true
+    },
+    {
         name: 'stats',
         shortBrief: "Show the server stats.",
         description: null,
@@ -423,6 +453,16 @@ export default <CommandHelpData[]> [
         description: null,
         structure: "",
         example: "`%%system",
+        notes: null,
+        slashCommand: true,
+        legacyCommand: true
+    },
+    {
+        name: 'tempban',
+        shortBrief: "Temporarily ban a user.",
+        description: null,
+        structure: "<UserID|UserTag|UserMention> <Time> [-d=DAYS] [Reason]",
+        example: "`%%softban @Someone 20m`\n`%%softban 44347362235774742 50m Hello world`",
         notes: null,
         slashCommand: true,
         legacyCommand: true
@@ -453,13 +493,12 @@ export default <CommandHelpData[]> [
     {
         name: 'unlockall',
         shortBrief: "Unlock all the channels given in the configuration.",
-        description: "Makes the given channels writable for the general members.",
+        description: "<...ChannelMention|ChannelIDs> [--raid] [-r=ROLEMENTION|ROLEID]",
         structure: "[...options]",
-        example: "`%%unlockall --no-send\n`%%unlockall`\n`%%unlockall --everyone`",
+        example: "`%%unlockall --raid\n`%%unlockall 348764381911364631 634894637314679163795`",
         notes: null,
         options: {
-            "--no-send": "Do not send a confirmation message to the locked channel",
-            "--raid": "Unlock all Raid-locked channels"
+            "--raid": "Unlock all Raid-protected channels"
         },
         slashCommand: true,
         legacyCommand: true
@@ -485,33 +524,19 @@ export default <CommandHelpData[]> [
         legacyCommand: true
     },
     {
-        name: 'warndel',
-        shortBrief: "Delete a warning.",
-        description: null,
-        structure: "<ID>",
-        example: "`%%warndel 39`",
-        notes: null,
-        slashCommand: true,
-        legacyCommand: true
-    },
-    {
         name: 'warning',
-        shortBrief: "Show a warning.",
+        shortBrief: "Operations with warnings.",
         description: null,
         structure: "<ID>",
-        example: "`%%warning 39`",
+        example: "`%%warning list @Someone`\n`%%warning clear @Someone`\n`%%warning remove 24`\n`%%warning view 35`",
         notes: null,
         slashCommand: true,
-        legacyCommand: true
-    },
-    {
-        name: 'warnings',
-        shortBrief: "Show all warnings.",
-        description: "Show all warnings in this server. Passing an user will only show their warnings.",
-        structure: "[UserId|UserTag|Mention]",
-        example: "`%%warnings`\n`%%warnings 948489127957979253978538`",
-        notes: null,
-        slashCommand: true,
-        legacyCommand: true
+        legacyCommand: true,
+        subcommands: {
+            "list": "List all warnings for a user",
+            "clear": "Clear all warnings for a user",
+            "remove": "Remove a warning by ID",
+            "view": "View information about a warning by ID"
+        }
     },
 ]

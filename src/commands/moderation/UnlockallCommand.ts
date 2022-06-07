@@ -87,7 +87,7 @@ export default class UnlockallCommand extends BaseCommand {
 		const raid = options.isInteraction ? options.options.getBoolean('raid') === true : (options.options.indexOf('--raid') !== -1);
 
 		let role: Role = <Role> msg.guild!.roles.everyone;
-		let unlockall: string[] = [];
+		let unlockall: string[] = [], unlockallChannels: Collection<string, TextChannel> = new Collection();
 		const force = options.isInteraction ? options.options.getBoolean('force') === true : (options.options.indexOf('--force') !== -1);
 
 		if (options.isInteraction) {
@@ -116,9 +116,18 @@ export default class UnlockallCommand extends BaseCommand {
 				return;
 			}
 
-			for (const a of options.args) {
-                if (/^\d+$/g.test(a)) {
-                    unlockall.push(a);
+			if (!raid) {
+                for (const a of options.args) {
+                    if (/^\d+$/g.test(a)) {
+                        unlockall.push(a);
+                    }
+                }
+    
+                if ((msg as Message).mentions.channels.first()) {
+                    (msg as Message).mentions.channels.forEach(c => {
+                        if (c instanceof TextChannel)
+                            unlockallChannels.set(c.id, c);
+                    });
                 }
             }
 		}
@@ -132,6 +141,7 @@ export default class UnlockallCommand extends BaseCommand {
 
         if (channels === null && !raid) {
             channels = msg.guild!.channels.cache.filter(c2 => (unlockall.includes(c2.id) || unlockall.includes(c2.parent?.id!)) && c2.type === 'GUILD_TEXT')!;
+			channels = channels.merge(unlockallChannels, c => ({ keep: true, value: c }), c => ({ keep: true, value: c }), (c1, c2) => ({ keep: true, value: c2 }));
         }
 
 		await unlockAll(client, role, msg, options, channels as Collection <string, TextChannel>, force);
