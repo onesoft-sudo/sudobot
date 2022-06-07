@@ -142,6 +142,21 @@ export default class MessageFilter {
         return true;
     }
 
+    async filterDomains({ content, channel: { id } }: Message) {
+        if (this.client.config.get('filters').domain_enabled && !this.client.config.get('filters').domain_excluded.includes(id)) {
+            for await (const domain of this.client.config.get('filters').domains) {
+                const pattern = `((http|https|ftp|blob)\:(\/)?(\/)?)?${domain.replace('.', '\\.').replace('*', '[a-zA-Z0-9-_\\.]+')}`;               
+                const regex = new RegExp(pattern, 'gm');
+
+                if (regex.test(content)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     async start(msg: Message) {
         this.load();
 
@@ -296,6 +311,28 @@ export default class MessageFilter {
                         iconURL: msg.author.displayAvatarURL()
                     })
                     .setTitle(`Mass mention detected`)
+                    .setDescription(msg.content)
+                    .setFooter({
+                        text: "Deleted"
+                    })
+                    .setTimestamp()
+                ]
+            });
+        }
+        else if ((await this.filterDomains(msg))) {
+            await msg.delete();
+
+            const channel = <TextChannel> await msg.guild!.channels.fetch(this.client.config.get('logging_channel'));
+
+            await channel!.send({
+                embeds: [
+                    new MessageEmbed()
+                    .setColor('#f14a60')
+                    .setAuthor({
+                        name: msg.author.tag,
+                        iconURL: msg.author.displayAvatarURL()
+                    })
+                    .setTitle(`Restricted domains detected`)
                     .setDescription(msg.content)
                     .setFooter({
                         text: "Deleted"

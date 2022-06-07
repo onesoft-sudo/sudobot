@@ -190,6 +190,13 @@ export default class ClearCommand extends BaseCommand {
             await message!.edit(messageOptions);
         }
 
+        setTimeout(async () => {
+            if (msg instanceof Message)
+                await msg.delete();
+            
+            await message!.delete();
+        }, 5500);
+
         (global as any).deletingMessages = false;
     }
 }
