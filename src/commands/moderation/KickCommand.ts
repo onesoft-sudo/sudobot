@@ -1,4 +1,4 @@
-import { BanOptions, CommandInteraction, GuildMember, Interaction, Message, User } from 'discord.js';
+import { BanOptions, CommandInteraction, ContextMenuInteraction, GuildMember, Interaction, Message, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -12,12 +12,13 @@ import PunishmentType from '../../types/PunishmentType';
 
 export default class KickCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    supportsContextMenu: boolean = true;
 
     constructor() {
-        super('kick', 'moderation', []);
+        super('kick', 'moderation', ['Kick']);
     }
 
-    async run(client: DiscordClient, msg: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
+    async run(client: DiscordClient, msg: Message | CommandInteraction | ContextMenuInteraction, options: CommandOptions | InteractionOptions) {
         if (!options.isInteraction && typeof options.args[0] === 'undefined') {
             await msg.reply({
                 embeds: [
@@ -34,7 +35,7 @@ export default class KickCommand extends BaseCommand {
         let reason: string | undefined;
 
         if (options.isInteraction) {
-            user = await <GuildMember> options.options.getMember('member');
+            user = await <GuildMember> (msg instanceof ContextMenuInteraction ? options.options.getMember('user') : options.options.getMember('member'));
 
             if (!user) {
                 await msg.reply({

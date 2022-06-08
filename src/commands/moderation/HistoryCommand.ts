@@ -1,4 +1,4 @@
-import { BanOptions, CommandInteraction, EmojiIdentifierResolvable, GuildMember, Interaction, InteractionCollector, Message, MessageActionRow, MessageButton, MessageOptions, ReplyOptions, TextChannel, User } from 'discord.js';
+import { BanOptions, CommandInteraction, ContextMenuInteraction, EmojiIdentifierResolvable, GuildMember, Interaction, InteractionCollector, Message, MessageActionRow, MessageButton, MessageOptions, ReplyOptions, TextChannel, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -13,9 +13,10 @@ import PunishmentType from '../../types/PunishmentType';
 
 export default class HistoryCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    supportsContextMenu = true;
 
     constructor() {
-        super('history', 'moderation', []);
+        super('history', 'moderation', ['Moderation History']);
     }
 
     async genEmbed(client: DiscordClient, msg: Message | Interaction, user: User, page: number = 1) {
@@ -259,9 +260,16 @@ export default class HistoryCommand extends BaseCommand {
 
         collector.on('end', async () => {
             try {
-                await message.edit({
-                    components: []
-                });
+                if (msg instanceof ContextMenuInteraction) {
+                    await msg.editReply({
+                        components: []
+                    });
+                }
+                else {
+                    await message.edit({
+                        components: []
+                    });
+                }
             }
             catch (e) {
                 console.log(e);                

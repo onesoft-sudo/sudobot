@@ -11,9 +11,10 @@ import PunishmentType from '../../types/PunishmentType';
 
 export default class BanCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    supportsContextMenu: boolean = true;
 
     constructor() {
-        super('ban', 'moderation', []);
+        super('ban', 'moderation', ['Ban']);
     }
 
     async run(client: DiscordClient, msg: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {

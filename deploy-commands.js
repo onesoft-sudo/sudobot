@@ -1,13 +1,13 @@
 #!/bin/node
 
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder, ContextMenuCommandBuilder } = require('@discordjs/builders');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const { config } = require('dotenv');
 const { existsSync } = require('fs');
-const { Permissions } = require('discord.js');
+const { Permissions, ApplicationCommand } = require('discord.js');
 const path = require('path');
-const { ActivityType } = require('discord-api-types/v10');
+const { ActivityType, ApplicationCommandType } = require('discord-api-types/v10');
 
 if (existsSync(path.join(__dirname, '.env'))) {
     config();
@@ -302,8 +302,18 @@ let commands = [
 	new SlashCommandBuilder().setName('appeal').setDescription('Send us a messages about a punishment appeal')
 ].map(command => command.toJSON());
 
+let contextMenuCommands = [
+	new ContextMenuCommandBuilder().setName('Moderation History').setType(ApplicationCommandType.User),
+	new ContextMenuCommandBuilder().setName('Ban').setType(ApplicationCommandType.User),
+	new ContextMenuCommandBuilder().setName('Bean').setType(ApplicationCommandType.User),
+	new ContextMenuCommandBuilder().setName('Kick').setType(ApplicationCommandType.User),
+].map(command => command.toJSON());
+
+commands = commands.concat(contextMenuCommands);
+
 if (process.argv.includes('--clear')) {
 	commands = [];
+	contextMenuCommands = [];
 }
 
 const rest = new REST({ version: '9' }).setToken(TOKEN);

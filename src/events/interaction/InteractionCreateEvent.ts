@@ -21,14 +21,14 @@ export default class InteractionCreateEvent extends BaseEvent {
             return;
         }
 
-        if (interaction.isCommand()) {
+        if (interaction.isCommand() || interaction.isContextMenu()) {
             await client.setMessage(interaction);
 
             const { commandName } = interaction;
 
             const command = await client.commands.get(commandName);
 
-            if (command && command.supportsInteractions) {
+            if (command && ((interaction.isCommand() && command.supportsInteractions) || (interaction.isContextMenu() && command.supportsContextMenu))) {
                 const allowed = await client.auth.verify(interaction.member! as GuildMember, command);
 
                 if (!allowed) {

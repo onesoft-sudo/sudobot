@@ -1,4 +1,4 @@
-import { CommandInteraction, GuildMember, Message, User } from "discord.js";
+import { CommandInteraction, ContextMenuInteraction, GuildMember, Message, User } from "discord.js";
 import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
 import CommandOptions from "../types/CommandOptions";
@@ -23,7 +23,7 @@ export default class Cooldown {
         this.config = {} as CooldownConfig;
     }
 
-    async start(msg: Message | CommandInteraction, options: CommandOptions | InteractionOptions): Promise <boolean> {
+    async start(msg: Message | CommandInteraction | ContextMenuInteraction, options: CommandOptions | InteractionOptions): Promise <boolean> {
         this.config = this.client.config.get('cooldown');
 
         const { cmdName } = options;

@@ -1,5 +1,5 @@
 import { ModalSubmitInteraction } from 'discord-modals';
-import { AutocompleteInteraction, CommandInteraction, CommandInteractionOption, Interaction, Message, MessageEditOptions, MessageOptions, MessagePayload, WebhookEditMessageOptions } from 'discord.js';
+import { AutocompleteInteraction, CommandInteraction, CommandInteractionOption, ContextMenuInteraction, Interaction, Message, MessageEditOptions, MessageOptions, MessagePayload, WebhookEditMessageOptions } from 'discord.js';
 import DiscordClient from '../../client/Client';
 import AutoCompleteOptions from '../../types/AutoCompleteOptions';
 import CommandOptions from '../../types/CommandOptions';
@@ -8,6 +8,7 @@ import InteractionOptions from '../../types/InteractionOptions';
 export default abstract class BaseCommand {
     supportsInteractions: boolean = false;
     supportsLegacy: boolean = true;
+    supportsContextMenu: boolean = false;
     coolDown?: number;
     ownerOnly: boolean = false;
 
@@ -39,7 +40,7 @@ export default abstract class BaseCommand {
         
     }
 
-    async deferReply(msg: Message | CommandInteraction, options: MessageOptions | string | MessagePayload | WebhookEditMessageOptions, edit: boolean = false): Promise<Message | CommandInteraction> {
+    async deferReply(msg: Message | CommandInteraction | ContextMenuInteraction, options: MessageOptions | string | MessagePayload | WebhookEditMessageOptions, edit: boolean = false): Promise<Message | CommandInteraction> {
         if (msg instanceof Message) {
             return await msg[edit ? 'edit' : 'reply'](options as (MessageOptions & MessageEditOptions));
         }
