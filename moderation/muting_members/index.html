@@ -554,8 +554,12 @@
 <div class="highlight"><pre><span></span><code>-mute &lt;UserID|UserMention|UserTag&gt; [-t=TIME] [Reason] 
 </code></pre></div>
 <h5 id="slash-command">Slash Command<a class="headerlink" href="#slash-command" title="Permanent link">#</a></h5>
-<div class="highlight"><pre><span></span><code>/mute &lt;Member&gt; [Time] [Reason]
+<div class="highlight"><pre><span></span><code>/mute &lt;Member&gt; [Time] [Reason] [Hardmute]
 </code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Hardmuting means not only muting but also taking out all other roles except the muted role. They'll be given back when the unmute command is run or the mute duration expires.</p>
+</div>
 <h4 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">#</a></h4>
 <div class="highlight"><pre><span></span><code>-mute @Someone
 -mute 347382275362482
