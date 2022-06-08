@@ -60,7 +60,7 @@ export default class Cooldown {
                 embeds: [
                     new MessageEmbed()
                     .setColor('#f14a60')
-                    .setDescription(':clock: Please try again in ' + timeProcess((time - ((new Date()).getTime() - this.cooldownTimes[index].getTime())) / 1000))
+                    .setDescription(':clock: Please try again in ' + timeProcess(((time - ((new Date()).getTime() - this.cooldownTimes[index].getTime())) + 1) / 1000))
                 ]
             });
 

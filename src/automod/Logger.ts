@@ -319,7 +319,7 @@ class Logger {
         }, member);
     }
 
-    logMute(member: GuildMember, reason: string, timeMs: number | null | undefined, d: User) {
+    logMute(member: GuildMember, reason: string, timeMs: number | null | undefined, d: User, hard: boolean = true) {
         this.channel(async (channel) => {
             await channel.send({
                 embeds: [
@@ -334,6 +334,7 @@ class Logger {
                     .addField('Muted by', d.tag)
                     .addField('Duration Until', typeof timeMs === 'number' ? `${new Date((timeMs / 1000) + Date.now()).toLocaleString()} (${timeProcess(timeMs / 1000)})` : "*No duration set*")
                     .addField('User ID', member.user.id)
+                    .addField('Hardmute', hard ? 'Yes' : 'No')
                     .setFooter({
                         text: "Muted",
                     })

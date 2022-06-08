@@ -16,11 +16,40 @@ export async function unmute(client: DiscordClient, user: GuildMember, d: User) 
         await History.create(user.id, user.guild!, 'unmute', d.id, null);
 
         const role = await user.guild!.roles.fetch(client.config.props[user.guild.id].mute_role);
-        await user.roles.remove(role!);
+        await user.roles.remove(role!, 'Unmuting user');
 
         const { default: Punishment } = await import('../../models/Punishment');
 
         const { getTimeouts, clearTimeoutv2 } = await import('../../utils/setTimeout');
+
+        const { default: Hardmute } = await import("../../models/Hardmute");
+
+        const hardmute = await Hardmute.findOne({
+            where: {
+                user_id: user.id,
+                guild_id: user.guild.id,
+            },
+            order: [
+                ['id', 'DESC']
+            ]
+        });
+
+        if (hardmute) {
+            for await (const roleID of hardmute.get().roles) {
+                try {
+                    const role = await user.guild.roles.fetch(roleID);
+
+                    if (role) {
+                        await user.roles.add(role, 'Adding the roles which were removed due to hardmute');
+                    }
+                }
+                catch (e) {
+                    console.log(e);                    
+                }
+            }
+
+            await hardmute.destroy();
+        }
 
         const timeouts = getTimeouts();
         
@@ -86,13 +115,16 @@ export default class UnmuteCommand extends BaseCommand {
             return;
         }
 
+        if (msg instanceof CommandInteraction)  
+            await msg.deferReply();
+
         let user: GuildMember;
 
         if (options.isInteraction) {
             user = await <GuildMember> options.options.getMember('member');
 
             if (!user) {
-                await msg.reply({
+                await this.deferReply(msg, {
                     embeds: [
                         new MessageEmbed()
                         .setColor('#f14a60')
@@ -114,7 +146,7 @@ export default class UnmuteCommand extends BaseCommand {
                 user = user2;
             }
             catch (e) {
-                await msg.reply({
+                await this.deferReply(msg, {
                     embeds: [
                         new MessageEmbed()
                         .setColor('#f14a60')
@@ -130,7 +162,7 @@ export default class UnmuteCommand extends BaseCommand {
 
         await unmute(client, user, msg.member!.user as User);
 
-        await msg.reply({
+        await this.deferReply(msg, {
             embeds: [
                 new MessageEmbed()
                 .setAuthor({

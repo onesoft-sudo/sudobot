@@ -11,7 +11,7 @@ import ms from 'ms';
 import { unmute } from './UnmuteCommand';
 import PunishmentType from '../../types/PunishmentType';
 
-export async function mute(client: DiscordClient, dateTime: number | undefined, user: GuildMember, msg: Message | CommandInteraction, timeInterval: number | undefined, reason: string | undefined) {
+export async function mute(client: DiscordClient, dateTime: number | undefined, user: GuildMember, msg: Message | CommandInteraction, timeInterval: number | undefined, reason: string | undefined, hard: boolean = false) {
     try {
         const { default: Punishment } = await import('../../models/Punishment');
         
@@ -47,11 +47,23 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
             });
         }
         
+        if (hard) {
+            const { default: Hardmute } = await import("../../models/Hardmute");
+            const roles = await user.roles.cache.filter(r => r.id !== msg.guild!.id);
+            await user.roles.remove(roles, reason);
+
+            await Hardmute.create({
+                user_id: user.id,
+                roles: roles.map(role => role.id),
+                guild_id: msg.guild!.id,
+            });
+        }
+
         const role = await msg.guild!.roles.fetch(client.config.get('mute_role'));
-        await user.roles.add(role!);
+        await user.roles.add(role!, reason);
 
         await Punishment.create({
-            type: PunishmentType.MUTE,
+            type: hard ? PunishmentType.HARDMUTE : PunishmentType.MUTE,
             user_id: user.id,
             guild_id: msg.guild!.id,
             mod_id: msg.member!.user.id,
@@ -61,9 +73,8 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
                 time: timeInterval ? ms(timeInterval) : undefined
             }
         });
-
-        await History.create(user.id, msg.guild!, 'mute', msg.member!.user.id, typeof reason === 'undefined' ? null : reason);
-        await client.logger.logMute(user, reason === undefined || reason.trim() === '' ? "*No reason provided*" : reason, timeInterval, msg.member!.user as User);
+        
+        await client.logger.logMute(user, reason === undefined || reason.trim() === '' ? "*No reason provided*" : reason, timeInterval, msg.member!.user as User, hard);
         await user.send({
             embeds: [
                 new MessageEmbed()
@@ -78,13 +89,22 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
     catch (e) {
         console.log(e);
         
-        await msg.reply({
-            embeds: [
-                new MessageEmbed()
-                .setColor('#f14a60')
-                .setDescription("Failed to assign the muted role to this user. Maybe missing permisions/roles or I'm not allowed to assign roles this user?")
-            ]
-        });
+        if (msg instanceof Message)
+            await msg.reply({
+                embeds: [
+                    new MessageEmbed()
+                    .setColor('#f14a60')
+                    .setDescription("Failed to assign the muted role to this user. Maybe missing permisions/roles or I'm not allowed to assign roles this user?")
+                ]
+            });
+        else
+            await msg.editReply({
+                embeds: [
+                    new MessageEmbed()
+                    .setColor('#f14a60')
+                    .setDescription("Failed to assign the muted role to this user. Maybe missing permisions/roles or I'm not allowed to assign roles this user?")
+                ]
+            });
 
         return;
     }
@@ -110,11 +130,15 @@ export default class MuteCommand extends BaseCommand {
             return;
         }
 
+        if (msg instanceof CommandInteraction)
+            await msg.deferReply();
+
         let user: GuildMember;
         let reason: string | undefined;
         let time: string | undefined;
         let timeInterval: number | undefined;
         let dateTime: number | undefined;
+        let hard: boolean = false;
 
         if (options.isInteraction) {
             user = await <GuildMember> options.options.getMember('member');
@@ -123,12 +147,16 @@ export default class MuteCommand extends BaseCommand {
                 reason = await <string> options.options.getString('reason');
             }
 
+            if (options.options.getBoolean('hardmute')) {
+                hard = await <boolean> options.options.getBoolean('hardmute');
+            }
+
             if (options.options.getString('time')) {
                 time = await options.options.getString('time') as string;
                 timeInterval = await ms(time);
 
                 if (!timeInterval) {
-                    await msg.reply({
+                    await this.deferReply(msg, {
                         embeds: [
                             new MessageEmbed()
                             .setColor('#f14a60')
@@ -144,7 +172,7 @@ export default class MuteCommand extends BaseCommand {
             const user2 = await getMember((msg as Message), options);
 
             if (!user2) {
-                await msg.reply({
+                await this.deferReply(msg, {
                     embeds: [
                         new MessageEmbed()
                         .setColor('#f14a60')
@@ -164,7 +192,7 @@ export default class MuteCommand extends BaseCommand {
                 args.shift();
 
                 if (index !== -1) {
-                    args.splice(index - 1, 2)
+                    args.splice(index - 1, 2);
                 }
 
                 reason = await args.join(' ');
@@ -174,7 +202,7 @@ export default class MuteCommand extends BaseCommand {
                 time = await options.args[index + 1];
 
                 if (time === undefined) {
-                    await msg.reply({
+                    await this.deferReply(msg, {
                         embeds: [
                             new MessageEmbed()
                             .setColor('#f14a60')
@@ -186,7 +214,7 @@ export default class MuteCommand extends BaseCommand {
                 }
 
                 if (!ms(time)) {
-                    await msg.reply({
+                    await this.deferReply(msg, {
                         embeds: [
                             new MessageEmbed()
                             .setColor('#f14a60')
@@ -205,7 +233,7 @@ export default class MuteCommand extends BaseCommand {
             dateTime = Date.now() + timeInterval;
         }
 
-        await mute(client, dateTime, user, msg, timeInterval, reason);
+        await mute(client, dateTime, user, msg, timeInterval, reason, hard);
 
         const fields = [
             {
@@ -219,12 +247,16 @@ export default class MuteCommand extends BaseCommand {
             {
                 name: "Duration",
                 value: time === undefined ? "*No duration set*" : (time + '')
+            },
+            {
+                name: "Role Takeout",
+                value: hard ? 'Yes' : 'No'
             }
         ];
 
         console.log(fields);        
 
-        await msg.reply({
+        await this.deferReply(msg, {
             embeds: [
                 new MessageEmbed()
                 .setAuthor({

@@ -211,7 +211,8 @@ let commands = [
 	new SlashCommandBuilder().setName('mute').setDescription('Mute a member')
 		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true))
 		.addStringOption(option => option.setName('reason').setDescription("The reason for muting this user"))
-		.addStringOption(option => option.setName('time').setDescription("Mute duration")),
+		.addStringOption(option => option.setName('time').setDescription("Mute duration"))
+		.addBooleanOption(option => option.setName('hardmute').setDescription("Specify if the system should take out all roles of the user during the mute")),
 
 	new SlashCommandBuilder().setName('unmute').setDescription('Unmute a member')
 		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true)),

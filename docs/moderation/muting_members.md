@@ -9,8 +9,13 @@ Use the `-mute` command to mute members. This will assign a muted role to the me
 
 ##### Slash Command
 ```
-/mute <Member> [Time] [Reason]
+/mute <Member> [Time] [Reason] [Hardmute]
 ```
+
+!!! info
+
+    Hardmuting means not only muting but also taking out all other roles except the muted role. They'll be given back when the unmute command is run or the mute duration expires.
+
 
 #### Examples
 
