@@ -15,5 +15,9 @@ export default class GuildMemberAddEvent extends BaseEvent {
         await client.antiraid.start(member);
         await autoRole(client, member);
         await client.logger.logJoined(member);
+
+        if (client.config.props[member.guild.id].verification.enabled) {
+            await client.verification.start(member);
+        }
     }
 }

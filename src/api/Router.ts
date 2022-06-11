@@ -30,7 +30,7 @@ export interface Route {
     all?: (req: Request, res: Response) => any,
 };
 
-export function loadRoutes(dir: string = __dirname) {
+export function loadRoutes(dir: string = __dirname, router: Router) {
     readdir(dir, async (err, data) => {
         if (err) {
             console.log(err);
@@ -76,6 +76,6 @@ export function loadRoutes(dir: string = __dirname) {
     });
 }
 
-loadRoutes(path.resolve(__dirname, 'routes'));
+loadRoutes(path.resolve(__dirname, 'routes'), router);
 
 export default router;

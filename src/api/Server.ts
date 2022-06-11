@@ -2,6 +2,7 @@ import DiscordClient from "../client/Client";
 import express, { Application, Request, Response } from 'express';
 import routes from './routes';
 import router from "./Router";
+import pubRouter from "./PublicRouter";
 import { readFileSync } from "fs";
 import path from "path";
 
@@ -48,6 +49,7 @@ export default class Server {
             res.send("Server is up.");
         });
 
+        this.app.use('/pub', pubRouter);        
         this.app.use('/api', router);
     }
 

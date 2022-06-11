@@ -20,6 +20,7 @@ import DebugLogger from '../services/DebugLogger';
 import BaseCLICommand from '../utils/structures/BaseCLICommand';
 import discordModals from 'discord-modals';
 import SpamFilter from '../automod/SpamFilter';
+import Verification from '../services/Verification';
 
 export default class DiscordClient extends Client {
     private _commands = new Collection<string, BaseCommand>();
@@ -45,6 +46,7 @@ export default class DiscordClient extends Client {
     autoClear: AutoClear;
     randomStatus: RandomStatus;
     debugLogger: DebugLogger;
+    verification: Verification;
 
     static client: DiscordClient;
 
@@ -80,6 +82,7 @@ export default class DiscordClient extends Client {
         this.autoClear = new AutoClear(this);
         this.randomStatus = new RandomStatus(this);
         this.debugLogger = new DebugLogger(this);
+        this.verification = new Verification(this);
         
         discordModals(this);        
     }
