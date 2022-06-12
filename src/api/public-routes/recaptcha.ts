@@ -59,7 +59,7 @@ export default <Route> {
                     if (!user)
                         throw new Error();
                     
-                    await DiscordClient.client.verification.success(user);
+                    await DiscordClient.client.verification.success(user, req);
 
                     return await res.json({
                         google: response.data,

@@ -22,6 +22,14 @@ UnverifiedMember.init({
         allowNull: false,
         defaultValue: 'pending'
     },
+    ip: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    user_agent: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
 }, {
     sequelize: DiscordClient.client.db.sequelize,
     modelName: 'UnverifiedMember',

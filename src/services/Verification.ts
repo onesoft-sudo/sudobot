@@ -1,4 +1,5 @@
 import { GuildMember } from "discord.js";
+import { Request } from "express";
 import { Op } from "sequelize";
 import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
@@ -8,7 +9,7 @@ export default class Verification {
 
     }
 
-    async success(member: GuildMember) {        
+    async success(member: GuildMember, req: Request) {        
         await member.roles.remove(this.client.config.props[member.guild.id].verification.role);
 
         await member.send({
@@ -36,6 +37,8 @@ export default class Verification {
         });
 
         await data?.set('status', 'done');
+        await data?.set('ip', req.ip);
+        await data?.set('user_agent', req.get('User-Agent'));
         await data?.save();
     }
 
