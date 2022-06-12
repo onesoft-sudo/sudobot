@@ -52,5 +52,5 @@ markdown_extensions:
   - pymdownx.betterem:
       smart_enable: all
 
-copyright: 'Copyright &copy; Ar Rakin 2022'
+copyright: 'Copyright &copy; OSN Inc. 2022'
 
