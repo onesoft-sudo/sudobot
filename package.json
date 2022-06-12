@@ -6,10 +6,6 @@
     "dependencies": {
         "@discordjs/builders": "^0.13.0",
         "@discordjs/rest": "^0.4.1",
-        "@types/express": "^4.17.13",
-        "@types/ms": "^0.7.31",
-        "@types/sequelize": "^4.28.13",
-        "@types/sqlite3": "^3.1.8",
         "axios": "^0.27.2",
         "bufferutil": "^4.0.6",
         "discord-api-types": "^0.32.1",
@@ -24,17 +20,21 @@
         "zod": "^3.17.2"
     },
     "devDependencies": {
+        "@types/express": "^4.17.13",
+        "@types/ms": "^0.7.31",
         "@types/node": "^17.0.33",
+        "@types/sequelize": "^4.28.13",
+        "@types/sqlite3": "^3.1.8",
         "nodemon": "^2.0.16",
         "typescript": "^4.6.4"
     },
     "scripts": {
         "watch": "nodemon ./src/index.ts",
         "dev": "ts-node ./src/index.ts",
-        "dev-prod": "ts-node ./src/index.ts --prod",
+        "flag:prod": "ts-node ./src/index.ts --prod",
         "deploy": "node ./deploy-commands.js",
         "start": "node ./build/index.js",
-        "prod-dev": "node ./build/index.js --dev",
+        "flag:dev": "node ./build/index.js --dev",
         "build": "tsc",
         "clean": "bash -c 'rm -r build'"
     }
