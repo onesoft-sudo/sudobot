@@ -141,8 +141,6 @@ export default class MessageFilter {
                     code = await code[code.length - 1];
 
                     let filtered = await invites.has(code.trim());
-
-                    console.log(3);
                         
                     if (!filtered) {
                         return matches;
@@ -150,7 +148,7 @@ export default class MessageFilter {
                 }
            }
            catch(e) {
-                console.log(e, 'here');
+                console.log(e);
            }
         }
     }
