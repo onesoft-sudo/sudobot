@@ -1,5 +1,4 @@
-import { channelMention } from "@discordjs/builders";
-import { Message, TextChannel, MessageMentions, Guild } from "discord.js";
+import { Message, TextChannel, MessageMentions } from "discord.js";
 import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
 
@@ -15,8 +14,6 @@ export type MessageFilterConfig = {
     words_repeated: number;
     chars_repeated: number;
     pings: number;
-    tokens: string[];
-    regex_patterns: string[];
 };
 
 export default class MessageFilter {
@@ -79,38 +76,6 @@ export default class MessageFilter {
                     word: word,
                     all: [word]
                 }
-            }
-        }
-
-        return true;
-    }
-
-    async filterBlockedTokens(msg: Message) {
-        if (!this.config.words_enabled) 
-            return true;
-        
-        if (this.config.words_excluded.indexOf(msg.channel.id) !== -1 || this.config.words_excluded.indexOf((msg.channel as TextChannel).parent?.id!) !== -1) 
-            return true;
-
-        for (let token of this.config.tokens) {
-            if (msg.content.includes(token)) {
-                return token;
-            }
-        }
-
-        return true;
-    }
-
-    async filterBlockedRegExp(msg: Message) {
-        if (!this.config.words_enabled) 
-            return true;
-        
-        if (this.config.words_excluded.indexOf(msg.channel.id) !== -1 || this.config.words_excluded.indexOf((msg.channel as TextChannel).parent?.id!) !== -1) 
-            return true;
-
-        for (let regex of this.config.regex_patterns) {
-            if ((new RegExp(regex, 'gim')).test(msg.content)) {
-                return regex;
             }
         }
 
@@ -192,99 +157,11 @@ export default class MessageFilter {
         return false;
     }
 
-    async fetchLoggingChannel(guild: Guild) {
-        return <TextChannel> await guild.channels.fetch(this.client.config.get('logging_channel'));
-    }
-
     async start(msg: Message) {
         this.load();
 
         if (this.config.ignore_staff && msg.member!.roles.cache.has(this.client.config.get('mod_role')))
             return;
-
-        const token = await this.filterBlockedTokens(msg);
-
-        if (token !== true) {
-            try {
-                await msg.delete();
-            }
-            catch (e) {
-                console.log(e);                
-            }
-
-            const channel = await this.fetchLoggingChannel(msg.guild!);
-
-            await channel.send({
-                embeds: [
-                    new MessageEmbed({
-                        author: {
-                            name: msg.author.tag,
-                            iconURL: msg.member!.displayAvatarURL(),
-                        },
-                        title: 'Posted blocked token(s)',
-                        fields: [
-                            {
-                                name: "Token",
-                                value: `||${token}||`
-                            },
-                            {
-                                name: "Channel",
-                                value: `${channelMention(msg.channel.id)} (${msg.channel.id})`
-                            },
-                        ],
-                        timestamp: new Date(),
-                        footer: {
-                            text: 'Deleted'
-                        }
-                    })
-                    .setColor('#f14a60')
-                ]
-            });
-
-            return;
-        }
-        
-        const regex = await this.filterBlockedRegExp(msg);
-
-        if (regex !== true) {
-            try {
-                await msg.delete(); 
-            }
-            catch (e) {
-                console.log(e);                
-            }
-
-            const channel = await this.fetchLoggingChannel(msg.guild!);
-
-            await channel.send({
-                embeds: [
-                    new MessageEmbed({
-                        author: {
-                            name: msg.author.tag,
-                            iconURL: msg.member!.displayAvatarURL(),
-                        },
-                        title: 'Posted messages that matched to a blocked Regex',
-                        fields: [
-                            {
-                                name: "Regex Pattern",
-                                value: `||${regex}||`
-                            },
-                            {
-                                name: "Channel",
-                                value: `${channelMention(msg.channel.id)} (${msg.channel.id})`
-                            },
-                        ],
-                        timestamp: new Date(),
-                        footer: {
-                            text: 'Deleted'
-                        }
-                    })
-                    .setColor('#f14a60')
-                ]
-            });
-
-            return;
-        }
         
         const blockedPass = await this.filterBlockedWords(msg);
         const files = await this.filterFiles(msg);
@@ -292,57 +169,51 @@ export default class MessageFilter {
         const matches = await this.filterInvites(msg);
 
         if (matches instanceof Array) {
-            await msg.delete();
-
-            const content = this.config.invite_message.replace(':mention:', `<@${msg.author.id}>`);
-
-            const message = await msg.channel.send({
-                content
-            });
-
-            setTimeout(async () => {
-                try {
-                    await message.delete();
-                }
-                catch (e) {
-                    console.log(e);                        
-                }
-            }, 10000);
-
-            try {
-                const channel = <TextChannel> await msg.guild!.channels.fetch(this.client.config.get('logging_channel'));
-
-                await channel!.send({
-                    embeds: [
-                        new MessageEmbed()
-                        .setColor('#f14a60')
-                        .setAuthor({
-                            name: msg.author.tag,
-                            iconURL: msg.author.displayAvatarURL()
-                        })
-                        .setTitle(`Posted invite(s)`)
-                        .addFields([
-                            {
-                                name: "URL",
-                                value: '`' + matches.join('` `') + '`'
-                            },
-                            {
-                                name: "Channel",
-                                value: `${channelMention(msg.channel.id)} (${msg.channel.id})`
-                            },
-                        ])
-                        .setFooter({
-                            text: "Deleted"
-                        })
-                        .setTimestamp()
-                    ]
+                await msg.delete();
+    
+                const content = this.config.invite_message.replace(':mention:', `<@${msg.author.id}>`);
+    
+                const message = await msg.channel.send({
+                    content
                 });
-            }
-            catch(e) {
-                console.log(e);
-            }
 
-            return;
+                setTimeout(async () => {
+                    try {
+                        await message.delete();
+                    }
+                    catch (e) {
+                        console.log(e);                        
+                    }
+                }, 10000);
+    
+                try {
+                    const channel = <TextChannel> await msg.guild!.channels.fetch(this.client.config.get('logging_channel'));
+    
+                    await channel!.send({
+                        embeds: [
+                            new MessageEmbed()
+                            .setColor('#f14a60')
+                            .setAuthor({
+                                name: msg.author.tag,
+                                iconURL: msg.author.displayAvatarURL()
+                            })
+                            .setTitle(`Posted invite(s)`)
+                            .addFields([
+                                {
+                                    name: "URL",
+                                    value: '`' + matches.join('` `') + '`'
+                                },
+                            ])
+                            .setFooter({
+                                text: "Deleted"
+                            })
+                            .setTimestamp()
+                        ]
+                    });
+                }
+                catch(e) {
+                    console.log(e);
+                }
         }
 
         if (blockedPass !== true) {
@@ -363,10 +234,6 @@ export default class MessageFilter {
                             {
                                 name: "Word",
                                 value: "||" + blockedPass.word + "||"
-                            },
-                            {
-                                name: "Channel",
-                                value: `${channelMention(msg.channel.id)} (${msg.channel.id})`
                             },
                         ])
                         .setFooter({
@@ -399,10 +266,6 @@ export default class MessageFilter {
                                 name: "File Type/Extension",
                                 value: files + ""
                             },
-                            {
-                                name: "Channel",
-                                value: `${channelMention(msg.channel.id)} (${msg.channel.id})`
-                            },
                         ])
                         .setFooter({
                             text: "Deleted"
@@ -432,12 +295,6 @@ export default class MessageFilter {
                     })
                     .setTitle(`Repeated text detected`)
                     .setDescription(msg.content)
-                    .addFields([
-                        {
-                            name: "Channel",
-                            value: `${channelMention(msg.channel.id)} (${msg.channel.id})`
-                        },
-                    ])
                     .setFooter({
                         text: "Deleted"
                     })
@@ -459,12 +316,6 @@ export default class MessageFilter {
                         iconURL: msg.author.displayAvatarURL()
                     })
                     .setTitle(`Mass mention detected`)
-                    .addFields([
-                        {
-                            name: "Channel",
-                            value: `${channelMention(msg.channel.id)} (${msg.channel.id})`
-                        },
-                    ])
                     .setDescription(msg.content)
                     .setFooter({
                         text: "Deleted"
@@ -488,12 +339,6 @@ export default class MessageFilter {
                     })
                     .setTitle(`Restricted domains detected`)
                     .setDescription(msg.content)
-                    .addFields([
-                        {
-                            name: "Channel",
-                            value: `${channelMention(msg.channel.id)} (${msg.channel.id})`
-                        },
-                    ])
                     .setFooter({
                         text: "Deleted"
                     })
