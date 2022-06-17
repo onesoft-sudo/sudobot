@@ -8,11 +8,14 @@ import { Route } from "../Router";
 export default <Route> {
     path: '/verification/:guild',
     middleware: [guildAuth],
-    async post(req: Request, res: Response) {
+    async get(req: Request, res: Response) {
         await res.json(await UnverifiedMember.findAll({
             where: {
                 guild_id: req.params.guild
-            }
+            },
+            order: [
+                ['id', 'DESC']
+            ]
         }));
     }
 };
