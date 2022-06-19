@@ -111,7 +111,6 @@ export default class SpamFilter {
                                 if (err) {
                                     console.log(err);
                                 }
-
                                 
                                 await msg.reply({
                                     content: "Whoa there! Calm down and please don't spam!"

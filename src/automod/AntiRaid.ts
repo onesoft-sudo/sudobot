@@ -36,22 +36,26 @@ export default class AntiRaid {
         this.joins++;
 
         if (this.joins >= this.maxJoins) {
-            let role = member.guild.roles.everyone;
-            
-            let channels = <Collection <string, TextChannel>> member.guild.channels.cache.filter(channel => {
-                let cond: boolean;
-
-                if (this.exclude) {
-                    cond = this.channels.indexOf(channel.id) === -1 && this.channels.indexOf(channel.parent?.id!) === -1;
-                }
-                else {
-                    cond = this.channels.indexOf(channel.id) !== -1 || this.channels.indexOf(channel.parent?.id!) !== -1;
-                }
-
-                return cond && channel.type === 'GUILD_TEXT';
-            });
-
-            await lockAll(this.client, role, channels, true);
+            await this.trigger(member.guild);
         }
+    }
+
+    async trigger(guild: Guild) {
+        let role = guild.roles.everyone;
+            
+        let channels = <Collection <string, TextChannel>> guild.channels.cache.filter(channel => {
+            let cond: boolean;
+
+            if (this.exclude) {
+                cond = this.channels.indexOf(channel.id) === -1 && this.channels.indexOf(channel.parent?.id!) === -1;
+            }
+            else {
+                cond = this.channels.indexOf(channel.id) !== -1 || this.channels.indexOf(channel.parent?.id!) !== -1;
+            }
+
+            return cond && channel.type === 'GUILD_TEXT';
+        });
+
+        await lockAll(this.client, role, channels, true);
     }
 };
