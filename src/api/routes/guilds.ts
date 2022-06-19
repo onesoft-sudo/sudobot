@@ -8,7 +8,7 @@ import { Route } from "../Router";
 export default <Route> {
     path: '/guilds',
     async post(req: Request, res: Response) {
-        let guilds: any;
+        let guilds = [];
 
         if (!req.body.guilds || !(req.body.guilds instanceof Array)) {
             res.json({});
@@ -18,7 +18,12 @@ export default <Route> {
 
         for await (const id of req.body.guilds) {
             console.log(id);
-            guilds = await DiscordClient.client.guilds.fetch(id);
+
+            if (!DiscordClient.client.config.props[id]) {
+                continue;
+            }
+
+            guilds.push(await DiscordClient.client.guilds.fetch(id));
         }
 
         console.log(guilds);

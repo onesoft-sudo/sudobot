@@ -31,12 +31,13 @@ export default <Route> {
             role_commands: z.any(),
         });
 
-        console.log(req.body.data);        
+        console.log(req.body.data);
 
         if (!req.body.data || !Config.safeParse(req.body.data).success) {
             res.status(422).json({
                 status: 422,
-                message: "Unprocessable entity"
+                message: "Unprocessable entity",
+                trace: Config.safeParse(req.body.data)
             });
 
             return;
