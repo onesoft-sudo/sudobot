@@ -9,6 +9,7 @@ import History from '../../automod/History';
 import Punishment from '../../models/Punishment';
 import PunishmentType from '../../types/PunishmentType';
 import { fetchEmojiStr } from '../../utils/Emoji';
+import { shouldNotModerate } from '../../utils/util';
 
 export default class SoftBanCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -124,6 +125,26 @@ export default class SoftBanCommand extends BaseCommand {
             reply = <Message> await msg.fetchReply();
 
         try {
+        	try {
+        		const member = await msg.guild!.members.fetch(user.id);
+
+        		if (member && shouldNotModerate(client, member)) {
+        			await msg.reply({
+        				embeds: [
+        					new MessageEmbed()
+        					.setColor('#f14a60')
+        					.setDescription('This user cannot be softbanned.')
+        				]
+        			});
+
+        			return;
+        		}
+        	}
+        	catch (e) {
+        		console.log(e);
+        		return;
+        	}
+        	
             await msg.guild?.bans.create(user, banOptions);
             await new Promise(r => setTimeout(r, 1600));
             await msg.guild?.bans.remove(user);

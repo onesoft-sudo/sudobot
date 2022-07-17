@@ -8,6 +8,7 @@ import getUser from '../../utils/getUser';
 import History from '../../automod/History';
 import Punishment from '../../models/Punishment';
 import PunishmentType from '../../types/PunishmentType';
+import { shouldNotModerate } from '../../utils/util';
 
 export default class BanCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -105,6 +106,26 @@ export default class BanCommand extends BaseCommand {
             }
         }
 
+		try {
+        	const member = await msg.guild?.members.fetch(user.id);
+
+			if (member && shouldNotModerate(client, member)) {
+				await msg.reply({
+					embeds: [
+						new MessageEmbed()
+						.setColor('#f14a60')
+						.setDescription('Cannot ban this user: Operation not permitted')	
+					]
+				});
+				
+				return;
+			}
+		}
+		catch (e) {
+			console.log(e);
+			return;
+		}
+		
         try {
             await msg.guild?.bans.create(user, banOptions);
 

@@ -1,5 +1,17 @@
 import fs from 'fs';
+import DiscordClient from '../client/Client';
+import { GuildMember } from 'discord.js';
 import Axios, { AxiosRequestHeaders, HeadersDefaults } from 'axios';
+
+export function shouldNotModerate(client: DiscordClient, member: GuildMember) {
+	if (!client.config.props[member.guild.id].admin) {
+		return false;
+	}
+
+	const role = client.config.props[member.guild.id].admin;
+
+	return member.roles.cache.has(role);
+}
 
 export function timeProcess(seconds: number) {      
     let interval = seconds / (60 * 60 * 24 * 30 * 365);

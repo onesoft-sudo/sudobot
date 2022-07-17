@@ -9,6 +9,7 @@ import getMember from '../../utils/getMember';
 import History from '../../automod/History';
 import Punishment from '../../models/Punishment';
 import PunishmentType from '../../types/PunishmentType';
+import { shouldNotModerate } from '../../utils/util';
 
 export default class KickCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -85,7 +86,7 @@ export default class KickCommand extends BaseCommand {
         }
 
         try {
-            if (!user.kickable) 
+            if (!user.kickable || shouldNotModerate(client, user)) 
                 throw new Error('User not kickable');
             
             await user.kick(reason);
@@ -99,7 +100,7 @@ export default class KickCommand extends BaseCommand {
                 reason
             });
 
-            await History.create(user.id, msg.guild!, 'kick', msg.member!.user.id, typeof reason === 'undefined' ? null : reason);
+            // await History.create(user.id, msg.guild!, 'kick', msg.member!.user.id, typeof reason === 'undefined' ? null : reason);
         }
         catch (e) {
             await msg.reply({

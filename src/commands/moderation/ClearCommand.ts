@@ -8,6 +8,7 @@ import getUser from '../../utils/getUser';
 import getMember from '../../utils/getMember';
 import History from '../../automod/History';
 import { fetchEmoji } from '../../utils/Emoji';
+import { shouldNotModerate } from '../../utils/util';
 
 export default class ClearCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -87,6 +88,26 @@ export default class ClearCommand extends BaseCommand {
             });
 
             return;
+        }
+
+        if (user) {
+        	try {
+        		const member = await msg.guild?.members.fetch(user.id);
+
+        		if (member && shouldNotModerate(client, member)) {
+        			await msg.reply({
+      					embeds: [
+        					{ description: "Cannot clear messages from this user: Operation not permitted" }
+        				]
+        			});
+        			
+        			return;
+        		}
+        	}
+        	catch (e) {
+        		console.log(e);
+        		return;
+        	}
         }
 
         let count = 0;
