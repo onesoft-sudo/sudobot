@@ -78,15 +78,20 @@ export async function unmute(client: DiscordClient, user: GuildMember, d: User) 
             mod_tag: d.tag,
         });
 
-        await user.send({
-            embeds: [
-                new MessageEmbed()
-                .setAuthor({
-                    iconURL: <string> user.guild!.iconURL(),
-                    name: `\tYou have been unmuted in ${user.guild!.name}`
-                })
-            ]
-        });
+		try {
+	        await user.send({
+	            embeds: [
+	                new MessageEmbed()
+	                .setAuthor({
+	                    iconURL: <string> user.guild!.iconURL(),
+	                    name: `\tYou have been unmuted in ${user.guild!.name}`
+	                })
+	            ]
+	        });
+	    }
+	    catch (e) {
+	    	console.log(e);
+	    }
 
         await client.logger.logUnmute(user, d);
     }

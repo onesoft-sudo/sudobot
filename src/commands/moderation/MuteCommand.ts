@@ -76,16 +76,22 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
         });
         
         await client.logger.logMute(user, reason === undefined || reason.trim() === '' ? "*No reason provided*" : reason, timeInterval, msg.member!.user as User, hard);
-        await user.send({
-            embeds: [
-                new MessageEmbed()
-                .setAuthor({
-                    iconURL: <string> msg.guild!.iconURL(),
-                    name: `\tYou have been muted in ${msg.guild!.name}`
-                })
-                .addField("Reason", reason === undefined || reason.trim() === '' ? "*No reason provided*" : reason)
-            ]
-        });
+
+		try {
+	        await user.send({
+	            embeds: [
+	                new MessageEmbed()
+	                .setAuthor({
+	                    iconURL: <string> msg.guild!.iconURL(),
+	                    name: `\tYou have been muted in ${msg.guild!.name}`
+	                })
+	                .addField("Reason", reason === undefined || reason.trim() === '' ? "*No reason provided*" : reason)
+	            ]
+	        });
+        }
+        catch (e) {
+        	console.log(e);
+        }
     }
     catch (e) {
         console.log(e);
