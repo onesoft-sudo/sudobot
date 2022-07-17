@@ -27,32 +27,40 @@ export async function warn(client: DiscordClient, user: User, reason: string | u
         }
     });
 
-    await History.create(user.id, msg.guild!, 'warn', warned_by?.id ?? msg.member!.user.id, reason ?? null);
+    // await History.create(user.id, msg.guild!, 'warn', warned_by?.id ?? msg.member!.user.id, reason ?? null);
 
-    await user.send({
-        embeds: [
-            new MessageEmbed({
-                author: {
-                    name: `You have been warned in ${msg.guild!.name}`,
-                    iconURL: msg.guild!.iconURL()!
-                },
-                fields: [
-                    {
-                        name: 'Reason',
-                        value: reason ?? '*No reason provided*'
-                    },
-                    {
-                        name: 'Strike',
-                        value: `${strike} time(s)`
-                    }
-                ]
-            })
-        ]
-    });
+	let DMed = true;
 
+	try {
+	    await user.send({
+	        embeds: [
+	            new MessageEmbed({
+	                author: {
+	                    name: `You have been warned in ${msg.guild!.name}`,
+	                    iconURL: msg.guild!.iconURL()!
+	                },
+	                fields: [
+	                    {
+	                        name: 'Reason',
+	                        value: reason ?? '*No reason provided*'
+	                    },
+	                    {
+	                        name: 'Strike',
+	                        value: `${strike} time(s)`
+	                    }
+	                ]
+	            })
+	        ]
+	    });
+    }
+    catch (e) {
+    	console.log(e);
+    	DMed = false;	
+    }
+    
     await client.logger.logWarn(msg, user, (warned_by ?? msg.member!.user) as User, reason, warning.get('id') as number);
 
-    return { warning, strike };
+    return { warning, strike, DMed };
 }
 
 export default class WarnCommand extends BaseCommand {
@@ -128,7 +136,7 @@ export default class WarnCommand extends BaseCommand {
         }
 
         try {
-            const { warning, strike } = await warn(client, user.user, reason, msg, msg.member?.user as User);
+            const { warning, strike, DMed } = await warn(client, user.user, reason, msg, msg.member?.user as User);
 
             await msg.reply({
                 embeds: [
@@ -150,7 +158,11 @@ export default class WarnCommand extends BaseCommand {
                         {
                             name: "ID",
                             value: warning.get('id') + ''
-                        }
+                        },
+                        ...(DMed ? {} : {
+                        	name: "Note",
+                        	value: ":warning: The user has DMs disabled, so they might not know that they've been warned."
+                        })
                     ])
                 ]
             });
