@@ -97,10 +97,10 @@ export default class BeanCommand extends BaseCommand {
 
             await History.create(user.id, msg.guild!, 'bean', msg.member!.user.id, typeof reason === 'undefined' ? null : reason);
 
-			try {
-	            await user.send({
-	                embeds: [
-	                    new MessageEmbed()
+	    try {
+	        await user.send({
+	            embeds: [
+	                new MessageEmbed()
 	                    .setAuthor({
 	                        iconURL: <string> msg.guild!.iconURL(),
 	                        name: `\tYou have been beaned in ${msg.guild!.name}`
@@ -111,8 +111,8 @@ export default class BeanCommand extends BaseCommand {
 	                            value: typeof reason === 'undefined' ? '*No reason provided*' : reason
 	                        }
 	                    ])
-	                ]
-	            });
+	            ]
+	        });
             }
             catch (e) {
             	console.log(e);
