@@ -14,3 +14,44 @@
 <p align="center">
 A Discord bot for moderation purposes.
 </p>
+
+### Getting started
+
+You can request an invite for SudoBot [here](https://sudobot.everything-server.ml/).
+Alternatively, you can create your own Discord API application and then host SudoBot.
+
+### Setup for Custom Hosting
+
+First, download the latest release or clone the repo by running:
+
+```
+git clone https://github.com/onesoft-sudo/sudobot
+```
+
+Then go inside the project directory, and run the following commands:
+
+```
+sh init.sh
+touch config/config.json .env
+echo "{}" > config/snippets.json
+npm install
+npm install -D
+```
+
+Build the project:
+
+```
+npm run build
+```
+
+Deploy slash commands globally:
+
+```
+node deploy-commands.js
+```
+
+Start the bot:
+
+```
+npm start
+```
