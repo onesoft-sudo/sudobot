@@ -32,6 +32,7 @@ export default class BeanCommand extends BaseCommand {
         }
 
         let user: GuildMember;
+        let dm = true;
         let reason: string | undefined;
 
         if (options.isInteraction) {
@@ -96,21 +97,27 @@ export default class BeanCommand extends BaseCommand {
 
             await History.create(user.id, msg.guild!, 'bean', msg.member!.user.id, typeof reason === 'undefined' ? null : reason);
 
-            await user.send({
-                embeds: [
-                    new MessageEmbed()
-                    .setAuthor({
-                        iconURL: <string> msg.guild!.iconURL(),
-                        name: `\tYou have been beaned in ${msg.guild!.name}`
-                    })
-                    .addFields([
-                        {
-                            name: "Reason",
-                            value: typeof reason === 'undefined' ? '*No reason provided*' : reason
-                        }
-                    ])
-                ]
-            });
+			try {
+	            await user.send({
+	                embeds: [
+	                    new MessageEmbed()
+	                    .setAuthor({
+	                        iconURL: <string> msg.guild!.iconURL(),
+	                        name: `\tYou have been beaned in ${msg.guild!.name}`
+	                    })
+	                    .addFields([
+	                        {
+	                            name: "Reason",
+	                            value: typeof reason === 'undefined' ? '*No reason provided*' : reason
+	                        }
+	                    ])
+	                ]
+	            });
+            }
+            catch (e) {
+            	console.log(e);
+            	dm = false;
+            }
 
             await client.logger.logBeaned(user, typeof reason === 'undefined' ? '*No reason provided*' : reason, msg.member!.user as User);
         }
@@ -125,7 +132,7 @@ export default class BeanCommand extends BaseCommand {
                     name: user.user.tag,
                     iconURL: user.user.displayAvatarURL(),
                 })
-                .setDescription(user.user.tag + " has been beaned.")
+                .setDescription(user.user.tag + " has been beaned." + (!dm ? "\nThey have DMs disabled. They will not know that they have been beaned." : ''))
                 .addFields([
                     {
                         name: "Beaned by",
