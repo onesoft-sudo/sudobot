@@ -159,7 +159,7 @@ export default class WarnCommand extends BaseCommand {
                             name: "ID",
                             value: warning.get('id') + ''
                         },
-                        ...(DMed ? {} : {
+                        (DMed ? ...{} : {
                         	name: "Note",
                         	value: ":warning: The user has DMs disabled, so they might not know that they've been warned."
                         })
