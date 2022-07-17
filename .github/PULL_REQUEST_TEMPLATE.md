@@ -3,5 +3,5 @@
 A short brief about your changes.
 
 - Is Bugfix? *Yes/No*
-- Relates issues: *None*
+- Related issues: *None*
 - Closes: *None*
