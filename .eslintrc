@@ -11,6 +11,7 @@
     ],
     "rules": {
         "prefer-const": "warn",
+        "no-mixed-spaces-and-tabs": "warn",
         "@typescript-eslint/no-inferrable-types": "warn",
         "no-useless-escape": "warn",
         "@typescript-eslint/no-empty-function": "warn",
