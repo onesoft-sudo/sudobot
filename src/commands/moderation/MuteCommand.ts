@@ -10,6 +10,7 @@ import getMember from '../../utils/getMember';
 import ms from 'ms';
 import { unmute } from './UnmuteCommand';
 import PunishmentType from '../../types/PunishmentType';
+import { shouldNotModerate } from '../../utils/util';
 
 export async function mute(client: DiscordClient, dateTime: number | undefined, user: GuildMember, msg: Message | CommandInteraction, timeInterval: number | undefined, reason: string | undefined, hard: boolean = false) {
     try {
@@ -233,6 +234,18 @@ export default class MuteCommand extends BaseCommand {
             dateTime = Date.now() + timeInterval;
         }
 
+		if (shouldNotModerate(client, user)) {
+			await msg.reply({
+				embeds: [
+					{
+						description: "This user cannot be muted."
+					}
+				]
+			});
+
+			return;
+		}
+		
         await mute(client, dateTime, user, msg, timeInterval, reason, hard);
 
         const fields = [
