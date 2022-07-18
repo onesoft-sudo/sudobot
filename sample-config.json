@@ -1,0 +1,111 @@
+{
+ "global": {
+  "id": "[home_server_id]",
+  "cp_host": "[control_panel_host_if_you_have]",
+  "owners": [
+   "[your_user_id]"
+  ]
+ },
+ "[guild_id]": {
+  "prefix": "-",
+  "debug": false,
+  "mute_role": "[id]",
+  "gen_role": "[id]",
+  "logging_channel": "[id]",
+  "logging_channel_join_leave": "[id]",
+  "mod_role": "[id]",
+  "announcement_channel": "[id]",
+  "admin": "[id]",
+  "autoclear": {
+   "enabled": false,
+   "channels": []
+  },
+  "cooldown": {
+   "enabled": false,
+   "global": null,
+   "cmds": {}
+  },
+  "starboard": {
+   "enabled": false,
+   "reactions": 3,
+   "channel": "[id]"
+  },
+  "autorole": {
+   "enabled": false,
+   "roles": []
+  },
+  "spam_filter": {
+   "enabled": true,
+   "limit": 5,
+   "time": 5000,
+   "diff": 2000,
+   "exclude": [],
+   "samelimit": 10,
+   "unmute_in": 1800000
+  },
+  "raid": {
+   "enabled": true,
+   "max_joins": 10,
+   "time": 60000,
+   "channels": [
+   	
+   ],
+   "exclude": false
+  },
+  "lockall": [],
+  "warn_notallowed": true,
+  "global_commands": [
+   "cat",
+   "dog",
+   "pixabay",
+   "httpcat",
+   "httpdog",
+   "afk",
+   "joke",
+   "profile",
+   "avatar",
+   "about",
+   "emoji"
+  ],
+  "role_commands": {
+   "[id]": [],
+  },
+  "filters": {
+   "ignore_staff": true,
+   "chars_repeated": 9,
+   "words_repeated": 9,
+   "words": [
+    "blocked-words"
+   ],
+   "invite_message": "Hey :mention:, post server invites in Server Promotions category only!",
+   "words_excluded": [
+   ],
+   "domain_excluded": [
+   ],
+   "invite_excluded": [
+   ],
+   "words_enabled": true,
+   "invite_enabled": true,
+   "domain_enabled": true,
+   "regex": false,
+   "file_mimes_excluded": [],
+   "file_types_excluded": [
+    "exe",
+    "msi",
+    "mxbundle",
+    "bat",
+    "cmd",
+    "ps1",
+    "ps",
+    "run",
+    "sh",
+    "bash",
+    "apk",
+    "xapk"
+   ],
+   "domains": [
+  	
+   ]
+  }
+ }
+}
