@@ -78,7 +78,7 @@ Start the bot:
 npm start
 ```
 
-And if everything was configured correctly, you should not see an error and the bot should say "The system has logged in to discord".
+And if everything was configured correctly, you should not see an error and the bot should say `Logged in as [tag]!`.
 Then you can run the following command in Discord to make sure everything is working:
 
 ```
