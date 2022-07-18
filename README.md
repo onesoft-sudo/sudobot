@@ -40,7 +40,6 @@ npm install -D
 ```
 
 Then open up the `config/config.json` file and change at least the following:
-**Note**: `...` means other options that exist in the config, you can edit them to customize the settings, but not required.
 
 ```json
 {
@@ -59,6 +58,8 @@ Then open up the `config/config.json` file and change at least the following:
     }
 }
 ```
+
+**Note**: `...` means other options that exist in the config, you can edit them to customize the settings, but not required.
 
 Build the project:
 
