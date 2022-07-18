@@ -15,6 +15,13 @@
 A Discord bot for moderation purposes.
 </p>
 
+### Features
+
+- Strong automoderation system with tools like anti-spam and anti-raid
+- Useful moderation tools 
+- Secure
+- Fun commands
+
 ### Getting started
 
 You can request an invite for SudoBot [here](https://sudobot.everything-server.ml/).
