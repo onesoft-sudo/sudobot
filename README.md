@@ -31,11 +31,33 @@ git clone https://github.com/onesoft-sudo/sudobot
 Then go inside the project directory, and run the following commands:
 
 ```
-sh init.sh
-touch config/config.json .env
+mkdir config tmp storage logs
+touch logs/join-leave.log
 echo "{}" > config/snippets.json
+cp sample-config.json config/config.json
 npm install
 npm install -D
+```
+
+Then open up the `config/config.json` file and change at least the following:
+**Note**: `...` means other options that exist in the config, you can edit them to customize the settings, but not required.
+
+```json
+{
+    "global": {
+        "id": "set your home guild id",
+        "owners": ["set owner user ids here"],
+        ...
+    },
+    "guild id here": {
+       "prefix": "-",
+       "mod_role": "the mod role, users having it will be able to use the bot",
+       "gen_role": "general role id, which all users have",
+       "mute_role": "the muted role id",
+       "admin": "the admin role id. users having it will be immune to sudobot.",
+       ...
+    }
+}
 ```
 
 Build the project:
@@ -55,3 +77,18 @@ Start the bot:
 ```
 npm start
 ```
+
+And if everything was configured correctly, you should not see an error and the bot should say "The system has logged in to discord".
+Then you can run the following command in Discord to make sure everything is working:
+
+```
+-about
+```
+
+That should show the bot information.
+Congratulations! You've successfully set up your own instance of SudoBot!
+
+### Support
+
+- **Email**: rakinar2@onesoftnet.eu.org
+- **Discord Server**: [Support Server Invite](https://discord.gg/892GWhTzgs)
