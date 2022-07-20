@@ -131,10 +131,22 @@ export default class ClearCommand extends BaseCommand {
 
             do {
                 fetched = await (channel as TextChannel).messages.fetch({ limit: 100 });
-                fetched = await fetched.filter(m => m.author.id === user!.id && m.id !== message!.id && (Date.now() - m.createdTimestamp) <= (2 * 7 * 24 * 60 * 60));
+                fetched = await fetched.filter(m => m.author.id === user!.id && m.id !== message!.id && (Date.now() - m.createdTimestamp) <= (2 * 7 * 24 * 60 * 60 * 1000));
                 await (channel as TextChannel).bulkDelete(fetched);
+                count += fetched.size;
+
+                /*for await (const [id, m] of fetched.entries()) {
+                	try {
+                		await m.delete();
+                		count++;
+                	}
+                	catch (e) {
+                		console.log('Error deleting message', e);
+                	}
+                }
+                */
+                
                 await new Promise(r => setTimeout(r, 900));
-                count += await fetched.size;
             }
             while (fetched.size >= 2);
         }
@@ -219,7 +231,7 @@ export default class ClearCommand extends BaseCommand {
             catch (e) {
                 console.log(e);                
             }
-
+            
             try {
                 await message!.delete();
             }
