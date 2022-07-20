@@ -33,13 +33,16 @@ export default class MessageFilter {
     } 
 
     async filterPings(str: string) {        
-        let data = [...str.matchAll(new RegExp(`[(${MessageMentions.USERS_PATTERN})]+`, 'gm'))];
+        let data = [...str.matchAll(new RegExp(`\<\@[0-9]+\>`, 'gm'))];
 
+		console.log('users', data);
+1
         if (data.length >= this.config.pings)
-            return false;
+            return true;
         
-        data = [...str.matchAll(new RegExp(`[(${MessageMentions.ROLES_PATTERN})]+`, 'gm'))];
-
+        data = [...str.matchAll(new RegExp(`\<\@\&[0-9]+\>`, 'gm'))];
+		console.log('roles', data);
+		
         return data.length >= this.config.pings;
     } 
 
