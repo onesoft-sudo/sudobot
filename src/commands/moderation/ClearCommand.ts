@@ -106,7 +106,6 @@ export default class ClearCommand extends BaseCommand {
         	}
         	catch (e) {
         		console.log(e);
-        		return;
         	}
         }
 

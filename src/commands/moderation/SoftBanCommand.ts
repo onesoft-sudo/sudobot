@@ -142,7 +142,6 @@ export default class SoftBanCommand extends BaseCommand {
         	}
         	catch (e) {
         		console.log(e);
-        		return;
         	}
         	
             await msg.guild?.bans.create(user, banOptions);
