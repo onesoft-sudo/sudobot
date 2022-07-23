@@ -23,4 +23,13 @@ export class ModerationEmbed extends MessageEmbed {
 		
 		this.setColor('#007bff');
 	}
+
+	public setReason(reason: string | null | undefined) {
+		if (reason) {
+			this.addField('Reason', reason);
+		}
+		else {
+			this.addField('Reason', '*No reason provided*');
+		}
+	}
 }
