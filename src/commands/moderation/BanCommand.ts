@@ -123,7 +123,6 @@ export default class BanCommand extends BaseCommand {
 		}
 		catch (e) {
 			console.log(e);
-			return;
 		}
 		
         try {

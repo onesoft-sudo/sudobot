@@ -150,7 +150,6 @@ export default class tempBanCommand extends BaseCommand {
 			}
 			catch (e) {
 				console.log(e);
-				return;
 			}
         
             await msg.guild?.bans.create(user, banOptions);

@@ -117,7 +117,6 @@ export default class MassBanCommand extends BaseCommand {
                     }
                     catch (e) {
                     	console.log(e);
-                    	continue;
                     }
 
                     await Punishment.create({
