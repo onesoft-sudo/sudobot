@@ -149,8 +149,8 @@ export default class BeanCommand extends BaseCommand {
 
         await msg.reply({
         	embeds: [
-        		new ModerationEmbed(user, msg.member!.user, {
-        			description: `${user.tag} has been beaned.`
+        		new ModerationEmbed(user.user, msg.member!.user as User, {
+        			description: `${user.user.tag} has been beaned.`
         		})
         		.setReason(reason)
         	]
