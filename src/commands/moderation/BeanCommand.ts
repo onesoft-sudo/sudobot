@@ -9,6 +9,7 @@ import getMember from '../../utils/getMember';
 import History from '../../automod/History';
 import Punishment from '../../models/Punishment';
 import PunishmentType from '../../types/PunishmentType';
+import ModerationEmbed from '../../utils/ModerationEmbed';
 
 export default class BeanCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -97,22 +98,22 @@ export default class BeanCommand extends BaseCommand {
 
             await History.create(user.id, msg.guild!, 'bean', msg.member!.user.id, typeof reason === 'undefined' ? null : reason);
 
-	    try {
-	        await user.send({
-	            embeds: [
-	                new MessageEmbed()
-	                    .setAuthor({
-	                        iconURL: <string> msg.guild!.iconURL(),
-	                        name: `\tYou have been beaned in ${msg.guild!.name}`
-	                    })
-	                    .addFields([
-	                        {
-	                            name: "Reason",
-	                            value: typeof reason === 'undefined' ? '*No reason provided*' : reason
-	                        }
-	                    ])
-	            ]
-	        });
+		    try {
+		        await user.send({
+		            embeds: [
+		                new MessageEmbed()
+		                    .setAuthor({
+		                        iconURL: <string> msg.guild!.iconURL(),
+		                        name: `\tYou have been beaned in ${msg.guild!.name}`
+		                    })
+		                    .addFields([
+		                        {
+		                            name: "Reason",
+		                            value: typeof reason === 'undefined' ? '*No reason provided*' : reason
+		                        }
+		                    ])
+		            ]
+		        });
             }
             catch (e) {
             	console.log(e);
@@ -125,7 +126,7 @@ export default class BeanCommand extends BaseCommand {
             console.log(e);            
         }
 
-        await msg.reply({
+        /*await msg.reply({
             embeds: [
                 new MessageEmbed()
                 .setAuthor({
@@ -144,6 +145,15 @@ export default class BeanCommand extends BaseCommand {
                     }
                 ])
             ]
+        });*/
+
+        await msg.reply({
+        	embeds: [
+        		new ModerationEmbed(user, msg.member!.user, {
+        			description: `${user.tag} has been beaned.`
+        		})
+        		.setReason(reason)
+        	]
         });
     }
 }
