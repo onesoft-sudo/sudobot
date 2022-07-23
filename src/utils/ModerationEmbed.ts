@@ -1,6 +1,6 @@
 import { MessageEmbed, User, MessageEmbedOptions } from 'discord.js';
 
-export class ModerationEmbed extends MessageEmbed {
+export default class ModerationEmbed extends MessageEmbed {
 	constructor(protected user: User, protected mod: User, options?: MessageEmbedOptions) {
 		super({
 			author: {
@@ -10,10 +10,7 @@ export class ModerationEmbed extends MessageEmbed {
 			...options
 		});
 		
-		this.addField('Executor', [
-			`Tag: ${mod.tag}`,
-			`ID: ${mod.id}`
-		]);
+		this.addField('Executor', `Tag: ${mod.tag}\nID: ${mod.id}`);
 
 		this.setFooter({
 			text: `${user.id}`
@@ -31,5 +28,7 @@ export class ModerationEmbed extends MessageEmbed {
 		else {
 			this.addField('Reason', '*No reason provided*');
 		}
+
+		return this;
 	}
 }
