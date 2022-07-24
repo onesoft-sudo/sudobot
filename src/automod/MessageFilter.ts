@@ -76,6 +76,11 @@ export default class MessageFilter {
     } 
 
     async filterRepeatedText(msg: Message) {
+		const excluded = this.client.config.props[msg.guild!.id].spam_filter.exclude;
+
+		if (excluded.indexOf(msg.channel!.id) !== -1 || excluded.indexOf((msg.channel! as TextChannel).parent?.id) !== -1)
+			return;
+    
         return await this.filterAlmostSameChars(msg.content) || await this.filterAlmostSameText(msg.content);
     }
 
