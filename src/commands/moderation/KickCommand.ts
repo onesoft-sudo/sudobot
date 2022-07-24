@@ -9,7 +9,7 @@ import getMember from '../../utils/getMember';
 import History from '../../automod/History';
 import Punishment from '../../models/Punishment';
 import PunishmentType from '../../types/PunishmentType';
-import { shouldNotModerate } from '../../utils/util';
+import { hasPermission, shouldNotModerate } from '../../utils/util';
 
 export default class KickCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -86,6 +86,10 @@ export default class KickCommand extends BaseCommand {
         }
 
         try {
+        	if (!(await hasPermissions(client, member, msg, null, "You don't have permission to kick this user."))) {
+        		return;
+        	}
+        	
             if (!user.kickable || shouldNotModerate(client, user)) 
                 throw new Error('User not kickable');
             

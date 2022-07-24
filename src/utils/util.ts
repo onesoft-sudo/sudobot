@@ -1,6 +1,6 @@
 import fs from 'fs';
 import DiscordClient from '../client/Client';
-import { GuildMember } from 'discord.js';
+import { GuildMember, Message, CommandInteraction, MessageEmbed } from 'discord.js';
 import Axios, { AxiosRequestHeaders, HeadersDefaults } from 'axios';
 
 export function shouldNotModerate(client: DiscordClient, member: GuildMember) {
@@ -11,6 +11,28 @@ export function shouldNotModerate(client: DiscordClient, member: GuildMember) {
 	const role = client.config.props[member.guild.id].admin;
 
 	return member.roles.cache.has(role);
+}
+
+export async function hasPermission(client: DiscordClient, member: GuildMember, msg: Message | CommandInteraction, mod: GuildMember | null, error: string = "You don't have permission to moderate this user") {
+	let m = mod;
+	
+	if (!m) {
+		m = msg.member! as GuildMember;
+	}
+	
+	if (member.roles.highest?.position > m.roles.highest?.position) {
+		await msg.reply({
+			embeds: [
+				new MessageEmbed()
+				.setColor('#f14a60')
+				.setDescription(`:x: ${error}`)
+			]
+		});
+
+		return false;
+	}
+
+	return true;
 }
 
 export function timeProcess(seconds: number) {      

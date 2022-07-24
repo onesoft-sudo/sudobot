@@ -8,7 +8,7 @@ import getUser from '../../utils/getUser';
 import History from '../../automod/History';
 import Punishment from '../../models/Punishment';
 import PunishmentType from '../../types/PunishmentType';
-import { shouldNotModerate } from '../../utils/util';
+import { shouldNotModerate, hasPermission } from '../../utils/util';
 
 export default class BanCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -108,6 +108,10 @@ export default class BanCommand extends BaseCommand {
 
 		try {
         	const member = await msg.guild?.members.fetch(user.id);
+
+			if (member && !(await hasPermission(client, member, msg, null, "You don't have permission to ban this user."))) {
+				return;
+			}
 
 			if (member && shouldNotModerate(client, member)) {
 				await msg.reply({

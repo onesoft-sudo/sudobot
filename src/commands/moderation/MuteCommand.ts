@@ -10,7 +10,7 @@ import getMember from '../../utils/getMember';
 import ms from 'ms';
 import { unmute } from './UnmuteCommand';
 import PunishmentType from '../../types/PunishmentType';
-import { shouldNotModerate } from '../../utils/util';
+import { hasPermission, shouldNotModerate } from '../../utils/util';
 
 export async function mute(client: DiscordClient, dateTime: number | undefined, user: GuildMember, msg: Message | CommandInteraction, timeInterval: number | undefined, reason: string | undefined, hard: boolean = false) {
     try {
@@ -240,6 +240,10 @@ export default class MuteCommand extends BaseCommand {
             dateTime = Date.now() + timeInterval;
         }
 
+		if (!(await hasPermission(client, user, msg, null, "You don't have permission to mute this user."))) {
+			return;
+		}
+		
 		if (shouldNotModerate(client, user)) {
 			await msg.reply({
 				embeds: [

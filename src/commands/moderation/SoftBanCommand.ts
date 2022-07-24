@@ -9,7 +9,7 @@ import History from '../../automod/History';
 import Punishment from '../../models/Punishment';
 import PunishmentType from '../../types/PunishmentType';
 import { fetchEmojiStr } from '../../utils/Emoji';
-import { shouldNotModerate } from '../../utils/util';
+import { hasPermission, shouldNotModerate } from '../../utils/util';
 
 export default class SoftBanCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -127,6 +127,10 @@ export default class SoftBanCommand extends BaseCommand {
         try {
         	try {
         		const member = await msg.guild!.members.fetch(user.id);
+
+				if (member && !(await hasPermission(client, member, msg, null, "You don't have permission to softban this user."))) {
+					return;
+				}
 
         		if (member && shouldNotModerate(client, member)) {
         			await msg.reply({
