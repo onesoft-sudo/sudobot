@@ -94,7 +94,7 @@ export default class ClearCommand extends BaseCommand {
         	try {
         		const member = await msg.guild?.members.fetch(user.id);
 
-				if (member && !(await hasPermissions(client, member, msg, null, "You don't have permission to clear messages from this user.")))
+				if (member && !(await hasPermission(client, member, msg, null, "You don't have permission to clear messages from this user.")))
 					return;
 
         		if (member && shouldNotModerate(client, member)) {

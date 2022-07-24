@@ -86,7 +86,7 @@ export default class KickCommand extends BaseCommand {
         }
 
         try {
-        	if (!(await hasPermissions(client, member, msg, null, "You don't have permission to kick this user."))) {
+        	if (!(await hasPermission(client, user, msg, null, "You don't have permission to kick this user."))) {
         		return;
         	}
         	
