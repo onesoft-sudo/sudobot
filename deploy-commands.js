@@ -196,9 +196,9 @@ let commands = [
 		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true))
 		.addStringOption(option => option.setName('reason').setDescription("The reason for kicking this user")),
 
-	new SlashCommandBuilder().setName('bean').setDescription('Bean a member')
+	new SlashCommandBuilder().setName('shot').setDescription('Give a shot to a member')
 		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true))
-		.addStringOption(option => option.setName('reason').setDescription("The reason for beaning this user")),
+		.addStringOption(option => option.setName('reason').setDescription("The reason for giving shot to this user")),
 
 	new SlashCommandBuilder().setName('warn').setDescription('Warn a member')
 		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true))
@@ -305,7 +305,7 @@ let commands = [
 let contextMenuCommands = [
 	new ContextMenuCommandBuilder().setName('Moderation History').setType(ApplicationCommandType.User),
 	new ContextMenuCommandBuilder().setName('Ban').setType(ApplicationCommandType.User),
-	new ContextMenuCommandBuilder().setName('Bean').setType(ApplicationCommandType.User),
+	new ContextMenuCommandBuilder().setName('Shot').setType(ApplicationCommandType.User),
 	new ContextMenuCommandBuilder().setName('Kick').setType(ApplicationCommandType.User),
 ].map(command => command.toJSON());
 

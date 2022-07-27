@@ -46,8 +46,8 @@ export default class HistoryCommand extends BaseCommand {
                     return 'Soft Ban';
                 case PunishmentType.TEMPBAN:
                     return 'Temporary Ban';
-                case PunishmentType.BEAN:
-                    return 'Bean';
+                case PunishmentType.SHOT:
+                    return 'Shot';
                 case PunishmentType.MUTE:
                     return 'Mute';
                 case PunishmentType.HARDMUTE:

@@ -8,7 +8,7 @@ enum PunishmentType {
     TEMPBAN = 'tempban',
     UNBAN = 'unban',
     KICK = 'kick',
-    BEAN = 'bean'
+    SHOT = 'shot'
 }
 
 export default PunishmentType;

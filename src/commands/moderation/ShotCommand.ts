@@ -11,12 +11,12 @@ import Punishment from '../../models/Punishment';
 import PunishmentType from '../../types/PunishmentType';
 import ModerationEmbed from '../../utils/ModerationEmbed';
 
-export default class BeanCommand extends BaseCommand {
+export default class ShotCommand extends BaseCommand {
     supportsInteractions: boolean = true;
     supportsContextMenu: boolean = true;
 
     constructor() {
-        super('bean', 'moderation', ['Bean']);
+        super('shot', 'moderation', ['Shot']);
     }
 
     async run(client: DiscordClient, msg: Message | CommandInteraction | ContextMenuInteraction, options: CommandOptions | InteractionOptions) {
@@ -88,7 +88,7 @@ export default class BeanCommand extends BaseCommand {
 
         try {            
             await Punishment.create({
-                type: PunishmentType.BEAN,
+                type: PunishmentType.SHOT,
                 user_id: user.id,
                 guild_id: msg.guild!.id,
                 mod_id: msg.member!.user.id,
@@ -96,7 +96,7 @@ export default class BeanCommand extends BaseCommand {
                 reason
             });
 
-            await History.create(user.id, msg.guild!, 'bean', msg.member!.user.id, typeof reason === 'undefined' ? null : reason);
+            // await History.create(user.id, msg.guild!, 'bean', msg.member!.user.id, typeof reason === 'undefined' ? null : reason);
 
 		    try {
 		        await user.send({
@@ -104,7 +104,7 @@ export default class BeanCommand extends BaseCommand {
 		                new MessageEmbed()
 		                    .setAuthor({
 		                        iconURL: <string> msg.guild!.iconURL(),
-		                        name: `\tYou have been beaned in ${msg.guild!.name}`
+		                        name: `\tYou got a shot in ${msg.guild!.name}`
 		                    })
 		                    .addFields([
 		                        {
@@ -120,23 +120,23 @@ export default class BeanCommand extends BaseCommand {
             	dm = false;
             }
 
-            await client.logger.logBeaned(user, typeof reason === 'undefined' ? '*No reason provided*' : reason, msg.member!.user as User);
+            // await client.logger.logBeaned(user, typeof reason === 'undefined' ? '*No reason provided*' : reason, msg.member!.user as User);
         }
         catch (e) {
             console.log(e);            
         }
 
-        /*await msg.reply({
+        await msg.reply({
             embeds: [
                 new MessageEmbed()
                 .setAuthor({
                     name: user.user.tag,
                     iconURL: user.user.displayAvatarURL(),
                 })
-                .setDescription(user.user.tag + " has been beaned." + (!dm ? "\nThey have DMs disabled. They will not know that they have been beaned." : ''))
+                .setDescription(user.user.tag + " got a shot." + (!dm ? "\nThey have DMs disabled. They will not know that they got a shot." : ''))
                 .addFields([
                     {
-                        name: "Beaned by",
+                        name: "Given by",
                         value: (msg.member!.user as User).tag
                     },
                     {
@@ -145,15 +145,6 @@ export default class BeanCommand extends BaseCommand {
                     }
                 ])
             ]
-        });*/
-
-        await msg.reply({
-        	embeds: [
-        		new ModerationEmbed(user.user, msg.member!.user as User, {
-        			description: `${user.user.tag} has been beaned.`
-        		})
-        		.setReason(reason)
-        	]
         });
     }
 }

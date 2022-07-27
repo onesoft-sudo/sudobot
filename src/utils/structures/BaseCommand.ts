@@ -1,5 +1,5 @@
 import { ModalSubmitInteraction } from 'discord-modals';
-import { AutocompleteInteraction, CommandInteraction, CommandInteractionOption, ContextMenuInteraction, Interaction, Message, MessageEditOptions, MessageOptions, MessagePayload, WebhookEditMessageOptions } from 'discord.js';
+import { PermissionResolvable, AutocompleteInteraction, CommandInteraction, CommandInteractionOption, ContextMenuInteraction, Interaction, Message, MessageEditOptions, MessageOptions, MessagePayload, WebhookEditMessageOptions } from 'discord.js';
 import DiscordClient from '../../client/Client';
 import AutoCompleteOptions from '../../types/AutoCompleteOptions';
 import CommandOptions from '../../types/CommandOptions';
@@ -11,9 +11,10 @@ export default abstract class BaseCommand {
     supportsContextMenu: boolean = false;
     coolDown?: number;
     ownerOnly: boolean = false;
-
+	permissions: PermissionResolvable[] = [];
+	
     constructor(private name: string, private category: string, private aliases: Array<string>) {
-
+ 
     }
 
     getName(): string { 
