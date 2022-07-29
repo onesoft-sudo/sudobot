@@ -8,6 +8,7 @@ import getUser from '../../utils/getUser';
 import getMember from '../../utils/getMember';
 import History from '../../automod/History';
 import { fetchEmoji } from '../../utils/Emoji';
+import { hasPermission, shouldNotModerate } from '../../utils/util';
 
 export default class ClearCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -89,6 +90,28 @@ export default class ClearCommand extends BaseCommand {
             return;
         }
 
+        if (user) {
+        	try {
+        		const member = await msg.guild?.members.fetch(user.id);
+
+				if (member && !(await hasPermission(client, member, msg, null, "You don't have permission to clear messages from this user.")))
+					return;
+
+        		if (member && shouldNotModerate(client, member)) {
+        			await msg.reply({
+      					embeds: [
+        					{ description: "Cannot clear messages from this user: Operation not permitted" }
+        				]
+        			});
+        			
+        			return;
+        		}
+        	}
+        	catch (e) {
+        		console.log(e);
+        	}
+        }
+
         let count = 0;
         (global as any).deletingMessages = true;
 
@@ -110,10 +133,22 @@ export default class ClearCommand extends BaseCommand {
 
             do {
                 fetched = await (channel as TextChannel).messages.fetch({ limit: 100 });
-                fetched = await fetched.filter(m => m.author.id === user!.id && m.id !== message!.id && (Date.now() - m.createdTimestamp) <= (2 * 7 * 24 * 60 * 60));
+                fetched = await fetched.filter(m => m.author.id === user!.id && m.id !== message!.id && (Date.now() - m.createdTimestamp) <= (2 * 7 * 24 * 60 * 60 * 1000));
                 await (channel as TextChannel).bulkDelete(fetched);
+                count += fetched.size;
+
+                /*for await (const [id, m] of fetched.entries()) {
+                	try {
+                		await m.delete();
+                		count++;
+                	}
+                	catch (e) {
+                		console.log('Error deleting message', e);
+                	}
+                }
+                */
+                
                 await new Promise(r => setTimeout(r, 900));
-                count += await fetched.size;
             }
             while (fetched.size >= 2);
         }
@@ -198,7 +233,7 @@ export default class ClearCommand extends BaseCommand {
             catch (e) {
                 console.log(e);                
             }
-
+            
             try {
                 await message!.delete();
             }

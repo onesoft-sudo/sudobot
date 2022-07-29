@@ -1,4 +1,4 @@
-import { BanOptions, CommandInteraction, GuildMember, Interaction, Message, User } from 'discord.js';
+import { Permissions, BanOptions, CommandInteraction, GuildMember, Interaction, Message, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -8,10 +8,12 @@ import getUser from '../../utils/getUser';
 import History from '../../automod/History';
 import Punishment from '../../models/Punishment';
 import PunishmentType from '../../types/PunishmentType';
+import { shouldNotModerate, hasPermission } from '../../utils/util';
 
 export default class BanCommand extends BaseCommand {
     supportsInteractions: boolean = true;
     supportsContextMenu: boolean = true;
+    permissions = [Permissions.FLAGS.BAN_MEMBERS];
 
     constructor() {
         super('ban', 'moderation', ['Ban']);
@@ -105,6 +107,29 @@ export default class BanCommand extends BaseCommand {
             }
         }
 
+		try {
+        	const member = await msg.guild?.members.fetch(user.id);
+
+			if (member && !(await hasPermission(client, member, msg, null, "You don't have permission to ban this user."))) {
+				return;
+			}
+
+			if (member && shouldNotModerate(client, member)) {
+				await msg.reply({
+					embeds: [
+						new MessageEmbed()
+						.setColor('#f14a60')
+						.setDescription('Cannot ban this user: Operation not permitted')	
+					]
+				});
+				
+				return;
+			}
+		}
+		catch (e) {
+			console.log(e);
+		}
+		
         try {
             await msg.guild?.bans.create(user, banOptions);
 

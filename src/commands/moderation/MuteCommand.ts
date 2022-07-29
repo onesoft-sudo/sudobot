@@ -10,6 +10,7 @@ import getMember from '../../utils/getMember';
 import ms from 'ms';
 import { unmute } from './UnmuteCommand';
 import PunishmentType from '../../types/PunishmentType';
+import { hasPermission, shouldNotModerate } from '../../utils/util';
 
 export async function mute(client: DiscordClient, dateTime: number | undefined, user: GuildMember, msg: Message | CommandInteraction, timeInterval: number | undefined, reason: string | undefined, hard: boolean = false) {
     try {
@@ -75,16 +76,22 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
         });
         
         await client.logger.logMute(user, reason === undefined || reason.trim() === '' ? "*No reason provided*" : reason, timeInterval, msg.member!.user as User, hard);
-        await user.send({
-            embeds: [
-                new MessageEmbed()
-                .setAuthor({
-                    iconURL: <string> msg.guild!.iconURL(),
-                    name: `\tYou have been muted in ${msg.guild!.name}`
-                })
-                .addField("Reason", reason === undefined || reason.trim() === '' ? "*No reason provided*" : reason)
-            ]
-        });
+
+		try {
+	        await user.send({
+	            embeds: [
+	                new MessageEmbed()
+	                .setAuthor({
+	                    iconURL: <string> msg.guild!.iconURL(),
+	                    name: `\tYou have been muted in ${msg.guild!.name}`
+	                })
+	                .addField("Reason", reason === undefined || reason.trim() === '' ? "*No reason provided*" : reason)
+	            ]
+	        });
+        }
+        catch (e) {
+        	console.log(e);
+        }
     }
     catch (e) {
         console.log(e);
@@ -233,6 +240,22 @@ export default class MuteCommand extends BaseCommand {
             dateTime = Date.now() + timeInterval;
         }
 
+		if (!(await hasPermission(client, user, msg, null, "You don't have permission to mute this user."))) {
+			return;
+		}
+		
+		if (shouldNotModerate(client, user)) {
+			await msg.reply({
+				embeds: [
+					{
+						description: "This user cannot be muted."
+					}
+				]
+			});
+
+			return;
+		}
+		
         await mute(client, dateTime, user, msg, timeInterval, reason, hard);
 
         const fields = [

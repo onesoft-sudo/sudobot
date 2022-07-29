@@ -2,6 +2,8 @@ import { channelMention } from "@discordjs/builders";
 import { Message, TextChannel, MessageMentions, Guild } from "discord.js";
 import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
+import { readFile } from 'fs/promises';
+import { resolve } from 'path';
 
 export type MessageFilterConfig = {
     words_enabled: boolean;
@@ -17,29 +19,55 @@ export type MessageFilterConfig = {
     pings: number;
     tokens: string[];
     regex_patterns: string[];
+    rickrolls_enabled: boolean;
 };
 
 export default class MessageFilter {
+	rickrolls: string[] = [];
+	
     constructor(protected client: DiscordClient, protected config: MessageFilterConfig = {} as MessageFilterConfig) {
         
     }
 
-    load() {
-        this.config = this.client.config.get('filters');
+    async load() {
+        this.config = await this.client.config.get('filters');
+
+        if (this.rickrolls.length < 1 && this.config.rickrolls_enabled) {
+        	const data = await readFile(resolve(__dirname, '..', '..', 'resources', 'rickrolls.json'));
+        	this.rickrolls = await (JSON.parse(data.toString()).rickrolls || []);
+        }
+
+        console.log('\n');
+        console.log(this.config);
     }
+
+	async filterRickRolls({ content }: Message) {
+		if (!this.config.rickrolls_enabled) {
+			return false;
+		}
+
+		for await (const url of this.rickrolls) {
+			if (content.includes(url)) {
+				return true;
+			}
+		}
+	}
     
     async filterAlmostSameChars(str: string) {
         return (new RegExp('(.+)\\1{' + this.config.chars_repeated + ',}', 'gm')).test(str.trim());
     } 
 
     async filterPings(str: string) {        
-        let data = [...str.matchAll(new RegExp(`[(${MessageMentions.USERS_PATTERN})]+`, 'gm'))];
+        let data = [...str.matchAll(new RegExp(`\<\@[0-9]+\>`, 'gm'))];
 
+		console.log('users', data);
+1
         if (data.length >= this.config.pings)
-            return false;
+            return true;
         
-        data = [...str.matchAll(new RegExp(`[(${MessageMentions.ROLES_PATTERN})]+`, 'gm'))];
-
+        data = [...str.matchAll(new RegExp(`\<\@\&[0-9]+\>`, 'gm'))];
+		console.log('roles', data);
+		
         return data.length >= this.config.pings;
     } 
 
@@ -48,6 +76,11 @@ export default class MessageFilter {
     } 
 
     async filterRepeatedText(msg: Message) {
+		const excluded = this.client.config.props[msg.guild!.id].spam_filter.exclude;
+
+		if (excluded.indexOf(msg.channel!.id) !== -1 || excluded.indexOf((msg.channel! as TextChannel).parent?.id) !== -1)
+			return;
+    
         return await this.filterAlmostSameChars(msg.content) || await this.filterAlmostSameText(msg.content);
     }
 
@@ -485,6 +518,34 @@ export default class MessageFilter {
                         iconURL: msg.author.displayAvatarURL()
                     })
                     .setTitle(`Restricted domains detected`)
+                    .setDescription(msg.content)
+                    .addFields([
+                        {
+                            name: "Channel",
+                            value: `${channelMention(msg.channel.id)} (${msg.channel.id})`
+                        },
+                    ])
+                    .setFooter({
+                        text: "Deleted"
+                    })
+                    .setTimestamp()
+                ]
+            });
+        }
+        else if ((await this.filterRickRolls(msg))) {
+            await msg.delete();
+
+            const channel = <TextChannel> await msg.guild!.channels.fetch(this.client.config.get('logging_channel'));
+
+            await channel!.send({
+                embeds: [
+                    new MessageEmbed()
+                    .setColor('#f14a60')
+                    .setAuthor({
+                        name: msg.author.tag,
+                        iconURL: msg.author.displayAvatarURL()
+                    })
+                    .setTitle(`Rickroll URLs detected`)
                     .setDescription(msg.content)
                     .addFields([
                         {

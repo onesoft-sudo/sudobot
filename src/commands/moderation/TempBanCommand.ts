@@ -11,8 +11,9 @@ import PunishmentType from '../../types/PunishmentType';
 import { fetchEmojiStr } from '../../utils/Emoji';
 import ms from 'ms';
 import { clearTimeoutv2, getTimeouts, setTimeoutv2 } from '../../utils/setTimeout';
+import { hasPermission, shouldNotModerate } from '../../utils/util';
 
-export default class tempBanCommand extends BaseCommand {
+export default class TempBanCommand extends BaseCommand {
     supportsInteractions: boolean = true;
 
     constructor() {
@@ -132,6 +133,29 @@ export default class tempBanCommand extends BaseCommand {
         time = ms(time);
     
         try {
+			try {
+				const member = await msg.guild?.members.fetch(user.id);
+
+				if (member && !(await hasPermission(client, member, msg, null, "You don't have permission to tempban this user."))) {
+					return;
+				}
+
+				if (member && shouldNotModerate(client, member)) {
+					await msg.reply({
+		                embeds: [
+		                    new MessageEmbed()
+		                    .setColor('#f14a60')
+		                    .setDescription(`This user cannot be tempbanned.`)
+		                ]
+		            });
+
+		            return;		
+				}
+			}
+			catch (e) {
+				console.log(e);
+			}
+        
             await msg.guild?.bans.create(user, banOptions);
 
             const punishment = await Punishment.create({

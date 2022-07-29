@@ -12,19 +12,24 @@ export default class Verification {
     async success(member: GuildMember, req: Request) {        
         await member.roles.remove(this.client.config.props[member.guild.id].verification.role);
 
-        await member.send({
-            embeds: [
-                new MessageEmbed({
-                    author: {
-                        name: member.guild.name,
-                        iconURL: member.guild.iconURL() ?? undefined,
-                    },
-                    title: "Thanks for verifying!",
-                    description: "The verification was completed successfully!",
-                    timestamp: new Date()
-                })
-            ],
-        });
+		try {
+	        await member.send({
+	            embeds: [
+	                new MessageEmbed({
+	                    author: {
+	                        name: member.guild.name,
+	                        iconURL: member.guild.iconURL() ?? undefined,
+	                    },
+	                    title: "Thanks for verifying!",
+	                    description: "The verification was completed successfully!",
+	                    timestamp: new Date()
+	                })
+	            ],
+	        });
+	    }
+	    catch (e) {
+	    	console.log(e);
+	    }
 
         const { default: UnverifiedMember } = await import('../models/UnverifiedMember');
 
@@ -55,25 +60,30 @@ export default class Verification {
 
         const url = `${this.client.config.props.global.cp_host}/challenge/v1/verify/?guild_id=${member.guild.id}`;
 
-        await member.send({
-            embeds: [
-                new MessageEmbed({
-                    author: {
-                        name: member.guild.name,
-                        iconURL: member.guild.iconURL() ?? undefined,
-                    },
-                    title: "Verification Required!",
-                    description: `Hey ${member.nickname ?? member.user.username}, the server **${member.guild.name}** requires verification!\nTo verify yourself, simply go to the verification URL given below and you might be asked to solve some captcha.\n\nHave a nice day,\n*${member.guild.name} Staff*`,
-                    timestamp: new Date(),
-                    fields: [
-                        {
-                            name: "Verification URL",
-                            value: url
-                        }
-                    ],
-                    url
-                })
-            ]
-        });
+		try {
+	        await member.send({
+	            embeds: [
+	                new MessageEmbed({
+	                    author: {
+	                        name: member.guild.name,
+	                        iconURL: member.guild.iconURL() ?? undefined,
+	                    },
+	                    title: "Verification Required!",
+	                    description: `Hey ${member.nickname ?? member.user.username}, the server **${member.guild.name}** requires verification!\nTo verify yourself, simply go to the verification URL given below and you might be asked to solve some captcha.\n\nHave a nice day,\n*${member.guild.name} Staff*`,
+	                    timestamp: new Date(),
+	                    fields: [
+	                        {
+	                            name: "Verification URL",
+	                            value: url
+	                        }
+	                    ],
+	                    url
+	                })
+	            ]
+	        });
+        }
+        catch (e) {
+        	console.log(e);
+        }
     }
 }

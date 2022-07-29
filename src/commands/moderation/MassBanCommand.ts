@@ -9,6 +9,7 @@ import History from '../../automod/History';
 import { fetchEmoji } from '../../utils/Emoji';
 import Punishment from '../../models/Punishment';
 import PunishmentType from '../../types/PunishmentType';
+import { hasPermission, shouldNotModerate } from '../../utils/util';
 
 export default class MassBanCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -98,6 +99,28 @@ export default class MassBanCommand extends BaseCommand {
 
                 try {
                     console.log(banOptions.reason);
+
+                    try {
+                    	const member = await msg.guild?.members.fetch(user.id);
+
+						if (member && !(await hasPermission(client, member, msg, null, "You don't have permission to ban " + user.tag + ".")))
+							break;
+							
+                    	if (member && shouldNotModerate(client, member)) {
+                    		await msg.reply({
+                    			embeds: [
+                    				new MessageEmbed()
+                    				.setColor('#f14a60')
+                    				.setDescription('The user ' + user.tag + ' is not bannable.')
+                    			]
+                    		});
+
+                    		return;
+                    	}
+                    }
+                    catch (e) {
+                    	console.log(e);
+                    }
 
                     await Punishment.create({
                         type: PunishmentType.BAN,
