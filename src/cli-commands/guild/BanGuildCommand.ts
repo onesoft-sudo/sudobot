@@ -1,6 +1,6 @@
 import { exit } from "process";
 import DiscordClient from "../../client/Client";
-import BannedGuild from "../../models/BannedGuilds";
+import BannedGuild from "../../models/BannedGuild";
 import BaseCLICommand from "../../utils/structures/BaseCLICommand";
 
 export default class BanGuildCommand extends BaseCLICommand {

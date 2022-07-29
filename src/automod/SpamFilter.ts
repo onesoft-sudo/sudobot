@@ -1,150 +1,114 @@
-import { mute } from "../commands/moderation/MuteCommand";
-import { unmute } from "../commands/moderation/UnmuteCommand";
-import History from "./History";
-import MessageEmbed from "../client/MessageEmbed";
+import { userMention } from "@discordjs/builders";
+import { Collection, Guild, Message, TextChannel } from "discord.js";
 import DiscordClient from "../client/Client";
-import { Message, TextChannel } from "discord.js";
+import { mute } from "../commands/moderation/MuteCommand";
+import { warn } from "../commands/moderation/WarnCommand";
 
-let warn: Function;
-
-export type SpamFilterConfig = {
-    limit: number;
-    samelimit: number;
-    diff: number;
-    time: number;
-    unmute_in: number;
-    enabled: boolean;
-    exclude: string[]
-};
+export interface SpamFilterData {
+    count: number,
+    lastMessage: Message,
+    timeout: NodeJS.Timeout
+}
 
 export default class SpamFilter {
-    users: { [key: string | number]: Map <string, any> } = {};
-    config: SpamFilterConfig;
-    LIMIT: number = 0;
-    SAMELIMIT: number = 0;
-    DIFF: number = 0;
-    UNMUTE: number = 0;
-    TIME: number = 0;
+    users: {
+        [guild: string]: Collection<string, SpamFilterData>
+    } = {};
+
+    LIMIT = 5;
+    TIME = 5000;
+    DIFF = 2500;
+    exclude: string[] = [];
     enabled: boolean = true;
+    SpamViolation: typeof import("../models/SpamViolation");
 
-    constructor(private client: DiscordClient) {
-        this.config = {} as any;
-        warn = require("../commands/moderation/WarnCommand").warn;
+    constructor(protected client: DiscordClient) {
+        this.SpamViolation = require("../models/SpamViolation");
     }
 
-    load() {
-        this.config = this.client.config.get('spam_filter');
-        this.LIMIT = this.config.limit;    
-        this.SAMELIMIT = this.config.samelimit;    
-        this.DIFF = this.config.diff;
-        this.TIME = this.config.time;
-        this.UNMUTE = this.config.unmute_in;
-        this.enabled = this.config.enabled;
-        (global as any).reset = true;
-        (global as any).reset1 = true;
+    load(guild: Guild) {
+        this.enabled = this.client.config.props[guild.id].spam_filter.enabled;
+        this.exclude = this.client.config.props[guild.id].spam_filter.exclude;
     }
 
-    async start(msg: Message) {
-        this.load();
-        
-        if(msg.author.bot || this.config.exclude.indexOf(msg.channel.id) !== -1 || this.config.exclude.indexOf((msg.channel as TextChannel).parent?.id!) !== -1 || !this.enabled || msg.member!.roles.cache.has(this.client.config.get('mod_role'))) 
+    async start(message: Message) {
+        const { guild, author, member, channel } = message;
+        const { default: SpamViolation } = this.SpamViolation;
+
+        this.load(guild!);
+
+        if(author.bot || this.exclude.indexOf(channel.id) !== -1 || this.exclude.indexOf((channel as TextChannel).parent?.id!) !== -1 || !this.enabled || member!.roles.cache.has(this.client.config.get('mod_role'))) 
             return;
 
-        if (!this.users[msg.guild!.id]) {
-            this.users[msg.guild!.id] = new Map();
+        if (!this.users[guild!.id]) {
+            this.users[guild!.id] = new Collection();
         }
 
-        const users = this.users[msg.guild!.id];
+        const users = this.users[guild!.id];
 
-        if (users.has(msg.author.id)) {
-            const user = users.get(msg.author.id);
-            const interval = msg.createdTimestamp - user.lastmsg.createdTimestamp;
-
-            console.log(interval);
-
-            if (user.lastmsg && user.lastmsg.content.trim() === msg.content.trim()) {
-                user.samecount++;
-            }
-            else {
-                user.samecount = 1;
-            }
-
-            user.lastmsg = msg;
-
-            if (interval > this.DIFF) {
-                clearTimeout(user.timeout);
-                console.log('Cleared timeout');
-
+        if (users.has(author.id)) {
+            const user = users.get(author.id)!;
+            const diff = message.createdTimestamp - user.lastMessage.createdTimestamp;
+            
+            if (diff > this.DIFF) {
                 user.count = 1;
-
+                user.lastMessage = message;
+                clearTimeout(user.timeout);
                 user.timeout = setTimeout(() => {
-                    users.delete(msg.author.id);
-                    console.log('deleted (RESET)');
-                    (global as any).reset = true;
+                    users.delete(author.id);
                 }, this.TIME);
-
-                users.set(msg.author.id, user);
             }
             else {
                 user.count++;
 
-                const muteOuter = async () => {
-                    await this.client.db.get("SELECT * FROM spam WHERE user_id = ? AND guild_id = ?", [msg.author.id, msg.guild!.id], async (err: any, data: any) => {
-                        console.log(data);
-                        if (data !== undefined && data !== null) {
-                            if (data.strike === 1) {
-                                await warn(this.client, msg.author, "Spamming\nThe next violations will cause mutes.", msg, this.client.user!);
-                                console.log('warned');                                
-                            }
-                            if (data.strike >= 2) {
-                                let u = await msg.guild!.members.fetch(msg.author.id);
-                                let timeMs = this.UNMUTE;
-                                let time = (new Date()).getTime() + timeMs;
+                const { count } = user;
 
-                                await mute(this.client, time, u, msg, timeMs, 'Spamming');
-                            }
-                            
-                            await this.client.db.get("UPDATE spam SET strike = strike + 1 WHERE id = ?", [data.id], () => null);
-                        }
-                        else {
-                            await this.client.db.get("INSERT INTO spam(user_id, date, strike, guild_id) VALUES(?, ?, 1, ?)", [msg.author.id, (new Date()).toISOString(), msg.guild!.id], async (err: any) => {
-                                if (err) {
-                                    console.log(err);
-                                }
-                                
-                                await msg.reply({
-                                    content: "Whoa there! Calm down and please don't spam!"
-                                });
-                            });
-                        }
+                if (count === this.LIMIT) {
+                    const [spamViolation, isCreated] = await SpamViolation.findOrCreate({
+                        defaults: {
+                            user_id: author.id,
+                            guild_id: guild!.id,
+                        },
+                        where: {
+                            user_id: author.id,
+                            guild_id: guild!.id,
+                        },
+                        order: [
+                            ['id', 'DESC']
+                        ]
                     });
-                    
-                    user.count = 1;
-                    users.set(msg.author.id, user);
-                };
 
-                if (user.samecount === this.SAMELIMIT) {
-                    await muteOuter();
-                    console.log('here <3');
-                }
-                else if (user.count === this.LIMIT) {
-                    await muteOuter();
+                    if (isCreated) {
+                        await message.channel.send({
+                            content: `Whoa there ${userMention(author.id)}! Calm down and please don't spam!`
+                        });
+
+                        return;
+                    }
+
+                    const rawData = spamViolation.get();
+
+                    if (rawData.strike === 2) {
+                        await warn(this.client, author, `Spamming\nThe next violations will cause mutes.`, message, this.client.user!);
+                    }
+                    else if (rawData.strike > 2) {
+                        await mute(this.client, Date.now() + 20000, member!, message, 20000, `Spamming`);
+                    }
                 }
                 else {
-                    users.set(msg.author.id, user);
+                    user.lastMessage = message;
+                    users.set(author.id, user);
                 }
             }
         }
         else {
-            users.set(msg.author.id, {
+            users.set(author.id, {
                 count: 1,
-                lastmsg: msg,
+                lastMessage: message,
                 timeout: setTimeout(() => {
-                    users.delete(msg.author.id);
-                    console.log('deleted');
-                }, this.TIME),
-                samecount: 1,
+                    users.delete(author.id);
+                }, this.TIME)
             });
         }
     }
-};
+}

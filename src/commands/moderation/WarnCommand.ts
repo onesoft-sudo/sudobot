@@ -6,10 +6,11 @@ import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import getMember from '../../utils/getMember';
 import PunishmentType from '../../types/PunishmentType';
-import Punishment from '../../models/Punishment';
 import History from '../../automod/History';
 
-export async function warn(client: DiscordClient, user: User, reason: string | undefined, msg: Message | CommandInteraction, warned_by?: User) {    
+export async function warn(client: DiscordClient, user: User, reason: string | undefined, msg: Message | CommandInteraction, warned_by?: User) {   
+    const { default: Punishment } = await import('../../models/Punishment');
+
     const warning = await Punishment.create({
         guild_id: msg.guild!.id,
         user_id: user.id,

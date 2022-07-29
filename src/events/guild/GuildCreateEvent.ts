@@ -3,7 +3,7 @@ import DiscordClient from '../../client/Client';
 import { runTimeouts } from '../../utils/setTimeout';
 import { LogLevel } from '../../services/DebugLogger';
 import { Guild } from 'discord.js';
-import BannedGuild from '../../models/BannedGuilds';
+import BannedGuild from '../../models/BannedGuild';
 
 export default class GuildCreateEvent extends BaseEvent {
     constructor() {

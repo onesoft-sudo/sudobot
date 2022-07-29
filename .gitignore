@@ -11,3 +11,4 @@ yarn-error.log
 build/
 logs/
 site/
+src/automod/SpamFilter3.ts
