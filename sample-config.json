@@ -68,7 +68,7 @@
    "emoji"
   ],
   "role_commands": {
-   "[id]": [],
+   "[id]": []
   },
   "filters": {
    "ignore_staff": true,
