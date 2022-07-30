@@ -20,6 +20,15 @@
    "enabled": false,
    "channels": []
   },
+  "verification": {
+    "enabled": true,
+    "role": "963418517565214770"
+   },
+  "welcomer": {
+    "enabled": true,
+    "channel": "",
+    "message": "Welcome :mention: to :guild:! :wave:"
+   },
   "cooldown": {
    "enabled": false,
    "global": null,
