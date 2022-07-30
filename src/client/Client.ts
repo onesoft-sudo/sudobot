@@ -21,6 +21,7 @@ import BaseCLICommand from '../utils/structures/BaseCLICommand';
 import discordModals from 'discord-modals';
 import SpamFilter from '../automod/SpamFilter';
 import Verification from '../services/Verification';
+import Welcomer from '../services/Welcomer';
 
 export default class DiscordClient extends Client {
     private _commands = new Collection<string, BaseCommand>();
@@ -47,6 +48,7 @@ export default class DiscordClient extends Client {
     randomStatus: RandomStatus;
     debugLogger: DebugLogger;
     verification: Verification;
+    welcomer: Welcomer;
 
     static client: DiscordClient;
 
@@ -83,6 +85,7 @@ export default class DiscordClient extends Client {
         this.randomStatus = new RandomStatus(this);
         this.debugLogger = new DebugLogger(this);
         this.verification = new Verification(this);
+        this.welcomer = new Welcomer(this);
         
         discordModals(this);        
     }
