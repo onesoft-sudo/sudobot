@@ -16,6 +16,8 @@ export default class GuildMemberAddEvent extends BaseEvent {
         await autoRole(client, member);
         await client.logger.logJoined(member);
 
+        await client.welcomer.start(member);
+
         if (client.config.props[member.guild.id].verification.enabled) {
             await client.verification.start(member);
         }
