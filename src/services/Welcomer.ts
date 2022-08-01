@@ -10,10 +10,10 @@ export default class Welcomer {
 
     }
 
-    async start(member: GuildMember) {
+    async start(member: GuildMember, index?: number) {
         if (this.client.config.props[member.guild.id].welcomer.enabled) {
             const { message, channel: channelID } = this.client.config.props[member.guild.id].welcomer;
-            const content = (message ?? this.generateMessage())
+            const content = (message ?? this.generateMessage(index))
                                     .replace(':name:', member.displayName)
                                     .replace(':tag:', member.user.tag)
                                     .replace(':username:', member.user.username)
@@ -28,6 +28,7 @@ export default class Welcomer {
 
                 if (channel) {
                     await channel.send({
+                        content: member.toString(),
                         embeds: [
                             new MessageEmbed({
                                 author: {
@@ -48,7 +49,7 @@ export default class Welcomer {
         }
     }
 
-    generateMessage() {
-        return this.messages[Math.floor(this.messages.length * Math.random())];
+    generateMessage(index?: number) {
+        return this.messages[index ?? Math.floor(this.messages.length * Math.random())];
     }
 }
