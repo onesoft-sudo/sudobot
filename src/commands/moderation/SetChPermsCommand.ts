@@ -14,6 +14,8 @@ import AutoCompleteOptions from '../../types/AutoCompleteOptions';
 export default class SetChPermsCommand extends BaseCommand {
     supportsInteractions: boolean = true;
 
+    permissions = [Permissions.FLAGS.MANAGE_CHANNELS];
+
     constructor() {
         super('setchperms', 'moderation', []);
     }

@@ -10,7 +10,7 @@ import History from '../../automod/History';
 import { fetchEmoji } from '../../utils/Emoji';
 
 export default class LockCommand extends BaseCommand {
-    supportsInteractions: boolean = true;
+    supportsInteractions: boolean = true;    
 
     constructor() {
         super('lock', 'moderation', []);
