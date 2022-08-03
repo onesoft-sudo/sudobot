@@ -1,4 +1,4 @@
-import { BanOptions, CommandInteraction, Guild, GuildMember, Interaction, Message, User } from 'discord.js';
+import { BanOptions, CommandInteraction, Guild, GuildMember, Interaction, Message, Permissions, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -102,6 +102,7 @@ export async function unmute(client: DiscordClient, user: GuildMember, d: User) 
 
 export default class UnmuteCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    permissions = [Permissions.FLAGS.MODERATE_MEMBERS];
 
     constructor() {
         super('unmute', 'moderation', []);

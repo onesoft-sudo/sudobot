@@ -1,4 +1,4 @@
-import { BanOptions, CommandInteraction, GuildMember, Interaction, Message, User } from 'discord.js';
+import { BanOptions, CommandInteraction, GuildMember, Interaction, Message, Permissions, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -119,6 +119,7 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
 
 export default class MuteCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    permissions = [Permissions.FLAGS.MODERATE_MEMBERS];
 
     constructor() {
         super('mute', 'moderation', []);
