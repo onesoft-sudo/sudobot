@@ -1,4 +1,4 @@
-import { BanOptions, CommandInteraction, Guild, GuildMember, Interaction, Message, User } from 'discord.js';
+import { BanOptions, CommandInteraction, Guild, GuildMember, Interaction, Message, User, Permissions } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -13,6 +13,7 @@ import PunishmentType from '../../types/PunishmentType';
 
 export default class UnbanCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    permissions = [Permissions.FLAGS.BAN_MEMBERS];
 
     constructor() {
         super('unban', 'moderation', []);
