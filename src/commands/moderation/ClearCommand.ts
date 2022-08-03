@@ -1,4 +1,4 @@
-import { BanOptions, CommandInteraction, Emoji, GuildChannel, GuildMember, Interaction, Message, TextChannel, User } from 'discord.js';
+import { BanOptions, CommandInteraction, Emoji, GuildChannel, GuildMember, Interaction, Message, TextChannel, User, Permissions } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -12,6 +12,7 @@ import { hasPermission, shouldNotModerate } from '../../utils/util';
 
 export default class ClearCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
 
     constructor() {
         super('clear', 'moderation', []);
