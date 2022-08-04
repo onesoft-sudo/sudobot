@@ -13,6 +13,10 @@ export default class GuildMemberRemoveEvent extends BaseEvent {
             return;
 
         await client.logger.logLeft(member);
+
+        if (member.user.bot)
+            return;
+        
         await client.autoClear.start(member, member.guild);
 
         const verificationData = await UnverifiedMember.findOne({

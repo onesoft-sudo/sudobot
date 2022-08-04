@@ -12,9 +12,13 @@ export default class GuildMemberAddEvent extends BaseEvent {
         if (member.user.id === client.user!.id)
             return;
         
+        await client.logger.logJoined(member);
+        
+        if (member.user.bot)
+            return;
+
         await client.antiraid.start(member);
         await autoRole(client, member);
-        await client.logger.logJoined(member);
 
         await client.welcomer.start(member);
 
