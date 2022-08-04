@@ -11,7 +11,6 @@ import { fetchEmoji } from '../../utils/Emoji';
 
 export default class EchoCommand extends BaseCommand {
     supportsInteractions: boolean = true;
-    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
 
     constructor() {
         super('echo', 'moderation', []);
