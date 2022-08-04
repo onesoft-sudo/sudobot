@@ -1,5 +1,5 @@
 import { ModalSubmitInteraction } from 'discord-modals';
-import { PermissionResolvable, AutocompleteInteraction, CommandInteraction, CommandInteractionOption, ContextMenuInteraction, Interaction, Message, MessageEditOptions, MessageOptions, MessagePayload, WebhookEditMessageOptions } from 'discord.js';
+import { PermissionResolvable, AutocompleteInteraction, CommandInteraction, CommandInteractionOption, ContextMenuInteraction, Interaction, Message, MessageEditOptions, MessageOptions, MessagePayload, WebhookEditMessageOptions, SelectMenuInteraction, ButtonInteraction, GuildMember } from 'discord.js';
 import DiscordClient from '../../client/Client';
 import AutoCompleteOptions from '../../types/AutoCompleteOptions';
 import CommandOptions from '../../types/CommandOptions';
@@ -47,6 +47,51 @@ export default abstract class BaseCommand {
         }
         
         return (await msg.editReply(options as string | MessagePayload | WebhookEditMessageOptions)) as Message;
+    }
+
+    async perms(client: DiscordClient, message: Message | Interaction) {
+        let member: GuildMember | null = null;
+
+        if (message.member && !(message.member instanceof GuildMember)) {
+            try {
+                member = (await message.guild?.members.fetch(message.member!.user.id)) ?? null;
+            }
+            catch (e) {
+                console.log(e);
+                return false;
+            }
+        }
+        else {
+            member = message.member;
+        }
+
+        for await (let permission of this.permissions) {
+            if (!member?.permissions.has(permission, true)) {                
+                if (message instanceof Interaction && !message.isRepliable())
+                    return; 
+    
+                await message.reply({
+                    embeds: [
+                        {
+                            description: ":x: You don't have enough permissions to run this command.",
+                            color: 0xf14a60
+                        }
+                    ]
+                });
+    
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    async execute(client: DiscordClient, message: Message | Interaction, options: CommandOptions | InteractionOptions) {
+        if (!(await this.perms(client, message))) {
+            return;
+        } 
+
+        await this.run(client, message, options);
     }
 
     abstract run(client: DiscordClient, message: Message | Interaction, options: CommandOptions | InteractionOptions): Promise<void>;

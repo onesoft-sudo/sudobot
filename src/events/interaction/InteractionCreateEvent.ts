@@ -53,7 +53,7 @@ export default class InteractionCreateEvent extends BaseEvent {
                 if (!await client.cooldown.start(interaction, options))
                     return;
 
-                await command.run(client, interaction, options);
+                await command.execute(client, interaction, options);
                 (global as any).lastCommand = commandName;
             }
         }
@@ -68,6 +68,10 @@ export default class InteractionCreateEvent extends BaseEvent {
                 const allowed = await client.auth.verify(interaction.member! as GuildMember, command);
 
                 if (!allowed) {
+                    return;
+                }
+
+                if (!(await command.perms(client, interaction))) {
                     return;
                 }
 
@@ -95,6 +99,10 @@ export default class InteractionCreateEvent extends BaseEvent {
                 const allowed = await client.auth.verify(interaction.member! as GuildMember, command);
 
                 if (!allowed) {
+                    return;
+                }
+                
+                if (!(await command.perms(client, interaction))) {
                     return;
                 }
 

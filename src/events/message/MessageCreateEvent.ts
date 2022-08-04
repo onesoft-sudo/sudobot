@@ -43,7 +43,7 @@ export default class MessageCreateEvent extends BaseEvent {
                     if (!await client.cooldown.start(message, options))
                         return;
                     
-                    await command.run(client, message, options);    
+                    await command.execute(client, message, options);    
                 }
                 else {
                     await message.reply({
