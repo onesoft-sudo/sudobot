@@ -1,6 +1,6 @@
 import fs from 'fs';
 import DiscordClient from '../client/Client';
-import { GuildMember, Message, CommandInteraction, MessageEmbed, ContextMenuInteraction } from 'discord.js';
+import { GuildMember, Message, CommandInteraction, MessageEmbed, ContextMenuInteraction, Interaction } from 'discord.js';
 import Axios, { AxiosRequestHeaders, HeadersDefaults } from 'axios';
 
 export function shouldNotModerate(client: DiscordClient, member: GuildMember) {
@@ -20,7 +20,19 @@ export async function hasPermission(client: DiscordClient, member: GuildMember, 
 		m = msg.member! as GuildMember;
 	}
 	
-	if (member.roles.highest?.position > m.roles.highest?.position) {
+	if (member.roles.highest?.position >= m.roles.highest?.position) {
+        if (msg instanceof Interaction && msg.deferred) {
+            await msg.editReply({
+                embeds: [
+                    new MessageEmbed()
+                    .setColor('#f14a60')
+                    .setDescription(`:x: ${error}`)
+                ]
+            });
+
+            return false;
+        }
+
 		await msg.reply({
 			embeds: [
 				new MessageEmbed()
