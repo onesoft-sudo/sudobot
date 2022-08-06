@@ -42,7 +42,6 @@ mkdir config tmp storage logs
 touch logs/join-leave.log
 echo "{}" > config/snippets.json
 cp sample-config.json config/config.json
-npm install
 npm install -D
 ```
 
