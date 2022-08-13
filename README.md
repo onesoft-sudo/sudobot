@@ -99,4 +99,4 @@ Congratulations! You've successfully set up your own instance of SudoBot!
 ### Support
 
 - **Email**: rakinar2@onesoftnet.eu.org
-- **Discord Server**: [Support Server Invite](https://discord.gg/892GWhTzgs)
+- **Discord Servers*: [The Everything Server](https://discord.gg/Km7ZcfXT6P), [Support Server](https://discord.gg/892GWhTzgs)
