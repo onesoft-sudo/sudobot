@@ -30,6 +30,10 @@ class Logger {
         }
     }
 
+    log(guild: Guild, callback: (channel: TextChannel) => any) {
+        this.channel(callback, { guild });
+    }
+
     logEdit(oldMsg: Message, newMsg: Message) {
         this.channel(async (channel) => {
             await channel.send({
