@@ -9,7 +9,7 @@
 <img src="https://img.shields.io/github/license/onesoft-sudo/sudobot?label=License" alt="GitHub">
 <img src="https://img.shields.io/github/package-json/v/onesoft-sudo/sudobot?label=Version" alt="GitHub package.json version">
 <img src="https://img.shields.io/github/commit-activity/w/onesoft-sudo/sudobot?label=Commit%20Activity" alt="GitHub commit activity">
-<img src="https://img.shields.io/discord/964969362073198652?label=Support+Chat" alt="Discord">
+<a href="https://discord.gg/892GWhTzgs"><img src="https://img.shields.io/discord/964969362073198652?label=Support+Chat" alt="Discord"></a>
 </p>
 
 <p align="center">
