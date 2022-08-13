@@ -29,9 +29,6 @@ jobs:
     - name: "Install Dev Dependencies"
       run: npm install --dev
 
-    - name: "Run ESLint"
-      run: npm run lint || echo "ESLint Failed"
-
     - name: "Build"
       run: npm run build --if-present
 
