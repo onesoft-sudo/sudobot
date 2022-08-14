@@ -20,7 +20,7 @@ export async function hasPermission(client: DiscordClient, member: GuildMember, 
 		m = msg.member! as GuildMember;
 	}
 	
-	if (member.roles.highest?.position >= m.roles.highest?.position) {
+	if (member.id !== m.id && member.roles.highest?.position >= m.roles.highest?.position) {
         if (msg instanceof Interaction && msg.deferred) {
             await msg.editReply({
                 embeds: [
