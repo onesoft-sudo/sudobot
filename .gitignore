@@ -14,3 +14,4 @@ site/
 src/automod/SpamFilter3.ts
 src/commands/settings/SpamFilterCommand.ts
 src/commands/settings/SpamFilterCommand.ts.bak
+package-lock.json
