@@ -174,6 +174,8 @@ let commands = [
 		.addStringOption(option => option.setName('content').setDescription("The announcemnt message content")),
 
 	// MODERATION
+	new SlashCommandBuilder().setName('antijoin').setDescription('Enable antijoin system which will kick any new users joining the server'),
+
 	new SlashCommandBuilder().setName('ban').setDescription('Ban a user')
 		.addUserOption(option => option.setName('user').setDescription("The user").setRequired(true))
 		.addStringOption(option => option.setName('reason').setDescription("The reason for banning this user"))

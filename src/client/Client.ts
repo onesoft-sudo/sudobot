@@ -22,6 +22,7 @@ import discordModals from 'discord-modals';
 import SpamFilter from '../automod/SpamFilter';
 import Verification from '../services/Verification';
 import Welcomer from '../services/Welcomer';
+import Antijoin from '../automod/Antijoin';
 
 export default class DiscordClient extends Client {
     private _commands = new Collection<string, BaseCommand>();
@@ -49,6 +50,7 @@ export default class DiscordClient extends Client {
     debugLogger: DebugLogger;
     verification: Verification;
     welcomer: Welcomer;
+    antijoin: Antijoin;
 
     static client: DiscordClient;
 
@@ -56,7 +58,7 @@ export default class DiscordClient extends Client {
         super({
             ws: {
                 properties: {
-                    $browser: "Discord iOS"
+                    browser: "Discord iOS"
                 }
             },
             ...options
@@ -86,6 +88,7 @@ export default class DiscordClient extends Client {
         this.debugLogger = new DebugLogger(this);
         this.verification = new Verification(this);
         this.welcomer = new Welcomer(this);
+        this.antijoin = new Antijoin(this);
         
         discordModals(this);        
     }
