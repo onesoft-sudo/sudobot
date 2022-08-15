@@ -29,5 +29,7 @@ export default class GuildMemberAddEvent extends BaseEvent {
         if (client.config.props[member.guild.id].verification.enabled) {
             await client.verification.start(member);
         }
+
+        await client.automute.onMemberJoin(member);
     }
 }

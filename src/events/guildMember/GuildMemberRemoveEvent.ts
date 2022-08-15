@@ -25,7 +25,7 @@ export default class GuildMemberRemoveEvent extends BaseEvent {
             type: 'MEMBER_KICK',
         })).entries.first();
 
-        if (logs && logs.target?.id === member.id) {
+        if (logs && logs.target?.id === member.id && logs.createdAt >= (member.joinedAt ?? 0)) {
             console.log(logs?.executor);
 
             await Punishment.create({
@@ -81,5 +81,7 @@ export default class GuildMemberRemoveEvent extends BaseEvent {
             await verificationData.set('status', 'canceled');
             await verificationData.save();
         }
+        
+        await client.automute.onMemberLeave(member);
     }
 }

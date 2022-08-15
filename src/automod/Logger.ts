@@ -1,5 +1,5 @@
 import { roleMention } from '@discordjs/builders';
-import { BanOptions, CommandInteraction, FileOptions, Guild, GuildBan, GuildMember, Message, MessageEmbed, TextChannel, User } from 'discord.js';
+import { BanOptions, CommandInteraction, FileOptions, Guild, GuildBan, GuildMember, Message, MessageEmbed, MessageOptions, MessagePayload, TextChannel, User } from 'discord.js';
 import ms from 'ms';
 import DiscordClient from '../client/Client';
 import Punishment from '../models/Punishment';
@@ -27,6 +27,15 @@ class Logger {
 
         if (channel) {
             return callback(channel);
+        }
+    }
+
+    async send(guild: Guild, messageOptions: MessageOptions | MessagePayload | string) {
+        let channelID = this.client.config.props[guild!.id].logging_channel;
+        let channel = guild!.channels.cache.find((c: any) => c.id === channelID) as TextChannel;
+
+        if (channel) {
+            return await channel.send(messageOptions);
         }
     }
 

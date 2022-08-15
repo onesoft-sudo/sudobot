@@ -23,6 +23,7 @@ import SpamFilter from '../automod/SpamFilter';
 import Verification from '../services/Verification';
 import Welcomer from '../services/Welcomer';
 import Antijoin from '../automod/Antijoin';
+import Automute from '../automod/Automute';
 
 export default class DiscordClient extends Client {
     private _commands = new Collection<string, BaseCommand>();
@@ -51,6 +52,7 @@ export default class DiscordClient extends Client {
     verification: Verification;
     welcomer: Welcomer;
     antijoin: Antijoin;
+    automute: Automute;
 
     static client: DiscordClient;
 
@@ -89,6 +91,7 @@ export default class DiscordClient extends Client {
         this.verification = new Verification(this);
         this.welcomer = new Welcomer(this);
         this.antijoin = new Antijoin(this);
+        this.automute = new Automute(this);
         
         discordModals(this);        
     }

@@ -23,6 +23,7 @@ export async function unmute(client: DiscordClient, user: GuildMember, d: User) 
         const { getTimeouts, clearTimeoutv2 } = await import('../../utils/setTimeout');
 
         const { default: Hardmute } = await import("../../models/Hardmute");
+        const { default: MuteRecord } = await import("../../models/MuteRecord");
 
         const hardmute = await Hardmute.findOne({
             where: {
@@ -77,6 +78,17 @@ export async function unmute(client: DiscordClient, user: GuildMember, d: User) 
             mod_id: d.id,
             mod_tag: d.tag,
         });
+
+        const muteRecord = await MuteRecord.findOne({
+            where: {
+                user_id: user.user.id,
+                guild_id: user.guild.id
+            }
+        });
+
+        if (muteRecord) {
+            await muteRecord.destroy();
+        }
 
 		try {
 	        await user.send({
