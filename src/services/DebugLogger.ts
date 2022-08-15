@@ -1,6 +1,7 @@
 import DiscordClient from "../client/Client";
 import { Guild } from "discord.js";
 import { appendFile } from "fs/promises";
+import Service from "../utils/structures/Service";
 
 export enum LogLevel {
     LOG = 'log',
@@ -10,14 +11,10 @@ export enum LogLevel {
     ERROR = 'error'
 }
 
-export default class DebugLogger {
+export default class DebugLogger extends Service {
     private joinLeaveLogFile = __dirname + '/../../logs/join-leave.log';
     private appLogFile = __dirname + '/../../logs/app.log';
-
-    constructor(protected client: DiscordClient) {
-        
-    }
-
+    
     async logApp(level: LogLevel, message: string) {
         await this.log(this.appLogFile, level, message);
     }

@@ -4,6 +4,7 @@ import { writeFile } from "fs/promises";
 import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
 import { fetchEmoji } from "../utils/Emoji";
+import Service from "../utils/structures/Service";
 import { timeProcess, yellow } from "../utils/util";
 
 export interface RestartLockFileData {
@@ -13,11 +14,7 @@ export interface RestartLockFileData {
     guild_id: string;
 }
 
-export default class StartupManager {
-    constructor(protected client: DiscordClient) {
-
-    }
-
+export default class StartupManager extends Service {
     async createLockFile(data: RestartLockFileData) {
         await writeFile(`${__dirname}/../../tmp/lock`, JSON.stringify(data));
     }

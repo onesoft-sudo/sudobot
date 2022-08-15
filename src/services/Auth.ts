@@ -1,12 +1,9 @@
 import { GuildMember } from "discord.js";
 import DiscordClient from "../client/Client";
 import BaseCommand from "../utils/structures/BaseCommand";
+import Service from "../utils/structures/Service";
 
-export default class Auth {
-    constructor(protected client: DiscordClient) {
-
-    }
-
+export default class Auth extends Service {
     async verify(member: GuildMember, command: BaseCommand): Promise<boolean> {
         const cmds: string[] = await this.client.config.get('global_commands');
 

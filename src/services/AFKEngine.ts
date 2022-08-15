@@ -2,14 +2,9 @@ import { CommandInteraction, GuildMember, Message, User } from "discord.js";
 import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
 import { notAFK } from "../commands/utils/AFKCommand";
+import Service from "../utils/structures/Service";
 
-export default class AFKEngine {
-    client: DiscordClient;
-
-    constructor(client: DiscordClient) {
-        this.client = client;
-    }
-
+export default class AFKEngine extends Service {
     mention(msg: Message, user: GuildMember, cb: (data: any) => void, msg1?: any) {
         this.client.db.get('SELECT * FROM afk WHERE user_id = ?', [user.id], (err: any, data: any) => {
             if (data) {

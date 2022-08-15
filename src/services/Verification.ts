@@ -3,12 +3,9 @@ import { Request } from "express";
 import { Op } from "sequelize";
 import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
+import Service from "../utils/structures/Service";
 
-export default class Verification {
-    constructor(protected client: DiscordClient) {
-
-    }
-
+export default class Verification extends Service {
     async success(member: GuildMember, req: Request) {        
         await member.roles.remove(this.client.config.props[member.guild.id].verification.role);
 

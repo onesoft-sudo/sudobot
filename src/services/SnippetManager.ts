@@ -1,6 +1,7 @@
 import { readFile, writeFile } from "fs";
 import path from "path";
 import DiscordClient from "../client/Client";
+import Service from "../utils/structures/Service";
 import { deleteFile } from "../utils/util";
 
 export type Snippet = {
@@ -13,12 +14,11 @@ export type SnippetContainer = {
     [guildID: string]: Snippet[];
 }; 
 
-export default class SnippetManager {
+export default class SnippetManager extends Service {
     snippets: SnippetContainer = {};
-    client: DiscordClient;
 
     constructor(client: DiscordClient) {
-        this.client = client;
+        super(client);
         this.load();
     }
 

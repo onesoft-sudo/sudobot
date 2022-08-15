@@ -1,12 +1,9 @@
 import { MessageAttachment, MessageReaction, TextChannel, User } from "discord.js";
 import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
+import Service from "../utils/structures/Service";
 
-export default class Starboard {
-    constructor(private client: DiscordClient) {
-
-    }
-
+export default class Starboard extends Service {
     async handle(reaction: MessageReaction) {
         if (this.client.config.get('starboard').enabled) {
             let emoji = reaction.emoji.name;

@@ -2,14 +2,11 @@ import { GuildMember, MessageEmbed, TextChannel } from "discord.js";
 import DiscordClient from "../client/Client";
 import fs from 'fs';
 import path from "path";
+import Service from "../utils/structures/Service";
 
-export default class Welcomer {
+export default class Welcomer extends Service {
     messages: string[] = JSON.parse(fs.readFileSync(path.resolve(__dirname, '..', '..', 'resources', 'welcome_messages.json')).toString());
-
-    constructor(protected client: DiscordClient) {
-
-    }
-
+    
     async start(member: GuildMember, index?: number) {
         if (this.client.config.props[member.guild.id].welcomer.enabled) {
             const { message, channel: channelID } = this.client.config.props[member.guild.id].welcomer;
