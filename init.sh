@@ -1,9 +1,9 @@
 #!/bin/sh
 
-mkdir config
-mkdir logs
-mkdir tmp
-mkdir storage
+mkdir -p config
+mkdir -p logs
+mkdir -p tmp 
+mkdir -p storage
 
 touch logs/join-leave.log
 echo "{}" > config/snippets.json
