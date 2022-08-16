@@ -43,6 +43,6 @@
         "flag:dev": "node ./build/index.js --dev",
         "build": "tsc",
         "clean": "bash -c 'rm -r build'",
-        "prepare": "husky install && mkdir -p config logs storage tmp"
+        "prepare": "husky install && sh ./init.sh"
     }
 }
