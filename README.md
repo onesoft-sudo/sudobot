@@ -36,13 +36,9 @@ First, download the latest release or clone the repo by running:
 git clone https://github.com/onesoft-sudo/sudobot
 ```
 
-Then go inside the project directory, and run the following commands:
+Then go inside the project directory, and run the following command:
 
 ```
-mkdir config tmp storage logs
-touch logs/join-leave.log
-echo "{}" > config/snippets.json
-cp sample-config.json config/config.json
 npm install -D
 ```
 
