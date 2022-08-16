@@ -24,6 +24,7 @@ import Verification from '../services/Verification';
 import Welcomer from '../services/Welcomer';
 import Antijoin from '../automod/Antijoin';
 import Automute from '../automod/Automute';
+import ServiceManager from './ServiceManager';
 
 export default class DiscordClient extends Client {
     private _commands = new Collection<string, BaseCommand>();
@@ -35,24 +36,51 @@ export default class DiscordClient extends Client {
 
     config: Config;
     db: Database;
-    logger: Logger;
-    snippetManager: SnippetManager;
-    afkEngine: AFKEngine;
-    auth: Auth;
-    spamFilter: SpamFilter;
-    messageFilter: MessageFilter;
-    antiraid: AntiRaid;
-    starboard: Starboard;
     server: Server;
-    cooldown: Cooldown;
-    startupManager: StartupManager;
-    autoClear: AutoClear;
-    randomStatus: RandomStatus;
-    debugLogger: DebugLogger;
-    verification: Verification;
-    welcomer: Welcomer;
-    antijoin: Antijoin;
-    automute: Automute;
+    serviceManager: ServiceManager;
+
+    logger: Logger = {} as Logger;
+    snippetManager: SnippetManager = {} as SnippetManager;
+    afkEngine: AFKEngine = {} as AFKEngine;
+    auth: Auth = {} as Auth;
+    spamFilter: SpamFilter = {} as SpamFilter;
+    messageFilter: MessageFilter = {} as MessageFilter;
+    antiraid: AntiRaid = {} as AntiRaid;
+    starboard: Starboard = {} as Starboard;
+    cooldown: Cooldown = {} as Cooldown;
+    startupManager: StartupManager = {} as StartupManager;
+    autoClear: AutoClear = {} as AutoClear;
+    randomStatus: RandomStatus = {} as RandomStatus;
+    debugLogger: DebugLogger = {} as DebugLogger;
+    verification: Verification = {} as Verification;
+    welcomer: Welcomer = {} as Welcomer;
+    antijoin: Antijoin = {} as Antijoin;
+    automute: Automute = {} as Automute;
+
+    aliases = {
+        automod: path.resolve(__dirname, '..', 'automod'),
+        services: path.resolve(__dirname, '..', 'services'),
+    };
+
+    services = {
+        "@automod/Logger": "logger",
+        "@services/SnippetManager": "snippetManager",
+        "@services/AFKEngine": "afkEngine",
+        "@services/Auth": "auth",
+        "@automod/SpamFilter": "spamFilter",
+        "@automod/MessageFilter": "messageFilter",
+        "@automod/AntiRaid": "antiraid",
+        "@services/Starboard": "starboard",
+        "@automod/Cooldown": "cooldown",
+        "@services/StartupManager": "startupManager",
+        "@automod/AutoClear": "autoClear",
+        "@services/RandomStatus": "randomStatus",
+        "@services/DebugLogger": "debugLogger",
+        "@services/Verification": "verification",
+        "@services/Welcomer": "welcomer",
+        "@automod/Antijoin": "antijoin",
+        "@automod/Automute": "automute",
+    };
 
     static client: DiscordClient;
 
@@ -74,24 +102,28 @@ export default class DiscordClient extends Client {
 
         this.config = new Config(this);
         this.db = new Database(path.resolve(rootdir, 'database.db'), this);
-        this.logger = new Logger(this);
-        this.snippetManager = new SnippetManager(this);
-        this.afkEngine = new AFKEngine(this);
-        this.auth = new Auth(this);
-        this.spamFilter = new SpamFilter(this);
-        this.messageFilter = new MessageFilter(this);
-        this.antiraid = new AntiRaid(this);
-        this.starboard = new Starboard(this);
+        this.serviceManager = new ServiceManager(this, this.aliases);
+        this.serviceManager.load(this.services);
+
+        // this.logger = new Logger(this);
+        // this.snippetManager = new SnippetManager(this);
+        // this.afkEngine = new AFKEngine(this);
+        // this.auth = new Auth(this);
+        // this.spamFilter = new SpamFilter(this);
+        // this.messageFilter = new MessageFilter(this);
+        // this.antiraid = new AntiRaid(this);
+        // this.starboard = new Starboard(this);
+        // this.cooldown = new Cooldown(this);
+        // this.startupManager = new StartupManager(this);
+        // this.autoClear = new AutoClear(this);
+        // this.randomStatus = new RandomStatus(this);
+        // this.debugLogger = new DebugLogger(this);
+        // this.verification = new Verification(this);
+        // this.welcomer = new Welcomer(this);
+        // this.antijoin = new Antijoin(this);
+        // this.automute = new Automute(this);
+
         this.server = new Server(this);
-        this.cooldown = new Cooldown(this);
-        this.startupManager = new StartupManager(this);
-        this.autoClear = new AutoClear(this);
-        this.randomStatus = new RandomStatus(this);
-        this.debugLogger = new DebugLogger(this);
-        this.verification = new Verification(this);
-        this.welcomer = new Welcomer(this);
-        this.antijoin = new Antijoin(this);
-        this.automute = new Automute(this);
         
         discordModals(this);        
     }
