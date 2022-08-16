@@ -4,4 +4,7 @@ mkdir config
 mkdir logs
 mkdir tmp
 mkdir storage
-mkdir resources
+
+touch logs/join-leave.log
+echo "{}" > config/snippets.json
+cp sample-config.json config/config.json
