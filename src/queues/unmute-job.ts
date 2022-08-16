@@ -1,6 +1,7 @@
 import { TextChannel } from "discord.js";
 import DiscordClient from "../client/Client";
 import { unmute } from "../commands/moderation/UnmuteCommand";
+import MuteRecord from "../models/MuteRecord";
 
 export default async function unmuteJob(client: DiscordClient, guild_id: string, user_id: string) {
     console.log('top-level');
@@ -40,9 +41,23 @@ export default async function unmuteJob(client: DiscordClient, guild_id: string,
 
                 await unmute(client, member, client.user!);
             }
+            else {
+                throw new Error();
+            }
         }
         catch (e) {
-            console.log(e);            
+            console.log(e);   
+            
+            const muteRecord = await MuteRecord.findOne({
+                where: {
+                    user_id,
+                    guild_id
+                }
+            });
+    
+            if (muteRecord) {
+                await muteRecord.destroy();
+            }
         }
     }
 }
