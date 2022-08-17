@@ -3,6 +3,37 @@ import DiscordClient from '../client/Client';
 import { GuildMember, Message, CommandInteraction, MessageEmbed, ContextMenuInteraction, Interaction } from 'discord.js';
 import Axios, { AxiosRequestHeaders, HeadersDefaults } from 'axios';
 
+export function splitMessage(message: string, limit: number = 1000, maxIterationCount: number = 100) {
+    const splitted: string[] = [];
+    let content = message;
+    let { length } = content;
+
+    if (length >= limit) {
+        let i = 0;
+
+        while (length !== 0 && content !== '') {
+            splitted.push(content.substring(0, limit));
+            content = content.substring(limit);
+            length = content.length;
+            i++;
+
+            if (i >= maxIterationCount) {
+                console.log('Break loop');
+                break;
+            }
+        }
+    }
+    else {
+        splitted.push(message);
+    }
+
+    return splitted;
+}
+
+export function getHomeGuild(client: DiscordClient) {
+    return client.guilds.cache.get(client.config.props.global.id);
+}
+
 export function shouldNotModerate(client: DiscordClient, member: GuildMember) {
 	if (!client.config.props[member.guild.id].admin) {
 		return false;
