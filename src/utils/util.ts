@@ -2,6 +2,7 @@ import fs from 'fs';
 import DiscordClient from '../client/Client';
 import { GuildMember, Message, CommandInteraction, MessageEmbed, ContextMenuInteraction, Interaction } from 'discord.js';
 import Axios, { AxiosRequestHeaders, HeadersDefaults } from 'axios';
+import { formatDistance } from 'date-fns';
 
 export function splitMessage(message: string, limit: number = 1000, maxIterationCount: number = 100) {
     const splitted: string[] = [];
@@ -78,7 +79,15 @@ export async function hasPermission(client: DiscordClient, member: GuildMember, 
 	return true;
 }
 
-export function timeProcess(seconds: number) {      
+export function timeProcess(seconds: number) {
+	return formatDistance(new Date(), new Date(seconds));
+}
+
+
+/**
+ * @deprecated
+ */
+export function timeProcessOld(seconds: number) {      
     let interval = seconds / (60 * 60 * 24 * 30 * 365);
 
     if (interval >= 1) {
@@ -119,8 +128,9 @@ export function escapeRegex(string: string) {
 }
 
 export function timeSince(date: number) {
-    const seconds = Math.floor((Date.now() - date) / 1000);
-    return timeProcess(seconds) + ' ago';
+    // const seconds = Math.floor((Date.now() - date) / 1000);
+    // return timeProcess(seconds) + ' ago';
+    return formatDistance(new Date(), new Date(date), { addSuffix: true });
 }
 
 export async function download(url: string, path: string, headers?: AxiosRequestHeaders) {  
