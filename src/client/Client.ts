@@ -63,6 +63,7 @@ export default class DiscordClient extends Client {
     };
 
     services = {
+        "@services/DebugLogger": "debugLogger",
         "@automod/Logger": "logger",
         "@services/SnippetManager": "snippetManager",
         "@services/AFKEngine": "afkEngine",
@@ -75,7 +76,6 @@ export default class DiscordClient extends Client {
         "@services/StartupManager": "startupManager",
         "@automod/AutoClear": "autoClear",
         "@services/RandomStatus": "randomStatus",
-        "@services/DebugLogger": "debugLogger",
         "@services/Verification": "verification",
         "@services/Welcomer": "welcomer",
         "@automod/Antijoin": "antijoin",
@@ -92,6 +92,14 @@ export default class DiscordClient extends Client {
                 }
             },
             ...options
+        });
+
+        process.on('uncaughtException', (error, origin) => {
+            console.log('Uncaught', error);
+            this.handleCrash(error, origin).then(() => process.exit(-1)).catch(err => {
+                console.log(err);
+                process.exit(-1);
+            });
         });
         
         console.log('init');        
@@ -142,5 +150,9 @@ export default class DiscordClient extends Client {
 
     setMessage(msg: Message | Interaction) {
         this.msg = msg;
+    }
+
+    async handleCrash(error: Error, origin: NodeJS.UncaughtExceptionOrigin) {
+        await this.debugLogger.logToHomeServer(`Uncaught ${error.name}: ${error.message}\n${error.stack}`);
     }
 }
