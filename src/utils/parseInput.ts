@@ -2,14 +2,14 @@ import DiscordClient from '../client/Client';
 import { User, GuildMember, GuildChannel, Role, Guild } from 'discord.js';
 
 export async function parseUser(client: DiscordClient, input: string): Promise <User | null> {
-	if (!/^\<\@(\d+)\>$/.test(input.trim())) {
+	if (!/^\<\@(\!)?(\d+)\>$/.test(input.trim())) {
 		return null;
 	}	
 
 	let user: User | null = null;	
 
 	try {
-		user = await client.users.fetch(input.trim().substring(2, input.trim().length - 1));
+		user = await client.users.fetch(input.trim().substring(input.includes('!') ? 3 : 2, input.trim().length - 1));
 	}
 	catch (e) {
 		return null;
@@ -19,14 +19,14 @@ export async function parseUser(client: DiscordClient, input: string): Promise <
 }
 
 export async function parseMember(guild: Guild, input: string): Promise <GuildMember | null> {
-	if (!/^\<\@(\d+)\>$/.test(input.trim())) {
+	if (!/^\<\@(\!)?(\d+)\>$/.test(input.trim())) {
 		return null;
 	}	
 
 	let user: GuildMember | null = null;	
 
 	try {
-		user = await guild.members.fetch(input.trim().substring(2, input.trim().length - 1));
+		user = await guild.members.fetch(input.trim().substring(input.includes('!') ? 3 : 2, input.trim().length - 1));
 	}
 	catch (e) {
 		return null;
