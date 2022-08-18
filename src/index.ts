@@ -49,4 +49,5 @@ const client = new DiscordClient({
     await registrationEnd();
     
     await client.login(process.env.TOKEN);
+    await console.log('test');
 })();

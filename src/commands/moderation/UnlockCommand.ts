@@ -19,6 +19,10 @@ export default class UnlockCommand extends BaseCommand {
     async run(client: DiscordClient, msg: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
         let channel: TextChannel = <TextChannel> msg.channel;
         let role: Role = <Role> msg.guild!.roles.everyone;
+
+        if (msg instanceof CommandInteraction) 
+            await msg.deferReply({ ephemeral: true });
+
         const force = options.isInteraction ? options.options.getBoolean('force') === true : (options.options.indexOf('--force') !== -1);
 
         if (options.isInteraction) {
@@ -73,75 +77,29 @@ export default class UnlockCommand extends BaseCommand {
         }
 
         try {
-            await client.db.get('SELECT * FROM locks WHERE channel_id = ?', [channel.id], async (err: any, data: any) => {
-                if (data || force) {
-                    let perm;
-                    const data1 = data?.perms;
+            const result = await client.channelLock.unlock(channel, { sendConfirmation: true, force });
+            let error = null;
 
-                    if (data1) {
-                        if (data1 === 'DENY') {
-                            await (perm = false);
-                        }
-                        else if (data1 === 'NULL') {
-                            await (perm = null);
-                        }
-                        else if (data1 === 'ALLOW') {
-                            await (perm = true);
-                        }
-                    }
+            if (!result) {
+                error = 'This channel wasn\'t locked. If you want to force unlock, run this command with `--force` option or select `True` if using slash commands.';
+            }
 
-                    console.log(data1, perm);                    
-                    
-                    if (force) {
-                        await (perm = true);
-                    }
-
-                    await console.log(channel.name, role.name);
-
-                    try {
-                        await channel.permissionOverwrites.edit(role, {
-                            SEND_MESSAGES: perm,
-                        });
-                    }
-                    catch (e) {
-                        console.log(e);
-                    }
-
-                    if (data) {
-                        await client.db.get('DELETE FROM locks WHERE id = ?', [data?.id], async (err: any) => {});
-                    }
-                }
-                else {
-                    await msg.reply({
-                        embeds: [
-                            new MessageEmbed()
-                            .setColor('#007bff')
-                            .setDescription(`:closed_lock_with_key: This channel wasn't locked.`)
-                        ],
-                        ephemeral: true
-                    });
-
-                    return;
-                }
-
-                if (options.isInteraction) {
-                    await msg.reply({
-                        content: "Channel unlocked.",
-                        ephemeral: true
-                    });
-                }
-                else {
-                    await (msg as Message).react('🔓');
-                }
-
-                await channel.send({
-                    embeds: [
-                        new MessageEmbed()
-                        .setColor('#007bff')
-                        .setDescription(`:closed_lock_with_key: This channel has been unlocked.`)
-                    ]
+            if (error) {
+                await this.deferReply(msg, {
+                    content: error,
                 });
-            });
+
+                return;
+            }
+            
+            if (options.isInteraction) {
+                await this.deferReply(msg, {
+                    content: "Channel unlocked.",
+                });
+            }
+            else {
+                await (msg as Message).react('🔓');
+            }
         }
         catch (e) {
             console.log(e);

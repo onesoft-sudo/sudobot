@@ -20,6 +20,9 @@ export default class LockCommand extends BaseCommand {
         let channel: TextChannel = <TextChannel> msg.channel;
         let role: Role = <Role> msg.guild!.roles.everyone;
 
+        if (msg instanceof CommandInteraction) 
+            await msg.deferReply({ ephemeral: true });
+
         if (options.isInteraction) {
             if (options.options.getChannel('channel')) {
                 channel = await <TextChannel> options.options.getChannel('channel');
@@ -72,49 +75,25 @@ export default class LockCommand extends BaseCommand {
         }
 
         try {
-            let dbPerms;
+            const result = await client.channelLock.lock(channel, msg.member!.user as User, { sendConfirmation: true });
 
-            let overWrites = await channel.permissionOverwrites.cache.get(role.id);
-            let allowperms = await overWrites?.allow?.has(Permissions.FLAGS.SEND_MESSAGES);
-            let denyperms = await overWrites?.deny?.has(Permissions.FLAGS.SEND_MESSAGES);
+            let error = null;
 
-            if (allowperms && !denyperms) {
-                await (dbPerms = 'ALLOW');
-            }
-            else if (!allowperms && denyperms) {
-                await (dbPerms = 'DENY');
-            }
-            else if (!allowperms && !denyperms) {
-                await (dbPerms = 'NULL');
+            if (!result) {
+                error = 'This channel is already locked.'; // If you want to force unlock, run this command with `--force` option or select `True` if using slash commands.';
             }
 
-            
-            await client.db.get('INSERT INTO locks(channel_id, perms, date) VALUES(?, ?, ?)', [channel.id, dbPerms, new Date().toISOString()], async (err: any) => {
-                if (err)
-                    console.log(err);
-                
-                try {
-                    await channel.permissionOverwrites.edit(role, {
-                        SEND_MESSAGES: false,
-                    });
-                }
-                catch (e) {
-                    console.log(e);
-                }
-            })
-  
-            await channel.send({
-                embeds: [
-                    new MessageEmbed()
-                    .setColor('#007bff')
-                    .setDescription(`:lock: This channel has been locked.`)
-                ]
-            });
+            if (error) {
+                await this.deferReply(msg, {
+                    content: error,
+                });
+
+                return;
+            }
             
             if (options.isInteraction) {
-                await msg.reply({
+                await this.deferReply(msg, {
                     content: "Channel locked.",
-                    ephemeral: true
                 });
             }
             else {

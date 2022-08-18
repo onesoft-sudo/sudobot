@@ -25,6 +25,7 @@ import Welcomer from '../services/Welcomer';
 import Antijoin from '../automod/Antijoin';
 import Automute from '../automod/Automute';
 import ServiceManager from './ServiceManager';
+import ChannelLockManager from '../services/ChannelLockManager';
 
 export default class DiscordClient extends Client {
     private _commands = new Collection<string, BaseCommand>();
@@ -56,6 +57,7 @@ export default class DiscordClient extends Client {
     welcomer: Welcomer = {} as Welcomer;
     antijoin: Antijoin = {} as Antijoin;
     automute: Automute = {} as Automute;
+    channelLock: ChannelLockManager = {} as ChannelLockManager;
 
     aliases = {
         automod: path.resolve(__dirname, '..', 'automod'),
@@ -78,6 +80,7 @@ export default class DiscordClient extends Client {
         "@services/RandomStatus": "randomStatus",
         "@services/Verification": "verification",
         "@services/Welcomer": "welcomer",
+        "@services/ChannelLockManager": "channelLock",
         "@automod/Antijoin": "antijoin",
         "@automod/Automute": "automute",
     };
@@ -153,6 +156,7 @@ export default class DiscordClient extends Client {
     }
 
     async handleCrash(error: Error, origin: NodeJS.UncaughtExceptionOrigin) {
+        console.log('here');
         await this.debugLogger.logToHomeServer(`Uncaught ${error.name}: ${error.message}\n${error.stack}`);
     }
 }
