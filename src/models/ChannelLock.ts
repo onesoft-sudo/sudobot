@@ -19,10 +19,16 @@ ChannelLock.init({
     },
     guild_id: {
         type: DataTypes.STRING,
+        allowNull: false
     },
     channel_id: {
         type: DataTypes.STRING,
-        unique: true
+        unique: true,
+        allowNull: false
+    },
+    role_id: {
+        type: DataTypes.STRING,
+        allowNull: false
     },
     previous_perms: {
         type: DataTypes.JSON,

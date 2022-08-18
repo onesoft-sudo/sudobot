@@ -80,7 +80,7 @@ export default class LockCommand extends BaseCommand {
             let error = null;
 
             if (!result) {
-                error = 'This channel is already locked.'; // If you want to force unlock, run this command with `--force` option or select `True` if using slash commands.';
+                error = 'This channel is already locked' + (role.id === msg.guild!.id ? '' : ' for the given role') + '.';
             }
 
             if (error) {

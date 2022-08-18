@@ -1,4 +1,4 @@
-import { GuildChannel, PermissionString, User } from "discord.js";
+import { GuildChannel, PermissionString, Role, RoleResolvable, User } from "discord.js";
 import MessageEmbed from "../client/MessageEmbed";
 import ChannelLock from "../models/ChannelLock";
 import Service from "../utils/structures/Service";
@@ -7,14 +7,18 @@ export interface ChannelLockOptions {
     reason?: string;
     sendConfirmation?: boolean;
     force?: boolean;
+    role?: RoleResolvable;
 }
 
 export default class ChannelLockManager extends Service {
-    async lock(channel: GuildChannel, user: User, { reason, sendConfirmation }: ChannelLockOptions = {}) {
+    async lock(channel: GuildChannel, user: User, { reason, sendConfirmation, role }: ChannelLockOptions = {}) {
+        const lockRole = role ? (role instanceof Role ? role.id : role) : channel.guild.id;
+
         const channelLock = await ChannelLock.findOne({
             where: {
                 channel_id: channel.id,
-                guild_id: channel.guild.id
+                guild_id: channel.guild.id,
+                role_id: lockRole
             }
         });
 
@@ -22,7 +26,7 @@ export default class ChannelLockManager extends Service {
             return false;
         }
 
-        const permissions = channel.permissionOverwrites.cache.get(channel.guild.id);
+        const permissions = channel.permissionOverwrites.cache.get(lockRole);
         
         if (permissions) {
             const permJson = {
@@ -37,11 +41,12 @@ export default class ChannelLockManager extends Service {
                 guild_id: channel.guild.id,
                 channel_id: channel.id,
                 reason,
-                previous_perms: permJson
+                previous_perms: permJson,
+                role_id: lockRole
             });
         }
 
-        await channel.permissionOverwrites.edit(channel.guild.id, {
+        await channel.permissionOverwrites.edit(lockRole, {
             SEND_MESSAGES: false,
             SEND_MESSAGES_IN_THREADS: false,
             ADD_REACTIONS: false,
@@ -71,13 +76,20 @@ export default class ChannelLockManager extends Service {
         return true;
     }
 
-    async unlock(channel: GuildChannel, { reason, sendConfirmation, force }: ChannelLockOptions = {}) {
+    async unlock(channel: GuildChannel, { reason, sendConfirmation, force, role }: ChannelLockOptions = {}) {
+        const lockRole = role ? (role instanceof Role ? role.id : role) : channel.guild.id;
+
         const channelLock = await ChannelLock.findOne({
             where: {
                 channel_id: channel.id,
-                guild_id: channel.guild.id
+                guild_id: channel.guild.id,
+                role_id: lockRole
             }
         });
+
+        if (!channelLock) {
+            return false;
+        }
 
         const permissions = channelLock?.get('previous_perms') as { allow: PermissionString[], deny: PermissionString[] };
 
@@ -101,7 +113,7 @@ export default class ChannelLockManager extends Service {
             }
         };
 
-        await channel.permissionOverwrites.edit(channel.guild.id, {
+        await channel.permissionOverwrites.edit(lockRole, {
             SEND_MESSAGES: transform('SEND_MESSAGES'),
             SEND_MESSAGES_IN_THREADS: transform('SEND_MESSAGES_IN_THREADS'),
             ADD_REACTIONS: transform('ADD_REACTIONS'),

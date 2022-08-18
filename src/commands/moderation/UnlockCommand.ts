@@ -81,7 +81,7 @@ export default class UnlockCommand extends BaseCommand {
             let error = null;
 
             if (!result) {
-                error = 'This channel wasn\'t locked. If you want to force unlock, run this command with `--force` option or select `True` if using slash commands.';
+                error = 'This channel wasn\'t locked' + (role.id === msg.guild!.id ? '' : ' for the given role') + '. If you want to force unlock, run this command with `--force` option or select `True` if using slash commands.';
             }
 
             if (error) {
