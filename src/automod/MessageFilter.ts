@@ -36,9 +36,6 @@ export default class MessageFilter {
         	const data = await readFile(resolve(__dirname, '..', '..', 'resources', 'rickrolls.json'));
         	this.rickrolls = await (JSON.parse(data.toString()).rickrolls || []);
         }
-
-        console.log('\n');
-        console.log(this.config);
     }
 
 	async filterRickRolls({ content }: Message) {

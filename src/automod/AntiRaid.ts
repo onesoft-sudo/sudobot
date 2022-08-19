@@ -35,7 +35,7 @@ export default class AntiRaid {
 
         this.joins++;
 
-        if (this.joins >= this.maxJoins) {
+        if (this.joins === this.maxJoins) {
             await this.trigger(member.guild);
         }
     }
@@ -56,6 +56,6 @@ export default class AntiRaid {
             return cond && channel.type === 'GUILD_TEXT';
         });
 
-        await lockAll(this.client, role, channels, true);
+        await lockAll(this.client, role, channels, this.client.user!, true);
     }
 };
