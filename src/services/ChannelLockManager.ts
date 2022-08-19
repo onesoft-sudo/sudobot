@@ -12,47 +12,49 @@ export interface ChannelLockOptions {
 
 export default class ChannelLockManager extends Service {
     async lock(channel: GuildChannel, user: User, { reason, sendConfirmation, role }: ChannelLockOptions = {}) {
-        const lockRole = role ? (role instanceof Role ? role.id : role) : channel.guild.id;
+        const lockRole = role ? (role instanceof Role ? role : (await channel.guild.roles.fetch(role))!) : channel.guild.roles.everyone;
 
         const channelLock = await ChannelLock.findOne({
             where: {
                 channel_id: channel.id,
                 guild_id: channel.guild.id,
-                role_id: lockRole
+                role_id: lockRole.id
             }
         });
 
         if (channelLock) {
+            console.log('exists');
             return false;
         }
 
-        const permissions = channel.permissionOverwrites.cache.get(lockRole);
-        
-        if (permissions) {
-            const permJson = {
-                allow: permissions.allow.toArray(),
-                deny: permissions.deny.toArray(),
-            };
+        console.log(lockRole?.name);
 
-            console.log(permJson);
+        let permissions = channel.permissionOverwrites.cache.get(lockRole.id);
 
-            await ChannelLock.create({
-                user_id: user.id,
-                guild_id: channel.guild.id,
-                channel_id: channel.id,
-                reason,
-                previous_perms: permJson,
-                role_id: lockRole
-            });
-        }
+        const permJson = {
+            allow: permissions?.allow?.toArray() ?? null,
+            deny: permissions?.deny?.toArray() ?? null,
+        };
+
+        console.log(permJson);
+
+        await ChannelLock.create({
+            user_id: user.id,
+            guild_id: channel.guild.id,
+            channel_id: channel.id,
+            reason,
+            previous_perms: permJson,
+            role_id: lockRole.id
+        });
 
         await channel.permissionOverwrites.edit(lockRole, {
             SEND_MESSAGES: false,
             SEND_MESSAGES_IN_THREADS: false,
-            ADD_REACTIONS: false,
             REQUEST_TO_SPEAK: false,
             SPEAK: false,
         }, { reason });
+
+        console.log('success');
 
         if (sendConfirmation && channel.isText()) {
             await channel.send({
@@ -77,27 +79,33 @@ export default class ChannelLockManager extends Service {
     }
 
     async unlock(channel: GuildChannel, { reason, sendConfirmation, force, role }: ChannelLockOptions = {}) {
-        const lockRole = role ? (role instanceof Role ? role.id : role) : channel.guild.id;
+        const lockRole = role ? (role instanceof Role ? role : (await channel.guild.roles.fetch(role))!) : channel.guild.roles.everyone;
 
         const channelLock = await ChannelLock.findOne({
             where: {
                 channel_id: channel.id,
                 guild_id: channel.guild.id,
-                role_id: lockRole
+                role_id: lockRole.id
             }
         });
 
         if (!channelLock) {
+            console.log('Channel not locked');            
             return false;
         }
 
-        const permissions = channelLock?.get('previous_perms') as { allow: PermissionString[], deny: PermissionString[] };
+        const permissions = channelLock?.get('previous_perms') as { allow: PermissionString[] | null, deny: PermissionString[] | null };
 
         if (!permissions && !force) {
+            console.log('Permission error');
             return false;
         }
 
         const transform = (key: PermissionString) => {
+            if (!permissions.allow || !permissions.deny) {
+                return undefined;
+            }
+
             if (!permissions) {
                 return force ? true : undefined;
             }
@@ -113,13 +121,17 @@ export default class ChannelLockManager extends Service {
             }
         };
 
-        await channel.permissionOverwrites.edit(lockRole, {
-            SEND_MESSAGES: transform('SEND_MESSAGES'),
-            SEND_MESSAGES_IN_THREADS: transform('SEND_MESSAGES_IN_THREADS'),
-            ADD_REACTIONS: transform('ADD_REACTIONS'),
-            REQUEST_TO_SPEAK: transform('REQUEST_TO_SPEAK'),
-            SPEAK: transform('SPEAK'),
-        }, { reason });
+        if (!permissions.allow && !permissions.deny) {
+            await channel.permissionOverwrites.delete(lockRole);
+        }
+        else {
+            await channel.permissionOverwrites.edit(lockRole, {
+                SEND_MESSAGES: transform('SEND_MESSAGES'),
+                SEND_MESSAGES_IN_THREADS: transform('SEND_MESSAGES_IN_THREADS'),
+                REQUEST_TO_SPEAK: transform('REQUEST_TO_SPEAK'),
+                SPEAK: transform('SPEAK'),
+            }, { reason });
+        }        
 
         await channelLock?.destroy();
 
@@ -145,11 +157,37 @@ export default class ChannelLockManager extends Service {
         return true;
     }
 
-    lockAll(channels: GuildChannel[], user: User, options: ChannelLockOptions = {}) {
-        return Promise.all(channels.map(c => this.lock(c, user, options)));
+    async lockAll(channels: GuildChannel[], user: User, options: ChannelLockOptions = {}) {
+        let success = 0, failure = 0;
+
+        for await (const channel of channels) {
+            console.log('Locking', channel.name);
+            
+            if (await this.lock(channel, user, options)) {
+                success++;
+            }
+            else {
+                failure++;
+            }
+        }
+
+        return [success, failure];
     }
 
-    unlockAll(channels: GuildChannel[], options: ChannelLockOptions = {}) {
-        return Promise.all(channels.map(c => this.unlock(c, options)));
+    async unlockAll(channels: GuildChannel[], options: ChannelLockOptions = {}) {
+        let success = 0, failure = 0;
+
+        for await (const channel of channels) {
+            console.log('Unlocking', channel.name);
+
+            if (await this.unlock(channel, options)) {
+                success++;
+            }
+            else {
+                failure++;
+            }
+        }
+
+        return [success, failure];
     }
 }

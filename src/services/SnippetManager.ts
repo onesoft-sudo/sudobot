@@ -45,6 +45,10 @@ export default class SnippetManager extends Service {
     }
 
     get(guildID: string, name: string): Snippet | null {
+        if (!this.snippets[guildID]) {
+            return null;
+        }
+        
         for (const s of this.snippets[guildID]) {
             if (s.name === name) {
                 return s;

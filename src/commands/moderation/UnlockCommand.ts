@@ -30,7 +30,7 @@ export default class UnlockCommand extends BaseCommand {
                 channel = await <TextChannel> options.options.getChannel('channel');
             }
 
-            if (options.options.getChannel('role')) {
+            if (options.options.getRole('role')) {
                 role = await <Role> options.options.getRole('role');
             }
         }
