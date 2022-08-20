@@ -13,6 +13,10 @@ export async function fetchEmojiStr(name: string) {
     return (await findEmoji(e => e.name === name))?.toString();
 }
 
-export async function findEmoji(callback: (e: Emoji) => boolean) {
-    return await DiscordClient.client.guilds.cache.find(g => g.id === globalConfig().id)!.emojis.cache.find(callback);
+export function emoji(name: string) {
+    return findEmoji(e => e.name === name)?.toString();
+}
+
+export function findEmoji(callback: (e: Emoji) => boolean) {
+    return DiscordClient.client.guilds.cache.find(g => g.id === globalConfig().id)!.emojis.cache.find(callback);
 }
