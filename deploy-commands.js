@@ -88,6 +88,20 @@ let commands = [
 				.setDescription('Get information/stats about a ballot')
 				.addIntegerOption(option => option.setName('id').setDescription('The ballot ID'))),
 		
+	new SlashCommandBuilder().setName('embed').setDescription('Make and send an embed')
+		.addStringOption(option => option.setName('author_name').setDescription('The embed author name'))
+		.addStringOption(option => option.setName('author_iconurl').setDescription('The embed author icon URL'))
+		.addStringOption(option => option.setName('title').setDescription('The embed title'))
+		.addStringOption(option => option.setName('description').setDescription('The embed description'))
+		.addStringOption(option => option.setName('thumbnail').setDescription('The embed thumbnail'))
+		.addStringOption(option => option.setName('image').setDescription('The embed image attachment'))
+		.addStringOption(option => option.setName('footer_text').setDescription('The embed footer text'))
+		.addStringOption(option => option.setName('footer_iconurl').setDescription('The embed footer icon URL'))
+		.addStringOption(option => option.setName('timestamp').setDescription('The embed timestamp, use \'current\' to set current date'))
+		.addStringOption(option => option.setName('color').setDescription('The embed color (default is #007bff)'))
+		.addStringOption(option => option.setName('url').setDescription('The embed URL'))
+		.addStringOption(option => option.setName('fields').setDescription('The embed fields, should be in `Field 1: Value 1, Field 2: Value 2` format')),
+
 	new SlashCommandBuilder().setName('queues').setDescription('List all queued jobs'),
 
 	new SlashCommandBuilder().setName('schedule').setDescription('Schedule a message for sending later')
