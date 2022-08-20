@@ -12,21 +12,26 @@ export default abstract class BaseCommand {
     coolDown?: number;
     ownerOnly: boolean = false;
 	permissions: PermissionResolvable[] = [];
+
 	
     constructor(private name: string, private category: string, private aliases: Array<string>) {
- 
+        
     }
-
+    
     getName(): string { 
         return this.name; 
     }
-
+    
     getCategory(): string { 
         return this.category; 
     }
-
+    
     getAliases(): Array<string> { 
         return this.aliases; 
+    }
+    
+    async permissionValidation(client: DiscordClient, member: GuildMember): Promise <boolean> {
+        return true;
     }
 
     async autoComplete(client: DiscordClient, interaction: AutocompleteInteraction, options: AutoCompleteOptions): Promise <void> {
@@ -81,6 +86,22 @@ export default abstract class BaseCommand {
     
                 return false;
             }
+        }
+
+        if (message instanceof Interaction && !message.isRepliable())
+            return; 
+
+        if (!(await this.permissionValidation(client, member!))) {
+            await message.reply({
+                embeds: [
+                    {
+                        description: ":x: You don't have enough permissions to run this command.",
+                        color: 0xf14a60
+                    }
+                ]
+            });
+
+            return false;
         }
 
         return true;
