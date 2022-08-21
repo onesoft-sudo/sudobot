@@ -18,7 +18,7 @@ export default class AddsnippetCommand extends BaseCommand {
 
     async run(client: DiscordClient, msg: CommandInteraction, options: InteractionOptions) {
         if (options.options.getSubcommand(true) === 'get') {
-            const snippet = await client.snippetManager.get(msg.guild!.id, options.options.getString('name')!);
+            const snippet = await client.snippetManager.getParsed(msg.guild!.id, options.options.getString('name')!);
 
             if (!snippet) {
                 await msg.reply({
@@ -30,13 +30,14 @@ export default class AddsnippetCommand extends BaseCommand {
             }
 
             await msg.reply({
-                content: snippet.content,
+                content: snippet.content.trim() === '' ? undefined : snippet.content,
                 files: snippet.files.map(name => {
                     return {
                         name,
                         attachment: path.resolve(__dirname, '../../../storage', name)
                     } as FileOptions
                 }),
+                embeds: snippet.embeds
             });
         }
 
