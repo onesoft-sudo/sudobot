@@ -28,6 +28,15 @@ export default class EmbedBuildCommand extends BaseCommand {
 
             try {
                 const embed = new MessageEmbed(embedData);
+
+                if (embedData.color) {
+                    try {
+                        embed.setColor(embedData.color);
+                    }
+                    catch (e) {
+                        console.log(e);
+                    }
+                }
                 
                 await message.channel?.send({
                     embeds: [embed]

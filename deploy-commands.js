@@ -123,7 +123,7 @@ let commands = [
 		)
 		.addSubcommand(subcmd => 
 		     subcmd.setName("build").setDescription("Build an embed from schema")
-				.addStringOption(option => option.setName('schema').setDescription('The embed schema'))
+				.addStringOption(option => option.setName('json_schema').setDescription('The embed JSON schema'))
 		),
 
 	new SlashCommandBuilder().setName('queues').setDescription('List all queued jobs'),
