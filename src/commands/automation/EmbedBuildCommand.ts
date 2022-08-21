@@ -20,7 +20,7 @@ export default class EmbedBuildCommand extends BaseCommand {
         }
 
         try {
-            const embedData = JSON.parse(options.isInteraction ? options.options.getString('json_schema')! : options.args.join(' '));
+            const embedData = JSON.parse((options.isInteraction ? options.options.getString('json_schema')! : options.args.join(' ')).replace(/^embed\:/, ''));
 
             if (!embedData) {
                 throw new Error('Parse Error');

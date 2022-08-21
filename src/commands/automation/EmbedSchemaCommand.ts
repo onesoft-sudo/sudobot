@@ -60,6 +60,6 @@ export default class EmbedSchemaCommand extends BaseCommand {
             url: getString('url'),
         };
 
-        await interaction.reply({ content: `**Embed Schema**:\n\`\`\`json\n${JSON.stringify(embed)}\n\`\`\`\nYou can now use this schema to build embeds.` });
+        await interaction.reply({ content: `**Embed Schema**:\n\`\`\`\nembed:${JSON.stringify(embed)}\n\`\`\`\nYou can now use this schema to build embeds.` });
     }
 }
