@@ -60,17 +60,22 @@ export default class MessageCreateEvent extends BaseEvent {
             
             const snippet = await client.snippetManager.getParsed(message.guild!.id, cmdName);
 
-            if (snippet) {
-                await message.channel.send({
-                    content: snippet.content.trim() === '' ? undefined : snippet.content,
-                    files: snippet.files.map(name => {
-                        return {
-                            name,
-                            attachment: path.resolve(__dirname, '../../../storage', name)
-                        } as FileOptions
-                    }),
-                    embeds: snippet.embeds
-                });
+            if (snippet) {                
+                try {
+                    await message.channel.send({
+                        content: snippet.content.trim() === '' ? undefined : snippet.content,
+                        files: snippet.files.map(name => {
+                            return {
+                                name,
+                                attachment: path.resolve(__dirname, '../../../storage', name)
+                            } as FileOptions
+                        }),
+                        embeds: snippet.embeds
+                    });
+                }
+                catch (e) {
+                    console.log(e);                    
+                }
 
                 return;
             }

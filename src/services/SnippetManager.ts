@@ -5,7 +5,7 @@ import path from "path";
 import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
 import Service from "../utils/structures/Service";
-import { deleteFile } from "../utils/util";
+import { deleteFile, parseEmbedsInString } from "../utils/util";
 
 export type Snippet = {
     name: string;
@@ -41,6 +41,10 @@ export default class SnippetManager extends Service {
     }
 
     set(guildID: string, name: string, content: string, files: string[] = []): void {
+        if (!this.snippets[guildID]) {
+            this.snippets[guildID] = [];
+        }
+
         this.snippets[guildID].push({
             name,
             content,
@@ -69,30 +73,24 @@ export default class SnippetManager extends Service {
             return null;
         }
 
-        snippet.embeds = this.parseEmbeds(snippet).embeds;
-
-        return snippet;
+        return this.parseEmbeds(snippet) ?? snippet;
     }
 
-    parseEmbeds(snippet: Snippet) {;
-        const embedExpressions = snippet.content.matchAll(/embed\:(\{[^\n]+\})/g);
-        snippet.content = snippet.content.replace(/embed\:(\{[^\n]+\})/g, '');
-        let embeds: typeof snippet.embeds = [];
+    parseEmbeds(snippet: Snippet) {        
+        try {
+            const { embeds, content } = parseEmbedsInString(snippet.content);
 
-        for (const expr of [...embedExpressions]) {
-            const parsed = JSON.parse(expr[1]);
+            console.log(content);            
 
-            try {
-                embeds.push(new MessageEmbed(parsed).setColor(parsed.color));
-            }
-            catch (e) {
-                console.log(e);
-            }
+            return <Snippet> {
+                ...snippet,
+                content,
+                embeds,
+            };
         }
-
-        snippet.embeds = embeds;
-
-        return snippet;
+        catch (e) {
+            console.log(e);
+        }
     }
 
     async delete(guildID: string, name: string): Promise<void> {

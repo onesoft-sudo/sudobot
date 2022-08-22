@@ -3,6 +3,26 @@ import DiscordClient from '../client/Client';
 import { GuildMember, Message, CommandInteraction, MessageEmbed, ContextMenuInteraction, Interaction } from 'discord.js';
 import Axios, { AxiosRequestHeaders, HeadersDefaults } from 'axios';
 import { formatDistance } from 'date-fns';
+import { Snippet } from '../services/SnippetManager';
+
+export function parseEmbedsInString(content: string) {
+    const embedExpressions = content.matchAll(/embed\:(\{[^\n]+\})/g);
+    const newContent = content.replace(/embed\:(\{[^\n]+\})/g, '');
+    let embeds: MessageEmbed[] = [];
+
+    for (const expr of [...embedExpressions]) {
+        const parsed = JSON.parse(expr[1]);
+
+        try {
+            embeds.push(new MessageEmbed(parsed).setColor(parsed.color));     
+        }
+        catch (e) {
+            console.log(e);
+        }
+    }
+
+    return { embeds, content: newContent };
+}
 
 export function splitMessage(message: string, limit: number = 1000, maxIterationCount: number = 100) {
     const splitted: string[] = [];
