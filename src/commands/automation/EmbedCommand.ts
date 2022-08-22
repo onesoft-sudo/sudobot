@@ -7,7 +7,6 @@ import { emoji } from '../../utils/Emoji';
 
 export default class EmbedCommand extends BaseCommand {
     supportsInteractions: boolean = true;
-    supportsLegacy = false;
     subcommands = ['send', 'schema', 'build'];
 
     constructor() {
@@ -26,7 +25,7 @@ export default class EmbedCommand extends BaseCommand {
         }
 
         if (!options.isInteraction && !this.subcommands.includes(options.args[0])) {
-            await message.reply(`${emoji('error')} Invalid subcommand provided. Must be one of ${this.subcommands.map(c => `\`${c}\``)}.`);
+            await message.reply(`${emoji('error')} Invalid subcommand provided. Must be one of ${this.subcommands.map(c => `\`${c}\``).join(', ')}.`);
             return;
         }
 
@@ -35,6 +34,8 @@ export default class EmbedCommand extends BaseCommand {
         const command = client.commands.get('embed__' + subcommand);
 
         if (command) {
+            if (!options.isInteraction) 
+                options.args.shift();
             await command.execute(client, message, options);
         }
     }
