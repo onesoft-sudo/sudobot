@@ -208,6 +208,51 @@ let commands = [
 	new SlashCommandBuilder().setName('afk').setDescription('Set your AFK status')
 		.addStringOption(option => option.setName('reason').setDescription("The reason for going AFK")),
 	
+	new SlashCommandBuilder().setName('hash').setDescription('Generate hash for a string (text) data')
+		.addStringOption(option => option.setName('content').setDescription("The content to be hashed").setRequired(true))
+		.addStringOption(option => 
+			option
+			.setName('algorithm')
+			.setDescription("Hash algorithm")
+			.setChoices(
+				{
+					name: 'SHA1',
+					value: 'sha1'
+				},
+				{
+					name: 'SHA256',
+					value: 'sha256'
+				},
+				{
+					name: 'SHA512',
+					value: 'sha512'
+				},
+				{
+					name: 'MD5',
+					value: 'md5'
+				},
+			)
+		)
+		.addStringOption(option => 
+			option
+			.setName('digest')
+			.setDescription("Digest mode")
+			.setChoices(
+				{
+					name: 'HEX',
+					value: 'hex'
+				},
+				{
+					name: 'Base64',
+					value: 'base64'
+				},
+				{
+					name: 'Base64 URL',
+					value: 'base64url'
+				},
+			)
+		),
+	
 	new SlashCommandBuilder().setName('announce').setDescription('Announce something')
 		.addStringOption(option => option.setName('content').setDescription("The announcemnt message content")),
 
