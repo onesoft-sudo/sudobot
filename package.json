@@ -8,6 +8,7 @@
         "@discordjs/rest": "^0.4.1",
         "axios": "^0.27.2",
         "bufferutil": "^4.0.6",
+        "date-fns": "^2.29.1",
         "discord-api-types": "^0.32.1",
         "discord-modals": "^1.3.6",
         "discord.js": "^13.7.0",
@@ -16,10 +17,10 @@
         "express": "^4.18.1",
         "express-router": "^0.0.1",
         "ms": "^2.1.3",
+        "pm2": "^5.2.0",
         "sequelize": "^6.20.1",
         "sqlite3": "^5.0.8",
-        "zod": "^3.17.2",
-        "date-fns": "^2.29.1"
+        "zod": "^3.17.2"
     },
     "devDependencies": {
         "@commitlint/cli": "^17.0.3",
@@ -40,10 +41,11 @@
         "dev": "ts-node ./src/index.ts",
         "flag:prod": "ts-node ./src/index.ts --prod",
         "deploy": "node ./deploy-commands.js",
-        "start": "node ./build/index.js",
+        "start:node": "node ./build/index.js",
         "flag:dev": "node ./build/index.js --dev",
         "build": "tsc",
         "clean": "bash -c 'rm -r build'",
-        "prepare": "husky install && sh ./init.sh"
+        "prepare": "husky install && sh ./init.sh",
+        "start": "pm2 start ./ecosystem.config.js --no-daemon"
     }
 }
