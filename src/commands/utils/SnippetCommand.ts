@@ -29,16 +29,22 @@ export default class AddsnippetCommand extends BaseCommand {
                 return;
             }
 
-            await msg.reply({
-                content: snippet.content.trim() === '' ? undefined : snippet.content,
-                files: snippet.files.map(name => {
-                    return {
-                        name,
-                        attachment: path.resolve(__dirname, '../../../storage', name)
-                    } as FileOptions
-                }),
-                embeds: snippet.embeds
-            });
+            try {
+                await msg.reply({
+                    content: snippet.content.trim() === '' ? undefined : snippet.content,
+                    files: snippet.files.map(name => {
+                        return {
+                            name,
+                            attachment: path.resolve(__dirname, '../../../storage', name)
+                        } as FileOptions
+                    }),
+                    embeds: snippet.embeds
+                });
+            }
+            catch (e) {
+                console.log(e);      
+                await msg.reply({ content: 'Looks like that snippet is corrupted. Maybe invalid embed schema?', ephemeral: true });          
+            }
         }
 
         let cmdName = '';

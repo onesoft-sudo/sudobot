@@ -8,6 +8,7 @@ import getUser from '../../utils/getUser';
 import getMember from '../../utils/getMember';
 import History from '../../automod/History';
 import { fetchEmoji } from '../../utils/Emoji';
+import { parseEmbedsInString } from '../../utils/util';
 
 export default class SendCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -56,8 +57,12 @@ export default class SendCommand extends BaseCommand {
         }
 
         try {
+            let { embeds, content: parsedContent } = parseEmbedsInString(content);
+
             await member.send({
-                content
+                content: parsedContent.trim() === '' ? undefined : parsedContent,
+                embeds,
+                attachments: msg instanceof CommandInteraction ? undefined : [...msg.attachments.values()]
             });
 
             if (options.isInteraction) {
@@ -81,7 +86,7 @@ export default class SendCommand extends BaseCommand {
                 embeds: [
                     new MessageEmbed()
                     .setColor('#f14a60')
-                    .setDescription(`Failed to send message. Maybe missing permissions or the user has disabled DMs?`)
+                    .setDescription(`Failed to send message. Maybe invalid embed schema or the user has disabled DMs?`)
                 ],
                 ephemeral: true
             });

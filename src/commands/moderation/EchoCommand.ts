@@ -8,6 +8,7 @@ import getUser from '../../utils/getUser';
 import getMember from '../../utils/getMember';
 import History from '../../automod/History';
 import { fetchEmoji } from '../../utils/Emoji';
+import { parseEmbedsInString } from '../../utils/util';
 
 export default class EchoCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -57,9 +58,13 @@ export default class EchoCommand extends BaseCommand {
             return;
         }
 
-        try {
+        try {                
+            let { embeds, content: parsedContent } = parseEmbedsInString(content);
+
             await channel.send({
-                content
+                content: parsedContent.trim() === '' ? undefined : parsedContent,
+                embeds,
+                attachments: msg instanceof CommandInteraction ? undefined : [...msg.attachments.values()]
             });
 
             if (options.isInteraction) {
@@ -83,7 +88,7 @@ export default class EchoCommand extends BaseCommand {
                 embeds: [
                     new MessageEmbed()
                     .setColor('#f14a60')
-                    .setDescription(`Failed to send message. Maybe missing permissions?`)
+                    .setDescription(`Failed to send message. Maybe missing permissions or invalid embed schema?`)
                 ],
                 ephemeral: true
             });
