@@ -1,4 +1,4 @@
-import { BanOptions, CommandInteraction, EmojiIdentifierResolvable, GuildMember, Interaction, Message, TextChannel, User } from 'discord.js';
+import { BanOptions, CommandInteraction, EmojiIdentifierResolvable, FileOptions, GuildMember, Interaction, Message, TextChannel, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -62,7 +62,11 @@ export default class SendCommand extends BaseCommand {
             await member.send({
                 content: parsedContent.trim() === '' ? undefined : parsedContent,
                 embeds,
-                attachments: msg instanceof CommandInteraction ? undefined : [...msg.attachments.values()]
+                files: msg instanceof CommandInteraction ? undefined : [...msg.attachments.map(a => ({
+                    attachment: a.proxyURL,
+                    description: a.description,
+                    name: a.name
+                } as FileOptions)).values()]
             });
 
             if (options.isInteraction) {
