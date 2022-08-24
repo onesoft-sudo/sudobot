@@ -112,7 +112,9 @@ export default class ProfileCommand extends BaseCommand {
                     },
                     {
                         name: 'Roles',
-                        value: user?.roles.cache.filter(role => role.id !== msg.guild!.id).reduce((acc, value) => `${acc} ${roleMention(value.id)}`, '')!.trim()!
+                        value: user?.roles.cache.filter(role => role.id !== msg.guild!.id).sort((role1, role2) => {
+                            return role2.position - role1.position;
+                        }).reduce((acc, value) => `${acc} ${roleMention(value.id)}`, '')!.trim()!
                     }
                 ])
             ]
