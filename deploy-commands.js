@@ -23,6 +23,8 @@ let commands = [
 	new SlashCommandBuilder().setName('help').setDescription('A short documentation about the commands')
 		.addStringOption(option => option.setName('command').setDescription("The command")),
 	new SlashCommandBuilder().setName('about').setDescription('Show information about the bot'),
+	new SlashCommandBuilder().setName('eval').setDescription('Execute raw code in the runtime environment')
+		.addStringOption(option => option.setName('code').setDescription('The code to be executed').setRequired(true)),
 	new SlashCommandBuilder().setName('system').setDescription('Show the system status'),
 	new SlashCommandBuilder().setName('restart').setDescription('Restart the system'),
 	new SlashCommandBuilder().setName('setstatus').setDescription('Set status for the bot system')

@@ -12,7 +12,6 @@ import MessageFilter from '../automod/MessageFilter';
 import AntiRaid from '../automod/AntiRaid';
 import Starboard from '../services/Starboard';
 import Server from '../api/Server';
-import Cooldown from '../automod/Cooldown';
 import StartupManager from '../services/StartupManager';
 import AutoClear from '../automod/AutoClear';
 import RandomStatus from '../services/RandomStatus';
@@ -48,7 +47,6 @@ export default class DiscordClient extends Client {
     messageFilter: MessageFilter = {} as MessageFilter;
     antiraid: AntiRaid = {} as AntiRaid;
     starboard: Starboard = {} as Starboard;
-    cooldown: Cooldown = {} as Cooldown;
     startupManager: StartupManager = {} as StartupManager;
     autoClear: AutoClear = {} as AutoClear;
     randomStatus: RandomStatus = {} as RandomStatus;
@@ -74,7 +72,6 @@ export default class DiscordClient extends Client {
         "@automod/MessageFilter": "messageFilter",
         "@automod/AntiRaid": "antiraid",
         "@services/Starboard": "starboard",
-        "@automod/Cooldown": "cooldown",
         "@services/StartupManager": "startupManager",
         "@automod/AutoClear": "autoClear",
         "@services/RandomStatus": "randomStatus",
