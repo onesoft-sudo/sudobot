@@ -5,14 +5,14 @@ import Service from "../utils/structures/Service";
 
 export default class Auth extends Service {
     async verify(member: GuildMember, command: BaseCommand): Promise<boolean> {
+        if (command.ownerOnly && !this.client.config.props.global.owners.includes(member.user.id)) {
+            return false;
+        }
+
         const cmds: string[] = await this.client.config.get('global_commands');
 
         if (cmds.indexOf(command.getName()) !== -1) {
             return true;
-        }
-
-        if (command.ownerOnly && !this.client.config.props.global.owners.includes(member.user.id)) {
-            return false;
         }
 
         if (await member.roles.cache.has(await this.client.config.get('mod_role'))) {
