@@ -2,7 +2,7 @@ import fs from 'fs';
 import DiscordClient from '../client/Client';
 import { GuildMember, Message, CommandInteraction, MessageEmbed, ContextMenuInteraction, Interaction } from 'discord.js';
 import Axios, { AxiosRequestHeaders, HeadersDefaults } from 'axios';
-import { formatDistance } from 'date-fns';
+import { formatDistanceToNowStrict } from 'date-fns';
 import { Snippet } from '../services/SnippetManager';
 
 export function parseEmbedsInString(content: string) {
@@ -100,7 +100,7 @@ export async function hasPermission(client: DiscordClient, member: GuildMember, 
 }
 
 export function timeProcess(seconds: number) {
-	return formatDistance(new Date(), new Date(seconds));
+	return formatDistanceToNowStrict(new Date(seconds));
 }
 
 
@@ -150,7 +150,7 @@ export function escapeRegex(string: string) {
 export function timeSince(date: number) {
     // const seconds = Math.floor((Date.now() - date) / 1000);
     // return timeProcess(seconds) + ' ago';
-    return formatDistance(new Date(), new Date(date), { addSuffix: true });
+    return formatDistanceToNowStrict(new Date(date), { addSuffix: true });
 }
 
 export async function download(url: string, path: string, headers?: AxiosRequestHeaders) {  
