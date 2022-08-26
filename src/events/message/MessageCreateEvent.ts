@@ -39,9 +39,6 @@ export default class MessageCreateEvent extends BaseEvent {
                         options: args.filter(a => a[0] === '-'),
                         isInteraction: false
                     } as CommandOptions;
-
-                    if (!await client.cooldown.start(message, options))
-                        return;
                     
                     await command.execute(client, message, options);    
                 }

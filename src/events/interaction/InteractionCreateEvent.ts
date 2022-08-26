@@ -50,9 +50,6 @@ export default class InteractionCreateEvent extends BaseEvent {
                     isInteraction: true
                 } as InteractionOptions;
 
-                if (!await client.cooldown.start(interaction, options))
-                    return;
-
                 await command.execute(client, interaction, options);
                 (global as any).lastCommand = commandName;
             }
