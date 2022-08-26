@@ -11,5 +11,4 @@ module.exports = {
             max_memory_restart: "850M"
         }
     ],
-
 };
