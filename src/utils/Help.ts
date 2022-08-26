@@ -75,7 +75,7 @@ export default <CommandHelpData[]> [
         name: 'avatar',
         shortBrief: "Show someone's avatar.",
         description: null,
-        structure: "[UserID|UserTag|Mention]=CURRENT_USER",
+        structure: "[UserID|UserTag|Mention=CURRENT_USER]",
         example: "`%%avatar 385753607325075320`\n`%%avatar`",
         notes: null,
         slashCommand: true,
@@ -181,7 +181,7 @@ export default <CommandHelpData[]> [
     {
         name: 'embed',
         shortBrief: "Build, send and make schemas of embeds!",
-        description: "Build, send and make schemas of embeds. Schemas are special kind of text which can be used in various commands to represent an embed.\n**Subcommands**:\n\n`send` - Build and send an embed from the given input.\n`schema` - Builds an embed and returns back the JSON schema of the embed so that you can use it in other places!\n`build` - Builds an embed from a JSON schema.",
+        description: "Build, send and make schemas of embeds. Schemas are special kind of text which can be used in various commands to represent an embed.\n\n**Subcommands**:\n\n`send` - Build and send an embed from the given input.\n`schema` - Builds an embed and returns back the JSON schema of the embed so that you can use it in other places!\n`build` - Builds an embed from a JSON schema.",
         structure: "<subcommand> <...args>",
         example: "`/embed send title:Hello world description:This is an embed, awesome!`\n`/embed schema title:Hello world description:This is an embed, awesome!`\n`/embed build json_schema:embed:{\"title\": \"Hello world\", \"description\": \"This is an embed, awesome!\", \"fields\": []}`",
         notes: null,

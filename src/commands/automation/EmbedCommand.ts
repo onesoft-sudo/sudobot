@@ -10,7 +10,7 @@ export default class EmbedCommand extends BaseCommand {
     subcommands = ['send', 'schema', 'build'];
 
     constructor() {
-        super('embed', 'settings', []);
+        super('embed', 'automation', []);
     }
 
     async run(client: DiscordClient, message: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
