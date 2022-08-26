@@ -4,8 +4,6 @@ import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
-import e from 'express';
-import getUser from '../../utils/getUser';
 import getMember from '../../utils/getMember';
 import { timeSince } from '../../utils/util';
 import { roleMention } from '@discordjs/builders';
