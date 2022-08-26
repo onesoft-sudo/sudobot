@@ -8,6 +8,7 @@ import { emoji, fetchEmoji } from '../../utils/Emoji';
 
 export default class EmbedBuildCommand extends BaseCommand {
     supportsInteractions: boolean = false;
+    supportsLegacy: boolean = false;
 
     constructor() {
         super('embed__build', 'automation', []);

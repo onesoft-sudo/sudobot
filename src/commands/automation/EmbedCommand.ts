@@ -14,28 +14,16 @@ export default class EmbedCommand extends BaseCommand {
     }
 
     async run(client: DiscordClient, message: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
-        if (!options.isInteraction && options.args[0] === undefined) {
-            await message.reply(`${emoji('error')} No subcommand provided.`);
-            return;
-        }
-
-        if (!options.isInteraction && (options.args[0] === 'send' || options.args[0] === 'schema')) {
+        if (!options.isInteraction) {
             await message.reply(`${emoji('error')} This command can not be used in legacy mode. Use slash commands instead.`);
             return;
         }
 
-        if (!options.isInteraction && !this.subcommands.includes(options.args[0])) {
-            await message.reply(`${emoji('error')} Invalid subcommand provided. Must be one of ${this.subcommands.map(c => `\`${c}\``).join(', ')}.`);
-            return;
-        }
-
-        const subcommand = options.isInteraction ? options.options.getSubcommand() : options.args[0];
+        const subcommand = options.options.getSubcommand();
 
         const command = client.commands.get('embed__' + subcommand);
 
         if (command) {
-            if (!options.isInteraction) 
-                options.args.shift();
             await command.execute(client, message, options);
         }
     }
