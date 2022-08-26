@@ -52,6 +52,16 @@ export default <CommandHelpData[]> [
         legacyCommand: true
     },
     {
+        name: 'antijoin',
+        shortBrief: "Enable the AntiJoin shield.",
+        description: "Enables the AntiJoin shield.\nWhile AntiJoin is active, users will not be able to join the server (they will be kicked). This is useful when handling a raid.",
+        structure: "",
+        example: "`%%antijoin",
+        notes: null,
+        slashCommand: true,
+        legacyCommand: true
+    },
+    {
         name: 'appeal',
         shortBrief: "Send a message to staff members about a punishment appeal.",
         description: null,
@@ -99,16 +109,6 @@ export default <CommandHelpData[]> [
         legacyCommand: true
     },
     {
-        name: 'bean',
-        shortBrief: "Bean someone in this server.",
-        description: "Bean someone. It doesn't do anything except pretending.",
-        structure: "<UserID|UserTag|Mention> [Reason]",
-        example: "`%%bean 385753607325075320`\n`%%bean @Someone You are spamming a lot`",
-        notes: null,
-        slashCommand: true,
-        legacyCommand: true
-    },
-    {
         name: 'cat',
         shortBrief: "Get a random kitty picture.",
         description: "Fetches a random cat picture from `thecatapi.com` API.",
@@ -124,6 +124,16 @@ export default <CommandHelpData[]> [
         description: "Clear all messages from a user, in the current channel. This might take a while.",
         structure: "<UserID|UserTag|UserMention>",
         example: "`%%clear 83474924191884727`\n`%%clear @Someone`",
+        notes: null,
+        slashCommand: true,
+        legacyCommand: true
+    },
+    {
+        name: 'config',
+        shortBrief: "View or change the config options.",
+        description: "Configure the bot settings. This command is for advanced users.\nIf the user only gives one argument (setting key), then the value of the setting key will be shown. Otherwise the setting key will be modified with the given parameters.",
+        structure: "<key> [value]",
+        example: "`%%config spam_filter.enabled false`\n`%%config prefix -`",
         notes: null,
         slashCommand: true,
         legacyCommand: true
@@ -169,6 +179,16 @@ export default <CommandHelpData[]> [
         legacyCommand: true
     },
     {
+        name: 'embed',
+        shortBrief: "Build, send and make schemas of embeds!",
+        description: "Build, send and make schemas of embeds. Schemas are special kind of text which can be used in various commands to represent an embed.\n**Subcommands**:\n\n`send` - Build and send an embed from the given input.\n`schema` - Builds an embed and returns back the JSON schema of the embed so that you can use it in other places!\n`build` - Builds an embed from a JSON schema.",
+        structure: "<subcommand> <...args>",
+        example: "`/embed send title:Hello world description:This is an embed, awesome!`\n`/embed schema title:Hello world description:This is an embed, awesome!`\n`/embed build json_schema:embed:{\"title\": \"Hello world\", \"description\": \"This is an embed, awesome!\", \"fields\": []}`",
+        notes: null,
+        slashCommand: true,
+        legacyCommand: false
+    },
+    {
         name: 'emoji',
         shortBrief: "Get info about an emoji. Must be guild (server) specific emoji.",
         description: null,
@@ -176,6 +196,16 @@ export default <CommandHelpData[]> [
         example: "`%%emoji check`\n`%%emoji error`",
         notes: null,
         slashCommand: false,
+        legacyCommand: true
+    },
+    {
+        name: 'eval',
+        shortBrief: "Execute raw Javascript code.\n*This command is owner-only*.",
+        description: null,
+        structure: "<code>",
+        example: "`%%eval console.log(\"Hello world!\")`",
+        notes: null,
+        slashCommand: true,
         legacyCommand: true
     },
     {
@@ -194,6 +224,16 @@ export default <CommandHelpData[]> [
         description: "Schedule a message from the bot and delete it automatically after the given time interval.",
         structure: "<scheduleTimeInterval> <expireTimeInterval> <content> [channelMention]",
         example: "`%%echo 25m 5h Something\nVery Cool`\n`%%echo 1h 7d Something\nVery Cool #general`",
+        notes: null,
+        slashCommand: true,
+        legacyCommand: true
+    },
+    {
+        name: 'hash',
+        shortBrief: "Generate a hash of the given text input.",
+        description: null,
+        structure: "<algorithm> <input>",
+        example: "`%%hash sha1 abc`",
         notes: null,
         slashCommand: true,
         legacyCommand: true
@@ -262,21 +302,18 @@ export default <CommandHelpData[]> [
         name: 'lock',
         shortBrief: "Lock a specific channel.",
         description: "Makes the given channel read-only for the general members. If no channel is present, the current channel will be locked.",
-        structure: "[ChannelID|ChannelMention] [...options]",
+        structure: "[ChannelID|ChannelMention]",
         example: "`%%lock 385753607325075320`\n`%%lock #general`\n`%%lock`",
         notes: null,
-        options: {
-            "--no-send": "Do not send a confirmation message to the locked channel",
-        },
         slashCommand: true,
         legacyCommand: true
     },
     {
         name: 'lockall',
-        shortBrief: "Lock all the channels given in the configuration.",
+        shortBrief: "Lock all given channels, in-bulk.",
         description: "Makes the given channels read-only for the general members.",
-        structure: "<...ChannelMention|ChannelIDs> [--raid] [-r=ROLEMENTION|ROLEID]",
-        example: "`%%lockall 2572562578247841786\n`%%lockall 2572562578247841786 2572562578247841782 2572562578247841783`\n`%%lockall 2572562578247841786 2572562578247841785 -r @General`",
+        structure: "<...ChannelMention|ChannelIDs> [--raid]",
+        example: "`%%lockall 2572562578247841786\n`%%lockall 2572562578247841786 2572562578247841782 2572562578247841783`\n`%%lockall 2572562578247841786 2572562578247841785`",
         notes: null,
         options: {
             "--raid": "Lock all raid protected channels",
@@ -369,7 +406,7 @@ export default <CommandHelpData[]> [
     },
     {
         name: 'profile',
-        shortBrief: 'Show server profile',
+        shortBrief: 'Show the server profile.',
         description: null,
         structure: '[UserID|UserTag|UserMention]',
         example: '`%%profile`\n`%%profile @Someone`',
@@ -428,6 +465,16 @@ export default <CommandHelpData[]> [
         legacyCommand: true
     },
     {
+        name: 'shot',
+        shortBrief: "Give a shot to a user.",
+        description: "Give a shot to a user. This command actually doesn't do anything.",
+        structure: "<UserID|UserTag|Mention> [Reason]",
+        example: "`%%shot 385753607325075320`\n`%%shot @Someone You are spamming a lot`",
+        notes: null,
+        slashCommand: true,
+        legacyCommand: true
+    },
+    {
         name: 'softban',
         shortBrief: "Softban a user.",
         description: "A softban means banning and unbanning a user immediately so that their messages gets deleted.",
@@ -481,19 +528,16 @@ export default <CommandHelpData[]> [
         name: 'unlock',
         shortBrief: "Unlock a specific channel.",
         description: "Makes the given channel writable for the general members. If no channel is present, the current channel is unlocked.",
-        structure: "[ChannelID|ChannelMention] [...options]",
+        structure: "[ChannelID|ChannelMention]",
         example: "`%%unlock 385753607325075320`\n`%%unlock #general`\n`%%unlock`",
         notes: null,
-        options: {
-            "--no-send": "Do not send a confirmation message to the locked channel",
-        },
         slashCommand: true,
         legacyCommand: true
     },
     {
         name: 'unlockall',
-        shortBrief: "Unlock all the channels given in the configuration.",
-        description: "<...ChannelMention|ChannelIDs> [--raid] [-r=ROLEMENTION|ROLEID]",
+        shortBrief: "Unlock all given channels, in bulk.",
+        description: "<...ChannelMention|ChannelIDs> [--raid]",
         structure: "[...options]",
         example: "`%%unlockall --raid\n`%%unlockall 348764381911364631 634894637314679163795`",
         notes: null,
@@ -537,6 +581,25 @@ export default <CommandHelpData[]> [
             "clear": "Clear all warnings for a user",
             "remove": "Remove a warning by ID",
             "view": "View information about a warning by ID"
+        }
+    },
+    {
+        name: 'welcomer',
+        shortBrief: "Configure the welcomer.",
+        description: "Change the settings of the welcomer.",
+        structure: "<option(s)> [...args]",
+        example: "`%%welcomer --enable`",
+        notes: null,
+        slashCommand: true,
+        legacyCommand: true,
+        options: {
+            "--enable": "Enables the welcomer",
+            "--disable": "Disables the welcomer",
+            "--toggle": "Toggles the welcomer",
+            "--msg, --message, --custom": "Set custom welcome message. The welcome message as an argument is required.",
+            "--rm-msg, --remove-message": "Remove the custom welcome message.",
+            "--rand, --randomize": "Toggle random welcome messages.",
+            "--preview": "Preview the welcome message embed.",
         }
     },
 ]
