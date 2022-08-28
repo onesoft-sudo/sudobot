@@ -62,7 +62,7 @@ export function shouldNotModerate(client: DiscordClient, member: GuildMember) {
 
 	const role = client.config.props[member.guild.id].admin;
 
-	return member.roles.cache.has(role);
+	return role && role.trim() !== '' && member.roles.cache.has(role);
 }
 
 export async function hasPermission(client: DiscordClient, member: GuildMember, msg: Message | CommandInteraction | ContextMenuInteraction, mod: GuildMember | null, error: string = "You don't have permission to moderate this user") {
