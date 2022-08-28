@@ -20,6 +20,7 @@ export type MessageFilterConfig = {
     tokens: string[];
     regex_patterns: string[];
     rickrolls_enabled: boolean;
+    off: boolean;
 };
 
 export default class MessageFilter {
@@ -226,6 +227,10 @@ export default class MessageFilter {
 
     async start(msg: Message) {
         this.load();
+
+        if (this.config.off) {
+            return;
+        }
 
         if (this.config.ignore_staff && msg.member!.roles.cache.has(this.client.config.get('mod_role')))
             return;
