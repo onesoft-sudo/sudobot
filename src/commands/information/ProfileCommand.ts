@@ -75,7 +75,7 @@ export default class ProfileCommand extends BaseCommand {
                 console.log(a);
                 
                 if (a.type === 'CUSTOM') {
-                    activities.push(`${a.emoji?.toString() ?? ''}${a.emoji?.toString() ? ' ' : ''}${a.state}`);
+                    activities.push(`${a.emoji ? `${a.emoji.toString()} ` : ''}${a.state}`);
                 }
                 else if (a.type === 'LISTENING') {
                     if (a.name === 'Spotify') {
