@@ -590,7 +590,7 @@ export default <CommandHelpData[]> [
         structure: "<option(s)> [...args]",
         example: "`%%welcomer --enable`",
         notes: null,
-        slashCommand: true,
+        slashCommand: false,
         legacyCommand: true,
         options: {
             "--enable": "Enables the welcomer",
