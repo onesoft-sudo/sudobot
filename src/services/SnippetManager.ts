@@ -41,10 +41,6 @@ export default class SnippetManager extends Service {
     }
 
     set(guildID: string, name: string, content: string, files: string[] = []): void {
-        if (!this.snippets[guildID]) {
-            this.snippets[guildID] = [];
-        }
-
         this.snippets[guildID].push({
             name,
             content,
