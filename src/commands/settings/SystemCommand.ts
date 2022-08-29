@@ -6,6 +6,7 @@ import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import { fetchEmoji } from '../../utils/Emoji';
 import { timeProcess } from '../../utils/util';
+import { formatDistanceStrict, formatDistanceToNowStrict, formatDuration, intervalToDuration } from 'date-fns';
 
 export default class SystemCommand extends BaseCommand {
     constructor() {
@@ -54,7 +55,7 @@ export default class SystemCommand extends BaseCommand {
             apiLatencyIcon = '🟡';
         }
 
-        const memoryFree = Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100;
+        const memoryFree = Math.round((process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100);
 
         const msgoptions: any = {
             embeds: [
@@ -71,7 +72,10 @@ export default class SystemCommand extends BaseCommand {
                     },
                     {
                         name: 'Uptime',
-                        value: `${timeProcess(parseInt(process.uptime().toFixed(2)))}`
+                        value: `${formatDuration(intervalToDuration({
+                            start: 0,
+                            end: process.uptime() * 1000
+                        }))}`
                     },
                     {
                         name: 'Latency',
