@@ -2,10 +2,9 @@
     "Someone joined the server! Everyone welcome **:username:**!",
     "Hello world, **:username:**!",
     "Hi **:username:**! We were waiting for you!",
-    "Hola **:username:**!",
     "A new member **:username:** appeared in the server!",
     "What a timing! Welcome **:username:** to :guild:!",
-    "Aye aye Captain **:username:**! Welcome to :guild:!",
+    "Captain **:username:**! Welcome to :guild:!",
     "Ayo we got a new member, welcome **:username:**!",
     "Looks like someone joined the party! Greetings, **:username:**!",
     "Greetings, **:username:**!",
@@ -14,5 +13,11 @@
     "Make way for **:username:**!",
     "**:username:** is here!",
     "We're no strangers to talk,\nYou read the rules... and so do we!\nA *TES Roll* is what I'm thinking of...\nYou wouldn't get this from any other server, **:username:**!",
-    "Welcome **:username:**, to :guild:!"
+    "Welcome **:username:**, to :guild:!",
+    "Never gonna give **:username:** up,\nNever gonna give **:username:** down!",
+    "After a long time, **:username:**!",
+    "**:username:**, may I have your attention please?",
+    "Oh it's you, **:username:**!",
+    "Please wait **:username:**, your welcome message is compiling...",
+    "You joined the battle, **:username:**!"
 ]
