@@ -12,7 +12,7 @@ export function findCommandData(callback: (data: CommandHelpData) => boolean) {
     return Help.find(callback);
 }
 
-export function renderCommandList(limit = 40): string {
+export function renderCommandList(limit = 60): string {
     let str = `Type \`${DiscordClient.client.config.get('prefix')}help <CommandName>\` for more information about a specific command.\n\n`;
     let index = 0;
 
