@@ -72,7 +72,7 @@ let commands = [
 			.addUserOption(option => option.setName("user").setDescription("The user to search").setRequired(true))	
 		)
 		.addSubcommand(subcommand => subcommand.setName("guild").setDescription("Server/Guild lookup")
-			.addStringOption(option => option.setName("server").setDescription("The ID of the server/guild to lookup").setRequired(true))	
+			.addStringOption(option => option.setName("guild_id").setDescription("The ID of the server/guild to lookup").setRequired(true))	
 		),
 
 	new SlashCommandBuilder().setName('profile').setDescription('Show someone\'s profile')
