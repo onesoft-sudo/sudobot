@@ -4,6 +4,7 @@ import { appendFile } from "fs/promises";
 import path from "path";
 import { exit } from "process";
 import DiscordClient from "../../client/Client";
+import { LogLevel } from "../../services/DebugLogger";
 import BaseEvent from "../../utils/structures/BaseEvent";
 
 export default class DebugEvent extends BaseEvent {
@@ -24,6 +25,11 @@ export default class DebugEvent extends BaseEvent {
         await appendFile(this.logFile, `[${format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx")}] [LOG] ${e}\n`);
 
         if (process.env.PLATFORM === 'replit' && e.includes("Hit a 429 while executing a request") && !client.isReady()) {
+            console.log("DEBUG: ", "Restart Required");
+            await appendFile(this.logFile, `[${format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx")}] [LOG] ${e}\n`);
+            await appendFile(this.logFile, `[${format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx")}] [FATAL] Restart Required\n`);
+            await client.debugLogger.logToHomeServer("Discord Ratelimit [419]: System restart required.\nAutomated restart is in progress.", LogLevel.WARN);
+
             exec("kill 1");
             return;
         }
