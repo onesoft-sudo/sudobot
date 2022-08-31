@@ -53,6 +53,11 @@ export default class UserLookupCommand extends BaseCommand {
             }
         });
 
+
+        if (user.hexAccentColor) {            
+            embed.setColor(user.hexAccentColor);
+        }
+
         const fieldsCommon: APIEmbedField[] = [  
             
         ];
@@ -61,10 +66,16 @@ export default class UserLookupCommand extends BaseCommand {
             {
                 name: "Server Member?",
                 value: member ? "Yes" : "No",
+                inline: true
+            },
+            {
+                name: "Bot?",
+                value: user.bot ? "Yes" : "No",
+                inline: true
             },
             {
                 name: "Account created",
-                value: formatDistanceToNowStrict(user.createdAt, { addSuffix: true }),
+                value: user.createdAt.toLocaleString() + " (" + formatDistanceToNowStrict(user.createdAt, { addSuffix: true }) + ")",
                 inline: true
             }
         ];
@@ -72,14 +83,14 @@ export default class UserLookupCommand extends BaseCommand {
         if (member) {
             fields.push({
                 name: "Joined Server",
-                value: member.joinedAt ? formatDistanceToNowStrict(member.joinedAt, { addSuffix: true }) : "Information not available",
+                value: member.joinedAt ? member.joinedAt.toLocaleString() + " (" + formatDistanceToNowStrict(member.joinedAt, { addSuffix: true }) + ")" : "Information not available",
                 inline: true
             });
 
             if (member.premiumSince) {
                 fields.push({
                     name: "Boosted Server",
-                    value: formatDistanceToNowStrict(member.premiumSince, { addSuffix: true }),
+                    value: member.premiumSince.toLocaleString() + " (" + formatDistanceToNowStrict(member.premiumSince, { addSuffix: true }) + ")",
                     inline: true
                 });
             }
@@ -87,18 +98,61 @@ export default class UserLookupCommand extends BaseCommand {
             if (member.communicationDisabledUntil) {
                 fields.push({
                     name: "Timed-out Until",
-                    value: formatDistanceStrict(member.communicationDisabledUntil, new Date()),
+                    value: member.communicationDisabledUntil.toLocaleString() + " (" + formatDistanceStrict(member.communicationDisabledUntil, new Date()) + ")",
                     inline: true
                 });
             }
 
-            if (member.displayAvatarURL() != user.displayAvatarURL()) {
+            if (member.displayAvatarURL()) {
                 embed.setThumbnail(member.displayAvatarURL());
+            }
+
+            if (member.nickname) {
+                fields.push({
+                    name: "Nickname",
+                    value: Util.escapeMarkdown(member.nickname)
+                });
+            }
+
+            if (member.displayHexColor) {
+                fields.push({
+                    name: "Guild Profile Theme Color",
+                    value: member.displayHexColor
+                });
+            }
+            
+            if (member.displayHexColor && !user.hexAccentColor) {
+                embed.setColor(member.displayHexColor);
+            }
+
+            if (member.voice && member.voice.channel) {
+                fields.push({
+                    name: "Current Voice Channel",
+                    value: member.voice.channel.toString()
+                });
+            }
+
+            fields.push({
+                name: "Completed Membership Screening",
+                value: member.pending ? "No" : "Yes"
+            });
+
+            fields.push({
+                name: "Mention",
+                value: member.toString()
+            });
+
+            if (member.roles.highest.id !== member.guild.id) {
+                fields.push({
+                    name: "Highest Role",
+                    value: member.roles.highest.toString()
+                });
             }
         }
 
         fields = [...fields, ...fieldsCommon];
         embed.setFields(fields);
+        embed.setTimestamp();
         
         await message.reply({
             embeds: [
