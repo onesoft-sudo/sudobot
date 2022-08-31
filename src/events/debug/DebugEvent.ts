@@ -20,12 +20,12 @@ export default class DebugEvent extends BaseEvent {
             return;
         }
 
+        console.log("DEBUG: ", e);
+        await appendFile(this.logFile, `[${format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx")}] [LOG] ${e}\n`);
+
         if (process.env.PLATFORM === 'replit' && e.includes("Hit a 429 while executing a request") && !client.isReady()) {
             exec("kill 1");
             return;
         }
-
-        console.log("DEBUG: ", e);
-        await appendFile(this.logFile, `[${format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx")}] [LOG] ${e}\n`);
     }
 }
