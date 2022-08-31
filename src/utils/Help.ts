@@ -229,6 +229,16 @@ export default <CommandHelpData[]> [
         legacyCommand: true
     },
     {
+        name: 'guildlookup',
+        shortBrief: "Lookup any Public Discord server/guild!",
+        description: "Lookup any Public Discord server/guild!\nThis command is a subcommand of the `/lookup` slash command.",
+        structure: "<UserID|Mention>",
+        example: "`%%guildlookup 385753607325075320`\n`",
+        notes: null,
+        slashCommand: true,
+        legacyCommand: true
+    },
+    {
         name: 'hash',
         shortBrief: "Generate a hash of the given text input.",
         description: null,
@@ -320,6 +330,20 @@ export default <CommandHelpData[]> [
         },
         slashCommand: true,
         legacyCommand: true
+    },
+    {
+        name: 'lookup',
+        shortBrief: "Lookup something.",
+        description: null,
+        structure: "[ChannelID|ChannelMention]",
+        subcommands: {
+            "user": "Lookup a user around Discord",
+            "guild": "Lookup a Public Discord Server"
+        },
+        example: "`/lookup user user:384624924565405777`",
+        notes: null,
+        slashCommand: true,
+        legacyCommand: false
     },
     {
         name: 'massban',
@@ -553,6 +577,16 @@ export default <CommandHelpData[]> [
         description: null,
         structure: "<UserID|UserTag|Mention>",
         example: "`%%unmute 385753607325075320`\n`%%unmute @Someone You are spamming a lot`",
+        notes: null,
+        slashCommand: true,
+        legacyCommand: true
+    },
+    {
+        name: 'userlookup',
+        shortBrief: "Lookup any Discord user!",
+        description: "Lookup any Discord user! Doesn't matter if they are in the server or not.\nThis command is a subcommand of the `/lookup` slash command.",
+        structure: "<UserID|Mention>",
+        example: "`%%userlookup 385753607325075320`\n`",
         notes: null,
         slashCommand: true,
         legacyCommand: true

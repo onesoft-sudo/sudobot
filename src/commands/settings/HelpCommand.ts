@@ -31,8 +31,6 @@ export default class HelpCommand extends BaseCommand {
                         title: 'Help',
                         description: renderCommandList()
                     })
-                    // .setDescription("The command list.\n\n`<...>` means required argument, `[...]` means optional argument.\n\nRun `" + client.config.get('prefix') + "help <commandName>` for more information about a specific command.\n" + await this.render())
-                    // .setTitle('Help')
                 ],
             });
 
