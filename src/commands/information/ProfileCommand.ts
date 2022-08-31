@@ -1,4 +1,4 @@
-import { ColorResolvable, CommandInteraction, GuildMember, Message, User, UserFlags } from 'discord.js';
+import { CommandInteraction, GuildMember, Message, User, UserFlags } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -7,6 +7,41 @@ import MessageEmbed from '../../client/MessageEmbed';
 import getMember from '../../utils/getMember';
 import { timeSince } from '../../utils/util';
 import { roleMention } from '@discordjs/builders';
+
+export const getUserBadges = (user: User) => {
+    const { FLAGS } = UserFlags;
+    
+    const badges = [];
+
+    if (user.flags?.has(FLAGS.BUGHUNTER_LEVEL_1)) 
+        badges.push('Bughunter Level 1');
+    if (user.flags?.has(FLAGS.BUGHUNTER_LEVEL_2)) 
+        badges.push('Bughunter Level 2');
+    if (user.flags?.has(FLAGS.DISCORD_CERTIFIED_MODERATOR)) 
+        badges.push('Discord Certified Moderator');
+    if (user.flags?.has(FLAGS.DISCORD_EMPLOYEE)) 
+        badges.push('Discord Staff');
+    if (user.flags?.has(FLAGS.EARLY_SUPPORTER)) 
+        badges.push('Early Nitro Supporter');
+    if (user.flags?.has(FLAGS.EARLY_VERIFIED_BOT_DEVELOPER)) 
+        badges.push('Early Verified Bot Developer');
+    if (user.flags?.has(FLAGS.HOUSE_BALANCE)) 
+        badges.push('HypeSquad Balance');
+    if (user.flags?.has(FLAGS.HOUSE_BRILLIANCE)) 
+        badges.push('HypeSquad Brilliance');
+    if (user.flags?.has(FLAGS.HOUSE_BRAVERY)) 
+        badges.push('HypeSquad Bravery');
+    if (user.flags?.has(FLAGS.HYPESQUAD_EVENTS)) 
+        badges.push('HypeSquad Events');
+    if (user.flags?.has(FLAGS.PARTNERED_SERVER_OWNER)) 
+        badges.push('Partnered Server Owner');
+    if (user.flags?.has(FLAGS.BOT_HTTP_INTERACTIONS)) 
+        badges.push('Supports Interactions');
+    if (user.flags?.has(FLAGS.VERIFIED_BOT)) 
+        badges.push('Verified Bot');
+    
+    return badges.map(b => `🔵 ${b}`);
+};
 
 export default class ProfileCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -101,41 +136,6 @@ export default class ProfileCommand extends BaseCommand {
         }
 
         activities = activities.join('\n');
-
-        const { FLAGS } = UserFlags;
-
-        const getUserBadges = (user: User) => {
-            const badges = [];
-
-            if (user.flags?.has(FLAGS.BUGHUNTER_LEVEL_1)) 
-                badges.push('Bughunter Level 1');
-            if (user.flags?.has(FLAGS.BUGHUNTER_LEVEL_2)) 
-                badges.push('Bughunter Level 2');
-            if (user.flags?.has(FLAGS.DISCORD_CERTIFIED_MODERATOR)) 
-                badges.push('Discord Certified Moderator');
-            if (user.flags?.has(FLAGS.DISCORD_EMPLOYEE)) 
-                badges.push('Discord Staff');
-            if (user.flags?.has(FLAGS.EARLY_SUPPORTER)) 
-                badges.push('Early Nitro Supporter');
-            if (user.flags?.has(FLAGS.EARLY_VERIFIED_BOT_DEVELOPER)) 
-                badges.push('Early Verified Bot Developer');
-            if (user.flags?.has(FLAGS.HOUSE_BALANCE)) 
-                badges.push('HypeSquad Balance');
-            if (user.flags?.has(FLAGS.HOUSE_BRILLIANCE)) 
-                badges.push('HypeSquad Brilliance');
-            if (user.flags?.has(FLAGS.HOUSE_BRAVERY)) 
-                badges.push('HypeSquad Bravery');
-            if (user.flags?.has(FLAGS.HYPESQUAD_EVENTS)) 
-                badges.push('HypeSquad Events');
-            if (user.flags?.has(FLAGS.PARTNERED_SERVER_OWNER)) 
-                badges.push('Partnered Server Owner');
-            if (user.flags?.has(FLAGS.BOT_HTTP_INTERACTIONS)) 
-                badges.push('Supports Interactions');
-            if (user.flags?.has(FLAGS.VERIFIED_BOT)) 
-                badges.push('Verified Bot');
-            
-            return badges.map(b => `🔵 ${b}`);
-        };
 
         const fields = [
             {

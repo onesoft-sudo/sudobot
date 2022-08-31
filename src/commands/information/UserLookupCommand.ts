@@ -9,6 +9,7 @@ import { emoji } from "../../utils/Emoji";
 import getUser from "../../utils/getUser";
 import { parseUser } from "../../utils/parseInput";
 import BaseCommand from "../../utils/structures/BaseCommand";
+import { getUserBadges } from "./ProfileCommand";
 
 export default class UserLookupCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -80,6 +81,8 @@ export default class UserLookupCommand extends BaseCommand {
             }
         ];
 
+        embed.setThumbnail(user.displayAvatarURL());
+
         if (member) {
             fields.push({
                 name: "Joined Server",
@@ -149,6 +152,13 @@ export default class UserLookupCommand extends BaseCommand {
                 });
             }
         }
+
+        const badges = getUserBadges(user).join('\n');
+
+        fields.push({
+            name: "Badges",
+            value: badges.trim() === '' ? '*No badges found*' : badges
+        });
 
         fields = [...fields, ...fieldsCommon];
         embed.setFields(fields);

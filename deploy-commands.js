@@ -67,6 +67,14 @@ let commands = [
 
 	// INFORMATION
 	new SlashCommandBuilder().setName('stats').setDescription('Show the server statistics'),
+	new SlashCommandBuilder().setName('lookup').setDescription('Lookup something')
+		.addSubcommand(subcommand => subcommand.setName("user").setDescription("User lookup")
+			.addUserOption(option => option.setName("user").setDescription("The user to search").setRequired(true))	
+		)
+		.addSubcommand(subcommand => subcommand.setName("guild").setDescription("Server/Guild lookup")
+			.addStringOption(option => option.setName("server").setDescription("The ID of the server/guild to lookup").setRequired(true))	
+		),
+
 	new SlashCommandBuilder().setName('profile').setDescription('Show someone\'s profile')
 		.addUserOption(option => option.setName('user').setDescription('The user')),
 	new SlashCommandBuilder().setName('avatar').setDescription('Show someone\'s avatar')
