@@ -70,10 +70,13 @@ let commands = [
 	new SlashCommandBuilder().setName('lookup').setDescription('Lookup something')
 		.addSubcommand(subcommand => subcommand.setName("user").setDescription("User lookup")
 			.addUserOption(option => option.setName("user").setDescription("The user to search").setRequired(true))	
-		)
-		.addSubcommand(subcommand => subcommand.setName("guild").setDescription("Server/Guild lookup")
-			.addStringOption(option => option.setName("guild_id").setDescription("The ID of the server/guild to lookup").setRequired(true))	
-		),
+			)
+			.addSubcommand(subcommand => subcommand.setName("guild").setDescription("Server/Guild lookup")
+				.addStringOption(option => option.setName("guild_id").setDescription("The ID of the server/guild to lookup").setRequired(true))	
+			)
+			.addSubcommand(subcommand => subcommand.setName("avatar").setDescription("Avatar lookup using Google Image Search")
+				.addUserOption(option => option.setName("user").setDescription("The user to lookup").setRequired(true))	
+			),
 
 	new SlashCommandBuilder().setName('profile').setDescription('Show someone\'s profile')
 		.addUserOption(option => option.setName('user').setDescription('The user')),

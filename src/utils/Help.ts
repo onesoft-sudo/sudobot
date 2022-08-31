@@ -82,6 +82,16 @@ export default <CommandHelpData[]> [
         legacyCommand: true
     },
     {
+        name: 'avatarlookup',
+        shortBrief: "Lookup someone's avatar!",
+        description: "Lookup someone's avatar, using Google Image Search.\nThis command is a subcommand of the `/lookup` slash command.",
+        structure: "<UserID|Mention>",
+        example: "`%%avatarlookup 385753607325075320`\n`",
+        notes: null,
+        slashCommand: true,
+        legacyCommand: true
+    },
+    {
         name: 'ban',
         shortBrief: "Ban someone in this server.",
         description: "Ban a user in this server.",

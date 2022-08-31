@@ -19,6 +19,9 @@ export default class LookupCommand extends BaseCommand {
         else if (interaction.options.getSubcommand() === "guild") {
             await client.commands.get("guildlookup")?.execute(client, interaction, options);
         }
+        else if (interaction.options.getSubcommand() === "avatar") {
+            await client.commands.get("avatarlookup")?.execute(client, interaction, options);
+        }
         else {
             await interaction.reply({ content: "Invalid subcommand given. Must be one of 'user' or 'guild'." });
         }
