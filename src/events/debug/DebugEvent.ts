@@ -24,11 +24,11 @@ export default class DebugEvent extends BaseEvent {
         console.log("DEBUG: ", e);
         await appendFile(this.logFile, `[${format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx")}] [LOG] ${e}\n`);
 
-        if (process.env.PLATFORM === 'replit' && e.includes("Hit a 429 while executing a request") && !client.isReady()) {
+        if (process.env.PLATFORM === 'replit' && e.includes("Hit a 429") && !client.isReady()) {
             console.log("DEBUG: ", "Restart Required");
             await appendFile(this.logFile, `[${format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx")}] [LOG] ${e}\n`);
             await appendFile(this.logFile, `[${format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx")}] [FATAL] Restart Required\n`);
-            await client.debugLogger.logToHomeServer("Discord Ratelimit [419]: System restart required.\nAutomated restart is in progress.", LogLevel.WARN);
+            await client.debugLogger.logToHomeServer("Discord Ratelimit [429]: System restart required.\nAutomated restart is in progress.", LogLevel.WARN);
 
             exec("kill 1");
             return;
