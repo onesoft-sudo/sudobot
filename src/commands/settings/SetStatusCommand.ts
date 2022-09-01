@@ -40,8 +40,9 @@ export default class SetStatusCommand extends BaseCommand {
         else {
             activity = options.args.join(' ');
         }
-
-        await client.randomStatus.update(activity, type, status);
+        
+        await client.randomStatus.config(activity, type);
+        await client.randomStatus.update(status);
 
         await message.reply({
             content: (await fetchEmoji('check'))?.toString() + ' Status updated.'
