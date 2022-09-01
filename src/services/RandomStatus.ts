@@ -10,10 +10,21 @@ export default class RandomStatus extends Service {
         console.log(status);
         
         await this.client.user?.setActivity({
-            type: type ?? 'WATCHING',
-            name: name ?? 'over the server'
+            type: type ?? this.client.config.props.global.status.name ?? 'WATCHING',
+            name: name ?? this.client.config.props.global.status.type ?? 'over the server'
         });
 
+        this.client.config.props.global.status = type || name ? {} : null;
+
+        if (name) {
+            this.client.config.props.global.status.name = name;
+        }
+
+        if (type) {
+            this.client.config.props.global.status.type = type;
+        }
+
         await this.client.user?.setStatus(status!);
+        await this.client.config.write();
     }
 }

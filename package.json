@@ -37,7 +37,7 @@
         "typescript": "^4.6.4"
     },
     "scripts": {
-        "watch": "nodemon ./src/index.ts",
+        "watch": "nodemon ./src/index.ts --ext ts",
         "dev": "ts-node ./src/index.ts",
         "flag:prod": "ts-node ./src/index.ts --prod",
         "deploy": "node ./deploy-commands.js",
