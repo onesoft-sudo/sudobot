@@ -63,5 +63,7 @@ export default class WelcomeMsgCommand extends BaseCommand {
             await message.reply(`${emoji('error')} Invalid argument(s) or option(s) supplied.`);
             return;
         }
+
+        client.config.write();
     }
 }
