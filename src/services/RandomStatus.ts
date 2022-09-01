@@ -22,5 +22,5 @@ export default class RandomStatus extends Service {
         this.client.config.props.status.type = type ?? 'WATCHING';
         this.client.config.props.status.name = name ?? 'over the server';
         this.client.config.write();
-    } 
+    }
 }
