@@ -1,56 +1,146 @@
-import { CommandInteraction, GuildMember, Message, User } from "discord.js";
+import { formatDistanceToNowStrict } from "date-fns";
+import { CommandInteraction, GuildMember, Message, User, Util } from "discord.js";
 import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
-import { notAFK } from "../commands/utils/AFKCommand";
+import AFKCommand from "../commands/utils/AFKCommand";
+import AFK from "../models/AFK";
 import Service from "../utils/structures/Service";
 
+export interface MentionSchema {
+    date: number;
+    user: string; 
+}
+
 export default class AFKEngine extends Service {
-    mention(msg: Message, user: GuildMember, cb: (data: any) => void, msg1?: any) {
-        this.client.db.get('SELECT * FROM afk WHERE user_id = ?', [user.id], (err: any, data: any) => {
-            if (data) {
-                if (msg1 === undefined) {
-                    msg.channel!.send({
-                        embeds: [
-                            new MessageEmbed()
-                            .setDescription(`**${user.user.tag}** is AFK right now${data.reason.trim() == '' ? '.' : (' for reason: **' + data.reason.replace(/\*/g, '\\*') + '**')}`)
-                        ]
-                    });
-                }
+    list: AFK[] = [];
 
-                this.client.db.get('UPDATE afk SET mentions = ? WHERE id = ?', [parseInt(data.mentions) + 1, data.id], (err: any) => {});
-
-                cb(data);
-            }
-        });
-
+    constructor(client: DiscordClient) {
+        super(client);
+        AFK.findAll().then(models => this.list = models).catch(console.error);
     }
 
-    start(msg: Message) {
-        if (msg.author.bot)
-            return;
-        
-        const mention = msg.mentions.members!.first();
+    findUsers(ids: string[], guild: string) {
+        return this.list.filter(afk => ids.includes(afk.get("user") as string) && afk.get("guild_id") as string === guild);
+    }
+ 
+    async removeUser(id: string, guild: string) {
+        let index = 0;
 
-        if (mention) {
-            this.mention(msg, msg.member!, data => {
-                if (msg.author.id === data.user_id) {
-                    notAFK(this.client, msg, data);
+        for await (const afk of this.list) {
+            if (afk.get('user') === id && afk.get("guild_id") === guild) {
+                await afk.destroy();
+                this.list.splice(index, 1);
+            }
+
+            index++;
+        }
+    }
+    
+    async toggle(message: Message | CommandInteraction, enable: boolean = false, status?: string) {
+        const afk = this.findUsers([message.member!.user.id], message.guild!.id);
+
+        if (afk.length > 0) {
+            const mentions = afk[0].get("mentions")! as Array<MentionSchema>;
+            let count = 0, text = '';
+
+            for await (const m of mentions) {
+                if (count >= 3) {
+                    break;
                 }
-            }, true);
-            
-            msg.mentions.members!.forEach((member) => {
-                this.mention(msg, member, data => {
-                    if (msg.author.id === data.user_id) {
-                        notAFK(this.client, msg, data);
+
+                let member: GuildMember | undefined;
+
+                try {
+                    member = await message.guild!.members.fetch(m.user);
+
+                    if (!member) {
+                        throw new Error("user not found");
                     }
-                });
+                }
+                catch (e) {
+                    console.log(e);
+                    continue;                    
+                }
+                
+                text += `\nFrom ${member.toString()}, ${formatDistanceToNowStrict(m.date, { addSuffix: true })}`;
+                count++;
+            }
+
+            await this.client.afkEngine.removeUser(message.member!.user.id, message.guild!.id);
+
+            await message.reply({
+                embeds: [
+                    new MessageEmbed({
+                        description: `You're no longer AFK. You had ${mentions.length ?? 0} mentions in the server(s) where SudoBot is in.${mentions.length > 0 ? `\n\n**Mentions**:${text}` : ''}`,
+                    })
+                ]
             });
         }
-        else {
-            this.client.db.get('SELECT * FROM afk WHERE user_id = ?', [msg.author.id], (err: any, data: any) => {
-                if (data) {
-                    notAFK(this.client, msg, data);
+        else if (enable) {
+            this.client.afkEngine.list.push(await AFK.create({
+                user: message.member!.user.id,
+                guild_id: message.guild!.id,
+                mentions: [],
+                reason: status ?? undefined
+            }));
+
+            await message.reply({
+                embeds: [
+                    new MessageEmbed({
+                        description: `You're AFK now${status ? `, for reason: **${Util.escapeMarkdown(status)}**` : ''}.`
+                    })
+                ]
+            });
+        }
+    }
+
+    async start(msg: Message) {
+        if (msg.author.bot)
+            return;
+
+        const selfAFK = this.findUsers([msg.author.id], msg.guild!.id);
+
+        if (selfAFK.length > 0) {
+            this.toggle(msg, false);
+        }
+        
+        const mention = msg.mentions.members?.first();
+
+        if (mention) {
+            const afkRecords: AFK[] = this.findUsers([...msg.mentions.members!.keys()].slice(0, 3), msg.guild!.id);
+
+            if (!afkRecords || afkRecords.length < 1) {
+                return;
+            }
+
+            for (const record of afkRecords) {
+                const mentions = record.get("mentions") as MentionSchema[];
+
+                mentions.push({
+                    date: Date.now(),
+                    user: msg.author.id
+                });
+
+                record.set("mentions", mentions).save();
+            }
+
+            let text = `The following users are AFK right now:`;
+
+            if (afkRecords.length > 1) {
+                for await (const afkRecord of afkRecords) {
+                    text += `\n**${msg.mentions.members!.get(afkRecord.get("user") as string)!.user.tag}**${afkRecord.get("reason") as (null | string) ? `\n**Reason**: ${Util.escapeMarkdown(afkRecord.get("reason") as string)}` : ""}`;
                 }
+            }
+            else {
+                text = `${msg.mentions.members!.get(afkRecords[0].get("user") as string)!.user.tag} is AFK right now${afkRecords[0].get("reason") as (null | string) ? `, for reason **${Util.escapeMarkdown(afkRecords[0].get("reason") as string)}**` : ""}.`;
+            }
+
+            await msg.reply({
+                embeds: [
+                    new MessageEmbed({
+                        description: text
+                    })
+                ]
             });
         }
     }
