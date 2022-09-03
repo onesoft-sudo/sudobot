@@ -24,4 +24,4 @@ Read the terms [here](https://sudobot.everything-server.ml/terms/) and if you ag
 
 <br>
 
-<img src="https://res.cloudinary.com/rakinar2/image/upload/v1651761676/sudobot4_r257uw.png" class="rounded" height="auto" width="200px">
+<img src="https://res.cloudinary.com/rakinar2/image/upload/v1659628446/SudoBot-new_cvwphw.png" class="rounded" height="auto" width="200px">
