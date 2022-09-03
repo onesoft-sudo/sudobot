@@ -26,6 +26,29 @@ You can lock channels using `-lock` command. This sets a permission override to 
 -lock #general
 ```
 
+## Locking Channels in Bulk
+
+##### Legacy Command
+```
+-lockall <...ChannelIDs|ChannelMentions> [--raid]
+```
+
+##### Slash Command
+```
+/lockall <...ChannelIDs> [Role] [Raid]
+```
+
+* `Role`: The channel will be locked for this role. Defaults to `@everyone`.
+* `Raid`, `--raid`: Select and lock all Raid-protected channels.
+
+#### Examples
+
+```
+-lockall --raid
+-lockall 347382275362482
+-lockall #general
+```
+
 ## Unlocking Channels
 
 You can unlock channels back using `-unlock` command. This sets a permission override to the target channel that reverts the `SEND_MESSAGES` permission for `@everyone` role as it was before.
@@ -49,4 +72,27 @@ You can unlock channels back using `-unlock` command. This sets a permission ove
 -unlock
 -unlock 347382275362482
 -unlock #general
+```
+
+## Unlocking Channels in Bulk
+
+##### Legacy Command
+```
+-unlockall <...ChannelIDs|ChannelMentions> [--raid]
+```
+
+##### Slash Command
+```
+/unlockall <...Channels> [Role] [Raid]
+```
+
+* `Role`: The channel will be unlocked for this role. Defaults to `@everyone`.
+* `Raid`, `--raid`: Select and unlock all Raid-protected channels.
+
+#### Examples
+
+```
+-unlockall --raid
+-unlockall 347382275362482
+-unlockall #general
 ```
