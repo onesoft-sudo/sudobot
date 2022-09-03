@@ -20,24 +20,24 @@
 -kick 34738227536248 Spamming
 ```
 
-## Beaning members
-Beaning members actually do nothing except sending a message to the user that says `You've been beaned`. This can be used for fun purposes, or a moderation reminder.
+## Giving "Shots" to the members
+Giving shot to members actually means sending a message to the user that says `You've got a shot`. This can be used for fun purposes, or a moderation reminder.
 
 ##### Legacy Command
 ```
--bean <UserID|UserMention|UserTag> [Reason]
+-shot <UserID|UserMention|UserTag> [Reason]
 ```
 
 ##### Slash Command
 ```
-/bean <Member> [Reason]
+/shot <Member> [Reason]
 ```
 
 #### Examples
 
 ```
--bean @Someone
--bean 34738227536248
--bean @Someone Spamming
--bean 34738227536248 Spamming
+-shot @Someone
+-shot 34738227536248
+-shot @Someone Spamming
+-shot 34738227536248 Spamming
 ```

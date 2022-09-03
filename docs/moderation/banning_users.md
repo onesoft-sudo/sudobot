@@ -28,6 +28,54 @@ Use the `-ban` command to ban a user, regardless if they are in the server or no
 -ban 45643846466843 -d 7 Spamming a lot
 ```
 
+## Temporary Ban
+Temporarily ban users.
+
+##### Legacy Command
+```
+-tempban <UserID|UserMention> <Time> [Reason]
+``` 
+
+##### Slash Command
+```
+/tempban <UserID> <Time> [days] [reason]
+```
+
+##### Examples
+
+```
+-tempban @Someone 1h
+-tempban @Someone 30m Spamming a lot
+-tempban 45643846466843 2m
+-tempban 45643846466843 5d Spamming a lot
+```
+
+## Softban
+Ban a user and unban immediately to remove messages from the user.
+
+##### Legacy Command
+```
+-softban <UserID|UserMention> [-d=DAYS_OF_MESSAGE_DELETION] [Reason]
+``` 
+
+##### Slash Command
+```
+/softban <UserID> [-d=DAYS_OF_MESSAGE_DELETION] [days] [reason]
+```
+
+**Options**: 
+
+- `-d`: Specify the how many days old messages to delete. Must be in range of 0-7. Default is `7`.
+
+##### Examples
+
+```
+-tempban @Someone 1h
+-tempban @Someone 30m Spamming a lot
+-tempban 45643846466843 2m
+-tempban 45643846466843 5d Spamming a lot
+```
+
 ## Mass Ban
 Use the `-massban` command to massban users.
 
