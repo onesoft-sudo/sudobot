@@ -9,7 +9,7 @@ export default class Welcomer extends Service {
 
     generateEmbed(member: GuildMember, index?: number) {
         const { message, randomize } = this.client.config.props[member.guild.id].welcomer;
-        let content = message ?? '';
+        let content: string = message ?? '';
 
         if (randomize) {
             content = this.generateMessage(index) + (message ? "\n" + content : '');
@@ -20,14 +20,14 @@ export default class Welcomer extends Service {
         }
 
         content = content
-            .replace(':name:', member.displayName)
-            .replace(':tag:', member.user.tag)
-            .replace(':username:', member.user.username)
-            .replace(':discrim:', member.user.discriminator)
-            .replace(':avatar:', member.displayAvatarURL())
-            .replace(':date:', `<t:${member.joinedAt?.getTime()}>`)
-            .replace(':guild:', member.guild.name)
-            .replace(':mention:', member.toString());
+            .replace(/:name:/g, member.displayName)
+            .replace(/:tag:/g, member.user.tag)
+            .replace(/:username:/g, member.user.username)
+            .replace(/:discrim:/g, member.user.discriminator)
+            .replace(/:avatar:/g, member.displayAvatarURL())
+            .replace(/:date:/g, `<t:${member.joinedAt?.getTime()}>`)
+            .replace(/:guild:/g, member.guild.name)
+            .replace(/:mention:/g, member.toString());
 
         return {
             content: member.toString(),
