@@ -16,7 +16,7 @@ By using this service or visiting this website YOU AGREE TO THE FOLLOWING CONDIT
 * You will not use the service in a non-Community server.
 * You will not sell, represent or warrant the services provided by us as your property.
 * You will not violate Discord's ToS.
-* You will keep the user data secure and keep them private.
+* You will keep the user data secure and private.
 * You will not copy matrials like the SudoBot Logo without the written permission by the Author ("Ar Rakin").
 
 If you do not agree to these terms then you should stop using the services from us, right now. We reserve the right to terminate the services to you at any point, for your ToS violations.
