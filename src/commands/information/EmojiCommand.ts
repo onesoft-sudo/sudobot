@@ -1,4 +1,4 @@
-import { CommandInteraction, Emoji, Message } from 'discord.js';
+import { CommandInteraction, Emoji, Message, Util } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -37,24 +37,59 @@ export default class EmojiCommand extends BaseCommand {
             emojiString = options.args[0];
         }
 
-        if (emojiString.startsWith('<:') && emojiString.endsWith('>')) {
-            console.log(emojiString);
-            emojiString = emojiString.substring(2, emojiString.length - 1);
-        }
+        const emojiSubString = emojiString.startsWith('<:') && emojiString.endsWith('>') ? emojiString.substring(2, emojiString.length - 1) : emojiString;
         
-        const emoji = await client.emojis.cache.find(e => e.name === emojiString || e.identifier === emojiString);
+        let emoji = await client.emojis.cache.find(e => e.name === emojiSubString || e.identifier === emojiSubString || e.id === emojiSubString);
 
         if (!emoji) {
-            await msg.reply({
-                embeds: [
-                    new MessageEmbed()
-                    .setColor('#f14a60')
-                    .setDescription('No emoji found or not a guild based emoji!')
-                ]
-            });
+            if ((emojiString.startsWith('<:') && emojiString.endsWith('>')) || /\d+/g.test(emojiString)) {
+                let parsedEmoji = emojiString.startsWith('<:') && emojiString.endsWith('>') ? Util.parseEmoji(emojiString) : { animated: undefined, id: emojiString, name: undefined };
+
+                if (!parsedEmoji) {
+                    await msg.reply({
+                        embeds: [
+                            new MessageEmbed()
+                            .setColor('#f14a60')
+                            .setDescription('Invalid emoji!')
+                        ]
+                    });
+
+                    return;
+                }
+
+                await msg.reply({
+                    embeds: [
+                        new MessageEmbed()
+                        .setAuthor({
+                            name: parsedEmoji.name ?? "Unknown Emoji",
+                            iconURL: `https://cdn.discordapp.com/emojis/${parsedEmoji.id}`,
+                        })
+                        .setFields({
+                            name: "Animated",
+                            value: parsedEmoji.animated !== undefined ? parsedEmoji.animated ? 'Yes' : 'No' : "*The system could not load enough information*",
+                        }, {
+                            name: "Download",
+                            value: `[Click Here](https://cdn.discordapp.com/emojis/${parsedEmoji.id})`
+                        })
+                        .setThumbnail(`https://cdn.discordapp.com/emojis/${parsedEmoji.id}`)
+                        .setFooter({
+                            text: `ID: ${parsedEmoji.id}`
+                        })
+                    ]
+                });
+            }
+            else {
+                await msg.reply({
+                    embeds: [
+                        new MessageEmbed()
+                        .setColor('#f14a60')
+                        .setDescription('No emoji found or not a guild based emoji!')
+                    ]
+                });
+            }
 
             return;
-        }       
+        }
 
         await msg.reply({
             embeds: [
@@ -67,9 +102,9 @@ export default class EmojiCommand extends BaseCommand {
                 .addField('Name', emoji.name ?? '*No name set*')
                 .addField('Identifier', emoji.identifier ?? '*No identifier set*')
                 .addField('Available', emoji.available ? 'Yes' : 'No')
-                .addField('Created at', timeSince(emoji.createdAt.getTime()))
+                .addField('Created', timeSince(emoji.createdAt.getTime()))
                 .addField('Download', `[Click here](${emoji.url})`)
-                .setImage(emoji.url)
+                .setThumbnail(emoji.url)
                 .setFooter({
                     text: `ID: ${emoji.id}`
                 })

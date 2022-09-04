@@ -200,9 +200,9 @@ export default <CommandHelpData[]> [
     },
     {
         name: 'emoji',
-        shortBrief: "Get info about an emoji. Must be guild (server) specific emoji.",
+        shortBrief: "Get info about an emoji.",
         description: null,
-        structure: "<GuildEmoji|GuildEmojiName>",
+        structure: "<GuildEmojiID|GuildEmoji|GuildEmojiName|ExternalEmoji|ExternalEmojiID>",
         example: "`%%emoji check`\n`%%emoji error`",
         notes: null,
         slashCommand: false,
