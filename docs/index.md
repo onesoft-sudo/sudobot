@@ -13,7 +13,7 @@ The ultimate solution for discord server moderation.
 
 ## Invite SudoBot
 
-Read the terms [here](https://sudobot.everything-server.ml/terms/) and if you agree with those then you can submit an invite request [here](https://sudobot.everything-server.ml/invite/).
+Read the terms [here](../legal/terms/) and if you agree with those then you can submit an invite request [here](https://sudobot.everything-server.ml/invite/).
 
 ## Features
 
