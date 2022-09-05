@@ -1,13 +1,9 @@
-import { BanOptions, CommandInteraction, EmojiIdentifierResolvable, GuildMember, Interaction, Message, Permissions, Role, TextChannel, User } from 'discord.js';
+import { BanOptions, CommandInteraction, Message, Role, TextChannel, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
-import getUser from '../../utils/getUser';
-import getMember from '../../utils/getMember';
-import History from '../../automod/History';
-import { fetchEmoji } from '../../utils/Emoji';
 
 export default class LockCommand extends BaseCommand {
     supportsInteractions: boolean = true;    

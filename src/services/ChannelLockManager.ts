@@ -44,7 +44,8 @@ export default class ChannelLockManager extends Service {
             channel_id: channel.id,
             reason,
             previous_perms: permJson,
-            role_id: lockRole.id
+            role_id: lockRole.id,
+            createdAt: new Date()
         });
 
         await channel.permissionOverwrites.edit(lockRole, {
@@ -82,11 +83,9 @@ export default class ChannelLockManager extends Service {
         const lockRole = role ? (role instanceof Role ? role : (await channel.guild.roles.fetch(role))!) : channel.guild.roles.everyone;
 
         const channelLock = await ChannelLock.findOne({
-            where: {
-                channel_id: channel.id,
-                guild_id: channel.guild.id,
-                role_id: lockRole.id
-            }
+            channel_id: channel.id,
+            guild_id: channel.guild.id,
+            role_id: lockRole.id
         });
 
         if (!channelLock) {
@@ -94,7 +93,7 @@ export default class ChannelLockManager extends Service {
             return false;
         }
 
-        const permissions = channelLock?.get('previous_perms') as { allow: PermissionString[] | null, deny: PermissionString[] | null };
+        const permissions = channelLock?.previous_perms; //  as { allow: PermissionString[] | null, deny: PermissionString[] | null }
 
         if (!permissions && !force) {
             console.log('Permission error');
@@ -102,7 +101,7 @@ export default class ChannelLockManager extends Service {
         }
 
         const transform = (key: PermissionString) => {
-            if (!permissions.allow || !permissions.deny) {
+            if (!permissions?.allow || !permissions?.deny) {
                 return undefined;
             }
 
@@ -121,7 +120,7 @@ export default class ChannelLockManager extends Service {
             }
         };
 
-        if (!permissions.allow && !permissions.deny) {
+        if (!permissions?.allow && !permissions?.deny) {
             await channel.permissionOverwrites.delete(lockRole);
         }
         else {
@@ -133,7 +132,7 @@ export default class ChannelLockManager extends Service {
             }, { reason });
         }        
 
-        await channelLock?.destroy();
+        await channelLock?.delete();
 
         if (sendConfirmation && channel.isText()) {
             await channel.send({

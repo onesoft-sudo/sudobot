@@ -1,44 +1,85 @@
 import { DataTypes, Model } from 'sequelize';
 import DiscordClient from '../client/Client';
+import { Schema, model, Document, SchemaTypes } from 'mongoose';
 
-class ChannelLock extends Model {}
+// export interface IChannelLock extends Document {
+//     user: string;
+//     reason?: string;
+//     mentions: Array<object>;
+//     guild_id: string;
+//     createdAt: Date;
+// }
 
-ChannelLock.init({
-    id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-    },
+const schema = new Schema({
     reason: {
-        type: DataTypes.TEXT,
-        allowNull: true
+        type: String,
+        required: false
     },
     user_id: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     guild_id: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     channel_id: {
-        type: DataTypes.STRING,
+        type: String,
         unique: true,
-        allowNull: false
+        required: true
     },
     role_id: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     previous_perms: {
-        type: DataTypes.JSON,
-        allowNull: false
+        allow: Array,
+        deny: Array
+    },
+    createdAt: {
+        type: Date,
+        required: true
     }
-}, {
-    sequelize: DiscordClient.client.db.sequelize,
-    modelName: 'ChannelLock',
-    updatedAt: false,
-    tableName: 'channel_lock'
 });
 
-export default ChannelLock;
+// class ChannelLock extends Model {}
+
+// ChannelLock.init({
+//     id: {
+//         type: DataTypes.INTEGER,
+//         autoIncrement: true,
+//         primaryKey: true,
+//     },
+//     reason: {
+//         type: DataTypes.TEXT,
+//         allowNull: true
+//     },
+//     user_id: {
+//         type: DataTypes.STRING,
+//         allowNull: false
+//     },
+//     guild_id: {
+//         type: DataTypes.STRING,
+//         allowNull: false
+//     },
+//     channel_id: {
+//         type: DataTypes.STRING,
+//         unique: true,
+//         allowNull: false
+//     },
+//     role_id: {
+//         type: DataTypes.STRING,
+//         allowNull: false
+//     },
+//     previous_perms: {
+//         type: DataTypes.JSON,
+//         allowNull: false
+//     }
+// }, {
+//     sequelize: DiscordClient.client.db.sequelize,
+//     modelName: 'ChannelLock',
+//     updatedAt: false,
+//     tableName: 'channel_lock'
+// });
+
+export default model('ChannelLock', schema);
