@@ -1,30 +1,24 @@
 import { DataTypes, Model } from 'sequelize';
 import DiscordClient from '../client/Client';
+import { Schema, model } from 'mongoose';
 
-class Hardmute extends Model {}
-
-Hardmute.init({
-    id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-    },
+const schema = new Schema({
     user_id: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     roles: {
-        type: DataTypes.JSON,
-        allowNull: false
+        type: Array,
+        required: true
     },
     guild_id: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        required: true
     }
-}, {
-    sequelize: DiscordClient.client.db.sequelize,
-    modelName: 'Hardmute',
-    updatedAt: false
 });
 
-export default Hardmute;
+export default model('Hardmute', schema);
