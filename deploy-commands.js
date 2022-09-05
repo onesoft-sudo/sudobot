@@ -99,7 +99,7 @@ let commands = [
 			subcommand
 				.setName('view')
 				.setDescription('Get information/stats about a ballot')
-				.addIntegerOption(option => option.setName('id').setDescription('The ballot ID'))),
+				.addStringOption(option => option.setName('id').setDescription('The ballot ID'))),
 		
 	new SlashCommandBuilder().setName('embed').setDescription('Make an embed')
 		.addSubcommand(subcmd => 
