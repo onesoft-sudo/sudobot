@@ -80,14 +80,12 @@ export async function unmute(client: DiscordClient, user: GuildMember, d: User) 
         });
 
         const muteRecord = await MuteRecord.findOne({
-            where: {
-                user_id: user.user.id,
-                guild_id: user.guild.id
-            }
+            user_id: user.user.id,
+            guild_id: user.guild.id
         });
 
         if (muteRecord) {
-            await muteRecord.destroy();
+            await muteRecord.delete();
         }
 
 		try {

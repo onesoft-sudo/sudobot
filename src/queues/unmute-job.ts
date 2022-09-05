@@ -49,14 +49,12 @@ export default async function unmuteJob(client: DiscordClient, guild_id: string,
             console.log(e);   
             
             const muteRecord = await MuteRecord.findOne({
-                where: {
-                    user_id,
-                    guild_id
-                }
+                user_id,
+                guild_id
             });
     
             if (muteRecord) {
-                await muteRecord.destroy();
+                await muteRecord.delete();
             }
         }
     }

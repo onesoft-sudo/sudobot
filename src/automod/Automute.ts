@@ -4,7 +4,7 @@ import MessageEmbed from "../client/MessageEmbed";
 import Service from "../utils/structures/Service";
 
 export default class Automute extends Service {
-    MuteRecord: any;
+    MuteRecord: typeof import("../models/MuteRecord").default;
 
     constructor(client: DiscordClient) {
         super(client);
@@ -18,10 +18,8 @@ export default class Automute extends Service {
     public async onMemberJoin(member: GuildMember) {
         const { MuteRecord } = this;
         const muteRecord = await MuteRecord.findOne({
-            where: {
-                user_id: member.user.id,
-                guild_id: member.guild.id
-            }
+            user_id: member.user.id,
+            guild_id: member.guild.id
         });
 
         if (!muteRecord) {
@@ -45,7 +43,7 @@ export default class Automute extends Service {
             ]
         });
 
-        await muteRecord.destroy();
+        await muteRecord.delete();
     }
 
     public async onMemberLeave(member: GuildMember) {
@@ -56,16 +54,15 @@ export default class Automute extends Service {
         }
 
         const muteRecord = await MuteRecord.findOne({
-            where: {
-                user_id: member.user.id,
-                guild_id: member.guild.id
-            }
+            user_id: member.user.id,
+            guild_id: member.guild.id
         });
 
         if (!muteRecord) {
             await MuteRecord.create({
                 user_id: member.user.id,
-                guild_id: member.guild.id 
+                guild_id: member.guild.id,
+                createdAt: new Date()
             });
         }
     }
