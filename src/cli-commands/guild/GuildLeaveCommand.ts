@@ -1,13 +1,12 @@
 import { exit } from "process";
 import DiscordClient from "../../client/Client";
-import BannedGuild from "../../models/BannedGuild";
 import BaseCLICommand from "../../utils/structures/BaseCLICommand";
 
-export default class BanGuildCommand extends BaseCLICommand {
+export default class GuildLeaveCommand extends BaseCLICommand {
     requiredArgs = 1;
 
     constructor() {
-        super('banguild', 'guild');
+        super('guildleave', 'guild');
     }
 
     async run(client: DiscordClient, argv: string[], args: string[]) {
@@ -24,14 +23,9 @@ export default class BanGuildCommand extends BaseCLICommand {
             exit(-1);
         }
         
-        await BannedGuild.create({
-            guild_id,
-            reason
-        });
-
         await guild.leave();
 
-        console.log(`Succesfully banned and left guild: ${guild.name} (${guild.id})`);
+        console.log(`Succesfully left guild: ${guild.name} (${guild.id})`);
         
         await exit(0);
     }

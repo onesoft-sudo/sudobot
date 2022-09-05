@@ -3,7 +3,6 @@ import path from "path";
 import { exit } from "process";
 import readline from "readline";
 import DiscordClient from "../../client/Client";
-import BannedGuild from "../../models/BannedGuild";
 import BaseCLICommand from "../../utils/structures/BaseCLICommand";
 
 export default class SyncDBCommand extends BaseCLICommand {
