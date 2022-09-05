@@ -1,6 +1,6 @@
 import DiscordClient from "../client/Client";
 import Service from "../utils/structures/Service";
-import express, { Express } from 'express';
+import express, { Express, Router as ExpressRouter } from 'express';
 import Router from "./Router";
 import path from "path";
 
@@ -21,7 +21,16 @@ export default class Server extends Service {
     }
 
     async boot() {
+        type methods = 'get' | 'post' | 'put' | 'patch' | 'delete';
+        const expressRouter = ExpressRouter();
+
         await this.router.loadRoutes();
+
+        for (const route of this.router.routes) {
+            expressRouter[route.method.toLowerCase() as methods](route.path, ...route.middlewareList, route.getCallbackFunction());
+        }
+
+        this.express.use(expressRouter);
     }
 
     async run() {
