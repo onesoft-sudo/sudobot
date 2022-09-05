@@ -1,43 +1,38 @@
-import { DataTypes, Model } from 'sequelize';
-import DiscordClient from '../client/Client';
+import { Schema, model, Document } from 'mongoose';
 
-class Ballot extends Model {}
+export interface IBallot extends Document {
+    user: string;
+    reason?: string;
+    mentions: Array<object>;
+    guild_id: string;
+    createdAt: Date;
+}
 
-Ballot.init({
-    // Model attributes are defined here
-    id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-    },
+const schema = new Schema({
     content: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     author: {
-        type: DataTypes.STRING,
-        allowNull: true
+        type: String,
+        required: true
     },
     msg_id: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     channel_id: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     guild_id: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     date: {
-        type: DataTypes.DATE,
-        allowNull: false,
+        type: Date,
+        required: true,
     }
-}, {
-    sequelize: DiscordClient.client.db.sequelize,
-    modelName: 'Ballot',
-    timestamps: false,
 });
 
-export default Ballot;
+export default model('Ballot', schema);

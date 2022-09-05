@@ -1,5 +1,3 @@
-import { DataTypes, Model } from 'sequelize';
-import DiscordClient from '../client/Client';
 import { Schema, model, SchemaTypes, Document } from 'mongoose';
 
 export interface IAFK extends Document {
