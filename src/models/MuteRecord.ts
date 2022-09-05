@@ -1,27 +1,19 @@
-import { DataTypes, Model } from 'sequelize';
-import DiscordClient from '../client/Client';
+import { Schema, model } from 'mongoose';
 
-class MuteRecord extends Model {}
-
-MuteRecord.init({
-    id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-    },
+const schema = new Schema({
     user_id: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: String,
+        required: true,
         unique: true
     },
     guild_id: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        required: true
     }
-}, {
-    sequelize: DiscordClient.client.db.sequelize,
-    modelName: 'MuteRecord',
-    updatedAt: false
 });
 
-export default MuteRecord;
+export default model("MuteRecord", schema);
