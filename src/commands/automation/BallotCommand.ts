@@ -84,10 +84,7 @@ export default class BallotCommand extends BaseCommand {
         });
 
         await ballot.save();
-
-        // await client.db.runAsync('INSERT INTO ballots(content, author, msg_id, guild_id, date, channel_id) VALUES(?, ?, ?, ?, ?, ?)', [content, anonymous ? null : msg.member?.user.id, message.id, msg.guild!.id, new Date().toISOString(), msg.channel!.id]);
-        // const ballot = await client.db.getAsync("SELECT * FROM ballots WHERE msg_id = ? AND guild_id = ? ORDER BY id DESC LIMIT 0, 1", [message.id, msg.guild!.id]);
-
+        
         await message.react(<EmojiIdentifierResolvable> await fetchEmoji('check'));
         await message.react(<EmojiIdentifierResolvable> await fetchEmoji('error'));
 
@@ -110,13 +107,9 @@ export default class BallotCommand extends BaseCommand {
         }
         
         try {
-            const id = options.isInteraction ? options.options.getInteger('id') : options.args[0];
+            const id = options.isInteraction ? options.options.getString('id') : options.args[0];
             //const ballot = await client.db.getAsync("SELECT * FROM ballots WHERE id = ? ORDER BY id DESC LIMIT 0, 1", [id]);
-            const ballot = (await Ballot.findOne({
-                where: {
-                    id
-                }
-            }))?.get();
+            const ballot = await Ballot.findById(id);
 
             if (!ballot)
                 throw new Error();
