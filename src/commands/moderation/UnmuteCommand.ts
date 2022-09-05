@@ -31,17 +31,12 @@ export async function unmute(client: DiscordClient, user: GuildMember, d: User) 
         const { default: MuteRecord } = await import("../../models/MuteRecord");
 
         const hardmute = await Hardmute.findOne({
-            where: {
-                user_id: user.id,
-                guild_id: user.guild.id,
-            },
-            order: [
-                ['id', 'DESC']
-            ]
+            user_id: user.id,
+            guild_id: user.guild.id
         });
 
         if (hardmute) {
-            for await (const roleID of hardmute.get().roles) {
+            for await (const roleID of hardmute.roles) {
                 try {
                     const role = await user.guild.roles.fetch(roleID);
 
@@ -54,7 +49,7 @@ export async function unmute(client: DiscordClient, user: GuildMember, d: User) 
                 }
             }
 
-            await hardmute.destroy();
+            await hardmute.delete();
         }
 
         const timeouts = getTimeouts();
