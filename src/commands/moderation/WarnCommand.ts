@@ -18,14 +18,13 @@ export async function warn(client: DiscordClient, user: User, reason: string | u
         mod_id: warned_by?.id ?? msg.member!.user.id,
         mod_tag: warned_by?.tag ?? (msg.member!.user as User).tag,
         type: PunishmentType.WARNING,
+        createdAt: new Date()
     });
 
     const strike = await Punishment.count({
-        where: {
-            guild_id: msg.guild!.id,
-            user_id: user.id,
-            type: PunishmentType.WARNING,
-        }
+        guild_id: msg.guild!.id,
+        user_id: user.id,
+        type: PunishmentType.WARNING,
     });
 
     // await History.create(user.id, msg.guild!, 'warn', warned_by?.id ?? msg.member!.user.id, reason ?? null);

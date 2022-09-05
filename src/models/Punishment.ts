@@ -1,49 +1,95 @@
-import { DataTypes, Model } from 'sequelize';
-import DiscordClient from '../client/Client';
+import { Schema, model } from 'mongoose';
 
-class Punishment extends Model {}
+export interface IPunishment {
+    user_id: string
+    mod_id: string
+    mod_tag: string,
+    guild_id: string;
+    reason?: string;
+    type: string
+    meta?: object;
+    createdAt: Date;
+}
 
-Punishment.init({
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-        allowNull: false,
-    },
+const schema = new Schema({
     user_id: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: String,
+        required: true,
     },
     mod_id: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: String,
+        required: true,
     },
     mod_tag: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: String,
+        required: true,
     },
     guild_id: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: String,
+        required: true,
     },
     reason: {
-        type: DataTypes.TEXT,
-        allowNull: true
+        type: String,
+        required: false
     },
     type: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     meta: {
-        type: DataTypes.JSON,
-        allowNull: false,
-        defaultValue: {}
+        type: Object,
+        required: true,
+        default: {}
     },
-}, {
-    sequelize: DiscordClient.client.db.sequelize,
-    modelName: 'Punishment',
-    updatedAt: false,
-    tableName: 'punishments'
+    createdAt: {
+        type: Date,
+        required: true
+    }
 });
 
-export default Punishment;
+// class Punishment extends Model {}
+
+// Punishment.init({
+//     id: {
+//         type: DataTypes.INTEGER,
+//         primaryKey: true,
+//         autoIncrement: true,
+//         allowNull: false,
+//     },
+//     user_id: {
+//         type: DataTypes.STRING,
+//         allowNull: false,
+//     },
+//     mod_id: {
+//         type: DataTypes.STRING,
+//         allowNull: false,
+//     },
+//     mod_tag: {
+//         type: DataTypes.STRING,
+//         allowNull: false,
+//     },
+//     guild_id: {
+//         type: DataTypes.STRING,
+//         allowNull: false,
+//     },
+//     reason: {
+//         type: DataTypes.TEXT,
+//         allowNull: true
+//     },
+//     type: {
+//         type: DataTypes.STRING,
+//         allowNull: false
+//     },
+//     meta: {
+//         type: DataTypes.JSON,
+//         allowNull: false,
+//         defaultValue: {}
+//     },
+// }, {
+//     sequelize: DiscordClient.client.db.sequelize,
+//     modelName: 'Punishment',
+//     updatedAt: false,
+//     tableName: 'punishments'
+// });
+
+export default model('Punishment', schema);

@@ -73,7 +73,8 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
             reason,
             meta: {
                 time: timeInterval ? ms(timeInterval) : undefined
-            }
+            },
+            createdAt: new Date()
         });
         
         await client.logger.logMute(user, reason === undefined || reason.trim() === '' ? "*No reason provided*" : reason, timeInterval, msg.member!.user as User, hard);

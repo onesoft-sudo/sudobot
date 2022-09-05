@@ -2,7 +2,7 @@ import { roleMention } from '@discordjs/builders';
 import { BanOptions, CommandInteraction, FileOptions, Guild, GuildBan, GuildMember, Message, MessageEmbed, MessageOptions, MessagePayload, TextChannel, User } from 'discord.js';
 import ms from 'ms';
 import DiscordClient from '../client/Client';
-import Punishment from '../models/Punishment';
+import Punishment, { IPunishment } from '../models/Punishment';
 import { timeProcess, timeSince } from '../utils/util';
 
 class Logger {
@@ -148,7 +148,7 @@ class Logger {
         }, ban);
     }
 
-    logSoftBan(banOptions: BanOptions, guild: Guild, user: User, model: Punishment) {
+    logSoftBan(banOptions: BanOptions, guild: Guild, user: User, model: IPunishment) {
         this.channel(async (channel) => {
             let r = '*No reason provided*';
 
@@ -179,7 +179,7 @@ class Logger {
                         iconURL: user.displayAvatarURL(),
                     })
                     .addField('Reason', r)
-                    .addField('Softbanned by', model.get().mod_tag)
+                    .addField('Softbanned by', model.mod_tag)
                     .addField('User ID', user.id)
                     .setFooter({
                         text: "Softbanned",
@@ -192,7 +192,7 @@ class Logger {
         });
     }
 
-    logTempBan(banOptions: BanOptions, guild: Guild, user: User, model: Punishment) {
+    logTempBan(banOptions: BanOptions, guild: Guild, user: User, model: IPunishment) {
         this.channel(async (channel) => {
             let r = '*No reason provided*';
 
@@ -223,9 +223,9 @@ class Logger {
                         iconURL: user.displayAvatarURL(),
                     })
                     .addField('Reason', r)
-                    .addField('Banned by', model.get().mod_tag)
+                    .addField('Banned by', model.mod_tag)
                     .addField('User ID', user.id)
-                    .addField('Duration', ms(model.get().meta?.time))
+                    .addField('Duration', ms((model.meta as any).time))
                     .setFooter({
                         text: "Temporarily banned",
                     })
