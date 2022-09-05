@@ -4,6 +4,7 @@ import BaseCommand from '../utils/structures/BaseCommand';
 import { Config } from './Config';
 import Database from './Database';
 import path from 'path';
+import { appendFile } from "fs/promises";
 import Logger from '../automod/Logger';
 import SnippetManager from '../services/SnippetManager';
 import AFKEngine from '../services/AFKEngine';
@@ -154,6 +155,7 @@ export default class DiscordClient extends Client {
 
     async handleCrash(error: Error, origin: NodeJS.UncaughtExceptionOrigin) {
         console.log('here');
+        await appendFile(path.resolve(__dirname, "..", "..", "logs", "error.log"), `Uncaught ${error.name}: ${error.message}\n${error.stack}`);
         await this.debugLogger.logToHomeServer(`Uncaught ${error.name}: ${error.message}\n${error.stack}`);
     }
 }
