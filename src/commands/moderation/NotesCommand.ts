@@ -5,10 +5,6 @@ import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import getUser from '../../utils/getUser';
-import getMember from '../../utils/getMember';
-import History from '../../automod/History';
-import { fetchEmoji } from '../../utils/Emoji';
-import PunishmentType from '../../types/PunishmentType';
 import Note from '../../models/Note';
 
 export default class NotesCommand extends BaseCommand {
@@ -22,26 +18,19 @@ export default class NotesCommand extends BaseCommand {
         const limit = 5;
         const offset = ((page < 1 ? 1 : page) - 1) * limit;
 
-        const notes = await Note.findAndCountAll({
-            where: {
-                guild_id: msg.guild!.id,
-                user_id: user.id
-            },
-            order: [
-                ['createdAt', 'DESC']
-            ],
-            limit,
-            offset
-        });
+        const notes = await Note.find({
+            guild_id: msg.guild!.id,
+            user_id: user.id,
+        }).skip(offset).limit(limit).sort("createdAt");
 
         let str = '';
-        const maxPage = Math.ceil(notes.count / limit);
+        const maxPage = Math.ceil(notes.length / limit);
 
-        for await (const note of notes.rows) {
-            str += `**Note ID**: ${note.get().id}\n`;
-            str += `Note taken by: ${note.get().mod_tag}\n`;
-            str += `Date: ${note.get().createdAt.toLocaleString()}\n`;
-            str += `Content:\n\`\`\`\n${note.get().content}\n\`\`\`\n`;
+        for await (const note of notes) {
+            str += `**Note ID**: ${note.id}\n`;
+            str += `Note taken by: ${note.mod_tag}\n`;
+            str += `Date: ${note.createdAt.toLocaleString()}\n`;
+            str += `Content:\n\`\`\`\n${note.content}\n\`\`\`\n`;
             str += '\n';
         }
 

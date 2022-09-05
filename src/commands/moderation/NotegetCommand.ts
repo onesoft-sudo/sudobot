@@ -34,17 +34,15 @@ export default class NotegetCommand extends BaseCommand {
         let id: string;
 
         if (options.isInteraction) {
-            id = await <string> options.options.getNumber('id')?.toString();
+            id = await <string> options.options.getString('id');
         }
         else {
             id = await options.args[0];
         }
 
         const note = await Note.findOne({
-            where: {
-                guild_id: msg.guild!.id,
-                id
-            }
+            guild_id: msg.guild!.id,
+            _id: id
         });
 
         if (!note) {
@@ -55,7 +53,7 @@ export default class NotegetCommand extends BaseCommand {
         let user;
 
         try {
-            user = await client.users.fetch(note.get().user_id);
+            user = await client.users.fetch(note.user_id);
         }
         catch (e) {
             console.log(e);            
@@ -65,20 +63,20 @@ export default class NotegetCommand extends BaseCommand {
             embeds: [
                 new MessageEmbed({
                     author: {
-                        name: user?.tag ?? note.get().user_id,
+                        name: user?.tag ?? note.user_id,
                         iconURL: user instanceof User ? user.displayAvatarURL() : undefined,
                     },
-                    description: note.get().content,
+                    description: note.content,
                     fields: [
                         {
                             name: 'Note taken by',
-                            value: note.get().mod_tag
+                            value: note.mod_tag
                         }
                     ],
                     footer: {
-                        text: `ID: ${note.get().id}`
+                        text: `ID: ${note.id}`
                     },
-                    timestamp: note.get().createdAt
+                    timestamp: note.createdAt
                 })
             ]
         });

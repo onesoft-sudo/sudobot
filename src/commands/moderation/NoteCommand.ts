@@ -18,7 +18,8 @@ export async function note(user: GuildMember | User, content: string, msg: Messa
         author: msg.member!.user.id,
         mod_tag: (msg.member!.user as User).tag,
         user_id: user.id,
-        guild_id: msg.guild!.id
+        guild_id: msg.guild!.id,
+        createdAt: new Date(),
     });
 }
 
@@ -97,7 +98,7 @@ export default class NoteCommand extends BaseCommand {
                 new MessageEmbed()
                 .setDescription(`${(await fetchEmoji('check'))?.toString()} A note has been added for ${user.tag}`)
                 .setFooter({
-                    text: `ID: ${n.get().id}`
+                    text: `ID: ${n.id}`
                 })
             ]
         });
