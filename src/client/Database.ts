@@ -1,6 +1,7 @@
 import { Sequelize } from 'sequelize';
 import { Database as DB } from 'sqlite3';
 import DiscordClient from './Client';
+import mongoose from "mongoose";
 
 export default class Database {
     client: DiscordClient;
@@ -22,6 +23,10 @@ export default class Database {
                 console.log(err);
             }
         });
+
+        mongoose.connect(process.env.MONGO_URI!)
+            .then(() => console.log("Connected to MongoDB"))
+            .catch(console.error);
     }
 
     get(sql: string, params: any[] | Function, callback?: Function) {
