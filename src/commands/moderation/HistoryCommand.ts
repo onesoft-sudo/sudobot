@@ -23,20 +23,17 @@ export default class HistoryCommand extends BaseCommand {
         const limit = 3;
         const offset = ((page < 1 ? 1 : page) - 1) * limit;
 
-        const logs = await Punishment.findAndCountAll({
-            where: {
-                guild_id: msg.guild!.id,
-                user_id: user.id
-            },
-            order: [
-                ['createdAt', 'DESC']
-            ],
-            limit,
-            offset
-        });
+        const logs = await Punishment.find({
+            guild_id: msg.guild!.id,
+            user_id: user.id,
+        }).skip(offset).limit(limit).sort({ createdAt: -1 });
 
         let str = '';
-        const maxPage = Math.ceil(logs.count / limit);
+        
+        const maxPage = Math.ceil((await Punishment.count({ 
+            guild_id: msg.guild!.id,
+            user_id: user.id,
+        })) / limit);
 
         const convert = (type: PunishmentType) => {            
             switch (type) {
@@ -65,10 +62,10 @@ export default class HistoryCommand extends BaseCommand {
             }
         };
 
-        for await (const log of logs.rows) {
-            str += `**Case ID**: ${log.get().id}\n`;
-            str += `Type: ${convert(log.get().type)}\n`;
-            str += `Reason: ${log.get().reason ? (log.get().reason.trim() === '' ? '*No reason provided*' : log.get().reason) : '*No reason provided*'}\n`;
+        for await (const log of logs) {
+            str += `**Case ID**: ${log.id}\n`;
+            str += `Type: ${convert(log.type as PunishmentType)}\n`;
+            str += `Reason: ${log.reason ? (log.reason.trim() === '' ? '*No reason provided*' : log.reason) : '*No reason provided*'}\n`;
 
             // let mod_tag;
 
@@ -84,15 +81,15 @@ export default class HistoryCommand extends BaseCommand {
             //     mod_tag = log.get().mod_id;
             // }
 
-            str += `Action Executor: ${log.get().mod_tag}\n`;
-            str += `Date: ${log.get().createdAt.toLocaleString('en-US')}\n`;
+            str += `Action Executor: ${log.mod_tag}\n`;
+            str += `Date: ${log.createdAt.toLocaleString('en-US')}\n`;
 
             // if (log.get().type === PunishmentType.MUTE) {
             //     str += `Duration: ${(log.get().meta ? JSON.parse(log.get().meta) : {})?.time ?? '*No duration set*'}\n`;               
             // }
 
-            if (log.get().meta) {
-                const json = typeof log.get().meta === 'string' ? JSON.parse(log.get().meta) : log.get().meta;
+            if (log.meta) {
+                const json = typeof log.meta === 'string' ? JSON.parse(log.meta) : log.meta;
 
                 if (Object.keys(json).length > 0) {
                     str += "Additional Attributes:\n```\n";

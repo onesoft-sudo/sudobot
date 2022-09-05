@@ -77,6 +77,7 @@ export async function unmute(client: DiscordClient, user: GuildMember, d: User) 
             guild_id: user.guild!.id,
             mod_id: d.id,
             mod_tag: d.tag,
+            createdAt: new Date()
         });
 
         const muteRecord = await MuteRecord.findOne({

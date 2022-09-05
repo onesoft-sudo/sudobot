@@ -52,13 +52,11 @@ export default class WarningCommand extends BaseCommand {
             return;
         }
 
-        const warnings = await Punishment.findAll({
-            where: {
-                guild_id: msg.guild!.id,
-                user_id: user.id,
-                type: PunishmentType.WARNING
-            },
-        });
+        const warnings = await Punishment.find({
+            guild_id: msg.guild!.id,
+            user_id: user.id,
+            type: PunishmentType.WARNING
+        }).sort({ createdAt: -1 });
 
         if (warnings.length < 1) {
             await msg.reply({
@@ -75,17 +73,17 @@ export default class WarningCommand extends BaseCommand {
         let str = '';
 
         for await (const warning of warnings) {
-            str += `ID: ${warning.get().id}\n`;
-            str += `Reason: ${warning.get().reason ?? '*No reason provided*'}\n`;
+            str += `ID: ${warning.id}\n`;
+            str += `Reason: ${warning.reason ?? '*No reason provided*'}\n`;
 
             try {
-                str += `Warned by: ${(await client.users.fetch(warning.get().mod_id)).tag}\n`;
+                str += `Warned by: ${(await client.users.fetch(warning.mod_id)).tag}\n`;
             }
             catch (e) {
-                str += `Warned by: ${warning.get().mod_id}\n`;
+                str += `Warned by: ${warning.mod_id}\n`;
             }
             
-            str += `Date: ${warning.get().createdAt}\n\n`;
+            str += `Date: ${warning.createdAt}\n\n`;
         }
 
         await msg.reply({
@@ -133,15 +131,13 @@ export default class WarningCommand extends BaseCommand {
             return;
         }
 
-        const warning = await Punishment.destroy({
-            where: {
-                guild_id: msg.guild!.id,
-                user_id: user.id,
-                type: PunishmentType.WARNING
-            },
+        const warning = await Punishment.deleteOne({
+            guild_id: msg.guild!.id,
+            user_id: user.id,
+            type: PunishmentType.WARNING
         });
 
-        if (warning < 1) {
+        if (warning.deletedCount < 1) {
             await msg.reply({
                 embeds: [
                     new MessageEmbed()
@@ -175,17 +171,12 @@ export default class WarningCommand extends BaseCommand {
             return;
         }
 
-        const id = options.isInteraction ? options.options.getNumber('id') : parseInt(options.args[0]);
+        const id = options.isInteraction ? options.options.getString('id') : parseInt(options.args[0]);
 
         const warning = await Punishment.findOne({
-            where: {
-                id,
-                guild_id: msg.guild!.id,
-                type: PunishmentType.WARNING
-            },
-            order: [
-                ['id', 'DESC']
-            ],
+            id,
+            guild_id: msg.guild!.id,
+            type: PunishmentType.WARNING
         });
 
         if (!warning) {
@@ -200,7 +191,7 @@ export default class WarningCommand extends BaseCommand {
             return;
         }
 
-        await warning.destroy();
+        await warning.delete();
 
         await msg.reply({
             embeds: [
@@ -224,17 +215,12 @@ export default class WarningCommand extends BaseCommand {
             return;
         }
 
-        const id = options.isInteraction ? options.options.getNumber('id') : parseInt(options.args[0]);
+        const id = options.isInteraction ? options.options.getString('id') : parseInt(options.args[0]);
 
         const warning = await Punishment.findOne({
-            where: {
-                id,
-                guild_id: msg.guild!.id,
-                type: PunishmentType.WARNING
-            },
-            order: [
-                ['id', 'DESC']
-            ],
+            id,
+            guild_id: msg.guild!.id,
+            type: PunishmentType.WARNING
         });
 
         if (!warning) {

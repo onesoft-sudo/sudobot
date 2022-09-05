@@ -323,10 +323,10 @@ let commands = [
 
 	new SlashCommandBuilder().setName('warning').setDescription('Clear, remove or view warnings')
 		.addSubcommand(subcmd => {
-			return subcmd.setName('view').setDescription('View information about a warning').addNumberOption(option => option.setName('id').setDescription("The warning ID").setRequired(true));
+			return subcmd.setName('view').setDescription('View information about a warning').addStringOption(option => option.setName('id').setDescription("The warning ID").setRequired(true));
 		})
 		.addSubcommand(subcmd => {
-			return subcmd.setName('remove').setDescription('Remove a warning').addNumberOption(option => option.setName('id').setDescription("The warning ID").setRequired(true));
+			return subcmd.setName('remove').setDescription('Remove a warning').addStringOption(option => option.setName('id').setDescription("The warning ID").setRequired(true));
 		})
 		.addSubcommand(subcmd => {
 			return subcmd.setName('list').setDescription('List warnings for a user').addUserOption(option => option.setName('user').setDescription("The user").setRequired(true));

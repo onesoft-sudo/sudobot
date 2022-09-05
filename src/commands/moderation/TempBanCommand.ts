@@ -169,7 +169,8 @@ export default class TempBanCommand extends BaseCommand {
                 meta: {
                     days: banOptions.days,
                     time
-                }
+                },
+                createdAt: new Date()
             });
 
             const timeouts = getTimeouts();

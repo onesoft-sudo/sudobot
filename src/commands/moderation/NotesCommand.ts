@@ -24,7 +24,11 @@ export default class NotesCommand extends BaseCommand {
         }).skip(offset).limit(limit).sort("createdAt");
 
         let str = '';
-        const maxPage = Math.ceil(notes.length / limit);
+        
+        const maxPage = Math.ceil((await Note.count({
+            guild_id: msg.guild!.id,
+            user_id: user.id,
+        })) / limit);
 
         for await (const note of notes) {
             str += `**Note ID**: ${note.id}\n`;

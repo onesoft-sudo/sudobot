@@ -83,6 +83,7 @@ export default class UnbanCommand extends BaseCommand {
                 guild_id: msg.guild!.id,
                 mod_id: msg.member!.user.id,
                 mod_tag: (msg.member!.user as User).tag,
+                createdAt: new Date()
             });
 
             await History.create(user.id, msg.guild!, 'unban', (msg.member!.user as User).id, null);
