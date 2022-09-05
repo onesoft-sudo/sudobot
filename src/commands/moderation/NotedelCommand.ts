@@ -34,17 +34,15 @@ export default class NotedelCommand extends BaseCommand {
         let id: string;
 
         if (options.isInteraction) {
-            id = await <string> options.options.getNumber('id')?.toString();
+            id = await <string> options.options.getString('id');
         }
         else {
             id = await options.args[0];
         }
 
         const note = await Note.findOne({
-            where: {
-                guild_id: msg.guild!.id,
-                id
-            }
+            guild_id: msg.guild!.id,
+            _id: id
         });
 
         if (!note) {
@@ -52,7 +50,7 @@ export default class NotedelCommand extends BaseCommand {
             return;
         }
 
-        await note.destroy();
+        await note.delete();
 
         await msg.reply({
             embeds: [
