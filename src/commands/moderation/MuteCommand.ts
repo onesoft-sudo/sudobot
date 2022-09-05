@@ -57,6 +57,7 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
                 user_id: user.id,
                 roles: roles.map(role => role.id),
                 guild_id: msg.guild!.id,
+                createdAt: new Date()
             });
         }
 
