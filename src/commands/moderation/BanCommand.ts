@@ -139,7 +139,8 @@ export default class BanCommand extends BaseCommand {
                 guild_id: msg.guild!.id,
                 mod_id: msg.member!.user.id,
                 mod_tag: (msg.member!.user as User).tag,
-                reason: banOptions.reason ?? undefined
+                reason: banOptions.reason ?? undefined,
+                createdAt: new Date()
             });
 
             await History.create(user.id, msg.guild!, 'ban', msg.member!.user.id, typeof banOptions.reason === 'undefined' ? null : banOptions.reason, async (data: any) => undefined);

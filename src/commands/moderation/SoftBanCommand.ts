@@ -162,7 +162,8 @@ export default class SoftBanCommand extends BaseCommand {
                 reason: banOptions.reason ?? undefined,
                 meta: {
                     days: banOptions.days
-                }
+                },
+                createdAt: new Date()
             });
 
             await client.logger.logSoftBan(banOptions, msg.guild!, user, punishment);
