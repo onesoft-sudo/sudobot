@@ -67,4 +67,14 @@ export default class Router extends Service {
     static delete(path: string, callback: [typeof Controller, string]) {
         return Router.insert("DELETE", path, callback);
     }
+
+    static resource(path: string, controller: typeof Controller, { get = true, post = true, put = true, patch = true, del = true }: { get?: boolean, post?: boolean, put?: boolean, patch?: boolean, del?: boolean } = {}) {
+        return {
+            get: get ? Router.get(path, [controller, 'index']) : undefined,
+            post: post ? Router.post(path, [controller, 'create']) : undefined,
+            put: put ? Router.put(path, [controller, 'update']) : undefined,
+            patch: patch ? Router.patch(path, [controller, 'update']) : undefined,
+            delete: del ? Router.delete(path, [controller, 'delete']) : undefined,
+        };
+    }
 }
