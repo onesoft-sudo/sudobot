@@ -1,5 +1,3 @@
-import { DataTypes, Model } from 'sequelize';
-import DiscordClient from '../client/Client';
 import { Schema, model } from 'mongoose';
 
 const schema = new Schema({
