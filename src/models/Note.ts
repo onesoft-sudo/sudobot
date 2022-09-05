@@ -1,39 +1,30 @@
-import { DataTypes, Model } from 'sequelize';
-import DiscordClient from '../client/Client';
+import { Schema, model } from 'mongoose';
 
-class Note extends Model {}
-
-Note.init({
-    id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-    },
+const schema = new Schema({
     content: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     author: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: String,
+        required: true,
     },
     mod_tag: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: String,
+        required: true,
     },
     user_id: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     guild_id: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
-}, {
-    sequelize: DiscordClient.client.db.sequelize,
-    modelName: 'Note',
-    updatedAt: false,
-    tableName: 'notes'
+    createdAt: {
+        type: Date,
+        required: true
+    }
 });
 
-export default Note;
+export default model("Note", schema);
