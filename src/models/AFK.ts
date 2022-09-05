@@ -1,35 +1,33 @@
 import { DataTypes, Model } from 'sequelize';
 import DiscordClient from '../client/Client';
+import { Schema, model, SchemaTypes, Document } from 'mongoose';
 
-class AFK extends Model {}
+export interface IAFK extends Document {
+    user: string;
+    reason?: string;
+    mentions: Array<object>;
+    guild_id: string;
+    createdAt: Date;
+}
 
-AFK.init({
-    id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-    },
+const schema = new Schema({
     user: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     reason: {
-        type: DataTypes.STRING,
-        allowNull: true
+        type: String,
+        required: false
     },
-    mentions: {
-        type: DataTypes.JSON,
-        allowNull: false,
-        defaultValue: []
-    },
+    mentions: Array,
     guild_id: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
-}, {
-    sequelize: DiscordClient.client.db.sequelize,
-    modelName: 'AFK',
-    updatedAt: false,
+    createdAt: {
+        type: Date,
+        required: true
+    }
 });
 
-export default AFK;
+export default model('AFK', schema);

@@ -2,8 +2,7 @@ import { formatDistanceToNowStrict } from "date-fns";
 import { CommandInteraction, GuildMember, Message, User, Util } from "discord.js";
 import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
-import AFKCommand from "../commands/utils/AFKCommand";
-import AFK from "../models/AFK";
+import AFK, { IAFK } from "../models/AFK";
 import Service from "../utils/structures/Service";
 
 export interface MentionSchema {
@@ -12,23 +11,23 @@ export interface MentionSchema {
 }
 
 export default class AFKEngine extends Service {
-    list: AFK[] = [];
+    list: IAFK[] = [];
 
     constructor(client: DiscordClient) {
         super(client);
-        AFK.findAll().then(models => this.list = models).catch(console.error);
+        AFK.find().then(models => this.list = models).catch(console.error);
     }
 
     findUsers(ids: string[], guild: string) {
-        return this.list.filter(afk => ids.includes(afk.get("user") as string) && afk.get("guild_id") as string === guild);
+        return this.list.filter(afk => ids.includes(afk.user) && afk.guild_id === guild);
     }
  
     async removeUser(id: string, guild: string) {
         let index = 0;
 
         for await (const afk of this.list) {
-            if (afk.get('user') === id && afk.get("guild_id") === guild) {
-                await afk.destroy();
+            if (afk.user === id && afk.guild_id === guild) {
+                await afk.delete();
                 this.list.splice(index, 1);
             }
 
@@ -81,7 +80,8 @@ export default class AFKEngine extends Service {
                 user: message.member!.user.id,
                 guild_id: message.guild!.id,
                 mentions: [],
-                reason: status ?? undefined
+                reason: status ?? undefined,
+                createdAt: new Date()
             }));
 
             await message.reply({
@@ -107,14 +107,14 @@ export default class AFKEngine extends Service {
         const mention = msg.mentions.members?.first();
 
         if (mention) {
-            const afkRecords: AFK[] = this.findUsers([...msg.mentions.members!.keys()].slice(0, 3), msg.guild!.id);
+            const afkRecords: Array<IAFK> = this.findUsers([...msg.mentions.members!.keys()].slice(0, 3), msg.guild!.id).filter(afk => afk.user !== msg.author.id);
 
             if (!afkRecords || afkRecords.length < 1) {
                 return;
             }
 
             for (const record of afkRecords) {
-                const mentions = record.get("mentions") as MentionSchema[];
+                const mentions = record.mentions as MentionSchema[];
 
                 mentions.push({
                     date: Date.now(),
