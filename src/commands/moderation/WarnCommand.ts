@@ -6,7 +6,6 @@ import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import getMember from '../../utils/getMember';
 import PunishmentType from '../../types/PunishmentType';
-import History from '../../automod/History';
 
 export async function warn(client: DiscordClient, user: User, reason: string | undefined, msg: Message | CommandInteraction, warned_by?: User) {   
     const { default: Punishment } = await import('../../models/Punishment');

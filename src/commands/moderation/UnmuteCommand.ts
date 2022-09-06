@@ -4,17 +4,12 @@ import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
-import getUser from '../../utils/getUser';
-import History from '../../automod/History';
 import getMember from '../../utils/getMember';
-import ms from 'ms';
 
 import PunishmentType from '../../types/PunishmentType';
 
 export async function unmute(client: DiscordClient, user: GuildMember, d: User) {
     try {            
-        await History.create(user.id, user.guild!, 'unmute', d.id, null);
-
         const role = await user.guild!.roles.fetch(client.config.props[user.guild.id].mute_role);
         try {
             await user.roles.remove(role!, 'Unmuting user');
