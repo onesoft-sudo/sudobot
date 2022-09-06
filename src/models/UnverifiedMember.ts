@@ -1,40 +1,31 @@
-import { DataTypes, Model } from 'sequelize';
-import DiscordClient from '../client/Client';
+import { Schema, model } from 'mongoose';
 
-class UnverifiedMember extends Model {}
-
-UnverifiedMember.init({
-    id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-    },
+const schema = new Schema({
     user_id: {
-        type: DataTypes.STRING,
-        allowNull: true
+        type: String,
+        required: true,
     },
     guild_id: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true,
     },
     status: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        defaultValue: 'pending'
+        type: String,
+        required: true,
+        default: 'pending'
     },
     ip: {
-        type: DataTypes.STRING,
-        allowNull: true,
+        type: String,
+        required: false,
     },
     user_agent: {
-        type: DataTypes.STRING,
-        allowNull: true,
+        type: String,
+        required: false,
     },
-}, {
-    sequelize: DiscordClient.client.db.sequelize,
-    modelName: 'UnverifiedMember',
-    tableName: 'unverified_members',
-    updatedAt: false,
+    createdAt: {
+        type: Date,
+        required: true
+    }
 });
 
-export default UnverifiedMember;
+export default model('UnverifiedMember', schema);

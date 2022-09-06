@@ -31,11 +31,9 @@ export default class Verification extends Service {
         const { default: UnverifiedMember } = await import('../models/UnverifiedMember');
 
         const data = await UnverifiedMember.findOne({
-            where: {
-                guild_id: member.guild.id,
-                user_id: member.id,
-                status: 'pending'
-            }
+			guild_id: member.guild.id,
+			user_id: member.id,
+			status: 'pending'
         });
 
         await data?.set('status', 'done');
@@ -50,7 +48,8 @@ export default class Verification extends Service {
         await UnverifiedMember.create({
             guild_id: member.guild.id,
             user_id: member.id,
-            status: 'pending'
+            status: 'pending',
+			createdAt: new Date()
         });
 
         await member.roles.add(this.client.config.props[member.guild.id].verification.role);
