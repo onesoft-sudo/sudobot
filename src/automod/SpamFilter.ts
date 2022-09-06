@@ -3,6 +3,7 @@ import { Collection, Guild, Message, TextChannel } from "discord.js";
 import DiscordClient from "../client/Client";
 import { mute } from "../commands/moderation/MuteCommand";
 import { warn } from "../commands/moderation/WarnCommand";
+import KeyValuePair from "../types/KeyValuePair";
 
 export interface SpamFilterData {
     count: number,
@@ -18,6 +19,7 @@ export default class SpamFilter {
     LIMIT = 5;
     TIME = 5000;
     DIFF = 2500;
+    config: KeyValuePair<string | number> = {};
     exclude: string[] = [];
     enabled: boolean = true;
     SpamViolation: typeof import("../models/SpamViolation");
@@ -27,6 +29,7 @@ export default class SpamFilter {
     }
 
     load(guild: Guild) {
+        this.config = this.client.config.props[guild.id].spam_filter;
         this.enabled = this.client.config.props[guild.id].spam_filter.enabled;
         this.exclude = this.client.config.props[guild.id].spam_filter.exclude;
     }
@@ -43,6 +46,8 @@ export default class SpamFilter {
         if (!this.users[guild!.id]) {
             this.users[guild!.id] = new Collection();
         }
+
+        console.log(this.users[guild!.id].get(author.id));
 
         const users = this.users[guild!.id];
 
@@ -64,19 +69,20 @@ export default class SpamFilter {
                 const { count } = user;
 
                 if (count === this.LIMIT) {
-                    const [spamViolation, isCreated] = await SpamViolation.findOrCreate({
-                        defaults: {
-                            user_id: author.id,
-                            guild_id: guild!.id,
-                        },
-                        where: {
-                            user_id: author.id,
-                            guild_id: guild!.id,
-                        },
-                        order: [
-                            ['id', 'DESC']
-                        ]
+                    let spamViolation = await SpamViolation.findOne({
+                        user_id: author.id,
+                        guild_id: guild!.id,
                     });
+
+                    const isCreated = spamViolation === null;
+
+                    if (!spamViolation) {
+                        spamViolation = await SpamViolation.create({
+                            user_id: author.id,
+                            guild_id: guild!.id,
+                            createdAt: new Date()
+                        });
+                    }
 
                     if (isCreated) {
                         await message.channel.send({
@@ -86,14 +92,16 @@ export default class SpamFilter {
                         return;
                     }
 
-                    const rawData = spamViolation.get();
-
-                    if (rawData.strike === 2) {
+                    if (spamViolation.strike === 2) {
                         await warn(this.client, author, `Spamming\nThe next violations will cause mutes.`, message, this.client.user!);
                     }
-                    else if (rawData.strike > 2) {
-                        await mute(this.client, Date.now() + 20000, member!, message, 20000, `Spamming`);
+                    else if (spamViolation.strike > 2) {
+                        await mute(this.client, Date.now() + (this.config.unmute_in as number), member!, message, this.config.unmute_in as number, `Spamming`);
+                        return;
                     }
+                    
+                    spamViolation.strike++;
+                    await spamViolation.save();
                 }
                 else {
                     user.lastMessage = message;
