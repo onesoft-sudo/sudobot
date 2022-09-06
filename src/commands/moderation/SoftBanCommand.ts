@@ -5,7 +5,6 @@ import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import getUser from '../../utils/getUser';
-import History from '../../automod/History';
 import Punishment from '../../models/Punishment';
 import PunishmentType from '../../types/PunishmentType';
 import { fetchEmojiStr } from '../../utils/Emoji';

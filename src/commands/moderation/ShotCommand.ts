@@ -4,12 +4,9 @@ import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
-import getUser from '../../utils/getUser';
 import getMember from '../../utils/getMember';
-import History from '../../automod/History';
 import Punishment from '../../models/Punishment';
 import PunishmentType from '../../types/PunishmentType';
-import ModerationEmbed from '../../utils/ModerationEmbed';
 
 export default class ShotCommand extends BaseCommand {
     supportsInteractions: boolean = true;

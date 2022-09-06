@@ -5,9 +5,6 @@ import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import getUser from '../../utils/getUser';
-import History from '../../automod/History';
-import getMember from '../../utils/getMember';
-import ms from 'ms';
 import Punishment from '../../models/Punishment';
 import PunishmentType from '../../types/PunishmentType';
 
@@ -85,8 +82,6 @@ export default class UnbanCommand extends BaseCommand {
                 mod_tag: (msg.member!.user as User).tag,
                 createdAt: new Date()
             });
-
-            await History.create(user.id, msg.guild!, 'unban', (msg.member!.user as User).id, null);
         }
         catch (e) {
             console.log(e);            

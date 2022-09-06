@@ -5,9 +5,6 @@ import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import getUser from '../../utils/getUser';
-import History from '../../automod/History';
-import getMember from '../../utils/getMember';
-import ms from 'ms';
 import { fetchEmoji } from '../../utils/Emoji';
 
 export async function note(user: GuildMember | User, content: string, msg: Message | CommandInteraction) {

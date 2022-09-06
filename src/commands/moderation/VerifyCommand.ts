@@ -4,10 +4,7 @@ import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
-import getUser from '../../utils/getUser';
 import getMember from '../../utils/getMember';
-import History from '../../automod/History';
-import { fetchEmoji } from '../../utils/Emoji';
 
 export default class VerifyCommand extends BaseCommand {
     supportsInteractions: boolean = true;

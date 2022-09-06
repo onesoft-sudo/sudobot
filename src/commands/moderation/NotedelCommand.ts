@@ -5,7 +5,6 @@ import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import getUser from '../../utils/getUser';
-import History from '../../automod/History';
 import getMember from '../../utils/getMember';
 import ms from 'ms';
 import Note from '../../models/Note';

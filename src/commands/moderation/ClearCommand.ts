@@ -6,7 +6,6 @@ import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import getUser from '../../utils/getUser';
 import getMember from '../../utils/getMember';
-import History from '../../automod/History';
 import { fetchEmoji } from '../../utils/Emoji';
 import { hasPermission, shouldNotModerate } from '../../utils/util';
 
