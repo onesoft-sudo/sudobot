@@ -4,8 +4,6 @@ import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import axios from 'axios';
-import path from 'path';
-import { deleteFile, download } from '../../utils/util';
 
 export default class HttpdogCommand extends BaseCommand {
     supportsInteractions: boolean = true;

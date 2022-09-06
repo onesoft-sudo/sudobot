@@ -1,12 +1,8 @@
-import { CommandInteraction, FileOptions, GuildMember, Interaction, Message, MessageAttachment } from 'discord.js';
+import { CommandInteraction, FileOptions } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
-import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
-import MessageEmbed from '../../client/MessageEmbed';
-import { download } from '../../utils/util';
 import path from 'path';
-import { fetchEmoji } from '../../utils/Emoji';
 
 export default class AddsnippetCommand extends BaseCommand {
     supportsInteractions: boolean = true;

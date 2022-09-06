@@ -1,4 +1,4 @@
-import { BanOptions, CommandInteraction, GuildMember, Interaction, Message, User, Permissions } from 'discord.js';
+import { BanOptions, CommandInteraction, Message, User, Permissions } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';

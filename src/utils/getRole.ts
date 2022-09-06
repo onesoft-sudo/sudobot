@@ -1,4 +1,4 @@
-import { CommandInteraction, Guild, GuildMember, Message, Role, User, MessageMentions } from "discord.js";
+import { Guild, Message, Role, MessageMentions } from "discord.js";
 import CommandOptions from "../types/CommandOptions";
 
 export default async function getRole(msgInteraction: Message, options: CommandOptions, index: number = 0): Promise<Role | null | undefined> {

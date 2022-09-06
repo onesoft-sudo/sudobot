@@ -1,7 +1,7 @@
 import path from 'path';
 import { promises as fs } from 'fs';
 import DiscordClient from '../client/Client';
-import { registered, registrationStart } from './debug';
+import { registered } from './debug';
 
 export async function registerCLICommands(client: DiscordClient, dir: string = '') {
     const filePath = path.join(__dirname, dir);

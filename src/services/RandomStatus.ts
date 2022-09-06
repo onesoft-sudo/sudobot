@@ -1,6 +1,5 @@
 import { ExcludeEnum, PresenceStatusData } from "discord.js";
 import { ActivityTypes } from "discord.js/typings/enums";
-import DiscordClient from "../client/Client";
 import Service from "../utils/structures/Service";
 import { random } from "../utils/util";
 

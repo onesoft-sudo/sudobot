@@ -1,9 +1,8 @@
-import { ActivityType, ClientPresenceStatus, CommandInteraction, ExcludeEnum, GuildMember, Interaction, Message, PresenceStatus, PresenceStatusData } from 'discord.js';
+import { ClientPresenceStatus, CommandInteraction, ExcludeEnum, Message } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
-import MessageEmbed from '../../client/MessageEmbed';
 import { ActivityTypes } from 'discord.js/typings/enums';
 import { fetchEmoji } from '../../utils/Emoji';
 

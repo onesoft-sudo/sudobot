@@ -1,4 +1,4 @@
-import { CommandInteraction, GuildMember, Message, User } from "discord.js";
+import { GuildMember, Message } from "discord.js";
 import CommandOptions from "../types/CommandOptions";
 import { parseMember } from './parseInput';
 

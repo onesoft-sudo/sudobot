@@ -1,5 +1,4 @@
 import { GuildMember } from "discord.js";
-import DiscordClient from "../client/Client";
 import BaseCommand from "../utils/structures/BaseCommand";
 import Service from "../utils/structures/Service";
 

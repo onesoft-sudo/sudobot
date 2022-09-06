@@ -1,8 +1,7 @@
-import { CommandInteraction, GuildMember, Interaction, Message } from 'discord.js';
+import { Message } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
-import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import { clearTimeoutv2, getTimeout, getTimeouts } from '../../utils/setTimeout';
 

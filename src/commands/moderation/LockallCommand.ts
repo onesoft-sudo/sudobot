@@ -1,4 +1,4 @@
-import { Collection, CommandInteraction, GuildBasedChannel, GuildChannel, Message, Permissions, Role, TextChannel, User } from 'discord.js';
+import { Collection, CommandInteraction, Message, Role, TextChannel, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';

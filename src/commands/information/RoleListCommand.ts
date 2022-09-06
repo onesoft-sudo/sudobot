@@ -1,10 +1,8 @@
-import { CommandInteraction, InteractionCollector, Message, MessageActionRow, MessageButton, Role } from 'discord.js';
+import { CommandInteraction, Role } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
-import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
-import getRole from '../../utils/getRole';
 
 export default class RoleListCommand extends BaseCommand {
     supportsInteractions: boolean = true;

@@ -1,6 +1,5 @@
 import BaseEvent from '../../utils/structures/BaseEvent';
 import DiscordClient from '../../client/Client';
-import { runTimeouts } from '../../utils/setTimeout';
 import { TextChannel } from 'discord.js';
 
 export default class RawEvent extends BaseEvent {

@@ -1,5 +1,4 @@
-import { MessageAttachment, MessageReaction, TextChannel, User } from "discord.js";
-import DiscordClient from "../client/Client";
+import { MessageAttachment, MessageReaction, TextChannel } from "discord.js";
 import MessageEmbed from "../client/MessageEmbed";
 import Service from "../utils/structures/Service";
 

@@ -1,7 +1,5 @@
 import { GuildMember } from "discord.js";
 import { Request } from "express";
-import { Op } from "sequelize";
-import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
 import Service from "../utils/structures/Service";
 
