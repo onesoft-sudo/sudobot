@@ -1,34 +1,22 @@
-import { BuildOptions, DataTypes, Model, Optional } from 'sequelize';
-import DiscordClient from '../client/Client';
+import { Schema, model } from 'mongoose';
 
-class PunishmentAppeal extends Model {
-    
-}
-
-PunishmentAppeal.init({
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-        allowNull: false,
-    },
+const schema = new Schema({
     user_id: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: String,
+        required: true,
     },
     guild_id: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: String,
+        required: true,
     },
     content: {
-        type: DataTypes.TEXT,
-        allowNull: false
+        type: String,
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        required: true
     }
-}, {
-    sequelize: DiscordClient.client.db.sequelize,
-    modelName: 'PunishmentAppeal',
-    updatedAt: false,
-    tableName: 'appeals'
 });
 
-export default PunishmentAppeal;
+export default model('PunishmentAppeal', schema);

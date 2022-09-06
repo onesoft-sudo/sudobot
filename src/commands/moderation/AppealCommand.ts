@@ -1,13 +1,7 @@
 import { BanOptions, CommandInteraction, EmojiIdentifierResolvable, GuildMember, Interaction, Message, TextChannel, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
-import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
-import MessageEmbed from '../../client/MessageEmbed';
-import getUser from '../../utils/getUser';
-import getMember from '../../utils/getMember';
-import History from '../../automod/History';
-import { fetchEmoji } from '../../utils/Emoji';
 import { Modal, ModalSubmitInteraction, showModal, TextInputComponent } from 'discord-modals';
 import PunishmentAppeal from '../../models/PunishmentAppeal';
 
@@ -26,7 +20,8 @@ export default class AppealCommand extends BaseCommand {
             await PunishmentAppeal.create({
                 user_id: interaction.member.id,
                 guild_id: interaction.guild!.id,
-                content
+                content,
+                createdAt: new Date()
             });
 
             await interaction.reply({
@@ -38,10 +33,8 @@ export default class AppealCommand extends BaseCommand {
 
     async run(client: DiscordClient, interaction: CommandInteraction, options: InteractionOptions) {
         const existingData = await PunishmentAppeal.findOne({
-            where: {
-                user_id: interaction.member!.user.id,
-                guild_id: interaction.guild!.id
-            }
+            user_id: interaction.member!.user.id,
+            guild_id: interaction.guild!.id
         });
 
         if (!existingData) {
