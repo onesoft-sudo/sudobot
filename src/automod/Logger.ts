@@ -1,4 +1,5 @@
 import { roleMention } from '@discordjs/builders';
+import { formatDuration, intervalToDuration } from 'date-fns';
 import { BanOptions, CommandInteraction, FileOptions, Guild, GuildBan, GuildMember, Message, MessageEmbed, MessageOptions, MessagePayload, TextChannel, User } from 'discord.js';
 import ms from 'ms';
 import DiscordClient from '../client/Client';
@@ -332,7 +333,7 @@ class Logger {
         }, member);
     }
 
-    logMute(member: GuildMember, reason: string, timeMs: number | null | undefined, d: User, hard: boolean = true) {
+    logMute(member: GuildMember, reason: string, duration: number | null | undefined, d: User, hard: boolean = true) {
         this.channel(async (channel) => {
             await channel.send({
                 embeds: [
@@ -345,7 +346,7 @@ class Logger {
                     })
                     .addField('Reason', reason)
                     .addField('Muted by', d.tag)
-                    .addField('Duration Until', typeof timeMs === 'number' ? `${new Date((timeMs / 1000) + Date.now()).toLocaleString()} (${timeProcess(timeMs / 1000)})` : "*No duration set*")
+                    .addField('Duration Until', duration ? `${(new Date(Date.now() + duration)).toLocaleString()} (${formatDuration(intervalToDuration({ start: 0, end: duration }))})` : "*No duration set*")
                     .addField('User ID', member.user.id)
                     .addField('Hardmute', hard ? 'Yes' : 'No')
                     .setFooter({
