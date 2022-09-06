@@ -63,7 +63,7 @@ export default class MessageFilter {
         let data = [...str.matchAll(new RegExp(`\<\@[0-9]+\>`, 'gm'))];
 
 		console.log('users', data);
-1
+
         if (data.length >= this.config.pings)
             return true;
         
