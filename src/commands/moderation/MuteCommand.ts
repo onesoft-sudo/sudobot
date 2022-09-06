@@ -35,14 +35,7 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
         }
 
         if (dateTime && timeInterval) {
-            await client.db.get("INSERT INTO unmutes(user_id, guild_id, time) VALUES(?, ?, ?)", [user.id, msg.guild!.id, new Date(dateTime).toISOString()], async (err: any) => {
-                if (err) 
-                    console.log(err);
-                
-                    console.log('A timeout has been set.');
-
-                    await setTimeoutv2('unmute-job', timeInterval, msg.guild!.id, `unmute ${user.id}`, msg.guild!.id, user.id);
-            });
+            await setTimeoutv2('unmute-job', timeInterval, msg.guild!.id, `unmute ${user.id}`, msg.guild!.id, user.id);
         }
         
         if (hard) {
