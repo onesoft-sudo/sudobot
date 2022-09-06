@@ -1,4 +1,4 @@
-import { BanOptions, CommandInteraction, ContextMenuInteraction, EmojiIdentifierResolvable, GuildMember, Interaction, InteractionCollector, Message, MessageActionRow, MessageButton, MessageOptions, ReplyOptions, TextChannel, User } from 'discord.js';
+import { CommandInteraction, ContextMenuInteraction, Interaction, InteractionCollector, Message, MessageActionRow, MessageButton, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';

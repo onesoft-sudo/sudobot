@@ -1,11 +1,10 @@
 import { TextChannel } from "discord.js";
 import { existsSync, readFile, rm } from "fs";
 import { writeFile } from "fs/promises";
-import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
 import { fetchEmoji } from "../utils/Emoji";
 import Service from "../utils/structures/Service";
-import { timeProcess, yellow } from "../utils/util";
+import { yellow } from "../utils/util";
 
 export interface RestartLockFileData {
     date: string;

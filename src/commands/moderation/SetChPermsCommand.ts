@@ -1,11 +1,11 @@
-import { CategoryChannel, CommandInteraction, Message, TextChannel, Permissions, PermissionFlags, PermissionString, GuildChannel, Role, AutocompleteInteraction, Interaction, Collection } from 'discord.js';
+import { CategoryChannel, CommandInteraction, Message, TextChannel, Permissions, PermissionString, GuildChannel, Role, AutocompleteInteraction, Collection } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import { fetchEmoji } from '../../utils/Emoji';
-import getRole, { getRoleRaw } from '../../utils/getRole';
+import { getRoleRaw } from '../../utils/getRole';
 import { channelMention } from '@discordjs/builders';
 import AutoCompleteOptions from '../../types/AutoCompleteOptions';
 

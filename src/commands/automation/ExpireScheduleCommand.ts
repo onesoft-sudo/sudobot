@@ -1,11 +1,10 @@
-import { CommandInteraction, GuildMember, Interaction, Message, TextChannel } from 'discord.js';
+import { CommandInteraction, Message, TextChannel } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import ms from 'ms';
-import { timeSince } from '../../utils/util';
 import { setTimeoutv2 } from '../../utils/setTimeout';
 
 export default class ExpireScheduleCommand extends BaseCommand {

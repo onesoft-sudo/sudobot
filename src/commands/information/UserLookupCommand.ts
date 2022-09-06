@@ -1,13 +1,12 @@
 import { formatDistanceStrict, formatDistanceToNowStrict } from "date-fns";
 import { APIEmbedField } from "discord-api-types/v9";
-import { Util, Message, Interaction, CacheType, CommandInteraction } from "discord.js";
+import { Util, Message, CacheType, CommandInteraction } from "discord.js";
 import Client from "../../client/Client";
 import MessageEmbed from "../../client/MessageEmbed";
 import CommandOptions from "../../types/CommandOptions";
 import InteractionOptions from "../../types/InteractionOptions";
 import { emoji } from "../../utils/Emoji";
 import getUser from "../../utils/getUser";
-import { parseUser } from "../../utils/parseInput";
 import BaseCommand from "../../utils/structures/BaseCommand";
 import { getUserBadges } from "./ProfileCommand";
 

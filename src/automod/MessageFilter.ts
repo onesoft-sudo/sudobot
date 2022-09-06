@@ -1,5 +1,5 @@
 import { channelMention } from "@discordjs/builders";
-import { Message, TextChannel, MessageMentions, Guild } from "discord.js";
+import { Message, TextChannel, Guild } from "discord.js";
 import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
 import { readFile } from 'fs/promises';

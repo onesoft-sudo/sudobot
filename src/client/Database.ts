@@ -1,5 +1,3 @@
-import { Sequelize } from 'sequelize';
-import { Database as DB } from 'sqlite3';
 import DiscordClient from './Client';
 import mongoose from "mongoose";
 

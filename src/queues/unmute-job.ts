@@ -1,4 +1,3 @@
-import { TextChannel } from "discord.js";
 import DiscordClient from "../client/Client";
 import { unmute } from "../commands/moderation/UnmuteCommand";
 import MuteRecord from "../models/MuteRecord";

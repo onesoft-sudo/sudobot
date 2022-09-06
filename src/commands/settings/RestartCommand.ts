@@ -1,7 +1,6 @@
-import { CommandInteraction, GuildMember, Interaction, InteractionCollector, Message, MessageActionRow, MessageButton, MessageCollector } from 'discord.js';
+import { CommandInteraction, InteractionCollector, Message, MessageActionRow, MessageButton } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
-import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import { MessageButtonStyles } from 'discord.js/typings/enums';

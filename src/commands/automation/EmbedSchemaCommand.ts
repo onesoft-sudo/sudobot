@@ -1,8 +1,7 @@
-import { ColorResolvable, CommandInteraction, Message, Util } from 'discord.js';
+import { ColorResolvable, CommandInteraction, Util } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import InteractionOptions from '../../types/InteractionOptions';
-import MessageEmbed from '../../client/MessageEmbed';
 
 export default class EmbedSchemaCommand extends BaseCommand {
     supportsInteractions: boolean = false;

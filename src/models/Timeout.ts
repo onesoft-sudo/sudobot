@@ -1,4 +1,4 @@
-import { Schema, model, SchemaTypes, Document } from 'mongoose';
+import { Schema, model } from 'mongoose';
 
 const schema = new Schema({
     time: {

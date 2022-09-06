@@ -1,12 +1,11 @@
-import { CommandInteraction, GuildMember, Interaction, Message } from 'discord.js';
+import { CommandInteraction, Message } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import { fetchEmoji } from '../../utils/Emoji';
-import { timeProcess } from '../../utils/util';
-import { formatDistanceStrict, formatDistanceToNowStrict, formatDuration, intervalToDuration } from 'date-fns';
+import { formatDuration, intervalToDuration } from 'date-fns';
 
 export default class SystemCommand extends BaseCommand {
     constructor() {

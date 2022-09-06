@@ -1,5 +1,3 @@
-import { APIEmbed } from "discord-api-types/v9";
-import { MessageEmbedOptions } from "discord.js";
 import { readFile, writeFile } from "fs";
 import path from "path";
 import DiscordClient from "../client/Client";

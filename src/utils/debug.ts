@@ -1,6 +1,6 @@
 import BaseCommand from "./structures/BaseCommand";
 import BaseEvent from "./structures/BaseEvent";
-import { fill, green, red, timeProcess, yellow } from "./util";
+import { fill, green, red, yellow } from "./util";
 
 let colLengths = [19, 33, 10];
 let totalLength = colLengths.reduce((acc, val) => acc + val);
