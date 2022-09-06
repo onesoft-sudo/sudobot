@@ -109,7 +109,7 @@ export default class DiscordClient extends Client {
         DiscordClient.client = this;
 
         this.config = new Config(this);
-        this.db = new Database(path.resolve(rootdir, 'database.db'), this);
+        this.db = new Database(this);
         this.serviceManager = new ServiceManager(this, this.aliases);
         this.serviceManager.load(this.services);
 
