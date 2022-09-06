@@ -1,32 +1,32 @@
 import { DataTypes, Model } from 'sequelize';
 import DiscordClient from '../client/Client';
+import { Schema, model } from 'mongoose';
 
-class SpamViolation extends Model {}
+export interface ISpamViolation {
+    user_id: string;
+    guild_id: string;
+    strike?: number;
+    createdAt: Date;
+}
 
-SpamViolation.init({
-    id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-    },
+const schema = new Schema({
     user_id: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     guild_id: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     strike: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 1
+        type: Number,
+        required: true,
+        default: 1
+    },
+    createdAt: {
+        type: Date,
+        required: true
     }
-}, {
-    sequelize: DiscordClient.client.db.sequelize,
-    modelName: 'SpamViolation',
-    updatedAt: false,
-    tableName: 'spam_violation'
 });
 
-export default SpamViolation;
+export default model('SpamViolation', schema);
