@@ -1,4 +1,4 @@
-import { ColorResolvable, CommandInteraction, Message, Util } from 'discord.js';
+import { CommandInteraction, Message } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import InteractionOptions from '../../types/InteractionOptions';

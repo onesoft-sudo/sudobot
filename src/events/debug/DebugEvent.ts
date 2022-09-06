@@ -2,7 +2,6 @@ import { exec } from "child_process";
 import { format } from "date-fns";
 import { appendFile } from "fs/promises";
 import path from "path";
-import { exit } from "process";
 import DiscordClient from "../../client/Client";
 import { LogLevel } from "../../services/DebugLogger";
 import BaseEvent from "../../utils/structures/BaseEvent";

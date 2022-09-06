@@ -1,5 +1,5 @@
 import { formatDistanceToNowStrict } from "date-fns";
-import { CommandInteraction, GuildMember, Message, User, Util } from "discord.js";
+import { CommandInteraction, GuildMember, Message, Util } from "discord.js";
 import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
 import AFK, { IAFK } from "../models/AFK";

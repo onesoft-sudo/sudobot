@@ -1,4 +1,4 @@
-import { Schema, model, SchemaTypes, Document } from 'mongoose';
+import { Schema, model, Document } from 'mongoose';
 
 export interface IAFK extends Document {
     user: string;

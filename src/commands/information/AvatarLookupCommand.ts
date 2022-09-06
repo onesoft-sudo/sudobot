@@ -1,5 +1,4 @@
-import { formatDistanceToNowStrict } from "date-fns";
-import { Message, Interaction, CacheType, CommandInteraction, Guild, GuildPreview } from "discord.js";
+import { Message, CacheType, CommandInteraction } from "discord.js";
 import Client from "../../client/Client";
 import MessageEmbed from "../../client/MessageEmbed";
 import CommandOptions from "../../types/CommandOptions";

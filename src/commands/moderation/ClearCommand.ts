@@ -1,11 +1,10 @@
-import { BanOptions, CommandInteraction, Emoji, GuildChannel, GuildMember, Interaction, Message, TextChannel, User, Permissions } from 'discord.js';
+import { CommandInteraction, Emoji, GuildChannel, Message, TextChannel, User, Permissions } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import getUser from '../../utils/getUser';
-import getMember from '../../utils/getMember';
 import { fetchEmoji } from '../../utils/Emoji';
 import { hasPermission, shouldNotModerate } from '../../utils/util';
 

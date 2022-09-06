@@ -1,4 +1,4 @@
-import { Guild, GuildMember } from "discord.js";
+import { GuildMember } from "discord.js";
 import DiscordClient from "../client/Client";
 
 export default async function autoRole(client: DiscordClient, member: GuildMember) {

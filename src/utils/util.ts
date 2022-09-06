@@ -1,9 +1,8 @@
 import fs from 'fs';
 import DiscordClient from '../client/Client';
 import { GuildMember, Message, CommandInteraction, MessageEmbed, ContextMenuInteraction, Interaction } from 'discord.js';
-import Axios, { AxiosRequestHeaders, HeadersDefaults } from 'axios';
+import Axios, { AxiosRequestHeaders } from 'axios';
 import { formatDistanceToNowStrict, formatDuration, intervalToDuration } from 'date-fns';
-import { Snippet } from '../services/SnippetManager';
 
 export function parseEmbedsInString(content: string) {
     const embedExpressions = content.matchAll(/embed\:(\{[^\n]+\})/g);

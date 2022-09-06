@@ -1,12 +1,9 @@
-import { BanOptions, CommandInteraction, Guild, GuildMember, Interaction, Message, User } from 'discord.js';
+import { CommandInteraction, Message } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
-import getUser from '../../utils/getUser';
-import getMember from '../../utils/getMember';
-import ms from 'ms';
 import Note from '../../models/Note';
 import { fetchEmojiStr } from '../../utils/Emoji';
 

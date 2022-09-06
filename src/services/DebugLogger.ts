@@ -1,5 +1,4 @@
-import DiscordClient from "../client/Client";
-import { Guild, MessageEmbed, WebhookClient } from "discord.js";
+import { MessageEmbed, WebhookClient } from "discord.js";
 import { appendFile } from "fs/promises";
 import Service from "../utils/structures/Service";
 import { splitMessage } from "../utils/util";

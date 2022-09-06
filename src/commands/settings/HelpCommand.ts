@@ -1,4 +1,4 @@
-import { CommandInteraction, Interaction, Message } from 'discord.js';
+import { CommandInteraction, Message } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import Help from '../../utils/Help';

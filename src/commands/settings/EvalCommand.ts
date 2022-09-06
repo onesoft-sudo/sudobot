@@ -3,7 +3,6 @@ import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
-import MessageEmbed from '../../client/MessageEmbed';
 import { emoji } from '../../utils/Emoji';
 
 export default class EvalCommand extends BaseCommand {

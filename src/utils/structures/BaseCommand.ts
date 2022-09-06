@@ -1,5 +1,5 @@
 import { ModalSubmitInteraction } from 'discord-modals';
-import { PermissionResolvable, AutocompleteInteraction, CommandInteraction, CommandInteractionOption, ContextMenuInteraction, Interaction, Message, MessageEditOptions, MessageOptions, MessagePayload, WebhookEditMessageOptions, SelectMenuInteraction, ButtonInteraction, GuildMember } from 'discord.js';
+import { PermissionResolvable, AutocompleteInteraction, CommandInteraction, ContextMenuInteraction, Interaction, Message, MessageEditOptions, MessageOptions, MessagePayload, WebhookEditMessageOptions, GuildMember } from 'discord.js';
 import DiscordClient from '../../client/Client';
 import AutoCompleteOptions from '../../types/AutoCompleteOptions';
 import CommandOptions from '../../types/CommandOptions';

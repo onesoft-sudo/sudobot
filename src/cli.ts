@@ -1,12 +1,11 @@
 #!/usr/bin/ts-node
 
-import { registerCLICommands, registerCommands, registerEvents } from './utils/registry';
+import { registerCLICommands } from './utils/registry';
 import DiscordClient from './client/Client';
 import { Intents } from 'discord.js';
 import { config } from 'dotenv';
 import { existsSync } from 'fs';
 import path from 'path';
-import { registrationEnd, registrationStart } from './utils/debug';
 import { yellow } from './utils/util';
 
 if (existsSync(path.join(__dirname, '../.env'))) {

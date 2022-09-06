@@ -1,5 +1,4 @@
 import { GuildMember, MessageEmbed, TextChannel } from "discord.js";
-import DiscordClient from "../client/Client";
 import fs from 'fs';
 import path from "path";
 import Service from "../utils/structures/Service";

@@ -1,6 +1,5 @@
-import { Message, Interaction, CacheType, CommandInteraction } from "discord.js";
+import { CommandInteraction } from "discord.js";
 import Client from "../../client/Client";
-import CommandOptions from "../../types/CommandOptions";
 import InteractionOptions from "../../types/InteractionOptions";
 import BaseCommand from "../../utils/structures/BaseCommand";
 

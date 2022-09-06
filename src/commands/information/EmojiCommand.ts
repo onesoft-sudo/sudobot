@@ -1,11 +1,9 @@
-import { CommandInteraction, Emoji, Message, Util } from 'discord.js';
+import { CommandInteraction, Message, Util } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
-import axios from 'axios';
-import path from 'path';
-import { deleteFile, download, timeSince } from '../../utils/util';
+import { timeSince } from '../../utils/util';
 import MessageEmbed from '../../client/MessageEmbed';
 
 export default class EmojiCommand extends BaseCommand {

@@ -3,8 +3,8 @@ import { formatDuration, intervalToDuration } from 'date-fns';
 import { BanOptions, CommandInteraction, FileOptions, Guild, GuildBan, GuildMember, Message, MessageEmbed, MessageOptions, MessagePayload, TextChannel, User } from 'discord.js';
 import ms from 'ms';
 import DiscordClient from '../client/Client';
-import Punishment, { IPunishment } from '../models/Punishment';
-import { timeProcess, timeSince } from '../utils/util';
+import { IPunishment } from '../models/Punishment';
+import { timeSince } from '../utils/util';
 
 class Logger {
     client: DiscordClient;

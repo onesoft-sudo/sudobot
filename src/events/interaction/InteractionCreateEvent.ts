@@ -1,7 +1,6 @@
 import BaseEvent from '../../utils/structures/BaseEvent';
-import { GuildMember, Interaction, Message, MessageEmbed } from 'discord.js';
+import { GuildMember, Interaction, MessageEmbed } from 'discord.js';
 import DiscordClient from '../../client/Client';
-import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import AutoCompleteOptions from '../../types/AutoCompleteOptions';
 

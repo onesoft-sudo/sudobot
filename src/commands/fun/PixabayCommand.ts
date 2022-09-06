@@ -4,8 +4,7 @@ import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import axios from 'axios';
-import path from 'path';
-import { deleteFile, download, random } from '../../utils/util';
+import { random } from '../../utils/util';
 
 
 function url() {
