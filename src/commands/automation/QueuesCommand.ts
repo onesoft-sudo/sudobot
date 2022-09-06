@@ -23,7 +23,7 @@ export default class QueuesCommand extends BaseCommand {
                 return;
             
             console.log(new Date(value.row.time).getTime() - new Date().getTime());
-            str += `**ID: ${value.row.id}**\n**User Command**: \`${value.row.cmd}\`\n**Internal Command**: \`${value.row.params}\`\n**ETA**: ${timeProcess((new Date(value.row.time).getTime() - new Date().getTime()) / 1000).replace(' ago', '')}\n**Queue Added**: ${new Date(value.row.created_at).toLocaleString()} (${timeSince(new Date(value.row.created_at).getTime())})\n\n`;
+            str += `**ID: ${value.row.id}**\n**User Command**: \`${value.row.cmd}\`\n**Internal Command**: \`${value.row.params}\`\n**ETA**: ${timeProcess((new Date(value.row.time).getTime() - new Date().getTime()) / 1000).replace(' ago', '')}\n**Queue Added**: ${value.row.createdAt.toLocaleString()} (${timeSince(value.row.createdAt.getTime())})\n\n`;
         });
 
         await msg.reply({

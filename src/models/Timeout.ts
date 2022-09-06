@@ -1,40 +1,30 @@
-import { DataTypes, Model } from 'sequelize';
-import DiscordClient from '../client/Client';
+import { Schema, model, SchemaTypes, Document } from 'mongoose';
 
-class Timeout extends Model {}
-
-Timeout.init({
-    // Model attributes are defined here
-    id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-    },
+const schema = new Schema({
     time: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     filePath: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     params: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     guild_id: {
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     cmd: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: String,
+        required: true,
+    },
+    createdAt: {
+        type: Date,
+        required: true
     }
-}, {
-    sequelize: DiscordClient.client.db.sequelize,
-    modelName: 'Timeout',
-    createdAt: 'created_at',
-    updatedAt: false
 });
 
-export default Timeout;
+export default model('Timeout', schema);
