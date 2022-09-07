@@ -8,6 +8,7 @@ export default class Route {
 
     middleware(...middleware: Object[]) {
         this.middlewareList = [...this.middlewareList, ...middleware];
+        return this;
     }
 
     async getCallbackFunction(...args: any[]) {

@@ -3,6 +3,7 @@ import Service from "../utils/structures/Service";
 import express, { Express, Router as ExpressRouter } from 'express';
 import Router from "./Router";
 import path from "path";
+import rateLimit from 'express-rate-limit';
 
 export interface ServerOptions {
     port?: number;
@@ -23,6 +24,14 @@ export default class Server extends Service {
     async boot() {
         type methods = 'get' | 'post' | 'put' | 'patch' | 'delete';
         const expressRouter = ExpressRouter();
+
+        expressRouter.use(rateLimit({
+            windowMs: 1 * 60 * 1000,
+            max: 50, 
+            standardHeaders: true,
+            legacyHeaders: true,
+            message: { code: 429, error: 'Too many requests at a time. Please try again later.' },
+        }));
 
         await this.router.loadRoutes();
 
