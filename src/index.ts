@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { registerCommands, registerEvents } from './utils/registry';
 import DiscordClient from './client/Client';
 import { Intents } from 'discord.js';
