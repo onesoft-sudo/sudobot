@@ -5,4 +5,4 @@ import Router from "../Router";
 
 Router.get("/", [MainController, "index"]);
 Router.resource("/config", ConfigController, { post: false, del: false });
-Router.resource("/user", UserController);
+Router.resource("/users", UserController);

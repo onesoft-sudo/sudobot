@@ -33,10 +33,14 @@ export default class Server extends Service {
             message: { code: 429, error: 'Too many requests at a time. Please try again later.' },
         }));
 
+        expressRouter.use(express.json());
+        expressRouter.use(express.urlencoded({ extended: true }));
+
         await this.router.loadRoutes();
 
-        for (const route of this.router.routes) {
-            expressRouter[route.method.toLowerCase() as methods](route.path, ...route.middlewareList, await route.getCallbackFunction());
+        for (const route of this.router.routes) {            
+            console.log(route.callback[1], route.callback[0].middleware()[route.callback[1]]);            
+            expressRouter[route.method.toLowerCase() as methods](route.path, ...(route.callback[0].middleware()[route.callback[1]] as any[] ?? []), ...route.middlewareList as any[], await route.getCallbackFunction());
         }
 
         this.express.use(expressRouter);
