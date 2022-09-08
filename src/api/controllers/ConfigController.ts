@@ -3,11 +3,12 @@ import { body } from "express-validator";
 import KeyValuePair from "../../types/KeyValuePair";
 import Controller from "../Controller";
 import RequireAuth from "../middleware/RequireAuth";
+import ValidatorError from "../middleware/ValidatorError";
 import Request from "../Request";
 
 export default class ConfigController extends Controller {
     globalMiddleware(): Function[] {
-        return [RequireAuth];
+        return [RequireAuth, ValidatorError];
     }
 
     middleware(): KeyValuePair<Function[]> {
@@ -38,22 +39,26 @@ export default class ConfigController extends Controller {
         const currentConfigDotObject = dot(this.client.config.props[id]);
         const newConfigDotObject = {...currentConfigDotObject};
  
-        console.log("Input: ", currentConfigDotObject);
+        console.log("Input: ", config);
 
         for (const configKey in config) {
             if (!(configKey in currentConfigDotObject)) {
                 return { error: `The key '${configKey}' is not allowed` };
             }
 
-            if (typeof config[configKey] !== typeof currentConfigDotObject[configKey] || (config[configKey] !== currentConfigDotObject[configKey])) {
+            if (typeof config[configKey] !== typeof currentConfigDotObject[configKey] || (config[configKey] !== null && currentConfigDotObject[configKey] === null) || (config[configKey] === null && currentConfigDotObject[configKey] !== null)) {
                 return { error: `The key '${configKey}' has incompatible value type '${config[configKey] === null ? 'null' : typeof config[configKey]}'` };
             }
 
             newConfigDotObject[configKey] = config[configKey];
+            console.log("Updating: ", configKey, config[configKey], newConfigDotObject[configKey]);
         }
 
         console.log("Output: ", newConfigDotObject);
-        this.client.config.props[id] = object(newConfigDotObject);
+
+        this.client.config.props[id] = object({...newConfigDotObject});
+        this.client.config.write();
+
         return { message: "Configuration updated", previous: currentConfigDotObject, new: newConfigDotObject };
     }
 }
