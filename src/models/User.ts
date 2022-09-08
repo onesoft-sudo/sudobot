@@ -6,7 +6,9 @@ export interface IUser extends Document {
     guilds: Array<string>;
     password?: string;
     token?: string;
+    isAdmin?: boolean;
     createdAt: Date;
+    tokenUpdatedAt?: Date;
 }
 
 const schema = new Schema({
@@ -28,6 +30,11 @@ const schema = new Schema({
         type: String,
         required: false
     },
+    isAdmin: {
+        type: Boolean,
+        required: false,
+        default: false
+    },
     token: {
         type: String,
         required: false
@@ -35,6 +42,10 @@ const schema = new Schema({
     createdAt: {
         type: Date,
         required: true,
+    },
+    tokenUpdatedAt: {
+        type: Date,
+        required: false,
     }
 });
 

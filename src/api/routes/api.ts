@@ -4,5 +4,8 @@ import UserController from "../controllers/UserController";
 import Router from "../Router";
 
 Router.get("/", [MainController, "index"]);
-Router.resource("/config", ConfigController, { post: false, del: false });
+
+Router.get("/config/:id", [ConfigController, "index"]);
+
 Router.resource("/users", UserController);
+Router.post("/login", [UserController, "login"]);

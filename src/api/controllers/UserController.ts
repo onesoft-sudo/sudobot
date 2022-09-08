@@ -1,12 +1,13 @@
 import { Request } from "express";
 import User from "../../models/User";
 import Controller from "../Controller";
-import { body, validationResult } from 'express-validator';
+import { body } from 'express-validator';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import KeyValuePair from "../../types/KeyValuePair";
-import { promise } from "zod";
 import Response from "../Response";
+import ValidatorError from "../middleware/ValidatorError";
+import RequireAuth from "../middleware/RequireAuth";
 
 export default class UserController extends Controller {
     middleware(): KeyValuePair<Function[]> {
@@ -23,28 +24,35 @@ export default class UserController extends Controller {
                     return username;
                 }),
                 body(["discord_id"]).custom(value => /\d+/g.test(value) ? value : Promise.reject("Invalid Snowflake Given"))
+            ],
+            login: [
+                body(["username", "password"]).isLength({ min: 2 }),
+            ],
+            delete: [
+                RequireAuth,
+                body(["username", "password"]).isLength({ min: 2 }),
             ]
         };
     }
 
+    globalMiddleware(): Function[] {
+        return [ValidatorError];
+    }
+
     public async index() {
-        return await User.find().limit(30);
+        return new Response(403);
+        return await User.find().select(["_id", "username", "createdAt"]).limit(30);
     }
 
     public async create(request: Request) {
         return new Response(403);
-        
-        const errors = validationResult(request);
-
-        if (!errors.isEmpty()) {
-            return { errors: errors.array(), error_type: 'validation' };
-        } 
 
         const user = new User();
 
         user.username = request.body.username;
         user.discord_id = request.body.discord_id;
         user.createdAt = new Date();
+        user.tokenUpdatedAt = new Date();
 
         try {
             await user.save();
@@ -76,5 +84,78 @@ export default class UserController extends Controller {
 
         user.password = undefined;
         return user;
+    }
+
+    public async delete(request: Request) {
+        const { username, password } = request.body;
+        const user = await User.findOne({ username });
+
+        if (!user) {
+            return { error: "Username is incorrect." };
+        }
+
+        if (!(await bcrypt.compare(password, user.password!))) {
+            return { error: "Password is incorrect." };
+        }
+
+        await user.delete();
+
+        user.password = undefined;
+        user.token = undefined;
+        user.tokenUpdatedAt = undefined;
+
+        return {
+            message: "Account deletion successful",
+            user
+        };
+    }
+
+    public async login(request: Request) {
+        const { username, password } = request.body;
+        const user = await User.findOne({ username });
+
+        if (!user) {
+            return { error: "Username is incorrect." };
+        }
+
+        if (!(await bcrypt.compare(password, user.password!))) {
+            return { error: "Password is incorrect." };
+        }
+
+        let { token } = user;
+
+        try {
+            if (!token) {
+                throw new Error("Token is not set");
+            }
+
+            if (!jwt.verify(token, process.env.JWT_SECRET!)) {
+                throw new Error("Token is not valid");
+            }
+        }
+        catch (e) {
+            console.log(e);    
+            
+            const newToken = await jwt.sign({
+                username: user.username,
+                discord_id: user.discord_id,
+                _id: user.id
+            }, process.env.JWT_SECRET!, {
+                expiresIn: "2 days",
+                issuer: "SudoBot API",
+            });    
+
+            token = newToken;
+            user.tokenUpdatedAt = new Date();
+            user.token = newToken;
+            await user.save();
+        }
+
+        return {
+            message: "Login successful",
+            username,
+            token,
+            expires: new Date(user.tokenUpdatedAt!.getTime() + (2 * 24 * 60 * 60 * 1000))
+        };
     }
 }
