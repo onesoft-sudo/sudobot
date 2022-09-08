@@ -1,3 +1,6 @@
+import { dot, object } from "dot-object";
+import { body } from "express-validator";
+import KeyValuePair from "../../types/KeyValuePair";
 import Controller from "../Controller";
 import RequireAuth from "../middleware/RequireAuth";
 import Request from "../Request";
@@ -5,6 +8,14 @@ import Request from "../Request";
 export default class ConfigController extends Controller {
     globalMiddleware(): Function[] {
         return [RequireAuth];
+    }
+
+    middleware(): KeyValuePair<Function[]> {
+        return {
+            update: [
+                body(["config"]).isObject()
+            ]
+        };
     }
 
     public async index(request: Request) {
@@ -22,6 +33,27 @@ export default class ConfigController extends Controller {
     }
 
     public async update(request: Request) {
-        
+        const { id } = request.params;
+        const { config } = request.body;
+        const currentConfigDotObject = dot(this.client.config.props[id]);
+        const newConfigDotObject = {...currentConfigDotObject};
+ 
+        console.log("Input: ", currentConfigDotObject);
+
+        for (const configKey in config) {
+            if (!(configKey in currentConfigDotObject)) {
+                return { error: `The key '${configKey}' is not allowed` };
+            }
+
+            if (typeof config[configKey] !== typeof currentConfigDotObject[configKey] || (config[configKey] !== currentConfigDotObject[configKey])) {
+                return { error: `The key '${configKey}' has incompatible value type '${config[configKey] === null ? 'null' : typeof config[configKey]}'` };
+            }
+
+            newConfigDotObject[configKey] = config[configKey];
+        }
+
+        console.log("Output: ", newConfigDotObject);
+        this.client.config.props[id] = object(newConfigDotObject);
+        return { message: "Configuration updated", previous: currentConfigDotObject, new: newConfigDotObject };
     }
 }
