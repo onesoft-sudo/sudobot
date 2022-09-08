@@ -1,12 +1,13 @@
+import DiscordClient from "../client/Client";
 import KeyValuePair from "../types/KeyValuePair";
 import Response from "./Response";
 
 export default class Controller {
-    constructor() {
+    constructor(protected client: DiscordClient) {
         console.log("Constructor call");
     }
 
-    protected response(body: string, status: number = 200, headers: KeyValuePair<string> = {}) {
+    protected response(body: string | object | null | undefined, status: number = 200, headers: KeyValuePair<string> = {}) {
         return new Response(status, body, headers);
     }
 

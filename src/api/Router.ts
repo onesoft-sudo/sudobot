@@ -38,7 +38,7 @@ export default class Router extends Service {
         let controller = DiscordClient.client.server.router.controllerObjects.find(c => c instanceof callback[0]);
 
         if (!controller) {
-            controller = new callback[0]();
+            controller = new callback[0](DiscordClient.client);
             DiscordClient.client.server.router.controllerObjects.push(controller);
             console.log("Pushed a controller");
         }
