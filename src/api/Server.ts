@@ -39,7 +39,7 @@ export default class Server extends Service {
         await this.router.loadRoutes();
 
         for (const route of this.router.routes) {            
-            console.log(route.callback[1], route.callback[0].middleware()[route.callback[1]]);            
+            // console.log(route.callback[1], route.callback[0].middleware()[route.callback[1]]);            
             expressRouter[route.method.toLowerCase() as methods](route.path, ...(route.callback[0].middleware()[route.callback[1]] as any[] ?? []), ...route.middlewareList as any[], await route.getCallbackFunction());
         }
 
