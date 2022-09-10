@@ -18,6 +18,7 @@ export class Config {
 
     constructor(client: DiscordClient) {
         this.client = client;
+        console.log(`ENV: ${process.env.SUDO_PREFIX}`);
         this.configPath = path.resolve(process.env.SUDO_PREFIX ?? this.client.rootdir, "config", "config.json");
         this.load();
     }

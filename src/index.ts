@@ -25,6 +25,8 @@ if (process.argv.includes('--dev')) {
     process.env.ENV = 'dev';
 }
 
+console.log(`ENV: ${process.env.SUDO_PREFIX}`);
+
 const client = new DiscordClient({
     partials: ["CHANNEL"],
     intents: [

@@ -64,7 +64,7 @@ export default class MessageCreateEvent extends BaseEvent {
                         files: snippet.files.map(name => {
                             return {
                                 name,
-                                attachment: path.resolve(__dirname, '../../../storage', name)
+                                attachment: path.resolve(process.env.SUDO_PREFIX ?? path.join(__dirname, '../../..'), 'storage', name)
                             } as FileOptions
                         }),
                         embeds: snippet.embeds
