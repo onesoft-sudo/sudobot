@@ -32,7 +32,7 @@ export default class ShotCommand extends BaseCommand {
         let user: GuildMember;
         let dm = true;
         let reason: string | undefined;
-
+        
         if (options.isInteraction) {
             user = await <GuildMember> (msg instanceof ContextMenuInteraction ? options.options.getMember('user') : options.options.getMember('member'));
 
@@ -83,6 +83,8 @@ export default class ShotCommand extends BaseCommand {
             }
         }
 
+        const anonymous = options.isInteraction ? options.options.getBoolean('anonymous') ?? false : false;
+
         try {            
             await Punishment.create({
                 type: PunishmentType.SHOT,
@@ -108,7 +110,11 @@ export default class ShotCommand extends BaseCommand {
 		                        {
 		                            name: "Reason",
 		                            value: typeof reason === 'undefined' ? '*No reason provided*' : reason
-		                        }
+		                        },
+                                ...(!anonymous ? [{
+                                    name: "💉 Doctor",
+                                    value: `${(msg.member?.user as User).tag}`
+                                }] : [])
 		                    ])
 		            ]
 		        });
@@ -134,7 +140,7 @@ export default class ShotCommand extends BaseCommand {
                 .setDescription(user.user.tag + " got a shot." + (!dm ? "\nThey have DMs disabled. They will not know that they got a shot." : ''))
                 .addFields([
                     {
-                        name: "Given by",
+                        name: "💉 Doctor",
                         value: (msg.member!.user as User).tag
                     },
                     {
