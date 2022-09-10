@@ -1,7 +1,7 @@
 {
     "name": "sudobot",
     "version": "3.0.0",
-    "main": "index.js",
+    "main": "build/index.js",
     "license": "GPL-3.0-or-later",
     "dependencies": {
         "@discordjs/builders": "^0.13.0",
@@ -57,7 +57,7 @@
         "flag:dev": "node ./build/index.js --dev",
         "build": "tsc",
         "clean": "bash -c 'rm -r build'",
-        "prepare": "husky install && sh ./init.sh",
+        "prepare": "sh -c \"husky install; sh ./init.sh\" || echo \"Error while trying to prepare project.\"",
         "start": "pm2 start ./ecosystem.config.js --no-daemon",
         "lint": "eslint . --ext .ts",
         "lint:fix": "eslint . --ext .ts --fix"

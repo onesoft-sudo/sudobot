@@ -16,3 +16,5 @@ src/commands/settings/SpamFilterCommand.ts
 src/commands/settings/SpamFilterCommand.ts.bak
 package-lock.json
 tmp/
+fly.toml
+fly-2.toml
