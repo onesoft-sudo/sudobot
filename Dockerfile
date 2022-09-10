@@ -3,10 +3,12 @@ FROM node:18-buster
 WORKDIR /app
 
 COPY package.json .
+COPY package-lock.json .
 COPY tsconfig.json .
-COPY src .
+COPY init.sh .
+COPY src ./src
 
-RUN npm install -D
+RUN npm ci --progress=false --no-audit --loglevel=error
 RUN npm run build
 
 COPY . .
