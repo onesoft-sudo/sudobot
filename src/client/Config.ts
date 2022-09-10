@@ -14,14 +14,16 @@ export type configContainer = {
 export class Config {
     props: configContainer = {};
     client: DiscordClient;
+    configPath: string;
 
     constructor(client: DiscordClient) {
         this.client = client;
+        this.configPath = path.resolve(process.env.SUDO_PREFIX ?? this.client.rootdir, "config", "config.json");
         this.load();
     }
 
     load() {
-        fs.readFile(path.resolve(__dirname, this.client.rootdir, "config", "config.json"), (err, data) => {
+        fs.readFile(this.configPath, (err, data) => {
             if (err) {
                 console.log(err);
             }
@@ -31,7 +33,7 @@ export class Config {
     }
 
     write() {
-        fs.writeFile(path.resolve(__dirname, this.client.rootdir, "config", "config.json"), JSON.stringify(this.props, undefined, ' '), () => null);
+        fs.writeFile(this.configPath, JSON.stringify(this.props, undefined, ' '), () => null);
     }
 
     get(key: string) {

@@ -70,7 +70,7 @@ export default class AddsnippetCommand extends BaseCommand {
             try {
                 let filename = Math.round(Math.random() * 1000000) + '_' + file.name!;
                 filenames.push(filename);
-                await download(file.url, path.resolve(__dirname, '../../..', 'storage', filename));
+                await download(file.url, path.resolve(process.env.SUDO_PREFIX ?? path.join(__dirname, '../../..'), 'storage', filename));
             }
             catch (e) {
                 console.log(e);                

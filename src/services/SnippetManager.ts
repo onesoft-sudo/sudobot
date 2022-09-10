@@ -18,14 +18,16 @@ export type SnippetContainer = {
 
 export default class SnippetManager extends Service {
     snippets: SnippetContainer = {};
+    filePath: string;
 
     constructor(client: DiscordClient) {
         super(client);
+        this.filePath = path.resolve(process.env.SUDO_PREFIX ?? path.join(__dirname, '../..'), 'config/snippets.json');
         this.load();
     }
 
     load() {
-        readFile(path.resolve(__dirname, '../..', 'config/snippets.json'), (err, data) => {
+        readFile(this.filePath, (err, data) => {
             if (err) {
                 console.log(err);                
             }
@@ -35,7 +37,7 @@ export default class SnippetManager extends Service {
     }
 
     write() {
-        writeFile(path.resolve(__dirname, '../..', 'config/snippets.json'), JSON.stringify(this.snippets), () => null);
+        writeFile(this.filePath, JSON.stringify(this.snippets), () => null);
     }
 
     set(guildID: string, name: string, content: string, files: string[] = []): void {
@@ -92,7 +94,7 @@ export default class SnippetManager extends Service {
             if (this.snippets[guildID][i].name === name) {
                 for await (const file of this.snippets[guildID][i].files) {
                     try {
-                        await deleteFile(path.resolve(__dirname, '../../storage', file));
+                        await deleteFile(path.resolve(process.env.SUDO_PREFIX ?? path.join(__dirname, '../..'), 'storage', file));
                     }
                     catch (e) {
                         console.log(e);                
