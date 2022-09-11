@@ -4,6 +4,7 @@ import express, { Express, Router as ExpressRouter } from 'express';
 import Router from "./Router";
 import path from "path";
 import rateLimit from 'express-rate-limit';
+import cors from 'cors';
 
 export interface ServerOptions {
     port?: number;
@@ -24,6 +25,8 @@ export default class Server extends Service {
     async boot() {
         type methods = 'get' | 'post' | 'put' | 'patch' | 'delete';
         const expressRouter = ExpressRouter();
+
+        expressRouter.use(cors());
 
         expressRouter.use(rateLimit({
             windowMs: 1 * 60 * 1000,
