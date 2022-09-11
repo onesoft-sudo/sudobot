@@ -54,7 +54,8 @@ export default class SystemCommand extends BaseCommand {
             apiLatencyIcon = '🟡';
         }
 
-        const memoryFree = Math.round((process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100);
+        const memoryTotal = Math.round(process.memoryUsage().heapTotal / 1024 / 1024);
+        const memoryUsed = Math.round(process.memoryUsage().heapUsed / 1024 / 1024);
 
         const msgoptions: any = {
             embeds: [
@@ -85,8 +86,8 @@ export default class SystemCommand extends BaseCommand {
                         value: `${apiLatencyIcon} ${apiLatency}ms`
                     },
                     {
-                        name: 'Available Memory',
-                        value: `${1024 - memoryFree}MB / 1.0GB`
+                        name: 'Memory Usage',
+                        value: `${memoryUsed} MB / ${memoryTotal} MB`
                     },
                     {
                         name: 'System Platform',
