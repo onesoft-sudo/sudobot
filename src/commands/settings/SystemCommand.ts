@@ -6,6 +6,7 @@ import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import { fetchEmoji } from '../../utils/Emoji';
 import { formatDuration, intervalToDuration } from 'date-fns';
+import os from 'os';
 
 export default class SystemCommand extends BaseCommand {
     constructor() {
@@ -54,8 +55,9 @@ export default class SystemCommand extends BaseCommand {
             apiLatencyIcon = '🟡';
         }
 
-        const memoryTotal = Math.round(process.memoryUsage().heapTotal / 1024 / 1024);
-        const memoryUsed = Math.round(process.memoryUsage().heapUsed / 1024 / 1024);
+        const memoryTotal = Math.round(os.totalmem() / 1024 / 1024);
+        const memoryUsed = Math.round((os.totalmem() - os.freemem()) / 1024 / 1024);
+        const memoryUsedByBot = Math.round(process.memoryUsage().heapUsed / 1024 / 1024);
 
         const msgoptions: any = {
             embeds: [
@@ -87,7 +89,7 @@ export default class SystemCommand extends BaseCommand {
                     },
                     {
                         name: 'Memory Usage',
-                        value: `${memoryUsed} MB / ${memoryTotal} MB`
+                        value: `${memoryUsed}MB / ${memoryTotal}MB (${memoryUsedByBot}MB used by the bot)`
                     },
                     {
                         name: 'System Platform',
