@@ -2,6 +2,9 @@ FROM node:18-buster
 
 WORKDIR /app
 
+RUN rm -rvf build
+RUN rm -rvf node_modules
+
 COPY package.json .
 COPY package-lock.json .
 COPY tsconfig.json .
