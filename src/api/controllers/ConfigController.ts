@@ -36,18 +36,33 @@ export default class ConfigController extends Controller {
     public async update(request: Request) {
         const { id } = request.params;
         const { config } = request.body;
+
+        console.log(config);        
+
         const currentConfigDotObject = dot(this.client.config.props[id]);
         const newConfigDotObject = {...currentConfigDotObject};
  
         console.log("Input: ", config);
 
         for (const configKey in config) {
-            if (!(configKey in currentConfigDotObject)) {
-                return { error: `The key '${configKey}' is not allowed` };
+            if (typeof currentConfigDotObject[configKey] === 'undefined') {
+                return this.response({ error: `The key '${configKey}' is not allowed` }, 422);
             }
 
-            if (typeof config[configKey] !== typeof currentConfigDotObject[configKey] || (config[configKey] !== null && currentConfigDotObject[configKey] === null) || (config[configKey] === null && currentConfigDotObject[configKey] !== null)) {
-                return { error: `The key '${configKey}' has incompatible value type '${config[configKey] === null ? 'null' : typeof config[configKey]}'` };
+            if (config[configKey] !== null && config[configKey] !== null && typeof config[configKey] !== typeof currentConfigDotObject[configKey]) {
+                console.log(typeof config[configKey], typeof currentConfigDotObject[configKey]);    
+                
+                if (typeof currentConfigDotObject[configKey] === 'number' && typeof config[configKey] === 'string') {
+                    const int = parseInt(config[configKey]);
+
+                    if (int !== NaN) {
+                        newConfigDotObject[configKey] = int;
+                        console.log("Updating: ", configKey, config[configKey], newConfigDotObject[configKey]);
+                        continue;
+                    } 
+                }
+                
+                return this.response({ error: `The key '${configKey}' has incompatible value type '${config[configKey] === null ? 'null' : typeof config[configKey]}'` }, 422);
             }
 
             newConfigDotObject[configKey] = config[configKey];
