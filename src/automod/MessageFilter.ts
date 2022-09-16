@@ -3,7 +3,7 @@ import { Message, TextChannel, Guild } from "discord.js";
 import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
 import { readFile } from 'fs/promises';
-import { resolve } from 'path';
+import { join, resolve } from 'path';
 
 export type MessageFilterConfig = {
     words_enabled: boolean;
@@ -34,7 +34,7 @@ export default class MessageFilter {
         this.config = await this.client.config.get('filters');
 
         if (this.rickrolls.length < 1 && this.config.rickrolls_enabled) {
-        	const data = await readFile(resolve(__dirname, '..', '..', 'resources', 'rickrolls.json'));
+        	const data = await readFile(resolve(process.env.SUDO_PREFIX ?? join(__dirname, '..', '..'), 'resources', 'rickrolls.json'));
         	this.rickrolls = await (JSON.parse(data.toString()).rickrolls || []);
         }
     }
