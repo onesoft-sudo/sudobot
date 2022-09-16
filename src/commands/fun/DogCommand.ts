@@ -37,7 +37,7 @@ export default class DogCommand extends BaseCommand {
                 name = name[name.length - 1];
 
                 console.log(name);
-                let filename = path.join(__dirname, '../../..', 'tmp', name);
+                let filename = path.join(process.env.SUDO_PREFIX ?? path.join(__dirname, '../../..'), 'tmp', name);
 
                 if (filename.endsWith('.false')) {
                     filename = filename.replace(/\.false$/, '.png');
