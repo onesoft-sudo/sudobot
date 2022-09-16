@@ -1,6 +1,7 @@
 import { TextChannel } from "discord.js";
 import { existsSync, readFile, rm } from "fs";
 import { writeFile } from "fs/promises";
+import path from "path";
 import MessageEmbed from "../client/MessageEmbed";
 import { fetchEmoji } from "../utils/Emoji";
 import Service from "../utils/structures/Service";
@@ -14,18 +15,20 @@ export interface RestartLockFileData {
 }
 
 export default class StartupManager extends Service {
+    lockfile = path.join(process.env.SUDO_PREFIX ?? (__dirname + '/../../'), 'tmp/lock');
+
     async createLockFile(data: RestartLockFileData) {
-        await writeFile(`${__dirname}/../../tmp/lock`, JSON.stringify(data));
+        await writeFile(this.lockfile, JSON.stringify(data));
     }
 
     async boot() {
-        if (existsSync(`${__dirname}/../../tmp/lock`)) {
-            readFile(`${__dirname}/../../tmp/lock`, async (err, data) => {
+        if (existsSync(this.lockfile)) {
+            readFile(this.lockfile, async (err, data) => {
                 const { date, message_id, channel_id, guild_id } = <RestartLockFileData> await JSON.parse(data.toString());
 
                 console.warn(yellow('Lockfile detected - ' + new Date(date).toLocaleString()));
 
-                await rm(`${__dirname}/../../tmp/lock`, () => console.log('Lockfile removed'));
+                await rm(this.lockfile, () => console.log('Lockfile removed'));
 
                 try {
                     const guild = await this.client.guilds.fetch(guild_id);
