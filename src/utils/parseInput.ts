@@ -43,7 +43,7 @@ export async function parseChannel(guild: Guild, input: string): Promise <GuildC
 	let channel: GuildChannel | null = null;	
 
 	try {
-		channel = await guild.channels.fetch(input.trim().substring(2, input.trim().length - 1));
+		channel = <GuildChannel | null> await guild.channels.fetch(input.trim().substring(2, input.trim().length - 1));
 	}
 	catch (e) {
 		return null;
