@@ -1,5 +1,6 @@
 import { MessageEmbed, WebhookClient } from "discord.js";
 import { appendFile } from "fs/promises";
+import path from "path";
 import Service from "../utils/structures/Service";
 import { splitMessage } from "../utils/util";
 
@@ -12,8 +13,8 @@ export enum LogLevel {
 }
 
 export default class DebugLogger extends Service {
-    private joinLeaveLogFile = __dirname + '/../../logs/join-leave.log';
-    private appLogFile = __dirname + '/../../logs/app.log';
+    private joinLeaveLogFile = path.join(process.env.SUDO_PREFIX ?? (__dirname + '/../../'), 'logs/join-leave.log');
+    private appLogFile = path.join(process.env.SUDO_PREFIX ?? (__dirname + '/../../'), 'logs/app.log');
     
     async logApp(level: LogLevel, message: string) {
         await this.log(this.appLogFile, level, message);
@@ -66,6 +67,8 @@ export default class DebugLogger extends Service {
                     ]
                 });
             }
+
+            await webhookClient.destroy();
         }
         catch (e) {
             console.log(e);

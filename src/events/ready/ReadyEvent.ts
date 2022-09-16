@@ -13,8 +13,6 @@ export default class ReadyEvent extends BaseEvent {
         console.log(`\nLogged in as ${client.user!.tag}!`);
         await client.server.run();
 
-        // console.log(client.server.router.routes);        
-
         runTimeouts();
         client.startupManager.boot();
         client.randomStatus.update();

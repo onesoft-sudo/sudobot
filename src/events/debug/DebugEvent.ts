@@ -7,7 +7,7 @@ import { LogLevel } from "../../services/DebugLogger";
 import BaseEvent from "../../utils/structures/BaseEvent";
 
 export default class DebugEvent extends BaseEvent {
-    logFile: string = path.resolve(__dirname, "..", "..", "..", "logs", 'debug.log');
+    logFile: string = path.join(process.env.SUDO_PREFIX ?? (__dirname + "/../../../"), "logs", 'debug.log');
 
     constructor() {
         super("debug");

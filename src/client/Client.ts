@@ -155,7 +155,7 @@ export default class DiscordClient extends Client {
 
     async handleCrash(error: Error, origin: NodeJS.UncaughtExceptionOrigin) {
         console.log('here');
-        await appendFile(path.resolve(__dirname, "..", "..", "logs", "error.log"), `Uncaught ${error.name}: ${error.message}\n${error.stack}`);
+        await appendFile(path.join(process.env.SUDO_PREFIX ?? (__dirname + "/../../"), "logs", "error.log"), `Uncaught ${error.name}: ${error.message}\n+ ${error.stack}`);
         await this.debugLogger.logToHomeServer(`Uncaught ${error.name}: ${error.message}\n${error.stack}`);
     }
 }
