@@ -4,7 +4,7 @@ import path from "path";
 import Service from "../utils/structures/Service";
 
 export default class Welcomer extends Service {
-    messages: string[] = JSON.parse(fs.readFileSync(path.resolve(__dirname, '..', '..', 'resources', 'welcome_messages.json')).toString());
+    messages: string[] = JSON.parse(fs.readFileSync(path.resolve(process.env.SUOD_PREFIX ?? path.join(__dirname, '..', '..'), 'resources', 'welcome_messages.json')).toString());
 
     generateEmbed(member: GuildMember, index?: number) {
         const { message, randomize } = this.client.config.props[member.guild.id].welcomer;
