@@ -155,7 +155,8 @@ export default class UserController extends Controller {
             message: "Login successful",
             username,
             token,
-            expires: new Date(user.tokenUpdatedAt!.getTime() + (2 * 24 * 60 * 60 * 1000))
+            expires: new Date(user.tokenUpdatedAt!.getTime() + (2 * 24 * 60 * 60 * 1000)),
+            guilds: this.client.guilds.cache.filter(g => user.guilds.includes(g.id) ?? false)
         };
     }
 }

@@ -7,6 +7,7 @@ import RequireAuth from "../middleware/RequireAuth";
 import ValidatorError from "../middleware/ValidatorError";
 import Request from "../Request";
 import merge from 'ts-deepmerge';
+import { config } from "../../client/Config";
 
 export default class ConfigController extends Controller {
     globalMiddleware(): Function[] {
@@ -21,8 +22,9 @@ export default class ConfigController extends Controller {
         };
     }
 
-    private zodSchema() {
+    private zodSchema(id: string) {
         const snowflake = zod.string().regex(/\d+/, { message: "The given value is not a Snowflake" });
+        const config = this.client.config.props[id];
 
         const schema = zod.object({
             "prefix": zod.string().optional(),
@@ -39,10 +41,10 @@ export default class ConfigController extends Controller {
             "role_commands": zod.record(
                 snowflake,
                 zod.array(zod.string().min(1))
-            ).optional(),
+            ).optional().default({}),
             "autoclear": zod.object({
                 "enabled": zod.boolean().optional(),
-                "channels": zod.array(snowflake).optional()
+                "channels": zod.array(snowflake).optional().default(config.autoclear.channels)
             }).optional(),
             "verification": zod.object({
                 "enabled": zod.boolean().optional(),
@@ -66,14 +68,14 @@ export default class ConfigController extends Controller {
             }).optional(),
             "autorole": zod.object({
                 "enabled": zod.boolean().optional(),
-                "roles": zod.array(snowflake).optional()
+                "roles": zod.array(snowflake).optional().default(config.autorole.roles)
             }).optional(),
             "spam_filter": zod.object({
                 "enabled": zod.boolean().optional(),
                 "limit": zod.number().int().optional(),
                 "time": zod.number().optional(),
                 "diff": zod.number().optional(),
-                "exclude": zod.array(snowflake).optional(),
+                "exclude": zod.array(snowflake).optional().default(config.spam_filter.exclude),
                 "samelimit": zod.number().int().optional(),
                 "unmute_in": zod.number().optional()
             }).optional(),
@@ -81,28 +83,28 @@ export default class ConfigController extends Controller {
                 "enabled": zod.boolean().optional(),
                 "max_joins": zod.number().int().optional(),
                 "time": zod.number().optional(),
-                "channels": zod.array(snowflake).optional(),
+                "channels": zod.array(snowflake).optional().default(config.raid.channels),
                 "exclude": zod.boolean().optional()
             }).optional(),
-            "global_commands": zod.array(zod.string()).optional(),
+            "global_commands": zod.array(zod.string()).optional().default(config.global_commands),
             "filters": zod.object({
                 "ignore_staff": zod.boolean().optional(),
                 "chars_repeated": zod.number().int().optional(),
                 "words_repeated": zod.number().int().optional(),
-                "words": zod.array(zod.string()).optional(),
-                "tokens": zod.array(zod.string()).optional(),
+                "words": zod.array(zod.string()).optional().default(config.filters.words),
+                "tokens": zod.array(zod.string()).optional().default(config.filters.tokens),
                 "invite_message": zod.string().optional(),
-                "words_excluded": zod.array(snowflake).optional(),
-                "domain_excluded": zod.array(snowflake).optional(),
-                "invite_excluded": zod.array(snowflake).optional(),
+                "words_excluded": zod.array(snowflake).optional().default(config.filters.words_excluded),
+                "domain_excluded": zod.array(snowflake).optional().default(config.filters.domain_excluded),
+                "invite_excluded": zod.array(snowflake).optional().default(config.filters.invite_excluded),
                 "words_enabled": zod.boolean().optional(),
                 "invite_enabled": zod.boolean().optional(),
                 "domain_enabled": zod.boolean().optional(),
                 "regex": zod.boolean().optional(),
-                "file_mimes_excluded": zod.array(zod.string()).optional(),
-                "file_types_excluded": zod.array(zod.string()).optional(),
-                "domains": zod.array(zod.string()).optional(),
-                "regex_patterns": zod.array(zod.string()).optional(),
+                "file_mimes_excluded": zod.array(zod.string()).optional().default(config.filters.file_mimes_excluded),
+                "file_types_excluded": zod.array(zod.string()).optional().default(config.filters.file_types_excluded),
+                "domains": zod.array(zod.string()).optional().default(config.filters.domains),
+                "regex_patterns": zod.array(zod.string()).optional().default(config.filters.regex_patterns),
                 "rickrolls_enabled": zod.boolean().optional(),
                 "pings": zod.number().int().optional()
             }).optional()
@@ -127,34 +129,82 @@ export default class ConfigController extends Controller {
 
     public async update(request: Request) {
         const { id } = request.params;
-        const { config } = request.body;
+        const { config: origconfig } = request.body;
 
-        console.log(config);        
+        console.log(origconfig);        
 
         try {
-            const currentConfigDotObject = dot(this.client.config.props[id]);
-            let newConfigDotObject = {...currentConfigDotObject};
+            const currentConfigDotObject = this.client.config.props[id];
     
-            console.log("Input: ", config);
+            console.log("Current config: ", currentConfigDotObject);
 
-            const result = this.zodSchema().safeParse(object({...config}));
+            const result = this.zodSchema(id).safeParse(object(origconfig));
 
             if (!result?.success) {
                 return this.response({ error: "The data schema does not match.", error_type: 'validation', errors: result.error.errors }, 422);
             }
 
-            for (const configKey in config) {
+            const config = result.data;
+            const newConfig = merge.withOptions({ mergeArrays: false }, currentConfigDotObject, config);
+            const result2 = this.zodSchema(id).safeParse(newConfig);
+
+            if (!result2?.success) {
+                console.log(result2.error.errors);                
+                return this.response({ error: 'Internal Server Error (500)', error_type: 'internal' }, 500);
+            }
+
+            console.log('Final', newConfig);
+            this.client.config.props[id] = newConfig;
+            this.client.config.write();       
+            return { message: "Configuration updated", previous: dot(currentConfigDotObject), new: dot(this.client.config.props[id]) };     
+        }
+        catch (e) {
+            console.log(e);
+            return this.response({ error: 'Internal Server Error', error_type: 'internal' }, 500);
+        }
+    }
+
+    public async update2(request: Request) {
+        const { id } = request.params;
+        const { config: origconfig } = request.body;
+
+        console.log(origconfig);        
+
+        try {
+            const currentConfigDotObject = dot(this.client.config.props[id]);
+            let newConfigDotObject = {...currentConfigDotObject};
+    
+            console.log("Current config: ", currentConfigDotObject);
+
+            const result = this.zodSchema(id).safeParse(object({...origconfig}));
+
+            if (!result?.success) {
+                return this.response({ error: "The data schema does not match.", error_type: 'validation', errors: result.error.errors }, 422);
+            }
+
+            const config = result.data;
+
+            console.log(config);            
+
+            for (const key in config) {
+                const configKey = key as keyof typeof config;
                 const regexMatched = /(.+)\[\d+\]/g.test(configKey);
                 
                 if (typeof currentConfigDotObject[configKey] === 'undefined' && !regexMatched) {
-                    return this.response({ error: `The key '${configKey}' is not allowed` }, 422);
+                    console.log(configKey, config[configKey]);
+                    
+                    if (currentConfigDotObject[configKey] instanceof Array && config[configKey] instanceof Array) {
+                        console.log('Array');                        
+                    }
+                    else
+                        return this.response({ error: `The key '${configKey}' is not allowed` }, 422);
                 }
 
                 if (!regexMatched && config[configKey] !== null && config[configKey] !== null && typeof config[configKey] !== typeof currentConfigDotObject[configKey]) {
                     console.log(typeof config[configKey], typeof currentConfigDotObject[configKey]);    
                     
                     if (typeof currentConfigDotObject[configKey] === 'number' && typeof config[configKey] === 'string') {
-                        const int = parseInt(config[configKey]);
+                        const int = parseInt(config[configKey]!.toString());
 
                         if (int !== NaN) {
                             newConfigDotObject[configKey] = int;
@@ -169,8 +219,13 @@ export default class ConfigController extends Controller {
                 console.log("Updating: ", configKey, config[configKey], newConfigDotObject[configKey]);
             }
 
+            const newObj = object({...newConfigDotObject});
+            const configObj = object({...config});
 
-            newConfigDotObject = merge.withOptions({ mergeArrays: false }, object({...newConfigDotObject}), object({...config}));
+            // console.log("Newobj", newObj);
+            // console.log("Configobj", configObj);
+
+            newConfigDotObject = merge.withOptions({ mergeArrays: false }, newObj, configObj);
             console.log("Output: ", newConfigDotObject);
 
             this.client.config.props[id] = newConfigDotObject;

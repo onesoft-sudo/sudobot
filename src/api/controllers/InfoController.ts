@@ -40,4 +40,8 @@ export default class InfoController extends Controller {
 
         return channels;
     }
+
+    public async indexGuilds(request: Request) {
+        return this.client.guilds.cache.filter(g => request.user?.guilds.includes(g.id) ?? false);
+    }
 }
