@@ -88,10 +88,10 @@ export default abstract class BaseCommand {
             }
         }
 
-        if (message instanceof Interaction && !message.isRepliable())
-            return; 
-
         if (!(await this.permissionValidation(client, member!))) {
+            if (message instanceof Interaction && !message.isRepliable())
+                return; 
+            
             await message.reply({
                 embeds: [
                     {
