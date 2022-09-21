@@ -15,3 +15,4 @@ Router.post("/login", [UserController, "login"]);
 
 Router.get("/info/:id/channels", [InfoController, "indexChannels"]);
 Router.get("/info/:id/roles", [InfoController, "indexRoles"]);
+Router.get("/systeminfo/commands", [InfoController, "indexCommands"]);

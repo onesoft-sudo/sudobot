@@ -1,7 +1,9 @@
+import { Collection } from "discord.js";
 import { dot, object } from "dot-object";
 import { NextFunction, Response } from "express";
 import { body } from "express-validator";
 import KeyValuePair from "../../types/KeyValuePair";
+import BaseCommand from "../../utils/structures/BaseCommand";
 import Controller from "../Controller";
 import RequireAuth from "../middleware/RequireAuth";
 import ValidatorError from "../middleware/ValidatorError";
@@ -10,6 +12,13 @@ import Request from "../Request";
 export default class InfoController extends Controller {
     globalMiddleware(): Function[] {
         return [RequireAuth, ValidatorError, (request: Request, response: Response, next: NextFunction) => {
+            console.log(`URI: ` + request.path);
+
+            if (request.path === "/systeminfo/commands") {
+                next();
+                return;
+            }
+
             const { id } = request.params;
 
             if (!request.user?.guilds.includes(id)) {
@@ -42,7 +51,31 @@ export default class InfoController extends Controller {
     }
 
     public async indexRoles(request: Request) {
-        return this.client.guilds.cache.get(request.params.id)?.roles?.cache;
+        return this.client.guilds.cache.get(request.params.id)?.roles?.cache.sort((first, second) => second.position - first.position);
+    }
+
+    public async indexCommands() {
+        const commands = new Collection<string, BaseCommand>();
+
+        for (const [name, command] of this.client.commands) {
+            if (command.getAliases().includes(name)) {
+                console.log(command.getAliases(), "includes", name);
+                continue;
+            }
+
+            if (commands.has(name) || command.ownerOnly) {
+                console.log(commands.get(name)?.getName(), name);
+                continue;
+            }
+
+            if (commands.get(name) !== command)
+                commands.set(name, command);
+        }
+        
+        return commands.map(command => ({
+            ...command,
+            permissions: command.permissions.map(perm => perm.toString()),
+        }));
     }
 
     public async indexGuilds(request: Request) {
