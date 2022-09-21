@@ -62,7 +62,7 @@ let commands = [
 			}
 		])),
 	new SlashCommandBuilder().setName('config').setDescription('View/change the system settings for this server')
-		.addStringOption(option => option.setName('key').setDescription('The setting key (e.g. spam_filter.enabled)').setRequired(true))
+		.addStringOption(option => option.setName('key').setDescription('The setting key (e.g. spam_filter.enabled)').setRequired(true).setAutocomplete(true))
 		.addStringOption(option => option.setName('value').setDescription('New value for the setting')),
 
 	// INFORMATION

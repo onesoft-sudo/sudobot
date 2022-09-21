@@ -1,4 +1,4 @@
-import { CommandInteraction, Message } from 'discord.js';
+import { AutocompleteInteraction, CacheType, CommandInteraction, Message } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -6,12 +6,53 @@ import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import dot from 'dot-object';
 import { fetchEmoji } from '../../utils/Emoji';
+import AutoCompleteOptions from '../../types/AutoCompleteOptions';
 
 export default class ConfigCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    configDotted: { [key: string]: string[] } = {};
 
     constructor() {
         super('config', 'settings', []);
+        const config = DiscordClient.client.config.props;
+        
+        for (const guild in config) {
+            this.configDotted[guild] = Object.keys(dot.dot({...config[guild]}));
+        }
+    }
+
+    async autoComplete(client: DiscordClient, interaction: AutocompleteInteraction<CacheType>, options: AutoCompleteOptions): Promise<void> {
+        const focused = interaction.options.getFocused(true);
+
+        if (focused.name !== "key") {
+            return;
+        }
+
+        if (focused.value === '') {
+            await interaction.respond(this.configDotted[interaction.guild!.id].slice(0, 25).map(key => ({
+                name: key,
+                value: key,
+            })));
+
+            return;
+        }
+
+        const response = [];
+
+        for (const key of this.configDotted[interaction.guild!.id]) {
+            if (key.includes(focused.value)) {
+                response.push({
+                    name: key,
+                    value: key
+                });
+
+                if (response.length >= 25) {
+                    break;
+                }
+            }
+        }
+
+        await interaction.respond(response);
     }
 
     async run(client: DiscordClient, message: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
