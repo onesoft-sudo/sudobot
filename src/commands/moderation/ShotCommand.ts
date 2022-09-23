@@ -84,9 +84,11 @@ export default class ShotCommand extends BaseCommand {
         }
 
         if (user.id === client.user?.id) {
+            const random = Math.random() >= 0.5;
+            
             await msg.reply({
-                content: "Oh no no no... wait wait, you can't just do that with me!?!? Can you?",
-                files: ['https://tenor.com/view/are-you-even-capable-vera-bennett-wentworth-can-you-handle-this-are-you-qualified-gif-22892513.gif']
+                content: `Oh no no no... wait wait, you can't just do that with me${random ? "... I'm such an innocent bot :innocent:, PWEASE don't do that :pleading_face:" : "!?!? Can you?"}`,
+                files: [random ? "https://tenor.com/view/folded-hands-emoji-funny-animals-gray-cat-cute-pwease-gif-14039745.gif" : 'https://tenor.com/view/are-you-even-capable-vera-bennett-wentworth-can-you-handle-this-are-you-qualified-gif-22892513.gif']
             });
 
             return;
