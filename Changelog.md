@@ -1,5 +1,14 @@
 # Changelog
 
+### v3.1.0 (development)
+* Performance Improvements
+* Now Using MongoDB as Database instead of SQLite **[BREAKING CHANGE]**
+* A full refactor of the API
+* Dockerized the project
+* Customizable data directory path 
+* Fixed autocomplete interaction issues 
+* Minor bug fixes
+
 ### v3.0.0-alpha
 * Improved channel locking system
 * Added welcomer with random welcome messages support
