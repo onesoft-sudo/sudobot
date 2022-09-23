@@ -1,3 +1,5 @@
+#!/usr/bin/ts-node
+
 /**
 * This file is part of SudoBot.
 * 
@@ -16,8 +18,6 @@
 * You should have received a copy of the GNU Affero General Public License 
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
-
-#!/usr/bin/ts-node
 
 import { registerCLICommands } from './utils/registry';
 import DiscordClient from './client/Client';
