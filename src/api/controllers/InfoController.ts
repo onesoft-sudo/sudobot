@@ -1,7 +1,5 @@
 import { Collection } from "discord.js";
-import { dot, object } from "dot-object";
 import { NextFunction, Response } from "express";
-import { body } from "express-validator";
 import KeyValuePair from "../../types/KeyValuePair";
 import BaseCommand from "../../utils/structures/BaseCommand";
 import Controller from "../Controller";

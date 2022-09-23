@@ -1,7 +1,5 @@
 import { NextFunction, Response } from "express";
 import Request from "../Request";
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import User from "../../models/User";
 import Auth from "./Auth";
 
 export default async function RequireAuth(request: Request, response: Response, next: NextFunction) {

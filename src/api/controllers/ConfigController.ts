@@ -1,13 +1,12 @@
 import { dot, object } from "dot-object";
 import { body } from "express-validator";
-import { z as zod, ZodSchema } from "zod";
+import { z as zod } from "zod";
 import KeyValuePair from "../../types/KeyValuePair";
 import Controller from "../Controller";
 import RequireAuth from "../middleware/RequireAuth";
 import ValidatorError from "../middleware/ValidatorError";
 import Request from "../Request";
 import merge from 'ts-deepmerge';
-import { config } from "../../client/Config";
 
 export default class ConfigController extends Controller {
     globalMiddleware(): Function[] {
