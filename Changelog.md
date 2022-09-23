@@ -7,6 +7,7 @@
 * Dockerized the project
 * Customizable data directory path 
 * Fixed autocomplete interaction issues 
+* Add license notices and other details to the about command
 * Minor bug fixes
 
 ### v3.0.0-alpha
