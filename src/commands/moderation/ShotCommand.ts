@@ -84,7 +84,11 @@ export default class ShotCommand extends BaseCommand {
         }
 
         if (user.id === client.user?.id) {
-            await msg.reply("Oh no no no... wait wait, you can't just do that with me!?!? Can you? :grin:");
+            await msg.reply({
+                content: "Oh no no no... wait wait, you can't just do that with me!?!? Can you?",
+                files: ['https://tenor.com/view/are-you-even-capable-vera-bennett-wentworth-can-you-handle-this-are-you-qualified-gif-22892513.gif']
+            });
+
             return;
         }
 
