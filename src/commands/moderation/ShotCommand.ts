@@ -83,6 +83,11 @@ export default class ShotCommand extends BaseCommand {
             }
         }
 
+        if (user.id === client.user?.id) {
+            await msg.reply("Oh no no no... wait wait, you can't just do that with me!?!? Can you? :grin:");
+            return;
+        }
+
         const anonymous = options.isInteraction ? options.options.getBoolean('anonymous') ?? false : false;
 
         try {            
