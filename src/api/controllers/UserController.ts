@@ -24,7 +24,6 @@ import { body } from 'express-validator';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import KeyValuePair from "../../types/KeyValuePair";
-import Response from "../Response";
 import { NextFunction, Response as ExpressResponse } from "express";
 import ValidatorError from "../middleware/ValidatorError";
 import RequireAuth from "../middleware/RequireAuth";
