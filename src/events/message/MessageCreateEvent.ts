@@ -50,6 +50,11 @@ export default class MessageCreateEvent extends BaseEvent {
                 const allowed = await client.auth.verify(message.member!, command);
                 
                 if (allowed) {
+                    if (!(await client.cooldown.onMessageCreate(message, command))) {
+                        console.log(`Skipping execution of command \'${cmdName}\' - Cooldown`);
+                        return;
+                    }
+
                     const options = {
                         cmdName,
                         args,
