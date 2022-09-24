@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Request } from "express";
+import Request from "../Request";
 import User from "../../models/User";
 import Controller from "../Controller";
 import { body } from 'express-validator';
@@ -25,13 +25,26 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import KeyValuePair from "../../types/KeyValuePair";
 import Response from "../Response";
+import { NextFunction, Response as ExpressResponse } from "express";
 import ValidatorError from "../middleware/ValidatorError";
 import RequireAuth from "../middleware/RequireAuth";
+
+function RequireAdmin(request: Request, response: ExpressResponse, next: NextFunction) {
+    if (!request.user?.isAdmin) {
+        response.status(403).send({ error: "Forbidden", code: 403 });
+        return;
+    }
+
+    next();
+}
 
 export default class UserController extends Controller {
     middleware(): KeyValuePair<Function[]> {
         return {
+            index: [RequireAuth, RequireAdmin],
             create: [
+                RequireAuth,
+                RequireAdmin,
                 body(["password"]).isLength({ min: 2 }), 
                 body(["username"]).custom(async username => {
                     const user = await User.findOne({ username });
@@ -59,13 +72,10 @@ export default class UserController extends Controller {
     }
 
     public async index() {
-        return new Response(403);
         return await User.find().select(["_id", "username", "createdAt"]).limit(30);
     }
 
     public async create(request: Request) {
-        return new Response(403);
-
         const user = new User();
 
         user.username = request.body.username;
