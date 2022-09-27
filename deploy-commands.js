@@ -24,9 +24,8 @@ const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const { config } = require('dotenv');
 const { existsSync } = require('fs');
-const { Permissions, ApplicationCommand } = require('discord.js');
 const path = require('path');
-const { ActivityType, ApplicationCommandType } = require('discord-api-types/v10');
+const { ApplicationCommandType } = require('discord-api-types/v10');
 
 if (existsSync(path.join(__dirname, '.env'))) {
     config();
