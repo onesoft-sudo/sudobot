@@ -1,6 +1,6 @@
 # Changelog
 
-### v3.1.0 (development)
+### development
 * Performance Improvements
 * Now Using MongoDB as Database instead of SQLite **[BREAKING CHANGE]**
 * A full refactor of the API
@@ -9,6 +9,7 @@
 * Fixed autocomplete interaction issues 
 * Add license notices and other details to the about command
 * Minor bug fixes
+* Added profile filter for checking banned words/tokens in user profiles
 
 ### v3.0.0-alpha
 * Improved channel locking system
