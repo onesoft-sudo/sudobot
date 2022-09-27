@@ -32,6 +32,7 @@ export async function unmute(client: DiscordClient, user: GuildMember, d: User) 
         const role = await user.guild!.roles.fetch(client.config.props[user.guild.id].mute_role);
         try {
             await user.roles.remove(role!, 'Unmuting user');
+            console.log("did that");
         }
         catch (e) {
             console.log(e);

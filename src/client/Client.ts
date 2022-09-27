@@ -46,6 +46,7 @@ import Automute from '../automod/Automute';
 import ServiceManager from './ServiceManager';
 import ChannelLockManager from '../services/ChannelLockManager';
 import Cooldown from '../services/Cooldown';
+import ProfileFilter from '../automod/ProfileFilter';
 
 export default class DiscordClient extends Client {
     private _commands = new Collection<string, BaseCommand>();
@@ -78,6 +79,7 @@ export default class DiscordClient extends Client {
     automute: Automute = {} as Automute;
     channelLock: ChannelLockManager = {} as ChannelLockManager;
     cooldown: Cooldown = {} as Cooldown;
+    profileFilter: ProfileFilter = {} as ProfileFilter;
 
     aliases = {
         automod: path.resolve(__dirname, '..', 'automod'),
@@ -103,6 +105,7 @@ export default class DiscordClient extends Client {
         "@automod/Antijoin": "antijoin",
         "@automod/Automute": "automute",
         "@services/Cooldown": "cooldown",
+        "@automod/ProfileFilter": "profileFilter",
     };
 
     static client: DiscordClient;

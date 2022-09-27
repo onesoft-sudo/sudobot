@@ -49,6 +49,9 @@ export default class GuildMemberAddEvent extends BaseEvent {
             await client.verification.start(member);
         }
 
-        await client.automute.onMemberJoin(member);
+        if (!(await client.profileFilter.check(member))) {
+            await client.automute.onMemberJoin(member);
+            console.log("Run automute");
+        }
     }
 }

@@ -42,7 +42,7 @@ export default class Automute extends Service {
         });
 
         if (!muteRecord) {
-            return;
+            return true;
         }
 
         await this.mute(member);
@@ -63,6 +63,7 @@ export default class Automute extends Service {
         });
 
         await muteRecord.delete();
+        return false;
     }
 
     public async onMemberLeave(member: GuildMember) {

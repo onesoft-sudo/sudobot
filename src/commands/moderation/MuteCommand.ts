@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, GuildMember, Message, Permissions, User } from 'discord.js';
+import { CommandInteraction, Guild, GuildMember, Message, Permissions, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -28,7 +28,7 @@ import ms from 'ms';
 import PunishmentType from '../../types/PunishmentType';
 import { hasPermission, shouldNotModerate } from '../../utils/util';
 
-export async function mute(client: DiscordClient, dateTime: number | undefined, user: GuildMember, msg: Message | CommandInteraction, timeInterval: number | undefined, reason: string | undefined, hard: boolean = false) {
+export async function mute(client: DiscordClient, dateTime: number | undefined, user: GuildMember, msg: Message | CommandInteraction | { guild: Guild, member: GuildMember, editReply?: undefined }, timeInterval: number | undefined, reason: string | undefined, hard: boolean = false) {
     try {
         const { default: Punishment } = await import('../../models/Punishment');
         
@@ -70,7 +70,7 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
             });
         }
 
-        const role = await msg.guild!.roles.fetch(client.config.get('mute_role'));
+        const role = await msg.guild!.roles.fetch(client.config.props[msg.guild!.id].mute_role);
         await user.roles.add(role!, reason);
 
         await Punishment.create({
@@ -115,7 +115,7 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
                     .setDescription("Failed to assign the muted role to this user. Maybe missing permisions/roles or I'm not allowed to assign roles this user?")
                 ]
             });
-        else
+        else if (msg.editReply)
             await msg.editReply({
                 embeds: [
                     new MessageEmbed()
