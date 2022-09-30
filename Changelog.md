@@ -1,6 +1,9 @@
 # Changelog
 
 ### development
+(no change yet)
+
+### v4.0.0-alpha
 * Performance Improvements
 * Now Using MongoDB as Database instead of SQLite **[BREAKING CHANGE]**
 * A full refactor of the API
