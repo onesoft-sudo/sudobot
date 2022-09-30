@@ -1,6 +1,6 @@
 # Changelog
 
-### development
+### 3.x
 * Performance Improvements
 * Now Using MongoDB as Database instead of SQLite **[BREAKING CHANGE]**
 * A full refactor of the API
