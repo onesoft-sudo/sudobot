@@ -20,3 +20,4 @@ fly.toml
 fly-2.toml
 Dockerfile
 setup.sh
+.gitpodsetup.sh

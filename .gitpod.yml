@@ -6,4 +6,4 @@ tasks:
   - init: npm install && npm run build
     command: npm run start
 
-
+  - before: test -f .gitpodsetup.sh && source /workspace/sudobot/.gitpodsetup.sh
