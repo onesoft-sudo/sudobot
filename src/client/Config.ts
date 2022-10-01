@@ -103,6 +103,27 @@ export class Config {
                 "global": zod.any().optional(),
                 "cmds": zod.object({}).optional()
             }).optional(),
+            "profile_filter": zod.object({
+                "enabled": zod.boolean().optional(),
+                "inherit_from_words": zod.boolean().optional(),
+                "inherit_from_tokens": zod.boolean().optional(),
+                "inherit_from_regex": zod.boolean().optional(),
+                "blocked_words": zod.array(zod.string()).optional().default(config.profile_filter.blocked_words),
+                "blocked_tokens": zod.array(zod.string()).optional().default(config.profile_filter.blocked_tokens),
+                "blocked_regex_patterns": zod.array(zod.string()).optional().default(config.profile_filter.blocked_regex_patterns),
+                "components": zod.object({
+                    "tag": zod.boolean().optional(),
+                    "nickname": zod.boolean().optional(),
+                    "about": zod.boolean().optional(),
+                    "status": zod.boolean().optional()
+                }).optional(),
+                "actions": zod.object({
+                    "tag": zod.string().optional(),
+                    "nickname": zod.string().optional(),
+                    "about": zod.string().optional(),
+                    "status": zod.string().optional()
+                }).optional()
+            }).optional(),
             "starboard": zod.object({
                 "enabled": zod.boolean().optional(),
                 "reactions": zod.number().int().optional(),
