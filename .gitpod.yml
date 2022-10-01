@@ -3,7 +3,5 @@
 # and commit this file to your remote git repository to share the goodness with others.
 
 tasks:
-  - init: npm install && npm run build
+  - init: test -f .gitpodsetup.sh && source /workspace/sudobot/.gitpodsetup.sh; npm install && npm run build
     command: npm run start
-
-  - before: test -f .gitpodsetup.sh && source /workspace/sudobot/.gitpodsetup.sh
