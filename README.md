@@ -65,6 +65,8 @@ Then open up the `config/config.json` file and change at least the following:
 
 **Note**: `...` means other options that exist in the config, you can edit them to customize the settings, but not required.
 
+Then copy the `.env.example` file to `.env` and open it, edit the information (such as bot token. MongoDB URI, etc) as needed.
+
 Build the project:
 
 ```
