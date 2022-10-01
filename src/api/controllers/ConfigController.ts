@@ -19,7 +19,6 @@
 
 import { dot, object } from "dot-object";
 import { body } from "express-validator";
-import { z as zod } from "zod";
 import KeyValuePair from "../../types/KeyValuePair";
 import Controller from "../Controller";
 import RequireAuth from "../middleware/RequireAuth";
