@@ -3,6 +3,9 @@
 ### development
 (no change yet)
 
+### v4.0.0-alpha1
+* Fixed typo in a welcome message
+
 ### v4.0.0-alpha
 * Performance Improvements
 * Now Using MongoDB as Database instead of SQLite **[BREAKING CHANGE]**
