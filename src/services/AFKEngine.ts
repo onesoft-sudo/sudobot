@@ -37,15 +37,15 @@ export default class AFKEngine extends Service {
         AFK.find().then(models => this.list = models).catch(console.error);
     }
 
-    findUsers(ids: string[], guild: string) {
-        return this.list.filter(afk => ids.includes(afk.user) && afk.guild_id === guild);
+    findUsers(ids: string[]) {
+        return this.list.filter(afk => ids.includes(afk.user));
     }
  
-    async removeUser(id: string, guild: string) {
+    async removeUser(id: string) {
         let index = 0;
 
         for await (const afk of this.list) {
-            if (afk.user === id && afk.guild_id === guild) {
+            if (afk.user === id) {
                 await afk.delete();
                 this.list.splice(index, 1);
             }
@@ -55,7 +55,7 @@ export default class AFKEngine extends Service {
     }
     
     async toggle(message: Message | CommandInteraction, enable: boolean = false, status?: string) {
-        const afk = this.findUsers([message.member!.user.id], message.guild!.id);
+        const afk = this.findUsers([message.member!.user.id]);
 
         if (afk.length > 0) {
             const mentions = afk[0].get("mentions")! as Array<MentionSchema>;
@@ -84,7 +84,7 @@ export default class AFKEngine extends Service {
                 count++;
             }
 
-            await this.client.afkEngine.removeUser(message.member!.user.id, message.guild!.id);
+            await this.client.afkEngine.removeUser(message.member!.user.id);
 
             await message.reply({
                 embeds: [
@@ -117,7 +117,7 @@ export default class AFKEngine extends Service {
         if (msg.author.bot)
             return;
 
-        const selfAFK = this.findUsers([msg.author.id], msg.guild!.id);
+        const selfAFK = this.findUsers([msg.author.id]);
 
         if (selfAFK.length > 0) {
             this.toggle(msg, false);
@@ -126,7 +126,7 @@ export default class AFKEngine extends Service {
         const mention = msg.mentions.members?.first();
 
         if (mention) {
-            const afkRecords: Array<IAFK> = this.findUsers([...msg.mentions.members!.keys()].slice(0, 3), msg.guild!.id).filter(afk => afk.user !== msg.author.id);
+            const afkRecords: Array<IAFK> = this.findUsers([...msg.mentions.members!.keys()].slice(0, 3)).filter(afk => afk.user !== msg.author.id);
 
             if (!afkRecords || afkRecords.length < 1) {
                 return;
