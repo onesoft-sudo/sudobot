@@ -156,6 +156,11 @@ export default class ProfileCommand extends BaseCommand {
 
         activities = activities.join('\n');
 
+        const allRoles = [...user!.roles.cache.values()].filter(role => role.id !== msg.guild!.id).sort((role1, role2) => {
+            return role2.position - role1.position;
+        });
+        const limit = 10;
+        const roles = (allRoles.length > limit ? allRoles.slice(0, limit) : allRoles).reduce((acc, value) => `${acc} ${roleMention(value.id)}`, '')!.trim()!;
         const fields = [
             {
                 name: "Nickname",
@@ -179,9 +184,7 @@ export default class ProfileCommand extends BaseCommand {
             },
             {
                 name: 'Roles',
-                value: user?.roles.cache.filter(role => role.id !== msg.guild!.id).sort((role1, role2) => {
-                    return role2.position - role1.position;
-                }).reduce((acc, value) => `${acc} ${roleMention(value.id)}`, '')!.trim()!
+                value: roles === '' ? '*No roles assigned*' : `${roles} ${allRoles.length > limit ? `**+ ${allRoles.length - limit} More**` : ''}`
             }
         ];
 
@@ -194,9 +197,25 @@ export default class ProfileCommand extends BaseCommand {
             });
         }
 
+        let banner: string | undefined;
+
+        try {
+            await user?.user.fetch(true);
+            banner = user!.user!.bannerURL({ size: 4096 }) ?? undefined;
+        }
+        catch (e) {
+            console.log(e);
+        }
+
+        console.log("Banner", banner, user!.user!.banner);
+
         await msg.reply({
             embeds: [
-                new MessageEmbed()
+                new MessageEmbed({
+                    image: {
+                        url: banner,
+                    }
+                })
                 .setColor(user!.user!.hexAccentColor ? user!.user!.hexAccentColor! : '#007bff')
                 .setAuthor({
                     name: user?.user.tag!,
@@ -207,7 +226,7 @@ export default class ProfileCommand extends BaseCommand {
                 }))
                 .setFields(fields)
                 .setFooter({
-                    text: `${user!.id} - ${user?.user.bot ? 'Bot' : 'User'}`
+                    text: `${user?.user.bot ? 'Bot' : 'User'} • ${user!.id}`
                 })
             ]
         });
