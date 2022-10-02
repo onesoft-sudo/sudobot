@@ -1,7 +1,8 @@
 # Changelog
 
 ### development
-(no change yet)
+* Fixed AFK systems not working properly (#84)
+* Updated config schema
 
 ### v4.0.0-alpha1
 * Fixed typo in a welcome message
