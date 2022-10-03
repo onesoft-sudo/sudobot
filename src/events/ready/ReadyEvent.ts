@@ -33,6 +33,7 @@ export default class ReadyEvent extends BaseEvent {
         await client.server.run();
 
         runTimeouts();
+        client.queueManager.loadQueues();
         client.startupManager.boot();
         client.randomStatus.update();
 

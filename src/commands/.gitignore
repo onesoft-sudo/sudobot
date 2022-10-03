@@ -19,3 +19,4 @@
 
 test/
 *.bak
+TestCommand.ts
