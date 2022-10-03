@@ -50,6 +50,12 @@ export default abstract class Queue {
     async run() {
         this.completed = true;
         this.model.delete();
-        return await this.execute(this.model.data);
+
+        try {
+            return await this.execute(this.model.data);
+        }
+        catch (e) {
+            console.error(`An error occurred in queue job\nJob ID: ${this.id}`, e);
+        }
     }
 }
