@@ -1,5 +1,5 @@
 # Privacy Policy
-Last updated: 03 September 2022
+Last updated: 03 October 2022
 
 OSN Inc. operates the Discord Bot "SudoBot" (ID: 957258945863499867, Tag: SudoBot#8476), which provides Discord Server Moderation tools.
 
@@ -11,11 +11,14 @@ The terms used in this Privacy Policy have the same meanings as in our Terms and
 
 ## Information Collection and Use
 
-For a better experience while using our Service, we may require you to provide us with certain personally identifiable information, including but not limited to your name, public information about your Discord account such as username, ID, tag, Profile Picture, etc. The information that we collect will be used to contact or identify you.
+For a better experience while using our Service, we may require you to provide us with certain personally identifiable information, including but not limited to your name, public information about your Discord account such as username, ID, tag, Profile Picture, etc. The information that we collect will be used to contact or identify you. 
 
-SudoBot will store some basic information like Discord username, ID, avatar, etc about other users that are moderated using it, in order to function properly.
+<!-- SudoBot will store some basic information like Discord username, ID, avatar, etc about other users that are moderated using it, in order to function properly.
+-->
 
 It might also store information like IDs, Names, Permissions of a Discord Server/Channel/Role... etc, in order to work properly and enhance end user experience.
+
+We never store private credentials like your account passwords, phone numbers, emails etc. We always keep in mind about the Discord ToS before collecting data from you.
 
 ## Log Data
 
