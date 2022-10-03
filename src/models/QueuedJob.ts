@@ -3,7 +3,7 @@ import mongoose, { Document } from "mongoose"
 export interface IQueuedJob extends Document {
     uuid: string;
     data?: { [key: string | number]: any };
-    runOn: number;
+    runOn: Date;
     createdAt: Date;
 }
 
@@ -15,7 +15,7 @@ const schema = new mongoose.Schema({
     },
     data: mongoose.Schema.Types.Mixed,
     runOn: {
-        type: Number,
+        type: Date,
         required: true
     }, 
     createdAt: {

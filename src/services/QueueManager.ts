@@ -21,7 +21,7 @@ export default class QueueManager extends Service {
         for await (const model of models) {
             const { default: Queue }: { default: new (client: DiscordClient, queueOptions: QueueOptions) => Queue } = await import(path.resolve(__dirname, '../queues/', model.className));
             console.log(Queue);
-            this.queues.set(model.uuid, new Queue(this.client, { model, id: model.uuid, runAt: new Date(model.runOn) }));
+            this.queues.set(model.uuid, new Queue(this.client, { model, id: model.uuid, runAt: model.runOn }));
             console.log("Found queue: ", model.className);
         }
     }
@@ -40,7 +40,7 @@ export default class QueueManager extends Service {
         }
 
         const id = uuid();
-        const model = await QueuedJob.create({ uuid: id, data, runOn: runAfter ? Date.now() + runAfter : runAt!.getTime(), createdAt: new Date(), className: queueClass.name });
+        const model = await QueuedJob.create({ uuid: id, data, runOn: runAfter ? new Date(Date.now() + runAfter) : runAt!, createdAt: new Date(), className: queueClass.name });
         const queue = new queueClass(this.client, { model, id, runAt, runAfter });
         this.setQueue(queue);
     }
