@@ -30,6 +30,7 @@ import { fetchEmojiStr } from '../../utils/Emoji';
 import ms from 'ms';
 import { clearTimeoutv2, getTimeouts, setTimeoutv2 } from '../../utils/setTimeout';
 import { hasPermission, shouldNotModerate } from '../../utils/util';
+import UnbanQueue from '../../queues/UnbanQueue';
 
 export default class TempBanCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -175,7 +176,7 @@ export default class TempBanCommand extends BaseCommand {
 				console.log(e);
 			}
         
-            await msg.guild?.bans.create(user, banOptions);
+            await msg.guild?.bans.create(user, { ...banOptions, reason: `[TEMPBAN] ${banOptions.reason ?? '**No reason provided**'}` });
 
             const punishment = await Punishment.create({
                 type: PunishmentType.TEMPBAN,
@@ -191,26 +192,40 @@ export default class TempBanCommand extends BaseCommand {
                 createdAt: new Date()
             });
 
-            const timeouts = getTimeouts();
+            // const timeouts = getTimeouts();
             
-            for (const timeout of timeouts.values()) {
-                if (timeout.row.params) {
-                    try {
-                        const json = JSON.parse(timeout.row.params);
+            // for (const timeout of timeouts.values()) {
+            //     if (timeout.row.params) {
+            //         try {
+            //             const json = JSON.parse(timeout.row.params);
 
-                        if (json) {
-                            if (json[1] === user.id && timeout.row.filePath.endsWith('tempban-remove')) {
-                                await clearTimeoutv2(timeout);
-                            }
-                        }
-                    }
-                    catch (e) {
-                        console.log(e);                    
-                    }
+            //             if (json) {
+            //                 if (json[1] === user.id && timeout.row.filePath.endsWith('tempban-remove')) {
+            //                     await clearTimeoutv2(timeout);
+            //                 }
+            //             }
+            //         }
+            //         catch (e) {
+            //             console.log(e);                    
+            //         }
+            //     }
+            // }
+
+            // await setTimeoutv2('tempban-remove', time, msg.guild!.id, 'unban ' + user.id, user.id, msg.guild!.id);
+
+            for await (const queue of client.queueManager.queues.values()) {
+                if (queue instanceof UnbanQueue && queue.data!.userID === user.id && queue.data!.guildID === msg.guild!.id) {
+                    await queue.cancel();
                 }
             }
 
-            await setTimeoutv2('tempban-remove', time, msg.guild!.id, 'unban ' + user.id, user.id, msg.guild!.id);
+            await client.queueManager.addQueue(UnbanQueue, {
+                data: {
+                    userID: user.id,
+                    guildID: msg.guild!.id
+                },
+                runAt: new Date(Date.now() + time)
+            });
 
             await client.logger.logTempBan(banOptions, msg.guild!, user, punishment);
 

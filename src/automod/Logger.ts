@@ -27,12 +27,22 @@ import { timeSince } from '../utils/util';
 
 class Logger {
     client: DiscordClient;
+    pause = false;
+    pauseBan = false;
+
+    pauseAll(p = true) {
+        this.pause = p;
+    }
 
     constructor(client: DiscordClient) {
         this.client = client;
     }
 
     channel(callback: (channel: TextChannel) => any, msg: any) {
+        if (this.pause) {
+            return;
+        }
+
         let channelID = this.client.config.props[msg.guild!.id].logging_channel;
         let channel = msg.guild!.channels.cache.find((c: any) => c.id === channelID) as TextChannel;
 
@@ -135,7 +145,6 @@ class Logger {
                 type: 'MEMBER_BAN_ADD',
             })).entries.first();           
       
-
             if (ban.reason) {
                 r = ban.reason;
             }
@@ -144,7 +153,11 @@ class Logger {
                 const { target, reason } = await auditLog;
 
                 if (target!.id === ban.user.id && reason) {
-                    r = await reason;
+                    r = reason.replace(/^\[BAN\]/, '');
+                }
+
+                if (auditLog.executor?.id === this.client.user!.id && (r.startsWith("[TEMPBAN]") || r.startsWith("[SOFTBAN]"))) {
+                    return;
                 }
             }
 
@@ -185,7 +198,7 @@ class Logger {
                 const { target, reason } = await auditLog;
 
                 if (target!.id === user.id && reason) {
-                    r = await reason;
+                    r = reason.replace(/^\[SOFTBAN\]/, '');
                 }
             }
 
@@ -229,7 +242,7 @@ class Logger {
                 const { target, reason } = await auditLog;
 
                 if (target!.id === user.id && reason) {
-                    r = await reason;
+                    r = reason.replace(/^\[TEMPBAN\]/, '');
                 }
             }
 

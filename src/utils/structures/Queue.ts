@@ -35,6 +35,10 @@ export default abstract class Queue {
         console.log('Queue created: ', this.constructor.name, this.id);
     }
 
+    get data() {
+        return this.model.data;
+    }
+
     async finish() {
         this.client.queueManager.removeQueue(this);
         console.log("Job complete: ", this.constructor.name);
@@ -43,6 +47,7 @@ export default abstract class Queue {
     async cancel() {
         clearTimeout(this.timeout);
         await this.model.delete();
+        this.client.queueManager.removeQueue(this);
     }
 
     abstract execute(data?: { [key: string | number]: any }): Promise<any>;

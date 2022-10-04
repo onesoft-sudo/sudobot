@@ -26,6 +26,7 @@ import MessageEmbed from '../../client/MessageEmbed';
 import getUser from '../../utils/getUser';
 import Punishment from '../../models/Punishment';
 import PunishmentType from '../../types/PunishmentType';
+import UnbanQueue from '../../queues/UnbanQueue';
 
 export default class UnbanCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -91,6 +92,12 @@ export default class UnbanCommand extends BaseCommand {
         }
 
         try {
+            for await (const queue of client.queueManager.queues.values()) {
+                if (queue instanceof UnbanQueue && queue.data!.userID === user.id && queue.data!.guildID === msg.guild!.id) {
+                    await queue.cancel();
+                }
+            }
+
             await msg.guild?.bans.remove(user);
 
             await Punishment.create({

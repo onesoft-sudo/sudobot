@@ -62,7 +62,8 @@ const schema = new Schema({
     },
     createdAt: {
         type: Date,
-        required: true
+        required: true,
+        default: () => new Date()
     }
 });
 

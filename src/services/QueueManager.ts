@@ -13,7 +13,7 @@ export type QueueCreateOptions = {
 };
 
 export default class QueueManager extends Service {
-    protected readonly queues: Collection<string, Queue> = new Collection();
+    public readonly queues: Collection<string, Queue> = new Collection();
 
     async loadQueues() {
         const models = await QueuedJob.find();

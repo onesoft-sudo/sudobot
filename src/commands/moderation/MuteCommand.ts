@@ -56,6 +56,12 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
 
         if (dateTime && timeInterval) {
             // await setTimeoutv2('unmute-job', timeInterval, msg.guild!.id, `unmute ${user.id}`, msg.guild!.id, user.id);
+            for await (const queue of client.queueManager.queues.values()) {
+                if (queue instanceof UnmuteQueue && queue.data!.memberID === user.id && queue.data!.guildID === msg.guild!.id) {
+                    await queue.cancel();
+                }
+            }
+
             await client.queueManager.addQueue(UnmuteQueue, {
                 data: {
                     guildID: msg.guild!.id,

@@ -3,6 +3,11 @@ import MuteRecord from "../models/MuteRecord";
 import Queue from "../utils/structures/Queue";
 
 export default class UnmuteQueue extends Queue {
+    cancel(): Promise<void> {
+        console.log("Canceling unmute");
+        return super.cancel();
+    }
+
     async execute({ memberID, guildID }: { [key: string]: string }): Promise<any> {     
         const guild = this.client.guilds.cache.get(guildID);
 

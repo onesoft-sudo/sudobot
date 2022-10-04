@@ -26,6 +26,7 @@ import MessageEmbed from '../../client/MessageEmbed';
 import getMember from '../../utils/getMember';
 
 import PunishmentType from '../../types/PunishmentType';
+import UnmuteQueue from '../../queues/UnmuteQueue';
 
 export async function unmute(client: DiscordClient, user: GuildMember, d: User) {
     try {            
@@ -67,22 +68,28 @@ export async function unmute(client: DiscordClient, user: GuildMember, d: User) 
             await hardmute.delete();
         }
 
-        const timeouts = getTimeouts();
+        // const timeouts = getTimeouts();
         
-        for (const timeout of timeouts.values()) {
-            if (timeout.row.params) {
-                try {
-                    const json = JSON.parse(timeout.row.params);
+        // for (const timeout of timeouts.values()) {
+        //     if (timeout.row.params) {
+        //         try {
+        //             const json = JSON.parse(timeout.row.params);
 
-                    if (json) {
-                        if (json[1] === user.id && timeout.row.filePath.endsWith('unmute-job')) {
-                            await clearTimeoutv2(timeout);
-                        }
-                    }
-                }
-                catch (e) {
-                    console.log(e);                    
-                }
+        //             if (json) {
+        //                 if (json[1] === user.id && timeout.row.filePath.endsWith('unmute-job')) {
+        //                     await clearTimeoutv2(timeout);
+        //                 }
+        //             }
+        //         }
+        //         catch (e) {
+        //             console.log(e);                    
+        //         }
+        //     }
+        // }
+
+        for await (const queue of client.queueManager.queues.values()) {
+            if (queue instanceof UnmuteQueue && queue.data!.memberID === user.id && queue.data!.guildID === user.guild!.id) {
+                await queue.cancel();
             }
         }
 

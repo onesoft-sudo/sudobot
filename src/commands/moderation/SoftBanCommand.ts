@@ -167,9 +167,9 @@ export default class SoftBanCommand extends BaseCommand {
         		console.log(e);
         	}
         	
-            await msg.guild?.bans.create(user, banOptions);
+            await msg.guild?.bans.create(user, { ...banOptions, reason: `[SOFTBAN] ${banOptions.reason ?? '**No reason provided**'}` });
             await new Promise(r => setTimeout(r, 1600));
-            await msg.guild?.bans.remove(user);
+            await msg.guild?.bans.remove(user, `[SOFTBAN REMOVE] ${banOptions.reason}`);
 
             const punishment = await Punishment.create({
                 type: PunishmentType.SOFTBAN,

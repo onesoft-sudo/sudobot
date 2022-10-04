@@ -149,7 +149,7 @@ export default class BanCommand extends BaseCommand {
 		}
 		
         try {
-            await msg.guild?.bans.create(user, banOptions);
+            await msg.guild?.bans.create(user, { ...banOptions, reason: `[BAN] ${banOptions.reason ?? '**No reason provided**'}` });
 
             await Punishment.create({
                 type: PunishmentType.BAN,
