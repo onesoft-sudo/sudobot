@@ -27,6 +27,7 @@ import getMember from '../../utils/getMember';
 import ms from 'ms';
 import PunishmentType from '../../types/PunishmentType';
 import { hasPermission, shouldNotModerate } from '../../utils/util';
+import UnmuteQueue from '../../queues/UnmuteQueue';
 
 export async function mute(client: DiscordClient, dateTime: number | undefined, user: GuildMember, msg: Message | CommandInteraction | { guild: Guild, member: GuildMember, editReply?: undefined }, timeInterval: number | undefined, reason: string | undefined, hard: boolean = false) {
     try {
@@ -54,7 +55,14 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
         }
 
         if (dateTime && timeInterval) {
-            await setTimeoutv2('unmute-job', timeInterval, msg.guild!.id, `unmute ${user.id}`, msg.guild!.id, user.id);
+            // await setTimeoutv2('unmute-job', timeInterval, msg.guild!.id, `unmute ${user.id}`, msg.guild!.id, user.id);
+            await client.queueManager.addQueue(UnmuteQueue, {
+                data: {
+                    guildID: msg.guild!.id,
+                    memberID: user.id
+                },
+                runAt: new Date(Date.now() + timeInterval)
+            });
         }
         
         if (hard) {
