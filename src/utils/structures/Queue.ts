@@ -1,6 +1,6 @@
 import DiscordClient from "../../client/Client";
 import { v4 as uuid } from 'uuid';
-import QueuedJob, { IQueuedJob } from "../../models/QueuedJob";
+import { IQueuedJob } from "../../models/QueuedJob";
 
 export interface QueueOptions {
     runAfter?: number;

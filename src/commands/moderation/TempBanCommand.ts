@@ -28,7 +28,6 @@ import Punishment from '../../models/Punishment';
 import PunishmentType from '../../types/PunishmentType';
 import { fetchEmojiStr } from '../../utils/Emoji';
 import ms from 'ms';
-import { clearTimeoutv2, getTimeouts, setTimeoutv2 } from '../../utils/setTimeout';
 import { hasPermission, shouldNotModerate } from '../../utils/util';
 import UnbanQueue from '../../queues/UnbanQueue';
 

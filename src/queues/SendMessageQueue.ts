@@ -1,4 +1,3 @@
-import { Message } from "discord.js";
 import Queue from "../utils/structures/Queue";
 
 export default class SendMessageQueue extends Queue {

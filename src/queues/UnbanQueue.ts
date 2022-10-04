@@ -1,5 +1,3 @@
-import { unmute } from "../commands/moderation/UnmuteCommand";
-import MuteRecord from "../models/MuteRecord";
 import Queue from "../utils/structures/Queue";
 
 export default class UnbanQueue extends Queue {
