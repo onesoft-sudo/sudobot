@@ -34,15 +34,21 @@ export default class QueuesCommand extends BaseCommand {
     }
 
     async run(client: DiscordClient, msg: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
-        const map = await getTimeouts();
+        const map = [...client.queueManager.queues.values()].slice(0, 8);
         let str = '';
 
         await map.forEach(value => {
-            if (value.row.guild_id !== msg.guild!.id)
+            if (value.guild !== msg.guild!.id)
                 return;
             
-            console.log(new Date(value.row.time).getTime() - new Date().getTime());
-            str += `**ID: ${value.row.id}**\n**User Command**: \`${value.row.cmd}\`\n**Internal Command**: \`${value.row.params}\`\n**ETA**: ${timeProcess((new Date(value.row.time).getTime() - new Date().getTime()) / 1000).replace(' ago', '')}\n**Queue Added**: ${value.row.createdAt.toLocaleString()} (${timeSince(value.row.createdAt.getTime())})\n\n`;
+            console.log(new Date(value.runOn).getTime() - new Date().getTime());
+            str += `**ID: ${value.id}**\n`;
+            
+            if (value.data?.cmd) {
+                `**Command**: \`${value.data.cmd}\`\n`;
+            }
+
+            str += `**ETA**: ${timeProcess((new Date(value.runOn).getTime() - new Date().getTime()) / 1000).replace(' ago', '')}\n**Queue Added**: ${value.model.createdAt.toLocaleString()} (${timeSince(value.model.createdAt.getTime())})\n\n`;
         });
 
         await msg.reply({

@@ -3,13 +3,14 @@ import DiscordClient from "../client/Client";
 import QueuedJob from "../models/QueuedJob";
 import Queue, { QueueOptions } from "../utils/structures/Queue";
 import Service from "../utils/structures/Service";
-import { v4 as uuid } from "uuid";
 import path from "path";
+import { generate as randomstring } from 'randomstring';
 
 export type QueueCreateOptions = {
     data?: { [key: string | number]: any };
     runAt?: Date;
     runAfter?: number;
+    guild?: string;
 };
 
 export default class QueueManager extends Service {
@@ -34,15 +35,16 @@ export default class QueueManager extends Service {
         return this.queues.get(id)?.cancel();
     }
 
-    async addQueue(queueClass: new (client: DiscordClient, queueOptions: QueueOptions) => Queue, { data, runAt, runAfter }: QueueCreateOptions) {
+    async addQueue(queueClass: new (client: DiscordClient, queueOptions: QueueOptions) => Queue, { data, runAt, runAfter, guild }: QueueCreateOptions) {
         if (runAfter !== 0 && runAfter !== 0 && !runAfter && !runAt) {
             throw new Error("One of runAfter or runAt must be specified for creating a queue");
         }
 
-        const id = uuid();
-        const model = await QueuedJob.create({ uuid: id, data, runOn: runAfter ? new Date(Date.now() + runAfter) : runAt!, createdAt: new Date(), className: queueClass.name });
+        const id = randomstring(7);
+        const model = await QueuedJob.create({ uuid: id, data, runOn: runAfter ? new Date(Date.now() + runAfter) : runAt!, createdAt: new Date(), className: queueClass.name, guild });
         const queue = new queueClass(this.client, { model, id, runAt, runAfter });
         this.setQueue(queue);
+        return queue;
     }
 
     runQueue(id: string) {

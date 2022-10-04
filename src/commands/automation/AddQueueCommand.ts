@@ -25,6 +25,7 @@ import MessageEmbed from '../../client/MessageEmbed';
 import ms from 'ms';
 import { timeSince } from '../../utils/util';
 import { setTimeoutv2 } from '../../utils/setTimeout';
+import CustomQueue from '../../queues/CustomQueue';
 
 export default class AddQueueCommand extends BaseCommand {
     constructor() {
@@ -81,30 +82,55 @@ export default class AddQueueCommand extends BaseCommand {
                 embeds: [
                     new MessageEmbed()
                     .setColor('#f14a60')
-                    .setDescription(`This command conflicts with queued jobs.`)
+                    .setDescription(`This command conflicts with queued jobs. (Non-legacy handler)`)
                 ]
             });
 
             return;
         }
 
-        const command = await cmd.join(' ');
+        const allowed = await client.auth.verify(msg.member!, cmdObj);
+        
+        if (!allowed) {
+            await msg.reply({
+                embeds: [
+                    new MessageEmbed()
+                    .setColor('#f14a60')
+                    .setDescription(`Operation not permitted. You don't have enough permissions to run this command.`)
+                ]
+            });
 
-        const queue = await setTimeoutv2('queue', time, msg.guild!.id, command, command, msg.id, msg.channel!.id, msg.guild!.id);
+            return;
+        }
+
+        // const command = await cmd.join(' ');
+
+        // const queue = await setTimeoutv2('queue', time, msg.guild!.id, command, command, msg.id, msg.channel!.id, msg.guild!.id);
+
+        const queue = await client.queueManager.addQueue(CustomQueue, {
+            data: {
+                channelID: msg.channel.id,
+                guildID: msg.guild!.id,
+                messageID: msg.id,
+                cmd,
+            },
+            runAt: new Date(Date.now() + time),
+            guild: msg.guild!.id
+        });
 
         await msg.reply({
             embeds: [
                 new MessageEmbed()
                 .setColor('#007bff')
-                .setDescription(`The queue has been added.`)
+                .setDescription(`The queue has been added. Don't delete the command message - it will be used by the queue later.`)
                 .setFields([
                     {
                         name: "ID",
-                        value: queue.row.id + '',
+                        value: queue.id + '',
                     },
                     {
                         name: "Command",
-                        value: `\`${command}\``
+                        value: `\`${cmd.join(' ')}\``
                     },
                     {
                         name: "Time",

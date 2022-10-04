@@ -1,5 +1,5 @@
 import DiscordClient from "../../client/Client";
-import { v4 as uuid } from 'uuid';
+import { generate as randomstring } from 'randomstring';
 import { IQueuedJob } from "../../models/QueuedJob";
 
 export interface QueueOptions {
@@ -11,10 +11,11 @@ export interface QueueOptions {
 
 export default abstract class Queue {
     protected completed = false;
-    protected runOn: number = 0;
+    public readonly runOn: number = 0;
     public readonly id: string;
-    protected readonly model: IQueuedJob;
+    public readonly model: IQueuedJob;
     protected readonly timeout: NodeJS.Timeout;
+    public readonly guild: string | undefined;
 
     constructor(protected client: DiscordClient, { runAfter, id, runAt, model }: QueueOptions) {
         if (runAfter !== 0 && runAfter !== 0 && !runAfter && !runAt) {
@@ -22,8 +23,9 @@ export default abstract class Queue {
         }
 
         this.runOn = runAfter ? Date.now() + runAfter : runAt!.getTime();
-        this.id = id ?? uuid();
+        this.id = id ?? randomstring(7);
         this.model = model;
+        this.guild = model.guild;
 
         const ms = this.runOn - Date.now();
 

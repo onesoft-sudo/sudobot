@@ -67,7 +67,8 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
                     guildID: msg.guild!.id,
                     memberID: user.id
                 },
-                runAt: new Date(Date.now() + timeInterval)
+                runAt: new Date(Date.now() + timeInterval),
+                guild: msg.guild!.id
             });
         }
         

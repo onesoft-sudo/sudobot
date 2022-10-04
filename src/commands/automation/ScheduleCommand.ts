@@ -25,6 +25,7 @@ import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import ms from 'ms';
 import { setTimeoutv2 } from '../../utils/setTimeout';
+import ScheduleMessageQueue from '../../queues/ScheduleMessageQueue';
 
 export default class ScheduleCommand extends BaseCommand {
     supportsInteractions = true;
@@ -61,7 +62,7 @@ export default class ScheduleCommand extends BaseCommand {
         }   
 
         let channel: TextChannel = <TextChannel> msg.channel;
-        let text: string;
+        let text: string = '';
         
         if (options.isInteraction) {
             if (options.options.getChannel('channel')) {
@@ -92,14 +93,24 @@ export default class ScheduleCommand extends BaseCommand {
         }
 
         try {
-            const timeout = await setTimeoutv2('send', time, msg.guild!.id, `schedule ${time} ${text!} #${channel.name}`, text!, channel.id, msg.guild!.id);
+            // const timeout = await setTimeoutv2('send', time, msg.guild!.id, `schedule ${time} ${text!} #${channel.name}`, text!, channel.id, msg.guild!.id);
+
+            const { id } = await client.queueManager.addQueue(ScheduleMessageQueue, {
+                data: {
+                    guildID: msg.guild!.id,
+                    channelID: msg.channel!.id,
+                    content: text
+                },
+                runAt: new Date(Date.now() + time),
+                guild: msg.guild!.id,
+            });
 
             await msg.reply({
                 embeds: [
                     new MessageEmbed()
                     .setDescription('A queue job has been added.')
                     .setFooter({
-                        text: 'ID: ' + timeout.row.id
+                        text: 'ID: ' + id // timeout.row.id
                     })
                 ],
                 ephemeral: true

@@ -25,6 +25,8 @@ import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import ms from 'ms';
 import { setTimeoutv2 } from '../../utils/setTimeout';
+import ScheduleMessageQueue from '../../queues/ScheduleMessageQueue';
+import ExpireScheduleMessageQueue from '../../queues/ExpireScheduleMessageQueue';
 
 export default class ExpireScheduleCommand extends BaseCommand {
     supportsInteractions = true;
@@ -74,7 +76,7 @@ export default class ExpireScheduleCommand extends BaseCommand {
         }   
 
         let channel: TextChannel = <TextChannel> msg.channel;
-        let text: string;
+        let text: string = '';
         
         if (options.isInteraction) {
             if (options.options.getChannel('channel')) {
@@ -106,14 +108,26 @@ export default class ExpireScheduleCommand extends BaseCommand {
         }
 
         try {
-            const timeout = await setTimeoutv2('send-expire', time1, msg.guild!.id, `expiresc ${time1} ${time2} ${text!} #${channel.name}`, text!, channel.id, msg.guild!.id, time2);
+            // const timeout = await setTimeoutv2('send-expire', time1, msg.guild!.id, `expiresc ${time1} ${time2} ${text!} #${channel.name}`, text!, channel.id, msg.guild!.id, time2);
+
+            const { id } = await client.queueManager.addQueue(ExpireScheduleMessageQueue, {
+                data: {
+                    messageID: msg.id,
+                    guildID: msg.guild!.id,
+                    channelID: msg.channel!.id,
+                    content: text,
+                    expires: time2
+                },
+                runAt: new Date(Date.now() + time1),
+                guild: msg.guild!.id,
+            });
 
             await msg.reply({
                 embeds: [
                     new MessageEmbed()
                     .setDescription('A queue job has been added.')
                     .setFooter({
-                        text: 'ID: ' + timeout.row.id
+                        text: 'ID: ' + id // timeout.row.id
                     })
                 ],
                 ephemeral: true

@@ -223,7 +223,8 @@ export default class TempBanCommand extends BaseCommand {
                     userID: user.id,
                     guildID: msg.guild!.id
                 },
-                runAt: new Date(Date.now() + time)
+                runAt: new Date(Date.now() + time),
+                guild: msg.guild!.id
             });
 
             await client.logger.logTempBan(banOptions, msg.guild!, user, punishment);

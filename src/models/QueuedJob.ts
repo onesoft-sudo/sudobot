@@ -5,6 +5,7 @@ export interface IQueuedJob extends Document {
     data?: { [key: string | number]: any };
     runOn: Date;
     createdAt: Date;
+    guild?: string;
 }
 
 const schema = new mongoose.Schema({
@@ -25,7 +26,8 @@ const schema = new mongoose.Schema({
     className: {
         type: String,
         required: true
-    }
+    },
+    guild: String
 });
 
 export default mongoose.model('QueuedJob', schema);

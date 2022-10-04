@@ -25,6 +25,7 @@ import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import ms from 'ms';
 import { setTimeoutv2 } from '../../utils/setTimeout';
+import ExpireMessageQueue from '../../queues/ExpireMessageQueue';
 
 export default class ExpireCommand extends BaseCommand {
     supportsInteractions = true;
@@ -96,14 +97,24 @@ export default class ExpireCommand extends BaseCommand {
                 content: text!
             });
 
-            const timeout = await setTimeoutv2('expire', time, msg.guild!.id, `expire ${time} ${text!} #${channel.name}`, message.id, channel.id, msg.guild!.id);
+            //const timeout = await setTimeoutv2('expire', time, msg.guild!.id, `expire ${time} ${text!} #${channel.name}`, message.id, channel.id, msg.guild!.id);
+
+            const { id } = await client.queueManager.addQueue(ExpireMessageQueue, {
+                data: {
+                    messageID: message.id,
+                    guildID: message.guild!.id,
+                    channelID: message.channel.id
+                },
+                runAt: new Date(Date.now() + time),
+                guild: message.guild!.id
+            });
 
             await msg.reply({
                 embeds: [
                     new MessageEmbed()
                     .setDescription('A queue job has been added.')
                     .setFooter({
-                        text: 'ID: ' + timeout.row.id
+                        text: `ID: ${id}` // timeout.row.id
                     })
                 ],
                 ephemeral: true
