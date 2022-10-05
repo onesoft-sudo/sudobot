@@ -19,10 +19,11 @@ A Discord bot for moderation purposes.
 
 ### Features
 
-- Strong automoderation system with tools like anti-spam and anti-raid
-- Useful moderation tools 
+- Strong automoderation system with tools like anti-spam and anti-raid ([Click here](https://onesoft-sudo.github.io/sudobot/automoderation/#what-can-the-bot-do) to see the full list)
+- Useful moderation tools and utilities 
 - Secure
 - Fun commands
+- Active development & support
 
 ### Getting started
 
