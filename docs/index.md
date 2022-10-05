@@ -9,7 +9,7 @@ title: "Home"
     This documentation is not complete yet. We're trying to finish writing the docs as soon as possible.
     If you find something wrong, feel free create an issue on GitHub.
 
-The ultimate solution for discord server moderation.
+The ultimate solution for Discord Server Moderation.
 
 ## Invite SudoBot
 
