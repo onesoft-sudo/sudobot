@@ -1,5 +1,5 @@
 # Privacy Policy
-Last updated: 03 October 2022
+Last updated: 05 October 2022
 
 OSN Inc. operates the Discord Bot "SudoBot" (ID: 957258945863499867, Tag: SudoBot#8476), which provides Discord Server Moderation tools.
 
