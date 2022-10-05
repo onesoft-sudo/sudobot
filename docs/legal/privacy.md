@@ -12,9 +12,7 @@ The terms used in this Privacy Policy have the same meanings as in our Terms and
 ## Information Collection and Use
 
 For a better experience while using our Service, we may require you to provide us with certain personally identifiable information, including but not limited to your name, public information about your Discord account such as username, ID, tag, Profile Picture, etc. The information that we collect will be used to contact or identify you. 
-
-<!-- SudoBot will store some basic information like Discord username, ID, avatar, etc about other users that are moderated using it, in order to function properly.
--->
+The bot can also store some basic information like Discord username, ID, avatar, etc about other users that are moderated using it, in order to work properly.
 
 It might also store information like IDs, Names, Permissions of a Discord Server/Channel/Role... etc, in order to work properly and enhance end user experience.
 
