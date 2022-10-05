@@ -10,17 +10,17 @@ SudoBot can also automoderate your server(s). You need to configure it according
 
 If only the key is specified, then the value will be shown. Otherwise the new given value will be written to config database.
 
-## What can the bot do?
+## What automoderation features does the bot have?
 
-SudoBot can do the following:
+SudoBot has the following automoderation features:
 
 * Spam Filtering (Message Rate-limiting)
 * Anti Raid systems
 * Message Filters: `Blocked word/token filter`, `Invite filter`, `Regex Filter`, `File extension/type filter`, `Domain filter`, `Mass mention filter`, `Repeated text filter` and more!
-* Message logging (Edit/Delete/etc)
-* Join/Leave logging
-* Moderation History Logging
-* Autorole
-* Verification System [BETA]
+* User Tag and Nickname filter
+* Anti-Join System
+* Moderation History Tracker
+* Autorole System
+* Verification System
 
 We're adding new features frequently, so you may see something new soon!
