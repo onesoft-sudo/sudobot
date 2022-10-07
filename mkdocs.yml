@@ -4,8 +4,7 @@ theme:
   name: 'material'
   custom_dir: docs/overrides
   logo: 'assets/images/sudobot.png'
-  favicon:
-    'assets/images/sudobot.png'
+  favicon: 'assets/images/sudobot.png'
   features:
     - navigation.tabs
     - navigation.instant
