@@ -4,6 +4,7 @@ node_modules/
 .idea/
 *.db
 config/*
+!config/sample-config.json
 test.ts
 test.js
 src/commands/test/

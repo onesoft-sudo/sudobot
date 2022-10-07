@@ -12,4 +12,4 @@ if [ -e config/config.json ]; then
     exit;
 fi
 
-cp sample-config.json config/config.json
+cp config/sample-config.json config/config.json

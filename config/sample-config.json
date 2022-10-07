@@ -11,7 +11,7 @@
    "debug": false,
    "mute_role": "[id]",
    "gen_role": "[id]",
-   "logging_channel": "961547831536136212",
+   "logging_channel": "[id]",
    "logging_channel_join_leave": "[id]",
    "mod_role": "[id]",
    "announcement_channel": "[id]",
