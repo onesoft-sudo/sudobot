@@ -1,7 +1,7 @@
 import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
 import { v4 as uuid } from 'uuid';
-import { ButtonInteraction, InteractionCollector, InteractionReplyOptions, Message, MessageActionRow, MessageButton, MessageEditOptions, MessageOptions, ReplyMessageOptions, TextChannel } from "discord.js";
+import { ButtonInteraction, InteractionCollector, InteractionReplyOptions, Message, MessageActionRow, MessageButton, MessageEditOptions, MessageOptions, ReplyMessageOptions } from "discord.js";
 
 export interface EmbedBuilderOptions<T> {
     data: Array<T>;
