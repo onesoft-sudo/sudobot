@@ -27,9 +27,9 @@ const readline = require('readline');
 
 const CONFIG_DIR = path.resolve(__dirname, 'config');
 const { version } = require('./package.json');
+const { existsSync } = require('fs');
 const SAMPLE_CONFIG_PATH = path.resolve(CONFIG_DIR, 'sample-config.json');
-
-let prefix = '-', homeGuild = '';
+const CONFIG_PATH = path.resolve(CONFIG_DIR, 'config.json');
 
 const isSnowflake = text => /^\d+$/.test(text);
 
@@ -56,7 +56,7 @@ const promptLoop = async (text, validator, defaultValue) => {
         fn = prompt;
     }
 
-    const input = await fn(text);
+    const input = await fn(text, defaultValue);
 
     if (!(await validator(input ?? ''))) {
         return promptLoop(text, validator, defaultValue);
@@ -74,6 +74,8 @@ const snowflakeValidator = input => {
     return true;
 };
 
+let prefix = '-', homeGuild = '', owners = [];
+
 (async () => {
     console.log(`SudoBot version ${version}`);
     console.log(`Copyright (C) OSN Inc 2022`);
@@ -87,7 +89,40 @@ const snowflakeValidator = input => {
 
         return true;
     }, prefix)).trim();
+
     homeGuild = await promptLoop(`What will be the Home/Support Guild ID?: `, snowflakeValidator);
+    owners = (await promptLoop(`Who will be the owner? Specify the owner user IDs separated with comma (,): `, input => {
+        const splitted = input.split(',');
+
+        for (const snowflake of splitted) {
+            if (!snowflakeValidator(snowflake)) {
+                console.log(`Invalid snowflake given! Make sure that the IDs are correctly given!`);
+                return false;
+            }
+        }
+
+        return true;
+    })).split(',').map(s => s.trim());
+
+    let config = Object.entries(JSON.parse((await fs.readFile(SAMPLE_CONFIG_PATH)).toString()));
+    config[1][0] = homeGuild;
+    config[1][1].prefix = prefix;
+    config = Object.fromEntries(config);
+
+    config.global.id = homeGuild;
+    config.global.owners = owners;
+
+    console.log(config);
+
+    if (existsSync(CONFIG_PATH)) {
+        const input = await promptDefault("The config file (config/config.json) already exists. Do you want to overwrite the file? [y/N]: ", "n");
+
+        if (input.trim().toLowerCase() !== "y" && input.trim().toLowerCase() !== "yes") {
+            console.log("Aborting setup.");
+            rl.close();
+            process.exit(1);
+        }
+    }
 
     rl.close();
 
