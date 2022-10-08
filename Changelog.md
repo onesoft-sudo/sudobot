@@ -1,6 +1,7 @@
 # Changelog
 
 ### development
+* Added new and improved pagination system
 * Upgraded the queue management system
 * Fixed AFK systems not working properly (#84)
 * Updated config schema
