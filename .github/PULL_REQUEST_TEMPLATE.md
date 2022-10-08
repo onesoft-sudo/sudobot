@@ -1,6 +1,4 @@
-# A Cool Title
-
-A short brief about your changes.
+<!-- A short brief about your changes here. -->
 
 - Is Bugfix? *Yes/No*
 - Related issues: *None*
