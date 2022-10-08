@@ -24,7 +24,6 @@ import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import ms from 'ms';
-import { setTimeoutv2 } from '../../utils/setTimeout';
 import ExpireMessageQueue from '../../queues/ExpireMessageQueue';
 
 export default class ExpireCommand extends BaseCommand {

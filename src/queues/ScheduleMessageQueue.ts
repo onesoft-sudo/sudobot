@@ -18,7 +18,6 @@
 */
 
 import { TextChannel } from "discord.js";
-import { fetchEmoji } from "../utils/Emoji";
 import Queue from "../utils/structures/Queue";
 
 export default class ScheduleMessageQueue extends Queue {

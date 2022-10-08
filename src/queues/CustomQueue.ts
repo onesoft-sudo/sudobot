@@ -19,7 +19,6 @@
 
 import { TextChannel } from "discord.js";
 import CommandOptions from "../types/CommandOptions";
-import { fetchEmoji } from "../utils/Emoji";
 import Queue from "../utils/structures/Queue";
 
 export default class CustomQueue extends Queue {

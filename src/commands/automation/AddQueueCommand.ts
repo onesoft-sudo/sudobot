@@ -24,7 +24,6 @@ import CommandOptions from '../../types/CommandOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import ms from 'ms';
 import { timeSince } from '../../utils/util';
-import { setTimeoutv2 } from '../../utils/setTimeout';
 import CustomQueue from '../../queues/CustomQueue';
 
 export default class AddQueueCommand extends BaseCommand {
