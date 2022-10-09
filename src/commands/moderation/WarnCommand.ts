@@ -25,6 +25,7 @@ import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import getMember from '../../utils/getMember';
 import PunishmentType from '../../types/PunishmentType';
+import { hasPermission } from '../../utils/util';
 
 export async function warn(client: DiscordClient, user: User, reason: string | undefined, msg: Message | CommandInteraction, warned_by?: User) {   
     const { default: Punishment } = await import('../../models/Punishment');
@@ -146,6 +147,7 @@ export default class WarnCommand extends BaseCommand {
             }
 
             console.log(user);
+            
 
             if (options.args[1]) {
                 await options.args.shift();
@@ -154,6 +156,10 @@ export default class WarnCommand extends BaseCommand {
         }
 
         try {
+            if (!(await hasPermission(client, user, msg, null, "You don't have permission to warn this user."))) {
+        		return;
+        	}
+
             const { warning, strike, DMed } = await warn(client, user.user, reason, msg, msg.member?.user as User);
 
             await msg.reply({
