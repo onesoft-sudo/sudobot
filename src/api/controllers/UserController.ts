@@ -27,6 +27,7 @@ import KeyValuePair from "../../types/KeyValuePair";
 import { NextFunction, Response as ExpressResponse } from "express";
 import ValidatorError from "../middleware/ValidatorError";
 import RequireAuth from "../middleware/RequireAuth";
+import { User as DiscordUser } from "discord.js";
 
 function RequireAdmin(request: Request, response: ExpressResponse, next: NextFunction) {
     if (!request.user?.isAdmin) {
@@ -179,12 +180,25 @@ export default class UserController extends Controller {
             await user.save();
         }
 
+        let discordUser: DiscordUser | undefined;
+
+        try {
+            discordUser = await this.client.users.fetch(user.discord_id);
+        }
+        catch (e) {
+            console.log(e);
+        }
+
+        console.log(this.client.guilds.cache.map(g => g.id));
+        console.log(user.guilds);
+
         return {
             message: "Login successful",
             username,
             token,
+            user: discordUser,
             expires: new Date(user.tokenUpdatedAt!.getTime() + (2 * 24 * 60 * 60 * 1000)),
-            guilds: this.client.guilds.cache.filter(g => user.guilds.includes(g.id) ?? false)
+            guilds: this.client.guilds.cache.filter(g => user.guilds.includes(g.id))
         };
     }
 }
