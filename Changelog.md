@@ -1,6 +1,8 @@
 # Changelog
 
 ### development
+* Spotify status song name is now clickable; it takes you to the song page
+* Warning command now checks role position
 * Added new and improved pagination system
 * Upgraded the queue management system
 * Fixed AFK systems not working properly (#84)
