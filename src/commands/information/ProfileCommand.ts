@@ -133,7 +133,8 @@ export default class ProfileCommand extends BaseCommand {
                 }
                 else if (a.type === 'LISTENING') {
                     if (a.name === 'Spotify') {
-                        activities.push(`:notes: Listening to **Spotify**: **${a.state?.replace(/\;/, ',')} - ${a.details}**`);
+                        const url = a.syncId ? `https://open.spotify.com/track/${a.syncId}` : null;
+                        activities.push(`:notes: Listening to **Spotify**: ${url ? '[' : '**'}${a.state?.replace(/\;/, ',')} - ${a.details}${url ? '](' + url + ')' : '**'}`);
                         continue;
                     }
 
