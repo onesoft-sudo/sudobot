@@ -41,7 +41,7 @@ Alternatively, you can create your own Discord API application and then host Sud
 * Cat and dog API Token (for fetching cat and dog images using `cat` and `dog` commands, the tokens can be obtained at [thecatapi.com](https://thecatapi.com) and [thedogapi.com](https://thedogapi.com))
 * Pixabay API Token (can be obtained [here](https://pixabay.com/api/docs/))
 * A Discord Webhook URL for sending error reports
-* A JWT Secret for the API services (if you don't have a API secret, you can run `openssl rand -base64 10` to generate a random base64 string and use it as secret)
+* A JWT Secret for the API services (if you don't have an API secret, you can run `openssl rand -base64 10` to generate a random base64 string and use it as secret)
 
 First, download the latest release or clone the repo by running:
 
