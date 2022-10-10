@@ -1,6 +1,8 @@
 # Changelog
 
 ### development
+* Changed about command embed
+* Changed warn command embed color and added timestamps
 * Spotify status song name is now clickable; it takes you to the song page
 * Warning command now checks role position
 * Added new and improved pagination system
