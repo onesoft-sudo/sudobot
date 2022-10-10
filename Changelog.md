@@ -1,6 +1,7 @@
 # Changelog
 
 ### development
+* Added installation/setup script for easy setup of the bot
 * Changed about command embed
 * Changed warn command embed color and added timestamps
 * Spotify status song name is now clickable; it takes you to the song page
