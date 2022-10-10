@@ -107,6 +107,13 @@ Then you can run the following command in Discord to make sure everything is wor
 That should show the bot information.
 Congratulations! You've successfully set up your own instance of SudoBot!
 
+### Contributors
+
+Thanks to all the contributors!
+
+* [Ar Rakin](https://github.com/virtual-designer)
+* [killerclaws12](https://github.com/killerclaws12)
+
 ### Support
 
 - **Email**: rakinar2@onesoftnet.eu.org

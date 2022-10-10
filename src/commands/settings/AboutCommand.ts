@@ -38,16 +38,14 @@ export default class AboutCommand extends BaseCommand {
                 new MessageEmbed()
                 .setAuthor({ iconURL: client.user?.displayAvatarURL(), name: "SudoBot" })
                 .setDescription(`
-                    A free and open source Discord moderation bot, specially created for **The Everything Server**.
-
-                    Copyright (C) ${new Date().getFullYear()} OSN Inc.
-                    This bot comes with ABSOLUTELY NO WARRANTY.
-                    This is free software, and you are welcome to redistribute it under certain conditions.
-                    See the [GNU Affero General Public License v3](https://www.gnu.org/licenses/agpl-3.0.en.html) for more detailed information.
+                    __**A free and open source Discord moderation bot, specially created for The Everything Server**__.\n
+                    > This bot comes with **ABSOLUTELY NO WARRANTY**.
+                    > This is free software, and you are welcome to redistribute it under certain conditions.
+                    > See the [GNU Affero General Public License v3](https://www.gnu.org/licenses/agpl-3.0.en.html) for more detailed information.
                 `)
                 .addFields({
-                    name: 'Version',
-                    value: this.metadata.version,
+                    name: 'Version: ',
+                    value: (`${this.metadata.version}`),
                     inline: true
                 }, {
                     name: 'Source Code',
@@ -64,7 +62,7 @@ export default class AboutCommand extends BaseCommand {
                     inline: true
                 }, {
                     name: 'Support',
-                    value: this.metadata.author.email,
+                    value: `rakinar2@onesoftnet.eu.org`,
                     inline: true
                 })
                 .setFooter({
