@@ -38,31 +38,31 @@ export default class AboutCommand extends BaseCommand {
                 new MessageEmbed()
                 .setAuthor({ iconURL: client.user?.displayAvatarURL(), name: "SudoBot" })
                 .setDescription(`
-                    __**A free and open source Discord moderation bot, specially created for The Everything Server**__.
+                    __**A free and open source Discord moderation bot, specially created for The Everything Server**__.\n
                     > This bot comes with **ABSOLUTELY NO WARRANTY**.
                     > This is free software, and you are welcome to redistribute it under certain conditions.
                     > See the [GNU Affero General Public License v3](https://www.gnu.org/licenses/agpl-3.0.en.html) for more detailed information.
                 `)
                 .addFields({
                     name: 'Version: ',
-                    value: (`> ${this.metadata.version}`),
+                    value: (`${this.metadata.version}`),
                     inline: true
                 }, {
                     name: 'Source Code',
-                    value: `> [GitHub](${this.metadata.repository.url})`,
+                    value: `[GitHub](${this.metadata.repository.url})`,
                     inline: true,
                 }, {
                     name: 'Licensed Under',
-                    value: `> [GNU Affero General Public License v3](https://www.gnu.org/licenses/agpl-3.0.en.html)`,
+                    value: `[GNU Affero General Public License v3](https://www.gnu.org/licenses/agpl-3.0.en.html)`,
                     inline: true
                 })
                 .addFields({
                     name: "Author",
-                    value: `> [${this.metadata.author.name}](${this.metadata.author.url})`,
+                    value: `[${this.metadata.author.name}](${this.metadata.author.url})`,
                     inline: true
                 }, {
                     name: 'Support',
-                    value: `> rakinar2@onesoftnet.eu.org`,
+                    value: `rakinar2@onesoftnet.eu.org`,
                     inline: true
                 })
                 .setFooter({
