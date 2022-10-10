@@ -24,6 +24,7 @@
 const path = require('path');
 const fs = require('fs/promises');
 const readline = require('readline');
+const bcrypt = require('bcrypt');
 
 const CONFIG_DIR = path.resolve(__dirname, 'config');
 const { version } = require('./package.json');
@@ -138,18 +139,75 @@ const snowflakeValidator = input => {
         }
     }
 
-    rl.close();
-
     if (existsSync(CONFIG_PATH))
         await fs.rename(CONFIG_PATH, path.join(CONFIG_DIR, 'config-old-' + Math.round(Math.random() * 100000) + '.json'));
 
     await fs.writeFile(CONFIG_PATH, JSON.stringify(config, undefined, ' '));
 
-    console.log("Setup complete!");
+    console.log("Config File Created!");
     console.table([
         {
             prefix,
             homeGuild
         }
     ]);
+
+    if (!existsSync(path.join(__dirname, ".env"))) {
+        const input = (await promptDefault("Generate a `.env' file? [y/N]: ", "n")).toLowerCase();
+
+        if (input !== 'yes' && input !== 'y') {
+            return;
+        }
+
+        const token = await promptLoop("What's your bot token? ", input => {
+            if (input.trim() !== '' && input.indexOf(' ') === -1) {
+                return true;
+            }
+
+            console.log("That's not a valid token.");
+            return false;
+        });
+
+        const clientID = await promptLoop("What's your bot's client ID? ", snowflakeValidator);
+
+        const mongoURI = await promptLoop("Enter the MongoDB URI for the bot to connect: ", input => {
+            if (input.trim() !== '' && input.indexOf(' ') === -1) {
+                return true;
+            }
+
+            console.log("That's not a valid MongoDB URI.");
+            return false;
+        });
+
+        const jwtSecret = (await promptLoop("Enter a JWT secret key (hit enter to generate automatically): ", input => {
+            if (input.trim() !== '') {
+                return true;
+            }
+
+            console.log("That's not a valid secret.");
+            return false;
+        }, null)) ?? bcrypt.hashSync(Math.random() + '', bcrypt.genSaltSync());
+
+        const webhook = await promptLoop("Enter a webhook URL for sending debug logs: ", input => {
+            if (input.trim() !== '' && input.indexOf(' ') === -1) {
+                return true;
+            }
+
+            console.log("That's not a valid webhook URL.");
+            return false;
+        });
+
+        await fs.writeFile(path.join(__dirname, ".env"), `# Environment Configuration
+        
+        TOKEN=${token}
+        ENV=dev
+        CLIENT_ID=${clientID}
+        GUILD_ID=${homeGuild}
+        MONGO_URI=${mongoURI}
+        JWT_SECRET=${jwtSecret}
+        DEBUG_WEBHOOK_URL=${webhook}
+        `);
+    }
+
+    rl.close();
 })().catch(console.error);
