@@ -62,7 +62,7 @@ export default class AboutCommand extends BaseCommand {
                     inline: true
                 }, {
                     name: 'Support',
-                    value: `rakinar2@onesoftnet.eu.org`,
+                    value: this.metadata.author.email,
                     inline: true
                 })
                 .setFooter({
