@@ -165,7 +165,9 @@ export default class WarnCommand extends BaseCommand {
             await msg.reply({
                 embeds: [
                     new MessageEmbed()
-                    .setDescription(`The user ${user.user.tag} has been warned` + (DMed ? "" : "\n:warning: The user has DMs disabled, so they might not know that they've been warned."))
+                    .setDescription(`The user **${user.user.tag}** has been warned.` + (DMed ? "" : "\n:warning: The user has DMs disabled, so they might not know that they've been warned."))
+                    .setTimestamp()
+                    .setColor("RED")
                     .addFields([
                         {
                             name: "Reason",
