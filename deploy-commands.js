@@ -102,7 +102,18 @@ let commands = [
 		.addUserOption(option => option.setName('user').setDescription('The user')),
 	new SlashCommandBuilder().setName('rolelist').setDescription('List all roles or show info about a role')
 		.addRoleOption(option => option.setName('role').setDescription('The role'))
-		.addIntegerOption(option => option.setName('page').setDescription('The page number')),
+		.addStringOption(option => 
+			option
+			.setName('order')
+			.setDescription('Order style of the list (according to the role positions)')
+			.setChoices({
+				name: "Ascending",
+				value: "a"
+			}, {
+				name: "Descending",
+				value: "d"
+			})
+		),
 
 	// AUTOMATION
 	new SlashCommandBuilder().setName('ballot').setDescription('Ballot engine')
