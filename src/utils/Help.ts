@@ -479,13 +479,13 @@ export default <CommandHelpData[]> [
     },
     {
         name: 'rolelist',
-        shortBrief: 'List all roles in the server',
+        shortBrief: 'List all roles in the server or give info about a role.',
         description: null,
-        structure: "[Page] [Role]",
-        example: "`%%rolelist`",
+        structure: "[RoleMention|RoleID]",
+        example: "`%%rolelist`\n`%%rolelist @Moderator`",
         notes: null,
         slashCommand: true,
-        legacyCommand: false
+        legacyCommand: true
     },
     {
         name: 'schedule',
