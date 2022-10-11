@@ -79,7 +79,7 @@ npm install -D
 
 **Note**: `...` means other options that exist in the config, you can edit them to customize the settings, but not required.
 
-Alternatively, you can try the new `setup.js` installer script [BETA] by running `node setup.js`. It will ask you some questions about the configuration.
+> Alternatively, you can try the new `setup.js` installer script [BETA] by running `node setup.js`. It will ask you some questions about the configuration.
 
 4. Copy the `.env.example` file to `.env` and open it, edit the information (such as bot token. MongoDB URI, etc) as needed.
 
