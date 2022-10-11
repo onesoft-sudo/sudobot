@@ -17,65 +17,78 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, Role } from 'discord.js';
+import { CommandInteraction, Interaction, Message, Role } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
+import Pagination from '../../utils/Pagination';
+import CommandOptions from '../../types/CommandOptions';
+import getRole from '../../utils/getRole';
 
 export default class RoleListCommand extends BaseCommand {
     supportsInteractions: boolean = true;
-    supportsLegacy = false;
 
     constructor() {
         super('rolelist', 'information', []);
     }
 
-    async run(client: DiscordClient, msg: CommandInteraction, options: InteractionOptions) {
-        let role: Role | null = null, page = 1;
+    async run(client: DiscordClient, message: CommandInteraction | Message, options: InteractionOptions | CommandOptions) {
+        let role: Role | null = null, order = "d";
 
-        if (options.options.getRole('role'))
+        if (options.isInteraction && options.options.getRole('role'))
             role = <Role> options.options.getRole('role');
+        else if (!options.isInteraction && options.args[0]) 
+            role = (await getRole(message as Message, options, 1)) ?? null;
 
-        if (options.options.getInteger('page'))
-            page = <number> options.options.getInteger('page');
+        if (options.isInteraction && options.options.getString('order'))
+            order = <string> options.options.getString('order');
         
         if (!role) {
-            const roles = await msg.guild!.roles.cache.toJSON();
+            message instanceof CommandInteraction ? await message.deferReply() : null;
 
-            let str = ``;
-            let limit = 15, i = 1, offset = (page - 1) * limit;
+            const roles = message.guild!.roles.cache.sort((role1, role2) => order === 'a' ? role1.position - role2.position : role2.position - role1.position).toJSON();
+            const popped = roles.pop();
 
-            if (offset >= roles.length) {
-                await msg.reply({
-                    content: "Invalid page number.",
-                    ephemeral: true
-                });
-
-                return;
+            if (popped && popped.id !== message.guild!.id) {
+                roles.push(popped);
             }
 
-            for await (const role of roles) {
-                if (role.id === msg.guild!.id)
-                    continue;
-                
-                i++;
-                
-                if (offset >= (i - 1))
-                    continue;
-                    
-                if ((limit + offset) < (i - 1))   
-                    break;
+            const pagination = new Pagination(roles, {
+                channel_id: message.channel!.id,
+                guild_id: message.guild!.id,
+                user_id: message.member!.user.id,
+                limit: 10,
+                timeout: 120_000,
+                embedBuilder({ data, currentPage, maxPages }) {
+                    let description = '';
 
-                str += `${role.name} - ${role.id} - ${role.members.size} Members - ${role.hexColor}\n`;
-            }
+                    for (const role of data) {
+                        description += `${role} • \`${role.id}\` • ${role.hexColor}\n`;
+                        // description += `${role}\n**ID**: ${role.id}\n**Color**: ${role.hexColor}\n**Hoisting**: ${role.hoist ? 'Enabled' : 'Disabled'}\n**Position**: ${role.position}\n\n`;
+                    }
 
-            await msg.reply({
-                content: "**Role List (" + page + ")**:\n\n```" + str + '```',
+                    return new MessageEmbed({
+                        author: {
+                            name: "Roles",
+                            iconURL: message.guild!.iconURL() ?? undefined
+                        },
+                        description,
+                        footer: { text: `Page ${currentPage} of ${maxPages}` }
+                    });
+                },
             });
+
+            let reply = await this.deferReply(message, pagination.getMessageOptions(1));
+
+            if (message instanceof Interaction) {
+                reply = (await message.fetchReply()) as Message;
+            }
+
+            await pagination.start(reply! as Message);
         }
         else {
-            await msg.reply({
+            await message.reply({
                 embeds: [
                     new MessageEmbed()
                     .setAuthor({
@@ -85,11 +98,13 @@ export default class RoleListCommand extends BaseCommand {
                     .addFields([
                         {
                             name: 'Name',
-                            value: role.name
+                            value: role.name,
+                            inline: true
                         },
                         {
                             name: 'Color',
-                            value: role.hexColor
+                            value: role.hexColor,
+                            inline: true
                         },
                         {
                             name: 'Members',
@@ -97,7 +112,8 @@ export default class RoleListCommand extends BaseCommand {
                         },
                         {
                             name: 'Bot Role',
-                            value: role.members.size === 1 && role.members.first()?.user.bot ? 'Yes' : 'No'
+                            value: role.members.size === 1 && role.members.first()?.user.bot ? 'Yes' : 'No',
+                            inline: true
                         }
                     ])
                 ]
