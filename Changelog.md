@@ -1,7 +1,10 @@
 # Changelog
 
-### development
-(No changes yet)
+### development 
+(No change yet)
+
+### v4.0.1
+* Updated about command
 
 ### v4.0.0
 * Added pagination to `help` command
