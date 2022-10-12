@@ -126,3 +126,8 @@ Thanks to all the contributors!
 
 - **Dashboard**: The dashboard for SudoBot can be found [here](https://github.com/onesoft-sudo/sudobot-dashboard).
 - **Download Emojis**: https://www.onesoftnet.eu.org/downloads/sudo/emojis/
+
+## Screenshots
+
+(![image](https://user-images.githubusercontent.com/78247679/195454974-ab895819-5543-495a-afa5-1b3fa7998101.png)
+)
