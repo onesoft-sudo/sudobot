@@ -59,7 +59,7 @@
    "autorole": {
     "enabled": false,
     "roles": [
-     "[id]"
+     
     ]
    },
    "spam_filter": {
@@ -76,7 +76,7 @@
     "max_joins": 2,
     "time": 60000,
     "channels": [
-     "[id]"
+     
     ],
     "exclude": false
    },
@@ -95,14 +95,12 @@
     "about",
     "emoji"
    ],
-   "role_commands": {
-    "[role_id]": ["disallowed_commands"]
-   },
+   "role_commands": {},
    "filters": {
     "ignore_staff": true,
     "chars_repeated": 9,
     "words_repeated": 9,
-    "words": ["[blocked_words]"],
+    "words": [],
     "invite_message": "Hey :mention:, post server invites in Server Promotions category only!",
     "words_excluded": [],
     "tokens": [],

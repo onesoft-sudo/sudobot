@@ -1,6 +1,12 @@
 # Changelog
 
 ### development
+* Changed `rolelist` command signature and syntax
+* Added pagination to `rolelist` command
+* Added pagination system
+* Added installation/setup script for easy setup of the bot
+* Changed about command embed
+* Changed warn command embed color and added timestamps
 * Spotify status song name is now clickable; it takes you to the song page
 * Warning command now checks role position
 * Added new and improved pagination system

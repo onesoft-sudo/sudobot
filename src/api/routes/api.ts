@@ -18,6 +18,7 @@
 */
 
 import ConfigController from "../controllers/ConfigController";
+import HistoryController from "../controllers/HistoryController";
 import InfoController from "../controllers/InfoController";
 import MainController from "../controllers/MainController";
 import UserController from "../controllers/UserController";
@@ -31,6 +32,8 @@ Router.patch("/config/:id", [ConfigController, "update"]);
 
 Router.resource("/users", UserController);
 Router.post("/login", [UserController, "login"]);
+
+Router.resource("/history/:id", HistoryController);
 
 Router.get("/info/:id/channels", [InfoController, "indexChannels"]);
 Router.get("/info/:id/roles", [InfoController, "indexRoles"]);

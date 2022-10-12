@@ -43,19 +43,21 @@ Alternatively, you can create your own Discord API application and then host Sud
 * A Discord Webhook URL for sending error reports
 * A JWT Secret for the API services (if you don't have an API secret, you can run `openssl rand -base64 10` to generate a random base64 string and use it as secret)
 
-First, download the latest release or clone the repo by running:
+### Setup steps
+
+1. Download the latest release or clone the repo by running:
 
 ```
 git clone https://github.com/onesoft-sudo/sudobot
 ```
 
-Then go inside the project directory, and run the following command:
+2. Go inside the project directory, and run the following command:
 
 ```
 npm install -D
 ```
 
-Then open up the `config/config.json` file and change at least the following:
+3. Open up the `config/config.json` file and change at least the following:
 
 ```json
 {
@@ -77,21 +79,23 @@ Then open up the `config/config.json` file and change at least the following:
 
 **Note**: `...` means other options that exist in the config, you can edit them to customize the settings, but not required.
 
-Then copy the `.env.example` file to `.env` and open it, edit the information (such as bot token. MongoDB URI, etc) as needed.
+> Alternatively, you can try the new `setup.js` installer script [BETA] by running `node setup.js`. It will ask you some questions about the configuration.
 
-Build the project:
+4. Copy the `.env.example` file to `.env` and open it, edit the information (such as bot token. MongoDB URI, etc) as needed.
+
+5. Build the project:
 
 ```
 npm run build
 ```
 
-Deploy slash commands globally:
+6. Deploy slash commands globally:
 
 ```
 node deploy-commands.js
 ```
 
-Start the bot:
+7. Start the bot:
 
 ```
 npm start
@@ -106,6 +110,13 @@ Then you can run the following command in Discord to make sure everything is wor
 
 That should show the bot information.
 Congratulations! You've successfully set up your own instance of SudoBot!
+
+### Contributors
+
+Thanks to all the contributors!
+
+* [Ar Rakin](https://github.com/virtual-designer)
+* [killerclaws12](https://github.com/killerclaws12)
 
 ### Support
 

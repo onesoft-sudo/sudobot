@@ -24,6 +24,7 @@
 const path = require('path');
 const fs = require('fs/promises');
 const readline = require('readline');
+const bcrypt = require('bcrypt');
 
 const CONFIG_DIR = path.resolve(__dirname, 'config');
 const { version } = require('./package.json');
@@ -74,24 +75,30 @@ const snowflakeValidator = input => {
     return true;
 };
 
-let prefix = '-', homeGuild = '', owners = [];
-
 (async () => {
     console.log(`SudoBot version ${version}`);
     console.log(`Copyright (C) OSN Inc 2022`);
     console.log(`Thanks for using SudoBot! We'll much appreciate if you star the repository on GitHub.\n`);
+
+    let prefix = '-', homeGuild = '', owners = [];
+    let config = Object.entries(JSON.parse((await fs.readFile(SAMPLE_CONFIG_PATH)).toString()));
     
-    prefix = (await promptLoop(`What will be the bot prefix? [${prefix}]: `, input => {
+    config[1][1].prefix = (await promptLoop(`What will be the bot prefix? [${prefix}]: `, input => {
         if (input.trim().includes(' ')) {
             console.log(`Prefixes must not contain spaces!`);
             return false;
         }
 
         return true;
-    }, prefix)).trim();
+    }, "-")).trim();
 
     homeGuild = await promptLoop(`What will be the Home/Support Guild ID?: `, snowflakeValidator);
-    owners = (await promptLoop(`Who will be the owner? Specify the owner user IDs separated with comma (,): `, input => {
+    config[1][0] = homeGuild;
+
+    config = Object.fromEntries(config);
+
+    config.global.id = homeGuild;
+    config.global.owners = (await promptLoop(`Who will be the owner? Specify the owner user IDs separated with comma (,): `, input => {
         const splitted = input.split(',');
 
         for (const snowflake of splitted) {
@@ -104,13 +111,21 @@ let prefix = '-', homeGuild = '', owners = [];
         return true;
     })).split(',').map(s => s.trim());
 
-    let config = Object.entries(JSON.parse((await fs.readFile(SAMPLE_CONFIG_PATH)).toString()));
-    config[1][0] = homeGuild;
-    config[1][1].prefix = prefix;
-    config = Object.fromEntries(config);
+    // config[1][0] = homeGuild;
+    // config[1][1].prefix = prefix;
 
-    config.global.id = homeGuild;
-    config.global.owners = owners;
+    // config.global.owners = owners;
+
+    const guildConfig = {...config[homeGuild]};
+
+    guildConfig.mod_role = await promptLoop(`What will be the moderator role ID?: `, snowflakeValidator);
+    guildConfig.admin = await promptLoop(`What will be the safe role ID?: `, snowflakeValidator);
+    guildConfig.mute_role = await promptLoop(`What will be the muted role ID?: `, snowflakeValidator);
+    guildConfig.gen_role = await promptLoop(`What will be the general role ID? [${homeGuild}]: `, snowflakeValidator, homeGuild);
+    guildConfig.logging_channel = await promptLoop(`What will be the main logging channel ID?: `, snowflakeValidator);
+    guildConfig.logging_channel_join_leave = await promptLoop(`What will be the join/leave logging channel ID?: `, snowflakeValidator);
+
+    config[homeGuild] = guildConfig;
 
     console.log(config);
 
@@ -124,13 +139,75 @@ let prefix = '-', homeGuild = '', owners = [];
         }
     }
 
-    rl.close();
+    if (existsSync(CONFIG_PATH))
+        await fs.rename(CONFIG_PATH, path.join(CONFIG_DIR, 'config-old-' + Math.round(Math.random() * 100000) + '.json'));
 
-    console.log("Setup complete!");
+    await fs.writeFile(CONFIG_PATH, JSON.stringify(config, undefined, ' '));
+
+    console.log("Config File Created!");
     console.table([
         {
             prefix,
             homeGuild
         }
     ]);
+
+    if (!existsSync(path.join(__dirname, ".env"))) {
+        const input = (await promptDefault("Generate a `.env' file? [y/N]: ", "n")).toLowerCase();
+
+        if (input !== 'yes' && input !== 'y') {
+            return;
+        }
+
+        const token = await promptLoop("What's your bot token? ", input => {
+            if (input.trim() !== '' && input.indexOf(' ') === -1) {
+                return true;
+            }
+
+            console.log("That's not a valid token.");
+            return false;
+        });
+
+        const clientID = await promptLoop("What's your bot's client ID? ", snowflakeValidator);
+
+        const mongoURI = await promptLoop("Enter the MongoDB URI for the bot to connect: ", input => {
+            if (input.trim() !== '' && input.indexOf(' ') === -1) {
+                return true;
+            }
+
+            console.log("That's not a valid MongoDB URI.");
+            return false;
+        });
+
+        const jwtSecret = (await promptLoop("Enter a JWT secret key (hit enter to generate automatically): ", input => {
+            if (input.trim() !== '') {
+                return true;
+            }
+
+            console.log("That's not a valid secret.");
+            return false;
+        }, null)) ?? bcrypt.hashSync(Math.random() + '', bcrypt.genSaltSync());
+
+        const webhook = await promptLoop("Enter a webhook URL for sending debug logs: ", input => {
+            if (input.trim() !== '' && input.indexOf(' ') === -1) {
+                return true;
+            }
+
+            console.log("That's not a valid webhook URL.");
+            return false;
+        });
+
+        await fs.writeFile(path.join(__dirname, ".env"), `# Environment Configuration
+        
+        TOKEN=${token}
+        ENV=dev
+        CLIENT_ID=${clientID}
+        GUILD_ID=${homeGuild}
+        MONGO_URI=${mongoURI}
+        JWT_SECRET=${jwtSecret}
+        DEBUG_WEBHOOK_URL=${webhook}
+        `);
+    }
+
+    rl.close();
 })().catch(console.error);
