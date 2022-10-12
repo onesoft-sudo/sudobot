@@ -1,7 +1,10 @@
 # Changelog
 
 ### development
-* Add pagination to `help` command
+(No changes yet)
+
+### v4.0.0
+* Added pagination to `help` command
 * Changed `rolelist` command signature and syntax
 * Added pagination to `rolelist` command
 * Added pagination system
