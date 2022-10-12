@@ -2,6 +2,7 @@ import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
 import { v4 as uuid } from 'uuid';
 import { ButtonInteraction, InteractionCollector, InteractionReplyOptions, Message, MessageActionRow, MessageButton, MessageEditOptions, MessageOptions, ReplyMessageOptions } from "discord.js";
+import { emoji } from "./Emoji";
 
 export interface EmbedBuilderOptions<T> {
     data: Array<T>;
@@ -79,23 +80,23 @@ export default class Pagination<T> {
             new MessageButton()
                 .setCustomId(`pagination_first_${this.id}`)
                 .setStyle("PRIMARY")
-                .setLabel('⏪')
-                .setDisabled(!first),
+                .setDisabled(!first)
+                .setEmoji(emoji('ChevronLeft')!),
             new MessageButton()
                 .setCustomId(`pagination_back_${this.id}`)
                 .setStyle("PRIMARY")
-                .setLabel('◀')
-                .setDisabled(!back),
+                .setDisabled(!back)
+                .setEmoji(emoji('ArrowLeft')!),
             new MessageButton()
                 .setCustomId(`pagination_next_${this.id}`)
                 .setStyle("PRIMARY")
-                .setLabel('▶')
-                .setDisabled(!next),
+                .setDisabled(!next)
+                .setEmoji(emoji('ArrowRight')!),
             new MessageButton()
                 .setCustomId(`pagination_last_${this.id}`)
                 .setStyle("PRIMARY")
-                .setLabel('⏩')
                 .setDisabled(!last)
+                .setEmoji(emoji('ChevronRight')!)
         );
 
         return actionRow;
