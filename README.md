@@ -130,4 +130,7 @@ Thanks to all the contributors!
 ## Screenshots
 
 ![image](https://user-images.githubusercontent.com/78247679/195454974-ab895819-5543-495a-afa5-1b3fa7998101.png)
+![image](https://user-images.githubusercontent.com/78247679/195455321-16a05026-3df4-4416-81e0-b8666768e0d7.png)
+![image](https://user-images.githubusercontent.com/78247679/195455486-4aab9472-49f9-4602-b17b-9fb0635efaa9.png)
+![image](https://user-images.githubusercontent.com/78247679/195455549-5f7bb903-7ab7-4308-832d-19c0a624bf73.png)
 
