@@ -24,7 +24,8 @@ import Help from '../../utils/Help';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
-import { renderCommandList, renderCommandMeta } from '../../services/CommandMetaDataManager';
+import { getAllCommandData, renderCommandMeta } from '../../services/CommandMetaDataManager';
+import Pagination from '../../utils/Pagination';
 
 export default class HelpCommand extends BaseCommand {
     constructor() {
@@ -44,14 +45,40 @@ export default class HelpCommand extends BaseCommand {
 
     async run(client: DiscordClient, message: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
         if ((options.isInteraction && !options.options.getString('command')) || (!options.isInteraction && options.args[0] === undefined)) {
-            await message.reply({
-                embeds: [
-                    new MessageEmbed({
-                        title: 'Help',
-                        description: renderCommandList()
-                    })
-                ],
+            const pagination = new Pagination(getAllCommandData(), {
+                channel_id: message.channel!.id,
+                guild_id: message.guild!.id,
+                limit: 10,
+                user_id: message.member!.user.id,
+                timeout: 120_000,
+                embedBuilder({ data, maxPages, currentPage }) {
+                    let description = `\`<...>\` means required argument and \`[...]\` means optional argument.\nRun \`${client.config.get('prefix')}help <CommandName>\` for more information about a specific command.\n\n`;
+
+                    for (const { name, shortBrief } of data) {
+                        description += `**${name}**\n`;
+                        description += `${shortBrief}\n\n`;
+                    }
+
+                    return new MessageEmbed({
+                        author: {
+                            iconURL: client.user?.displayAvatarURL(),
+                            name: "Help"
+                        },
+                        description,
+                        footer: {
+                            text: `Page ${currentPage} of ${maxPages}`
+                        }
+                    });
+                },
             });
+
+            let reply = await message.reply(pagination.getMessageOptions(1));
+
+            if (message instanceof CommandInteraction) {
+                reply = <Message> await message.fetchReply();
+            }
+
+            await pagination.start(reply!);
 
             return;
         }
