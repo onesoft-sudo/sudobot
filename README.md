@@ -122,3 +122,7 @@ Thanks to all the contributors!
 
 - **Email**: rakinar2@onesoftnet.eu.org
 - **Discord Servers**: [The Everything Server](https://discord.gg/Km7ZcfXT6P), [Support Server](https://discord.gg/892GWhTzgs)
+
+### Extra 
+
+- **Dashboard**: The dashboard for SudoBot can be found [here](https://github.com/onesoft-sudo/sudobot-dashboard)
