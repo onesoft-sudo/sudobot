@@ -29,7 +29,7 @@ theme:
     text: 'Roboto'
   
 repo_name: 'GitHub'
-repo_url: 'https://github.com/virtual-designer/sudobot'
+repo_url: 'https://github.com/onesoft-sudo/sudobot'
 edit_uri: edit/main/docs/
 
 extra_css:
