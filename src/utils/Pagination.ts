@@ -116,7 +116,7 @@ export default class Pagination<T> {
                 }
 
                 if (interaction.isRepliable()) {
-                    interaction.reply({ content: 'That\'t not under your control or the button controls are expired', ephemeral: true });
+                    interaction.reply({ content: 'That\'s not under your control or the button controls are expired', ephemeral: true });
                 }
 
                 return false;
