@@ -5,6 +5,8 @@ title: "Home"
 
 # SudoBot
 
+<img src="https://res.cloudinary.com/rakinar2/image/upload/v1659628446/SudoBot-new_cvwphw.png" class="rounded" height="auto" width="200px">
+
 !!! warning
     This documentation is not complete yet. We're trying to finish writing the docs as soon as possible.
     If you find something wrong, feel free create an issue on GitHub.
@@ -22,6 +24,8 @@ Read the terms [here](../legal/terms/) and if you agree with those then you can 
 - A lot of manual moderation tools
 - Secure
 
+## Downloads
+You can download the latest release [here](https://github.com/onesoft-sudo/sudobot/releases/). Also the emojis used in the bot are available [here](https://www.onesoftnet.eu.org/downloads/sudo/emojis/) for free.
+
 <br>
 
-<img src="https://res.cloudinary.com/rakinar2/image/upload/v1659628446/SudoBot-new_cvwphw.png" class="rounded" height="auto" width="200px">
