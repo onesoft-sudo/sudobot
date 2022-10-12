@@ -44,7 +44,7 @@ export default class AboutCommand extends BaseCommand {
                     > See the [GNU Affero General Public License v3](https://www.gnu.org/licenses/agpl-3.0.en.html) for more detailed information.
                 `)
                 .addFields({
-                    name: 'Version: ',
+                    name: 'Version',
                     value: (`${this.metadata.version}`),
                     inline: true
                 }, {
