@@ -1,4 +1,5 @@
 site_name: SudoBot Docs
+site_url: https://docs.sudobot.onesoftnet.eu.org
 
 theme: 
   name: 'material'
