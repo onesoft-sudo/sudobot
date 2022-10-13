@@ -232,7 +232,7 @@ export default class MessageFilter {
     async filterDomains({ content, channel: { id } }: Message) {
         if (this.client.config.get('filters').domain_enabled && !this.client.config.get('filters').domain_excluded.includes(id)) {
             for await (const domain of this.client.config.get('filters').domains) {
-                const pattern = `((http|https|ftp|blob)\:(\/)?(\/)?)?${domain.replace('.', '\\.').replace('*', '[a-zA-Z0-9-_\\.]+')}`;               
+                const pattern = `((http|https|ftp|blob)\:(\/)?(\/)?)?${domain.replace('.', '\\.').replace(/\*/g, '[a-zA-Z0-9-_\\.]+')}`;               
                 const regex = new RegExp(pattern, 'gm');
 
                 if (regex.test(content)) {
