@@ -6,7 +6,7 @@ on:
 
 jobs:
   changelog:
-    if: github.repository_owner == 'Upvision'
+    if: github.repository_owner == 'onesoft-sudo'
     runs-on: ubuntu-latest
 
     steps:
