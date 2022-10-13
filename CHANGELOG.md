@@ -1,3 +1,12 @@
+## [4.1.1](https://github.com/onesoft-sudo/sudobot/compare/v4.1.0...v4.1.1) (2022-10-13)
+
+
+### Bug Fixes
+
+* incomplete string escaping or encoding ([7da63a5](https://github.com/onesoft-sudo/sudobot/commit/7da63a586e35ba656319ec42412461b211a66884))
+
+
+
 # [4.1.0](https://github.com/onesoft-sudo/sudobot/compare/v4.0.2...v4.1.0) (2022-10-13)
 
 
@@ -57,24 +66,6 @@
 ### Performance Improvements
 
 * **pagination:** better response time ([9feec27](https://github.com/onesoft-sudo/sudobot/commit/9feec27ffc909ecfdc923828a93904328b28c769))
-
-
-
-# [4.0.0-snapshot1](https://github.com/onesoft-sudo/sudobot/compare/v4.0.0-alpha1...v4.0.0-snapshot1) (2022-10-04)
-
-
-### Bug Fixes
-
-* afk systems not working ([#85](https://github.com/onesoft-sudo/sudobot/issues/85)) ([241182e](https://github.com/onesoft-sudo/sudobot/commit/241182e9f23c31fa85267e2b9bcaabbdcff75f00)), closes [#84](https://github.com/onesoft-sudo/sudobot/issues/84)
-* queue manager ([dcc0756](https://github.com/onesoft-sudo/sudobot/commit/dcc075688f81aa8c3706c1d57f6d9e18e235851f))
-* update config schema ([#82](https://github.com/onesoft-sudo/sudobot/issues/82)) ([b691cbd](https://github.com/onesoft-sudo/sudobot/commit/b691cbdd3c9dd3992d1c76b335fa8546462d8650)), closes [#79](https://github.com/onesoft-sudo/sudobot/issues/79)
-* users can ban themselves ([64de4d5](https://github.com/onesoft-sudo/sudobot/commit/64de4d53a48eec69bf6b027263fdda9ca8f271bc))
-
-
-### Features
-
-* **queues:** finishing touch ([f077ed8](https://github.com/onesoft-sudo/sudobot/commit/f077ed836ce85b25c02b02d52456a6e790f50822))
-* update profile command ([341d442](https://github.com/onesoft-sudo/sudobot/commit/341d442602cfda90c51473b66b1ab1dd7c222408))
 
 
 
