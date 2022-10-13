@@ -62,5 +62,6 @@ We may update our Privacy Policy from time to time. Thus, we advise you to revie
 
 If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us. You can contact us in the following method(s): 
 ‌
-* Email rakinar2@onesoftnet.eu.org
-* Discord Server Invite https://discord.gg/x69VqCVd5n
+Email: rakinar2@onesoftnet.eu.org 
+
+Discord Server Invite: https://discord.gg/x69VqCVd5n
