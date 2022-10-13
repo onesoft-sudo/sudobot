@@ -3,6 +3,9 @@
 ### development 
 (No change yet)
 
+### v4.0.2
+* Fixed unexpected unmute by profile filter if not muted
+
 ### v4.0.1
 * Updated about command
 
