@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-A Discord bot for moderation purposes. Click [here](#screenshots) to see the screenshots.
+A Discord bot for moderation purposes. [Click here](https://docs.sudobot.onesoftnet.eu.org/features/screenshots/) to see the screenshots.
 </p>
 
 ### Features
