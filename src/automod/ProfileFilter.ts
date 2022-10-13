@@ -106,7 +106,7 @@ export default class ProfileFilter extends Service {
     }
 
     async takeBack(member: GuildMember, profileFilterRecord: IProfileFilterRecord) {
-        if (profileFilterRecord.action === ProfileFilterAction.MUTE) {
+        if (profileFilterRecord.action === ProfileFilterAction.MUTE && member.roles.cache.has(this.client.config.props[member.guild.id].mute_role)) {
             await unmute(this.client, member, this.client.user!);
         }
 
