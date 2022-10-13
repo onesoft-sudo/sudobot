@@ -1,0 +1,8 @@
+documentation:
+- "docs/*"
+- "docs/**/*"
+- "README.md"
+
+workflows:
+- ".github/*"
+- ".github/**/*"
