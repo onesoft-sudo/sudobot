@@ -21,6 +21,8 @@ import { GuildMember } from "discord.js";
 import { mute } from "../commands/moderation/MuteCommand";
 import { unmute } from "../commands/moderation/UnmuteCommand";
 import ProfileFilterRecord, { IProfileFilterRecord } from "../models/ProfileFilterRecord";
+import Punishment from "../models/Punishment";
+import PunishmentType from "../types/PunishmentType";
 import Service from "../utils/structures/Service";
 
 export enum ProfileFilterAction {
@@ -107,6 +109,19 @@ export default class ProfileFilter extends Service {
 
     async takeBack(member: GuildMember, profileFilterRecord: IProfileFilterRecord) {
         if (profileFilterRecord.action === ProfileFilterAction.MUTE && member.roles.cache.has(this.client.config.props[member.guild.id].mute_role)) {
+            const punishment = await Punishment.findOne({ 
+                user_id: member.id, 
+                guild_id: member.guild.id, 
+                type: PunishmentType.MUTE 
+            }, undefined, { 
+                sort: { createdAt: -1 }
+            });
+
+            if (punishment && punishment.mod_id !== this.client.user!.id) {
+                await profileFilterRecord.delete();
+                return;
+            }
+
             await unmute(this.client, member, this.client.user!);
         }
 
