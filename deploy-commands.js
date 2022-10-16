@@ -250,6 +250,10 @@ let commands = [
 	new SlashCommandBuilder().setName('afk').setDescription('Set your AFK status')
 		.addStringOption(option => option.setName('reason').setDescription("The reason for going AFK")),
 	
+	new SlashCommandBuilder().setName('private').setDescription('Create a private channel for specific members')
+		.addUserOption(option => option.setName('member').setDescription("The member to add in the private channel").setRequired(true))
+		.addChannelOption(option => option.setName('category').setDescription("Create channel in the specified category")),
+	
 	new SlashCommandBuilder().setName('hash').setDescription('Generate hash for a string (text) data')
 		.addStringOption(option => option.setName('content').setDescription("The content to be hashed").setRequired(true))
 		.addStringOption(option => 
