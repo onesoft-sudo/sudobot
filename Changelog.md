@@ -3,6 +3,20 @@
 ### development 
 (No change yet)
 
+### v4.2.0
+* Added private channel creation command
+* Added embed builder snippet function
+
+### v4.1.2
+* Fixed profile filter interfering with manual mutes
+
+### v4.1.1
+* Fixed incomplete string escaping or encoding
+
+### v4.1.0
+* Added new welcome messages 
+* Added wildcard rickroll url 
+
 ### v4.0.2
 * Fixed unexpected unmute by profile filter if not muted
 
