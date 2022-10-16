@@ -1,84 +1,49 @@
-# Changelog
+# [4.2.0](https://github.com/onesoft-sudo/sudobot/compare/v4.1.2...v4.2.0) (2022-10-16)
 
-### development 
-(No change yet)
 
-### v4.2.0
-* Added private channel creation command
-* Added embed builder snippet function
+### Features
 
-### v4.1.2
-* Fixed profile filter interfering with manual mutes
+* **commands:** add private channel creation command ([826f6c5](https://github.com/onesoft-sudo/sudobot/commit/826f6c510b4192d4bf724adce850320d1b18c3fc))
+* **utils:** add embed builder snippet function ([2dbcc37](https://github.com/onesoft-sudo/sudobot/commit/2dbcc377a6b77bdc79b3f777895739510db5d56f))
 
-### v4.1.1
-* Fixed incomplete string escaping or encoding
 
-### v4.1.0
-* Added new welcome messages 
-* Added wildcard rickroll url 
 
-### v4.0.2
-* Fixed unexpected unmute by profile filter if not muted
+## [4.1.2](https://github.com/onesoft-sudo/sudobot/compare/v4.1.1...v4.1.2) (2022-10-15)
 
-### v4.0.1
-* Updated about command
 
-### v4.0.0
-* Added pagination to `help` command
-* Changed `rolelist` command signature and syntax
-* Added pagination to `rolelist` command
-* Added pagination system
-* Added installation/setup script for easy setup of the bot
-* Changed about command embed
-* Changed warn command embed color and added timestamps
-* Spotify status song name is now clickable; it takes you to the song page
-* Warning command now checks role position
-* Added new and improved pagination system
-* Upgraded the queue management system
-* Fixed AFK systems not working properly (#84)
-* Updated config schema
+### Bug Fixes
 
-### v4.0.0-alpha1
-* Fixed typo in a welcome message
+* **automod:** profile filter interfering with manual mutes ([#112](https://github.com/onesoft-sudo/sudobot/issues/112)) ([347d53b](https://github.com/onesoft-sudo/sudobot/commit/347d53be55caec779f4daf5171c687637d47db6b)), closes [#106](https://github.com/onesoft-sudo/sudobot/issues/106)
 
-### v4.0.0-alpha
-* Performance Improvements
-* Now Using MongoDB as Database instead of SQLite **[BREAKING CHANGE]**
-* A full refactor of the API
-* Dockerized the project
-* Customizable data directory path 
-* Fixed autocomplete interaction issues 
-* Add license notices and other details to the about command
-* Minor bug fixes
-* Added profile filter for checking banned words/tokens in user profiles
 
-### v3.0.0-alpha
-* Improved channel locking system
-* Added welcomer with random welcome messages support
-* Added permission based command system [BREAKING CHANGE]
-* Added config management command
-* Added embed builder command
-* Snippets, and some other commands now support embed schemas
-* Improved automod system
-* Added AntiJoin system
-* Auto mute user if they were muted before and left the server
-* Added debug logger for better error investigation 
-* Improve the strategy of loading services
-* Added repeated text filter channel exclution, spam filter exclusions will now also apply to this filter
-* Added mention input parser
-* Integrate with PM2 process manager
-* Performance enhancements
 
-##### Breaking Changes!!!
-Some commands will now require specific permissions. Users without those permissions will not be able to run those commands.
-The required permissions are given below:
+## [4.1.1](https://github.com/onesoft-sudo/sudobot/compare/v4.1.0...v4.1.1) (2022-10-13)
 
-Command                       |Permission(s)
-------------------------------|-------------
-Ban                           |`BAN_MEMBERS`
-Kick                          |`KICK_MEMBERS`
-Mute                          |`MODERATE_MEMBERS` (Timeout Members)
-Clearing messages             |`MANAGE_MESSAGES`
-Setting Channel Permissions   |`MANAGE_CHANNELS`
 
-Users having the `ADMINISTRATOR` permission will be able to bypass these requirements. Commands not listed here are not affected in this change.
+### Bug Fixes
+
+* incomplete string escaping or encoding ([7da63a5](https://github.com/onesoft-sudo/sudobot/commit/7da63a586e35ba656319ec42412461b211a66884))
+
+
+
+# [4.1.0](https://github.com/onesoft-sudo/sudobot/compare/v4.0.2...v4.1.0) (2022-10-13)
+
+
+### Features
+
+* add new welcome message ([5b01598](https://github.com/onesoft-sudo/sudobot/commit/5b015984c8548140eca75d0283d0fa5576f6f559))
+* add new welcome messages ([5863a2f](https://github.com/onesoft-sudo/sudobot/commit/5863a2ff660e44204f3c80b98cbbf616021b4f21))
+* add wildcard rickroll url ([faef065](https://github.com/onesoft-sudo/sudobot/commit/faef065d4e1461d063c7080ed580af44bd8079ca))
+* **welcomer:** add new welcome message ([fbff3bd](https://github.com/onesoft-sudo/sudobot/commit/fbff3bd7b937783e5f482d4813d051965c471eeb))
+
+
+
+## [4.0.2](https://github.com/onesoft-sudo/sudobot/compare/v4.0.1...v4.0.2) (2022-10-13)
+
+
+### Bug Fixes
+
+* do not unmute user if not muted ([#105](https://github.com/onesoft-sudo/sudobot/issues/105)) ([2393e4d](https://github.com/onesoft-sudo/sudobot/commit/2393e4dfb3dad219dfbfab71e5b88f85c663eb82)), closes [#101](https://github.com/onesoft-sudo/sudobot/issues/101)
+
+
+
