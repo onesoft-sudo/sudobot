@@ -100,22 +100,22 @@ export default class Pagination<T> {
                 .setCustomId(`pagination_first_${this.id}`)
                 .setStyle("PRIMARY")
                 .setDisabled(!first)
-                .setEmoji(emoji('ChevronLeft')!),
+                .setEmoji(emoji('ArrowLeft')!),
             new MessageButton()
                 .setCustomId(`pagination_back_${this.id}`)
                 .setStyle("PRIMARY")
                 .setDisabled(!back)
-                .setEmoji(emoji('ArrowLeft')!),
+                .setEmoji(emoji('ChevronLeft')!),
             new MessageButton()
                 .setCustomId(`pagination_next_${this.id}`)
                 .setStyle("PRIMARY")
                 .setDisabled(!next)
-                .setEmoji(emoji('ArrowRight')!),
+                .setEmoji(emoji('ChevronRight')!),
             new MessageButton()
                 .setCustomId(`pagination_last_${this.id}`)
                 .setStyle("PRIMARY")
                 .setDisabled(!last)
-                .setEmoji(emoji('ChevronRight')!)
+                .setEmoji(emoji('ArrowRight')!)
         );
 
         return actionRow;
