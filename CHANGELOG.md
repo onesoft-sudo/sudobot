@@ -1,3 +1,12 @@
+## [4.2.1](https://github.com/onesoft-sudo/sudobot/compare/v4.2.0...v4.2.1) (2022-10-17)
+
+
+### Bug Fixes
+
+* **pagination:** update button emoji orders ([#114](https://github.com/onesoft-sudo/sudobot/issues/114)) ([1bf02dc](https://github.com/onesoft-sudo/sudobot/commit/1bf02dcb933f1a1f0583a6277651adda387b1bcf))
+
+
+
 # [4.2.0](https://github.com/onesoft-sudo/sudobot/compare/v4.1.2...v4.2.0) (2022-10-16)
 
 
@@ -35,15 +44,6 @@
 * add new welcome messages ([5863a2f](https://github.com/onesoft-sudo/sudobot/commit/5863a2ff660e44204f3c80b98cbbf616021b4f21))
 * add wildcard rickroll url ([faef065](https://github.com/onesoft-sudo/sudobot/commit/faef065d4e1461d063c7080ed580af44bd8079ca))
 * **welcomer:** add new welcome message ([fbff3bd](https://github.com/onesoft-sudo/sudobot/commit/fbff3bd7b937783e5f482d4813d051965c471eeb))
-
-
-
-## [4.0.2](https://github.com/onesoft-sudo/sudobot/compare/v4.0.1...v4.0.2) (2022-10-13)
-
-
-### Bug Fixes
-
-* do not unmute user if not muted ([#105](https://github.com/onesoft-sudo/sudobot/issues/105)) ([2393e4d](https://github.com/onesoft-sudo/sudobot/commit/2393e4dfb3dad219dfbfab71e5b88f85c663eb82)), closes [#101](https://github.com/onesoft-sudo/sudobot/issues/101)
 
 
 
