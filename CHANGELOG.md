@@ -1,3 +1,12 @@
+## [4.2.2](https://github.com/onesoft-sudo/sudobot/compare/v4.2.1...v4.2.2) (2022-10-19)
+
+
+### Performance Improvements
+
+* **shots:** fix performance issues of shot command ([#115](https://github.com/onesoft-sudo/sudobot/issues/115)) ([b9ca96f](https://github.com/onesoft-sudo/sudobot/commit/b9ca96ff8c537523ae8d9b60b09931085026ea56))
+
+
+
 ## [4.2.1](https://github.com/onesoft-sudo/sudobot/compare/v4.2.0...v4.2.1) (2022-10-17)
 
 
@@ -32,18 +41,6 @@
 ### Bug Fixes
 
 * incomplete string escaping or encoding ([7da63a5](https://github.com/onesoft-sudo/sudobot/commit/7da63a586e35ba656319ec42412461b211a66884))
-
-
-
-# [4.1.0](https://github.com/onesoft-sudo/sudobot/compare/v4.0.2...v4.1.0) (2022-10-13)
-
-
-### Features
-
-* add new welcome message ([5b01598](https://github.com/onesoft-sudo/sudobot/commit/5b015984c8548140eca75d0283d0fa5576f6f559))
-* add new welcome messages ([5863a2f](https://github.com/onesoft-sudo/sudobot/commit/5863a2ff660e44204f3c80b98cbbf616021b4f21))
-* add wildcard rickroll url ([faef065](https://github.com/onesoft-sudo/sudobot/commit/faef065d4e1461d063c7080ed580af44bd8079ca))
-* **welcomer:** add new welcome message ([fbff3bd](https://github.com/onesoft-sudo/sudobot/commit/fbff3bd7b937783e5f482d4813d051965c471eeb))
 
 
 
