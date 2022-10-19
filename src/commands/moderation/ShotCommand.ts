@@ -52,11 +52,15 @@ export default class ShotCommand extends BaseCommand {
         let dm = true;
         let reason: string | undefined;
         
+        if (msg instanceof CommandInteraction || msg instanceof ContextMenuInteraction) {
+            await msg.deferReply();   
+        }
+        
         if (options.isInteraction) {
             user = await <GuildMember> (msg instanceof ContextMenuInteraction ? options.options.getMember('user') : options.options.getMember('member'));
 
             if (!user) {
-                await msg.reply({
+                await this.deferReply(msg, {
                     embeds: [
                         new MessageEmbed()
                         .setColor('#f14a60')
@@ -82,7 +86,7 @@ export default class ShotCommand extends BaseCommand {
                 user = user2;
             }
             catch (e) {
-                await msg.reply({
+                await this.deferReply(msg, {
                     embeds: [
                         new MessageEmbed()
                         .setColor('#f14a60')
@@ -105,7 +109,7 @@ export default class ShotCommand extends BaseCommand {
         if (user.id === client.user?.id) {
             const random = Math.random() >= 0.5;
             
-            await msg.reply({
+            await this.deferReply(msg, {
                 content: `Oh no no no... wait wait, you can't just do that with me${random ? "... I'm such an innocent bot :innocent:, PWEASE don't do that :pleading_face:" : "!?!? Can you?"}`,
                 files: [random ? "https://tenor.com/view/folded-hands-emoji-funny-animals-gray-cat-cute-pwease-gif-14039745.gif" : 'https://tenor.com/view/are-you-even-capable-vera-bennett-wentworth-can-you-handle-this-are-you-qualified-gif-22892513.gif']
             });
@@ -160,7 +164,7 @@ export default class ShotCommand extends BaseCommand {
             console.log(e);            
         }
 
-        await msg.reply({
+        await this.deferReply(msg, {
             embeds: [
                 new MessageEmbed()
                 .setAuthor({
