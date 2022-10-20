@@ -1,3 +1,12 @@
+# [4.4.0](https://github.com/onesoft-sudo/sudobot/compare/v4.3.0...v4.4.0) (2022-10-20)
+
+
+### Features
+
+* show the number of total commands in help ([931c640](https://github.com/onesoft-sudo/sudobot/commit/931c640d878e852dafc839b2bcf727379bf48d2a))
+
+
+
 # [4.3.0](https://github.com/onesoft-sudo/sudobot/compare/v4.2.2...v4.3.0) (2022-10-20)
 
 
@@ -32,15 +41,6 @@
 
 * **commands:** add private channel creation command ([826f6c5](https://github.com/onesoft-sudo/sudobot/commit/826f6c510b4192d4bf724adce850320d1b18c3fc))
 * **utils:** add embed builder snippet function ([2dbcc37](https://github.com/onesoft-sudo/sudobot/commit/2dbcc377a6b77bdc79b3f777895739510db5d56f))
-
-
-
-## [4.1.2](https://github.com/onesoft-sudo/sudobot/compare/v4.1.1...v4.1.2) (2022-10-15)
-
-
-### Bug Fixes
-
-* **automod:** profile filter interfering with manual mutes ([#112](https://github.com/onesoft-sudo/sudobot/issues/112)) ([347d53b](https://github.com/onesoft-sudo/sudobot/commit/347d53be55caec779f4daf5171c687637d47db6b)), closes [#106](https://github.com/onesoft-sudo/sudobot/issues/106)
 
 
 
