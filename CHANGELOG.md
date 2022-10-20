@@ -1,3 +1,12 @@
+# [4.3.0](https://github.com/onesoft-sudo/sudobot/compare/v4.2.2...v4.3.0) (2022-10-20)
+
+
+### Features
+
+* show total number of roles in rolelist command ([252155c](https://github.com/onesoft-sudo/sudobot/commit/252155c6d13e5f41d7e328f092ed8c25d7674dd0))
+
+
+
 ## [4.2.2](https://github.com/onesoft-sudo/sudobot/compare/v4.2.1...v4.2.2) (2022-10-19)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * **automod:** profile filter interfering with manual mutes ([#112](https://github.com/onesoft-sudo/sudobot/issues/112)) ([347d53b](https://github.com/onesoft-sudo/sudobot/commit/347d53be55caec779f4daf5171c687637d47db6b)), closes [#106](https://github.com/onesoft-sudo/sudobot/issues/106)
-
-
-
-## [4.1.1](https://github.com/onesoft-sudo/sudobot/compare/v4.1.0...v4.1.1) (2022-10-13)
-
-
-### Bug Fixes
-
-* incomplete string escaping or encoding ([7da63a5](https://github.com/onesoft-sudo/sudobot/commit/7da63a586e35ba656319ec42412461b211a66884))
 
 
 
