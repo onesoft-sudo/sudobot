@@ -45,7 +45,8 @@ export default class HelpCommand extends BaseCommand {
 
     async run(client: DiscordClient, message: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
         if ((options.isInteraction && !options.options.getString('command')) || (!options.isInteraction && options.args[0] === undefined)) {
-            const pagination = new Pagination(getAllCommandData(), {
+            const commandData = getAllCommandData();
+            const pagination = new Pagination(commandData, {
                 channel_id: message.channel!.id,
                 guild_id: message.guild!.id,
                 limit: 10,
@@ -66,7 +67,7 @@ export default class HelpCommand extends BaseCommand {
                         },
                         description,
                         footer: {
-                            text: `Page ${currentPage} of ${maxPages}`
+                            text: `Page ${currentPage} of ${maxPages} • ${commandData.length} commands total`
                         }
                     });
                 },
