@@ -74,7 +74,7 @@ export default class RoleListCommand extends BaseCommand {
                             iconURL: message.guild!.iconURL() ?? undefined
                         },
                         description,
-                        footer: { text: `Page ${currentPage} of ${maxPages}` }
+                        footer: { text: `Page ${currentPage} of ${maxPages} • ${roles.length} roles total` }
                     });
                 },
             });
