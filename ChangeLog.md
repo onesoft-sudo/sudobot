@@ -3,6 +3,10 @@
 ### development 
 (No change yet)
 
+### v4.6.0
+**Date**: 10-21-2022
+* Show who got banned in logging
+
 ### v4.5.0
 **Date**: 10-21-2022
 
