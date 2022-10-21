@@ -156,7 +156,7 @@ class Logger {
                     r = reason.replace(/^\[BAN\]/, '');
                 }
 
-                if (auditLog.executor?.id === this.client.user!.id && (r.startsWith("[TEMPBAN]") || r.startsWith("[SOFTBAN]"))) {
+                if (auditLog.executor?.id === this.client.user!.id || (r.startsWith("[TEMPBAN]") || r.startsWith("[SOFTBAN]"))) {
                     return;
                 }
             }
@@ -172,6 +172,10 @@ class Logger {
                     })
                     .addField('Reason', r)
                     .addField('User ID', ban.user.id)
+                    .addFields({
+                        name: 'Banned by',
+                        value: auditLog?.executor ? `${auditLog.executor.tag} (${auditLog.executor.id})` : 'Unknown'
+                    })
                     .setFooter({
                         text: "Banned",
                     })

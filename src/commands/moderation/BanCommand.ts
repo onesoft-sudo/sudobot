@@ -175,6 +175,37 @@ export default class BanCommand extends BaseCommand {
             return;
         }
 
+        try {
+            const loggingChannel = await msg.guild?.channels.fetch(client.config.get('logging_channel'));
+
+            if (loggingChannel && (loggingChannel.type === 'GUILD_TEXT' || loggingChannel.type === 'GUILD_NEWS')) {
+                await loggingChannel.send({
+                    embeds: [
+                        new MessageEmbed()
+                        .setColor('#f14a60')
+                        .setTitle("A user was banned")
+                        .setAuthor({
+                            name: user.tag,
+                            iconURL: user.displayAvatarURL(),
+                        })
+                        .addField('Reason', banOptions.reason === undefined ? "*No reason provided*" : banOptions.reason)
+                        .addField('User ID', user.id)
+                        .addFields({
+                            name: 'Banned by',
+                            value: `${(msg.member!.user as User).tag} (${msg.member!.user.id})`
+                        })
+                        .setFooter({
+                            text: "Banned",
+                        })
+                        .setTimestamp()
+                    ]
+                });
+            }
+        }
+        catch (e) {
+            console.log(e);
+        }
+
         await msg.reply({
             embeds: [
                 new MessageEmbed()
