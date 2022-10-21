@@ -18,6 +18,7 @@ jobs:
         with:
           github-token: ${{ secrets.AUTO_RELEASE_TOKEN }}
           version-file: './package.json,./package-lock.json'
+          output-file: 'false'
 
       - name: Create Release
         uses: actions/create-release@v1
