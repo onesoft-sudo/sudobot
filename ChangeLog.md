@@ -8,19 +8,19 @@
 
 * Show permission percentages in profile command
 
-### 4.4.0
+### v4.4.0
 
 * Show the number of total commands in help list
 
-### 4.3.0
+### v4.3.0
 
 * Show total number of roles in rolelist command
 
-### 4.2.2
+### v4.2.2
 
 * Fix performance issues of shot command
 
-### 4.2.1
+### v4.2.1
 
 * Update button emoji orders in paginator
 
