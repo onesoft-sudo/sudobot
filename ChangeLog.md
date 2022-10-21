@@ -6,7 +6,7 @@
 ### v4.5.0
 **Date**: 10-21-2022
 
-* Show permission percentages
+* Show permission percentages in profile command
 
 ### 4.4.0
 
