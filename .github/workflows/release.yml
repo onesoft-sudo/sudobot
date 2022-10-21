@@ -12,8 +12,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Conventional Changelog Action
-        id: changelog
+      - name: Conventional Release Action
+        id: release
         uses: TriPSs/conventional-changelog-action@v3.15.0
         with:
           github-token: ${{ secrets.AUTO_RELEASE_TOKEN }}
