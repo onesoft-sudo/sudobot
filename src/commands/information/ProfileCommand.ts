@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, GuildMember, Message, User, UserFlags } from 'discord.js';
+import { CommandInteraction, Guild, GuildMember, Message, Permissions, User, UserFlags } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -62,6 +62,23 @@ export const getUserBadges = (user: User) => {
     return badges.map(b => `🔵 ${b}`);
 };
 
+export function getPermissionLevel({ permissions, guild, id }: { id: string, permissions: GuildMember["permissions"], guild: Guild }, string: boolean = false) {
+    if (guild.ownerId === id) {
+        return string ? "100" : 100;
+    }
+
+    const allBits = Object.values(Permissions.FLAGS).length;
+    const array = permissions.toArray();
+
+    if (array.includes('ADMINISTRATOR')) {
+        return string ? "100" : 100;
+    }
+
+    const percentage = (array.length / allBits) * 100;
+
+    return string ? percentage.toString() : percentage;
+}
+
 export default class ProfileCommand extends BaseCommand {
     supportsInteractions: boolean = true;
 
@@ -70,13 +87,13 @@ export default class ProfileCommand extends BaseCommand {
     }
 
     async run(client: DiscordClient, msg: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
-        let user: GuildMember | null = null;
+        let member: GuildMember | null = null;
 
         if (msg instanceof CommandInteraction && options.isInteraction) {
             if (options.options.getMember('user'))
-                user = <GuildMember> await options.options.getMember('user');
+                member = <GuildMember> await options.options.getMember('user');
             else
-                user = <GuildMember> msg.member!;
+                member = <GuildMember> msg.member!;
         }
         else if (msg instanceof Message && !options.isInteraction) {
             if (options.normalArgs[0]) {
@@ -86,7 +103,7 @@ export default class ProfileCommand extends BaseCommand {
                     if (!tempMember)
                         throw new Error();
                     
-                    user = tempMember;
+                    member = tempMember;
                 }
                 catch (e) {
                     console.log(e);              
@@ -103,7 +120,7 @@ export default class ProfileCommand extends BaseCommand {
                 }
             }
             else {
-                user = msg.member!;
+                member = msg.member!;
             }
         }
 
@@ -120,12 +137,12 @@ export default class ProfileCommand extends BaseCommand {
             return s;
         };    
 
-        const statusText = '' + ((user?.presence?.clientStatus?.desktop ? 'Desktop (' + status(user?.presence?.clientStatus?.desktop) + ')\n' : '') + (user?.presence?.clientStatus?.web ? 'Web (' + status(user?.presence?.clientStatus?.web) + ')\n' : '') + (user?.presence?.clientStatus?.mobile ? 'Mobile (' + status(user?.presence?.clientStatus?.mobile) + ')' : ''));
+        const statusText = '' + ((member?.presence?.clientStatus?.desktop ? 'Desktop (' + status(member?.presence?.clientStatus?.desktop) + ')\n' : '') + (member?.presence?.clientStatus?.web ? 'Web (' + status(member?.presence?.clientStatus?.web) + ')\n' : '') + (member?.presence?.clientStatus?.mobile ? 'Mobile (' + status(member?.presence?.clientStatus?.mobile) + ')' : ''));
         // const state = user?.presence?.activities.find(a => a.type === 'CUSTOM')?.state;
         let activities: string[] | string = [];
 
-        if (user?.presence) {
-            for (const a of user?.presence?.activities.values()!) {
+        if (member?.presence) {
+            for (const a of member?.presence?.activities.values()!) {
                 console.log(a);
                 
                 if (a.type === 'CUSTOM') {
@@ -157,7 +174,7 @@ export default class ProfileCommand extends BaseCommand {
 
         activities = activities.join('\n');
 
-        const allRoles = [...user!.roles.cache.values()].filter(role => role.id !== msg.guild!.id).sort((role1, role2) => {
+        const allRoles = [...member!.roles.cache.values()].filter(role => role.id !== msg.guild!.id).sort((role1, role2) => {
             return role2.position - role1.position;
         });
         const limit = 10;
@@ -165,15 +182,15 @@ export default class ProfileCommand extends BaseCommand {
         const fields = [
             {
                 name: "Nickname",
-                value: `${user!.nickname?.replace(/\*\<\>\@\_\~\|/g, '') ?? '*Nickname not set*'}`
+                value: `${member!.nickname?.replace(/\*\<\>\@\_\~\|/g, '') ?? '*Nickname not set*'}`
             },
             {
                 name: "Account Created",
-                value: `${user!.user.createdAt.toLocaleDateString('en-US')} (${timeSince(user!.user.createdTimestamp)})`
+                value: `${member!.user.createdAt.toLocaleDateString('en-US')} (${timeSince(member!.user.createdTimestamp)})`
             },
             {
                 name: "Joined at",
-                value: `${user!.joinedAt!.toLocaleDateString('en-US')} (${timeSince(user!.joinedTimestamp!)})`
+                value: `${member!.joinedAt!.toLocaleDateString('en-US')} (${timeSince(member!.joinedTimestamp!)})`
             },
             {
                 name: 'Active Devices',
@@ -189,7 +206,7 @@ export default class ProfileCommand extends BaseCommand {
             }
         ];
 
-        const badges = getUserBadges(user!.user);
+        const badges = getUserBadges(member!.user);
 
         if (badges.length > 0) {
             fields.push({
@@ -201,14 +218,17 @@ export default class ProfileCommand extends BaseCommand {
         let banner: string | undefined;
 
         try {
-            await user?.user.fetch(true);
-            banner = user!.user!.bannerURL({ size: 4096 }) ?? undefined;
+            await member?.user.fetch(true);
+            banner = member!.user!.bannerURL({ size: 4096 }) ?? undefined;
         }
         catch (e) {
             console.log(e);
         }
 
-        console.log("Banner", banner, user!.user!.banner);
+        console.log("Banner", banner, member!.user!.banner);
+
+        let percentage = <string> getPermissionLevel(member!, true);
+        percentage = percentage.includes('.') ? percentage.substring(0, percentage.indexOf('.')) : percentage;
 
         await msg.reply({
             embeds: [
@@ -217,17 +237,17 @@ export default class ProfileCommand extends BaseCommand {
                         url: banner,
                     }
                 })
-                .setColor(user!.user!.hexAccentColor ? user!.user!.hexAccentColor! : '#007bff')
+                .setColor(member!.user!.hexAccentColor ? member!.user!.hexAccentColor! : '#007bff')
                 .setAuthor({
-                    name: user?.user.tag!,
-                    iconURL: user!.user.displayAvatarURL()
+                    name: member?.user.tag!,
+                    iconURL: member!.user.displayAvatarURL()
                 })
-                .setThumbnail(user!.displayAvatarURL({
+                .setThumbnail(member!.displayAvatarURL({
                     size: 4096
                 }))
                 .setFields(fields)
                 .setFooter({
-                    text: `${user?.user.bot ? 'Bot' : 'User'} • ${user!.id}`
+                    text: `${member?.user.bot ? 'Bot' : 'User'} • ${member!.id} • Has ${percentage.toString()}% permissions`
                 })
             ]
         });
