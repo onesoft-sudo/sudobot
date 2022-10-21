@@ -1,3 +1,12 @@
+# [4.5.0](https://github.com/onesoft-sudo/sudobot/compare/v4.4.0...v4.5.0) (2022-10-21)
+
+
+### Features
+
+* **profile:** show permission percentage ([#118](https://github.com/onesoft-sudo/sudobot/issues/118)) ([7ccd631](https://github.com/onesoft-sudo/sudobot/commit/7ccd631b062ad8f40b521023e5c1f5577a07485b))
+
+
+
 # [4.4.0](https://github.com/onesoft-sudo/sudobot/compare/v4.3.0...v4.4.0) (2022-10-20)
 
 
@@ -31,16 +40,6 @@
 ### Bug Fixes
 
 * **pagination:** update button emoji orders ([#114](https://github.com/onesoft-sudo/sudobot/issues/114)) ([1bf02dc](https://github.com/onesoft-sudo/sudobot/commit/1bf02dcb933f1a1f0583a6277651adda387b1bcf))
-
-
-
-# [4.2.0](https://github.com/onesoft-sudo/sudobot/compare/v4.1.2...v4.2.0) (2022-10-16)
-
-
-### Features
-
-* **commands:** add private channel creation command ([826f6c5](https://github.com/onesoft-sudo/sudobot/commit/826f6c510b4192d4bf724adce850320d1b18c3fc))
-* **utils:** add embed builder snippet function ([2dbcc37](https://github.com/onesoft-sudo/sudobot/commit/2dbcc377a6b77bdc79b3f777895739510db5d56f))
 
 
 
