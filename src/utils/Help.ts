@@ -466,7 +466,7 @@ export default <CommandHelpData[]> [
         notes: null,
         slashCommand: true,
         legacyCommand: true
-    }
+    },
     {
         name: 'profile',
         shortBrief: 'Show the server profile.',
