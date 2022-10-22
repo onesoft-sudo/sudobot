@@ -3,6 +3,14 @@
 ### development 
 (No change yet)
 
+### v4.6.2
+**Date**: 10-22-2022
+* Code style fixes
+
+### v4.6.1
+**Date**: 10-22-2022
+* Added missing command information in help menu
+
 ### v4.6.0
 **Date**: 10-21-2022
 * Show who got banned in logging
