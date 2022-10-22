@@ -458,6 +458,16 @@ export default <CommandHelpData[]> [
         legacyCommand: true
     },
     {
+        name: "private",
+        shortBrief: "Create a private channel for the specified users, including the command executor.",
+        description: null,
+        structure: '<...UserIDs|UserTags|UserMentions> [CategoryChannel]',
+        example: '`%%private 2936398373737283`\n`%%private @Someone`',
+        notes: null,
+        slashCommand: true,
+        legacyCommand: true
+    }
+    {
         name: 'profile',
         shortBrief: 'Show the server profile.',
         description: null,
