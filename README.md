@@ -33,7 +33,7 @@ Alternatively, you can create your own Discord API application and then host Sud
 
 #### Requirements
 * NodeJS version 16 or higher
-* MongoDB version 5.0 or higher
+* MongoDB version 5.0 or higher ([Click to get free MongoDB service](https://www.mongodb.com/atlas))
 * A Discord API application token with proper setup
 
 #### Optional Services
