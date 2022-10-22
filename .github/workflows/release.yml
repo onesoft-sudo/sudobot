@@ -18,7 +18,8 @@ jobs:
         with:
           github-token: ${{ secrets.AUTO_RELEASE_TOKEN }}
           version-file: './package.json,./package-lock.json'
-          output-file: 'false'
+          output-file: './CHANGELOG.md'
+          release-count: 0
           git-user-name: "Conventional Release Action"
           git-user-email: rakinar2@onesoftnet.eu.org
 
