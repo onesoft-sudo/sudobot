@@ -1,3 +1,17 @@
+# [4.7.0](https://github.com/onesoft-sudo/sudobot/compare/v4.6.3...v4.7.0) (2022-10-23)
+
+
+### Bug Fixes
+
+* typescript errors ([348d506](https://github.com/onesoft-sudo/sudobot/commit/348d506ed13e84fd845f7eb3ff3cca808901c475))
+
+
+### Features
+
+* **spam_filter:** custom spam warning message ([576ef58](https://github.com/onesoft-sudo/sudobot/commit/576ef58e16ecb5c1763b730fdfe5acb4ed0938d4))
+
+
+
 ## [4.6.3](https://github.com/onesoft-sudo/sudobot/compare/v4.6.2...v4.6.3) (2022-10-22)
 
 
