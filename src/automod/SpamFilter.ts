@@ -105,7 +105,7 @@ export default class SpamFilter {
 
                     if (isCreated) {
                         await message.channel.send({
-                            content: this.config.spam_message ? this.config.spam_message?.replace(/\:mention\:/g, userMention(author.id)) : `Whoa there ${userMention(author.id)}! Calm down and please don't spam!`
+                            content: this.config.spam_message ? this.config.spam_message?.toString()?.replace(/\:mention\:/g, userMention(author.id)) : `Whoa there ${userMention(author.id)}! Calm down and please don't spam!`
                         });
 
                         return;
