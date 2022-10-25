@@ -1,3 +1,12 @@
+## [4.8.1](https://github.com/onesoft-sudo/sudobot/compare/v4.8.0...v4.8.1) (2022-10-25)
+
+
+### Bug Fixes
+
+* **auth:** bot owner(s) can run any command ([f1b0778](https://github.com/onesoft-sudo/sudobot/commit/f1b07789ab29301bae6d338f396b7ea46a75a998))
+
+
+
 # [4.8.0](https://github.com/onesoft-sudo/sudobot/compare/v4.7.0...v4.8.0) (2022-10-25)
 
 
