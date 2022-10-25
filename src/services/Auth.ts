@@ -23,6 +23,10 @@ import Service from "../utils/structures/Service";
 
 export default class Auth extends Service {
     async verify(member: GuildMember, command: BaseCommand): Promise<boolean> {
+        if (this.client.config.props.global.owners.includes(member.user.id)) {
+            return true;
+        }
+        
         if (command.ownerOnly && !this.client.config.props.global.owners.includes(member.user.id)) {
             return false;
         }
