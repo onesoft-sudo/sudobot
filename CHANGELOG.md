@@ -1,3 +1,12 @@
+# [4.8.0](https://github.com/onesoft-sudo/sudobot/compare/v4.7.0...v4.8.0) (2022-10-25)
+
+
+### Features
+
+* **setup:** confirm `.env` file creation success ([5409d95](https://github.com/onesoft-sudo/sudobot/commit/5409d95ceb590b1f6eaf74eb9eeab70a3abbc6db))
+
+
+
 # [4.7.0](https://github.com/onesoft-sudo/sudobot/compare/v4.6.3...v4.7.0) (2022-10-23)
 
 
