@@ -207,6 +207,8 @@ const snowflakeValidator = input => {
         JWT_SECRET=${jwtSecret}
         DEBUG_WEBHOOK_URL=${webhook}
         `);
+        
+        console.log("`.env` file generated successfully!");
     }
 
     rl.close();
