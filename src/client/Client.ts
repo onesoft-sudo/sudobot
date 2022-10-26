@@ -23,7 +23,6 @@ import BaseCommand from '../utils/structures/BaseCommand';
 import { Config } from './Config';
 import Database from './Database';
 import path from 'path';
-import { appendFile } from "fs/promises";
 import Logger from '../automod/Logger';
 import SnippetManager from '../services/SnippetManager';
 import AFKEngine from '../services/AFKEngine';
@@ -35,7 +34,7 @@ import Server from '../api/Server';
 import StartupManager from '../services/StartupManager';
 import AutoClear from '../automod/AutoClear';
 import RandomStatus from '../services/RandomStatus';
-import DebugLogger from '../services/DebugLogger';
+import DebugLogger, { LogLevel } from '../services/DebugLogger';
 import BaseCLICommand from '../utils/structures/BaseCLICommand';
 import discordModals from 'discord-modals';
 import SpamFilter from '../automod/SpamFilter';
@@ -125,13 +124,12 @@ export default class DiscordClient extends Client {
 
         process.on('uncaughtException', (error, origin) => {
             console.log('Uncaught', error);
+
             this.handleCrash(error, origin).then(() => process.exit(-1)).catch(err => {
                 console.log(err);
                 process.exit(-1);
             });
-        });
-        
-        console.log('init');        
+        });  
 
         this.rootdir = rootdir;
         
@@ -141,25 +139,6 @@ export default class DiscordClient extends Client {
         this.db = new Database(this);
         this.serviceManager = new ServiceManager(this, this.aliases);
         this.serviceManager.load(this.services);
-
-        // this.logger = new Logger(this);
-        // this.snippetManager = new SnippetManager(this);
-        // this.afkEngine = new AFKEngine(this);
-        // this.auth = new Auth(this);
-        // this.spamFilter = new SpamFilter(this);
-        // this.messageFilter = new MessageFilter(this);
-        // this.antiraid = new AntiRaid(this);
-        // this.starboard = new Starboard(this);
-        // this.cooldown = new Cooldown(this);
-        // this.startupManager = new StartupManager(this);
-        // this.autoClear = new AutoClear(this);
-        // this.randomStatus = new RandomStatus(this);
-        // this.debugLogger = new DebugLogger(this);
-        // this.verification = new Verification(this);
-        // this.welcomer = new Welcomer(this);
-        // this.antijoin = new Antijoin(this);
-        // this.automute = new Automute(this);
-
         this.server = new Server(this);
         
         discordModals(this);        
@@ -182,8 +161,9 @@ export default class DiscordClient extends Client {
     }
 
     async handleCrash(error: Error, origin: NodeJS.UncaughtExceptionOrigin) {
-        console.log('here');
-        await appendFile(path.join(process.env.SUDO_PREFIX ?? (__dirname + "/../../"), "logs", "error.log"), `Uncaught ${error.name}: ${error.message}\n+ ${error.stack}`);
+        // await appendFile(path.join(process.env.SUDO_PREFIX ?? (__dirname + "/../../"), "logs", "error.log"), `Uncaught ${error.name}: ${error.message}\n+ ${error.stack}`);
+        await this.debugLogger.logApp(LogLevel.CRITICAL, "An internal error was occurred");
+        await this.debugLogger.logApp(LogLevel.ERROR, `Uncaught ${error.name}: ${error.message}\n+ ${error.stack}`);
         await this.debugLogger.logToHomeServer(`Uncaught ${error.name}: ${error.message}\n${error.stack}`);
     }
 }

@@ -17,6 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { format } from "date-fns";
 import { MessageEmbed, WebhookClient } from "discord.js";
 import { appendFile } from "fs/promises";
 import path from "path";
@@ -24,16 +25,17 @@ import Service from "../utils/structures/Service";
 import { splitMessage } from "../utils/util";
 
 export enum LogLevel {
-    LOG = 'log',
-    INFO = 'info',
-    WARN = 'warn',
-    CRITICAL = 'critical',
-    ERROR = 'error'
+    LOG = 'LOG',
+    INFO = 'INFO',
+    WARN = 'WARN',
+    CRITICAL = 'CRITICAL',
+    ERROR = 'ERROR'
 }
 
 export default class DebugLogger extends Service {
     private joinLeaveLogFile = path.join(process.env.SUDO_PREFIX ?? (__dirname + '/../../'), 'logs/join-leave.log');
     private appLogFile = path.join(process.env.SUDO_PREFIX ?? (__dirname + '/../../'), 'logs/app.log');
+    private debugLogFile = path.join(process.env.SUDO_PREFIX ?? (__dirname + '/../../'), 'logs/debug.log');
     
     async logApp(level: LogLevel, message: string) {
         await this.log(this.appLogFile, level, message);
@@ -45,6 +47,10 @@ export default class DebugLogger extends Service {
 
     async log(stream: string, level: LogLevel, message: string) {
         await appendFile(stream, `[${new Date().toISOString()}] [${level}] ${message}\n`);
+    }
+
+    async logDebug(message: string, newLine = false) {
+        await appendFile(this.debugLogFile, `${newLine ? '\n' : ''}[${format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx")}] ${message}\n`);
     }
 
     async logToHomeServer(message: string, logLevel: LogLevel = LogLevel.ERROR) {
