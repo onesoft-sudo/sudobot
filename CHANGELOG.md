@@ -1,3 +1,12 @@
+# [4.9.0](https://github.com/onesoft-sudo/sudobot/compare/v4.8.1...v4.9.0) (2022-10-26)
+
+
+### Features
+
+* **utils:** reply embed function accepts other options ([6fc36f6](https://github.com/onesoft-sudo/sudobot/commit/6fc36f6e10a8f7c52588fd2bbcaafd8625cb35e0))
+
+
+
 ## [4.8.1](https://github.com/onesoft-sudo/sudobot/compare/v4.8.0...v4.8.1) (2022-10-25)
 
 
