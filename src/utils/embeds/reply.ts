@@ -17,8 +17,9 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { MessageEmbedOptions } from "discord.js";
 import MessageEmbed from "../../client/MessageEmbed";
 
-export default function reply(description: string, color = 0x007bff) {
-    return new MessageEmbed({ color, description });
+export default function reply(description: string, color = 0x007bff, options: MessageEmbedOptions = {}) {
+    return new MessageEmbed({ color, description, ...options });
 }   
