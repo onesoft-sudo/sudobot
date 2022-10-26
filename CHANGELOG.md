@@ -1,3 +1,13 @@
+# [4.11.0](https://github.com/onesoft-sudo/sudobot/compare/v4.10.0...v4.11.0) (2022-10-26)
+
+
+### Features
+
+* add private channel command ([371ab10](https://github.com/onesoft-sudo/sudobot/commit/371ab100baf39c4aaadf6ec526bdaa5670bb7035))
+* add setup command ([d5bbb9a](https://github.com/onesoft-sudo/sudobot/commit/d5bbb9ad7d897806d9eb7dc9baa4a39322ea567f))
+
+
+
 # [4.10.0](https://github.com/onesoft-sudo/sudobot/compare/v4.9.0...v4.10.0) (2022-10-26)
 
 
