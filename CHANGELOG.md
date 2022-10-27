@@ -1,3 +1,12 @@
+## [4.12.3](https://github.com/onesoft-sudo/sudobot/compare/v4.12.2...v4.12.3) (2022-10-27)
+
+
+### Bug Fixes
+
+* workflows ([9b60573](https://github.com/onesoft-sudo/sudobot/commit/9b60573798deb54ceed0421fc4e21d69e07c0fdc))
+
+
+
 ## [4.12.2](https://github.com/onesoft-sudo/sudobot/compare/v4.12.1...v4.12.2) (2022-10-27)
 
 
@@ -33,15 +42,6 @@
 
 * add private channel command ([371ab10](https://github.com/onesoft-sudo/sudobot/commit/371ab100baf39c4aaadf6ec526bdaa5670bb7035))
 * add setup command ([d5bbb9a](https://github.com/onesoft-sudo/sudobot/commit/d5bbb9ad7d897806d9eb7dc9baa4a39322ea567f))
-
-
-
-# [4.10.0](https://github.com/onesoft-sudo/sudobot/compare/v4.9.0...v4.10.0) (2022-10-26)
-
-
-### Features
-
-* **debug-logging:** better logging ([#122](https://github.com/onesoft-sudo/sudobot/issues/122)) ([19bea05](https://github.com/onesoft-sudo/sudobot/commit/19bea059d82d55e0e60f4033ef6cd7a6fd11da97))
 
 
 
