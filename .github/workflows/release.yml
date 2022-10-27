@@ -16,7 +16,7 @@ jobs:
         id: release
         uses: TriPSs/conventional-changelog-action@v3.15.0
         with:
-          github-token: ${{ secrets.AUTO_RELEASE_TOKEN }}
+          github-token: ${{ secrets.__TOKEN }}
           version-file: './package.json,./package-lock.json'
           release-count: 0
           git-user-name: "Conventional Release Action"
@@ -26,7 +26,7 @@ jobs:
         uses: actions/create-release@v1
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
         env:
-          GITHUB_TOKEN: ${{ secrets.AUTO_RELEASE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.__TOKEN }}
         with:
           tag_name: ${{ steps.changelog.outputs.tag }}
           release_name: ${{ steps.changelog.outputs.tag }}
