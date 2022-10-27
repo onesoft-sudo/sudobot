@@ -35,6 +35,7 @@ export interface PaginationOptions<T> {
     channel_id: string;
     user_id?: string;
     timeout?: number;
+    messageOptions?: ReplyMessageOptions & MessageOptions & InteractionReplyOptions & MessageEditOptions;
     embedBuilder: (options: EmbedBuilderOptions<T>) => MessageEmbed;
     actionRowBuilder?: (options: { first: boolean, last: boolean, next: boolean, back: boolean }) => MessageActionRow<MessageButton>;
 }
@@ -66,7 +67,7 @@ export default class Pagination<T> {
     }
 
     getMessageOptions(page: number = 1, actionRowOptions: { first: boolean, last: boolean, next: boolean, back: boolean } | undefined = undefined, optionsToMerge: ReplyMessageOptions & MessageOptions & InteractionReplyOptions & MessageEditOptions = {}) {
-        const options = {...optionsToMerge};
+        const options = {...this.options.messageOptions, ...optionsToMerge};
         const actionRowOptionsDup = actionRowOptions ? {...actionRowOptions} : { first: true, last: true, next: true, back: true };
 
         if (actionRowOptionsDup && page <= 1) {
@@ -83,7 +84,7 @@ export default class Pagination<T> {
         options.embeds.push(this.getEmbed(page));
         
         options.components ??= [];
-        options.components.push(this.getActionRow(actionRowOptionsDup));
+        options.components = [this.getActionRow(actionRowOptionsDup), ...options.components];
 
         return options;
     }
@@ -179,19 +180,20 @@ export default class Pagination<T> {
                         (interaction.customId === `pagination_next_${this.id}` ? (this.currentPage >= maxPage ? this.currentPage : ++this.currentPage) : --this.currentPage),
                 componentOptions,
                 {
-                    embeds: []
+                    embeds: [],
+                    ...(this.options.messageOptions ?? {})
                 }
             ));
         });
 
         collector.on("end", async () => {
-            const component = message.components[0]; // this.getActionRow({ first: false, last: false, next: false, back: false })
+            const [component, ...components] = message.components!; // this.getActionRow({ first: false, last: false, next: false, back: false })
 
             for (const i in component.components) {
                 component.components[i].disabled = true;
             }
 
-            await message.edit({ components: [component] });
+            await message.edit({ components: [component, ...components] });
         });
     }
 }
