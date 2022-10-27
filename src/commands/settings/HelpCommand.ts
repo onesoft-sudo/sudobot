@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, Message } from 'discord.js';
+import { CommandInteraction, Message, MessageActionRow, MessageButton } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import Help from '../../utils/Help';
@@ -26,6 +26,7 @@ import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import { getAllCommandData, renderCommandMeta } from '../../services/CommandMetaDataManager';
 import Pagination from '../../utils/Pagination';
+import { fetchEmoji } from '../../utils/Emoji';
 
 export default class HelpCommand extends BaseCommand {
     constructor() {
@@ -46,12 +47,30 @@ export default class HelpCommand extends BaseCommand {
     async run(client: DiscordClient, message: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
         if ((options.isInteraction && !options.options.getString('command')) || (!options.isInteraction && options.args[0] === undefined)) {
             const commandData = getAllCommandData();
+
+            const row = new MessageActionRow<MessageButton>()
+                .addComponents(
+                    new MessageButton()
+                        .setLabel('Documentation')
+                        .setURL('https://docs.sudobot.onesoftnet.eu.org')
+                        .setStyle('LINK')
+                        .setEmoji('📘'),
+                    new MessageButton()
+                        .setLabel('GitHub')
+                        .setURL('https://github.com/onesoft-sudo/sudobot')
+                        .setStyle('LINK')
+                        .setEmoji((await fetchEmoji('github'))!)
+                );
+
             const pagination = new Pagination(commandData, {
                 channel_id: message.channel!.id,
                 guild_id: message.guild!.id,
                 limit: 10,
                 user_id: message.member!.user.id,
                 timeout: 120_000,
+                messageOptions: {
+                    components: [row]
+                },
                 embedBuilder({ data, maxPages, currentPage }) {
                     let description = `\`<...>\` means required argument and \`[...]\` means optional argument.\nRun \`${client.config.get('prefix')}help <CommandName>\` for more information about a specific command.\n\n`;
 
@@ -72,8 +91,9 @@ export default class HelpCommand extends BaseCommand {
                     });
                 },
             });
-
-            let reply = await message.reply(pagination.getMessageOptions(1));
+                
+            const options = pagination.getMessageOptions(1);
+            let reply = await message.reply(options);
 
             if (message instanceof CommandInteraction) {
                 reply = <Message> await message.fetchReply();
