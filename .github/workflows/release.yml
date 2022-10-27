@@ -18,6 +18,8 @@ jobs:
         with:
           github-token: ${{ secrets.__TOKEN }}
           version-file: './package.json,./package-lock.json'
+          git-user-name: "Conventional Release Action"
+          git-user-email: rakinar2@onesoftnet.eu.org
 
       - name: Create Release
         uses: actions/create-release@v1
