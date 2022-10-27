@@ -12,15 +12,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Conventional Release Action
-        id: release
+      - name: Conventional Changelog Action
+        id: changelog
         uses: TriPSs/conventional-changelog-action@v3.15.0
         with:
           github-token: ${{ secrets.__TOKEN }}
           version-file: './package.json,./package-lock.json'
-          release-count: 0
-          git-user-name: "Conventional Release Action"
-          git-user-email: rakinar2@onesoftnet.eu.org
 
       - name: Create Release
         uses: actions/create-release@v1
