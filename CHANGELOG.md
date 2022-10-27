@@ -1,3 +1,12 @@
+## [4.12.1](https://github.com/onesoft-sudo/sudobot/compare/v4.12.0...v4.12.1) (2022-10-27)
+
+
+### Bug Fixes
+
+* update workflows ([42f6284](https://github.com/onesoft-sudo/sudobot/commit/42f628474c0e9e2aa5a69c59af500af65fc5fc03))
+
+
+
 # [4.12.0](https://github.com/onesoft-sudo/sudobot/compare/v4.11.0...v4.12.0) (2022-10-27)
 
 
