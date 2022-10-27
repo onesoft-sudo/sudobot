@@ -1,3 +1,13 @@
+# [4.12.0](https://github.com/onesoft-sudo/sudobot/compare/v4.11.0...v4.12.0) (2022-10-27)
+
+
+### Features
+
+* **help:** add useful link buttons ([8d510c6](https://github.com/onesoft-sudo/sudobot/commit/8d510c6eb24d695fa496a4675d48d53a7a3ce8ea))
+* **paginator:** custom message options ([f1d306f](https://github.com/onesoft-sudo/sudobot/commit/f1d306fd86928bb0215d60d24f96b4e82e9ea676))
+
+
+
 # [4.11.0](https://github.com/onesoft-sudo/sudobot/compare/v4.10.0...v4.11.0) (2022-10-26)
 
 
