@@ -1,7 +1,6 @@
 import { ContextMenuInteraction, Message } from "discord.js";
 import DiscordClient from "../../client/Client";
 import MessageEmbed from "../../client/MessageEmbed";
-import InteractionOptions from "../../types/InteractionOptions";
 import BaseCommand from "../../utils/structures/BaseCommand";
 
 export default class SaveMessageCommand extends BaseCommand {
