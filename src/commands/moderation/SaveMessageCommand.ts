@@ -12,7 +12,7 @@ export default class SaveMessageCommand extends BaseCommand {
         super('Save Message', 'moderation', []);
     }
 
-    async run(client: DiscordClient, interaction: ContextMenuInteraction, options: InteractionOptions): Promise<void> {
+    async run(client: DiscordClient, interaction: ContextMenuInteraction): Promise<void> {
         if (!interaction.isMessageContextMenu() || !interaction.targetMessage) {
             await interaction.reply({ content: "The interaction payload is corrupted.", ephemeral: true });
             return;
