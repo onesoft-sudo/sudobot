@@ -1,3 +1,12 @@
+# [4.13.0](https://github.com/onesoft-sudo/sudobot/compare/v4.12.3...v4.13.0) (2022-10-28)
+
+
+### Features
+
+* **automod:** add autoresponder ([#123](https://github.com/onesoft-sudo/sudobot/issues/123)) ([5d28cbc](https://github.com/onesoft-sudo/sudobot/commit/5d28cbc643d774fddfb0112dc85c6e356669224e))
+
+
+
 ## [4.12.3](https://github.com/onesoft-sudo/sudobot/compare/v4.12.2...v4.12.3) (2022-10-27)
 
 
@@ -32,16 +41,6 @@
 
 * **help:** add useful link buttons ([8d510c6](https://github.com/onesoft-sudo/sudobot/commit/8d510c6eb24d695fa496a4675d48d53a7a3ce8ea))
 * **paginator:** custom message options ([f1d306f](https://github.com/onesoft-sudo/sudobot/commit/f1d306fd86928bb0215d60d24f96b4e82e9ea676))
-
-
-
-# [4.11.0](https://github.com/onesoft-sudo/sudobot/compare/v4.10.0...v4.11.0) (2022-10-26)
-
-
-### Features
-
-* add private channel command ([371ab10](https://github.com/onesoft-sudo/sudobot/commit/371ab100baf39c4aaadf6ec526bdaa5670bb7035))
-* add setup command ([d5bbb9a](https://github.com/onesoft-sudo/sudobot/commit/d5bbb9ad7d897806d9eb7dc9baa4a39322ea567f))
 
 
 
