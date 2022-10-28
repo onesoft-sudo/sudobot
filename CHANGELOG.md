@@ -1,3 +1,13 @@
+# [4.14.0](https://github.com/onesoft-sudo/sudobot/compare/v4.13.0...v4.14.0) (2022-10-28)
+
+
+### Features
+
+* **commands:** add message saving command ([4f3021c](https://github.com/onesoft-sudo/sudobot/commit/4f3021c6e068e8a78904973cd65a84613c457882))
+* **commands:** update application commands ([e7f62db](https://github.com/onesoft-sudo/sudobot/commit/e7f62dbe11e90f2a88391210a2d752531667eaa3))
+
+
+
 # [4.13.0](https://github.com/onesoft-sudo/sudobot/compare/v4.12.3...v4.13.0) (2022-10-28)
 
 
@@ -31,16 +41,6 @@
 ### Bug Fixes
 
 * update workflows ([42f6284](https://github.com/onesoft-sudo/sudobot/commit/42f628474c0e9e2aa5a69c59af500af65fc5fc03))
-
-
-
-# [4.12.0](https://github.com/onesoft-sudo/sudobot/compare/v4.11.0...v4.12.0) (2022-10-27)
-
-
-### Features
-
-* **help:** add useful link buttons ([8d510c6](https://github.com/onesoft-sudo/sudobot/commit/8d510c6eb24d695fa496a4675d48d53a7a3ce8ea))
-* **paginator:** custom message options ([f1d306f](https://github.com/onesoft-sudo/sudobot/commit/f1d306fd86928bb0215d60d24f96b4e82e9ea676))
 
 
 
