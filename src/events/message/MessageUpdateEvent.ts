@@ -33,8 +33,9 @@ export default class MessageUpdateEvent extends BaseEvent {
         let msg = await client.msg;
         await (client.msg = newMessage);
     
+        await client.commonService.run(newMessage);
         await client.messageFilter.start(newMessage);
-        // await client.messageFilter.start(newMessage, this.commandManager);
+        await client.autoResponder.run(newMessage);
 
         await client.logger.logEdit(oldMessage, newMessage);
         await (client.msg = msg);
