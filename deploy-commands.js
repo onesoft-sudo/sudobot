@@ -442,6 +442,7 @@ let contextMenuCommands = [
 	new ContextMenuCommandBuilder().setName('Ban').setType(ApplicationCommandType.User),
 	new ContextMenuCommandBuilder().setName('Shot').setType(ApplicationCommandType.User),
 	new ContextMenuCommandBuilder().setName('Kick').setType(ApplicationCommandType.User),
+	new ContextMenuCommandBuilder().setName('Save Message').setType(ApplicationCommandType.Message),
 ].map(command => command.toJSON());
 
 commands = commands.concat(contextMenuCommands);
