@@ -115,7 +115,7 @@ export default class MessageFilter {
         let wordsList: string[] = [];
 
         if (!this.config.regex)
-            wordsList = msg.content.toLowerCase().split(/\s+/);
+            wordsList = this.client.commonService.words;
 
         for (let word of this.config.words) {
             if (this.config.regex) {
