@@ -6,3 +6,18 @@ documentation:
 workflows:
 - ".github/*"
 - ".github/**/*"
+
+automod:
+- "src/automod/*"
+- "src/automod/**/*"
+
+api:
+- "src/api/*"
+- "src/api/**/*"
+
+commands:
+- "src/commands/*"
+- "src/commands/**/*"
+
+setup-script:
+- "setup.js"
