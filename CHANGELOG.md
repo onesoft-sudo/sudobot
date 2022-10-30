@@ -1,3 +1,12 @@
+# [4.15.0](https://github.com/onesoft-sudo/sudobot/compare/v4.14.0...v4.15.0) (2022-10-30)
+
+
+### Features
+
+* **paginator:** support custom data fetching ([a1a3f0c](https://github.com/onesoft-sudo/sudobot/commit/a1a3f0c02833afeeb1c7c186d7a928a20f316325))
+
+
+
 # [4.14.0](https://github.com/onesoft-sudo/sudobot/compare/v4.13.0...v4.14.0) (2022-10-28)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * workflows ([76a0e56](https://github.com/onesoft-sudo/sudobot/commit/76a0e56cce68bb770392517087d8c3137c4b400b))
-
-
-
-## [4.12.1](https://github.com/onesoft-sudo/sudobot/compare/v4.12.0...v4.12.1) (2022-10-27)
-
-
-### Bug Fixes
-
-* update workflows ([42f6284](https://github.com/onesoft-sudo/sudobot/commit/42f628474c0e9e2aa5a69c59af500af65fc5fc03))
 
 
 
