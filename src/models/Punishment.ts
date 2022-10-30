@@ -17,9 +17,9 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Schema, model } from 'mongoose';
+import { Schema, model, Document } from 'mongoose';
 
-export interface IPunishment {
+export interface IPunishment extends Document {
     user_id: string
     mod_id: string
     mod_tag: string,
@@ -66,50 +66,5 @@ const schema = new Schema({
         default: () => new Date()
     }
 });
-
-// class Punishment extends Model {}
-
-// Punishment.init({
-//     id: {
-//         type: DataTypes.INTEGER,
-//         primaryKey: true,
-//         autoIncrement: true,
-//         allowNull: false,
-//     },
-//     user_id: {
-//         type: DataTypes.STRING,
-//         allowNull: false,
-//     },
-//     mod_id: {
-//         type: DataTypes.STRING,
-//         allowNull: false,
-//     },
-//     mod_tag: {
-//         type: DataTypes.STRING,
-//         allowNull: false,
-//     },
-//     guild_id: {
-//         type: DataTypes.STRING,
-//         allowNull: false,
-//     },
-//     reason: {
-//         type: DataTypes.TEXT,
-//         allowNull: true
-//     },
-//     type: {
-//         type: DataTypes.STRING,
-//         allowNull: false
-//     },
-//     meta: {
-//         type: DataTypes.JSON,
-//         allowNull: false,
-//         defaultValue: {}
-//     },
-// }, {
-//     sequelize: DiscordClient.client.db.sequelize,
-//     modelName: 'Punishment',
-//     updatedAt: false,
-//     tableName: 'punishments'
-// });
 
 export default model('Punishment', schema);
