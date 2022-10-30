@@ -79,7 +79,7 @@ export default class RoleListCommand extends BaseCommand {
                 },
             });
 
-            let reply = await this.deferReply(message, pagination.getMessageOptions(1));
+            let reply = await this.deferReply(message, await pagination.getMessageOptions(1));
 
             if (message instanceof Interaction) {
                 reply = (await message.fetchReply()) as Message;

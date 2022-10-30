@@ -92,7 +92,7 @@ export default class HelpCommand extends BaseCommand {
                 },
             });
                 
-            const options = pagination.getMessageOptions(1);
+            const options = await pagination.getMessageOptions(1);
             let reply = await message.reply(options);
 
             if (message instanceof CommandInteraction) {
