@@ -29,12 +29,20 @@ export interface EmbedBuilderOptions<T> {
     maxPages: number;
 }
 
+export interface FetchDataOption {
+    currentPage: number;
+    offset: number;
+    limit: number;
+}
+
 export interface PaginationOptions<T> {
     limit: number;
     guild_id: string;
     channel_id: string;
     user_id?: string;
     timeout?: number;
+    maxData?: (options: FetchDataOption) => Promise<number>;
+    fetchData?: (options: FetchDataOption) => Promise<T[]>;
     messageOptions?: ReplyMessageOptions & MessageOptions & InteractionReplyOptions & MessageEditOptions;
     embedBuilder: (options: EmbedBuilderOptions<T>) => MessageEmbed;
     actionRowBuilder?: (options: { first: boolean, last: boolean, next: boolean, back: boolean }) => MessageActionRow<MessageButton>;
@@ -43,9 +51,11 @@ export interface PaginationOptions<T> {
 export default class Pagination<T> {
     protected readonly client = DiscordClient.client;
     protected readonly id: string;
+    protected maxPage: number = 0;
     protected currentPage: number = 1;
+    protected currentData: T[] = [];
 
-    constructor(protected readonly data: Array<T> = [], protected readonly options: PaginationOptions<T>) {
+    constructor(protected readonly data: Array<T> | null = [], protected readonly options: PaginationOptions<T>) {
         this.id = uuid();
     }
 
@@ -53,35 +63,54 @@ export default class Pagination<T> {
         return (page - 1) * this.options.limit;
     }
 
-    getPaginatedData(page: number = 1) {
+    async getPaginatedData(page: number = 1) {
         console.log(page, this.getOffset(page));
-        return this.data.slice(this.getOffset(page), this.getOffset(page) + this.options.limit);
+
+        if (this.options.fetchData)
+            this.currentData = await this.options.fetchData({
+                currentPage: page,
+                limit: this.options.limit,
+                offset: this.getOffset(page)
+            });
+
+        return this.data ? this.data.slice(this.getOffset(page), this.getOffset(page) + this.options.limit) : this.currentData;
     }
 
-    getEmbed(page: number = 1): MessageEmbed {
+    async getEmbed(page: number = 1): Promise<MessageEmbed> {
+        const data = await this.getPaginatedData(page);
+
         return this.options.embedBuilder({
-            data: this.getPaginatedData(page),
+            data: this.data ? data : this.currentData,
             currentPage: this.currentPage,
-            maxPages: Math.ceil(this.data.length / this.options.limit),
+            maxPages: Math.ceil((this.data?.length ?? this.maxPage) / this.options.limit),
         });
     }
 
-    getMessageOptions(page: number = 1, actionRowOptions: { first: boolean, last: boolean, next: boolean, back: boolean } | undefined = undefined, optionsToMerge: ReplyMessageOptions & MessageOptions & InteractionReplyOptions & MessageEditOptions = {}) {
+    async getMessageOptions(page: number = 1, actionRowOptions: { first: boolean, last: boolean, next: boolean, back: boolean } | undefined = undefined, optionsToMerge: ReplyMessageOptions & MessageOptions & InteractionReplyOptions & MessageEditOptions = {}) {
         const options = {...this.options.messageOptions, ...optionsToMerge};
         const actionRowOptionsDup = actionRowOptions ? {...actionRowOptions} : { first: true, last: true, next: true, back: true };
+
+        if (this.options.maxData && this.maxPage === 0)
+            this.maxPage = await this.options.maxData({
+                currentPage: page,
+                limit: this.options.limit,
+                offset: this.getOffset(page)
+            });
+
+        console.log("Max Page", this.maxPage);
 
         if (actionRowOptionsDup && page <= 1) {
             actionRowOptionsDup.back = false;
             actionRowOptionsDup.first = false;
         }
 
-        if (actionRowOptionsDup && page >= Math.ceil(this.data.length / this.options.limit)) {
+        if (actionRowOptionsDup && page >= Math.ceil((this.data?.length ?? this.maxPage) / this.options.limit)) {
             actionRowOptionsDup.last = false
             actionRowOptionsDup.next = false;
         }
 
         options.embeds ??= [];
-        options.embeds.push(this.getEmbed(page));
+        options.embeds.push(await this.getEmbed(page));
         
         options.components ??= [];
         options.components = [this.getActionRow(actionRowOptionsDup), ...options.components];
@@ -150,7 +179,7 @@ export default class Pagination<T> {
 
             // await interaction.deferUpdate();
             
-            const maxPage = Math.ceil(this.data.length / this.options.limit);
+            const maxPage = Math.ceil((this.data?.length ?? this.maxPage) / this.options.limit);
             const componentOptions = { first: true, last: true, next: true, back: true };
 
             if ([`pagination_next_${this.id}`, `pagination_back_${this.id}`].includes(interaction.customId)) {
@@ -174,7 +203,7 @@ export default class Pagination<T> {
             else if (interaction.customId === `pagination_last_${this.id}`)
                 this.currentPage = maxPage;            
 
-            await interaction.update(this.getMessageOptions(
+            await interaction.update(await this.getMessageOptions(
                 interaction.customId === `pagination_first_${this.id}` ? 1 : 
                     interaction.customId === `pagination_last_${this.id}` ? maxPage :
                         (interaction.customId === `pagination_next_${this.id}` ? (this.currentPage >= maxPage ? this.currentPage : ++this.currentPage) : --this.currentPage),
@@ -193,7 +222,12 @@ export default class Pagination<T> {
                 component.components[i].disabled = true;
             }
 
-            await message.edit({ components: [component, ...components] });
+            try {
+                await message.edit({ components: [component, ...components] });
+            }
+            catch (e) {
+                console.log(e);
+            }
         });
     }
 }
