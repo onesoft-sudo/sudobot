@@ -488,6 +488,16 @@ export default <CommandHelpData[]> [
         legacyCommand: true
     },
     {
+        name: 'reply',
+        shortBrief: 'Send a reply to a message.',
+        description: null,
+        structure: "<message_id> <content> [channel]",
+        example: "`/reply message_id:2762892162852659 content:Test Message`",
+        notes: "Content menu support is also available for this command.",
+        slashCommand: true,
+        legacyCommand: false
+    },
+    {
         name: 'rolelist',
         shortBrief: 'List all roles in the server or give info about a role.',
         description: null,
