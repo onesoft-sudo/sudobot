@@ -1,3 +1,12 @@
+## [4.16.1](https://github.com/onesoft-sudo/sudobot/compare/v4.16.0...v4.16.1) (2022-10-31)
+
+
+### Bug Fixes
+
+* update help command ([5401664](https://github.com/onesoft-sudo/sudobot/commit/54016648ab99eaf6c9a6030dd1213cc2771abb66))
+
+
+
 # [4.16.0](https://github.com/onesoft-sudo/sudobot/compare/v4.15.1...v4.16.0) (2022-10-31)
 
 
@@ -32,15 +41,6 @@
 
 * **commands:** add message saving command ([4f3021c](https://github.com/onesoft-sudo/sudobot/commit/4f3021c6e068e8a78904973cd65a84613c457882))
 * **commands:** update application commands ([e7f62db](https://github.com/onesoft-sudo/sudobot/commit/e7f62dbe11e90f2a88391210a2d752531667eaa3))
-
-
-
-# [4.13.0](https://github.com/onesoft-sudo/sudobot/compare/v4.12.3...v4.13.0) (2022-10-28)
-
-
-### Features
-
-* **automod:** add autoresponder ([#123](https://github.com/onesoft-sudo/sudobot/issues/123)) ([5d28cbc](https://github.com/onesoft-sudo/sudobot/commit/5d28cbc643d774fddfb0112dc85c6e356669224e))
 
 
 
