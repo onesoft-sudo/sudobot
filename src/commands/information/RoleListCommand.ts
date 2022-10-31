@@ -85,7 +85,7 @@ export default class RoleListCommand extends BaseCommand {
                 reply = (await message.fetchReply()) as Message;
             }
 
-            await pagination.start(reply! as Message);
+            pagination.start(reply! as Message).catch(console.error);
         }
         else {
             await message.reply({

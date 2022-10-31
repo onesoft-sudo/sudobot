@@ -99,7 +99,7 @@ export default class HelpCommand extends BaseCommand {
                 reply = <Message> await message.fetchReply();
             }
 
-            await pagination.start(reply!);
+            pagination.start(reply!).catch(console.error);
 
             return;
         }

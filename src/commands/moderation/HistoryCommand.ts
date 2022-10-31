@@ -175,6 +175,6 @@ export default class HistoryCommand extends BaseCommand {
             reply = <Message> await msg.fetchReply();
         }
 
-        await paginator.start(reply);
+        paginator.start(reply).catch(console.error);
     }
 }
