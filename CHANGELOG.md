@@ -1,3 +1,12 @@
+## [4.15.1](https://github.com/onesoft-sudo/sudobot/compare/v4.15.0...v4.15.1) (2022-10-31)
+
+
+### Bug Fixes
+
+* **paginator:** app crash when users deletes reply message ([6abd969](https://github.com/onesoft-sudo/sudobot/commit/6abd96908e3a9853432b90d9f69c4f06b4092dac))
+
+
+
 # [4.15.0](https://github.com/onesoft-sudo/sudobot/compare/v4.14.0...v4.15.0) (2022-10-30)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * workflows ([9b60573](https://github.com/onesoft-sudo/sudobot/commit/9b60573798deb54ceed0421fc4e21d69e07c0fdc))
-
-
-
-## [4.12.2](https://github.com/onesoft-sudo/sudobot/compare/v4.12.1...v4.12.2) (2022-10-27)
-
-
-### Bug Fixes
-
-* workflows ([76a0e56](https://github.com/onesoft-sudo/sudobot/commit/76a0e56cce68bb770392517087d8c3137c4b400b))
 
 
 
