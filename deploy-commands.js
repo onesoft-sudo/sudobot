@@ -381,6 +381,11 @@ let commands = [
 	new SlashCommandBuilder().setName('history').setDescription('Fetch all moderation history for a user')
 		.addUserOption(option => option.setName('user').setDescription("The user").setRequired(true)),
 
+	new SlashCommandBuilder().setName('reply').setDescription('Reply to someone\'s message')
+		.addStringOption(option => option.setName('message_id').setDescription("The message ID").setRequired(true))
+		.addStringOption(option => option.setName('content').setDescription("The message content").setRequired(true))
+		.addChannelOption(option => option.setName('channel').setDescription("The channel where the bot should make reply, defaults to current channel").setRequired(false)),
+
 	new SlashCommandBuilder().setName('clear').setDescription('Clear messages in bulk')
 		.addUserOption(option => option.setName('user').setDescription("The user"))
 		.addIntegerOption(option => option.setName('count').setDescription("The amount of messages to delete").setMaxValue(400).setMinValue(0))
@@ -443,6 +448,7 @@ let contextMenuCommands = [
 	new ContextMenuCommandBuilder().setName('Shot').setType(ApplicationCommandType.User),
 	new ContextMenuCommandBuilder().setName('Kick').setType(ApplicationCommandType.User),
 	new ContextMenuCommandBuilder().setName('Save Message').setType(ApplicationCommandType.Message),
+	new ContextMenuCommandBuilder().setName('Send Reply').setType(ApplicationCommandType.Message),
 ].map(command => command.toJSON());
 
 commands = commands.concat(contextMenuCommands);
