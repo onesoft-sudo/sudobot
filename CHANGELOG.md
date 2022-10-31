@@ -1,3 +1,12 @@
+# [4.16.0](https://github.com/onesoft-sudo/sudobot/compare/v4.15.1...v4.16.0) (2022-10-31)
+
+
+### Features
+
+* **commands:** add reply command ([5bba261](https://github.com/onesoft-sudo/sudobot/commit/5bba261ab10c477d405ebf95b931505dd6b4e2f8))
+
+
+
 ## [4.15.1](https://github.com/onesoft-sudo/sudobot/compare/v4.15.0...v4.15.1) (2022-10-31)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * **automod:** add autoresponder ([#123](https://github.com/onesoft-sudo/sudobot/issues/123)) ([5d28cbc](https://github.com/onesoft-sudo/sudobot/commit/5d28cbc643d774fddfb0112dc85c6e356669224e))
-
-
-
-## [4.12.3](https://github.com/onesoft-sudo/sudobot/compare/v4.12.2...v4.12.3) (2022-10-27)
-
-
-### Bug Fixes
-
-* workflows ([9b60573](https://github.com/onesoft-sudo/sudobot/commit/9b60573798deb54ceed0421fc4e21d69e07c0fdc))
 
 
 
