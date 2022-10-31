@@ -23,7 +23,7 @@ import Response from "./Response";
 
 export default class Controller {
     constructor(protected client: DiscordClient) {
-        console.log("Constructor call");
+        // console.log("Constructor call");
     }
 
     protected response(body: string | object | null | undefined, status: number = 200, headers: KeyValuePair<string> = {}) {

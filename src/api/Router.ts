@@ -47,7 +47,7 @@ export default class Router extends Service {
                 continue;
             }
 
-            console.log(`Loading routes from "${file}"...`);
+            // console.log(`Loading routes from "${file}"...`);
 
             await import(path.join(this.routesDir, file));
         }
@@ -59,7 +59,7 @@ export default class Router extends Service {
         if (!controller) {
             controller = new callback[0](DiscordClient.client);
             DiscordClient.client.server.router.controllerObjects.push(controller);
-            console.log("Pushed a controller");
+            // console.log("Pushed a controller");
         }
 
         const route = new Route(method, path, [controller, callback[1]]);
