@@ -31,10 +31,20 @@ export default abstract class BaseCommand {
     coolDown?: number;
     ownerOnly: boolean = false;
 	permissions: PermissionResolvable[] = [];
-
+    
+    protected name: string = "";
+    protected category: string = "";
+    protected aliases: Array<string> = [];
 	
-    constructor(private name: string, private category: string, private aliases: Array<string>) {
-        
+    constructor(name?: string, category?: string, aliases?: Array<string>) {
+        if (name)
+            this.name = name;
+
+        if (category)
+            this.category = category;
+
+        if (aliases)
+            this.aliases = aliases;
     }
     
     getName(): string { 

@@ -188,6 +188,16 @@ export default <CommandHelpData[]> [
         legacyCommand: true
     },
     {
+        name: 'dmhistory',
+        shortBrief: "Get your infraction list via DMs.",
+        description: null,
+        structure: "",
+        example: "`%%dmhistory`",
+        notes: null,
+        slashCommand: true,
+        legacyCommand: true
+    },
+    {
         name: 'dog',
         shortBrief: "Get a random doggy picture.",
         description: "Fetches a random cat picture from `thedogapi.com` API.",
@@ -524,6 +534,19 @@ export default <CommandHelpData[]> [
         structure: "<UserID|UserTag|Mention> <content>",
         example: "`%%send 278358918549759428 Hello world`\n`%%send @Someone Hello world`",
         notes: null,
+        slashCommand: true,
+        legacyCommand: true
+    },
+    {
+        name: 'sendhistory',
+        shortBrief: "Get someone's full infraction list.",
+        description: null,
+        structure: "<UserID|UserTag|UserMention> [--dm]",
+        example: "`%%sendhistory 4738621677421822`",
+        notes: null,
+        options: {
+            "--dm": "Send a DM to the given user with the infraction list"
+        },
         slashCommand: true,
         legacyCommand: true
     },

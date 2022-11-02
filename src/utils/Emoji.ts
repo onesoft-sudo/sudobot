@@ -24,12 +24,12 @@ function globalConfig() {
     return DiscordClient.client.config.props.global;
 }
 
-export async function fetchEmoji(name: string) {    
-    return await findEmoji(e => e.name === name);
+export function fetchEmoji(name: string) {    
+    return findEmoji(e => e.name === name);
 }
 
-export async function fetchEmojiStr(name: string) {    
-    return (await findEmoji(e => e.name === name))?.toString();
+export function fetchEmojiStr(name: string) {    
+    return (findEmoji(e => e.name === name))?.toString();
 }
 
 export function emoji(name: string) {

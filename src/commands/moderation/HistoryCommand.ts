@@ -29,7 +29,7 @@ import PunishmentType from '../../types/PunishmentType';
 import Pagination from '../../utils/Pagination';
 import { format, formatDistanceToNowStrict } from 'date-fns';
 
-const convert = (type: PunishmentType) => {            
+export const convert = (type: PunishmentType) => {            
     switch (type) {
         case PunishmentType.BAN:
             return 'Ban';
