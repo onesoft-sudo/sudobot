@@ -369,6 +369,11 @@ let commands = [
 			return subcmd.setName('clear').setDescription('Clear all warnings for a user').addUserOption(option => option.setName('user').setDescription("The user").setRequired(true));
 		}),
 
+	new SlashCommandBuilder().setName('dmhistory').setDescription('Get your full infraction list via DMs'),
+	new SlashCommandBuilder().setName('sendhistory').setDescription('Get someone\'s full infraction list')
+		.addUserOption(option => option.setName("user").setDescription("The user").setRequired(true))
+		.addBooleanOption(option => option.setName("send_dm").setDescription("If true, the system will send a DM to the user with the infraction history")),
+
 	new SlashCommandBuilder().setName('noteget').setDescription('Get information about a note')
 		.addNumberOption(option => option.setName('id').setDescription("The note ID").setRequired(true)),
 
