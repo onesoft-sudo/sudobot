@@ -1,3 +1,12 @@
+## [4.17.1](https://github.com/onesoft-sudo/sudobot/compare/v4.17.0...v4.17.1) (2022-11-02)
+
+
+### Bug Fixes
+
+* no newline in infractions ([4cfb727](https://github.com/onesoft-sudo/sudobot/commit/4cfb727579e0d8f1c5223a71e259a02af3153582))
+
+
+
 # [4.17.0](https://github.com/onesoft-sudo/sudobot/compare/v4.16.1...v4.17.0) (2022-11-02)
 
 
@@ -33,15 +42,6 @@
 ### Bug Fixes
 
 * **paginator:** app crash when users deletes reply message ([6abd969](https://github.com/onesoft-sudo/sudobot/commit/6abd96908e3a9853432b90d9f69c4f06b4092dac))
-
-
-
-# [4.15.0](https://github.com/onesoft-sudo/sudobot/compare/v4.14.0...v4.15.0) (2022-10-30)
-
-
-### Features
-
-* **paginator:** support custom data fetching ([a1a3f0c](https://github.com/onesoft-sudo/sudobot/commit/a1a3f0c02833afeeb1c7c186d7a928a20f316325))
 
 
 
