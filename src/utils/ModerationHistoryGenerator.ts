@@ -29,10 +29,13 @@ export default class ModerationHistoryGenerator {
         await tmpFile.appendFile(`Moderation history of ${this.user.tag} (ID: ${this.user.id}) in ${this.guild.name}\n`);
         await tmpFile.appendFile(`* ${punishments.length} total entries\n`);
         await tmpFile.appendFile(`* Seeing something unexpected? Contact the moderators of ${this.guild.name}\n`);
-        await tmpFile.appendFile(`* Format: [Case ID] - [Type] - [Reason] - [Date]\n\n====================================================================\n\n`);
+        await tmpFile.appendFile(`* Format: [Serial Number] - [Case ID] - [Type] - [Reason] - [Date]\n\n====================================================================\n\n`);
     
+        let i = 1;
+
         for await (const punishment of punishments) {
-            await tmpFile.appendFile(`${punishment.id} - ${convert(punishment.type as PunishmentType)} - ${punishment.reason ?? '*No Reason Provided*'} - ${punishment.createdAt} (${formatDistanceToNowStrict(punishment.createdAt, { addSuffix: true })})`);
+            await tmpFile.appendFile(`${i}. ${punishment.id} - ${convert(punishment.type as PunishmentType)} - ${punishment.reason ?? '*No Reason Provided*'} - ${punishment.createdAt} (${formatDistanceToNowStrict(punishment.createdAt, { addSuffix: true })})\n`);
+            i++;
         }
     
         if (punishments.length === 0) {
