@@ -1,3 +1,14 @@
+# [4.17.0](https://github.com/onesoft-sudo/sudobot/compare/v4.16.1...v4.17.0) (2022-11-02)
+
+
+### Features
+
+* **commands:** add dmhistory command ([57d4193](https://github.com/onesoft-sudo/sudobot/commit/57d4193dd85abb13ac5b2aaf891fb2c804556e3b))
+* **commands:** add sendhistory command ([58e87e3](https://github.com/onesoft-sudo/sudobot/commit/58e87e3cb8e460544d537617308ffa28e57a6ac3))
+* **commands:** update application command deploy script ([9260786](https://github.com/onesoft-sudo/sudobot/commit/92607867ffdb4742c491aaf5a8bba4448f4ba1e7))
+
+
+
 ## [4.16.1](https://github.com/onesoft-sudo/sudobot/compare/v4.16.0...v4.16.1) (2022-10-31)
 
 
@@ -31,16 +42,6 @@
 ### Features
 
 * **paginator:** support custom data fetching ([a1a3f0c](https://github.com/onesoft-sudo/sudobot/commit/a1a3f0c02833afeeb1c7c186d7a928a20f316325))
-
-
-
-# [4.14.0](https://github.com/onesoft-sudo/sudobot/compare/v4.13.0...v4.14.0) (2022-10-28)
-
-
-### Features
-
-* **commands:** add message saving command ([4f3021c](https://github.com/onesoft-sudo/sudobot/commit/4f3021c6e068e8a78904973cd65a84613c457882))
-* **commands:** update application commands ([e7f62db](https://github.com/onesoft-sudo/sudobot/commit/e7f62dbe11e90f2a88391210a2d752531667eaa3))
 
 
 
