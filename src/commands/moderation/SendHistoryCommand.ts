@@ -7,6 +7,7 @@ import { fetchEmoji } from "../../utils/Emoji";
 import getUser from "../../utils/getUser";
 import ModerationHistoryGenerator from "../../utils/ModerationHistoryGenerator";
 import BaseCommand from "../../utils/structures/BaseCommand";
+
 export default class SendHistoryCommand extends BaseCommand {
     name = "sendhistory";
     category = "moderation";
