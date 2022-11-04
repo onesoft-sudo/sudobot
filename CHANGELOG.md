@@ -1,3 +1,12 @@
+# [4.18.0](https://github.com/onesoft-sudo/sudobot/compare/v4.17.1...v4.18.0) (2022-11-04)
+
+
+### Features
+
+* **automod:** add message reporting system ([ead9f54](https://github.com/onesoft-sudo/sudobot/commit/ead9f547d33cd31a8c353c51bef612ddc5bf8385))
+
+
+
 ## [4.17.1](https://github.com/onesoft-sudo/sudobot/compare/v4.17.0...v4.17.1) (2022-11-02)
 
 
@@ -33,15 +42,6 @@
 ### Features
 
 * **commands:** add reply command ([5bba261](https://github.com/onesoft-sudo/sudobot/commit/5bba261ab10c477d405ebf95b931505dd6b4e2f8))
-
-
-
-## [4.15.1](https://github.com/onesoft-sudo/sudobot/compare/v4.15.0...v4.15.1) (2022-10-31)
-
-
-### Bug Fixes
-
-* **paginator:** app crash when users deletes reply message ([6abd969](https://github.com/onesoft-sudo/sudobot/commit/6abd96908e3a9853432b90d9f69c4f06b4092dac))
 
 
 
