@@ -1,5 +1,5 @@
 # Terms of Service
-Last updated: 28 October 2022
+Last updated: 10 November 2022
 
 Please read these terms of service (“terms”, “terms of service”) carefully before using the Discord Bot, SudoBot (the “service”) operated by OSN Inc (“us”, ‘we”, “our”).
 
@@ -18,7 +18,6 @@ By using this service or visiting this website YOU AGREE TO THE FOLLOWING CONDIT
 * You will not sell, represent or warrant the services provided by us as your property.
 * You will not violate Discord's ToS.
 * You will keep the user data secure and private.
-* You will not copy materials like the SudoBot Logo without the written permission by the Author ("Ar Rakin").
 
 If you do not agree to these terms then you should stop using the services from us, right now. We reserve the right to terminate the services to you at any point, for your ToS violations or any other reason.
 
