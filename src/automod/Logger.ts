@@ -81,7 +81,14 @@ class Logger {
                     .setColor('#007bff')
                     .setTitle('Message Edited in #' + (newMsg.channel as TextChannel).name + " (" + newMsg.channel.id + ")")
                     .setDescription('**-+-+Before**\n' + oldMsg.content + '\n\n**-+-+After**\n' + newMsg.content)
-                    .addField('ID', newMsg.id)
+                    .addFields({
+                        name: 'ID', 
+                        value: newMsg.id
+                    },
+                    {
+                        name: 'User ID', 
+                        value: newMsg.author.id
+                    })
                     .setAuthor({
                         name: newMsg.author.tag,
                         iconURL: newMsg.author.displayAvatarURL(),
@@ -105,7 +112,14 @@ class Logger {
                     name: msg.author.tag,
                     iconURL: msg.author.displayAvatarURL(),
                 })
-                .addField('ID', msg.id)
+                .addFields({
+                    name: 'ID', 
+                    value: msg.id
+                },
+                {
+                    name: 'User ID', 
+                    value: msg.author.id
+                })
                 .setFooter({
                     text: "Deleted",
                 })
