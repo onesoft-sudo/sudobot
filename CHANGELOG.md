@@ -1,3 +1,12 @@
+# [4.19.0](https://github.com/onesoft-sudo/sudobot/compare/v4.18.0...v4.19.0) (2022-11-12)
+
+
+### Features
+
+* **logger:** show message author ID on change ([bb7fc8a](https://github.com/onesoft-sudo/sudobot/commit/bb7fc8a145c2fcc5373f2a077cfb8c082929b26c))
+
+
+
 # [4.18.0](https://github.com/onesoft-sudo/sudobot/compare/v4.17.1...v4.18.0) (2022-11-04)
 
 
@@ -33,15 +42,6 @@
 ### Bug Fixes
 
 * update help command ([5401664](https://github.com/onesoft-sudo/sudobot/commit/54016648ab99eaf6c9a6030dd1213cc2771abb66))
-
-
-
-# [4.16.0](https://github.com/onesoft-sudo/sudobot/compare/v4.15.1...v4.16.0) (2022-10-31)
-
-
-### Features
-
-* **commands:** add reply command ([5bba261](https://github.com/onesoft-sudo/sudobot/commit/5bba261ab10c477d405ebf95b931505dd6b4e2f8))
 
 
 
