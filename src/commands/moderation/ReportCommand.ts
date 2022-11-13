@@ -36,7 +36,7 @@ export default class ReportCommand extends BaseCommand {
         if (!(await this.verify(client, interaction))) {
             return;
         }
-        
+
         const { customId, guild } = interaction;
         const targetMessage = this.ids[customId];
 
@@ -103,9 +103,8 @@ export default class ReportCommand extends BaseCommand {
             return false;
         }
 
-        if (config.mod_only && !member.roles.cache.has(client.config.props[(interaction.member as GuildMember).guild.id].mod_role)) {
-            await interaction.reply({ ephemeral: true, content: "You don't have permission to report users." });
-            return false;
+        if (config.mod_only && member.roles.cache.has(client.config.props[(interaction.member as GuildMember).guild.id].mod_role)) {
+            return true;
         }
 
         for (const roleID of config.reporter_roles) {
@@ -118,12 +117,12 @@ export default class ReportCommand extends BaseCommand {
             }
         }
 
-        if (!config.reporters.includes(interaction.member!.user.id)) {
-            await interaction.reply({ ephemeral: true, content: "You're not permitted to report messages." });
-            return false;
+        if (config.reporters.includes(interaction.member!.user.id)) {
+            return true;
         }
-
-        return true;
+        
+        await interaction.reply({ ephemeral: true, content: "You're not permitted to report messages." });
+        return false;
     }
 
     async run(client: DiscordClient, interaction: MessageContextMenuInteraction, options: InteractionOptions): Promise<void> {
