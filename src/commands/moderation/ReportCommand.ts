@@ -18,7 +18,7 @@
 */
 
 import { ModalSubmitInteraction } from 'discord-modals';
-import { Message, Interaction, CacheType, MessageContextMenuInteraction, Modal, MessageActionRow, TextInputComponent, TextChannel } from 'discord.js';
+import { Message, Interaction, CacheType, MessageContextMenuInteraction, Modal, MessageActionRow, TextInputComponent, TextChannel, GuildMember } from 'discord.js';
 import DiscordClient from '../../client/Client';
 import MessageEmbed from '../../client/MessageEmbed';
 import CommandOptions from '../../types/CommandOptions';
@@ -33,6 +33,10 @@ export default class ReportCommand extends BaseCommand {
     supportsContextMenu = true;
 
     async modalSubmit(client: DiscordClient, interaction: ModalSubmitInteraction): Promise<void> {
+        if (!(await this.verify(client, interaction))) {
+            return;
+        }
+        
         const { customId, guild } = interaction;
         const targetMessage = this.ids[customId];
 
@@ -90,7 +94,43 @@ export default class ReportCommand extends BaseCommand {
         await interaction.reply({ content: "The message has been reported. Moderators will take action soon.", ephemeral: true });
     }
 
+    async verify(client: DiscordClient, interaction: MessageContextMenuInteraction | ModalSubmitInteraction) {
+        const member = interaction.member as GuildMember;
+        const config = client.config.props[member.guild.id].reports;
+
+        if (!config.enabled) {
+            await interaction.reply({ ephemeral: true, content: "Message reports are disabled in this server." });
+            return false;
+        }
+
+        if (config.mod_only && !member.roles.cache.has(client.config.props[(interaction.member as GuildMember).guild.id].mod_role)) {
+            await interaction.reply({ ephemeral: true, content: "You don't have permission to report users." });
+            return false;
+        }
+
+        for (const roleID of config.reporter_roles) {
+            if (roleID === 'everyone') {
+                return true;
+            }
+            
+            if (member.roles.cache.has(roleID)) {
+                return true;
+            }
+        }
+
+        if (!config.reporters.includes(interaction.member!.user.id)) {
+            await interaction.reply({ ephemeral: true, content: "You're not permitted to report messages." });
+            return false;
+        }
+
+        return true;
+    }
+
     async run(client: DiscordClient, interaction: MessageContextMenuInteraction, options: InteractionOptions): Promise<void> {
+        if (!(await this.verify(client, interaction))) {
+            return;
+        }
+
         const randomId = 'report_modal_' + Math.round(Math.random() * 10000000);
         const { targetMessage } = interaction;
         const modal = new Modal()
