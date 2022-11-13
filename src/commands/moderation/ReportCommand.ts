@@ -103,8 +103,13 @@ export default class ReportCommand extends BaseCommand {
             return false;
         }
 
-        if (config.mod_only && member.roles.cache.has(client.config.props[(interaction.member as GuildMember).guild.id].mod_role)) {
+        if (member.roles.cache.has(client.config.props[(interaction.member as GuildMember).guild.id].mod_role)) {
             return true;
+        }
+
+        if (config.mod_only && !member.roles.cache.has(client.config.props[(interaction.member as GuildMember).guild.id].mod_role)) {
+            await interaction.reply({ ephemeral: true, content: "Only moderators can report messages." });
+            return false;
         }
 
         for (const roleID of config.reporter_roles) {
