@@ -1,3 +1,13 @@
+## [4.20.1](https://github.com/onesoft-sudo/sudobot/compare/v4.20.0...v4.20.1) (2022-11-13)
+
+
+### Bug Fixes
+
+* message reports not permitting users ([234a15b](https://github.com/onesoft-sudo/sudobot/commit/234a15bfc78bccbaaa0daa108dcc488153bbd6a2))
+* message reports with moderator only setting ([801fdc5](https://github.com/onesoft-sudo/sudobot/commit/801fdc5a3efdbb2756b53ba7c932447da9cc631f))
+
+
+
 # [4.20.0](https://github.com/onesoft-sudo/sudobot/compare/v4.19.0...v4.20.0) (2022-11-13)
 
 
@@ -31,17 +41,6 @@
 ### Bug Fixes
 
 * no newline in infractions ([4cfb727](https://github.com/onesoft-sudo/sudobot/commit/4cfb727579e0d8f1c5223a71e259a02af3153582))
-
-
-
-# [4.17.0](https://github.com/onesoft-sudo/sudobot/compare/v4.16.1...v4.17.0) (2022-11-02)
-
-
-### Features
-
-* **commands:** add dmhistory command ([57d4193](https://github.com/onesoft-sudo/sudobot/commit/57d4193dd85abb13ac5b2aaf891fb2c804556e3b))
-* **commands:** add sendhistory command ([58e87e3](https://github.com/onesoft-sudo/sudobot/commit/58e87e3cb8e460544d537617308ffa28e57a6ac3))
-* **commands:** update application command deploy script ([9260786](https://github.com/onesoft-sudo/sudobot/commit/92607867ffdb4742c491aaf5a8bba4448f4ba1e7))
 
 
 
