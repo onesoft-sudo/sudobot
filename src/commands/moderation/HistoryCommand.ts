@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, ContextMenuInteraction, Interaction, InteractionCollector, Message, MessageActionRow, MessageButton, User } from 'discord.js';
+import { CommandInteraction, ContextMenuInteraction, Interaction, InteractionCollector, Message, MessageActionRow, MessageButton, User, Util } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -64,6 +64,47 @@ export default class HistoryCommand extends BaseCommand {
         super('history', 'moderation', ['Moderation History']);
     }
 
+    verboseOutput(data: IPunishment[]) {
+        let str = '';
+                
+        for (const row of data) {
+            str += `**Case ID**: \`${row.id}\`\n`;
+            str += `**Type**: ${convert(row.type as PunishmentType)}\n`;
+            str += `**Reason**: ${row.reason ? (row.reason.trim() === '' ? '*No reason provided*' : `\`\`\`${row.reason}\`\`\``) : '*No reason provided*'}\n`;
+
+            str += `**Action Executor**: ${row.mod_tag} (<@${row.mod_id}>)\n`;
+            str += `**Date**: ${format(row.createdAt, "dd MMMM yyyy 'at' h:mm a")} (${formatDistanceToNowStrict(row.createdAt, { addSuffix: true })})\n`;
+
+            if (row.meta) {
+                const json = typeof row.meta === 'string' ? JSON.parse(row.meta) : row.meta;
+
+                if (Object.keys(json).length > 0) {
+                    str += "Additional Attributes:\n```\n";
+
+                    for (const key in json) {
+                        str += `${key}: ${json[key]}\n`;
+                    }
+
+                    str += '\n```\n';
+                }
+            }
+
+            str += '\n';
+        }
+
+        return str;
+    }
+
+    shortOutput(data: IPunishment[]) {
+        let str = '';
+
+        for (const row of data) {
+            str += `\`${row.id}\` | \`${convert(row.type as PunishmentType)}\` | <@${row.user_id}> | Moderated by <@${row.mod_id}> | ${formatDistanceToNowStrict(row.createdAt, { addSuffix: true })}\n`;
+        }
+
+        return str;
+    }
+
     async run(client: DiscordClient, msg: Message | CommandInteraction | ContextMenuInteraction, options: CommandOptions | InteractionOptions) {
         if (!options.isInteraction && typeof options.args[0] === 'undefined') {
             await msg.reply({
@@ -82,6 +123,7 @@ export default class HistoryCommand extends BaseCommand {
         }
 
         let user: User | null | undefined;
+        let verbose = options.isInteraction ? (options.options.getBoolean('verbose') ?? true) : (!options.args.includes('--no-verbose') && !options.args.includes('-s'));
 
         if (options.isInteraction) {
             user = await <User> options.options.getUser('user');
@@ -108,6 +150,8 @@ export default class HistoryCommand extends BaseCommand {
             }
         }
 
+        const { verboseOutput, shortOutput } = this;
+
         const paginator = new Pagination<IPunishment>(null, {
             channel_id: msg.channel!.id,
             guild_id: msg.guild!.id,
@@ -129,33 +173,8 @@ export default class HistoryCommand extends BaseCommand {
                 return data;
             },
             embedBuilder({ data, currentPage, maxPages }) {
-                let str = '';
-                
-                for (const row of data) {
-                    str += `**Case ID**: \`${row.id}\`\n`;
-                    str += `**Type**: ${convert(row.type as PunishmentType)}\n`;
-                    str += `**Reason**: ${row.reason ? (row.reason.trim() === '' ? '*No reason provided*' : `\`\`\`${row.reason}\`\`\``) : '*No reason provided*'}\n`;
+                const str = verbose ? verboseOutput(data) : shortOutput(data);
 
-                    str += `**Action Executor**: ${row.mod_tag} (<@${row.mod_id}>)\n`;
-                    str += `**Date**: ${format(row.createdAt, "dd MMMM yyyy 'at' h:mm a")} (${formatDistanceToNowStrict(row.createdAt, { addSuffix: true })})\n`;
-        
-                    if (row.meta) {
-                        const json = typeof row.meta === 'string' ? JSON.parse(row.meta) : row.meta;
-        
-                        if (Object.keys(json).length > 0) {
-                            str += "Additional Attributes:\n```\n";
-        
-                            for (const key in json) {
-                                str += `${key}: ${json[key]}\n`;
-                            }
-        
-                            str += '\n```\n';
-                        }
-                    }
-        
-                    str += '\n';
-                }
-                    
                 return new MessageEmbed({
                     author: {
                         name: user!.tag,
