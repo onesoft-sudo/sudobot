@@ -1,3 +1,12 @@
+## [4.23.5](https://github.com/onesoft-sudo/sudobot/compare/v4.23.4...v4.23.5) (2022-11-18)
+
+
+### Bug Fixes
+
+* workflow error ([a717a52](https://github.com/onesoft-sudo/sudobot/commit/a717a528f0421c3c40e6dab4f7d1e90662b407d9))
+
+
+
 ## [4.23.4](https://github.com/onesoft-sudo/sudobot/compare/v4.23.3...v4.23.4) (2022-11-18)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * crash while using infraction command ([eeee0df](https://github.com/onesoft-sudo/sudobot/commit/eeee0dfa13cd9cfb023fad65f45b5fda6e59df68))
-
-
-
-# [4.23.0](https://github.com/onesoft-sudo/sudobot/compare/v4.22.0...v4.23.0) (2022-11-18)
-
-
-### Features
-
-* add infraction view command ([d0faae1](https://github.com/onesoft-sudo/sudobot/commit/d0faae10701d90a4c34f3a05b65a66b8ce1cfcf7))
 
 
 
