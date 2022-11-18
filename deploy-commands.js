@@ -380,11 +380,15 @@ let commands = [
 	new SlashCommandBuilder().setName('notedel').setDescription('Delete a note')
 		.addNumberOption(option => option.setName('id').setDescription("The note ID").setRequired(true)),
 
+	new SlashCommandBuilder().setName('infraction').setDescription('Get an infraction')
+		.addStringOption(option => option.setName('id').setDescription("The infraction ID").setRequired(true)),
+
 	new SlashCommandBuilder().setName('notes').setDescription('Fetch all notes for a user')
 		.addUserOption(option => option.setName('user').setDescription("The user").setRequired(true)),
 
 	new SlashCommandBuilder().setName('history').setDescription('Fetch all moderation history for a user')
-		.addUserOption(option => option.setName('user').setDescription("The user").setRequired(true)),
+		.addUserOption(option => option.setName('user').setDescription("The user").setRequired(true))
+		.addBooleanOption(option => option.setName('verbose').setDescription('Specify if the bot should return information in verbose mode (default: true)')),
 
 	new SlashCommandBuilder().setName('reply').setDescription('Reply to someone\'s message')
 		.addStringOption(option => option.setName('message_id').setDescription("The message ID").setRequired(true))
