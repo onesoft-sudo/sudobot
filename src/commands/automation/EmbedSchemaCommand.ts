@@ -46,7 +46,7 @@ export default class EmbedSchemaCommand extends BaseCommand {
             iconURL: getString('footer_iconurl'),
         };
 
-        if (getString('color') && (!Util.resolveColor(getString('color') as ColorResolvable) || Util.resolveColor(getString('color') as ColorResolvable) === NaN)) {
+        if (getString('color') && (!Util.resolveColor(getString('color') as ColorResolvable) || isNaN(Util.resolveColor(getString('color') as ColorResolvable)))) {
             await interaction.reply({ content: "Invalid color given.", ephemeral: true });
             return;
         }
