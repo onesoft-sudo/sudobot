@@ -128,7 +128,7 @@ export default class NotesCommand extends BaseCommand {
         if (interaction.isButton() && interaction.customId.startsWith('notes-')) {
             const splitted = interaction.customId.split('-');
 
-            if (splitted[2] === undefined || parseInt(splitted[2]) === NaN) 
+            if (splitted[2] === undefined || isNaN(parseInt(splitted[2]))) 
                 return;
 
             if (splitted[1] === 'next' || splitted[1] === 'back') {
