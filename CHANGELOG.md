@@ -1,3 +1,12 @@
+# [4.21.0](https://github.com/onesoft-sudo/sudobot/compare/v4.20.1...v4.21.0) (2022-11-18)
+
+
+### Features
+
+* **ballots:** auto deletion ([82cffdb](https://github.com/onesoft-sudo/sudobot/commit/82cffdb95e4eef88dae31133b4ea5f42e8188188))
+
+
+
 ## [4.20.1](https://github.com/onesoft-sudo/sudobot/compare/v4.20.0...v4.20.1) (2022-11-13)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * **automod:** add message reporting system ([ead9f54](https://github.com/onesoft-sudo/sudobot/commit/ead9f547d33cd31a8c353c51bef612ddc5bf8385))
-
-
-
-## [4.17.1](https://github.com/onesoft-sudo/sudobot/compare/v4.17.0...v4.17.1) (2022-11-02)
-
-
-### Bug Fixes
-
-* no newline in infractions ([4cfb727](https://github.com/onesoft-sudo/sudobot/commit/4cfb727579e0d8f1c5223a71e259a02af3153582))
 
 
 
