@@ -1,3 +1,12 @@
+# [4.23.0](https://github.com/onesoft-sudo/sudobot/compare/v4.22.0...v4.23.0) (2022-11-18)
+
+
+### Features
+
+* add infraction view command ([d0faae1](https://github.com/onesoft-sudo/sudobot/commit/d0faae10701d90a4c34f3a05b65a66b8ce1cfcf7))
+
+
+
 # [4.22.0](https://github.com/onesoft-sudo/sudobot/compare/v4.21.0...v4.22.0) (2022-11-18)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * **reporting:** configuration support ([15421be](https://github.com/onesoft-sudo/sudobot/commit/15421beff335a5c115329800998cd350c9caa429))
-
-
-
-# [4.19.0](https://github.com/onesoft-sudo/sudobot/compare/v4.18.0...v4.19.0) (2022-11-12)
-
-
-### Features
-
-* **logger:** show message author ID on change ([bb7fc8a](https://github.com/onesoft-sudo/sudobot/commit/bb7fc8a145c2fcc5373f2a077cfb8c082929b26c))
 
 
 
