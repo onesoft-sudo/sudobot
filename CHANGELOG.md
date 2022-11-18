@@ -1,3 +1,12 @@
+## [4.23.4](https://github.com/onesoft-sudo/sudobot/compare/v4.23.3...v4.23.4) (2022-11-18)
+
+
+### Bug Fixes
+
+* workflow error ([d51b6c4](https://github.com/onesoft-sudo/sudobot/commit/d51b6c4dcdce2c8c1ef2263a8e56bc8060a7904f))
+
+
+
 ## [4.23.3](https://github.com/onesoft-sudo/sudobot/compare/v4.23.2...v4.23.3) (2022-11-18)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * add infraction view command ([d0faae1](https://github.com/onesoft-sudo/sudobot/commit/d0faae10701d90a4c34f3a05b65a66b8ce1cfcf7))
-
-
-
-# [4.22.0](https://github.com/onesoft-sudo/sudobot/compare/v4.21.0...v4.22.0) (2022-11-18)
-
-
-### Features
-
-* history command verbosity control ([41ae5bb](https://github.com/onesoft-sudo/sudobot/commit/41ae5bb4d8f24c7fa9b0e2a43e16bcdb06e1451d))
 
 
 
