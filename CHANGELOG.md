@@ -1,3 +1,12 @@
+# [4.22.0](https://github.com/onesoft-sudo/sudobot/compare/v4.21.0...v4.22.0) (2022-11-18)
+
+
+### Features
+
+* history command verbosity control ([41ae5bb](https://github.com/onesoft-sudo/sudobot/commit/41ae5bb4d8f24c7fa9b0e2a43e16bcdb06e1451d))
+
+
+
 # [4.21.0](https://github.com/onesoft-sudo/sudobot/compare/v4.20.1...v4.21.0) (2022-11-18)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * **logger:** show message author ID on change ([bb7fc8a](https://github.com/onesoft-sudo/sudobot/commit/bb7fc8a145c2fcc5373f2a077cfb8c082929b26c))
-
-
-
-# [4.18.0](https://github.com/onesoft-sudo/sudobot/compare/v4.17.1...v4.18.0) (2022-11-04)
-
-
-### Features
-
-* **automod:** add message reporting system ([ead9f54](https://github.com/onesoft-sudo/sudobot/commit/ead9f547d33cd31a8c353c51bef612ddc5bf8385))
 
 
 
