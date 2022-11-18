@@ -1,3 +1,12 @@
+## [4.23.3](https://github.com/onesoft-sudo/sudobot/compare/v4.23.2...v4.23.3) (2022-11-18)
+
+
+### Bug Fixes
+
+* workflow errors ([be24ce8](https://github.com/onesoft-sudo/sudobot/commit/be24ce8bf061c5161b4255c60942026f64138ff4))
+
+
+
 ## [4.23.2](https://github.com/onesoft-sudo/sudobot/compare/v4.23.1...v4.23.2) (2022-11-18)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * history command verbosity control ([41ae5bb](https://github.com/onesoft-sudo/sudobot/commit/41ae5bb4d8f24c7fa9b0e2a43e16bcdb06e1451d))
-
-
-
-# [4.21.0](https://github.com/onesoft-sudo/sudobot/compare/v4.20.1...v4.21.0) (2022-11-18)
-
-
-### Features
-
-* **ballots:** auto deletion ([82cffdb](https://github.com/onesoft-sudo/sudobot/commit/82cffdb95e4eef88dae31133b4ea5f42e8188188))
 
 
 
