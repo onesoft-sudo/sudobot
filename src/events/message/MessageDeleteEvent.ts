@@ -20,6 +20,7 @@
 import BaseEvent from '../../utils/structures/BaseEvent';
 import { Message } from 'discord.js';
 import DiscordClient from '../../client/Client';
+import Ballot from '../../models/Ballot';
 
 export default class MessageDeleteEvent extends BaseEvent {
     constructor() {
@@ -27,6 +28,23 @@ export default class MessageDeleteEvent extends BaseEvent {
     }
 
     async run(client: DiscordClient, message: Message) {
+        if (message.author.id === client.user!.id && message.guild && message.channel.type !== 'DM') {
+            const { id, channel: { id: channelID }, guild: { id: guildID }, embeds: { length } } = message;
+
+            if (length !== 1) {
+                return;
+            }
+
+            const ballot = await Ballot.findOne({ msg_id: id, channel_id: channelID, guild_id: guildID });
+
+            if (ballot) {
+                await ballot.delete();
+                console.log(`Deleted ballot: ${ballot.id}`);
+            }
+
+            return;
+        }
+
         if (message.author.bot || !message.guild || message.channel.type === 'DM' || (global as any).deletingMessages === true)
             return;
 
