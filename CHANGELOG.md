@@ -1,3 +1,12 @@
+## [4.23.2](https://github.com/onesoft-sudo/sudobot/compare/v4.23.1...v4.23.2) (2022-11-18)
+
+
+### Bug Fixes
+
+* worflow errors ([7dd60b0](https://github.com/onesoft-sudo/sudobot/commit/7dd60b0a2659c3549bc2f400569f2d00acc8ad43))
+
+
+
 ## [4.23.1](https://github.com/onesoft-sudo/sudobot/compare/v4.23.0...v4.23.1) (2022-11-18)
 
 
@@ -31,16 +40,6 @@
 ### Features
 
 * **ballots:** auto deletion ([82cffdb](https://github.com/onesoft-sudo/sudobot/commit/82cffdb95e4eef88dae31133b4ea5f42e8188188))
-
-
-
-## [4.20.1](https://github.com/onesoft-sudo/sudobot/compare/v4.20.0...v4.20.1) (2022-11-13)
-
-
-### Bug Fixes
-
-* message reports not permitting users ([234a15b](https://github.com/onesoft-sudo/sudobot/commit/234a15bfc78bccbaaa0daa108dcc488153bbd6a2))
-* message reports with moderator only setting ([801fdc5](https://github.com/onesoft-sudo/sudobot/commit/801fdc5a3efdbb2756b53ba7c932447da9cc631f))
 
 
 
