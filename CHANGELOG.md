@@ -1,3 +1,12 @@
+## [4.23.1](https://github.com/onesoft-sudo/sudobot/compare/v4.23.0...v4.23.1) (2022-11-18)
+
+
+### Bug Fixes
+
+* crash while using infraction command ([eeee0df](https://github.com/onesoft-sudo/sudobot/commit/eeee0dfa13cd9cfb023fad65f45b5fda6e59df68))
+
+
+
 # [4.23.0](https://github.com/onesoft-sudo/sudobot/compare/v4.22.0...v4.23.0) (2022-11-18)
 
 
@@ -32,15 +41,6 @@
 
 * message reports not permitting users ([234a15b](https://github.com/onesoft-sudo/sudobot/commit/234a15bfc78bccbaaa0daa108dcc488153bbd6a2))
 * message reports with moderator only setting ([801fdc5](https://github.com/onesoft-sudo/sudobot/commit/801fdc5a3efdbb2756b53ba7c932447da9cc631f))
-
-
-
-# [4.20.0](https://github.com/onesoft-sudo/sudobot/compare/v4.19.0...v4.20.0) (2022-11-13)
-
-
-### Features
-
-* **reporting:** configuration support ([15421be](https://github.com/onesoft-sudo/sudobot/commit/15421beff335a5c115329800998cd350c9caa429))
 
 
 
