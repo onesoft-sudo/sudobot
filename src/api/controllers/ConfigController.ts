@@ -137,7 +137,7 @@ export default class ConfigController extends Controller {
                     if (typeof currentConfigDotObject[configKey] === 'number' && typeof config[configKey] === 'string') {
                         const int = parseInt(config[configKey]!.toString());
 
-                        if (int !== NaN) {
+                        if (!isNaN(int)) {
                             newConfigDotObject[configKey] = int;
                             console.log("Updating: ", configKey, config[configKey], newConfigDotObject[configKey]);
                             continue;
