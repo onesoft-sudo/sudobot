@@ -49,6 +49,7 @@ import ProfileFilter from '../automod/ProfileFilter';
 import QueueManager from '../services/QueueManager';
 import Common from '../automod/Common';
 import AutoResponder from '../automod/AutoResponder';
+import InteractionRoleManager from '../services/InteractionRoleManager';
 
 export default class DiscordClient extends Client {
     private _commands = new Collection<string, BaseCommand>();
@@ -85,6 +86,7 @@ export default class DiscordClient extends Client {
     queueManager: QueueManager = {} as QueueManager;
     commonService: Common = {} as Common;
     autoResponder: AutoResponder = {} as AutoResponder;
+    interactionRoleManager: InteractionRoleManager = {} as InteractionRoleManager;
 
     aliases = {
         automod: path.resolve(__dirname, '..', 'automod'),
@@ -112,6 +114,7 @@ export default class DiscordClient extends Client {
         "@services/Cooldown": "cooldown",
         "@automod/ProfileFilter": "profileFilter",
         "@services/QueueManager": "queueManager",
+        "@services/InteractionRoleManager": "interactionRoleManager",
         "@automod/Common": "commonService",
         "@automod/AutoResponder": "autoResponder",
     };

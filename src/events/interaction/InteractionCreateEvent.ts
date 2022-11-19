@@ -39,6 +39,11 @@ export default class InteractionCreateEvent extends BaseEvent {
             return;
         }
 
+        if (interaction.isButton()) {
+            await client.interactionRoleManager.onButtonInteraction(interaction);
+            return;
+        }
+
         if (interaction.isCommand() || interaction.isContextMenu()) {
             await client.setMessage(interaction);
 
