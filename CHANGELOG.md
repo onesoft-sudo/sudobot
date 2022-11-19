@@ -1,3 +1,12 @@
+# [4.24.0](https://github.com/onesoft-sudo/sudobot/compare/v4.23.5...v4.24.0) (2022-11-19)
+
+
+### Features
+
+* add button roles support ([a2b366f](https://github.com/onesoft-sudo/sudobot/commit/a2b366f436e6c61fcfb2cb2e4957c25c3f51d6be))
+
+
+
 ## [4.23.5](https://github.com/onesoft-sudo/sudobot/compare/v4.23.4...v4.23.5) (2022-11-18)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * worflow errors ([7dd60b0](https://github.com/onesoft-sudo/sudobot/commit/7dd60b0a2659c3549bc2f400569f2d00acc8ad43))
-
-
-
-## [4.23.1](https://github.com/onesoft-sudo/sudobot/compare/v4.23.0...v4.23.1) (2022-11-18)
-
-
-### Bug Fixes
-
-* crash while using infraction command ([eeee0df](https://github.com/onesoft-sudo/sudobot/commit/eeee0dfa13cd9cfb023fad65f45b5fda6e59df68))
 
 
 
