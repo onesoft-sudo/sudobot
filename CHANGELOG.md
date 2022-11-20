@@ -1,3 +1,17 @@
+# [4.25.0](https://github.com/onesoft-sudo/sudobot/compare/v4.24.0...v4.25.0) (2022-11-20)
+
+
+### Bug Fixes
+
+* add `--cancel` instruction to initial message ([4cadc10](https://github.com/onesoft-sudo/sudobot/commit/4cadc105b8a1e86b6ba65bc1613dfe8122d84454))
+
+
+### Features
+
+* add button role delete command ([bfc8ecb](https://github.com/onesoft-sudo/sudobot/commit/bfc8ecb958d3b563f8dcb7f3d1146b0a7f6f9a57))
+
+
+
 # [4.24.0](https://github.com/onesoft-sudo/sudobot/compare/v4.23.5...v4.24.0) (2022-11-19)
 
 
@@ -31,15 +45,6 @@
 ### Bug Fixes
 
 * workflow errors ([be24ce8](https://github.com/onesoft-sudo/sudobot/commit/be24ce8bf061c5161b4255c60942026f64138ff4))
-
-
-
-## [4.23.2](https://github.com/onesoft-sudo/sudobot/compare/v4.23.1...v4.23.2) (2022-11-18)
-
-
-### Bug Fixes
-
-* worflow errors ([7dd60b0](https://github.com/onesoft-sudo/sudobot/commit/7dd60b0a2659c3549bc2f400569f2d00acc8ad43))
 
 
 
