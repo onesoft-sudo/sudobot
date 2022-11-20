@@ -1,3 +1,12 @@
+## [4.26.1](https://github.com/onesoft-sudo/sudobot/compare/v4.26.0...v4.26.1) (2022-11-20)
+
+
+### Bug Fixes
+
+* wrong method call ([a0188fd](https://github.com/onesoft-sudo/sudobot/commit/a0188fda8895725641a65bf99efa06199ecf547a))
+
+
+
 # [4.26.0](https://github.com/onesoft-sudo/sudobot/compare/v4.25.0...v4.26.0) (2022-11-20)
 
 
@@ -36,15 +45,6 @@
 ### Bug Fixes
 
 * workflow error ([a717a52](https://github.com/onesoft-sudo/sudobot/commit/a717a528f0421c3c40e6dab4f7d1e90662b407d9))
-
-
-
-## [4.23.4](https://github.com/onesoft-sudo/sudobot/compare/v4.23.3...v4.23.4) (2022-11-18)
-
-
-### Bug Fixes
-
-* workflow error ([d51b6c4](https://github.com/onesoft-sudo/sudobot/commit/d51b6c4dcdce2c8c1ef2263a8e56bc8060a7904f))
 
 
 
