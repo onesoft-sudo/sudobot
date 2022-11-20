@@ -28,14 +28,15 @@ import InteractionRole from '../../models/InteractionRole';
 
 export default class ButtonRoleCreateCommand extends BaseCommand {
     constructor() {
-        super('buttonrole', 'automation', ['btnrole', 'brole']);
+        super('buttonrole__create', 'automation', []);
     }
 
     async action(client: DiscordClient, message: Message<boolean>, interactionBtn: ButtonInteraction) {
         await interactionBtn.reply("**Step 1**\nDo you want to have a custom text with your interaction role or the bot should generate it? Reply with '...' to generate message.");
         const collector = new MessageCollector(message.channel!, {
             filter(i) {
-                return i.author.id === message.author.id;
+                console.log(i.author.id, interactionBtn.user.id);
+                return i.author.id === interactionBtn.user.id;
             },
             time: 180_000,
         });
@@ -46,12 +47,13 @@ export default class ButtonRoleCreateCommand extends BaseCommand {
         const insertedIDs: string[] = [];
 
         collector.on("collect", async collectedMessage => {
+            console.log("Collected!");
             step++;
 
             if (collectedMessage.content === '--cancel') {
                 await InteractionRole.deleteMany({ _id: { $in: insertedIDs } });
-                await collectedMessage.reply("Operation canceled.");
                 collector.stop();
+                await collectedMessage.react(fetchEmoji('check')!);
                 return;
             }
 
@@ -173,6 +175,8 @@ export default class ButtonRoleCreateCommand extends BaseCommand {
                         allowedMentions: {
                             roles: []
                         }
+                    }).then(({ id }) => {
+                        
                     }).catch(console.error);
                 }
                 else {

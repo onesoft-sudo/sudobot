@@ -168,6 +168,14 @@ let commands = [
 				.addStringOption(option => option.setName('json_schema').setDescription('The embed JSON schema'))
 		),
 
+	new SlashCommandBuilder().setName('buttonrole').setDescription('Button role management')
+		.addSubcommand(subcmd => 
+			subcmd.setName("create").setDescription("Create a new button role provider message")	
+		)
+		.addSubcommand(subcmd => 
+			subcmd.setName("delete").setDescription("Delete button role provider message and it's information")	
+		),
+
 	new SlashCommandBuilder().setName('queues').setDescription('List all queued jobs'),
 
 	new SlashCommandBuilder().setName('schedule').setDescription('Schedule a message for sending later')
