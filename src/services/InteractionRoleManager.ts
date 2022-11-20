@@ -40,7 +40,7 @@ export default class InteractionRoleManager extends Service {
         });
 
         if (!interactionRole) {
-            await interaction.editReply({ content: "Uh oh! Looks like a server-side error has occured (could not find role info in database), please contact the developer/maintainer of the bot." });
+            await interaction.editReply({ content: "That role provider message is disabled!" });
             return;
         }
 

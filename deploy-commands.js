@@ -173,7 +173,8 @@ let commands = [
 			subcmd.setName("create").setDescription("Create a new button role provider message")	
 		)
 		.addSubcommand(subcmd => 
-			subcmd.setName("delete").setDescription("Delete button role provider message and it's information")	
+			subcmd.setName("delete").setDescription("Delete button role provider message information")	
+				.addStringOption(option => option.setName('message_id').setDescription("The message ID to delete")).setRequired(true)
 		),
 
 	new SlashCommandBuilder().setName('queues').setDescription('List all queued jobs'),

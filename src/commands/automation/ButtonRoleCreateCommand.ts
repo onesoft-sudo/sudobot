@@ -25,6 +25,7 @@ import MessageEmbed from '../../client/MessageEmbed';
 import InteractionOptions from '../../types/InteractionOptions';
 import { fetchEmoji } from '../../utils/Emoji';
 import InteractionRole from '../../models/InteractionRole';
+import InteractionRoleMessage from '../../models/InteractionRoleMessage';
 
 export default class ButtonRoleCreateCommand extends BaseCommand {
     constructor() {
@@ -175,8 +176,13 @@ export default class ButtonRoleCreateCommand extends BaseCommand {
                         allowedMentions: {
                             roles: []
                         }
-                    }).then(({ id }) => {
-                        
+                    }).then(async({ id, guildId }) => {
+                        await InteractionRoleMessage.create({
+                            dbIDs: insertedIDs,
+                            createdAt: new Date(),
+                            guild_id: guildId!,
+                            message_id: id
+                        });
                     }).catch(console.error);
                 }
                 else {
