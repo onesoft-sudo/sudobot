@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { ButtonInteraction, CacheType, CommandInteraction, GuildChannel, Interaction, Message, MessageActionRow, MessageButton, MessageCollector, Modal, TextChannel, TextInputComponent, Util } from 'discord.js';
+import { ButtonInteraction, CacheType, CommandInteraction, GuildChannel, Interaction, Message, MessageActionRow, MessageButton, MessageCollector, TextChannel, Util } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -189,7 +189,7 @@ export default class ButtonRoleCreateCommand extends BaseCommand {
             embeds: [
                 new MessageEmbed({
                     title: "Button Role Creation Wizard",
-                    description: "This interactive wizard will help you to set up new button roles. Make sure that you respond in 3 minutes or otherwise the operation will be canceled."
+                    description: "This interactive wizard will help you to set up new button roles. Make sure that you respond in 3 minutes or otherwise the operation will be canceled. You can also manually cancel the operation by typing `--cancel` at any time, in this channel."
                 })
             ],
             components: [
