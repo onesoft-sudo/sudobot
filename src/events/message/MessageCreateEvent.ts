@@ -38,6 +38,7 @@ export default class MessageCreateEvent extends BaseEvent {
         await client.commonService.run(message);
         await client.spamFilter.start(message);
         await client.messageFilter.start(message);
+        await client.messageRules.onMessageCreate(message);
         await client.autoResponder.run(message);
         
         if (message.content.startsWith(client.config.get('prefix'))) {

@@ -50,6 +50,7 @@ import QueueManager from '../services/QueueManager';
 import Common from '../automod/Common';
 import AutoResponder from '../automod/AutoResponder';
 import InteractionRoleManager from '../services/InteractionRoleManager';
+import MessageRules from '../automod/MessageRules';
 
 export default class DiscordClient extends Client {
     private _commands = new Collection<string, BaseCommand>();
@@ -87,6 +88,7 @@ export default class DiscordClient extends Client {
     commonService: Common = {} as Common;
     autoResponder: AutoResponder = {} as AutoResponder;
     interactionRoleManager: InteractionRoleManager = {} as InteractionRoleManager;
+    messageRules: MessageRules = {} as MessageRules;
 
     aliases = {
         automod: path.resolve(__dirname, '..', 'automod'),
@@ -117,6 +119,7 @@ export default class DiscordClient extends Client {
         "@services/InteractionRoleManager": "interactionRoleManager",
         "@automod/Common": "commonService",
         "@automod/AutoResponder": "autoResponder",
+        "@automod/MessageRules": "messageRules",
     };
 
     static client: DiscordClient;
