@@ -1,3 +1,12 @@
+# [4.27.0](https://github.com/onesoft-sudo/sudobot/compare/v4.26.1...v4.27.0) (2022-11-22)
+
+
+### Features
+
+* **automod:** add flexible rule system ([32501f9](https://github.com/onesoft-sudo/sudobot/commit/32501f92ca76135ddd7e3c2324ef8a157a478152))
+
+
+
 ## [4.26.1](https://github.com/onesoft-sudo/sudobot/compare/v4.26.0...v4.26.1) (2022-11-20)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * add button roles support ([a2b366f](https://github.com/onesoft-sudo/sudobot/commit/a2b366f436e6c61fcfb2cb2e4957c25c3f51d6be))
-
-
-
-## [4.23.5](https://github.com/onesoft-sudo/sudobot/compare/v4.23.4...v4.23.5) (2022-11-18)
-
-
-### Bug Fixes
-
-* workflow error ([a717a52](https://github.com/onesoft-sudo/sudobot/commit/a717a528f0421c3c40e6dab4f7d1e90662b407d9))
 
 
 
