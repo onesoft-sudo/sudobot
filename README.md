@@ -18,7 +18,7 @@ A Discord bot for moderation purposes. <a href="https://docs.sudobot.onesoftnet.
 
 ### Features
 
-- Strong automoderation system with tools like anti-spam and anti-raid ([Click here](https://onesoft-sudo.github.io/sudobot/automoderation/#what-can-the-bot-do) to see the full list)
+- Strong automoderation system with tools like anti-spam and anti-raid ([Click here](https://docs.sudobot.onesoftnet.eu.org/automoderation/#what-can-the-bot-do) to see the full list)
 - Useful moderation tools and utilities 
 - Secure
 - Fun commands
