@@ -19,7 +19,7 @@
 
 import { roleMention } from '@discordjs/builders';
 import { formatDuration, intervalToDuration } from 'date-fns';
-import { BanOptions, CommandInteraction, FileOptions, Guild, GuildBan, GuildMember, Message, MessageEmbed, MessageOptions, MessagePayload, TextChannel, User } from 'discord.js';
+import { BanOptions, CommandInteraction, FileOptions, Guild, GuildBan, GuildMember, Message, MessageActionRow, MessageButton, MessageEmbed, MessageOptions, MessagePayload, TextChannel, User } from 'discord.js';
 import ms from 'ms';
 import DiscordClient from '../client/Client';
 import { IPunishment } from '../models/Punishment';
@@ -88,6 +88,10 @@ class Logger {
                     {
                         name: 'User ID', 
                         value: newMsg.author.id
+                    }, 
+                    {
+                        name: 'Channel', 
+                        value: `${newMsg.channel} (${newMsg.channel.id})`
                     })
                     .setAuthor({
                         name: newMsg.author.tag,
@@ -97,6 +101,15 @@ class Logger {
                         text: "Edited",
                     })
                     .setTimestamp()
+                ],
+                components: [
+                    new MessageActionRow()
+                        .addComponents(
+                            new MessageButton()
+                                .setLabel('Go to context')
+                                .setStyle('LINK')
+                                .setURL(newMsg.url)
+                        )
                 ]
             });
         }, newMsg);
@@ -106,7 +119,7 @@ class Logger {
         this.channel(async (channel) => {
             const embed = new MessageEmbed()
                 .setColor('#f14a60')
-                .setTitle('Message Deleted in #' + (msg.channel as TextChannel).name + " (" + msg.channel.id + ")")
+                .setTitle('Message Deleted')
                 .setDescription(msg.content)
                 .setAuthor({
                     name: msg.author.tag,
@@ -119,6 +132,10 @@ class Logger {
                 {
                     name: 'User ID', 
                     value: msg.author.id
+                }, 
+                {
+                    name: 'Channel', 
+                    value: `${msg.channel} (${msg.channel.id})`
                 })
                 .setFooter({
                     text: "Deleted",
@@ -145,58 +162,59 @@ class Logger {
                 embeds: [
                     embed
                 ],
-                files
+                files,
+                components: [
+                    new MessageActionRow()
+                        .addComponents(
+                            new MessageButton()
+                                .setLabel('Go to context')
+                                .setStyle('LINK')
+                                .setURL(msg.url)
+                        )
+                ]
             });
         }, msg);
     }
 
-    logBanned(ban: GuildBan) {
-        this.channel(async (channel) => {
-            let r = '*No reason provided*';
+    async loggingChannel(guild: Guild) {
+        return <TextChannel> guild.channels.cache.get(DiscordClient.client.config.props[guild.id].logging_channel);
+    }
 
-            const auditLog = (await ban.guild.fetchAuditLogs({
-                limit: 1,
-                type: 'MEMBER_BAN_ADD',
-            })).entries.first();           
-      
-            if (ban.reason) {
-                r = ban.reason;
-            }
-            else if (auditLog) {
-                console.log(auditLog);  
-                const { target, reason } = await auditLog;
+    async logBanned(ban: GuildBan) {
+        const auditLog = (await ban.guild.fetchAuditLogs({
+            limit: 1,
+            type: 'MEMBER_BAN_ADD',
+        })).entries.first();
 
-                if (target!.id === ban.user.id && reason) {
-                    r = reason.replace(/^\[BAN\]/, '');
-                }
+        if (auditLog?.executor?.id === this.client.user!.id) {
+            console.log("Action taken by bot");
+            return;
+        }
 
-                if (auditLog.executor?.id === this.client.user!.id || (r.startsWith("[TEMPBAN]") || r.startsWith("[SOFTBAN]"))) {
-                    return;
-                }
-            }
+        const guildBan = await ban.guild.bans.fetch(ban.user.id);
+        const reason = guildBan.reason ?? '*No reason provided*';
 
-            await channel.send({
-                embeds: [
-                    new MessageEmbed()
-                    .setColor('#f14a60')
-                    .setTitle("A user was banned")
-                    .setAuthor({
-                        name: ban.user.tag,
-                        iconURL: ban.user.displayAvatarURL(),
-                    })
-                    .addField('Reason', r)
-                    .addField('User ID', ban.user.id)
-                    .addFields({
-                        name: 'Banned by',
-                        value: auditLog?.executor ? `${auditLog.executor.tag} (${auditLog.executor.id})` : 'Unknown'
-                    })
-                    .setFooter({
-                        text: "Banned",
-                    })
-                    .setTimestamp()
-                ]
-            });
-        }, ban);
+        await (await this.loggingChannel(ban.guild)).send({
+            embeds: [
+                new MessageEmbed()
+                .setColor('#f14a60')
+                .setTitle("A user was banned")
+                .setAuthor({
+                    name: guildBan.user.tag,
+                    iconURL: guildBan.user.displayAvatarURL(),
+                })
+                .addField('Reason', reason)
+                .addField('User ID', guildBan.user.id)
+                .addFields({
+                    name: 'Banned by',
+                    value: auditLog?.executor ? `${auditLog.executor.tag} (${auditLog.executor.id})` : 'Unknown'
+                })
+                .setFooter({
+                    text: "Banned",
+                })
+                .setTimestamp()
+            ]
+        });
     }
 
     logSoftBan(banOptions: BanOptions, guild: Guild, user: User, model: IPunishment) {
