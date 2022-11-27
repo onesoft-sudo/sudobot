@@ -1,3 +1,12 @@
+# [4.28.0](https://github.com/onesoft-sudo/sudobot/compare/v4.27.0...v4.28.0) (2022-11-27)
+
+
+### Features
+
+* **logger:** improvements ([78073dd](https://github.com/onesoft-sudo/sudobot/commit/78073dd27cc1812d77b6d213623b2dbc1cef9aa2))
+
+
+
 # [4.27.0](https://github.com/onesoft-sudo/sudobot/compare/v4.26.1...v4.27.0) (2022-11-22)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * add button role delete command ([bfc8ecb](https://github.com/onesoft-sudo/sudobot/commit/bfc8ecb958d3b563f8dcb7f3d1146b0a7f6f9a57))
-
-
-
-# [4.24.0](https://github.com/onesoft-sudo/sudobot/compare/v4.23.5...v4.24.0) (2022-11-19)
-
-
-### Features
-
-* add button roles support ([a2b366f](https://github.com/onesoft-sudo/sudobot/commit/a2b366f436e6c61fcfb2cb2e4957c25c3f51d6be))
 
 
 
