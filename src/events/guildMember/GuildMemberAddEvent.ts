@@ -31,7 +31,7 @@ export default class GuildMemberAddEvent extends BaseEvent {
         if (member.user.id === client.user!.id)
             return;
         
-        await client.logger.logJoined(member);
+        await client.logger.onGuildMemberAdd(member);
         
         if (member.user.bot)
             return;

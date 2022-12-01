@@ -1,8 +1,11 @@
-import { Message, MessageEmbedOptions, MessageEmbed as MessageEmbedDiscord, TextChannel, MessageActionRow, MessageButton, FileOptions, GuildBan, BanOptions, Guild, User } from "discord.js";
+import { roleMention } from "@discordjs/builders";
+import { formatDuration, intervalToDuration } from "date-fns";
+import { Message, MessageEmbedOptions, MessageEmbed as MessageEmbedDiscord, TextChannel, MessageActionRow, MessageButton, FileOptions, GuildBan, BanOptions, Guild, User, GuildMember } from "discord.js";
 import ms from "ms";
 import BaseMessageEmbed from "../client/MessageEmbed";
 import { IPunishment } from "../models/Punishment";
 import Service from "../utils/structures/Service";
+import { timeSince } from "../utils/util";
 
 class MessageEmbed extends BaseMessageEmbed {
     constructor(options?: MessageEmbedDiscord | MessageEmbedOptions) {
@@ -239,6 +242,189 @@ export default class Logger extends Service {
                 .addField('Duration', ms((model.meta as any).time))
                 .setFooter({
                     text: "Temporarily banned",
+                })
+                .setTimestamp()
+            ]
+        });
+    }
+
+    async onGuildMemberAdd(member: GuildMember) {
+        await this.loggingChannelJoinLeave(member.guild.id)?.send({
+            embeds: [
+                new MessageEmbed()
+                .setColor('#007bff')
+                .setTitle("New member joined")
+                .setAuthor({
+                    name: member.user.tag,
+                    iconURL: member.user.displayAvatarURL(),
+                })
+                .setDescription(`<@${member.user.id}> just joined the server!`)
+                .addField('Account Created', `${member.user.createdAt.toLocaleString()} (${timeSince(member.user.createdAt.getTime())})`)
+                .addField('New Account?', (new Date().getTime() - member.user.createdAt.getTime()) <= 3 * 24 * 60 * 60 * 1000 ? ":warning: Yes :warning:" : "No")
+                .addField('Bot?', member.user.bot === true ? 'Yes' : 'No')
+                .addField('User ID', member.user.id)
+                .setFooter({
+                    text: "Joined",
+                })
+                .setTimestamp()
+            ]
+        });
+    }
+    
+    async onGuildMemberRemove(member: GuildMember) {
+        const roles = member.roles.cache.filter(role => role.id !== member.guild.id).reduce((acc, val) => ` ${acc} ${roleMention(val.id)}`, '');
+
+        await this.loggingChannelJoinLeave(member.guild.id)?.send({
+            embeds: [
+                new MessageEmbed()
+                .setColor('#f14a60')
+                .setTitle("Member left")
+                .setAuthor({
+                    name: member.user.tag,
+                    iconURL: member.user.displayAvatarURL(),
+                })
+                .setDescription(`**Roles**\n${roles}`)
+                .addField('Joined at', `${member.joinedAt!.toLocaleString()} (${timeSince(member.joinedAt!.getTime())})`)
+                .addField('User ID', member.user.id)
+                .addField('Bot?', member.user.bot === true ? 'Yes' : 'No')
+                .setFooter({
+                    text: "Left",
+                })
+                .setTimestamp()
+            ]
+        });
+    }
+
+    async onMemberShot(member: GuildMember, moderator: User, reason?: string) {
+        await this.loggingChannel(member.guild.id)?.send({
+            embeds: [
+                new MessageEmbed()
+                .setColor('#007bff')
+                .setTitle("Member got shot")
+                .setAuthor({
+                    name: member.user.tag,
+                    iconURL: member.user.displayAvatarURL(),
+                })
+                .addField('Reason', reason ?? '*No reason provided*')
+                .addField('Doctor 💉', moderator.tag)
+                .addField('User ID', member.user.id)
+                .setFooter({
+                    text: "Shot delivered",
+                })
+                .setTimestamp()
+            ]
+        });
+    }
+
+    async onMemberKick(member: GuildMember, reason?: string, executor?: User) {
+        await this.loggingChannel(member.guild.id)?.send({
+            embeds: [
+                new MessageEmbed({
+                    author: {
+                        name: member.user.tag,
+                        iconURL: member.user.displayAvatarURL(),
+                    },
+                    title: 'Member Kicked',
+                    description: 'This user has left the server, probably due to a kick.',
+                    fields: [
+                        {
+                            name: 'Kicked by',
+                            value: executor?.tag ?? 'Unknown'
+                        },
+                        {
+                            name: 'Reason',
+                            value: reason ?? '*No reason provided*'
+                        }
+                    ],
+                    footer: {
+                        text: 'Kicked'
+                    }
+                })
+                .setTimestamp()
+            ]
+        });
+    }
+
+    async onMemberMute(member: GuildMember, duration?: number, reason?: string, executor?: User, hard = false) {
+        await this.loggingChannel(member.guild.id)?.send({
+            embeds: [
+                new MessageEmbed()
+                .setColor('#f14a60')
+                .setTitle("Member muted")
+                .setAuthor({
+                    name: member.user.tag,
+                    iconURL: member.user.displayAvatarURL(),
+                })
+                .addField('Reason', reason ?? '*No reason provided*')
+                .addField('Muted by', executor?.tag ?? 'Unknown')
+                .addField('Duration Until', duration ? `${(new Date(Date.now() + duration)).toLocaleString()} (${formatDuration(intervalToDuration({ start: 0, end: duration }))})` : "*No duration set*")
+                .addField('User ID', member.user.id)
+                .addField('Hardmute', hard ? 'Yes' : 'No')
+                .setFooter({
+                    text: "Muted",
+                })
+                .setTimestamp()
+            ]
+        });
+    }
+    
+    async onMemberUnmute(member: GuildMember, executor?: User) {
+        await this.loggingChannel(member.guild.id)?.send({
+            embeds: [
+                new MessageEmbed()
+                .setColor('#007bff')
+                .setTitle("Member unmuted")
+                .setAuthor({
+                    name: member.user.tag,
+                    iconURL: member.user.displayAvatarURL(),
+                })
+                .addField('Unmuted by', executor?.tag ?? 'Unknown')
+                .addField('User ID', member.user.id)
+                .setFooter({
+                    text: "Unmuted",
+                })
+                .setTimestamp()
+            ]
+        });
+    }
+
+    async onMemberWarn(user: User, guildID: string, id: string, reason?: string, moderator?: User) {
+        await this.loggingChannel(guildID)?.send({
+            embeds: [
+                new MessageEmbed()
+                .setColor('GOLD')
+                .setTitle("Member warned")
+                .setAuthor({
+                    name: user.tag,
+                    iconURL: user.displayAvatarURL(),
+                })
+                .addField('Reason', reason ?? '*No reason provided*')
+                .addField('Warned by', moderator?.tag ?? '*No reason provided*')
+                .addField('User ID', user.id)
+                .addField('Case ID', id + '')
+                .setFooter({
+                    text: "Warned",
+                })
+                .setTimestamp()
+            ]
+        });
+    }
+
+    async onMemberWarningDelete(member: GuildMember, id: string, reason?: string, moderator?: User) {
+        await this.loggingChannel(member.guild.id)?.send({
+            embeds: [
+                new MessageEmbed()
+                .setColor('GOLD')
+                .setTitle("Warning deleted")
+                .setAuthor({
+                    name: member.user.tag,
+                    iconURL: member.user.displayAvatarURL(),
+                })
+                .addField('Warned by', moderator?.tag ?? 'Unknown')
+                .addField('Warning ID', id + '')
+                .addField('User ID', member.user.id)
+                .setFooter({
+                    text: "Warning Deleted",
                 })
                 .setTimestamp()
             ]

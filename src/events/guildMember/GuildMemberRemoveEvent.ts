@@ -34,7 +34,7 @@ export default class GuildMemberRemoveEvent extends BaseEvent {
         if (member.user.id === client.user!.id)
             return;
 
-        await client.logger.logLeft(member);
+        await client.logger.onGuildMemberRemove(member);
 
         if (member.user.bot)
             return;
@@ -56,34 +56,7 @@ export default class GuildMemberRemoveEvent extends BaseEvent {
                 reason: logs.reason ?? undefined
             });
 
-            client.logger.log(member.guild, async channel => {
-                await channel.send({
-                    embeds: [
-                        new MessageEmbed({
-                            author: {
-                                name: member.user.tag,
-                                iconURL: member.user.displayAvatarURL(),
-                            },
-                            title: 'Member Kicked',
-                            description: 'This user has left the server, probably due to a kick.',
-                            fields: [
-                                {
-                                    name: 'Kicked by',
-                                    value: logs?.executor?.tag ?? 'Unknown'
-                                },
-                                {
-                                    name: 'Reason',
-                                    value: logs?.reason ?? '*No reason provided*'
-                                }
-                            ],
-                            footer: {
-                                text: 'Kicked'
-                            }
-                        })
-                        .setTimestamp()
-                    ]
-                });
-            });
+            client.logger.onMemberKick(member, logs.reason ?? undefined, logs.executor ?? undefined);
         }
         
         await client.autoClear.start(member, member.guild);

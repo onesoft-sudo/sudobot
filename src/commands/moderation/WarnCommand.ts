@@ -77,7 +77,7 @@ export async function warn(client: DiscordClient, user: User, reason: string | u
     	DMed = false;	
     }
     
-    await client.logger.logWarn(msg, user, (warned_by ?? msg.member!.user) as User, reason, warning.get('id') as number);
+    await client.logger.onMemberWarn(user, msg.guild!.id, warning.get('id'), reason, (warned_by ?? msg.member!.user) as User);
 
     return { warning, strike, DMed };
 }

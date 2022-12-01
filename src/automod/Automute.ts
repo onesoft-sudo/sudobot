@@ -47,7 +47,7 @@ export default class Automute extends Service {
 
         await this.mute(member);
 
-        this.client.logger.send(member.guild, {
+        this.client.logger.loggingChannel(member.guild.id)?.send({
             embeds: [
                 new MessageEmbed({
                     author: {

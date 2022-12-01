@@ -126,7 +126,7 @@ export async function unmute(client: DiscordClient, user: GuildMember, d: User) 
 	    	console.log(e);
 	    }
 
-        await client.logger.logUnmute(user, d);
+        await client.logger.onMemberUnmute(user, d);
     }
     catch (e) {
         console.log(e);            
