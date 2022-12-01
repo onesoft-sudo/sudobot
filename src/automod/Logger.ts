@@ -1,316 +1,184 @@
-/**
-* This file is part of SudoBot.
-* 
-* Copyright (C) 2021-2022 OSN Inc.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by 
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-* 
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License 
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+import { Message, MessageEmbedOptions, MessageEmbed as MessageEmbedDiscord, TextChannel, MessageActionRow, MessageButton, FileOptions, GuildBan, BanOptions, Guild, User } from "discord.js";
+import ms from "ms";
+import BaseMessageEmbed from "../client/MessageEmbed";
+import { IPunishment } from "../models/Punishment";
+import Service from "../utils/structures/Service";
 
-import { roleMention } from '@discordjs/builders';
-import { formatDuration, intervalToDuration } from 'date-fns';
-import { BanOptions, CommandInteraction, FileOptions, Guild, GuildBan, GuildMember, Message, MessageActionRow, MessageButton, MessageEmbed, MessageOptions, MessagePayload, TextChannel, User } from 'discord.js';
-import ms from 'ms';
-import DiscordClient from '../client/Client';
-import { IPunishment } from '../models/Punishment';
-import { timeSince } from '../utils/util';
+class MessageEmbed extends BaseMessageEmbed {
+    constructor(options?: MessageEmbedDiscord | MessageEmbedOptions) {
+        super(options);
+        this.setTimestamp();
+    }
+}
 
-class Logger {
-    client: DiscordClient;
-    pause = false;
-    pauseBan = false;
-
-    pauseAll(p = true) {
-        this.pause = p;
+export default class Logger extends Service {
+    loggingChannel(id: string) {
+        return this.client.guilds.cache.get(id)?.channels.cache.get(this.client.config.props[id].logging_channel) as (TextChannel | null);
     }
 
-    constructor(client: DiscordClient) {
-        this.client = client;
+    loggingChannelJoinLeave(id: string) {
+        return this.client.guilds.cache.get(id)?.channels.cache.get(this.client.config.props[id].logging_channel_join_leave) as (TextChannel | null);
     }
 
-    channel(callback: (channel: TextChannel) => any, msg: any) {
-        if (this.pause) {
-            return;
-        }
-
-        let channelID = this.client.config.props[msg.guild!.id].logging_channel;
-        let channel = msg.guild!.channels.cache.find((c: any) => c.id === channelID) as TextChannel;
-
-        if (channel) {
-            return callback(channel);
-        }
-    }
-
-    channelJoinLeft(callback: (channel: TextChannel) => any, msg: any) {
-        let channelID = this.client.config.props[msg.guild!.id].logging_channel_join_leave;
-        let channel = msg.guild!.channels.cache.find((c: any) => c.id === channelID) as TextChannel;
-
-        if (channel) {
-            return callback(channel);
-        }
-    }
-
-    async send(guild: Guild, messageOptions: MessageOptions | MessagePayload | string) {
-        let channelID = this.client.config.props[guild!.id].logging_channel;
-        let channel = guild!.channels.cache.find((c: any) => c.id === channelID) as TextChannel;
-
-        if (channel) {
-            return await channel.send(messageOptions);
-        }
-    }
-
-    log(guild: Guild, callback: (channel: TextChannel) => any) {
-        this.channel(callback, { guild });
-    }
-
-    logEdit(oldMsg: Message, newMsg: Message) {
-        this.channel(async (channel) => {
-            await channel.send({
-                embeds: [
-                    new MessageEmbed()
-                    .setColor('#007bff')
-                    .setTitle('Message Edited in #' + (newMsg.channel as TextChannel).name + " (" + newMsg.channel.id + ")")
-                    .setDescription('**-+-+Before**\n' + oldMsg.content + '\n\n**-+-+After**\n' + newMsg.content)
-                    .addFields({
-                        name: 'ID', 
-                        value: newMsg.id
+    async onMessageUpdate(oldMessage: Message, newMessage: Message) {
+        await this.loggingChannel(newMessage.guild!.id)!.send({
+            embeds: [
+                new MessageEmbed({
+                    title: "Message Updated",
+                    author: {
+                        name: oldMessage.author.tag,
+                        iconURL: oldMessage.author.displayAvatarURL()
                     },
-                    {
-                        name: 'User ID', 
-                        value: newMsg.author.id
-                    }, 
-                    {
-                        name: 'Channel', 
-                        value: `${newMsg.channel} (${newMsg.channel.id})`
-                    })
-                    .setAuthor({
-                        name: newMsg.author.tag,
-                        iconURL: newMsg.author.displayAvatarURL(),
-                    })
-                    .setFooter({
-                        text: "Edited",
-                    })
-                    .setTimestamp()
-                ],
-                components: [
-                    new MessageActionRow()
-                        .addComponents(
-                            new MessageButton()
-                                .setLabel('Go to context')
-                                .setStyle('LINK')
-                                .setURL(newMsg.url)
-                        )
-                ]
-            });
-        }, newMsg);
+                    description: '**-+-+Before**\n' + oldMessage.content + '\n\n**-+-+After**\n' + newMessage.content,
+                    fields: [
+                        {
+                            name: 'Message ID',
+                            value: newMessage.id
+                        },
+                        {
+                            name: 'User ID',
+                            value: oldMessage.author.id
+                        },
+                        {
+                            name: 'Channel',
+                            value: `${oldMessage.channel} (${oldMessage.channelId})`
+                        },
+                    ],
+                    footer: {
+                        text: `Updated • ${newMessage.id}`
+                    }
+                }),
+            ],
+            components: [
+                new MessageActionRow()
+                    .addComponents(
+                        new MessageButton()
+                            .setLabel('Go to context')
+                            .setStyle('LINK')
+                            .setURL(newMessage.url)
+                    )
+            ]
+        });
     }
 
-    logDelete(msg: Message) {
-        this.channel(async (channel) => {
-            const embed = new MessageEmbed()
-                .setColor('#f14a60')
-                .setTitle('Message Deleted')
-                .setDescription(msg.content)
-                .setAuthor({
-                    name: msg.author.tag,
-                    iconURL: msg.author.displayAvatarURL(),
-                })
-                .addFields({
-                    name: 'ID', 
-                    value: msg.id
+    async onMessageDelete(message: Message) {
+        const embed = new MessageEmbed({
+            title: "Message Deleted",
+            color: 0xf14a60,
+            author: {
+                name: message.author.tag,
+                iconURL: message.author.displayAvatarURL()
+            },
+            description: message.content,
+            fields: [
+                {
+                    name: 'Message ID',
+                    value: message.id
                 },
                 {
-                    name: 'User ID', 
-                    value: msg.author.id
-                }, 
+                    name: 'User ID',
+                    value: message.author.id
+                },
                 {
-                    name: 'Channel', 
-                    value: `${msg.channel} (${msg.channel.id})`
-                })
-                .setFooter({
-                    text: "Deleted",
-                })
-                .setTimestamp();
-            
-            const files: FileOptions[] = [];
-
-            if (msg.attachments.size > 0) {
-                let str = '';
-
-                msg.attachments.forEach(a => {
-                    str += `${a.name}\n`;
-                    files.push({
-                        name: a.name!,
-                        attachment: a.proxyURL
-                    });
-                });
-
-                embed.addField('Attachments (top)', str);
+                    name: 'Channel',
+                    value: `${message.channel} (${message.channelId})`
+                },
+            ],
+            footer: {
+                text: `Deleted • ${message.id}`
             }
+        });
 
-            await channel.send({
-                embeds: [
-                    embed
-                ],
-                files,
-                components: [
-                    new MessageActionRow()
-                        .addComponents(
-                            new MessageButton()
-                                .setLabel('Go to context')
-                                .setStyle('LINK')
-                                .setURL(msg.url)
-                        )
-                ]
+        const files: FileOptions[] = [];
+
+        if (message.attachments.size > 0) {
+            let str = '';
+
+            message.attachments.forEach(a => {
+                str += `${a.name}\n`;
+                files.push({
+                    name: a.name!,
+                    attachment: a.proxyURL
+                });
             });
-        }, msg);
+
+            embed.addFields({
+                name: 'Attachments (top)', 
+                value: str
+            });
+        }
+
+        await this.loggingChannel(message.guild!.id)!.send({
+            embeds: [
+                embed
+            ],
+            components: [
+                new MessageActionRow()
+                    .addComponents(
+                        new MessageButton()
+                            .setLabel('Go to context')
+                            .setStyle('LINK')
+                            .setURL(message.url)
+                    )
+            ],
+            files
+        });
     }
 
-    async loggingChannel(guild: Guild) {
-        return <TextChannel> guild.channels.cache.get(DiscordClient.client.config.props[guild.id].logging_channel);
-    }
-
-    async logBanned(ban: GuildBan) {
+    async onGuildBanAdd(ban: GuildBan, _executor?: User) {
         const auditLog = (await ban.guild.fetchAuditLogs({
             limit: 1,
             type: 'MEMBER_BAN_ADD',
         })).entries.first();
 
-        if (auditLog?.executor?.id === this.client.user!.id) {
+        const executor = _executor ?? auditLog?.executor;
+
+        if (executor?.id === this.client.user!.id) {
             console.log("Action taken by bot");
             return;
         }
 
         const guildBan = await ban.guild.bans.fetch(ban.user.id);
-        const reason = guildBan.reason ?? '*No reason provided*';
+        const reason = ban.reason ?? guildBan.reason ?? '*No reason provided*';
 
-        await (await this.loggingChannel(ban.guild)).send({
+        await this.loggingChannel(ban.guild.id)?.send({
             embeds: [
                 new MessageEmbed()
-                .setColor('#f14a60')
-                .setTitle("A user was banned")
-                .setAuthor({
-                    name: guildBan.user.tag,
-                    iconURL: guildBan.user.displayAvatarURL(),
-                })
-                .addField('Reason', reason)
-                .addField('User ID', guildBan.user.id)
-                .addFields({
-                    name: 'Banned by',
-                    value: auditLog?.executor ? `${auditLog.executor.tag} (${auditLog.executor.id})` : 'Unknown'
-                })
-                .setFooter({
-                    text: "Banned",
-                })
-                .setTimestamp()
+                    .setColor('#f14a60')
+                    .setTitle("A user was banned")
+                    .setAuthor({
+                        name: guildBan.user.tag,
+                        iconURL: guildBan.user.displayAvatarURL(),
+                    })
+                    .addField('Reason', reason)
+                    .addField('User ID', guildBan.user.id)
+                    .addFields({
+                        name: 'Banned by',
+                        value: executor ? `${executor.tag} (${executor.id})` : 'Unknown'
+                    })
+                    .setFooter({
+                        text: "Banned",
+                    })
             ]
         });
     }
 
-    logSoftBan(banOptions: BanOptions, guild: Guild, user: User, model: IPunishment) {
-        this.channel(async (channel) => {
-            let r = '*No reason provided*';
+    async onGuildBanRemove(ban: GuildBan, _executor?: User) {
+        const auditLog = (await ban.guild.fetchAuditLogs({
+            limit: 1,
+            type: 'MEMBER_BAN_REMOVE',
+        })).entries.first();
 
-            const auditLog = (await guild.fetchAuditLogs({
-                limit: 1,
-                type: 'MEMBER_BAN_ADD',
-            })).entries.first();         
+        const executor = _executor ?? auditLog?.executor;
 
-            if (banOptions.reason) {
-                r = banOptions.reason;
-            }
-            else if (auditLog) {
-                console.log(auditLog);  
-                const { target, reason } = await auditLog;
+        if (executor?.id === this.client.user!.id) {
+            console.log("Action taken by bot");
+            return;
+        }
 
-                if (target!.id === user.id && reason) {
-                    r = reason.replace(/^\[SOFTBAN\]/, '');
-                }
-            }
-
-            await channel.send({
-                embeds: [
-                    new MessageEmbed()
-                    .setColor('#f14a60')
-                    .setTitle("A user was softbanned")
-                    .setAuthor({
-                        name: user.tag,
-                        iconURL: user.displayAvatarURL(),
-                    })
-                    .addField('Reason', r)
-                    .addField('Softbanned by', model.mod_tag)
-                    .addField('User ID', user.id)
-                    .setFooter({
-                        text: "Softbanned",
-                    })
-                    .setTimestamp()
-                ]
-            });
-        }, {
-            guild
-        });
-    }
-
-    logTempBan(banOptions: BanOptions, guild: Guild, user: User, model: IPunishment) {
-        this.channel(async (channel) => {
-            let r = '*No reason provided*';
-
-            const auditLog = (await guild.fetchAuditLogs({
-                limit: 1,
-                type: 'MEMBER_BAN_ADD',
-            })).entries.first();         
-
-            if (banOptions.reason) {
-                r = banOptions.reason;
-            }
-            else if (auditLog) {
-                console.log(auditLog);  
-                const { target, reason } = await auditLog;
-
-                if (target!.id === user.id && reason) {
-                    r = reason.replace(/^\[TEMPBAN\]/, '');
-                }
-            }
-
-            await channel.send({
-                embeds: [
-                    new MessageEmbed()
-                    .setColor('#f14a60')
-                    .setTitle("A user was temporarily banned")
-                    .setAuthor({
-                        name: user.tag,
-                        iconURL: user.displayAvatarURL(),
-                    })
-                    .addField('Reason', r)
-                    .addField('Banned by', model.mod_tag)
-                    .addField('User ID', user.id)
-                    .addField('Duration', ms((model.meta as any).time))
-                    .setFooter({
-                        text: "Temporarily banned",
-                    })
-                    .setTimestamp()
-                ]
-            });
-        }, {
-            guild
-        });
-    }
-
-    logUnbanned(ban: GuildBan) {
-        this.channel(async (channel) => {
-            await channel.send({
-                embeds: [
-                    new MessageEmbed()
+        await this.loggingChannel(ban.guild.id)?.send({
+            embeds: [
+                new MessageEmbed()
                     .setColor('#f14a60')
                     .setTitle("A user was unbanned")
                     .setAuthor({
@@ -318,185 +186,62 @@ class Logger {
                         iconURL: ban.user.displayAvatarURL(),
                     })
                     .addField('User ID', ban.user.id)
+                    .addFields({
+                        name: 'Unbanned By',
+                        value: executor ? `${executor.tag} (${executor.id})` : 'Unknown'
+                    })
                     .setFooter({
                         text: "Unbanned",
                     })
                     .setTimestamp()
-                ]
-            });
-        }, ban);
+            ]
+        });
     }
 
-    logJoined(member: GuildMember) {
-        this.channelJoinLeft(async (channel) => {
-            await channel.send({
-                embeds: [
-                    new MessageEmbed()
-                    .setColor('#007bff')
-                    .setTitle("New member joined")
-                    .setAuthor({
-                        name: member.user.tag,
-                        iconURL: member.user.displayAvatarURL(),
-                    })
-                    .setDescription(`<@${member.user.id}> just joined the server!`)
-                    .addField('Account Created', `${member.user.createdAt.toLocaleString()} (${timeSince(member.user.createdAt.getTime())})`)
-                    .addField('New Account?', (new Date().getTime() - member.user.createdAt.getTime()) <= 3 * 24 * 60 * 60 * 1000 ? ":warning: Yes :warning:" : "No")
-                    .addField('Bot?', member.user.bot === true ? 'Yes' : 'No')
-                    .addField('User ID', member.user.id)
-                    .setFooter({
-                        text: "Joined",
-                    })
-                    .setTimestamp()
-                ]
-            });
-        }, member);
+    async onSoftban(banOptions: BanOptions, guild: Guild, user: User, model: IPunishment) {
+        let r = banOptions.reason ?? '*No reason provided*';
+
+        await this.loggingChannel(guild.id)?.send({
+            embeds: [
+                new MessageEmbed()
+                .setColor('#f14a60')
+                .setTitle("A user was softbanned")
+                .setAuthor({
+                    name: user.tag,
+                    iconURL: user.displayAvatarURL(),
+                })
+                .addField('Reason', r)
+                .addField('Softbanned by', `${model.mod_tag} (${model.mod_id})`)
+                .addField('User ID', user.id)
+                .setFooter({
+                    text: "Softbanned",
+                })
+                .setTimestamp()
+            ]
+        });
     }
+    
+    async onTempBan(banOptions: BanOptions, guild: Guild, user: User, model: IPunishment) {
+        let r = banOptions.reason ?? '*No reason provided*';
 
-    logLeft(member: GuildMember) {
-        this.channelJoinLeft(async (channel) => {
-            const roles = await member.roles.cache.filter(role => role.id !== member.guild.id).reduce((acc, val) => ` ${acc} ${roleMention(val.id)}`, '');
-
-            await channel.send({
-                embeds: [
-                    new MessageEmbed()
-                    .setColor('#f14a60')
-                    .setTitle("Member left")
-                    .setAuthor({
-                        name: member.user.tag,
-                        iconURL: member.user.displayAvatarURL(),
-                    })
-                    .setDescription(`**Roles**\n${roles}`)
-                    .addField('Joined at', `${member.joinedAt!.toLocaleString()} (${timeSince(member.joinedAt!.getTime())})`)
-                    .addField('User ID', member.user.id)
-                    .addField('Bot?', member.user.bot === true ? 'Yes' : 'No')
-                    .setFooter({
-                        text: "Left",
-                    })
-                    .setTimestamp()
-                ]
-            });
-        }, member);
-    }
-
-    logBeaned(member: GuildMember, r: string, d: User) {
-        this.channel(async (channel) => {
-            await channel.send({
-                embeds: [
-                    new MessageEmbed()
-                    .setColor('#007bff')
-                    .setTitle("Member beaned")
-                    .setAuthor({
-                        name: member.user.tag,
-                        iconURL: member.user.displayAvatarURL(),
-                    })
-                    .addField('Reason', r)
-                    .addField('Beaned by', d.tag)
-                    .addField('User ID', member.user.id)
-                    .setFooter({
-                        text: "Beaned",
-                    })
-                    .setTimestamp()
-                ]
-            });
-        }, member);
-    }
-
-    logMute(member: GuildMember, reason: string, duration: number | null | undefined, d: User, hard: boolean = true) {
-        this.channel(async (channel) => {
-            await channel.send({
-                embeds: [
-                    new MessageEmbed()
-                    .setColor('#f14a60')
-                    .setTitle("Member muted")
-                    .setAuthor({
-                        name: member.user.tag,
-                        iconURL: member.user.displayAvatarURL(),
-                    })
-                    .addField('Reason', reason)
-                    .addField('Muted by', d.tag)
-                    .addField('Duration Until', duration ? `${(new Date(Date.now() + duration)).toLocaleString()} (${formatDuration(intervalToDuration({ start: 0, end: duration }))})` : "*No duration set*")
-                    .addField('User ID', member.user.id)
-                    .addField('Hardmute', hard ? 'Yes' : 'No')
-                    .setFooter({
-                        text: "Muted",
-                    })
-                    .setTimestamp()
-                ]
-            });
-        }, member);
-    }
-
-    logUnmute(member: GuildMember, d: User) {
-        this.channel(async (channel) => {
-            await channel.send({
-                embeds: [
-                    new MessageEmbed()
-                    .setColor('#007bff')
-                    .setTitle("Member unmuted")
-                    .setAuthor({
-                        name: member.user.tag,
-                        iconURL: member.user.displayAvatarURL(),
-                    })
-                    .addField('Unmuted by', d.tag)
-                    .addField('User ID', member.user.id)
-                    .setFooter({
-                        text: "Unmuted",
-                    })
-                    .setTimestamp()
-                ]
-            });
-        }, member);
-    }
-
-    logWarn(msg: Message | CommandInteraction, member: GuildMember | User, d: User, reason: string | undefined, id: number | string) {
-        if ((member as GuildMember).user)
-            member = (member as GuildMember).user;
-
-        this.channel(async (channel) => {            
-            await channel.send({
-                embeds: [
-                    new MessageEmbed()
-                    .setColor('GOLD')
-                    .setTitle("Member warned")
-                    .setAuthor({
-                        name: (member as User).tag,
-                        iconURL: member.displayAvatarURL(),
-                    })
-                    .addField('Reason', reason ?? '*No reason provided*')
-                    .addField('Warned by', d.tag)
-                    .addField('User ID', member.id)
-                    .addField('Case ID', id + '')
-                    .setFooter({
-                        text: "Warned",
-                    })
-                    .setTimestamp()
-                ]
-            });
-        }, msg);
-    }
-
-    logWarndel(msg: Message, member: GuildMember, warn: any, d: User) {
-        this.channel(async (channel) => {
-            await channel.send({
-                embeds: [
-                    new MessageEmbed()
-                    .setColor('GOLD')
-                    .setTitle("Warning deleted")
-                    .setAuthor({
-                        name: member.user.tag,
-                        iconURL: member.user.displayAvatarURL(),
-                    })
-                    .addField('Warned by', d.tag + '')
-                    .addField('Warning ID', warn.id + '')
-                    .addField('User ID', member.user.id)
-                    .setFooter({
-                        text: "Warning Deleted",
-                    })
-                    .setTimestamp()
-                ]
-            });
-        }, msg);
+        await this.loggingChannel(guild.id)?.send({
+            embeds: [
+                new MessageEmbed()
+                .setColor('#f14a60')
+                .setTitle("A user was temporarily banned")
+                .setAuthor({
+                    name: user.tag,
+                    iconURL: user.displayAvatarURL(),
+                })
+                .addField('Reason', r)
+                .addField('Banned by', `${model.mod_tag} (${model.mod_id})`)
+                .addField('User ID', user.id)
+                .addField('Duration', ms((model.meta as any).time))
+                .setFooter({
+                    text: "Temporarily banned",
+                })
+                .setTimestamp()
+            ]
+        });
     }
 }
-
-export default Logger;

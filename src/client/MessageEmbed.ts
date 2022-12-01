@@ -22,6 +22,6 @@ import { MessageEmbed as MessageEmbedDiscord, MessageEmbedOptions } from 'discor
 export default class MessageEmbed extends MessageEmbedDiscord {
     constructor(options?: MessageEmbedDiscord | MessageEmbedOptions) {
         super(options);
-        this.setColor('#007bff');
+        this.setColor(options?.color ?? '#007bff');
     }
 }

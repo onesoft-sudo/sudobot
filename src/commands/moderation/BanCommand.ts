@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Permissions, BanOptions, CommandInteraction, Message, User } from 'discord.js';
+import { Permissions, BanOptions, CommandInteraction, Message, User, GuildBan } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -175,36 +175,11 @@ export default class BanCommand extends BaseCommand {
             return;
         }
 
-        try {
-            const loggingChannel = await msg.guild?.channels.fetch(client.config.get('logging_channel'));
-
-            if (loggingChannel && (loggingChannel.type === 'GUILD_TEXT' || loggingChannel.type === 'GUILD_NEWS')) {
-                await loggingChannel.send({
-                    embeds: [
-                        new MessageEmbed()
-                        .setColor('#f14a60')
-                        .setTitle("A user was banned")
-                        .setAuthor({
-                            name: user.tag,
-                            iconURL: user.displayAvatarURL(),
-                        })
-                        .addField('Reason', banOptions.reason === undefined ? "*No reason provided*" : banOptions.reason)
-                        .addField('User ID', user.id)
-                        .addFields({
-                            name: 'Banned by',
-                            value: `${(msg.member!.user as User).tag} (${msg.member!.user.id})`
-                        })
-                        .setFooter({
-                            text: "Banned",
-                        })
-                        .setTimestamp()
-                    ]
-                });
-            }
-        }
-        catch (e) {
-            console.log(e);
-        }
+        client.logger.onGuildBanAdd({
+            guild: msg.guild!,
+            user,
+            reason: banOptions.reason === undefined ? "*No reason provided*" : banOptions.reason
+        } as GuildBan, msg.member!.user as User).catch(console.error);
 
         await msg.reply({
             embeds: [

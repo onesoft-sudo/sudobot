@@ -30,7 +30,7 @@ export default class GuildBanAddEvent extends BaseEvent {
     
     async run(client: DiscordClient, ban: GuildBan) {
         setTimeout(async () => {
-            await client.logger.logBanned(ban);
+            await client.logger.onGuildBanAdd(ban);
 
             const logs = (await ban.guild.fetchAuditLogs({
                 limit: 1,

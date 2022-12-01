@@ -17,6 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { GuildBan } from "discord.js";
 import Queue from "../utils/structures/Queue";
 
 export default class UnbanQueue extends Queue {
@@ -37,6 +38,11 @@ export default class UnbanQueue extends Queue {
 
             if (user) {
                 await guild.bans.remove(user, 'Removed temporary ban');
+                
+                this.client.logger.onGuildBanRemove({
+                    guild: guild!,
+                    user
+                } as GuildBan, user).catch(console.error);
             }
             else {
                 throw new Error();
