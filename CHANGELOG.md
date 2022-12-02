@@ -1,3 +1,12 @@
+## [4.28.1](https://github.com/onesoft-sudo/sudobot/compare/v4.28.0...v4.28.1) (2022-12-02)
+
+
+### Bug Fixes
+
+* **logger:** unban not logging properly w/ tempban ([d5cf2b1](https://github.com/onesoft-sudo/sudobot/commit/d5cf2b1684cbbdbe3fb5ed119eabd62d81c24f47))
+
+
+
 # [4.28.0](https://github.com/onesoft-sudo/sudobot/compare/v4.27.0...v4.28.0) (2022-11-27)
 
 
@@ -31,20 +40,6 @@
 ### Features
 
 * add button role deletion support ([4f20ca7](https://github.com/onesoft-sudo/sudobot/commit/4f20ca72b4129252b2f4affa5858efc532ea483a))
-
-
-
-# [4.25.0](https://github.com/onesoft-sudo/sudobot/compare/v4.24.0...v4.25.0) (2022-11-20)
-
-
-### Bug Fixes
-
-* add `--cancel` instruction to initial message ([4cadc10](https://github.com/onesoft-sudo/sudobot/commit/4cadc105b8a1e86b6ba65bc1613dfe8122d84454))
-
-
-### Features
-
-* add button role delete command ([bfc8ecb](https://github.com/onesoft-sudo/sudobot/commit/bfc8ecb958d3b563f8dcb7f3d1146b0a7f6f9a57))
 
 
 
