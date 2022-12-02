@@ -25,6 +25,9 @@ import DiscordClient from '../client/Client';
 import { IPunishment } from '../models/Punishment';
 import { timeSince } from '../utils/util';
 
+/**
+ * @deprecated since the full refactor of automod logger
+ */
 class Logger {
     client: DiscordClient;
     pause = false;
