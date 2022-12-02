@@ -174,11 +174,6 @@ export default class Logger extends Service {
 
         const executor = _executor ?? auditLog?.executor;
 
-        if (executor?.id === this.client.user!.id) {
-            console.log("Action taken by bot");
-            return;
-        }
-
         await this.loggingChannel(ban.guild.id)?.send({
             embeds: [
                 new MessageEmbed()

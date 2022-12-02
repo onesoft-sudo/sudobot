@@ -42,7 +42,7 @@ export default class UnbanQueue extends Queue {
                 this.client.logger.onGuildBanRemove({
                     guild: guild!,
                     user
-                } as GuildBan, user).catch(console.error);
+                } as GuildBan, this.client.user!).catch(console.error);
             }
             else {
                 throw new Error();

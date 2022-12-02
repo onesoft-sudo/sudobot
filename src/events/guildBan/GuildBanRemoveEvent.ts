@@ -30,12 +30,17 @@ export default class GuildBanRemoveEvent extends BaseEvent {
     
     async run(client: DiscordClient, ban: GuildBan) {
         setTimeout(async () => {
-            await client.logger.onGuildBanRemove(ban);
-
             const logs = (await ban.guild.fetchAuditLogs({
                 limit: 1,
                 type: 'MEMBER_BAN_REMOVE',
             })).entries.first();
+
+            if (logs?.executor?.id === client.user!.id) {
+                console.log("Action taken by bot");
+                return;
+            }
+
+            await client.logger.onGuildBanRemove(ban);
 
             console.log(logs?.executor);
 
