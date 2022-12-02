@@ -38,7 +38,7 @@ export default class MessageUpdateEvent extends BaseEvent {
         await client.messageRules.onMessageCreate(newMessage);
         await client.autoResponder.run(newMessage);
 
-        await client.logger.logEdit(oldMessage, newMessage);
+        await client.logger.onMessageUpdate(oldMessage, newMessage);
         await (client.msg = msg);
     }
 }

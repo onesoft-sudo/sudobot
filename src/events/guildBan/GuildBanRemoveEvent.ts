@@ -29,22 +29,29 @@ export default class GuildBanRemoveEvent extends BaseEvent {
     }
     
     async run(client: DiscordClient, ban: GuildBan) {
-        await client.logger.logUnbanned(ban);
+        setTimeout(async () => {
+            const logs = (await ban.guild.fetchAuditLogs({
+                limit: 1,
+                type: 'MEMBER_BAN_REMOVE',
+            })).entries.first();
 
-        const logs = (await ban.guild.fetchAuditLogs({
-            limit: 1,
-            type: 'MEMBER_BAN_REMOVE',
-        })).entries.first();
+            if (logs?.executor?.id === client.user!.id) {
+                console.log("Action taken by bot");
+                return;
+            }
 
-        console.log(logs?.executor);
+            await client.logger.onGuildBanRemove(ban);
 
-        await Punishment.create({
-            type: PunishmentType.UNBAN,
-            user_id: ban.user.id,
-            guild_id: ban.guild!.id,
-            mod_id: logs?.executor?.id ?? client.user!.id,
-            mod_tag: logs?.executor?.tag ?? 'Unknown',
-            reason: undefined
-        });
+            console.log(logs?.executor);
+
+            await Punishment.create({
+                type: PunishmentType.UNBAN,
+                user_id: ban.user.id,
+                guild_id: ban.guild!.id,
+                mod_id: logs?.executor?.id ?? client.user!.id,
+                mod_tag: logs?.executor?.tag ?? 'Unknown',
+                reason: logs?.reason ?? undefined
+            });
+        }, 2500);
     }
 }

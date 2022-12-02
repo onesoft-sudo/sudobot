@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, Message, User, Permissions } from 'discord.js';
+import { CommandInteraction, Message, User, Permissions, GuildBan } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -99,6 +99,11 @@ export default class UnbanCommand extends BaseCommand {
             }
 
             await msg.guild?.bans.remove(user);
+
+            client.logger.onGuildBanRemove({
+                guild: msg.guild!,
+                user
+            } as GuildBan, msg.member!.user as User).catch(console.error);
 
             await Punishment.create({
                 type: PunishmentType.UNBAN,

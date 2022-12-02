@@ -227,7 +227,7 @@ export default class TempBanCommand extends BaseCommand {
                 guild: msg.guild!.id
             });
 
-            await client.logger.logTempBan(banOptions, msg.guild!, user, punishment);
+            await client.logger.onTempBan(banOptions, msg.guild!, user, punishment);
 
             await msg.reply({
                 embeds: [

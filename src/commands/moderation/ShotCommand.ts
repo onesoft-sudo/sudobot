@@ -158,7 +158,7 @@ export default class ShotCommand extends BaseCommand {
             	dm = false;
             }
 
-            // await client.logger.logBeaned(user, typeof reason === 'undefined' ? '*No reason provided*' : reason, msg.member!.user as User);
+            client.logger.onMemberShot(user, msg.member!.user as User, reason)
         }
         catch (e) {
             console.log(e);            

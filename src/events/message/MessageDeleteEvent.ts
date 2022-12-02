@@ -48,6 +48,6 @@ export default class MessageDeleteEvent extends BaseEvent {
         if (message.author.bot || !message.guild || message.channel.type === 'DM' || (global as any).deletingMessages === true)
             return;
 
-        await client.logger.logDelete(message);
+        await client.logger.onMessageDelete(message);
     }
 }

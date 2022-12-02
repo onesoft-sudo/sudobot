@@ -62,9 +62,7 @@ export default class AutoClear {
                                     ]
                                 };
         
-                                await this.client.logger.channelJoinLeft(async (ch) => {
-                                    await ch.send(messageOptions);
-                                }, member);
+                                await this.client.logger.loggingChannel(member.guild.id)?.send(messageOptions);
                             }
                         }
                     }
