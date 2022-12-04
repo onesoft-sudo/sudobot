@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, ContextMenuInteraction, EmojiIdentifierResolvable, FileOptions, Message, MessageActionRow, Modal, NewsChannel, TextChannel, TextInputComponent, ThreadChannel } from 'discord.js';
+import { CommandInteraction, ContextMenuInteraction, EmojiIdentifierResolvable, FileOptions, Message, MessageActionRow, Modal, ModalSubmitInteraction, NewsChannel, TextChannel, TextInputComponent, ThreadChannel } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -25,6 +25,9 @@ import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import { fetchEmoji } from '../../utils/Emoji';
 import { parseEmbedsInString } from '../../utils/util';
+
+let globalInteraction: CommandInteraction | ContextMenuInteraction;
+let globalMessage: Message;
 
 export default class SendReplyCommand extends BaseCommand {
     supportsContextMenu: boolean = true;
@@ -35,11 +38,43 @@ export default class SendReplyCommand extends BaseCommand {
         super('reply', 'moderation', ['Send Reply']);
     }
 
+    async innerRun(interaction: ModalSubmitInteraction) {
+        if (!this.filter(interaction)) {
+            return;
+        }
+        
+        try {                
+            await (globalMessage.channel as TextChannel).sendTyping();
+            await globalMessage.reply({ content: interaction.fields.getTextInputValue('content') });
+            await interaction.reply({ ephemeral: true, content: "Message sent!" });
+        }
+        catch (e) {
+            console.log(e);
+            
+            await interaction.reply({
+                embeds: [
+                    new MessageEmbed()
+                    .setColor('#f14a60')
+                    .setDescription(`Failed to send message. Maybe missing permissions or invalid embed schema?`)
+                ],
+                ephemeral: true
+            });
+
+            return;
+        }
+    }
+
+    filter(i: ModalSubmitInteraction) {
+        return i.user.id === globalInteraction.user.id && i.customId === 'send_reply_modal';
+    }
+
     async run(client: DiscordClient, interaction: CommandInteraction | ContextMenuInteraction, options: InteractionOptions) {
         let message: Message;
 
         if (interaction.isMessageContextMenu()) {
+            globalInteraction = interaction;
             message = <Message> interaction.targetMessage;
+            globalMessage = message;
             
             const modal = new Modal()
                 .setCustomId("send_reply_modal")
@@ -58,36 +93,6 @@ export default class SendReplyCommand extends BaseCommand {
                 );
 
             await interaction.showModal(modal);
-
-            interaction.awaitModalSubmit({
-                dispose: true,
-                time: 180_000,
-                filter(i) {
-                    return i.user.id === interaction.user.id && i.customId === 'send_reply_modal';
-                }
-            })
-            .then(async interaction => {
-                try {                
-                    await (message.channel as TextChannel).sendTyping();
-                    await message.reply({ content: interaction.fields.getTextInputValue('content') });
-                    await interaction.reply({ ephemeral: true, content: "Message sent!" });
-                }
-                catch (e) {
-                    console.log(e);
-                    
-                    await interaction.reply({
-                        embeds: [
-                            new MessageEmbed()
-                            .setColor('#f14a60')
-                            .setDescription(`Failed to send message. Maybe missing permissions or invalid embed schema?`)
-                        ],
-                        ephemeral: true
-                    });
-    
-                    return;
-                }
-            })
-            .catch(console.error);
         }
         else if (interaction.isCommand()) {
             const channel = <TextChannel | NewsChannel | ThreadChannel> interaction.options.getChannel("channel") ?? interaction.channel!;
