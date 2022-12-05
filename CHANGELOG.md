@@ -1,3 +1,12 @@
+## [4.28.3](https://github.com/onesoft-sudo/sudobot/compare/v4.28.2...v4.28.3) (2022-12-05)
+
+
+### Bug Fixes
+
+* **about:** remove quotes  ([eab7fa7](https://github.com/onesoft-sudo/sudobot/commit/eab7fa7e880ef5d3016a6fe81a17d391ff7fc85f))
+
+
+
 ## [4.28.2](https://github.com/onesoft-sudo/sudobot/compare/v4.28.1...v4.28.2) (2022-12-04)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **automod:** add flexible rule system ([32501f9](https://github.com/onesoft-sudo/sudobot/commit/32501f92ca76135ddd7e3c2324ef8a157a478152))
-
-
-
-## [4.26.1](https://github.com/onesoft-sudo/sudobot/compare/v4.26.0...v4.26.1) (2022-11-20)
-
-
-### Bug Fixes
-
-* wrong method call ([a0188fd](https://github.com/onesoft-sudo/sudobot/commit/a0188fda8895725641a65bf99efa06199ecf547a))
 
 
 
