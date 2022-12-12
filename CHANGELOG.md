@@ -1,3 +1,12 @@
+## [4.28.4](https://github.com/onesoft-sudo/sudobot/compare/v4.28.3...v4.28.4) (2022-12-12)
+
+
+### Bug Fixes
+
+* crash while creating anonymous ballots ([8551632](https://github.com/onesoft-sudo/sudobot/commit/8551632f4d97a106605d9d0ba700ed686e6d6cee))
+
+
+
 ## [4.28.3](https://github.com/onesoft-sudo/sudobot/compare/v4.28.2...v4.28.3) (2022-12-05)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **logger:** improvements ([78073dd](https://github.com/onesoft-sudo/sudobot/commit/78073dd27cc1812d77b6d213623b2dbc1cef9aa2))
-
-
-
-# [4.27.0](https://github.com/onesoft-sudo/sudobot/compare/v4.26.1...v4.27.0) (2022-11-22)
-
-
-### Features
-
-* **automod:** add flexible rule system ([32501f9](https://github.com/onesoft-sudo/sudobot/commit/32501f92ca76135ddd7e3c2324ef8a157a478152))
 
 
 
