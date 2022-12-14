@@ -82,6 +82,34 @@ let commands = [
 	new SlashCommandBuilder().setName('config').setDescription('View/change the system settings for this server')
 		.addStringOption(option => option.setName('key').setDescription('The setting key (e.g. spam_filter.enabled)').setRequired(true).setAutocomplete(true))
 		.addStringOption(option => option.setName('value').setDescription('New value for the setting')),
+		
+	new SlashCommandBuilder().setName('blockedword').setDescription('Manage blocked words')
+		.addSubcommand(subcmd => 
+			subcmd.setName("add").setDescription("Block words")
+				.addStringOption(option => option.setName("words").setDescription("The words that should be blocked; separated by spaces").setRequired(true))
+		)
+		.addSubcommand(subcmd => 
+			subcmd.setName("remove").setDescription("Remove blocked words")
+				.addStringOption(option => option.setName("words").setDescription("The words that should be removed from blocklist; separated by spaces").setRequired(true))
+		)
+		.addSubcommand(subcmd => 
+			subcmd.setName("has").setDescription("Check if a word is blocked")
+				.addStringOption(option => option.setName("word").setDescription("The word").setRequired(true))
+		),
+		
+	new SlashCommandBuilder().setName('blockedtoken').setDescription('Manage blocked tokens')
+		.addSubcommand(subcmd => 
+			subcmd.setName("add").setDescription("Block a token")
+				.addStringOption(option => option.setName("token").setDescription("The token that should be blocked").setRequired(true))
+		)
+		.addSubcommand(subcmd => 
+			subcmd.setName("remove").setDescription("Remove a blocked token")
+				.addStringOption(option => option.setName("token").setDescription("The token that should be removed from blocklist").setRequired(true))
+		)
+		.addSubcommand(subcmd => 
+			subcmd.setName("has").setDescription("Check if a token is blocked")
+				.addStringOption(option => option.setName("token").setDescription("The token").setRequired(true))
+		),
 
 	// INFORMATION
 	new SlashCommandBuilder().setName('stats').setDescription('Show the server statistics'),
