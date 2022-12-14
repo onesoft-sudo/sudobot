@@ -1,3 +1,12 @@
+# [4.29.0](https://github.com/onesoft-sudo/sudobot/compare/v4.28.4...v4.29.0) (2022-12-14)
+
+
+### Features
+
+* add blocked word & token management command ([e49d389](https://github.com/onesoft-sudo/sudobot/commit/e49d389648963178044bd9726a32e61a62f00d94))
+
+
+
 ## [4.28.4](https://github.com/onesoft-sudo/sudobot/compare/v4.28.3...v4.28.4) (2022-12-12)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **logger:** unban not logging properly w/ tempban ([d5cf2b1](https://github.com/onesoft-sudo/sudobot/commit/d5cf2b1684cbbdbe3fb5ed119eabd62d81c24f47))
-
-
-
-# [4.28.0](https://github.com/onesoft-sudo/sudobot/compare/v4.27.0...v4.28.0) (2022-11-27)
-
-
-### Features
-
-* **logger:** improvements ([78073dd](https://github.com/onesoft-sudo/sudobot/commit/78073dd27cc1812d77b6d213623b2dbc1cef9aa2))
 
 
 
