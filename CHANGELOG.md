@@ -1,3 +1,12 @@
+## [4.29.1](https://github.com/onesoft-sudo/sudobot/compare/v4.29.0...v4.29.1) (2022-12-14)
+
+
+### Bug Fixes
+
+* type mismatch ([0313402](https://github.com/onesoft-sudo/sudobot/commit/0313402232885f84905f11f231eabadafa5b815e))
+
+
+
 # [4.29.0](https://github.com/onesoft-sudo/sudobot/compare/v4.28.4...v4.29.0) (2022-12-14)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **replies:** multiple replies when modals get canceled ([57b741e](https://github.com/onesoft-sudo/sudobot/commit/57b741e03c07709e860bfdf1761f29f121bd764b))
-
-
-
-## [4.28.1](https://github.com/onesoft-sudo/sudobot/compare/v4.28.0...v4.28.1) (2022-12-02)
-
-
-### Bug Fixes
-
-* **logger:** unban not logging properly w/ tempban ([d5cf2b1](https://github.com/onesoft-sudo/sudobot/commit/d5cf2b1684cbbdbe3fb5ed119eabd62d81c24f47))
 
 
 
