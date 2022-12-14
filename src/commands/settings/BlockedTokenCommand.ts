@@ -9,7 +9,7 @@ export default class BlockedTokenCommand extends BaseCommand {
     name = "blockedtoken";
     group = "settings";
     aliases = ["btoken", "blockedtokens", "bannedtoken", "bannedtoken", "bantoken", "unbantoken", "blocktoken", "unblocktoken"];
-    supportsInteractions = 'true';
+    supportsInteractions = true;
 
     async run(client: DiscordClient, message: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
         const subcommand = options.isInteraction ? options.options.getSubcommand(true) : (
