@@ -24,7 +24,7 @@ import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import getUser from '../../utils/getUser';
-import { fetchEmoji } from '../../utils/Emoji';
+import { emoji, fetchEmoji } from '../../utils/Emoji';
 import { hasPermission, shouldNotModerate } from '../../utils/util';
 
 export default class ClearCommand extends BaseCommand {
@@ -35,9 +35,9 @@ export default class ClearCommand extends BaseCommand {
         super('clear', 'moderation', []);
     }
 
-    async run(client: DiscordClient, msg: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
+    async run(client: DiscordClient, message: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
         if (!options.isInteraction && options.args[0] === undefined) {
-            await msg.reply({
+            await message.reply({
                 embeds: [
                     new MessageEmbed()
                     .setColor('#f14a60')
@@ -49,7 +49,7 @@ export default class ClearCommand extends BaseCommand {
         }
 
         let user: User | undefined | null;
-        let msgCount = 0, channel: GuildChannel = msg.channel! as GuildChannel;
+        let msgCount = 0, channel: GuildChannel = message.channel! as GuildChannel;
 
         if (options.isInteraction) {
             if (options.options.getUser('user'))
@@ -61,7 +61,7 @@ export default class ClearCommand extends BaseCommand {
                 channel = <GuildChannel> options.options.getChannel('channel');
 
                 if (channel.type !== 'GUILD_TEXT' && channel.type !== 'GUILD_NEWS' && channel.type !== 'GUILD_PUBLIC_THREAD' && channel.type !== 'GUILD_PRIVATE_THREAD') {
-                    await msg.reply({
+                    await message.reply({
                         content: 'Invalid channel given.'
                     });
                     
@@ -75,7 +75,7 @@ export default class ClearCommand extends BaseCommand {
         }
         else {
             try {
-                user = await getUser(client, msg as Message, options);
+                user = await getUser(client, message as Message, options);
 
                 if (!user) {
                     throw new Error();
@@ -84,7 +84,7 @@ export default class ClearCommand extends BaseCommand {
             catch (e) {
                 console.log(e);
                 
-                await msg.reply({
+                await message.reply({
                     embeds: [
                         new MessageEmbed()
                         .setColor('#f14a60')
@@ -97,7 +97,7 @@ export default class ClearCommand extends BaseCommand {
         }
         
         if (msgCount === 0 && !user) {
-            await msg.reply({
+            await message.reply({
                 embeds: [
                     new MessageEmbed()
                     .setColor('#f14a60')
@@ -110,13 +110,13 @@ export default class ClearCommand extends BaseCommand {
 
         if (user) {
         	try {
-        		const member = await msg.guild?.members.fetch(user.id);
+        		const member = await message.guild?.members.fetch(user.id);
 
-				if (member && !(await hasPermission(client, member, msg, null, "You don't have permission to clear messages from this user.")))
+				if (member && !(await hasPermission(client, member, message, null, "You don't have permission to clear messages from this user.")))
 					return;
 
         		if (member && shouldNotModerate(client, member)) {
-        			await msg.reply({
+        			await message.reply({
       					embeds: [
         					{ description: "Cannot clear messages from this user: Operation not permitted" }
         				]
@@ -133,16 +133,10 @@ export default class ClearCommand extends BaseCommand {
         let count = 0;
         (global as any).deletingMessages = true;
 
-        let message = await msg.reply({
-            embeds: [
-                new MessageEmbed()
-                .setColor('GOLD')
-                .setDescription((await fetchEmoji('loading'))?.toString() + ' Deleting messages...')
-            ]
-        });
-
-        if (msg instanceof CommandInteraction)
-            message = <Message> await msg.fetchReply();
+        if (message instanceof Message)
+            await message.react(emoji('loading')!);
+        else 
+            await message.deferReply({ ephemeral: true });
 
         if (msgCount === 0 && user) {
             console.log(user?.tag);
@@ -154,17 +148,6 @@ export default class ClearCommand extends BaseCommand {
                 fetched = await fetched.filter(m => m.author.id === user!.id && m.id !== message!.id && (Date.now() - m.createdTimestamp) <= (2 * 7 * 24 * 60 * 60 * 1000));
                 await (channel as TextChannel).bulkDelete(fetched);
                 count += fetched.size;
-
-                /*for await (const [id, m] of fetched.entries()) {
-                	try {
-                		await m.delete();
-                		count++;
-                	}
-                	catch (e) {
-                		console.log('Error deleting message', e);
-                	}
-                }
-                */
                 
                 await new Promise(r => setTimeout(r, 900));
             }
@@ -184,7 +167,7 @@ export default class ClearCommand extends BaseCommand {
 
                     fetched = 0;
 
-                    for await (const [id, m] of data.entries()) {
+                    for await (const [, m] of data.entries()) {
                         try {
                             if (count >= msgCount || safeLimit2 > 200) {
                                 break;
@@ -228,32 +211,32 @@ export default class ClearCommand extends BaseCommand {
             while (fetched >= 2);
         }
 
-        const messageOptions = {
+        const reply = await message.channel?.send({
             embeds: [
                 new MessageEmbed()
                 .setColor('GREEN')
                 .setDescription((await fetchEmoji('check') as Emoji).toString() + " Deleted " + count + " message(s)" + (user ? " from user " + user.tag : ''))
             ]
-        };
+        });
 
-        if (msg instanceof CommandInteraction) {
-            await msg.editReply(messageOptions);
+        if (message instanceof CommandInteraction) {
+            await message.editReply({ content: "Operation completed." });
         }
-        else {
-            await message!.edit(messageOptions);
-        }
+
+        if (message instanceof Message)
+            await message.react(emoji('check')!);
 
         setTimeout(async () => {
             try {
-                if (msg instanceof Message)
-                    await msg.delete();
+                if (message instanceof Message)
+                    await message.delete();
             }
             catch (e) {
                 console.log(e);                
             }
             
             try {
-                await message!.delete();
+                await reply!.delete();
             }
             catch (e) {
                 console.log(e);                
