@@ -23,6 +23,8 @@ import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
 import { readFile } from 'fs/promises';
 import { join, resolve } from 'path';
+import BlockedWordViolation from "../models/BlockedWordViolation";
+import { BlockedWordType } from "../types/BlockedWordType";
 
 export type MessageFilterConfig = {
     words_enabled: boolean;
@@ -297,6 +299,21 @@ export default class MessageFilter {
                 ]
             });
 
+            BlockedWordViolation.findOneAndUpdate({
+                guild_id: msg.guildId!,
+                user_id: msg.author.id,
+                word_token: token,
+                ruleIndex: this.config.tokens.indexOf(token),
+                type: BlockedWordType.TOKEN,
+            }, {
+                updatedAt: new Date(),
+                $inc: {
+                    count: 1
+                }
+            }, {
+                upsert: true
+            }).catch(console.error);
+
             return;
         }
         
@@ -431,6 +448,21 @@ export default class MessageFilter {
                         .setTimestamp()
                     ]
                 });
+
+                BlockedWordViolation.findOneAndUpdate({
+                    guild_id: msg.guildId!,
+                    user_id: msg.author.id,
+                    word_token: blockedPass.word,
+                    ruleIndex: this.config.words.indexOf(blockedPass.word),
+                    type: BlockedWordType.WORD,
+                }, {
+                    updatedAt: new Date(),
+                    $inc: {
+                        count: 1
+                    }
+                }, {
+                    upsert: true
+                }).catch(console.error);
             }
             catch(e) {
                 console.log(e);

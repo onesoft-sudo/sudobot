@@ -8,15 +8,11 @@ import BaseCommand from "../../utils/structures/BaseCommand";
 export default class BlockedWordCommand extends BaseCommand {
     name = "blockedword";
     group = "settings";
-    aliases = ["bword", "blockedwords", "bannedword", "bannedword", "banword", "unbanword", "blockword", "unblockword"];
+    aliases = ["bword", "blockedwords", "bannedword", "bannedword"];
     supportsInteractions = true;
 
     async run(client: DiscordClient, message: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
-        const subcommand = options.isInteraction ? options.options.getSubcommand(true) : (
-            options.argv[0] === 'banword' ||  options.argv[0] === 'blockword' ? 'add' : (
-                options.argv[0] === 'unbanword' ||  options.argv[0] === 'unblockword' ? 'remove' : options.argv[1]
-            )
-        );
+        const subcommand = options.isInteraction ? options.options.getSubcommand(true) : options.argv[1];
 
         const subcommands = ["add", "remove", "has"];
 
