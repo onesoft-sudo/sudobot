@@ -1,3 +1,12 @@
+## [4.29.2](https://github.com/onesoft-sudo/sudobot/compare/v4.29.1...v4.29.2) (2022-12-16)
+
+
+### Bug Fixes
+
+* blocked token command error ([cb82770](https://github.com/onesoft-sudo/sudobot/commit/cb82770e9de1e3384ed2004c9db9d21fc0099a16))
+
+
+
 ## [4.29.1](https://github.com/onesoft-sudo/sudobot/compare/v4.29.0...v4.29.1) (2022-12-14)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **about:** remove quotes  ([eab7fa7](https://github.com/onesoft-sudo/sudobot/commit/eab7fa7e880ef5d3016a6fe81a17d391ff7fc85f))
-
-
-
-## [4.28.2](https://github.com/onesoft-sudo/sudobot/compare/v4.28.1...v4.28.2) (2022-12-04)
-
-
-### Bug Fixes
-
-* **replies:** multiple replies when modals get canceled ([57b741e](https://github.com/onesoft-sudo/sudobot/commit/57b741e03c07709e860bfdf1761f29f121bd764b))
 
 
 
