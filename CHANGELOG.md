@@ -1,3 +1,13 @@
+# [4.30.0](https://github.com/onesoft-sudo/sudobot/compare/v4.29.2...v4.30.0) (2022-12-16)
+
+
+### Features
+
+* add message rule stats command ([22701f7](https://github.com/onesoft-sudo/sudobot/commit/22701f7026f612cd8a1af26addc21efbbecfe07b))
+* stats support of blocked words counts ([b16a335](https://github.com/onesoft-sudo/sudobot/commit/b16a335ea66831f29ecb6ae08308f3541ec4b37b))
+
+
+
 ## [4.29.2](https://github.com/onesoft-sudo/sudobot/compare/v4.29.1...v4.29.2) (2022-12-16)
 
 
@@ -31,15 +41,6 @@
 ### Bug Fixes
 
 * crash while creating anonymous ballots ([8551632](https://github.com/onesoft-sudo/sudobot/commit/8551632f4d97a106605d9d0ba700ed686e6d6cee))
-
-
-
-## [4.28.3](https://github.com/onesoft-sudo/sudobot/compare/v4.28.2...v4.28.3) (2022-12-05)
-
-
-### Bug Fixes
-
-* **about:** remove quotes  ([eab7fa7](https://github.com/onesoft-sudo/sudobot/commit/eab7fa7e880ef5d3016a6fe81a17d391ff7fc85f))
 
 
 
