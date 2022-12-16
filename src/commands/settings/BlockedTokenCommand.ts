@@ -8,15 +8,11 @@ import BaseCommand from "../../utils/structures/BaseCommand";
 export default class BlockedTokenCommand extends BaseCommand {
     name = "blockedtoken";
     group = "settings";
-    aliases = ["btoken", "blockedtokens", "bannedtoken", "bannedtoken", "bantoken", "unbantoken", "blocktoken", "unblocktoken"];
+    aliases = ["btoken", "blockedtokens", "bannedtoken", "bannedtoken"];
     supportsInteractions = true;
 
     async run(client: DiscordClient, message: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
-        const subcommand = options.isInteraction ? options.options.getSubcommand(true) : (
-            options.argv[0] === 'bantoken' ||  options.argv[0] === 'blocktoken' ? 'add' : (
-                options.argv[0] === 'unbantoken' ||  options.argv[0] === 'unblocktoken' ? 'remove' : options.argv[1]
-            )
-        );
+        const subcommand = options.isInteraction ? options.options.getSubcommand(true) : options.argv[1];
 
         const subcommands = ["add", "remove", "has"];
 
@@ -41,11 +37,7 @@ export default class BlockedTokenCommand extends BaseCommand {
 
         switch (subcommand) {
             case 'add':
-                if (!options.isInteraction) {
-                    options.args.shift();
-                }
-
-                const tokenToBlock = message instanceof Message ? message.content.slice(client.config.get('prefix').length).trim() : message.options.getString('token', true);
+                const tokenToBlock = message instanceof Message ? message.content.slice(client.config.get('prefix').length).trim().slice((options as CommandOptions).argv[0].length).trim().slice(subcommand.length).trim() : message.options.getString('token', true);
 
                 if (client.config.props[message.guildId!]?.filters.tokens.includes(tokenToBlock)) {
                     await this.deferReply(message, `${emoji('error')} The given token is already blocked.`);
@@ -72,7 +64,7 @@ export default class BlockedTokenCommand extends BaseCommand {
             break;
 
             case 'remove':
-                const tokenToUnblock = message instanceof Message ? message.content.slice(client.config.get('prefix').length).trim() : message.options.getString('token', true);
+                const tokenToUnblock = message instanceof Message ? message.content.slice(client.config.get('prefix').length).trim().slice((options as CommandOptions).argv[0].length).trim().slice(subcommand.length).trim() : message.options.getString('token', true);
 
                 const index = client.config.props[message.guildId!]?.filters.tokens.indexOf(tokenToUnblock);
 
