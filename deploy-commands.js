@@ -112,6 +112,13 @@ let commands = [
 		),
 
 	// INFORMATION
+	new SlashCommandBuilder().setName('messagerulestats').setDescription('View stats of message rules (blocked words/tokens etc)')
+		.addUserOption(option =>
+			option.setName('user').setDescription('The user to search').setRequired(true)	
+		)
+		.addStringOption(option =>
+			option.setName('word_or_token').setDescription('The word/token to search').setRequired(true)	
+		),
 	new SlashCommandBuilder().setName('stats').setDescription('Show the server statistics'),
 	new SlashCommandBuilder().setName('lookup').setDescription('Lookup something')
 		.addSubcommand(subcommand => subcommand.setName("user").setDescription("User lookup")
