@@ -30,6 +30,8 @@ export default class GuildMemberUpdateEvent extends BaseEvent {
         if (newMember.user.bot) {
             return;
         }
+        
+        client.logger.onMemberUpdate(oldMember, newMember);
 
         if (newMember.nickname === oldMember.nickname && newMember.user.tag === oldMember.user.tag) {
             return;

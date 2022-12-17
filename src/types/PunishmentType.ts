@@ -27,7 +27,9 @@ enum PunishmentType {
     TEMPBAN = 'tempban',
     UNBAN = 'unban',
     KICK = 'kick',
-    SHOT = 'shot'
+    SHOT = 'shot',
+    TIMEOUT = 'timeout',
+    TIMEOUT_REMOVE = 'timeout_remove'
 }
 
 export default PunishmentType;

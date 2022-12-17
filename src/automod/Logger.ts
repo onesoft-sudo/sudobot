@@ -1,9 +1,10 @@
 import { roleMention } from "@discordjs/builders";
-import { formatDuration, intervalToDuration } from "date-fns";
+import { formatDistanceStrict, formatDuration, intervalToDuration } from "date-fns";
 import { Message, MessageEmbedOptions, MessageEmbed as MessageEmbedDiscord, TextChannel, MessageActionRow, MessageButton, FileOptions, GuildBan, BanOptions, Guild, User, GuildMember } from "discord.js";
 import ms from "ms";
 import BaseMessageEmbed from "../client/MessageEmbed";
-import { IPunishment } from "../models/Punishment";
+import Punishment, { IPunishment } from "../models/Punishment";
+import PunishmentType from "../types/PunishmentType";
 import Service from "../utils/structures/Service";
 import { timeSince } from "../utils/util";
 
@@ -424,5 +425,97 @@ export default class Logger extends Service {
                 .setTimestamp()
             ]
         });
+    }
+
+    async onMemberUpdate(oldMember: GuildMember, newMember: GuildMember) {
+        if (oldMember.isCommunicationDisabled() && !newMember.isCommunicationDisabled()) {
+            setTimeout(async () => {
+                const auditLog = await newMember.guild.fetchAuditLogs({
+                    type: 'MEMBER_UPDATE',
+                    limit: 1,
+                });
+    
+                const data = auditLog?.entries.first();
+
+                console.log(data);
+    
+                Punishment.create({
+                    createdAt: new Date(),
+                    guild_id: newMember.guild.id,
+                    mod_id: data?.executor?.id,
+                    mod_tag: data?.executor?.tag,
+                    user_id: newMember.user.id,
+                    type: PunishmentType.TIMEOUT_REMOVE,
+                }).catch(console.error);
+
+                await this.loggingChannel(newMember.guild.id)?.send({
+                    embeds: [
+                        new MessageEmbed()
+                        .setColor('GOLD')
+                        .setTitle("Member Timeout Removed")
+                        .setAuthor({
+                            name: newMember.user.tag,
+                            iconURL: newMember.user.displayAvatarURL(),
+                        })
+                        .addField('Removed by', data?.target?.id === newMember.user.id && data?.executor?.tag ? `${data?.executor?.tag} (${data?.executor?.id})` : '*Timeout expired automatically*')
+                        .addField('User ID', oldMember.user.id)
+                        .setFooter({
+                            text: "Timeout Removed",
+                        })
+                        .setTimestamp()
+                    ]
+                });
+            }, 2000);
+        }
+        else if (!oldMember.isCommunicationDisabled() && newMember.isCommunicationDisabled()) {
+            setTimeout(async () => {
+                const auditLog = await newMember.guild.fetchAuditLogs({
+                    type: 'MEMBER_UPDATE',
+                    limit: 1,
+                });
+    
+                const data = auditLog?.entries.first();
+
+                console.log(data);
+
+                Punishment.create({
+                    createdAt: new Date(),
+                    guild_id: newMember.guild.id,
+                    mod_id: data?.executor?.id,
+                    mod_tag: data?.executor?.tag,
+                    reason: data?.reason,
+                    user_id: newMember.user.id,
+                    type: PunishmentType.TIMEOUT,
+                    meta: {
+                        time: ms(newMember.communicationDisabledUntilTimestamp - Date.now())
+                    }
+                }).catch(console.error);
+    
+                await this.loggingChannel(newMember.guild.id)?.send({
+                    embeds: [
+                        new MessageEmbed()
+                        .setColor('#f14a60')
+                        .setTitle("Member Timed Out")
+                        .setAuthor({
+                            name: newMember.user.tag,
+                            iconURL: newMember.user.displayAvatarURL(),
+                        })
+                        .addFields({
+                            name: 'Reason',
+                            value: data?.reason ?? '*No reason provided*'
+                        }, {
+                            name: 'Duration',
+                            value: newMember.communicationDisabledUntil ? `${newMember.communicationDisabledUntil.toUTCString()} (${formatDistanceStrict(newMember.communicationDisabledUntil, new Date())})` : 'Unknown'
+                        })
+                        .addField('Action taken by', data?.target?.id === newMember.user.id && data?.executor?.tag ? `${data?.executor?.tag} (${data?.executor?.id})` : 'Unknown')
+                        .addField('User ID', oldMember.user.id)
+                        .setFooter({
+                            text: "Timed-out",
+                        })
+                        .setTimestamp()
+                    ]
+                });
+            }, 2000);
+        }
     }
 }
