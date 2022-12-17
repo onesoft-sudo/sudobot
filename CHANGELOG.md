@@ -1,3 +1,12 @@
+## [4.30.1](https://github.com/onesoft-sudo/sudobot/compare/v4.30.0...v4.30.1) (2022-12-17)
+
+
+### Bug Fixes
+
+* token filter case sensitivity ([64394cd](https://github.com/onesoft-sudo/sudobot/commit/64394cd46dde5d08912c9c53030546df6cd5185b))
+
+
+
 # [4.30.0](https://github.com/onesoft-sudo/sudobot/compare/v4.29.2...v4.30.0) (2022-12-16)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * add blocked word & token management command ([e49d389](https://github.com/onesoft-sudo/sudobot/commit/e49d389648963178044bd9726a32e61a62f00d94))
-
-
-
-## [4.28.4](https://github.com/onesoft-sudo/sudobot/compare/v4.28.3...v4.28.4) (2022-12-12)
-
-
-### Bug Fixes
-
-* crash while creating anonymous ballots ([8551632](https://github.com/onesoft-sudo/sudobot/commit/8551632f4d97a106605d9d0ba700ed686e6d6cee))
 
 
 
