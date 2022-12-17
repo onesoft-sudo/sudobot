@@ -115,7 +115,10 @@ export default class SpamFilter {
                         await warn(this.client, author, `Spamming\nThe next violations will cause mutes.`, message, this.client.user!);
                     }
                     else if (spamViolation.strike > 2) {
-                        await mute(this.client, Date.now() + (this.config.unmute_in as number), member!, message, this.config.unmute_in as number, `Spamming`);
+                        await mute(this.client, Date.now() + (this.config.unmute_in as number), member!, {
+                            guild: message.guild!,
+                            member: message.guild!.me!,
+                        }, this.config.unmute_in as number, `Spamming`, false);
                         return;
                     }
                     
