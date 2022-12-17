@@ -1,3 +1,12 @@
+## [4.30.2](https://github.com/onesoft-sudo/sudobot/compare/v4.30.1...v4.30.2) (2022-12-17)
+
+
+### Bug Fixes
+
+* spam filter showing wrong mute info ([70cea85](https://github.com/onesoft-sudo/sudobot/commit/70cea8562f1f21e2ce2c0b4bce48e43870c412a9))
+
+
+
 ## [4.30.1](https://github.com/onesoft-sudo/sudobot/compare/v4.30.0...v4.30.1) (2022-12-17)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * type mismatch ([0313402](https://github.com/onesoft-sudo/sudobot/commit/0313402232885f84905f11f231eabadafa5b815e))
-
-
-
-# [4.29.0](https://github.com/onesoft-sudo/sudobot/compare/v4.28.4...v4.29.0) (2022-12-14)
-
-
-### Features
-
-* add blocked word & token management command ([e49d389](https://github.com/onesoft-sudo/sudobot/commit/e49d389648963178044bd9726a32e61a62f00d94))
 
 
 
