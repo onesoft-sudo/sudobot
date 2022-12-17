@@ -149,7 +149,7 @@ export default class MessageFilter {
             return true;
 
         for (let token of this.config.tokens) {
-            if (msg.content.includes(token)) {
+            if (msg.content.toLowerCase().includes(token.toLowerCase())) {
                 return token;
             }
         }
