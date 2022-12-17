@@ -1,3 +1,12 @@
+# [4.31.0](https://github.com/onesoft-sudo/sudobot/compare/v4.30.2...v4.31.0) (2022-12-17)
+
+
+### Features
+
+* add spam violation reset command ([7c1de77](https://github.com/onesoft-sudo/sudobot/commit/7c1de770dcd5c442cc9d604f50462a7c37444946))
+
+
+
 ## [4.30.2](https://github.com/onesoft-sudo/sudobot/compare/v4.30.1...v4.30.2) (2022-12-17)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * blocked token command error ([cb82770](https://github.com/onesoft-sudo/sudobot/commit/cb82770e9de1e3384ed2004c9db9d21fc0099a16))
-
-
-
-## [4.29.1](https://github.com/onesoft-sudo/sudobot/compare/v4.29.0...v4.29.1) (2022-12-14)
-
-
-### Bug Fixes
-
-* type mismatch ([0313402](https://github.com/onesoft-sudo/sudobot/commit/0313402232885f84905f11f231eabadafa5b815e))
 
 
 
