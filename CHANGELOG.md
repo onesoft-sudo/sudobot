@@ -1,3 +1,12 @@
+# [4.32.0](https://github.com/onesoft-sudo/sudobot/compare/v4.31.0...v4.32.0) (2022-12-17)
+
+
+### Features
+
+* add timeout logging ([624b9a1](https://github.com/onesoft-sudo/sudobot/commit/624b9a141ebe0559c0c6e9cea333d9656ef6cb67))
+
+
+
 # [4.31.0](https://github.com/onesoft-sudo/sudobot/compare/v4.30.2...v4.31.0) (2022-12-17)
 
 
@@ -32,15 +41,6 @@
 
 * add message rule stats command ([22701f7](https://github.com/onesoft-sudo/sudobot/commit/22701f7026f612cd8a1af26addc21efbbecfe07b))
 * stats support of blocked words counts ([b16a335](https://github.com/onesoft-sudo/sudobot/commit/b16a335ea66831f29ecb6ae08308f3541ec4b37b))
-
-
-
-## [4.29.2](https://github.com/onesoft-sudo/sudobot/compare/v4.29.1...v4.29.2) (2022-12-16)
-
-
-### Bug Fixes
-
-* blocked token command error ([cb82770](https://github.com/onesoft-sudo/sudobot/commit/cb82770e9de1e3384ed2004c9db9d21fc0099a16))
 
 
 
