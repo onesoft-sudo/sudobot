@@ -29,11 +29,11 @@ import PunishmentType from '../../types/PunishmentType';
 import { hasPermission, shouldNotModerate } from '../../utils/util';
 import UnmuteQueue from '../../queues/UnmuteQueue';
 
-export async function mute(client: DiscordClient, dateTime: number | undefined, user: GuildMember, msg: Message | CommandInteraction | { guild: Guild, member: GuildMember, editReply?: undefined }, timeInterval: number | undefined, reason: string | undefined, hard: boolean = false) {
+export async function mute(client: DiscordClient, dateTime: number | undefined, user: GuildMember, msg: Message | CommandInteraction | { guild: Guild, member: GuildMember, editReply?: undefined }, timeInterval: number | undefined, reason: string | undefined, hard: boolean = false, mod?: User) {
     try {
         const { default: Punishment } = await import('../../models/Punishment');
         
-        const { getTimeouts, clearTimeoutv2, setTimeoutv2 } = await import('../../utils/setTimeout');
+        const { getTimeouts, clearTimeoutv2 } = await import('../../utils/setTimeout');
 
         const timeouts = getTimeouts();
         
@@ -92,8 +92,8 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
             type: hard ? PunishmentType.HARDMUTE : PunishmentType.MUTE,
             user_id: user.id,
             guild_id: msg.guild!.id,
-            mod_id: msg.member!.user.id,
-            mod_tag: (msg.member!.user as User).tag,
+            mod_id: (mod ?? msg.member!.user).id,
+            mod_tag: ((mod ?? msg.member!.user) as User).tag,
             reason,
             meta: {
                 time: timeInterval ? ms(timeInterval) : undefined
@@ -101,7 +101,7 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
             createdAt: new Date()
         });
         
-        await client.logger.onMemberMute(user, timeInterval, reason === undefined || reason.trim() === '' ? "*No reason provided*" : reason, msg.member!.user as User, hard);
+        await client.logger.onMemberMute(user, timeInterval, reason === undefined || reason.trim() === '' ? "*No reason provided*" : reason, (mod ?? msg.member!.user) as User, hard);
 
 		try {
 	        await user.send({

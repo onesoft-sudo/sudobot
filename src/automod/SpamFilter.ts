@@ -118,7 +118,7 @@ export default class SpamFilter {
                         await mute(this.client, Date.now() + (this.config.unmute_in as number), member!, {
                             guild: message.guild!,
                             member: message.guild!.me!,
-                        }, this.config.unmute_in as number, `Spamming`, false);
+                        }, this.config.unmute_in as number, `Spamming`, false, this.client.user!);
                         return;
                     }
                     

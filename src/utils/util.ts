@@ -74,6 +74,10 @@ export function getHomeGuild(client: DiscordClient) {
 }
 
 export function shouldNotModerate(client: DiscordClient, member: GuildMember) {
+    if (client.config.props.global.owners.includes(member.user.id)) {
+        return false;
+    }
+
 	if (!client.config.props[member.guild.id].admin) {
 		return false;
 	}
@@ -89,7 +93,11 @@ export async function hasPermission(client: DiscordClient, member: GuildMember, 
 	if (!m) {
 		m = msg.member! as GuildMember;
 	}
-	
+
+    if (client.config.props.global.owners.includes(m.user.id)) {
+        return true;
+    }
+
 	if (member.id === m.id || member.roles.highest?.position >= m.roles.highest?.position) {
         if (msg instanceof Interaction && msg.deferred) {
             await msg.editReply({

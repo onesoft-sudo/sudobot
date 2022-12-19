@@ -84,6 +84,10 @@ export default abstract class BaseCommand {
     }
 
     async perms(client: DiscordClient, message: Message | Interaction) {
+        if (client.config.props.global.owners.includes(message.member!.user.id)) {
+            return true;
+        }
+
         let member: GuildMember | null = null;
 
         if (message.member && !(message.member instanceof GuildMember)) {
