@@ -1,3 +1,12 @@
+## [4.32.1](https://github.com/onesoft-sudo/sudobot/compare/v4.32.0...v4.32.1) (2022-12-19)
+
+
+### Bug Fixes
+
+* issues with mute log ([e3c9fd8](https://github.com/onesoft-sudo/sudobot/commit/e3c9fd8ca3e14baac3903e78ff5db8ce8c92d684))
+
+
+
 # [4.32.0](https://github.com/onesoft-sudo/sudobot/compare/v4.31.0...v4.32.0) (2022-12-17)
 
 
@@ -31,16 +40,6 @@
 ### Bug Fixes
 
 * token filter case sensitivity ([64394cd](https://github.com/onesoft-sudo/sudobot/commit/64394cd46dde5d08912c9c53030546df6cd5185b))
-
-
-
-# [4.30.0](https://github.com/onesoft-sudo/sudobot/compare/v4.29.2...v4.30.0) (2022-12-16)
-
-
-### Features
-
-* add message rule stats command ([22701f7](https://github.com/onesoft-sudo/sudobot/commit/22701f7026f612cd8a1af26addc21efbbecfe07b))
-* stats support of blocked words counts ([b16a335](https://github.com/onesoft-sudo/sudobot/commit/b16a335ea66831f29ecb6ae08308f3541ec4b37b))
 
 
 
