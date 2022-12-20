@@ -23,6 +23,7 @@ import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
+import GuildInfo from '../../models/GuildInfo';
 
 export default class StatsCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -32,6 +33,13 @@ export default class StatsCommand extends BaseCommand {
     }
 
     async run(client: DiscordClient, msg: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
+        const info = await GuildInfo.findOneAndUpdate({ 
+            guild_id: msg.guild!.id 
+        }, {}, {
+            new: true,
+            upsert: true
+        });
+
         let members = 0;
         let bots = 0;
         
@@ -64,6 +72,11 @@ export default class StatsCommand extends BaseCommand {
                         name: "Total Members",
                         inline: true,
                         value: (members + bots) + ''
+                    },
+                    {
+                        name: "Total Members Joined",
+                        inline: true,
+                        value: info.totalMembersJoined + ''
                     }
                 ])
                 .addField('Roles', msg.guild!.roles.cache.size + '')
