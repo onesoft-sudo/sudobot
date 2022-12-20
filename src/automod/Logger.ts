@@ -3,6 +3,7 @@ import { formatDistanceStrict, formatDuration, intervalToDuration } from "date-f
 import { Message, MessageEmbedOptions, MessageEmbed as MessageEmbedDiscord, TextChannel, MessageActionRow, MessageButton, FileOptions, GuildBan, BanOptions, Guild, User, GuildMember } from "discord.js";
 import ms from "ms";
 import BaseMessageEmbed from "../client/MessageEmbed";
+import { IGuildInfo } from "../models/GuildInfo";
 import Punishment, { IPunishment } from "../models/Punishment";
 import PunishmentType from "../types/PunishmentType";
 import Service from "../utils/structures/Service";
@@ -244,7 +245,7 @@ export default class Logger extends Service {
         });
     }
 
-    async onGuildMemberAdd(member: GuildMember) {
+    async onGuildMemberAdd(member: GuildMember, info?: IGuildInfo) {
         await this.loggingChannelJoinLeave(member.guild.id)?.send({
             embeds: [
                 new MessageEmbed()
@@ -259,6 +260,10 @@ export default class Logger extends Service {
                 .addField('New Account?', (new Date().getTime() - member.user.createdAt.getTime()) <= 3 * 24 * 60 * 60 * 1000 ? ":warning: Yes :warning:" : "No")
                 .addField('Bot?', member.user.bot === true ? 'Yes' : 'No')
                 .addField('User ID', member.user.id)
+                .addFields({
+                    name: 'Total Members Joined',
+                    value: info?.totalMembersJoined?.toString() ?? '*Information unavailable*'
+                })
                 .setFooter({
                     text: "Joined",
                 })

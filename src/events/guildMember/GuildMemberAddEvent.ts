@@ -21,6 +21,7 @@ import BaseEvent from '../../utils/structures/BaseEvent';
 import DiscordClient from '../../client/Client';
 import { GuildMember } from 'discord.js';
 import autoRole from '../../services/AutoRole';
+import GuildInfo, { IGuildInfo } from '../../models/GuildInfo';
 
 export default class GuildMemberAddEvent extends BaseEvent {
     constructor() {
@@ -31,7 +32,26 @@ export default class GuildMemberAddEvent extends BaseEvent {
         if (member.user.id === client.user!.id)
             return;
         
-        await client.logger.onGuildMemberAdd(member);
+        let info: IGuildInfo | undefined | null;
+
+        try {
+            info = await GuildInfo.findOneAndUpdate({ 
+                guild_id: member.guild.id 
+            }, {
+                $inc: {
+                    totalMembersJoined: 1
+                },
+                updatedAt: new Date()
+            }, {
+                new: true,
+                upsert: true
+            });
+        }
+        catch (e) {
+            console.log(e);
+        }
+
+        await client.logger.onGuildMemberAdd(member, info ?? undefined);
         
         if (member.user.bot)
             return;
