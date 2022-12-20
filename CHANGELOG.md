@@ -1,3 +1,12 @@
+## [4.34.1](https://github.com/onesoft-sudo/sudobot/compare/v4.34.0...v4.34.1) (2022-12-20)
+
+
+### Bug Fixes
+
+* point systems ([1756f60](https://github.com/onesoft-sudo/sudobot/commit/1756f600b8f4993ed7c96af6d9632cff102640bc))
+
+
+
 # [4.34.0](https://github.com/onesoft-sudo/sudobot/compare/v4.33.0...v4.34.0) (2022-12-20)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * add timeout logging ([624b9a1](https://github.com/onesoft-sudo/sudobot/commit/624b9a141ebe0559c0c6e9cea333d9656ef6cb67))
-
-
-
-# [4.31.0](https://github.com/onesoft-sudo/sudobot/compare/v4.30.2...v4.31.0) (2022-12-17)
-
-
-### Features
-
-* add spam violation reset command ([7c1de77](https://github.com/onesoft-sudo/sudobot/commit/7c1de770dcd5c442cc9d604f50462a7c37444946))
 
 
 
