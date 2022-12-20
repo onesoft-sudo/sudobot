@@ -28,7 +28,7 @@ import BaseCommand from "../../utils/structures/BaseCommand";
 
 export default class GuildLookupCommand extends BaseCommand {
     constructor() {
-        super("guildlookup", "information", ["glookup", "guild"]);
+        super("guildlookup", "information", ["glookup", "guild", 'guildinfo']);
     }
 
     async run(client: Client, message: CommandInteraction<CacheType> | Message<boolean>, options: CommandOptions | InteractionOptions): Promise<void> {

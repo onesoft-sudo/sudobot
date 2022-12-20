@@ -22,8 +22,10 @@ import { APIEmbedField } from "discord-api-types/v9";
 import { Util, Message, CacheType, CommandInteraction } from "discord.js";
 import Client from "../../client/Client";
 import MessageEmbed from "../../client/MessageEmbed";
+import Punishment from "../../models/Punishment";
 import CommandOptions from "../../types/CommandOptions";
 import InteractionOptions from "../../types/InteractionOptions";
+import PunishmentType from "../../types/PunishmentType";
 import { emoji } from "../../utils/Emoji";
 import getUser from "../../utils/getUser";
 import BaseCommand from "../../utils/structures/BaseCommand";
@@ -33,7 +35,7 @@ export default class UserLookupCommand extends BaseCommand {
     supportsInteractions: boolean = true;
 
     constructor() {
-        super("userlookup", "information", ['user', 'ulookup']);
+        super("userlookup", "information", ['user', 'ulookup', 'userinfo']);
     }
 
     async run(client: Client, message: CommandInteraction<CacheType> | Message<boolean>, options: CommandOptions | InteractionOptions): Promise<void> {
@@ -71,11 +73,6 @@ export default class UserLookupCommand extends BaseCommand {
                 text: `${user.id}`,
             }
         });
-
-
-        if (user.hexAccentColor) {            
-            embed.setColor(user.hexAccentColor);
-        }
 
         const fieldsCommon: APIEmbedField[] = [  
             
@@ -141,10 +138,6 @@ export default class UserLookupCommand extends BaseCommand {
                     value: member.displayHexColor
                 });
             }
-            
-            if (member.displayHexColor && !user.hexAccentColor) {
-                embed.setColor(member.displayHexColor);
-            }
 
             if (member.voice && member.voice.channel) {
                 fields.push({
@@ -171,12 +164,55 @@ export default class UserLookupCommand extends BaseCommand {
             }
         }
 
+        embed.setColor(member?.user!.hexAccentColor ? member?.user!.hexAccentColor! : '#007bff');
+
         const badges = getUserBadges(user).join('\n');
 
         fields.push({
             name: "Badges",
             value: badges.trim() === '' ? '*No badges found*' : badges
         });
+
+        if (member) {
+            try {
+                const count = await Punishment.countDocuments({
+                    guild_id: message.guildId!,
+                    type: {
+                        $not: {
+                            $in: [PunishmentType.TIMEOUT_REMOVE, PunishmentType.UNBAN, PunishmentType.UNMUTE]
+                        }
+                    },
+                    user_id: user.id,
+                }, {
+    
+                });
+    
+                let suggestedAction = '*None*';
+    
+                if (count >= 1 && count < 5) {
+                    suggestedAction = 'Verbal Warning';
+                }
+                else if (count >= 5 && count < 10) {
+                    const muteMS = Date.now() + (60_000 * 30 * (count - 4));
+                    suggestedAction = `Mute ${member?.roles.cache.has(client.config.props[message.guildId!].mute_role) ? '(Already muted)' : `for ${formatDistanceStrict(new Date(), new Date(muteMS))}`}`;
+                }
+                else if (count >= 10 && count < 15) {
+                    const banMS = Date.now() + (60_000 * 60 * 24 * (count - 9));
+                    suggestedAction = `Temporary ban for ${formatDistanceStrict(new Date(), new Date(banMS))} or Kick`;
+                }
+                else {
+                    suggestedAction = "Permanent Ban";
+                }
+    
+                fields.push({
+                    name: 'Suggested Action',
+                    value: suggestedAction
+                })
+            }
+            catch (e) {
+                console.log(e);
+            }
+        }
 
         fields = [...fields, ...fieldsCommon];
         embed.setFields(fields);
