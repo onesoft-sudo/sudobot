@@ -1,3 +1,13 @@
+# [4.34.0](https://github.com/onesoft-sudo/sudobot/compare/v4.33.0...v4.34.0) (2022-12-20)
+
+
+### Features
+
+* add suggested moderation action support ([01ae38c](https://github.com/onesoft-sudo/sudobot/commit/01ae38c49be241ac342f708eb5cef31ea4ebaf84))
+* update stats command ([e997ff4](https://github.com/onesoft-sudo/sudobot/commit/e997ff4ac779da28143236053a7c5e97a336a403))
+
+
+
 # [4.33.0](https://github.com/onesoft-sudo/sudobot/compare/v4.32.1...v4.33.0) (2022-12-20)
 
 
@@ -31,15 +41,6 @@
 ### Features
 
 * add spam violation reset command ([7c1de77](https://github.com/onesoft-sudo/sudobot/commit/7c1de770dcd5c442cc9d604f50462a7c37444946))
-
-
-
-## [4.30.2](https://github.com/onesoft-sudo/sudobot/compare/v4.30.1...v4.30.2) (2022-12-17)
-
-
-### Bug Fixes
-
-* spam filter showing wrong mute info ([70cea85](https://github.com/onesoft-sudo/sudobot/commit/70cea8562f1f21e2ce2c0b4bce48e43870c412a9))
 
 
 
