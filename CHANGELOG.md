@@ -1,3 +1,12 @@
+# [4.33.0](https://github.com/onesoft-sudo/sudobot/compare/v4.32.1...v4.33.0) (2022-12-20)
+
+
+### Features
+
+* add member count tracking support ([bda6133](https://github.com/onesoft-sudo/sudobot/commit/bda61333d2405ed83346dc5725f28a7724cd3e88))
+
+
+
 ## [4.32.1](https://github.com/onesoft-sudo/sudobot/compare/v4.32.0...v4.32.1) (2022-12-19)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * spam filter showing wrong mute info ([70cea85](https://github.com/onesoft-sudo/sudobot/commit/70cea8562f1f21e2ce2c0b4bce48e43870c412a9))
-
-
-
-## [4.30.1](https://github.com/onesoft-sudo/sudobot/compare/v4.30.0...v4.30.1) (2022-12-17)
-
-
-### Bug Fixes
-
-* token filter case sensitivity ([64394cd](https://github.com/onesoft-sudo/sudobot/commit/64394cd46dde5d08912c9c53030546df6cd5185b))
 
 
 
