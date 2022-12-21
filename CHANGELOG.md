@@ -1,3 +1,12 @@
+## [4.34.3](https://github.com/onesoft-sudo/sudobot/compare/v4.34.2...v4.34.3) (2022-12-21)
+
+
+### Bug Fixes
+
+* wrong mod points ([3077202](https://github.com/onesoft-sudo/sudobot/commit/3077202b05b071df2dcedcb83a235455863430d6))
+
+
+
 ## [4.34.2](https://github.com/onesoft-sudo/sudobot/compare/v4.34.1...v4.34.2) (2022-12-21)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * add member count tracking support ([bda6133](https://github.com/onesoft-sudo/sudobot/commit/bda61333d2405ed83346dc5725f28a7724cd3e88))
-
-
-
-## [4.32.1](https://github.com/onesoft-sudo/sudobot/compare/v4.32.0...v4.32.1) (2022-12-19)
-
-
-### Bug Fixes
-
-* issues with mute log ([e3c9fd8](https://github.com/onesoft-sudo/sudobot/commit/e3c9fd8ca3e14baac3903e78ff5db8ce8c92d684))
 
 
 
