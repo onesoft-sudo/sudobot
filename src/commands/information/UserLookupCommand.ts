@@ -203,7 +203,7 @@ export default class UserLookupCommand extends BaseCommand {
     
                 let suggestedAction = '*None*';
     
-                if (points >= 0 && points < 5) {
+                if (points >= 1 && points < 5) {
                     suggestedAction = 'Verbal Warning';
                 }
                 else if (points >= 5 && points < 10) {
@@ -214,7 +214,7 @@ export default class UserLookupCommand extends BaseCommand {
                     const banMS = Date.now() + (60_000 * 60 * 24 * (points - 9));
                     suggestedAction = `Temporary ban for ${formatDistanceStrict(new Date(), new Date(banMS))} or Kick`;
                 }
-                else {
+                else if (points >= 15) {
                     suggestedAction = "Permanent Ban";
                 }
     
