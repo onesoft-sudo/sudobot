@@ -1,3 +1,12 @@
+## [4.34.2](https://github.com/onesoft-sudo/sudobot/compare/v4.34.1...v4.34.2) (2022-12-21)
+
+
+### Bug Fixes
+
+* wrong status ([a2ba92f](https://github.com/onesoft-sudo/sudobot/commit/a2ba92f9b472d9d86955737a9647dea687e2b6a2))
+
+
+
 ## [4.34.1](https://github.com/onesoft-sudo/sudobot/compare/v4.34.0...v4.34.1) (2022-12-20)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * issues with mute log ([e3c9fd8](https://github.com/onesoft-sudo/sudobot/commit/e3c9fd8ca3e14baac3903e78ff5db8ce8c92d684))
-
-
-
-# [4.32.0](https://github.com/onesoft-sudo/sudobot/compare/v4.31.0...v4.32.0) (2022-12-17)
-
-
-### Features
-
-* add timeout logging ([624b9a1](https://github.com/onesoft-sudo/sudobot/commit/624b9a141ebe0559c0c6e9cea333d9656ef6cb67))
 
 
 
