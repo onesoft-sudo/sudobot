@@ -203,7 +203,7 @@ export default class UserLookupCommand extends BaseCommand {
     
                 let suggestedAction = '*None*';
     
-                if (points >= 1 && points < 5) {
+                if (points >= 0 && points < 5) {
                     suggestedAction = 'Verbal Warning';
                 }
                 else if (points >= 5 && points < 10) {
