@@ -246,6 +246,15 @@ export default class Logger extends Service {
     }
 
     async onGuildMemberAdd(member: GuildMember, info?: IGuildInfo) {
+        let members = 0, bots = 0;
+
+        for (const m of member.guild!.members.cache.values()) {
+            if (m.user.bot)
+                bots++;
+            else 
+                members++;
+        }
+
         await this.loggingChannelJoinLeave(member.guild.id)?.send({
             embeds: [
                 new MessageEmbed()
@@ -255,7 +264,7 @@ export default class Logger extends Service {
                     name: member.user.tag,
                     iconURL: member.user.displayAvatarURL(),
                 })
-                .setDescription(`<@${member.user.id}> just joined the server!`)
+                .setDescription(`<@${member.user.id}> just joined the server! Their position is ${members + bots}th.`)
                 .addField('Account Created', `${member.user.createdAt.toLocaleString()} (${timeSince(member.user.createdAt.getTime())})`)
                 .addField('New Account?', (new Date().getTime() - member.user.createdAt.getTime()) <= 3 * 24 * 60 * 60 * 1000 ? ":warning: Yes :warning:" : "No")
                 .addField('Bot?', member.user.bot === true ? 'Yes' : 'No')
@@ -263,9 +272,12 @@ export default class Logger extends Service {
                 .addFields({
                     name: 'Total Members Joined',
                     value: info?.totalMembersJoined?.toString() ?? '*Information unavailable*'
+                }, {
+                    name: 'Positions',
+                    value: `Among All members: ${members + bots}th\n${!member.user.bot ? `Among bots: ${members}th` : `Among human members: ${bots}th`}`
                 })
                 .setFooter({
-                    text: "Joined",
+                    text: `Joined • ${members + bots} members total`,
                 })
                 .setTimestamp()
             ]
@@ -289,7 +301,7 @@ export default class Logger extends Service {
                 .addField('User ID', member.user.id)
                 .addField('Bot?', member.user.bot === true ? 'Yes' : 'No')
                 .setFooter({
-                    text: "Left",
+                    text: `Left • ${member.guild.memberCount} members total`,
                 })
                 .setTimestamp()
             ]
