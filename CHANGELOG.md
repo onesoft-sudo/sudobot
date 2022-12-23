@@ -1,3 +1,13 @@
+# [4.36.0](https://github.com/onesoft-sudo/sudobot/compare/v4.35.0...v4.36.0) (2022-12-23)
+
+
+### Features
+
+* log echoers ([bd978e5](https://github.com/onesoft-sudo/sudobot/commit/bd978e5a216ceaf5a4d10c35348cd93d4fdb9dcd))
+* log echoers ([8b86d52](https://github.com/onesoft-sudo/sudobot/commit/8b86d5244976675f56333c2d959a432cb5bbc11f))
+
+
+
 # [4.35.0](https://github.com/onesoft-sudo/sudobot/compare/v4.34.3...v4.35.0) (2022-12-23)
 
 
@@ -31,16 +41,6 @@
 ### Bug Fixes
 
 * point systems ([1756f60](https://github.com/onesoft-sudo/sudobot/commit/1756f600b8f4993ed7c96af6d9632cff102640bc))
-
-
-
-# [4.34.0](https://github.com/onesoft-sudo/sudobot/compare/v4.33.0...v4.34.0) (2022-12-20)
-
-
-### Features
-
-* add suggested moderation action support ([01ae38c](https://github.com/onesoft-sudo/sudobot/commit/01ae38c49be241ac342f708eb5cef31ea4ebaf84))
-* update stats command ([e997ff4](https://github.com/onesoft-sudo/sudobot/commit/e997ff4ac779da28143236053a7c5e97a336a403))
 
 
 
