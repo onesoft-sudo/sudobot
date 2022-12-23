@@ -75,7 +75,7 @@ export default class EchoCommand extends BaseCommand {
             return;
         }
 
-        const log = "======== " + (msg.member!.user as User).tag + " executed echo command =====";
+        const log = `======== ${(msg.member!.user as User).tag} (ID: ${(msg.member!.user as User).id}) executed echo command (Guild: ${msg.guildId}) =====`;
         console.log(log);
         client.debugLogger.logApp(LogLevel.INFO, log);
 

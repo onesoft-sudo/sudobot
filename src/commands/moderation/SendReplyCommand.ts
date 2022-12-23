@@ -121,7 +121,7 @@ export default class SendReplyCommand extends BaseCommand {
 
             const content = interaction.options.getString("content", true);
 
-            const log = "======== " + (interaction.member!.user as User).tag + " executed echo command =====";
+            const log = `======== ${(interaction.member!.user as User).tag} (ID: ${(interaction.member!.user as User).id}) executed send reply command (Guild: ${interaction.guildId}) =====`;
             console.log(log);
             client.debugLogger.logApp(LogLevel.INFO, log);
             
