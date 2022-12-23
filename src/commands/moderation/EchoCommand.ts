@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, EmojiIdentifierResolvable, FileOptions, Message, TextChannel } from 'discord.js';
+import { CommandInteraction, EmojiIdentifierResolvable, FileOptions, Message, TextChannel, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -25,6 +25,7 @@ import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import { fetchEmoji } from '../../utils/Emoji';
 import { parseEmbedsInString } from '../../utils/util';
+import { LogLevel } from '../../services/DebugLogger';
 
 export default class EchoCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -73,6 +74,10 @@ export default class EchoCommand extends BaseCommand {
 
             return;
         }
+
+        const log = "======== " + (msg.member!.user as User).tag + " executed echo command =====";
+        console.log(log);
+        client.debugLogger.logApp(LogLevel.INFO, log);
 
         try {                
             let { embeds, content: parsedContent } = parseEmbedsInString(content);

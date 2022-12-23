@@ -17,14 +17,12 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, ContextMenuInteraction, EmojiIdentifierResolvable, FileOptions, Message, MessageActionRow, Modal, ModalSubmitInteraction, NewsChannel, TextChannel, TextInputComponent, ThreadChannel } from 'discord.js';
+import { CommandInteraction, ContextMenuInteraction, Message, MessageActionRow, Modal, ModalSubmitInteraction, NewsChannel, TextChannel, TextInputComponent, ThreadChannel, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
-import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
-import { fetchEmoji } from '../../utils/Emoji';
-import { parseEmbedsInString } from '../../utils/util';
+import { LogLevel } from '../../services/DebugLogger';
 
 let globalInteraction: CommandInteraction | ContextMenuInteraction;
 let globalMessage: Message;
@@ -122,6 +120,10 @@ export default class SendReplyCommand extends BaseCommand {
             }
 
             const content = interaction.options.getString("content", true);
+
+            const log = "======== " + (interaction.member!.user as User).tag + " executed echo command =====";
+            console.log(log);
+            client.debugLogger.logApp(LogLevel.INFO, log);
             
             try {                
                 await message.reply({ content });
