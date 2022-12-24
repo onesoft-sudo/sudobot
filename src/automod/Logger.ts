@@ -1,6 +1,6 @@
 import { roleMention } from "@discordjs/builders";
 import { formatDistanceStrict, formatDuration, intervalToDuration } from "date-fns";
-import { Message, MessageEmbedOptions, MessageEmbed as MessageEmbedDiscord, TextChannel, MessageActionRow, MessageButton, FileOptions, GuildBan, BanOptions, Guild, User, GuildMember } from "discord.js";
+import { Message, MessageEmbedOptions, MessageEmbed as MessageEmbedDiscord, TextChannel, MessageActionRow, MessageButton, FileOptions, GuildBan, BanOptions, Guild, User, GuildMember, Util } from "discord.js";
 import ms from "ms";
 import BaseMessageEmbed from "../client/MessageEmbed";
 import { IGuildInfo } from "../models/GuildInfo";
@@ -23,6 +23,38 @@ export default class Logger extends Service {
 
     loggingChannelJoinLeave(id: string) {
         return this.client.guilds.cache.get(id)?.channels.cache.get(this.client.config.props[id].logging_channel_join_leave) as (TextChannel | null);
+    }
+
+    async onNicknameChange(oldMember: GuildMember, newMember: GuildMember) {
+        await this.loggingChannel(oldMember.guild.id)!.send({
+            embeds: [
+                new MessageEmbed({
+                    title: "Nickname Updated",
+                    author: {
+                        name: oldMember.user.tag,
+                        iconURL: oldMember.user.displayAvatarURL()
+                    },
+                    fields: [
+                        {
+                            name: 'Old Nickname',
+                            value: oldMember.nickname ? Util.escapeMarkdown(oldMember.nickname) : '*No nickname was set*'
+                        },
+                        {
+                            name: 'New Nickname',
+                            value: newMember.nickname ? Util.escapeMarkdown(newMember.nickname) : '*Nickname was removed*'
+                        },
+                        {
+                            name: 'User ID',
+                            value: newMember.user.id
+                        }
+                    ],
+                    footer: {
+                        text: 'Updated'
+                    }
+                })
+                .setTimestamp()
+            ]
+        });
     }
 
     async onMessageUpdate(oldMessage: Message, newMessage: Message) {

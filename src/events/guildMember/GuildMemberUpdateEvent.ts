@@ -39,6 +39,7 @@ export default class GuildMemberUpdateEvent extends BaseEvent {
 
         console.log("Here");
 
-        client.profileFilter.check(newMember);
+        client.logger.onNicknameChange(oldMember, newMember).catch(console.error);
+        client.profileFilter.check(newMember).catch(console.error);
     }
 }
