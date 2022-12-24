@@ -379,6 +379,10 @@ let commands = [
 		.addStringOption(option => option.setName('reason').setDescription("The reason for giving shot to this user"))
 		.addBooleanOption(option => option.setName('anonymous').setDescription("Prevents sending your name as the 'Doctor' of the shot")),
 
+	new SlashCommandBuilder().setName('bean').setDescription('Beans a member')
+		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true))
+		.addStringOption(option => option.setName('reason').setDescription("The reason for giving shot to this user")),
+
 	new SlashCommandBuilder().setName('warn').setDescription('Warn a member')
 		.addUserOption(option => option.setName('member').setDescription("The member").setRequired(true))
 		.addStringOption(option => option.setName('reason').setDescription("The reason for warning this user")),

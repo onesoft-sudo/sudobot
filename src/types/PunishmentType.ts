@@ -29,7 +29,8 @@ enum PunishmentType {
     KICK = 'kick',
     SHOT = 'shot',
     TIMEOUT = 'timeout',
-    TIMEOUT_REMOVE = 'timeout_remove'
+    TIMEOUT_REMOVE = 'timeout_remove',
+    BEAN = 'bean'
 }
 
 export default PunishmentType;
