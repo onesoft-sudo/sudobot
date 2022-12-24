@@ -1,3 +1,12 @@
+# [4.38.0](https://github.com/onesoft-sudo/sudobot/compare/v4.37.1...v4.38.0) (2022-12-24)
+
+
+### Features
+
+* nickname changes logging ([ea19910](https://github.com/onesoft-sudo/sudobot/commit/ea199101ebf74cf1ba9f465d70c10c2efabe83f0))
+
+
+
 ## [4.37.1](https://github.com/onesoft-sudo/sudobot/compare/v4.37.0...v4.37.1) (2022-12-24)
 
 
@@ -32,15 +41,6 @@
 
 * log echoers ([bd978e5](https://github.com/onesoft-sudo/sudobot/commit/bd978e5a216ceaf5a4d10c35348cd93d4fdb9dcd))
 * log echoers ([8b86d52](https://github.com/onesoft-sudo/sudobot/commit/8b86d5244976675f56333c2d959a432cb5bbc11f))
-
-
-
-# [4.35.0](https://github.com/onesoft-sudo/sudobot/compare/v4.34.3...v4.35.0) (2022-12-23)
-
-
-### Features
-
-* add leave/join log stats ([c8f3287](https://github.com/onesoft-sudo/sudobot/commit/c8f3287530b6588bfbc49aa68e51c10750fce1a6))
 
 
 
