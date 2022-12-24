@@ -1,3 +1,12 @@
+# [4.37.0](https://github.com/onesoft-sudo/sudobot/compare/v4.36.1...v4.37.0) (2022-12-24)
+
+
+### Features
+
+* add bean command ([81d70c2](https://github.com/onesoft-sudo/sudobot/commit/81d70c2d4d7b51c520488c81fdc8ea74b8a18b30))
+
+
+
 ## [4.36.1](https://github.com/onesoft-sudo/sudobot/compare/v4.36.0...v4.36.1) (2022-12-24)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * wrong mod points ([3077202](https://github.com/onesoft-sudo/sudobot/commit/3077202b05b071df2dcedcb83a235455863430d6))
-
-
-
-## [4.34.2](https://github.com/onesoft-sudo/sudobot/compare/v4.34.1...v4.34.2) (2022-12-21)
-
-
-### Bug Fixes
-
-* wrong status ([a2ba92f](https://github.com/onesoft-sudo/sudobot/commit/a2ba92f9b472d9d86955737a9647dea687e2b6a2))
 
 
 
