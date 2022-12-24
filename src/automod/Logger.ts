@@ -274,7 +274,7 @@ export default class Logger extends Service {
                     value: info?.totalMembersJoined?.toString() ?? '*Information unavailable*'
                 }, {
                     name: 'Positions',
-                    value: `Among All members: ${members + bots}th\n${member.user.bot ? `Among bots: ${members}th` : `Among human members: ${bots}th`}`
+                    value: `Among All members: ${members + bots}th\n${member.user.bot ? `Among bots: ${bots}th` : `Among human members: ${members}th`}`
                 })
                 .setFooter({
                     text: `Joined • ${members + bots} members total`,
