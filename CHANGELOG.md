@@ -1,3 +1,12 @@
+## [4.36.1](https://github.com/onesoft-sudo/sudobot/compare/v4.36.0...v4.36.1) (2022-12-24)
+
+
+### Bug Fixes
+
+* wrong stats ([361b012](https://github.com/onesoft-sudo/sudobot/commit/361b01291531625c09f2ae3b89d7aca657321684))
+
+
+
 # [4.36.0](https://github.com/onesoft-sudo/sudobot/compare/v4.35.0...v4.36.0) (2022-12-23)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * wrong status ([a2ba92f](https://github.com/onesoft-sudo/sudobot/commit/a2ba92f9b472d9d86955737a9647dea687e2b6a2))
-
-
-
-## [4.34.1](https://github.com/onesoft-sudo/sudobot/compare/v4.34.0...v4.34.1) (2022-12-20)
-
-
-### Bug Fixes
-
-* point systems ([1756f60](https://github.com/onesoft-sudo/sudobot/commit/1756f600b8f4993ed7c96af6d9632cff102640bc))
 
 
 
