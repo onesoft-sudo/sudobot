@@ -1,3 +1,12 @@
+## [4.37.1](https://github.com/onesoft-sudo/sudobot/compare/v4.37.0...v4.37.1) (2022-12-24)
+
+
+### Bug Fixes
+
+* logging error stats ([214693f](https://github.com/onesoft-sudo/sudobot/commit/214693f1f2f9747b620fe581139c5311ac10002d))
+
+
+
 # [4.37.0](https://github.com/onesoft-sudo/sudobot/compare/v4.36.1...v4.37.0) (2022-12-24)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * add leave/join log stats ([c8f3287](https://github.com/onesoft-sudo/sudobot/commit/c8f3287530b6588bfbc49aa68e51c10750fce1a6))
-
-
-
-## [4.34.3](https://github.com/onesoft-sudo/sudobot/compare/v4.34.2...v4.34.3) (2022-12-21)
-
-
-### Bug Fixes
-
-* wrong mod points ([3077202](https://github.com/onesoft-sudo/sudobot/commit/3077202b05b071df2dcedcb83a235455863430d6))
 
 
 
