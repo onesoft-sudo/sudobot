@@ -150,6 +150,9 @@ let commands = [
 			})
 		),
 
+	new SlashCommandBuilder().setName('spotify').setDescription('Shows your or someone else\'s current Spotify listening activity')
+		.addUserOption(option => option.setName('member').setDescription("Show someone else's activity")),
+
 	// AUTOMATION
 	new SlashCommandBuilder().setName('ballot').setDescription('Ballot engine')
 		.addSubcommand(subcommand =>
