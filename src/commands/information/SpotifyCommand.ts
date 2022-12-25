@@ -11,6 +11,7 @@ export default class SpotifyCommand extends BaseCommand {
     name = "spotify";
     category = "information";
     aliases = ["music"];
+    supportsInteractions = true;
 
     async run(client: DiscordClient, message: CommandInteraction | Message, options: CommandOptions | InteractionOptions) {
         const member = <GuildMember> (options.isInteraction ? options.options.getMember('member') ?? message.member! : (
