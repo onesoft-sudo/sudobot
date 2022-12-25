@@ -1,3 +1,12 @@
+## [4.39.1](https://github.com/onesoft-sudo/sudobot/compare/v4.39.0...v4.39.1) (2022-12-25)
+
+
+### Bug Fixes
+
+* slash command error ([52f9ab4](https://github.com/onesoft-sudo/sudobot/commit/52f9ab41925703d2807237edb15ce38d4ed455c1))
+
+
+
 # [4.39.0](https://github.com/onesoft-sudo/sudobot/compare/v4.38.0...v4.39.0) (2022-12-25)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * add bean command ([81d70c2](https://github.com/onesoft-sudo/sudobot/commit/81d70c2d4d7b51c520488c81fdc8ea74b8a18b30))
-
-
-
-## [4.36.1](https://github.com/onesoft-sudo/sudobot/compare/v4.36.0...v4.36.1) (2022-12-24)
-
-
-### Bug Fixes
-
-* wrong stats ([361b012](https://github.com/onesoft-sudo/sudobot/commit/361b01291531625c09f2ae3b89d7aca657321684))
 
 
 
