@@ -1,3 +1,12 @@
+## [4.40.2](https://github.com/onesoft-sudo/sudobot/compare/v4.40.1...v4.40.2) (2022-12-26)
+
+
+### Bug Fixes
+
+* case sensitivity ([4d753db](https://github.com/onesoft-sudo/sudobot/commit/4d753db177a6ba52bae708edf820818f25e254b0))
+
+
+
 ## [4.40.1](https://github.com/onesoft-sudo/sudobot/compare/v4.40.0...v4.40.1) (2022-12-26)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * add spotify command ([fc85605](https://github.com/onesoft-sudo/sudobot/commit/fc85605fdf4d57e5788400a939a81b9176369b43))
-
-
-
-# [4.38.0](https://github.com/onesoft-sudo/sudobot/compare/v4.37.1...v4.38.0) (2022-12-24)
-
-
-### Features
-
-* nickname changes logging ([ea19910](https://github.com/onesoft-sudo/sudobot/commit/ea199101ebf74cf1ba9f465d70c10c2efabe83f0))
 
 
 
