@@ -1,3 +1,13 @@
+## [4.40.3](https://github.com/onesoft-sudo/sudobot/compare/v4.40.2...v4.40.3) (2022-12-26)
+
+
+### Bug Fixes
+
+* timing ([99cf96c](https://github.com/onesoft-sudo/sudobot/commit/99cf96c438de46be63dd3f69bb3e3a583f45be0c))
+* wrong boost logs ([4a350c0](https://github.com/onesoft-sudo/sudobot/commit/4a350c0177d1d02f4c2c4bd6c584de7fefa1d1d8))
+
+
+
 ## [4.40.2](https://github.com/onesoft-sudo/sudobot/compare/v4.40.1...v4.40.2) (2022-12-26)
 
 
@@ -31,15 +41,6 @@
 ### Bug Fixes
 
 * slash command error ([52f9ab4](https://github.com/onesoft-sudo/sudobot/commit/52f9ab41925703d2807237edb15ce38d4ed455c1))
-
-
-
-# [4.39.0](https://github.com/onesoft-sudo/sudobot/compare/v4.38.0...v4.39.0) (2022-12-25)
-
-
-### Features
-
-* add spotify command ([fc85605](https://github.com/onesoft-sudo/sudobot/commit/fc85605fdf4d57e5788400a939a81b9176369b43))
 
 
 
