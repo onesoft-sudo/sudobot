@@ -42,7 +42,7 @@ export default class Logger extends Service {
                     fields: [
                         {
                             name: 'Boosting Since',
-                            value: `${newMember.premiumSince!.toUTCString()} (${formatDistanceToNowStrict(newMember.premiumSince!)})`
+                            value: `${newMember.premiumSince!.toUTCString()} (${!oldMember.premiumSince && newMember.premiumSince ? 'just now' : formatDistanceToNowStrict(newMember.premiumSince!)})`
                         }
                     ],
                     footer: {
