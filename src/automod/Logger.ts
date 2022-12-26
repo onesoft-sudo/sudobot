@@ -1,5 +1,5 @@
 import { roleMention } from "@discordjs/builders";
-import { formatDistanceStrict, formatDuration, intervalToDuration } from "date-fns";
+import { formatDistanceStrict, formatDistanceToNowStrict, formatDuration, intervalToDuration } from "date-fns";
 import { Message, MessageEmbedOptions, MessageEmbed as MessageEmbedDiscord, TextChannel, MessageActionRow, MessageButton, FileOptions, GuildBan, BanOptions, Guild, User, GuildMember, Util } from "discord.js";
 import ms from "ms";
 import BaseMessageEmbed from "../client/MessageEmbed";
@@ -21,8 +21,63 @@ export default class Logger extends Service {
         return this.client.guilds.cache.get(id)?.channels.cache.get(this.client.config.props[id].logging_channel) as (TextChannel | null);
     }
 
+    loggingChannelBoosts(id: string) {
+        return this.client.guilds.cache.get(id)?.channels.cache.get(this.client.config.props[id].logging_channel_boosts) as (TextChannel | null) ?? this.loggingChannel(id);
+    }
+
     loggingChannelJoinLeave(id: string) {
         return this.client.guilds.cache.get(id)?.channels.cache.get(this.client.config.props[id].logging_channel_join_leave) as (TextChannel | null);
+    }
+
+    async onServerBoost(oldMember: GuildMember, newMember: GuildMember) {
+        await this.loggingChannelBoosts(oldMember.guild.id)!.send({
+            embeds: [
+                new MessageEmbed({
+                    title: 'Server Boosted',
+                    author: {
+                        name: newMember.user.tag,
+                        iconURL: newMember.user.displayAvatarURL()
+                    },
+                    description: `${newMember.user.toString()} has boosted the server!`,
+                    fields: [
+                        {
+                            name: 'Boosting Since',
+                            value: `${newMember.premiumSince!.toUTCString()} (${formatDistanceToNowStrict(newMember.premiumSince!)})`
+                        }
+                    ],
+                    footer: {
+                        text: 'Boosted'
+                    }
+                })
+                .setTimestamp()
+            ]
+        });
+    }
+
+    async onServerUnboost(oldMember: GuildMember, newMember: GuildMember) {
+        await this.loggingChannelBoosts(oldMember.guild.id)!.send({
+            embeds: [
+                new MessageEmbed({
+                    title: 'Server Unboosted',
+                    author: {
+                        name: newMember.user.tag,
+                        iconURL: newMember.user.displayAvatarURL()
+                    },
+                    description: `${newMember.user.toString()} has unboosted the server.`,
+                    fields: [
+                        {
+                            name: 'Boosting Since',
+                            value: `${oldMember.premiumSince!.toUTCString()} (${formatDistanceToNowStrict(oldMember.premiumSince!)})`
+                        }
+                    ],
+                    footer: {
+                        text: 'Unboosted'
+                    }
+                })
+                .setColor('PURPLE')
+                .setTimestamp()
+            ]
+        });
     }
 
     async onNicknameChange(oldMember: GuildMember, newMember: GuildMember) {
@@ -34,6 +89,7 @@ export default class Logger extends Service {
                         name: oldMember.user.tag,
                         iconURL: oldMember.user.displayAvatarURL()
                     },
+                    color: 0xf14a60,
                     fields: [
                         {
                             name: 'Old Nickname',

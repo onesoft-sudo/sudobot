@@ -32,6 +32,15 @@ export default class GuildMemberUpdateEvent extends BaseEvent {
         }
         
         client.logger.onMemberUpdate(oldMember, newMember);
+        
+        if (oldMember.premiumSince !== newMember.premiumSince) {
+            if (oldMember.premiumSince && !newMember.premiumSince) {
+                await client.logger.onServerUnboost(oldMember, newMember);
+            }
+            else {
+                await client.logger.onServerBoost(oldMember, newMember);
+            }
+        }
 
         if (newMember.nickname === oldMember.nickname && newMember.user.tag === oldMember.user.tag) {
             return;
