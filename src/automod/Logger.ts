@@ -22,7 +22,7 @@ export default class Logger extends Service {
     }
 
     loggingChannelBoosts(id: string) {
-        return this.client.guilds.cache.get(id)?.channels.cache.get(this.client.config.props[id].logging_channel_boosts) as (TextChannel | null) ?? this.loggingChannel(id);
+        return this.client.guilds.cache.get(id)?.channels.cache.get(this.client.config.props[id].logging_channel_boosts ?? this.client.config.props[id].logging_channel) as (TextChannel | null);
     }
 
     loggingChannelJoinLeave(id: string) {
