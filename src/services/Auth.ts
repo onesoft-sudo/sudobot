@@ -33,7 +33,7 @@ export default class Auth extends Service {
 
         const cmds: string[] = await this.client.config.get('global_commands');
 
-        if (cmds.indexOf(command.getName()) !== -1) {
+        if (cmds.indexOf(command.getName().toLowerCase()) !== -1) {
             return true;
         }
 
@@ -48,7 +48,7 @@ export default class Auth extends Service {
                 }
             }
 
-            return restricted.indexOf(command.getName()) === -1;
+            return restricted.indexOf(command.getName().toLowerCase()) === -1;
         }
 
         return false;

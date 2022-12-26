@@ -47,7 +47,7 @@ export default class MessageCreateEvent extends BaseEvent {
                 .trim()
                 .split(/ +/);
                 
-            const command = await client.commands.get(cmdName);
+            const command = await client.commands.get(cmdName.toLowerCase());
 
             if (command && command.supportsLegacy) {
                 const allowed = await client.auth.verify(message.member!, command);
@@ -82,7 +82,7 @@ export default class MessageCreateEvent extends BaseEvent {
                 return;
             }
             
-            const snippet = await client.snippetManager.getParsed(message.guild!.id, cmdName);
+            const snippet = await client.snippetManager.getParsed(message.guild!.id, cmdName.toLowerCase());
 
             if (snippet) {                
                 try {
