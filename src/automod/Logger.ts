@@ -29,21 +29,23 @@ export default class Logger extends Service {
         return this.client.guilds.cache.get(id)?.channels.cache.get(this.client.config.props[id].logging_channel_join_leave) as (TextChannel | null);
     }
 
-    async onServerBoost(oldMember: GuildMember, newMember: GuildMember) {
-        await this.loggingChannelBoosts(oldMember.guild.id)!.send({
+    async onServerBoost(member: GuildMember, level: number) {
+        const distance = formatDistanceToNowStrict(member.premiumSince!);
+
+        await this.loggingChannelBoosts(member.guild.id)!.send({
             embeds: [
                 new MessageEmbed({
                     title: 'Server Boosted',
                     author: {
-                        name: newMember.user.tag,
-                        iconURL: newMember.user.displayAvatarURL()
+                        name: member.user.tag,
+                        iconURL: member.user.displayAvatarURL()
                     },
-                    description: `${newMember.user.toString()} has boosted the server!`,
+                    description: `${member.user.toString()} has boosted the server!${level > 0 ? ` The server has reached level **${level}**!` : ''}`,
                     fields: [
                         {
                             name: 'Boosting Since',
-                            value: `${newMember.premiumSince!.toUTCString()} (${!oldMember.premiumSince && newMember.premiumSince ? 'just now' : formatDistanceToNowStrict(newMember.premiumSince!)})`
-                        }
+                            value: `${member.premiumSince!.toUTCString()} (${distance.startsWith('0 second') ? 'just now' : distance})`
+                        },
                     ],
                     footer: {
                         text: 'Boosted'

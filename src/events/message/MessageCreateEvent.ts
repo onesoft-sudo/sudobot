@@ -35,6 +35,17 @@ export default class MessageCreateEvent extends BaseEvent {
 
         await client.setMessage(message);
 
+        const boostTypes = ['USER_PREMIUM_GUILD_SUBSCRIPTION', 'USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_1', 'USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_2', 'USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_3'];
+        
+        if (boostTypes.includes(message.type)) {
+            console.log('Server boosted');
+            client.logger.onServerBoost(message.member!, message.type === 'USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_1' ? 1 : (
+                message.type === 'USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_2' ? 2 : (
+                    message.type === 'USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_3' ? 3 : 0
+                )
+            )).catch(console.error);
+        }
+
         await client.commonService.run(message);
         await client.spamFilter.start(message);
         await client.messageFilter.start(message);
