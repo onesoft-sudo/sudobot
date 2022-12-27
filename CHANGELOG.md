@@ -1,3 +1,12 @@
+## [4.40.4](https://github.com/onesoft-sudo/sudobot/compare/v4.40.3...v4.40.4) (2022-12-27)
+
+
+### Bug Fixes
+
+* boost logs ([ed09070](https://github.com/onesoft-sudo/sudobot/commit/ed090705c0cb70837af80045744abf35de575f1d))
+
+
+
 ## [4.40.3](https://github.com/onesoft-sudo/sudobot/compare/v4.40.2...v4.40.3) (2022-12-26)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * server boost logs ([be8ef01](https://github.com/onesoft-sudo/sudobot/commit/be8ef01da628a7b6f011604a0c9e7542ec11f722))
-
-
-
-## [4.39.1](https://github.com/onesoft-sudo/sudobot/compare/v4.39.0...v4.39.1) (2022-12-25)
-
-
-### Bug Fixes
-
-* slash command error ([52f9ab4](https://github.com/onesoft-sudo/sudobot/commit/52f9ab41925703d2807237edb15ce38d4ed455c1))
 
 
 
