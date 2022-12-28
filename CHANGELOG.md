@@ -1,3 +1,12 @@
+## [4.41.1](https://github.com/onesoft-sudo/sudobot/compare/v4.41.0...v4.41.1) (2022-12-28)
+
+
+### Bug Fixes
+
+* invite tracker crash ([03c77ab](https://github.com/onesoft-sudo/sudobot/commit/03c77abd5311053a492480ce119abd57f3524099))
+
+
+
 # [4.41.0](https://github.com/onesoft-sudo/sudobot/compare/v4.40.4...v4.41.0) (2022-12-28)
 
 
@@ -33,15 +42,6 @@
 ### Bug Fixes
 
 * case sensitivity ([4d753db](https://github.com/onesoft-sudo/sudobot/commit/4d753db177a6ba52bae708edf820818f25e254b0))
-
-
-
-## [4.40.1](https://github.com/onesoft-sudo/sudobot/compare/v4.40.0...v4.40.1) (2022-12-26)
-
-
-### Bug Fixes
-
-* log errors ([03e50e8](https://github.com/onesoft-sudo/sudobot/commit/03e50e87054762d2948eea636afa94d9dea10b0f))
 
 
 
