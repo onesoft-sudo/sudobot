@@ -65,7 +65,7 @@ export default class InviteTracker extends Service {
             return;
         }
 
-        delete this.invites[invite.code];
+        delete this.invites[invite.guild.id][invite.code];
     }
 
     async getInviteInfo(member: GuildMember) {
@@ -76,6 +76,10 @@ export default class InviteTracker extends Service {
         const newInvites = await member.guild.invites.fetch();
 
         for (const newInvite of newInvites.values()) {
+            if (!this.invites[member.guild.id]) {
+                this.invites[member.guild.id] = {};
+            }
+
             if ((newInvite.uses ?? 0) > this.invites[member.guild.id][newInvite.code]) {
                 return newInvite;
             }
