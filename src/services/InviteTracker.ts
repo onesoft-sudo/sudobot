@@ -10,7 +10,7 @@ export default class InviteTracker extends Service {
 
     async onInviteCreate(invite: Invite) {
         console.log("added");
-        
+
         if (!invite.guild) {
             console.log("No guild");
             return;
@@ -69,6 +69,10 @@ export default class InviteTracker extends Service {
     }
 
     async getInviteInfo(member: GuildMember) {
+        if (!this.client.config.props[member.guild.id].invite_tracking?.enabled) {
+            return null;
+        }
+
         const newInvites = await member.guild.invites.fetch();
 
         for (const newInvite of newInvites.values()) {
