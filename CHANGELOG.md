@@ -1,3 +1,13 @@
+# [4.41.0](https://github.com/onesoft-sudo/sudobot/compare/v4.40.4...v4.41.0) (2022-12-28)
+
+
+### Features
+
+* add invite tracker ([e729d66](https://github.com/onesoft-sudo/sudobot/commit/e729d66002355d4b8750c809f111c5b3c2723834))
+* add invite tracker ([aadb767](https://github.com/onesoft-sudo/sudobot/commit/aadb767d9b13f01d6389c550c5bc35cd04ce5527))
+
+
+
 ## [4.40.4](https://github.com/onesoft-sudo/sudobot/compare/v4.40.3...v4.40.4) (2022-12-27)
 
 
@@ -32,15 +42,6 @@
 ### Bug Fixes
 
 * log errors ([03e50e8](https://github.com/onesoft-sudo/sudobot/commit/03e50e87054762d2948eea636afa94d9dea10b0f))
-
-
-
-# [4.40.0](https://github.com/onesoft-sudo/sudobot/compare/v4.39.1...v4.40.0) (2022-12-26)
-
-
-### Features
-
-* server boost logs ([be8ef01](https://github.com/onesoft-sudo/sudobot/commit/be8ef01da628a7b6f011604a0c9e7542ec11f722))
 
 
 
