@@ -54,7 +54,9 @@ export default class SetChPermsCommand extends BaseCommand {
                     'MENTION_EVERYONE',
                     'USE_APPLICATION_COMMANDS',
                     'USE_EXTERNAL_EMOJIS',
-                    'USE_EXTERNAL_STICKERS'
+                    'USE_EXTERNAL_STICKERS',
+                    'ADD_REACTIONS',
+                    'VIEW_CHANNEL'
                 ];
 
                 for await (const key of perms) {

@@ -46,5 +46,11 @@ export default class ReadyEvent extends BaseEvent {
                 exit(-1);                
             }
         }
+
+        for (const guild of client.guilds.cache.values()) {
+            if (client.config.props[guild.id].invite_tracking?.enabled) {
+                client.inviteTracker.refreshInvites(guild).catch(console.error);
+            }
+        }
     }
 }

@@ -345,6 +345,8 @@ export default class Logger extends Service {
                 members++;
         }
 
+        const invite = member.user.bot ? null : await this.client.inviteTracker.getInviteInfo(member);
+
         await this.loggingChannelJoinLeave(member.guild.id)?.send({
             embeds: [
                 new MessageEmbed()
@@ -365,6 +367,9 @@ export default class Logger extends Service {
                 }, {
                     name: 'Positions',
                     value: `Among All members: ${members + bots}th\n${member.user.bot ? `Among bots: ${bots}th` : `Among human members: ${members}th`}`
+                }, {
+                    name: 'Invite Information',
+                    value: invite ? `Inviter: ${invite.inviter ?? '*Unavailable*'}\nInvite URL: [https://discord.gg/${invite.code}](https://discord.gg/${invite.code})` : '*Unavailable*'
                 })
                 .setFooter({
                     text: `Joined • ${members + bots} members total`,

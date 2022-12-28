@@ -51,6 +51,7 @@ import Common from '../automod/Common';
 import AutoResponder from '../automod/AutoResponder';
 import InteractionRoleManager from '../services/InteractionRoleManager';
 import MessageRules from '../automod/MessageRules';
+import InviteTracker from '../services/InviteTracker';
 
 export default class DiscordClient extends Client {
     private _commands = new Collection<string, BaseCommand>();
@@ -89,6 +90,7 @@ export default class DiscordClient extends Client {
     autoResponder: AutoResponder = {} as AutoResponder;
     interactionRoleManager: InteractionRoleManager = {} as InteractionRoleManager;
     messageRules: MessageRules = {} as MessageRules;
+    inviteTracker: InviteTracker = {} as InviteTracker;
 
     aliases = {
         automod: path.resolve(__dirname, '..', 'automod'),
@@ -120,6 +122,7 @@ export default class DiscordClient extends Client {
         "@automod/Common": "commonService",
         "@automod/AutoResponder": "autoResponder",
         "@automod/MessageRules": "messageRules",
+        "@services/InviteTracker": "inviteTracker",
     };
 
     static client: DiscordClient;

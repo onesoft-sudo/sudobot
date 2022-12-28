@@ -34,7 +34,7 @@ export default class GuildMemberUpdateEvent extends BaseEvent {
         client.logger.onMemberUpdate(oldMember, newMember);
         
         if (oldMember.premiumSinceTimestamp !== newMember.premiumSinceTimestamp) {
-            if (oldMember.premiumSince && !newMember.premiumSince) {
+            if (oldMember.premiumSince !== null && newMember.premiumSince === null) {
                 await client.logger.onServerUnboost(oldMember, newMember);
             }
         }
