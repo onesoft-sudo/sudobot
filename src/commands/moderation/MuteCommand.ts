@@ -28,6 +28,7 @@ import ms from 'ms';
 import PunishmentType from '../../types/PunishmentType';
 import { hasPermission, shouldNotModerate } from '../../utils/util';
 import UnmuteQueue from '../../queues/UnmuteQueue';
+import { formatDistanceToNowStrict } from 'date-fns';
 
 export async function mute(client: DiscordClient, dateTime: number | undefined, user: GuildMember, msg: Message | CommandInteraction | { guild: Guild, member: GuildMember, editReply?: undefined }, timeInterval: number | undefined, reason: string | undefined, hard: boolean = false, mod?: User) {
     try {
@@ -112,6 +113,10 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
 	                    name: `\tYou have been muted in ${msg.guild!.name}`
 	                })
 	                .addField("Reason", reason === undefined || reason.trim() === '' ? "*No reason provided*" : reason)
+                    .addFields({
+                        name: 'Duration',
+                        value: `${timeInterval ? `${formatDistanceToNowStrict(new Date(Date.now() + timeInterval))}` : '*No duration specified*'}`
+                    })
 	            ]
 	        });
         }
