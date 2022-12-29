@@ -1,3 +1,12 @@
+## [4.41.2](https://github.com/onesoft-sudo/sudobot/compare/v4.41.1...v4.41.2) (2022-12-29)
+
+
+### Bug Fixes
+
+* crashes on invite filter ([a455eea](https://github.com/onesoft-sudo/sudobot/commit/a455eea0a5e9d0c6c533ce0154c377bdf12d368d))
+
+
+
 ## [4.41.1](https://github.com/onesoft-sudo/sudobot/compare/v4.41.0...v4.41.1) (2022-12-28)
 
 
@@ -33,15 +42,6 @@
 
 * timing ([99cf96c](https://github.com/onesoft-sudo/sudobot/commit/99cf96c438de46be63dd3f69bb3e3a583f45be0c))
 * wrong boost logs ([4a350c0](https://github.com/onesoft-sudo/sudobot/commit/4a350c0177d1d02f4c2c4bd6c584de7fefa1d1d8))
-
-
-
-## [4.40.2](https://github.com/onesoft-sudo/sudobot/compare/v4.40.1...v4.40.2) (2022-12-26)
-
-
-### Bug Fixes
-
-* case sensitivity ([4d753db](https://github.com/onesoft-sudo/sudobot/commit/4d753db177a6ba52bae708edf820818f25e254b0))
 
 
 
