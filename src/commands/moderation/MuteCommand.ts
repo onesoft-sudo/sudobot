@@ -112,6 +112,7 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
 	                    iconURL: <string> msg.guild!.iconURL(),
 	                    name: `\tYou have been muted in ${msg.guild!.name}`
 	                })
+                    .setColor('#f14a60')
 	                .addField("Reason", reason === undefined || reason.trim() === '' ? "*No reason provided*" : reason)
                     .addFields({
                         name: 'Duration',

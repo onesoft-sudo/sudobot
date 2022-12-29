@@ -181,6 +181,24 @@ export default class BanCommand extends BaseCommand {
             reason: banOptions.reason === undefined ? "*No reason provided*" : banOptions.reason
         } as GuildBan, msg.member!.user as User).catch(console.error);
 
+        user.send({
+            embeds: [
+                new MessageEmbed({
+                    author: {
+                        name: `You have been banned in ${msg.guild!.name}`,
+                        iconURL: msg.guild!.iconURL() ?? undefined
+                    },
+                    color: 0xf14a60,
+                    fields: [
+                        {
+                            name: 'Reason',
+                            value: banOptions.reason === undefined ? "*No reason provided*" : banOptions.reason
+                        }
+                    ]
+                })
+            ]
+        }).catch(console.error);
+
         await msg.reply({
             embeds: [
                 new MessageEmbed()

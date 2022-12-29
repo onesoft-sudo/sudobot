@@ -69,6 +69,7 @@ export async function warn(client: DiscordClient, user: User, reason: string | u
 	                    }
 	                ]
 	            })
+                .setColor('GOLD')
 	        ]
 	    });
     }
