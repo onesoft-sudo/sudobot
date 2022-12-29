@@ -1,3 +1,19 @@
+# [4.42.0](https://github.com/onesoft-sudo/sudobot/compare/v4.41.2...v4.42.0) (2022-12-29)
+
+
+### Bug Fixes
+
+* commands ([15dd458](https://github.com/onesoft-sudo/sudobot/commit/15dd458ca6cde15ae3773c1b509721332931554b))
+
+
+### Features
+
+*  show mute duration ([0533250](https://github.com/onesoft-sudo/sudobot/commit/0533250c438511bed034476adb63b0d4792de3c2))
+* add infraction management commands ([c314c8f](https://github.com/onesoft-sudo/sudobot/commit/c314c8fa5ac9417991ddd4aaff870e9e15e1cc92))
+* improve embeds of mod commands ([4778938](https://github.com/onesoft-sudo/sudobot/commit/47789389f0bfa14b4585b828de279608a9206174))
+
+
+
 ## [4.41.2](https://github.com/onesoft-sudo/sudobot/compare/v4.41.1...v4.41.2) (2022-12-29)
 
 
@@ -32,16 +48,6 @@
 ### Bug Fixes
 
 * boost logs ([ed09070](https://github.com/onesoft-sudo/sudobot/commit/ed090705c0cb70837af80045744abf35de575f1d))
-
-
-
-## [4.40.3](https://github.com/onesoft-sudo/sudobot/compare/v4.40.2...v4.40.3) (2022-12-26)
-
-
-### Bug Fixes
-
-* timing ([99cf96c](https://github.com/onesoft-sudo/sudobot/commit/99cf96c438de46be63dd3f69bb3e3a583f45be0c))
-* wrong boost logs ([4a350c0](https://github.com/onesoft-sudo/sudobot/commit/4a350c0177d1d02f4c2c4bd6c584de7fefa1d1d8))
 
 
 
