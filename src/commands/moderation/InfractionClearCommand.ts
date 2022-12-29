@@ -19,34 +19,42 @@
 
 import { Message, CacheType, CommandInteraction } from "discord.js";
 import Client from "../../client/Client";
+import Punishment from "../../models/Punishment";
 import CommandOptions from "../../types/CommandOptions";
 import InteractionOptions from "../../types/InteractionOptions";
+import { emoji } from "../../utils/Emoji";
+import getUser from "../../utils/getUser";
 import BaseCommand from "../../utils/structures/BaseCommand";
 
-export default class InfractionCommand extends BaseCommand {
-    name = "infraction";
+export default class InfractionClearCommand extends BaseCommand {
+    name = "infraction__clear";
     category = "moderation";
-    aliases = ['infractions', 'infrs', 'punishments'];
+    aliases = [];
     supportsInteractions = true;
 
     async run(client: Client, message: CommandInteraction<CacheType> | Message<boolean>, options: CommandOptions | InteractionOptions): Promise<void> {
-        const subcommands = ['view'];
-        const subcommand = options.isInteraction ? options.options.getSubcommand(true) : options.args.shift();
+        if (!options.isInteraction && options.args[0] === undefined) {
+            await message.reply(":x: You must provide an ID of the user to remove their infractions!");
+            return;
+        }
+        
+        if (message instanceof CommandInteraction)
+            await message.deferReply();
 
-        if (subcommand === undefined) {
-            await message.reply(`:x: No subcommand provided! You must provide one of the follwing subcommands: \`${subcommands.join('`, `')}\`.`);
+        const user = options.isInteraction ? options.options.getUser('user', true) : await getUser(client, message as Message, options, 0);
+
+        if (!user) {
+            await this.deferReply(message, ":x: Invalid user given!");
             return;
         }
 
-        if (!options.isInteraction && !subcommands.includes(subcommand)) {
-            await message.reply(`:x: Invalid subcommand provided! You must provide one of the follwing subcommands: \`${subcommands.join('`, `')}\`.`);
-            return;
-        }
+        const { deletedCount } = await Punishment.deleteMany({
+            guild_id: message.guild!.id,
+            user_id: user.id
+        });
 
-        const command = client.commands.get(`infraction__${subcommand}`);
-
-        if (command) {
-            await command.execute(client, message, options);
-        }
+        await this.deferReply(message, {
+            content: `${emoji('check')} Deleted **${deletedCount}** infractions for user **${user.tag}**.`
+        });
     }
 }
