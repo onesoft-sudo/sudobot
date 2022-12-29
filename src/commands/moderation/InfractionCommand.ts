@@ -30,7 +30,7 @@ export default class InfractionCommand extends BaseCommand {
     supportsInteractions = true;
 
     async run(client: Client, message: CommandInteraction<CacheType> | Message<boolean>, options: CommandOptions | InteractionOptions): Promise<void> {
-        const subcommands = ['view'];
+        const subcommands = ['view', 'delete', 'clear'];
         const subcommand = options.isInteraction ? options.options.getSubcommand(true) : options.args.shift();
 
         if (subcommand === undefined) {

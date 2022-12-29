@@ -431,8 +431,22 @@ let commands = [
 	new SlashCommandBuilder().setName('notedel').setDescription('Delete a note')
 		.addNumberOption(option => option.setName('id').setDescription("The note ID").setRequired(true)),
 
-	new SlashCommandBuilder().setName('infraction').setDescription('Get an infraction')
-		.addStringOption(option => option.setName('id').setDescription("The infraction ID").setRequired(true)),
+	new SlashCommandBuilder().setName('infraction').setDescription('Manage infractions')
+		.addSubcommand(subcommand => 
+			subcommand.setName('view').setDescription("View information about an infraction")
+				.addStringOption(option => option.setName('id').setDescription("The infraction ID").setRequired(true))	
+		)
+		.addSubcommand(subcommand => 
+			subcommand.setName('delete').setDescription("Delete an infraction")
+				.addStringOption(option => option.setName('id').setDescription("The infraction ID").setRequired(true))	
+		)
+		.addSubcommand(subcommand => 
+			subcommand.setName('clear').setDescription("Clear infractions for a user")
+				.addUserOption(option => option.setName('user').setDescription("The target user").setRequired(true))	
+				.addStringOption(option => option.setName('type').setDescription("Specify infraction type").setChoices(
+					...['Ban', "Mute", "Kick", "Warning", "Tempban", "Unmute", "Unban", "Timeout"].map(option => ({ name: option, value: option }))
+				))	
+		),
 
 	new SlashCommandBuilder().setName('notes').setDescription('Fetch all notes for a user')
 		.addUserOption(option => option.setName('user').setDescription("The user").setRequired(true)),

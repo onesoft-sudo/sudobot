@@ -93,7 +93,7 @@ export default class InfractionDeleteCommand extends BaseCommand {
                         },
                         {
                             name: 'Reason',
-                            value: punishment.reason ?? '*No reason provided*',
+                            value: punishment.reason && punishment.reason.trim() !== '' ? punishment.reason : '*No reason provided*',
                         },
                         {
                             name: 'Date',
