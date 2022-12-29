@@ -75,11 +75,11 @@ export default class InviteTracker extends Service {
 
         const newInvites = await member.guild.invites.fetch();
 
+        if (!this.invites[member.guild.id]) {
+            this.invites[member.guild.id] = {};
+        }
+        
         for (const newInvite of newInvites.values()) {
-            if (!this.invites[member.guild.id]) {
-                this.invites[member.guild.id] = {};
-            }
-
             if ((newInvite.uses ?? 0) > this.invites[member.guild.id][newInvite.code]) {
                 return newInvite;
             }
