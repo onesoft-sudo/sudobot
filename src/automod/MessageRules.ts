@@ -1,8 +1,10 @@
-import { Message } from "discord.js";
+import { Message, Util } from "discord.js";
+import MessageEmbed from "../client/MessageEmbed";
 import Service from "../utils/structures/Service";
 
 export enum MessageRuleType {
     RESTRICT_WORDS_IN_ROW = 'ruleRestrictWordsInRow',
+    REGEX_STRICT = 'ruleRegexStrict',
 }
 
 export enum MessageRuleAction {
@@ -15,6 +17,8 @@ export interface MessageRule {
     type: MessageRuleType;
     action: MessageRuleAction;
     meta: any;
+    disabledChannels?: string[];
+    enabledChannels?: string[];
 }
 
 export default class MessageRules extends Service {
@@ -26,10 +30,63 @@ export default class MessageRules extends Service {
         }
 
         for await (const rule of (rules as MessageRule[])) {
+            console.log(rule.type);
+
             if (rule.type.startsWith('rule') && typeof this[rule.type] === 'function') {
+                if (rule.disabledChannels && rule.disabledChannels.includes(message.channel.id!)) {
+                    continue;
+                }
+
+                if (rule.enabledChannels && !rule.enabledChannels.includes(message.channel.id!)) {
+                    continue;
+                }
+
                 if (!(await this[rule.type](message, rule))) {
                     return false;
                 }
+            }
+        }
+
+        return true;
+    }
+
+    async ruleRegexStrict(message: Message, rule: MessageRule) {
+        const { patterns } = rule.meta as { patterns: string[] };
+
+        for (const pattern of patterns) {
+            if (!(new RegExp(pattern, 'gi').test(message.content))) {
+                message.delete().catch(console.error);
+                this.client.logger.loggingChannel(message.guildId!)?.send({
+                    embeds: [
+                        new MessageEmbed({
+                            author: {
+                                name: message.author.tag,
+                                iconURL: message.author.displayAvatarURL()
+                            },
+                            color: 0xf14a60,
+                            title: 'Regex Rule Does Not Match',
+                            description: message.content,
+                            fields: [
+                                {
+                                    name: 'Pattern',
+                                    value: `\`${Util.escapeMarkdown(pattern)}\``
+                                },
+                                {
+                                    name: 'User ID',
+                                    value: message.author.id
+                                },
+                                {
+                                    name: 'Channel',
+                                    value: `<#${message.channel.id}> (${message.channel.id})`
+                                }
+                            ],
+                            footer: { text: 'Deleted' }
+                        })
+                        .setTimestamp()
+                    ]
+                }).catch(console.error);
+
+                return false;
             }
         }
 
