@@ -1,3 +1,12 @@
+# [4.43.0](https://github.com/onesoft-sudo/sudobot/compare/v4.42.0...v4.43.0) (2022-12-30)
+
+
+### Features
+
+* regex message rule ([490d671](https://github.com/onesoft-sudo/sudobot/commit/490d671ecab8183d33f8a63041b648a72bc4279e))
+
+
+
 # [4.42.0](https://github.com/onesoft-sudo/sudobot/compare/v4.41.2...v4.42.0) (2022-12-29)
 
 
@@ -39,15 +48,6 @@
 
 * add invite tracker ([e729d66](https://github.com/onesoft-sudo/sudobot/commit/e729d66002355d4b8750c809f111c5b3c2723834))
 * add invite tracker ([aadb767](https://github.com/onesoft-sudo/sudobot/commit/aadb767d9b13f01d6389c550c5bc35cd04ce5527))
-
-
-
-## [4.40.4](https://github.com/onesoft-sudo/sudobot/compare/v4.40.3...v4.40.4) (2022-12-27)
-
-
-### Bug Fixes
-
-* boost logs ([ed09070](https://github.com/onesoft-sudo/sudobot/commit/ed090705c0cb70837af80045744abf35de575f1d))
 
 
 
