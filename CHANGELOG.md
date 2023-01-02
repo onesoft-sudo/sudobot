@@ -1,3 +1,12 @@
+# [4.44.0](https://github.com/onesoft-sudo/sudobot/compare/v4.43.0...v4.44.0) (2023-01-02)
+
+
+### Features
+
+* add infraction creation command ([697d79f](https://github.com/onesoft-sudo/sudobot/commit/697d79fc13f502406e2d3ba152b97a20b60ebda1))
+
+
+
 # [4.43.0](https://github.com/onesoft-sudo/sudobot/compare/v4.42.0...v4.43.0) (2022-12-30)
 
 
@@ -38,16 +47,6 @@
 ### Bug Fixes
 
 * invite tracker crash ([03c77ab](https://github.com/onesoft-sudo/sudobot/commit/03c77abd5311053a492480ce119abd57f3524099))
-
-
-
-# [4.41.0](https://github.com/onesoft-sudo/sudobot/compare/v4.40.4...v4.41.0) (2022-12-28)
-
-
-### Features
-
-* add invite tracker ([e729d66](https://github.com/onesoft-sudo/sudobot/commit/e729d66002355d4b8750c809f111c5b3c2723834))
-* add invite tracker ([aadb767](https://github.com/onesoft-sudo/sudobot/commit/aadb767d9b13f01d6389c550c5bc35cd04ce5527))
 
 
 
