@@ -124,6 +124,22 @@ export default class KickCommand extends BaseCommand {
                 createdAt: new Date()
             });
 
+            try {
+                await user.send({
+                    embeds: [
+                        new MessageEmbed()
+                        .setAuthor({
+                            iconURL: <string> msg.guild!.iconURL(),
+                            name: `\tYou have been kicked from ${msg.guild!.name}`
+                        })
+                        .setColor('#f14a60')
+                        .addField("Reason", reason === undefined || reason.trim() === '' ? "*No reason provided*" : reason)
+                    ]
+                });
+            }
+            catch (e) {
+                console.log(e);
+            }
             // await History.create(user.id, msg.guild!, 'kick', msg.member!.user.id, typeof reason === 'undefined' ? null : reason);
         }
         catch (e) {

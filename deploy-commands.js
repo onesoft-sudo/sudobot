@@ -444,8 +444,16 @@ let commands = [
 			subcommand.setName('clear').setDescription("Clear infractions for a user")
 				.addUserOption(option => option.setName('user').setDescription("The target user").setRequired(true))	
 				.addStringOption(option => option.setName('type').setDescription("Specify infraction type").setChoices(
-					...['Ban', "Mute", "Kick", "Warning", "Tempban", "Unmute", "Unban", "Timeout"].map(option => ({ name: option, value: option }))
-				))	
+					...['Ban', "Mute", "Hardmute", "Kick", "Warning", "Softban", "Tempban", "Unmute", "Unban", "Timeout", "Timeout Remove", "Bean", "Shot"].map(option => ({ name: option, value: option.toLowerCase().replace(' ', '_') }))
+				))
+		)
+		.addSubcommand(subcommand => 
+			subcommand.setName('create').setDescription("Add infractions to a user")
+				.addUserOption(option => option.setName('user').setDescription("The target user").setRequired(true))	
+				.addStringOption(option => option.setName('type').setDescription("Specify infraction type").setChoices(
+					...['Ban', "Mute", "Hardmute", "Kick", "Warning", "Softban", "Tempban", "Unmute", "Unban", "Timeout", "Timeout Remove", "Bean", "Shot"].map(option => ({ name: option, value: option.toLowerCase().replace(' ', '_') }))
+				).setRequired(true))
+				.addStringOption(option => option.setName('reason').setDescription("The reason for giving this infraction"))
 		),
 
 	new SlashCommandBuilder().setName('notes').setDescription('Fetch all notes for a user')
