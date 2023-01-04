@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, ContextMenuInteraction, Interaction, InteractionCollector, Message, MessageActionRow, MessageButton, User, Util } from 'discord.js';
+import { CommandInteraction, ContextMenuInteraction, Message, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -51,6 +51,8 @@ export const convert = (type: PunishmentType) => {
             return 'Unban';
         case PunishmentType.UNMUTE:
             return 'Unmute';
+        case PunishmentType.BEAN:
+            return 'Bean';
         default:
             return "Unknown";
     }

@@ -48,6 +48,7 @@ export default class InfractionReasonUpdateCommand extends BaseCommand {
 
         const id = options.isInteraction ? options.options.getString('id') : options.args.shift();
         const reason = options.isInteraction ? options.options.getString('reason', true) : options.args.join(' ');
+        const silent = options.isInteraction ? options.options.getBoolean('silent') ?? false : false;
 
         if (!isValidObjectId(id)) {
             await message.reply(":x: That's not a valid ID! It must comply with mongo object IDs!");
@@ -79,6 +80,33 @@ export default class InfractionReasonUpdateCommand extends BaseCommand {
         const oldReason = punishment.reason;
         punishment.reason = reason;
         await punishment.save();
+
+        if (!silent) {
+            const convertedType = convert(punishment.type as PunishmentType);
+
+            if ((['Ban', 'Temporary Ban', 'Hardmute', 'Kick', "Mute", 'Warning', 'Soft Ban', 'Shot', 'Bean'] as (typeof convertedType)[]).includes(convertedType)) {
+                user?.send({
+                    embeds: [
+                        new MessageEmbed({
+                            author: {
+                                name: `Your ${convertedType} was updated in ${message.guild!.name}`,
+                                iconURL: message.guild!.id
+                            },
+                            fields: [
+                                {
+                                    name: 'Reason',
+                                    value: reason ?? '*No reason provided*'
+                                },
+                                {
+                                    name: 'Case ID',
+                                    value: punishment.id
+                                }
+                            ]
+                        })
+                    ]
+                })?.catch(console.error);
+            }
+        }
 
         await this.deferReply(message, {
             embeds: [
