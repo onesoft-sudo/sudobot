@@ -32,7 +32,7 @@ export default class Logger extends Service {
     async onServerBoost(member: GuildMember, level: number) {
         const distance = formatDistanceToNowStrict(member.premiumSince!);
 
-        await this.loggingChannelBoosts(member.guild.id)!.send({
+        await this.loggingChannelBoosts(member.guild.id)?.send({
             embeds: [
                 new MessageEmbed({
                     title: 'Server Boosted',
@@ -57,7 +57,7 @@ export default class Logger extends Service {
     }
 
     async onServerUnboost(oldMember: GuildMember, newMember: GuildMember) {
-        await this.loggingChannelBoosts(oldMember.guild.id)!.send({
+        await this.loggingChannelBoosts(oldMember.guild.id)?.send({
             embeds: [
                 new MessageEmbed({
                     title: 'Server Unboosted',
@@ -83,7 +83,7 @@ export default class Logger extends Service {
     }
 
     async onNicknameChange(oldMember: GuildMember, newMember: GuildMember) {
-        await this.loggingChannel(oldMember.guild.id)!.send({
+        await this.loggingChannel(oldMember.guild.id)?.send({
             embeds: [
                 new MessageEmbed({
                     title: "Nickname Updated",
@@ -116,7 +116,7 @@ export default class Logger extends Service {
     }
 
     async onMessageUpdate(oldMessage: Message, newMessage: Message) {
-        await this.loggingChannel(newMessage.guild!.id)!.send({
+        await this.loggingChannel(newMessage.guild!.id)?.send({
             embeds: [
                 new MessageEmbed({
                     title: "Message Updated",
@@ -203,7 +203,7 @@ export default class Logger extends Service {
             });
         }
 
-        await this.loggingChannel(message.guild!.id)!.send({
+        await this.loggingChannel(message.guild!.id)?.send({
             embeds: [
                 embed
             ],
