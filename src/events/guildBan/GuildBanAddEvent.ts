@@ -30,8 +30,6 @@ export default class GuildBanAddEvent extends BaseEvent {
     
     async run(client: DiscordClient, ban: GuildBan) {
         setTimeout(async () => {
-            await client.logger.onGuildBanAdd(ban);
-
             const logs = (await ban.guild.fetchAuditLogs({
                 limit: 1,
                 type: 'MEMBER_BAN_ADD',
@@ -39,7 +37,7 @@ export default class GuildBanAddEvent extends BaseEvent {
 
             console.log(logs?.executor);
 
-            await Punishment.create({
+            const { id } = await Punishment.create({
                 type: PunishmentType.BAN,
                 user_id: ban.user.id,
                 guild_id: ban.guild!.id,
@@ -47,6 +45,8 @@ export default class GuildBanAddEvent extends BaseEvent {
                 mod_tag: logs?.executor?.tag ?? 'Unknown',
                 reason: ban.reason ?? undefined
             });
+            
+            await client.logger.onGuildBanAdd(ban, undefined, id);
         }, 3500);
     }
 }

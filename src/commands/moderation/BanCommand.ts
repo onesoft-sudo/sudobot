@@ -151,7 +151,7 @@ export default class BanCommand extends BaseCommand {
         try {
             await msg.guild?.bans.create(user, { ...banOptions, reason: `[BAN] ${banOptions.reason ?? '**No reason provided**'}` });
 
-            await Punishment.create({
+            const { id } = await Punishment.create({
                 type: PunishmentType.BAN,
                 user_id: user.id,
                 guild_id: msg.guild!.id,
@@ -161,7 +161,62 @@ export default class BanCommand extends BaseCommand {
                 createdAt: new Date()
             });
 
-            // await History.create(user.id, msg.guild!, 'ban', msg.member!.user.id, typeof banOptions.reason === 'undefined' ? null : banOptions.reason, async (data: any) => undefined);
+            user.send({
+                embeds: [
+                    new MessageEmbed({
+                        author: {
+                            name: `You have been banned in ${msg.guild!.name}`,
+                            iconURL: msg.guild!.iconURL() ?? undefined
+                        },
+                        color: 0xf14a60,
+                        fields: [
+                            {
+                                name: 'Reason',
+                                value: banOptions.reason === undefined ? "*No reason provided*" : banOptions.reason
+                            },
+                            {
+                                name: 'Infraction ID',
+                                value: id
+                            }
+                        ]
+                    })
+                ]
+            }).catch(console.error);
+
+            client.logger.onGuildBanAdd({
+                guild: msg.guild!,
+                user,
+                reason: banOptions.reason === undefined ? "*No reason provided*" : banOptions.reason
+            } as GuildBan, msg.member!.user as User, id).catch(console.error);
+
+            await msg.reply({
+                embeds: [
+                    new MessageEmbed()
+                    .setAuthor({
+                        name: user.tag,
+                        iconURL: user.displayAvatarURL(),
+                    })
+                    .setDescription(user.tag + " has been banned from this server.")
+                    .addFields([
+                        {
+                            name: "Banned by",
+                            value: (msg.member!.user as User).tag
+                        },
+                        {
+                            name: "Reason",
+                            value: banOptions.reason === undefined ? "*No reason provided*" : banOptions.reason
+                        },
+                        {
+                            name: "Days of message deletion",
+                            value: banOptions.days === undefined ? "*No message will be deleted*" : (banOptions.days + '')
+                        },
+                        {
+                            name: 'Infraction ID',
+                            value: id
+                        }
+                    ])
+                ]
+            });
         }
         catch (e) {
             await msg.reply({
@@ -174,54 +229,5 @@ export default class BanCommand extends BaseCommand {
 
             return;
         }
-
-        client.logger.onGuildBanAdd({
-            guild: msg.guild!,
-            user,
-            reason: banOptions.reason === undefined ? "*No reason provided*" : banOptions.reason
-        } as GuildBan, msg.member!.user as User).catch(console.error);
-
-        user.send({
-            embeds: [
-                new MessageEmbed({
-                    author: {
-                        name: `You have been banned in ${msg.guild!.name}`,
-                        iconURL: msg.guild!.iconURL() ?? undefined
-                    },
-                    color: 0xf14a60,
-                    fields: [
-                        {
-                            name: 'Reason',
-                            value: banOptions.reason === undefined ? "*No reason provided*" : banOptions.reason
-                        }
-                    ]
-                })
-            ]
-        }).catch(console.error);
-
-        await msg.reply({
-            embeds: [
-                new MessageEmbed()
-                .setAuthor({
-                    name: user.tag,
-                    iconURL: user.displayAvatarURL(),
-                })
-                .setDescription(user.tag + " has been banned from this server.")
-                .addFields([
-                    {
-                        name: "Banned by",
-                        value: (msg.member!.user as User).tag
-                    },
-                    {
-                        name: "Reason",
-                        value: banOptions.reason === undefined ? "*No reason provided*" : banOptions.reason
-                    },
-                    {
-                        name: "Days of message deletion",
-                        value: banOptions.days === undefined ? "*No message will be deleted*" : (banOptions.days + '')
-                    }
-                ])
-            ]
-        });
     }
 }

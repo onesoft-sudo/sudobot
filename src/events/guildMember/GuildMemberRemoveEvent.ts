@@ -23,7 +23,6 @@ import { GuildMember } from 'discord.js';
 import UnverifiedMember from '../../models/UnverifiedMember';
 import Punishment from '../../models/Punishment';
 import PunishmentType from '../../types/PunishmentType';
-import MessageEmbed from '../../client/MessageEmbed';
 
 export default class GuildMemberRemoveEvent extends BaseEvent {
     constructor() {
@@ -47,7 +46,7 @@ export default class GuildMemberRemoveEvent extends BaseEvent {
         if (logs && logs.target?.id === member.id && logs.createdAt >= (member.joinedAt ?? 0)) {
             console.log(logs?.executor);
 
-            await Punishment.create({
+            const { id } = await Punishment.create({
                 type: PunishmentType.KICK,
                 user_id: member.user.id,
                 guild_id: member.guild!.id,
@@ -56,7 +55,7 @@ export default class GuildMemberRemoveEvent extends BaseEvent {
                 reason: logs.reason ?? undefined
             });
 
-            client.logger.onMemberKick(member, logs.reason ?? undefined, logs.executor ?? undefined);
+            client.logger.onMemberKick(member, logs.reason ?? undefined, logs.executor ?? undefined, id);
         }
         
         await client.autoClear.start(member, member.guild);

@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, ContextMenuInteraction, GuildMember, Message, User } from 'discord.js';
+import { CommandInteraction, GuildMember, Message, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -118,7 +118,7 @@ export default class BeanCommand extends BaseCommand {
         }
 
         try {            
-            await Punishment.create({
+            const { id } = await Punishment.create({
                 type: PunishmentType.BEAN,
                 user_id: user.id,
                 guild_id: msg.guild!.id,
@@ -127,8 +127,6 @@ export default class BeanCommand extends BaseCommand {
                 reason,
                 createdAt: new Date()
             });
-
-            // await History.create(user.id, msg.guild!, 'bean', msg.member!.user.id, typeof reason === 'undefined' ? null : reason);
 
 		    try {
 		        await user.send({
@@ -143,6 +141,10 @@ export default class BeanCommand extends BaseCommand {
 		                            name: "Reason",
 		                            value: typeof reason === 'undefined' ? '*No reason provided*' : reason
 		                        },
+                                {
+                                    name: 'Bean ID',
+                                    value: id
+                                }
 		                    ])
 		            ]
 		        });
@@ -152,31 +154,33 @@ export default class BeanCommand extends BaseCommand {
             	dm = false;
             }
 
-            // client.logger.onMemberShot(user, msg.member!.user as User, reason);
+            await this.deferReply(msg, {
+                embeds: [
+                    new MessageEmbed()
+                    .setAuthor({
+                        name: user.user.tag,
+                        iconURL: user.user.displayAvatarURL(),
+                    })
+                    .setDescription(user.user.tag + " has been beaned." + (!dm ? "\nThey have DMs disabled. They will not know that they were beaned." : ''))
+                    .addFields([
+                        {
+                            name: "Beaned by",
+                            value: (msg.member!.user as User).tag
+                        },
+                        {
+                            name: "Reason",
+                            value: reason === undefined ? "*No reason provided*" : reason
+                        },
+                        {
+                            name: 'Bean ID',
+                            value: id
+                        }
+                    ])
+                ]
+            });
         }
         catch (e) {
             console.log(e);            
         }
-
-        await this.deferReply(msg, {
-            embeds: [
-                new MessageEmbed()
-                .setAuthor({
-                    name: user.user.tag,
-                    iconURL: user.user.displayAvatarURL(),
-                })
-                .setDescription(user.user.tag + " has been beaned." + (!dm ? "\nThey have DMs disabled. They will not know that they were beaned." : ''))
-                .addFields([
-                    {
-                        name: "Beaned by",
-                        value: (msg.member!.user as User).tag
-                    },
-                    {
-                        name: "Reason",
-                        value: reason === undefined ? "*No reason provided*" : reason
-                    }
-                ])
-            ]
-        });
     }
 }

@@ -220,7 +220,7 @@ export default class Logger extends Service {
         });
     }
 
-    async onGuildBanAdd(ban: GuildBan, _executor?: User) {
+    async onGuildBanAdd(ban: GuildBan, _executor?: User, id?: string) {
         const auditLog = (await ban.guild.fetchAuditLogs({
             limit: 1,
             type: 'MEMBER_BAN_ADD',
@@ -250,6 +250,10 @@ export default class Logger extends Service {
                     .addFields({
                         name: 'Banned by',
                         value: executor ? `${executor.tag} (${executor.id})` : 'Unknown'
+                    }, 
+                    {
+                        name: 'Infraction ID',
+                        value: id ?? '*Unavailable*'
                     })
                     .setFooter({
                         text: "Banned",
@@ -403,7 +407,7 @@ export default class Logger extends Service {
         });
     }
 
-    async onMemberShot(member: GuildMember, moderator: User, reason?: string) {
+    async onMemberShot(member: GuildMember, moderator: User, reason?: string, id?: string) {
         await this.loggingChannel(member.guild.id)?.send({
             embeds: [
                 new MessageEmbed()
@@ -416,6 +420,10 @@ export default class Logger extends Service {
                 .addField('Reason', reason ?? '*No reason provided*')
                 .addField('Doctor 💉', moderator.tag)
                 .addField('User ID', member.user.id)
+                .addFields({
+                    name: 'Infraction ID',
+                    value: id ?? '*Unavailable*'
+                })
                 .setFooter({
                     text: "Shot delivered",
                 })
@@ -424,7 +432,7 @@ export default class Logger extends Service {
         });
     }
 
-    async onMemberKick(member: GuildMember, reason?: string, executor?: User) {
+    async onMemberKick(member: GuildMember, reason?: string, executor?: User, id?: string) {
         await this.loggingChannel(member.guild.id)?.send({
             embeds: [
                 new MessageEmbed({
@@ -442,6 +450,10 @@ export default class Logger extends Service {
                         {
                             name: 'Reason',
                             value: reason ?? '*No reason provided*'
+                        },
+                        {
+                            name: 'Infraction ID',
+                            value: id ?? '*Unavailable*'
                         }
                     ],
                     footer: {
@@ -453,7 +465,7 @@ export default class Logger extends Service {
         });
     }
 
-    async onMemberMute(member: GuildMember, duration?: number, reason?: string, executor?: User, hard = false) {
+    async onMemberMute(member: GuildMember, duration?: number, reason?: string, executor?: User, hard = false, id?: string) {
         await this.loggingChannel(member.guild.id)?.send({
             embeds: [
                 new MessageEmbed()
@@ -468,6 +480,10 @@ export default class Logger extends Service {
                 .addField('Duration Until', duration ? `${(new Date(Date.now() + duration)).toLocaleString()} (${formatDuration(intervalToDuration({ start: 0, end: duration }))})` : "*No duration set*")
                 .addField('User ID', member.user.id)
                 .addField('Hardmute', hard ? 'Yes' : 'No')
+                .addFields({
+                    name: 'Infraction ID',
+                    value: id ?? '*Unavailable*'
+                })
                 .setFooter({
                     text: "Muted",
                 })
@@ -509,7 +525,7 @@ export default class Logger extends Service {
                 .addField('Reason', reason ?? '*No reason provided*')
                 .addField('Warned by', moderator?.tag ?? '*No reason provided*')
                 .addField('User ID', user.id)
-                .addField('Case ID', id + '')
+                .addField('Infraction ID', id + '')
                 .setFooter({
                     text: "Warned",
                 })
@@ -529,7 +545,7 @@ export default class Logger extends Service {
                     iconURL: member.user.displayAvatarURL(),
                 })
                 .addField('Warned by', moderator?.tag ?? 'Unknown')
-                .addField('Warning ID', id + '')
+                .addField('Infraction ID', id + '')
                 .addField('User ID', member.user.id)
                 .setFooter({
                     text: "Warning Deleted",

@@ -66,6 +66,10 @@ export async function warn(client: DiscordClient, user: User, reason: string | u
 	                    {
 	                        name: 'Strike',
 	                        value: `${strike} time(s)`
+	                    },
+	                    {
+	                        name: 'Infraction ID',
+	                        value: warning.id
 	                    }
 	                ]
 	            })
@@ -184,7 +188,7 @@ export default class WarnCommand extends BaseCommand {
                             value: (msg.member?.user as User).tag
                         },
                         {
-                            name: "ID",
+                            name: "Infraction ID",
                             value: warning.get('id') + ''
                         }
                     ])

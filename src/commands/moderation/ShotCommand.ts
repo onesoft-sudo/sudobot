@@ -120,7 +120,7 @@ export default class ShotCommand extends BaseCommand {
         const anonymous = options.isInteraction ? options.options.getBoolean('anonymous') ?? false : false;
 
         try {            
-            await Punishment.create({
+            const { id } = await Punishment.create({
                 type: PunishmentType.SHOT,
                 user_id: user.id,
                 guild_id: msg.guild!.id,
@@ -148,7 +148,11 @@ export default class ShotCommand extends BaseCommand {
                                 ...(!anonymous ? [{
                                     name: "💉 Doctor",
                                     value: `${(msg.member?.user as User).tag}`
-                                }] : [])
+                                }] : []),
+                                {
+                                    name: 'Shot ID',
+                                    value: id
+                                }
 		                    ])
 		            ]
 		        });
@@ -158,31 +162,35 @@ export default class ShotCommand extends BaseCommand {
             	dm = false;
             }
 
-            client.logger.onMemberShot(user, msg.member!.user as User, reason)
+            client.logger.onMemberShot(user, msg.member!.user as User, reason);
+
+            await this.deferReply(msg, {
+                embeds: [
+                    new MessageEmbed()
+                    .setAuthor({
+                        name: user.user.tag,
+                        iconURL: user.user.displayAvatarURL(),
+                    })
+                    .setDescription(user.user.tag + " got a shot." + (!dm ? "\nThey have DMs disabled. They will not know that they got a shot." : ''))
+                    .addFields([
+                        {
+                            name: "💉 Doctor",
+                            value: (msg.member!.user as User).tag
+                        },
+                        {
+                            name: "Reason",
+                            value: reason === undefined ? "*No reason provided*" : reason
+                        },
+                        {
+                            name: 'Shot ID',
+                            value: id
+                        }
+                    ])
+                ]
+            });
         }
         catch (e) {
             console.log(e);            
         }
-
-        await this.deferReply(msg, {
-            embeds: [
-                new MessageEmbed()
-                .setAuthor({
-                    name: user.user.tag,
-                    iconURL: user.user.displayAvatarURL(),
-                })
-                .setDescription(user.user.tag + " got a shot." + (!dm ? "\nThey have DMs disabled. They will not know that they got a shot." : ''))
-                .addFields([
-                    {
-                        name: "💉 Doctor",
-                        value: (msg.member!.user as User).tag
-                    },
-                    {
-                        name: "Reason",
-                        value: reason === undefined ? "*No reason provided*" : reason
-                    }
-                ])
-            ]
-        });
     }
 }

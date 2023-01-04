@@ -89,7 +89,7 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
         const role = await msg.guild!.roles.fetch(client.config.props[msg.guild!.id].mute_role);
         await user.roles.add(role!, reason);
 
-        await Punishment.create({
+        const { id } = await Punishment.create({
             type: hard ? PunishmentType.HARDMUTE : PunishmentType.MUTE,
             user_id: user.id,
             guild_id: msg.guild!.id,
@@ -102,7 +102,7 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
             createdAt: new Date()
         });
         
-        await client.logger.onMemberMute(user, timeInterval, reason === undefined || reason.trim() === '' ? "*No reason provided*" : reason, (mod ?? msg.member!.user) as User, hard);
+        await client.logger.onMemberMute(user, timeInterval, reason === undefined || reason.trim() === '' ? "*No reason provided*" : reason, (mod ?? msg.member!.user) as User, hard, id);
 
 		try {
 	        await user.send({
@@ -117,6 +117,10 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
                     .addFields({
                         name: 'Duration',
                         value: `${timeInterval ? `${formatDistanceToNowStrict(new Date(Date.now() + timeInterval))}` : '*No duration specified*'}`
+                    })
+                    .addFields({
+                        name: 'Infraction ID',
+                        value: id ?? '*Unavailable*'
                     })
 	            ]
 	        });

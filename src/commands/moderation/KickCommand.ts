@@ -114,7 +114,7 @@ export default class KickCommand extends BaseCommand {
             
             await user.kick(reason);
 
-            await Punishment.create({
+            const { id } = await Punishment.create({
                 type: PunishmentType.KICK,
                 user_id: user.id,
                 guild_id: msg.guild!.id,
@@ -134,13 +134,41 @@ export default class KickCommand extends BaseCommand {
                         })
                         .setColor('#f14a60')
                         .addField("Reason", reason === undefined || reason.trim() === '' ? "*No reason provided*" : reason)
+                        .addFields({
+                            name: 'Infraction ID',
+                            value: id
+                        })
                     ]
                 });
             }
             catch (e) {
                 console.log(e);
             }
-            // await History.create(user.id, msg.guild!, 'kick', msg.member!.user.id, typeof reason === 'undefined' ? null : reason);
+
+            await msg.reply({
+                embeds: [
+                    new MessageEmbed()
+                    .setAuthor({
+                        name: user.user.tag,
+                        iconURL: user.user.displayAvatarURL(),
+                    })
+                    .setDescription(user.user.tag + " has been kicked from this server.")
+                    .addFields([
+                        {
+                            name: "Kicked by",
+                            value: (msg.member!.user as User).tag
+                        },
+                        {
+                            name: "Reason",
+                            value: reason === undefined ? "*No reason provided*" : reason
+                        },
+                        {
+                            name: 'Infraction ID',
+                            value: id
+                        }
+                    ])
+                ]
+            });
         }
         catch (e) {
             await msg.reply({
@@ -153,26 +181,5 @@ export default class KickCommand extends BaseCommand {
 
             return;
         }
-
-        await msg.reply({
-            embeds: [
-                new MessageEmbed()
-                .setAuthor({
-                    name: user.user.tag,
-                    iconURL: user.user.displayAvatarURL(),
-                })
-                .setDescription(user.user.tag + " has been kicked from this server.")
-                .addFields([
-                    {
-                        name: "Kicked by",
-                        value: (msg.member!.user as User).tag
-                    },
-                    {
-                        name: "Reason",
-                        value: reason === undefined ? "*No reason provided*" : reason
-                    }
-                ])
-            ]
-        });
     }
 }
