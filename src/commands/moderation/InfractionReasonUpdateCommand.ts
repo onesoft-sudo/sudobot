@@ -89,8 +89,8 @@ export default class InfractionReasonUpdateCommand extends BaseCommand {
                     embeds: [
                         new MessageEmbed({
                             author: {
-                                name: `Your ${convertedType} was updated in ${message.guild!.name}`,
-                                iconURL: message.guild!.id
+                                name: `Your ${convertedType.toLowerCase()} was updated in ${message.guild!.name}`,
+                                iconURL: message.guild!.iconURL() ?? undefined
                             },
                             fields: [
                                 {
