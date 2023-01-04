@@ -1,3 +1,13 @@
+# [4.45.0](https://github.com/onesoft-sudo/sudobot/compare/v4.44.0...v4.45.0) (2023-01-04)
+
+
+### Features
+
+* add infraction reason update command ([52cb450](https://github.com/onesoft-sudo/sudobot/commit/52cb45062aab56d69d7279a19e657b6bb3fdae71))
+* show infraction IDs in every action logs and DMs ([010a39a](https://github.com/onesoft-sudo/sudobot/commit/010a39a3a4fd79ee384d5fdcb0205828e412a6e7))
+
+
+
 # [4.44.0](https://github.com/onesoft-sudo/sudobot/compare/v4.43.0...v4.44.0) (2023-01-02)
 
 
@@ -38,15 +48,6 @@
 ### Bug Fixes
 
 * crashes on invite filter ([a455eea](https://github.com/onesoft-sudo/sudobot/commit/a455eea0a5e9d0c6c533ce0154c377bdf12d368d))
-
-
-
-## [4.41.1](https://github.com/onesoft-sudo/sudobot/compare/v4.41.0...v4.41.1) (2022-12-28)
-
-
-### Bug Fixes
-
-* invite tracker crash ([03c77ab](https://github.com/onesoft-sudo/sudobot/commit/03c77abd5311053a492480ce119abd57f3524099))
 
 
 
