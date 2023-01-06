@@ -7,7 +7,7 @@
 
 ##### Slash Command
 ```
-/note <User> [Reason]
+/warn <User> [Reason]
 ```
 
 #### Examples
