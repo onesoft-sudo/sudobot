@@ -173,64 +173,62 @@ export default class UserLookupCommand extends BaseCommand {
             value: badges.trim() === '' ? '*No badges found*' : badges
         });
 
-        if (member) {
-            try {
-                const muteCount = await Punishment.countDocuments({
-                    guild_id: message.guildId!,
-                    type: {
-                        $in: [PunishmentType.MUTE, PunishmentType.HARDMUTE, PunishmentType.TIMEOUT]
-                    },
-                    user_id: user.id,
-                });
+        try {
+            const muteCount = await Punishment.countDocuments({
+                guild_id: message.guildId!,
+                type: {
+                    $in: [PunishmentType.MUTE, PunishmentType.HARDMUTE, PunishmentType.TIMEOUT]
+                },
+                user_id: user.id,
+            });
 
-                const warnCount = await Punishment.countDocuments({
-                    guild_id: message.guildId!,
-                    type: {
-                        $in: [PunishmentType.WARNING]
-                    },
-                    user_id: user.id,
-                });
+            const warnCount = await Punishment.countDocuments({
+                guild_id: message.guildId!,
+                type: {
+                    $in: [PunishmentType.WARNING]
+                },
+                user_id: user.id,
+            });
 
-                const banCount = await Punishment.countDocuments({
-                    guild_id: message.guildId!,
-                    type: {
-                        $in: [PunishmentType.KICK, PunishmentType.SOFTBAN, PunishmentType.TEMPBAN, PunishmentType.BAN]
-                    },
-                    user_id: user.id,
-                });
+            const banCount = await Punishment.countDocuments({
+                guild_id: message.guildId!,
+                type: {
+                    $in: [PunishmentType.KICK, PunishmentType.SOFTBAN, PunishmentType.TEMPBAN, PunishmentType.BAN]
+                },
+                user_id: user.id,
+            });
 
-                const points = (warnCount * 3) + (muteCount * 5) + (banCount * 10);
-    
-                let suggestedAction = '*None*';
-    
-                if (points >= 1 && points < 5) {
-                    suggestedAction = 'Verbal Warning';
-                }
-                else if (points >= 5 && points < 10) {
-                    const muteMS = Date.now() + (60_000 * 30 * (points - 4));
-                    suggestedAction = `Mute ${member?.roles.cache.has(client.config.props[message.guildId!].mute_role) ? '(Already muted)' : `for ${formatDistanceStrict(new Date(), new Date(muteMS))}`}`;
-                }
-                else if (points >= 10 && points < 15) {
-                    const banMS = Date.now() + (60_000 * 60 * 24 * (points - 9));
-                    suggestedAction = `Temporary ban for ${formatDistanceStrict(new Date(), new Date(banMS))} or Kick`;
-                }
-                else if (points >= 15) {
-                    suggestedAction = "Permanent Ban";
-                }
-    
-                fields.push({
-                    name: 'Moderation Points',
-                    value: points + ''
-                });
-                
-                fields.push({
-                    name: 'Suggested Action',
-                    value: suggestedAction
-                });
+            const points = (warnCount * 3) + (muteCount * 5) + (banCount * 10);
+
+            let suggestedAction = '*None*';
+
+            if (points >= 1 && points < 5) {
+                suggestedAction = 'Verbal Warning';
             }
-            catch (e) {
-                console.log(e);
+            else if (points >= 5 && points < 10) {
+                const muteMS = Date.now() + (60_000 * 30 * (points - 4));
+                suggestedAction = `Mute ${member?.roles.cache.has(client.config.props[message.guildId!].mute_role) ? '(Already muted)' : `for ${formatDistanceStrict(new Date(), new Date(muteMS))}`}`;
             }
+            else if (points >= 10 && points < 15) {
+                const banMS = Date.now() + (60_000 * 60 * 24 * (points - 9));
+                suggestedAction = `Temporary ban for ${formatDistanceStrict(new Date(), new Date(banMS))} or Kick`;
+            }
+            else if (points >= 15) {
+                suggestedAction = "Permanent Ban";
+            }
+
+            fields.push({
+                name: 'Moderation Points',
+                value: points + ''
+            });
+            
+            fields.push({
+                name: 'Suggested Action',
+                value: suggestedAction
+            });
+        }
+        catch (e) {
+            console.log(e);
         }
 
         fields = [...fields, ...fieldsCommon];
