@@ -27,6 +27,7 @@ import Service from "../utils/structures/Service";
 export interface MentionSchema {
     date: number;
     user: string; 
+    messageLink: string;
 }
 
 export default class AFKEngine extends Service {
@@ -80,7 +81,7 @@ export default class AFKEngine extends Service {
                     continue;                    
                 }
                 
-                text += `\nFrom ${member.toString()}, ${formatDistanceToNowStrict(m.date, { addSuffix: true })}`;
+                text += `\nFrom ${member.toString()}, ${formatDistanceToNowStrict(m.date, { addSuffix: true })}, [Navigate](${m.messageLink ?? '*Unavailable*'})`;
                 count++;
             }
 
@@ -137,7 +138,8 @@ export default class AFKEngine extends Service {
 
                 mentions.push({
                     date: Date.now(),
-                    user: msg.author.id
+                    user: msg.author.id,
+                    messageLink: msg.url
                 });
 
                 record.set("mentions", mentions).save();
