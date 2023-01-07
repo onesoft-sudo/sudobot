@@ -1,3 +1,12 @@
+## [4.45.3](https://github.com/onesoft-sudo/sudobot/compare/v4.45.2...v4.45.3) (2023-01-07)
+
+
+### Bug Fixes
+
+* user lookup command ([169dab5](https://github.com/onesoft-sudo/sudobot/commit/169dab52efcc7c9d6f25758e2f842aabceac7192))
+
+
+
 ## [4.45.2](https://github.com/onesoft-sudo/sudobot/compare/v4.45.1...v4.45.2) (2023-01-04)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * add infraction creation command ([697d79f](https://github.com/onesoft-sudo/sudobot/commit/697d79fc13f502406e2d3ba152b97a20b60ebda1))
-
-
-
-# [4.43.0](https://github.com/onesoft-sudo/sudobot/compare/v4.42.0...v4.43.0) (2022-12-30)
-
-
-### Features
-
-* regex message rule ([490d671](https://github.com/onesoft-sudo/sudobot/commit/490d671ecab8183d33f8a63041b648a72bc4279e))
 
 
 
