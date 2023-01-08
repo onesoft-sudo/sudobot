@@ -36,6 +36,7 @@ export default class ReadyEvent extends BaseEvent {
         client.queueManager.loadQueues();
         client.startupManager.boot();
         client.randomStatus.update();
+        client.autobackup.onReady().catch(console.error);
 
         for (const guild of client.guilds.cache.toJSON()) {
             console.log(guild.id + ' ' + guild.name);         
