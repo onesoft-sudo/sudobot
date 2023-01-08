@@ -1,3 +1,12 @@
+# [4.46.0](https://github.com/onesoft-sudo/sudobot/compare/v4.45.3...v4.46.0) (2023-01-07)
+
+
+### Features
+
+* **afk_engine:** navigate to mentions ([d22097f](https://github.com/onesoft-sudo/sudobot/commit/d22097ff2e2209c59a0a69e44ae44594affba94f))
+
+
+
 ## [4.45.3](https://github.com/onesoft-sudo/sudobot/compare/v4.45.2...v4.45.3) (2023-01-07)
 
 
@@ -32,15 +41,6 @@
 
 * add infraction reason update command ([52cb450](https://github.com/onesoft-sudo/sudobot/commit/52cb45062aab56d69d7279a19e657b6bb3fdae71))
 * show infraction IDs in every action logs and DMs ([010a39a](https://github.com/onesoft-sudo/sudobot/commit/010a39a3a4fd79ee384d5fdcb0205828e412a6e7))
-
-
-
-# [4.44.0](https://github.com/onesoft-sudo/sudobot/compare/v4.43.0...v4.44.0) (2023-01-02)
-
-
-### Features
-
-* add infraction creation command ([697d79f](https://github.com/onesoft-sudo/sudobot/commit/697d79fc13f502406e2d3ba152b97a20b60ebda1))
 
 
 
