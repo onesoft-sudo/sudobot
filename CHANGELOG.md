@@ -1,3 +1,12 @@
+# [4.47.0](https://github.com/onesoft-sudo/sudobot/compare/v4.46.0...v4.47.0) (2023-01-08)
+
+
+### Features
+
+* auto backup config files ([cacd9fe](https://github.com/onesoft-sudo/sudobot/commit/cacd9fe21c128164f71cc62fab565047ea8a8adb))
+
+
+
 # [4.46.0](https://github.com/onesoft-sudo/sudobot/compare/v4.45.3...v4.46.0) (2023-01-07)
 
 
@@ -31,16 +40,6 @@
 ### Bug Fixes
 
 * infraction reason update DM does not deliver ([f69d181](https://github.com/onesoft-sudo/sudobot/commit/f69d18190c9ebb8a2bec10af0c6f7709db1c325f))
-
-
-
-# [4.45.0](https://github.com/onesoft-sudo/sudobot/compare/v4.44.0...v4.45.0) (2023-01-04)
-
-
-### Features
-
-* add infraction reason update command ([52cb450](https://github.com/onesoft-sudo/sudobot/commit/52cb45062aab56d69d7279a19e657b6bb3fdae71))
-* show infraction IDs in every action logs and DMs ([010a39a](https://github.com/onesoft-sudo/sudobot/commit/010a39a3a4fd79ee384d5fdcb0205828e412a6e7))
 
 
 
