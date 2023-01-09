@@ -1,3 +1,12 @@
+## [4.47.2](https://github.com/onesoft-sudo/sudobot/compare/v4.47.1...v4.47.2) (2023-01-09)
+
+
+### Bug Fixes
+
+* increase rolelist limit ([48341d6](https://github.com/onesoft-sudo/sudobot/commit/48341d60eafa92adc5421beb3a687dc9f45e0320))
+
+
+
 ## [4.47.1](https://github.com/onesoft-sudo/sudobot/compare/v4.47.0...v4.47.1) (2023-01-09)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * user lookup command ([169dab5](https://github.com/onesoft-sudo/sudobot/commit/169dab52efcc7c9d6f25758e2f842aabceac7192))
-
-
-
-## [4.45.2](https://github.com/onesoft-sudo/sudobot/compare/v4.45.1...v4.45.2) (2023-01-04)
-
-
-### Bug Fixes
-
-* crashing while message edits ([58676f0](https://github.com/onesoft-sudo/sudobot/commit/58676f0315a976a80782c18a941ae5b3a5c6a45b))
 
 
 
