@@ -58,7 +58,7 @@ export default class RoleListCommand extends BaseCommand {
                 channel_id: message.channel!.id,
                 guild_id: message.guild!.id,
                 user_id: message.member!.user.id,
-                limit: 10,
+                limit: 20,
                 timeout: 120_000,
                 embedBuilder({ data, currentPage, maxPages }) {
                     let description = '';
