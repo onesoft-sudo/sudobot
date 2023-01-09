@@ -24,8 +24,8 @@ export default class Autobackup extends Service {
                 await channel.send({
                     content: 'Backup: Config Files',
                     files: [
-                        path.resolve(__dirname, '../../config/config.json'),
-                        path.resolve(__dirname, '../../config/snippets.json')
+                        path.resolve(process.env.SUDO_PREFIX ?? `${__dirname}/../..`, 'config/config.json'),
+                        path.resolve(process.env.SUDO_PREFIX ?? `${__dirname}/../..`, 'config/snippets.json')
                     ]
                 })
             }
