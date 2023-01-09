@@ -1,3 +1,12 @@
+## [4.47.1](https://github.com/onesoft-sudo/sudobot/compare/v4.47.0...v4.47.1) (2023-01-09)
+
+
+### Bug Fixes
+
+* autobackup ([36958af](https://github.com/onesoft-sudo/sudobot/commit/36958afafe687c66429150a2e44b98dbeb0199a7))
+
+
+
 # [4.47.0](https://github.com/onesoft-sudo/sudobot/compare/v4.46.0...v4.47.0) (2023-01-08)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * crashing while message edits ([58676f0](https://github.com/onesoft-sudo/sudobot/commit/58676f0315a976a80782c18a941ae5b3a5c6a45b))
-
-
-
-## [4.45.1](https://github.com/onesoft-sudo/sudobot/compare/v4.45.0...v4.45.1) (2023-01-04)
-
-
-### Bug Fixes
-
-* infraction reason update DM does not deliver ([f69d181](https://github.com/onesoft-sudo/sudobot/commit/f69d18190c9ebb8a2bec10af0c6f7709db1c325f))
 
 
 
