@@ -36,7 +36,7 @@ export default class InfractionCreateCommand extends BaseCommand {
     async run(client: Client, interaction: CommandInteraction<CacheType>, options: InteractionOptions): Promise<void> {
         const type = interaction.options.getString('type', true);
         const user = interaction.options.getUser('user', true);
-        const reason = interaction.options.getUser('reason');
+        const reason = interaction.options.getString('reason');
 
         await interaction.deferReply();
 
