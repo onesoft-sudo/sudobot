@@ -107,6 +107,9 @@ export default class WarnCommand extends BaseCommand {
             return;
         }
 
+        if (msg instanceof CommandInteraction) 
+            await msg.deferReply();
+
         let user: GuildMember;
         let reason: string | undefined;
 
@@ -114,7 +117,7 @@ export default class WarnCommand extends BaseCommand {
             user = await <GuildMember> options.options.getMember('member');
 
             if (!user) {
-                await msg.reply({
+                await this.deferReply(msg, {
                     embeds: [
                         new MessageEmbed()
                         .setColor('#f14a60')
@@ -140,7 +143,7 @@ export default class WarnCommand extends BaseCommand {
                 user = user2;
             }
             catch (e) {
-                await msg.reply({
+                await this.deferReply(msg, {
                     embeds: [
                         new MessageEmbed()
                         .setColor('#f14a60')
@@ -167,7 +170,7 @@ export default class WarnCommand extends BaseCommand {
 
             const { warning, strike, DMed } = await warn(client, user.user, reason, msg, msg.member?.user as User);
 
-            await msg.reply({
+            await this.deferReply(msg, {
                 embeds: [
                     new MessageEmbed()
                     .setDescription(`The user **${user.user.tag}** has been warned.` + (DMed ? "" : "\n:warning: The user has DMs disabled, so they might not know that they've been warned."))
