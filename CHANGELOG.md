@@ -1,3 +1,12 @@
+## [4.47.3](https://github.com/onesoft-sudo/sudobot/compare/v4.47.2...v4.47.3) (2023-01-10)
+
+
+### Bug Fixes
+
+* wrong type of option ([3e6b57a](https://github.com/onesoft-sudo/sudobot/commit/3e6b57ad808fdf876de25c1d8ab200e0437426d8))
+
+
+
 ## [4.47.2](https://github.com/onesoft-sudo/sudobot/compare/v4.47.1...v4.47.2) (2023-01-09)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **afk_engine:** navigate to mentions ([d22097f](https://github.com/onesoft-sudo/sudobot/commit/d22097ff2e2209c59a0a69e44ae44594affba94f))
-
-
-
-## [4.45.3](https://github.com/onesoft-sudo/sudobot/compare/v4.45.2...v4.45.3) (2023-01-07)
-
-
-### Bug Fixes
-
-* user lookup command ([169dab5](https://github.com/onesoft-sudo/sudobot/commit/169dab52efcc7c9d6f25758e2f842aabceac7192))
 
 
 
