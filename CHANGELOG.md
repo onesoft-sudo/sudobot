@@ -1,3 +1,12 @@
+# [4.48.0](https://github.com/onesoft-sudo/sudobot/compare/v4.47.5...v4.48.0) (2023-01-11)
+
+
+### Features
+
+* improve clear command ([e0a787c](https://github.com/onesoft-sudo/sudobot/commit/e0a787cb9443c8991d760c930074b9834a066501))
+
+
+
 ## [4.47.5](https://github.com/onesoft-sudo/sudobot/compare/v4.47.4...v4.47.5) (2023-01-11)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * increase rolelist limit ([48341d6](https://github.com/onesoft-sudo/sudobot/commit/48341d60eafa92adc5421beb3a687dc9f45e0320))
-
-
-
-## [4.47.1](https://github.com/onesoft-sudo/sudobot/compare/v4.47.0...v4.47.1) (2023-01-09)
-
-
-### Bug Fixes
-
-* autobackup ([36958af](https://github.com/onesoft-sudo/sudobot/commit/36958afafe687c66429150a2e44b98dbeb0199a7))
 
 
 
