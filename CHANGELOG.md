@@ -1,3 +1,12 @@
+## [4.47.4](https://github.com/onesoft-sudo/sudobot/compare/v4.47.3...v4.47.4) (2023-01-11)
+
+
+### Bug Fixes
+
+* warn command ([3ab79bd](https://github.com/onesoft-sudo/sudobot/commit/3ab79bd52d1f81ec6a8ea3ea30bd3734c1af1554))
+
+
+
 ## [4.47.3](https://github.com/onesoft-sudo/sudobot/compare/v4.47.2...v4.47.3) (2023-01-10)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * auto backup config files ([cacd9fe](https://github.com/onesoft-sudo/sudobot/commit/cacd9fe21c128164f71cc62fab565047ea8a8adb))
-
-
-
-# [4.46.0](https://github.com/onesoft-sudo/sudobot/compare/v4.45.3...v4.46.0) (2023-01-07)
-
-
-### Features
-
-* **afk_engine:** navigate to mentions ([d22097f](https://github.com/onesoft-sudo/sudobot/commit/d22097ff2e2209c59a0a69e44ae44594affba94f))
 
 
 
