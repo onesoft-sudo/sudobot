@@ -1,3 +1,12 @@
+## [4.47.5](https://github.com/onesoft-sudo/sudobot/compare/v4.47.4...v4.47.5) (2023-01-11)
+
+
+### Bug Fixes
+
+* **deps:** security issues ([aa5827d](https://github.com/onesoft-sudo/sudobot/commit/aa5827dc748f8b46c979e51195485d5b6a70e78f))
+
+
+
 ## [4.47.4](https://github.com/onesoft-sudo/sudobot/compare/v4.47.3...v4.47.4) (2023-01-11)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * autobackup ([36958af](https://github.com/onesoft-sudo/sudobot/commit/36958afafe687c66429150a2e44b98dbeb0199a7))
-
-
-
-# [4.47.0](https://github.com/onesoft-sudo/sudobot/compare/v4.46.0...v4.47.0) (2023-01-08)
-
-
-### Features
-
-* auto backup config files ([cacd9fe](https://github.com/onesoft-sudo/sudobot/commit/cacd9fe21c128164f71cc62fab565047ea8a8adb))
 
 
 
