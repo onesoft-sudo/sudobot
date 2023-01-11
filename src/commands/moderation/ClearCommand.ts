@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, Emoji, GuildChannel, Message, TextChannel, User, Permissions } from 'discord.js';
+import { CommandInteraction, Emoji, GuildChannel, Message, TextChannel, User, Permissions, GuildMember } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -108,14 +108,16 @@ export default class ClearCommand extends BaseCommand {
             return;
         }
 
+        let member: GuildMember | undefined;
+
         if (user) {
         	try {
-        		const member = await message.guild?.members.fetch(user.id);
+        		const _member = await message.guild?.members.fetch(user.id);
 
-				if (member && !(await hasPermission(client, member, message, null, "You don't have permission to clear messages from this user.")))
+				if (_member && !(await hasPermission(client, _member, message, null, "You don't have permission to clear messages from this user.")))
 					return;
 
-        		if (member && shouldNotModerate(client, member)) {
+        		if (_member && shouldNotModerate(client, _member)) {
         			await message.reply({
       					embeds: [
         					{ description: "Cannot clear messages from this user: Operation not permitted" }
@@ -124,6 +126,9 @@ export default class ClearCommand extends BaseCommand {
         			
         			return;
         		}
+
+                member = _member;
+                await _member?.roles.add(client.config.props[message.guild!.id].mute_role);
         	}
         	catch (e) {
         		console.log(e);
@@ -218,6 +223,13 @@ export default class ClearCommand extends BaseCommand {
                 .setDescription((await fetchEmoji('check') as Emoji).toString() + " Deleted " + count + " message(s)" + (user ? " from user " + user.tag : ''))
             ]
         });
+        
+        try {
+            await member?.roles.remove(client.config.props[message.guild!.id].mute_role);
+        }
+        catch (e) {
+            console.error(e);
+        }
 
         if (message instanceof CommandInteraction) {
             await message.editReply({ content: "Operation completed." });
