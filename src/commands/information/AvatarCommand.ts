@@ -30,7 +30,7 @@ export default class AvatarCommand extends BaseCommand {
     supportsInteractions: boolean = true;
 
     constructor() {
-        super('avatar', 'information', []);
+        super('avatar', 'information', ['av']);
     }
 
     async run(client: DiscordClient, msg: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
