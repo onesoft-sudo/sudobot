@@ -42,6 +42,7 @@ export type MessageFilterConfig = {
     regex_patterns: string[];
     rickrolls_enabled: boolean;
     off: boolean;
+    invite_whitelist?: string[];
 };
 
 export default class MessageFilter {
@@ -187,16 +188,26 @@ export default class MessageFilter {
         if (matches && matches.length > 0) {
            try {
                 const invites = await msg.guild!.invites.fetch();
+                const excluded = this.config.invite_whitelist ?? [];
+                const vanityURL = msg.guild!.vanityURLCode;
+
+                if (vanityURL) {
+                    excluded.push(vanityURL);
+                }
 
                 if (!invites.size) {
                     return matches;
                 }
 
                 for (let match of matches) {
-                    let code: string[]|string = await match.split('/');
+                    let code: string[] | string = await match.split('/');
                     code = await code[code.length - 1];
 
-                    let filtered = await invites.has(code.trim());
+                    if (excluded.includes(code.trim())) {
+                        continue;
+                    }
+
+                    let filtered = invites.has(code.trim());
                         
                     if (!filtered) {
                         return matches;
