@@ -1,3 +1,13 @@
+# [4.49.0](https://github.com/onesoft-sudo/sudobot/compare/v4.48.0...v4.49.0) (2023-01-14)
+
+
+### Features
+
+* add a new alias to avatar command ([1a4c980](https://github.com/onesoft-sudo/sudobot/commit/1a4c98048cdd6f75bc7441109d5b06f1219cb60b))
+* exclude vanity URL and custom invites ([f1aa6da](https://github.com/onesoft-sudo/sudobot/commit/f1aa6daff6dd550a36a45e5dc435804ec94064ba))
+
+
+
 # [4.48.0](https://github.com/onesoft-sudo/sudobot/compare/v4.47.5...v4.48.0) (2023-01-11)
 
 
@@ -31,15 +41,6 @@
 ### Bug Fixes
 
 * wrong type of option ([3e6b57a](https://github.com/onesoft-sudo/sudobot/commit/3e6b57ad808fdf876de25c1d8ab200e0437426d8))
-
-
-
-## [4.47.2](https://github.com/onesoft-sudo/sudobot/compare/v4.47.1...v4.47.2) (2023-01-09)
-
-
-### Bug Fixes
-
-* increase rolelist limit ([48341d6](https://github.com/onesoft-sudo/sudobot/commit/48341d60eafa92adc5421beb3a687dc9f45e0320))
 
 
 
