@@ -26,7 +26,7 @@ import MessageEmbed from '../../client/MessageEmbed';
 import getMember from '../../utils/getMember';
 import Punishment from '../../models/Punishment';
 import PunishmentType from '../../types/PunishmentType';
-import { hasPermission, shouldNotModerate } from '../../utils/util';
+import { generateInfractionDescription, hasPermission, shouldNotModerate } from '../../utils/util';
 
 export default class KickCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -127,7 +127,9 @@ export default class KickCommand extends BaseCommand {
             try {
                 await user.send({
                     embeds: [
-                        new MessageEmbed()
+                        new MessageEmbed({
+                            description: generateInfractionDescription(client, msg.guildId!, 'kick_message')
+                        })
                         .setAuthor({
                             iconURL: <string> msg.guild!.iconURL(),
                             name: `\tYou have been kicked from ${msg.guild!.name}`

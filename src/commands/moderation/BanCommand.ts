@@ -26,7 +26,7 @@ import MessageEmbed from '../../client/MessageEmbed';
 import getUser from '../../utils/getUser';
 import Punishment from '../../models/Punishment';
 import PunishmentType from '../../types/PunishmentType';
-import { shouldNotModerate, hasPermission } from '../../utils/util';
+import { shouldNotModerate, hasPermission, generateInfractionDescription } from '../../utils/util';
 
 export default class BanCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -169,6 +169,7 @@ export default class BanCommand extends BaseCommand {
                             iconURL: msg.guild!.iconURL() ?? undefined
                         },
                         color: 0xf14a60,
+                        description: generateInfractionDescription(client, msg.guildId!, 'ban_message'),
                         fields: [
                             {
                                 name: 'Reason',

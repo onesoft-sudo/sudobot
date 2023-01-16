@@ -26,7 +26,7 @@ import MessageEmbed from '../../client/MessageEmbed';
 import getMember from '../../utils/getMember';
 import ms from 'ms';
 import PunishmentType from '../../types/PunishmentType';
-import { hasPermission, shouldNotModerate } from '../../utils/util';
+import { generateInfractionDescription, hasPermission, shouldNotModerate } from '../../utils/util';
 import UnmuteQueue from '../../queues/UnmuteQueue';
 import { formatDistanceToNowStrict } from 'date-fns';
 
@@ -107,7 +107,9 @@ export async function mute(client: DiscordClient, dateTime: number | undefined, 
 		try {
 	        await user.send({
 	            embeds: [
-	                new MessageEmbed()
+	                new MessageEmbed({
+                        description: generateInfractionDescription(client, msg.guild!.id, 'mute_message')
+                    })
 	                .setAuthor({
 	                    iconURL: <string> msg.guild!.iconURL(),
 	                    name: `\tYou have been muted in ${msg.guild!.name}`

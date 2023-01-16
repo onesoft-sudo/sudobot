@@ -243,3 +243,19 @@ export function yellow(string: string) {
 export function red(string: string) {
     return '\u001b[1;31m' + string + '\u001b[0m';
 }
+
+export function generateInfractionDescription(client: DiscordClient, guildId: string, key: 'warning_message' | 'ban_message' | 'kick_message' | 'mute_message') {
+    if (!client.config.props[guildId].infractions) {
+        return undefined;
+    }
+    
+    const message = client.config.props[guildId].infractions[key] || client.config.props[guildId!].infractions.common_message ?
+                            `${client.config.props[guildId].infractions.common_message ?? ''}${client.config.props[guildId!].infractions[key] && client.config.props[guildId!].infractions.common_message ? '\n' : ''}${client.config.props[guildId!].infractions[key] ?? ''}`
+                        : undefined;
+
+    if (message && message.trim() === '') {
+        return undefined;
+    }
+
+    return message;
+}
