@@ -1,3 +1,12 @@
+# [4.51.0](https://github.com/onesoft-sudo/sudobot/compare/v4.50.0...v4.51.0) (2023-01-16)
+
+
+### Features
+
+* add fakeban command ([bd8b64a](https://github.com/onesoft-sudo/sudobot/commit/bd8b64a5393705a299b6660699cc10e41b970803))
+
+
+
 # [4.50.0](https://github.com/onesoft-sudo/sudobot/compare/v4.49.0...v4.50.0) (2023-01-16)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * **deps:** security issues ([aa5827d](https://github.com/onesoft-sudo/sudobot/commit/aa5827dc748f8b46c979e51195485d5b6a70e78f))
-
-
-
-## [4.47.4](https://github.com/onesoft-sudo/sudobot/compare/v4.47.3...v4.47.4) (2023-01-11)
-
-
-### Bug Fixes
-
-* warn command ([3ab79bd](https://github.com/onesoft-sudo/sudobot/commit/3ab79bd52d1f81ec6a8ea3ea30bd3734c1af1554))
 
 
 
