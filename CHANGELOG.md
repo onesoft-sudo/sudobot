@@ -1,3 +1,12 @@
+# [4.50.0](https://github.com/onesoft-sudo/sudobot/compare/v4.49.0...v4.50.0) (2023-01-16)
+
+
+### Features
+
+* add infraction notes support in DMs ([f7f5196](https://github.com/onesoft-sudo/sudobot/commit/f7f5196ec6937514d3b024542f3ea9441c641109))
+
+
+
 # [4.49.0](https://github.com/onesoft-sudo/sudobot/compare/v4.48.0...v4.49.0) (2023-01-14)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * warn command ([3ab79bd](https://github.com/onesoft-sudo/sudobot/commit/3ab79bd52d1f81ec6a8ea3ea30bd3734c1af1554))
-
-
-
-## [4.47.3](https://github.com/onesoft-sudo/sudobot/compare/v4.47.2...v4.47.3) (2023-01-10)
-
-
-### Bug Fixes
-
-* wrong type of option ([3e6b57a](https://github.com/onesoft-sudo/sudobot/commit/3e6b57ad808fdf876de25c1d8ab200e0437426d8))
 
 
 
