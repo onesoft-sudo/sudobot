@@ -1,3 +1,12 @@
+## [4.52.1](https://github.com/onesoft-sudo/sudobot/compare/v4.52.0...v4.52.1) (2023-01-17)
+
+
+### Bug Fixes
+
+* ban and kick DMs not delivering ([024c983](https://github.com/onesoft-sudo/sudobot/commit/024c983f611f6e24a0692a43e9dc0e9421ec1404))
+
+
+
 # [4.52.0](https://github.com/onesoft-sudo/sudobot/compare/v4.51.0...v4.52.0) (2023-01-17)
 
 
@@ -32,15 +41,6 @@
 
 * add a new alias to avatar command ([1a4c980](https://github.com/onesoft-sudo/sudobot/commit/1a4c98048cdd6f75bc7441109d5b06f1219cb60b))
 * exclude vanity URL and custom invites ([f1aa6da](https://github.com/onesoft-sudo/sudobot/commit/f1aa6daff6dd550a36a45e5dc435804ec94064ba))
-
-
-
-# [4.48.0](https://github.com/onesoft-sudo/sudobot/compare/v4.47.5...v4.48.0) (2023-01-11)
-
-
-### Features
-
-* improve clear command ([e0a787c](https://github.com/onesoft-sudo/sudobot/commit/e0a787cb9443c8991d760c930074b9834a066501))
 
 
 
