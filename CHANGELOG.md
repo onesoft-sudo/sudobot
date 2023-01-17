@@ -1,3 +1,12 @@
+# [4.53.0](https://github.com/onesoft-sudo/sudobot/compare/v4.52.1...v4.53.0) (2023-01-17)
+
+
+### Features
+
+* add zodiac, continent, bio and job info support in profile command ([b7d4d12](https://github.com/onesoft-sudo/sudobot/commit/b7d4d12f21a5cf5b99e10642abe5e1be5b3717b7))
+
+
+
 ## [4.52.1](https://github.com/onesoft-sudo/sudobot/compare/v4.52.0...v4.52.1) (2023-01-17)
 
 
@@ -31,16 +40,6 @@
 ### Features
 
 * add infraction notes support in DMs ([f7f5196](https://github.com/onesoft-sudo/sudobot/commit/f7f5196ec6937514d3b024542f3ea9441c641109))
-
-
-
-# [4.49.0](https://github.com/onesoft-sudo/sudobot/compare/v4.48.0...v4.49.0) (2023-01-14)
-
-
-### Features
-
-* add a new alias to avatar command ([1a4c980](https://github.com/onesoft-sudo/sudobot/commit/1a4c98048cdd6f75bc7441109d5b06f1219cb60b))
-* exclude vanity URL and custom invites ([f1aa6da](https://github.com/onesoft-sudo/sudobot/commit/f1aa6daff6dd550a36a45e5dc435804ec94064ba))
 
 
 
