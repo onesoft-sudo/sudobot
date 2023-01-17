@@ -1,3 +1,12 @@
+# [4.52.0](https://github.com/onesoft-sudo/sudobot/compare/v4.51.0...v4.52.0) (2023-01-17)
+
+
+### Features
+
+* improved profile commands ([c934fdb](https://github.com/onesoft-sudo/sudobot/commit/c934fdb89b423b311f7fa655fb06e7ef0fa8f734))
+
+
+
 # [4.51.0](https://github.com/onesoft-sudo/sudobot/compare/v4.50.0...v4.51.0) (2023-01-16)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * improve clear command ([e0a787c](https://github.com/onesoft-sudo/sudobot/commit/e0a787cb9443c8991d760c930074b9834a066501))
-
-
-
-## [4.47.5](https://github.com/onesoft-sudo/sudobot/compare/v4.47.4...v4.47.5) (2023-01-11)
-
-
-### Bug Fixes
-
-* **deps:** security issues ([aa5827d](https://github.com/onesoft-sudo/sudobot/commit/aa5827dc748f8b46c979e51195485d5b6a70e78f))
 
 
 
