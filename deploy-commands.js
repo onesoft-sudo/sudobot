@@ -119,6 +119,15 @@ let commands = [
 		.addStringOption(option =>
 			option.setName('word_or_token').setDescription('The word/token to search').setRequired(true)	
 		),
+
+	new SlashCommandBuilder().setName('profileinfo').setDescription('Manage your profile information in the bot')
+		.addSubcommand(subcmd => 
+			subcmd.setName('set').setDescription('Set or edit your profile information')
+				.addStringOption(option => option.setName('gender').setDescription('Your gender').setChoices(...(['Male', 'Female', 'Other', "None"].map(op => ({ name: op, value: op })))))
+				.addStringOption(option => option.setName('pronoun').setDescription('Your pronoun').setChoices(...(['He/Him', 'She/Her', 'They/Them', "Any Pronoun", "Other Pronouns", "None"].map(op => ({ name: op, value: op.replace(/ /g, '_').replace(/\//g, '__') })))))
+				.addIntegerOption(option => option.setName('age').setDescription('Your age, put \'0\' to remove your age from the database'))
+		),
+
 	new SlashCommandBuilder().setName('stats').setDescription('Show the server statistics'),
 	new SlashCommandBuilder().setName('lookup').setDescription('Lookup something')
 		.addSubcommand(subcommand => subcommand.setName("user").setDescription("User lookup")

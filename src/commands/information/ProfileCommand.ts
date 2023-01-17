@@ -26,6 +26,7 @@ import MessageEmbed from '../../client/MessageEmbed';
 import getMember from '../../utils/getMember';
 import { timeSince } from '../../utils/util';
 import { roleMention } from '@discordjs/builders';
+import Profile from '../../models/Profile';
 
 export const getUserBadges = (user: User) => {
     const { FLAGS } = UserFlags;
@@ -94,6 +95,8 @@ export default class ProfileCommand extends BaseCommand {
                 member = <GuildMember> await options.options.getMember('user');
             else
                 member = <GuildMember> msg.member!;
+            
+            await msg.deferReply();
         }
         else if (msg instanceof Message && !options.isInteraction) {
             if (options.normalArgs[0]) {
@@ -179,7 +182,7 @@ export default class ProfileCommand extends BaseCommand {
         });
         const limit = 10;
         const roles = (allRoles.length > limit ? allRoles.slice(0, limit) : allRoles).reduce((acc, value) => `${acc} ${roleMention(value.id)}`, '')!.trim()!;
-        const fields = [
+        const fields: { name: string, value: string, inline?: boolean }[] = [
             {
                 name: "Nickname",
                 value: `${member!.nickname?.replace(/\*\<\>\@\_\~\|/g, '') ?? '*Nickname not set*'}`
@@ -203,7 +206,7 @@ export default class ProfileCommand extends BaseCommand {
             {
                 name: 'Roles',
                 value: roles === '' ? '*No roles assigned*' : `${roles} ${allRoles.length > limit ? `**+ ${allRoles.length - limit} More**` : ''}`
-            }
+            },
         ];
 
         const badges = getUserBadges(member!.user);
@@ -213,6 +216,37 @@ export default class ProfileCommand extends BaseCommand {
                 name: 'Badges',
                 value: badges.join("\n")
             });
+        }
+
+        const profile = await Profile.findOne({
+            user_id: member!.user.id,
+            guild_id: msg.guildId!
+        });
+
+        if (profile) {
+            if (profile.gender) {
+                fields.push({
+                    name: "Gender",
+                    inline: true,
+                    value: profile.gender
+                });
+            }
+
+            if (profile.pronoun) {
+                fields.push({
+                    name: "Pronoun",
+                    inline: true,
+                    value: profile.pronoun.replace(/__/g, '/').replace(/_/g, ' ')
+                });
+            }
+
+            if (profile.age) {
+                fields.push({
+                    name: "Age",
+                    inline: true,
+                    value: profile.age + ''
+                });
+            }
         }
 
         let banner: string | undefined;
@@ -230,7 +264,7 @@ export default class ProfileCommand extends BaseCommand {
         let percentage = <string> getPermissionLevel(member!, true);
         percentage = percentage.includes('.') ? percentage.substring(0, percentage.indexOf('.')) : percentage;
 
-        await msg.reply({
+        await this.deferReply(msg, {
             embeds: [
                 new MessageEmbed({
                     image: {
