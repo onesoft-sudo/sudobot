@@ -23,7 +23,7 @@ import Profile from "../../models/Profile";
 import InteractionOptions from "../../types/InteractionOptions";
 import BaseCommand from "../../utils/structures/BaseCommand";
 
-export default class LookupCommand extends BaseCommand {
+export default class ProfileInfoSetCommand extends BaseCommand {
     supportsInteractions: boolean = true;
     supportsLegacy: boolean = false;
 
@@ -35,10 +35,22 @@ export default class LookupCommand extends BaseCommand {
         const age = interaction.options.getInteger('age');
         const pronoun = interaction.options.getString('pronoun');
         const gender = interaction.options.getString('gender');
+        const zodiac = interaction.options.getString('zodiac');
+        const continent = interaction.options.getString('continent');
+        const job = interaction.options.getString('job');
 
-        if (!age && !pronoun && !gender) {
+        if (!age && !pronoun && !gender && !zodiac && !continent && !job) {
             await interaction.reply({
                 content: 'Please specify at least one of the options to set.',
+                ephemeral: true
+            });
+
+            return;
+        }
+
+        if (job && job.length > 250) {
+            await interaction.reply({
+                content: 'Your job information must contain less than 250 characters!',
                 ephemeral: true
             });
 
@@ -51,6 +63,9 @@ export default class LookupCommand extends BaseCommand {
             age?: number | null | undefined,
             pronoun?: string | null | undefined,
             gender?: string | null | undefined,
+            zodiac?: string | null | undefined,
+            continent?: string | null | undefined,
+            job?: string | null | undefined,
             updatedAt: Date
         } = {
             updatedAt: new Date()
@@ -75,6 +90,27 @@ export default class LookupCommand extends BaseCommand {
         }
         else if (pronoun) {
             object.pronoun = pronoun;
+        }
+
+        if (zodiac === 'None') {
+            object.zodiac = null;
+        }
+        else if (zodiac) {
+            object.zodiac = zodiac;
+        }
+
+        if (continent === 'None') {
+            object.continent = null;
+        }
+        else if (continent) {
+            object.continent = continent;
+        }
+
+        if (job && job.toLowerCase() === 'none') {
+            object.job = null;
+        }
+        else if (job) {
+            object.job = job;
         }
 
         await Profile.findOneAndUpdate({

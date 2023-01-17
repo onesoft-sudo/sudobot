@@ -22,7 +22,7 @@ import Client from "../../client/Client";
 import InteractionOptions from "../../types/InteractionOptions";
 import BaseCommand from "../../utils/structures/BaseCommand";
 
-export default class LookupCommand extends BaseCommand {
+export default class ProfileInfoCommand extends BaseCommand {
     supportsInteractions: boolean = true;
     supportsLegacy: boolean = false;
 

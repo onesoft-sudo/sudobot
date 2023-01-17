@@ -23,7 +23,12 @@ export interface IProfile extends Document {
     user_id: string;
     gender?: string;
     pronoun?: string;
+    hobbies?: string;
+    bio?: string;
     age?: number;
+    continent?: string;
+    job?: string;
+    zodiac?: string;
     guild_id: string;
     createdAt: Date;
     updatedAt: Date;
@@ -37,6 +42,11 @@ const schema = new Schema({
     gender: String,
     pronoun: String,
     age: Number,
+    bio: String,
+    hobbies: String,
+    continent: String,
+    job: String,
+    zodiac: String,
     guild_id: {
         type: String,
         required: true

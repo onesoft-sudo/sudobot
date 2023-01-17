@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, Guild, GuildMember, Message, Permissions, User, UserFlags } from 'discord.js';
+import { CommandInteraction, Guild, GuildMember, Message, Permissions, User, UserFlags, Util } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -247,6 +247,37 @@ export default class ProfileCommand extends BaseCommand {
                     value: profile.age + ''
                 });
             }
+
+            if (profile.hobbies) {
+                fields.push({
+                    name: "Hobbies",
+                    value: profile.hobbies
+                });
+            }
+
+            if (profile.continent) {
+                fields.push({
+                    name: "Continent",
+                    inline: true,
+                    value: profile.continent.replace(/_/g, ' ')
+                });
+            }
+
+            if (profile.zodiac) {
+                fields.push({
+                    name: "Zodiac Sign",
+                    inline: true,
+                    value: `:${profile.zodiac.toLowerCase()}: ${profile.zodiac}`
+                });
+            }
+
+            if (profile.job) {
+                fields.push({
+                    name: "Job/Occupation",
+                    inline: true,
+                    value: Util.escapeMarkdown(profile.job)
+                });
+            }
         }
 
         let banner: string | undefined;
@@ -269,7 +300,8 @@ export default class ProfileCommand extends BaseCommand {
                 new MessageEmbed({
                     image: {
                         url: banner,
-                    }
+                    },
+                    description: profile?.bio ?? undefined
                 })
                 .setColor(member!.user!.hexAccentColor ? member!.user!.hexAccentColor! : '#007bff')
                 .setAuthor({

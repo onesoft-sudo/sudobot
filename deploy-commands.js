@@ -124,8 +124,44 @@ let commands = [
 		.addSubcommand(subcmd => 
 			subcmd.setName('set').setDescription('Set or edit your profile information')
 				.addStringOption(option => option.setName('gender').setDescription('Your gender').setChoices(...(['Male', 'Female', 'Other', "None"].map(op => ({ name: op, value: op })))))
+				.addStringOption(option => option.setName('zodiac').setDescription('Your zodiac sign').setChoices(...([
+					"None",
+					"Taurus",
+					"Gemini",
+					"Aries",
+					"Cancer",
+					"Leo",
+					"Virgo",
+					"Libra",
+					"Scorpius",
+					"Sagittarius",
+					"Capricorn",
+					"Aquarius",
+					"Pisces"
+				].map(op => ({ name: op, value: op })))))
+				.addStringOption(option => option.setName('continent').setDescription('Your continent').setChoices(...([
+					"None",
+					"Asia",
+					"Europe",
+					"North America",
+					"South America",
+					"Africa",
+					"Oceania",
+					"Australia",
+				].map(op => ({ name: op, value: op.replace(/ /g, '_') })))))
+				.addStringOption(option => option.setName('job').setDescription('Your job or occupation, type \'none\' to remove this field'))
 				.addStringOption(option => option.setName('pronoun').setDescription('Your pronoun').setChoices(...(['He/Him', 'She/Her', 'They/Them', "Any Pronoun", "Other Pronouns", "None"].map(op => ({ name: op, value: op.replace(/ /g, '_').replace(/\//g, '__') })))))
 				.addIntegerOption(option => option.setName('age').setDescription('Your age, put \'0\' to remove your age from the database'))
+		)
+		.addSubcommand(subcmd => 
+			subcmd.setName('bio').setDescription('Set or edit your bio')
+				.addStringOption(option => option.setName('bio').setDescription("The bio, must be less than 2000 in length!"))
+				.addBooleanOption(option => option.setName('remove').setDescription("If true, the bot will remove your bio. Default is false"))
+		)
+		.addSubcommand(subcmd => 
+			subcmd.setName('hobbies').setDescription('Set or edit your hobbes')
+				.addStringOption(option => option.setName('hobbies').setDescription("Your hobbies, must be less than 1000 in length!"))
+				.addBooleanOption(option => option.setName('remove').setDescription("If true, the bot will remove your hobby information. Default is false"))
 		),
 
 	new SlashCommandBuilder().setName('stats').setDescription('Show the server statistics'),
