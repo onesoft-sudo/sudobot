@@ -149,8 +149,6 @@ export default class BanCommand extends BaseCommand {
 		}
 		
         try {
-            await msg.guild?.bans.create(user, { ...banOptions, reason: `[BAN] ${banOptions.reason ?? '**No reason provided**'}` });
-
             const { id } = await Punishment.create({
                 type: PunishmentType.BAN,
                 user_id: user.id,
@@ -161,28 +159,35 @@ export default class BanCommand extends BaseCommand {
                 createdAt: new Date()
             });
 
-            user.send({
-                embeds: [
-                    new MessageEmbed({
-                        author: {
-                            name: `You have been banned in ${msg.guild!.name}`,
-                            iconURL: msg.guild!.iconURL() ?? undefined
-                        },
-                        color: 0xf14a60,
-                        description: generateInfractionDescription(client, msg.guildId!, 'ban_message'),
-                        fields: [
-                            {
-                                name: 'Reason',
-                                value: banOptions.reason === undefined ? "*No reason provided*" : banOptions.reason
+            try {
+                await user.send({
+                    embeds: [
+                        new MessageEmbed({
+                            author: {
+                                name: `You have been banned in ${msg.guild!.name}`,
+                                iconURL: msg.guild!.iconURL() ?? undefined
                             },
-                            {
-                                name: 'Infraction ID',
-                                value: id
-                            }
-                        ]
-                    })
-                ]
-            }).catch(console.error);
+                            color: 0xf14a60,
+                            description: generateInfractionDescription(client, msg.guildId!, 'ban_message'),
+                            fields: [
+                                {
+                                    name: 'Reason',
+                                    value: banOptions.reason === undefined ? "*No reason provided*" : banOptions.reason
+                                },
+                                {
+                                    name: 'Infraction ID',
+                                    value: id
+                                }
+                            ]
+                        })
+                    ]
+                });
+            }
+            catch (e) {
+                console.log(e);
+            }
+
+            await msg.guild?.bans.create(user, { ...banOptions, reason: `[BAN] ${banOptions.reason ?? '**No reason provided**'}` });
 
             client.logger.onGuildBanAdd({
                 guild: msg.guild!,

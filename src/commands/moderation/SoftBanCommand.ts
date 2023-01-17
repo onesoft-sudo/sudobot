@@ -184,7 +184,7 @@ export default class SoftBanCommand extends BaseCommand {
                 createdAt: new Date()
             });
 
-        await client.logger.onSoftban(banOptions, msg.guild!, user, punishment);
+            await client.logger.onSoftban(banOptions, msg.guild!, user, punishment);
 
             await reply!.edit({
                 embeds: [

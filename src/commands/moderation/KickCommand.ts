@@ -111,8 +111,6 @@ export default class KickCommand extends BaseCommand {
         	
             if (!user.kickable || shouldNotModerate(client, user)) 
                 throw new Error('User not kickable');
-            
-            await user.kick(reason);
 
             const { id } = await Punishment.create({
                 type: PunishmentType.KICK,
@@ -146,6 +144,8 @@ export default class KickCommand extends BaseCommand {
             catch (e) {
                 console.log(e);
             }
+            
+            await user.kick(reason);
 
             await msg.reply({
                 embeds: [
