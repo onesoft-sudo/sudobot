@@ -1,3 +1,12 @@
+## [4.54.1](https://github.com/onesoft-sudo/sudobot/compare/v4.54.0...v4.54.1) (2023-01-18)
+
+
+### Bug Fixes
+
+* infraction issues ([df87ea7](https://github.com/onesoft-sudo/sudobot/commit/df87ea7c0843e9ce6bbdf683c89d7940abc4ff0f))
+
+
+
 # [4.54.0](https://github.com/onesoft-sudo/sudobot/compare/v4.53.0...v4.54.0) (2023-01-18)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * improved profile commands ([c934fdb](https://github.com/onesoft-sudo/sudobot/commit/c934fdb89b423b311f7fa655fb06e7ef0fa8f734))
-
-
-
-# [4.51.0](https://github.com/onesoft-sudo/sudobot/compare/v4.50.0...v4.51.0) (2023-01-16)
-
-
-### Features
-
-* add fakeban command ([bd8b64a](https://github.com/onesoft-sudo/sudobot/commit/bd8b64a5393705a299b6660699cc10e41b970803))
 
 
 
