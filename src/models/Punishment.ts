@@ -74,15 +74,18 @@ const schema = new Schema({
 });
 
 schema.pre('save', function(next) {
-    Counter.findByIdAndUpdate({ _id: 'punishments_id' }, { $inc: { seq: 1 } }, { upsert: true, new: true }, (error, counter) => {
-        if(error)
-            return next(error);
+    if (this.numericId === null || this.numericId === undefined || this.numericId === 0)
+        Counter.findByIdAndUpdate({ _id: 'punishments_id' }, { $inc: { seq: 1 } }, { upsert: true, new: true }, (error, counter) => {
+            if(error)
+                return next(error);
 
-        if (counter)
-            this.numericId = counter.seq;
+            if (counter && (this.numericId === null || this.numericId === undefined || this.numericId === 0))
+                this.numericId = counter.seq;
 
+            next();
+        });
+    else
         next();
-    });
 });
 
 export default model('Punishment', schema);

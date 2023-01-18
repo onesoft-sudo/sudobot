@@ -42,6 +42,11 @@ export default class InfractionViewCommand extends BaseCommand {
 
         const id = options.isInteraction ? options.options.getInteger('id', true) : options.args[0];
 
+        if (!/^\d+$/.test(id.toString())) {
+            await message.reply(":x: Invalid ID given.");
+            return;
+        }   
+
         if (message instanceof CommandInteraction)
             await message.deferReply();
 

@@ -49,6 +49,11 @@ export default class InfractionReasonUpdateCommand extends BaseCommand {
         const reason = options.isInteraction ? options.options.getString('reason', true) : options.args.join(' ');
         const silent = options.isInteraction ? options.options.getBoolean('silent') ?? false : false;
 
+        if (!/^\d+$/.test(id!.toString())) {
+            await message.reply(":x: Invalid ID given.");
+            return;
+        }   
+
         if (message instanceof CommandInteraction)
             await message.deferReply();
 
