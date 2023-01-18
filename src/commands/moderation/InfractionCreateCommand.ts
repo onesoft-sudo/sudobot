@@ -73,7 +73,7 @@ export default class InfractionCreateCommand extends BaseCommand {
                         name: user?.tag ?? `Unknown (ID: ${punishment.user_id})`,
                         iconURL: user?.displayAvatarURL()
                     },
-                    title: 'Created Infraction: ' + punishment.id,
+                    title: 'Created Infraction: ' + punishment.numericId,
                     fields: [
                         {
                             name: 'Type',

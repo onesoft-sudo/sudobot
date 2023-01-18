@@ -70,7 +70,7 @@ export async function warn(client: DiscordClient, user: User, reason: string | u
 	                    },
 	                    {
 	                        name: 'Infraction ID',
-	                        value: warning.id
+	                        value: warning.numericId + ''
 	                    }
 	                ]
 	            })
@@ -83,7 +83,7 @@ export async function warn(client: DiscordClient, user: User, reason: string | u
     	DMed = false;	
     }
     
-    await client.logger.onMemberWarn(user, msg.guild!.id, warning.get('id'), reason, (warned_by ?? msg.member!.user) as User);
+    await client.logger.onMemberWarn(user, msg.guild!.id, warning.numericId!.toString(), reason, (warned_by ?? msg.member!.user) as User);
 
     return { warning, strike, DMed };
 }
@@ -193,7 +193,7 @@ export default class WarnCommand extends BaseCommand {
                         },
                         {
                             name: "Infraction ID",
-                            value: warning.get('id') + ''
+                            value: warning.get('numericId') + ''
                         }
                     ])
                 ]

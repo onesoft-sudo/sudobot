@@ -53,7 +53,7 @@ export default class ModerationHistoryGenerator {
         let i = 1;
 
         for await (const punishment of punishments) {
-            await tmpFile.appendFile(`${i}. ${punishment.id} - ${convert(punishment.type as PunishmentType)} - ${punishment.reason ?? '*No Reason Provided*'} - ${punishment.createdAt} (${formatDistanceToNowStrict(punishment.createdAt, { addSuffix: true })})\n`);
+            await tmpFile.appendFile(`${i}. ${punishment.numericId} - ${convert(punishment.type as PunishmentType)} - ${punishment.reason ?? '*No Reason Provided*'} - ${punishment.createdAt} (${formatDistanceToNowStrict(punishment.createdAt, { addSuffix: true })})\n`);
             i++;
         }
     

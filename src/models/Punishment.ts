@@ -18,6 +18,7 @@
 */
 
 import { Schema, model, Document } from 'mongoose';
+import Counter from './Counter';
 
 export interface IPunishment extends Document {
     user_id: string
@@ -25,12 +26,17 @@ export interface IPunishment extends Document {
     mod_tag: string,
     guild_id: string;
     reason?: string;
-    type: string
+    type: string;
+    numericId?: number;
     meta?: object;
     createdAt: Date;
 }
 
 const schema = new Schema({
+    numericId: {
+        type: Number,
+        unique: true
+    },
     user_id: {
         type: String,
         required: true,
@@ -65,6 +71,18 @@ const schema = new Schema({
         required: true,
         default: () => new Date()
     }
+});
+
+schema.pre('save', function(next) {
+    Counter.findByIdAndUpdate({ _id: 'punishments_id' }, { $inc: { seq: 1 } }, { upsert: true, new: true }, (error, counter) => {
+        if(error)
+            return next(error);
+
+        if (counter)
+            this.numericId = counter.seq;
+
+        next();
+    });
 });
 
 export default model('Punishment', schema);

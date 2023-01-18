@@ -220,7 +220,7 @@ export default class Logger extends Service {
         });
     }
 
-    async onGuildBanAdd(ban: GuildBan, _executor?: User, id?: string) {
+    async onGuildBanAdd(ban: GuildBan, _executor?: User, id?: string | number) {
         const auditLog = (await ban.guild.fetchAuditLogs({
             limit: 1,
             type: 'MEMBER_BAN_ADD',
@@ -253,7 +253,7 @@ export default class Logger extends Service {
                     }, 
                     {
                         name: 'Infraction ID',
-                        value: id ?? '*Unavailable*'
+                        value: id?.toString() ?? '*Unavailable*'
                     })
                     .setFooter({
                         text: "Banned",
@@ -307,6 +307,10 @@ export default class Logger extends Service {
                 .addField('Reason', r)
                 .addField('Softbanned by', `${model.mod_tag} (${model.mod_id})`)
                 .addField('User ID', user.id)
+                .addFields({
+                    name: 'Case ID',
+                    value: model.numericId + ''
+                })
                 .setFooter({
                     text: "Softbanned",
                 })
@@ -331,6 +335,10 @@ export default class Logger extends Service {
                 .addField('Banned by', `${model.mod_tag} (${model.mod_id})`)
                 .addField('User ID', user.id)
                 .addField('Duration', ms((model.meta as any).time))
+                .addFields({
+                    name: 'Case ID',
+                    value: model.numericId + ''
+                })
                 .setFooter({
                     text: "Temporarily banned",
                 })

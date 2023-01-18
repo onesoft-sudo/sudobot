@@ -149,7 +149,7 @@ export default class BanCommand extends BaseCommand {
 		}
 		
         try {
-            const { id } = await Punishment.create({
+            const { numericId: id } = await Punishment.create({
                 type: PunishmentType.BAN,
                 user_id: user.id,
                 guild_id: msg.guild!.id,
@@ -176,7 +176,7 @@ export default class BanCommand extends BaseCommand {
                                 },
                                 {
                                     name: 'Infraction ID',
-                                    value: id
+                                    value: id + ''
                                 }
                             ]
                         })
@@ -218,7 +218,7 @@ export default class BanCommand extends BaseCommand {
                         },
                         {
                             name: 'Infraction ID',
-                            value: id
+                            value: id + ''
                         }
                     ])
                 ]

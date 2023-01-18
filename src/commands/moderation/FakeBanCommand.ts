@@ -17,17 +17,14 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Permissions, BanOptions, CommandInteraction, Message, User, GuildBan } from 'discord.js';
+import { BanOptions, CommandInteraction, Message, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import getUser from '../../utils/getUser';
-import Punishment from '../../models/Punishment';
-import PunishmentType from '../../types/PunishmentType';
 import { shouldNotModerate, hasPermission, generateInfractionDescription } from '../../utils/util';
-import mongoose from 'mongoose';
 
 export default class FakeBanCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -148,7 +145,7 @@ export default class FakeBanCommand extends BaseCommand {
 		}
 		
         try {
-            const id = (new mongoose.Types.ObjectId()).toString();
+            const id = Math.round(Math.random() * 10000);
 
             user.send({
                 embeds: [
@@ -166,18 +163,12 @@ export default class FakeBanCommand extends BaseCommand {
                             },
                             {
                                 name: 'Infraction ID',
-                                value: id
+                                value: id + ''
                             }
                         ]
                     })
                 ]
             }).catch(console.error);
-
-            client.logger.onGuildBanAdd({
-                guild: msg.guild!,
-                user,
-                reason: banOptions.reason === undefined ? "*No reason provided*" : banOptions.reason
-            } as GuildBan, msg.member!.user as User, id).catch(console.error);
 
             await msg.reply({
                 embeds: [
@@ -202,7 +193,7 @@ export default class FakeBanCommand extends BaseCommand {
                         },
                         {
                             name: 'Infraction ID',
-                            value: id
+                            value: id + ''
                         }
                     ])
                 ]

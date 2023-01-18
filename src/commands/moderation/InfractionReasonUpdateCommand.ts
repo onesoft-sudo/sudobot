@@ -19,7 +19,6 @@
 
 import { formatDistanceToNowStrict } from "date-fns";
 import { Message, CacheType, CommandInteraction, User, Util } from "discord.js";
-import { isValidObjectId } from "mongoose";
 import Client from "../../client/Client";
 import MessageEmbed from "../../client/MessageEmbed";
 import Punishment from "../../models/Punishment";
@@ -46,20 +45,15 @@ export default class InfractionReasonUpdateCommand extends BaseCommand {
             return;
         }
 
-        const id = options.isInteraction ? options.options.getString('id') : options.args.shift();
+        const id = options.isInteraction ? options.options.getInteger('id', true) : options.args.shift();
         const reason = options.isInteraction ? options.options.getString('reason', true) : options.args.join(' ');
         const silent = options.isInteraction ? options.options.getBoolean('silent') ?? false : false;
-
-        if (!isValidObjectId(id)) {
-            await message.reply(":x: That's not a valid ID! It must comply with mongo object IDs!");
-            return;
-        }
 
         if (message instanceof CommandInteraction)
             await message.deferReply();
 
         const punishment = await Punishment.findOne({
-            _id: id,
+            numericId: id,
             guild_id: message.guild!.id,
         });
 

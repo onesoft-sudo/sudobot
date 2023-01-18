@@ -70,7 +70,7 @@ export default class HistoryCommand extends BaseCommand {
         let str = '';
                 
         for (const row of data) {
-            str += `**Case ID**: \`${row.id}\`\n`;
+            str += `**Case ID**: \`${row.numericId}\`\n`;
             str += `**Type**: ${convert(row.type as PunishmentType)}\n`;
             str += `**Reason**: ${row.reason ? (row.reason.trim() === '' ? '*No reason provided*' : `\`\`\`${row.reason}\`\`\``) : '*No reason provided*'}\n`;
 
@@ -101,7 +101,7 @@ export default class HistoryCommand extends BaseCommand {
         let str = '';
 
         for (const row of data) {
-            str += `\`${row.id}\` | \`${convert(row.type as PunishmentType)}\` | <@${row.user_id}> | Moderated by <@${row.mod_id}> | ${formatDistanceToNowStrict(row.createdAt, { addSuffix: true })}\n`;
+            str += `\`${row.numericId}\` | \`${convert(row.type as PunishmentType)}\` | <@${row.user_id}> | Moderated by <@${row.mod_id}> | ${formatDistanceToNowStrict(row.createdAt, { addSuffix: true })}\n`;
         }
 
         return str;

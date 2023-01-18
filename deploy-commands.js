@@ -479,17 +479,17 @@ let commands = [
 	new SlashCommandBuilder().setName('infraction').setDescription('Manage infractions')
 		.addSubcommand(subcommand => 
 			subcommand.setName('view').setDescription("View information about an infraction")
-				.addStringOption(option => option.setName('id').setDescription("The infraction ID").setRequired(true))	
+				.addIntegerOption(option => option.setName('id').setDescription("The infraction ID").setRequired(true))	
 		)
 		.addSubcommand(subcommand => 
 			subcommand.setName('reasonupdate').setDescription("Update reason of an infraction")
-				.addStringOption(option => option.setName('id').setDescription("The infraction ID").setRequired(true))	
+				.addIntegerOption(option => option.setName('id').setDescription("The infraction ID").setRequired(true))	
 				.addStringOption(option => option.setName('reason').setDescription("New reason to set").setRequired(true))	
 				.addBooleanOption(option => option.setName('silent').setDescription("Specify if the bot should not let the user know about this"))	
 		)
 		.addSubcommand(subcommand => 
 			subcommand.setName('delete').setDescription("Delete an infraction")
-				.addStringOption(option => option.setName('id').setDescription("The infraction ID").setRequired(true))	
+				.addIntegerOption(option => option.setName('id').setDescription("The infraction ID").setRequired(true))	
 		)
 		.addSubcommand(subcommand => 
 			subcommand.setName('clear').setDescription("Clear infractions for a user")

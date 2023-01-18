@@ -18,7 +18,6 @@
 */
 
 import { Message } from "discord.js";
-import DiscordClient from "../client/Client";
 import Service from "../utils/structures/Service";
 
 export default class AutoResponder extends Service {
