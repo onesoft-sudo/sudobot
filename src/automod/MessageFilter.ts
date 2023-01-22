@@ -149,6 +149,9 @@ export default class MessageFilter {
         if (this.config.words_excluded.indexOf(msg.channel.id) !== -1 || this.config.words_excluded.indexOf((msg.channel as TextChannel).parent?.id!) !== -1) 
             return true;
 
+        console.log(this.config);
+        console.log(this.config.tokens);
+
         for (let token of this.config.tokens) {
             if (msg.content.toLowerCase().includes(token.toLowerCase())) {
                 return token;
@@ -262,7 +265,7 @@ export default class MessageFilter {
     }
 
     async start(msg: Message) {
-        this.load();
+        await this.load();
 
         if (this.config.off) {
             return;
