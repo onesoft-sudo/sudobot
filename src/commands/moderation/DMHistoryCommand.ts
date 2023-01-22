@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Message, CacheType, CommandInteraction, User, Util } from "discord.js";
+import { Message, CacheType, CommandInteraction, User } from "discord.js";
 import DiscordClient from "../../client/Client";
 import CommandOptions from "../../types/CommandOptions";
 import InteractionOptions from "../../types/InteractionOptions";

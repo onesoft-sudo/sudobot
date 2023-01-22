@@ -22,6 +22,8 @@ import DiscordClient from '../../client/Client';
 import { runTimeouts } from '../../utils/setTimeout';
 import { LogLevel } from '../../services/DebugLogger';
 import { exit } from 'process';
+import Punishment from '../../models/Punishment';
+import Counter from '../../models/Counter';
 
 export default class ReadyEvent extends BaseEvent {
     constructor() {
@@ -52,6 +54,19 @@ export default class ReadyEvent extends BaseEvent {
             if (client.config.props[guild.id].invite_tracking?.enabled) {
                 client.inviteTracker.refreshInvites(guild).catch(console.error);
             }
+        }
+
+        if ((await Counter.count()) < 1) {
+            const lastPunishment = await Punishment.findOne({}, undefined, {
+                sort: {
+                    createdAt: -1 
+                }
+            });
+
+            await Counter.create({
+                _id: 'punishments_id',
+                seq: lastPunishment!.numericId
+            });
         }
     }
 }
