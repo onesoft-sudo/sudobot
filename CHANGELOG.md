@@ -1,3 +1,12 @@
+## [4.54.2](https://github.com/onesoft-sudo/sudobot/compare/v4.54.1...v4.54.2) (2023-01-22)
+
+
+### Bug Fixes
+
+* token filter mismatch ([20de768](https://github.com/onesoft-sudo/sudobot/commit/20de7685e7b108b1026f224b0e6b64ee2c90fef6))
+
+
+
 ## [4.54.1](https://github.com/onesoft-sudo/sudobot/compare/v4.54.0...v4.54.1) (2023-01-18)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * ban and kick DMs not delivering ([024c983](https://github.com/onesoft-sudo/sudobot/commit/024c983f611f6e24a0692a43e9dc0e9421ec1404))
-
-
-
-# [4.52.0](https://github.com/onesoft-sudo/sudobot/compare/v4.51.0...v4.52.0) (2023-01-17)
-
-
-### Features
-
-* improved profile commands ([c934fdb](https://github.com/onesoft-sudo/sudobot/commit/c934fdb89b423b311f7fa655fb06e7ef0fa8f734))
 
 
 
