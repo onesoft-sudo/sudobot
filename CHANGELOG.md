@@ -1,3 +1,12 @@
+# [4.58.0](https://github.com/onesoft-sudo/sudobot/compare/v4.57.0...v4.58.0) (2023-01-23)
+
+
+### Features
+
+* add support of rnavigating to replied message reference ([7ebf6be](https://github.com/onesoft-sudo/sudobot/commit/7ebf6be056d2e91a4c094629e58a79cf5fd02a33))
+
+
+
 # [4.57.0](https://github.com/onesoft-sudo/sudobot/compare/v4.56.3...v4.57.0) (2023-01-23)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * command name ([8ae34fc](https://github.com/onesoft-sudo/sudobot/commit/8ae34fc63ae032f489e4745b6b1870619c36087a))
-
-
-
-# [4.56.0](https://github.com/onesoft-sudo/sudobot/compare/v4.55.0...v4.56.0) (2023-01-23)
-
-
-### Features
-
-* update slash commands ([00430e0](https://github.com/onesoft-sudo/sudobot/commit/00430e0fbaee6c9737ae2bd04a20428cb89c390d))
 
 
 
