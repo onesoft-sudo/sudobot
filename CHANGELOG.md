@@ -1,3 +1,12 @@
+# [4.57.0](https://github.com/onesoft-sudo/sudobot/compare/v4.56.3...v4.57.0) (2023-01-23)
+
+
+### Features
+
+* add support of rnavigating to replied message reference ([ade210e](https://github.com/onesoft-sudo/sudobot/commit/ade210e1b430eac9fedd9092d987a1c496de7ac1))
+
+
+
 ## [4.56.3](https://github.com/onesoft-sudo/sudobot/compare/v4.56.2...v4.56.3) (2023-01-23)
 
 
@@ -31,20 +40,6 @@
 ### Features
 
 * update slash commands ([00430e0](https://github.com/onesoft-sudo/sudobot/commit/00430e0fbaee6c9737ae2bd04a20428cb89c390d))
-
-
-
-# [4.55.0](https://github.com/onesoft-sudo/sudobot/compare/v4.54.2...v4.55.0) (2023-01-23)
-
-
-### Bug Fixes
-
-* typo ([e2bbc3d](https://github.com/onesoft-sudo/sudobot/commit/e2bbc3d460c072711f5d09e18f0322038d695cb9))
-
-
-### Features
-
-* add languages spoken field in the user profiles ([128e653](https://github.com/onesoft-sudo/sudobot/commit/128e6538cff68697bcbccef09174ce6c6439db26))
 
 
 
