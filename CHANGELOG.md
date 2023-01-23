@@ -1,3 +1,12 @@
+## [4.56.3](https://github.com/onesoft-sudo/sudobot/compare/v4.56.2...v4.56.3) (2023-01-23)
+
+
+### Bug Fixes
+
+* token filter not working case insensitively ([0097784](https://github.com/onesoft-sudo/sudobot/commit/0097784ff66f665e071649abed16d116aa475bbd))
+
+
+
 ## [4.56.2](https://github.com/onesoft-sudo/sudobot/compare/v4.56.1...v4.56.2) (2023-01-23)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * add languages spoken field in the user profiles ([128e653](https://github.com/onesoft-sudo/sudobot/commit/128e6538cff68697bcbccef09174ce6c6439db26))
-
-
-
-## [4.54.2](https://github.com/onesoft-sudo/sudobot/compare/v4.54.1...v4.54.2) (2023-01-22)
-
-
-### Bug Fixes
-
-* token filter mismatch ([20de768](https://github.com/onesoft-sudo/sudobot/commit/20de7685e7b108b1026f224b0e6b64ee2c90fef6))
 
 
 
