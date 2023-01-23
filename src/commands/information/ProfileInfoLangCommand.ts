@@ -28,7 +28,7 @@ export default class ProfileInfoHobbiesCommand extends BaseCommand {
     supportsLegacy: boolean = false;
 
     constructor() {
-        super("profileinfo__lang", "information", []);
+        super("profileinfo__languages", "information", []);
     }
 
     async run(client: Client, interaction: CommandInteraction, options: InteractionOptions): Promise<void> {
