@@ -1,3 +1,12 @@
+## [4.56.2](https://github.com/onesoft-sudo/sudobot/compare/v4.56.1...v4.56.2) (2023-01-23)
+
+
+### Bug Fixes
+
+* double creation of infraction logs ([f912b98](https://github.com/onesoft-sudo/sudobot/commit/f912b984d5c0ef3a70983fc09910d27d23ceecc8))
+
+
+
 ## [4.56.1](https://github.com/onesoft-sudo/sudobot/compare/v4.56.0...v4.56.1) (2023-01-23)
 
 
@@ -36,15 +45,6 @@
 ### Bug Fixes
 
 * token filter mismatch ([20de768](https://github.com/onesoft-sudo/sudobot/commit/20de7685e7b108b1026f224b0e6b64ee2c90fef6))
-
-
-
-## [4.54.1](https://github.com/onesoft-sudo/sudobot/compare/v4.54.0...v4.54.1) (2023-01-18)
-
-
-### Bug Fixes
-
-* infraction issues ([df87ea7](https://github.com/onesoft-sudo/sudobot/commit/df87ea7c0843e9ce6bbdf683c89d7940abc4ff0f))
 
 
 
