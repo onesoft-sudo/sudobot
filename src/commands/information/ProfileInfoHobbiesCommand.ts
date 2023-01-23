@@ -37,7 +37,7 @@ export default class ProfileInfoHobbiesCommand extends BaseCommand {
 
         if (!hobbies && !remove) {
             await interaction.reply({
-                content: 'Please specify at either the hobbies or the removal option if you want to remove your hobbiy information.',
+                content: 'Please specify at either the hobbies or the removal option if you want to remove your hobby information.',
                 ephemeral: true
             });
 
