@@ -1,3 +1,12 @@
+# [4.56.0](https://github.com/onesoft-sudo/sudobot/compare/v4.55.0...v4.56.0) (2023-01-23)
+
+
+### Features
+
+* update slash commands ([00430e0](https://github.com/onesoft-sudo/sudobot/commit/00430e0fbaee6c9737ae2bd04a20428cb89c390d))
+
+
+
 # [4.55.0](https://github.com/onesoft-sudo/sudobot/compare/v4.54.2...v4.55.0) (2023-01-23)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * auto-increment punishment case IDs ([5df5aa4](https://github.com/onesoft-sudo/sudobot/commit/5df5aa4e9826f48aaeab862fdd92dff41dd02ed6))
-
-
-
-# [4.53.0](https://github.com/onesoft-sudo/sudobot/compare/v4.52.1...v4.53.0) (2023-01-17)
-
-
-### Features
-
-* add zodiac, continent, bio and job info support in profile command ([b7d4d12](https://github.com/onesoft-sudo/sudobot/commit/b7d4d12f21a5cf5b99e10642abe5e1be5b3717b7))
 
 
 
