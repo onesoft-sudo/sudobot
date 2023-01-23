@@ -1,3 +1,17 @@
+# [4.55.0](https://github.com/onesoft-sudo/sudobot/compare/v4.54.2...v4.55.0) (2023-01-23)
+
+
+### Bug Fixes
+
+* typo ([e2bbc3d](https://github.com/onesoft-sudo/sudobot/commit/e2bbc3d460c072711f5d09e18f0322038d695cb9))
+
+
+### Features
+
+* add languages spoken field in the user profiles ([128e653](https://github.com/onesoft-sudo/sudobot/commit/128e6538cff68697bcbccef09174ce6c6439db26))
+
+
+
 ## [4.54.2](https://github.com/onesoft-sudo/sudobot/compare/v4.54.1...v4.54.2) (2023-01-22)
 
 
@@ -31,15 +45,6 @@
 ### Features
 
 * add zodiac, continent, bio and job info support in profile command ([b7d4d12](https://github.com/onesoft-sudo/sudobot/commit/b7d4d12f21a5cf5b99e10642abe5e1be5b3717b7))
-
-
-
-## [4.52.1](https://github.com/onesoft-sudo/sudobot/compare/v4.52.0...v4.52.1) (2023-01-17)
-
-
-### Bug Fixes
-
-* ban and kick DMs not delivering ([024c983](https://github.com/onesoft-sudo/sudobot/commit/024c983f611f6e24a0692a43e9dc0e9421ec1404))
 
 
 
