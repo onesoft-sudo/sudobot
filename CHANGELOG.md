@@ -1,3 +1,12 @@
+## [4.56.1](https://github.com/onesoft-sudo/sudobot/compare/v4.56.0...v4.56.1) (2023-01-23)
+
+
+### Bug Fixes
+
+* command name ([8ae34fc](https://github.com/onesoft-sudo/sudobot/commit/8ae34fc63ae032f489e4745b6b1870619c36087a))
+
+
+
 # [4.56.0](https://github.com/onesoft-sudo/sudobot/compare/v4.55.0...v4.56.0) (2023-01-23)
 
 
@@ -36,15 +45,6 @@
 ### Bug Fixes
 
 * infraction issues ([df87ea7](https://github.com/onesoft-sudo/sudobot/commit/df87ea7c0843e9ce6bbdf683c89d7940abc4ff0f))
-
-
-
-# [4.54.0](https://github.com/onesoft-sudo/sudobot/compare/v4.53.0...v4.54.0) (2023-01-18)
-
-
-### Features
-
-* auto-increment punishment case IDs ([5df5aa4](https://github.com/onesoft-sudo/sudobot/commit/5df5aa4e9826f48aaeab862fdd92dff41dd02ed6))
 
 
 
