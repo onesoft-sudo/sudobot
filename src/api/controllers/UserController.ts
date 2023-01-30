@@ -28,6 +28,7 @@ import { NextFunction, Response as ExpressResponse } from "express";
 import ValidatorError from "../middleware/ValidatorError";
 import RequireAuth from "../middleware/RequireAuth";
 import { User as DiscordUser } from "discord.js";
+import Response from "../Response";
 
 function RequireAdmin(request: Request, response: ExpressResponse, next: NextFunction) {
     if (!request.user?.isAdmin) {
@@ -144,11 +145,11 @@ export default class UserController extends Controller {
         const user = await User.findOne({ username });
 
         if (!user) {
-            return { error: "Username is incorrect." };
+            return new Response(400, { error: "Username is incorrect." });
         }
 
         if (!(await bcrypt.compare(password, user.password!))) {
-            return { error: "Password is incorrect." };
+            return new Response(401, { error: "Password is incorrect." });
         }
 
         let { token } = user;
