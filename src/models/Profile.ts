@@ -29,6 +29,7 @@ export interface IProfile extends Document {
     continent?: string;
     job?: string;
     zodiac?: string;
+    subjects?: string;
     guild_id: string;
     createdAt: Date;
     updatedAt: Date;
@@ -47,6 +48,7 @@ const schema = new Schema({
     continent: String,
     job: String,
     zodiac: String,
+    subjects: String,
     guild_id: {
         type: String,
         required: true
