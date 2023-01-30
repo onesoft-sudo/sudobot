@@ -278,6 +278,13 @@ export default class ProfileCommand extends BaseCommand {
                     value: Util.escapeMarkdown(profile.job)
                 });
             }
+
+            if (profile.languages) {
+                fields.push({
+                    name: "Languages Spoken",
+                    value: Util.escapeMarkdown(profile.languages)
+                });
+            }
         }
 
         let banner: string | undefined;

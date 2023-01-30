@@ -37,16 +37,18 @@ export default class GuildBanAddEvent extends BaseEvent {
 
             console.log(logs?.executor);
 
-            const { id } = await Punishment.create({
-                type: PunishmentType.BAN,
-                user_id: ban.user.id,
-                guild_id: ban.guild!.id,
-                mod_id: logs?.executor?.id ?? client.user!.id,
-                mod_tag: logs?.executor?.tag ?? 'Unknown',
-                reason: ban.reason ?? undefined
-            });
-            
-            await client.logger.onGuildBanAdd(ban, undefined, id);
+            if (logs?.executor?.id && logs?.executor?.id !== client.user!.id) {
+                const { id } = await Punishment.create({
+                    type: PunishmentType.BAN,
+                    user_id: ban.user.id,
+                    guild_id: ban.guild!.id,
+                    mod_id: logs?.executor?.id,
+                    mod_tag: logs?.executor?.tag ?? 'Unknown',
+                    reason: ban.reason ?? undefined
+                });
+
+                await client.logger.onGuildBanAdd(ban, undefined, id);
+            }
         }, 3500);
     }
 }

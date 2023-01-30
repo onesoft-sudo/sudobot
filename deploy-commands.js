@@ -167,6 +167,11 @@ let commands = [
 			subcmd.setName('hobbies').setDescription('Set or edit your hobbes')
 				.addStringOption(option => option.setName('hobbies').setDescription("Your hobbies, must be less than 1000 in length!"))
 				.addBooleanOption(option => option.setName('remove').setDescription("If true, the bot will remove your hobby information. Default is false"))
+		)
+		.addSubcommand(subcmd => 
+			subcmd.setName('languages').setDescription('Set or edit your languages that you speak')
+				.addStringOption(option => option.setName('languages').setDescription("Your languages, must be less than 1000 in length!"))
+				.addBooleanOption(option => option.setName('remove').setDescription("If true, the bot will remove your language information. Default is false"))
 		),
 
 	new SlashCommandBuilder().setName('stats').setDescription('Show the server statistics'),

@@ -28,25 +28,25 @@ export default class ProfileInfoHobbiesCommand extends BaseCommand {
     supportsLegacy: boolean = false;
 
     constructor() {
-        super("profileinfo__hobbies", "information", []);
+        super("profileinfo__languages", "information", []);
     }
 
     async run(client: Client, interaction: CommandInteraction, options: InteractionOptions): Promise<void> {
-        const hobbies = interaction.options.getString('hobbies');
+        const languages = interaction.options.getString('languages');
         const remove = interaction.options.getBoolean('remove');
 
-        if (!hobbies && !remove) {
+        if (!languages && !remove) {
             await interaction.reply({
-                content: 'Please specify at either the hobbies or the removal option if you want to remove your hobby information.',
+                content: 'Please specify at either the languages you speak or the removal option if you want to remove your languages information.',
                 ephemeral: true
             });
 
             return;
         }
         
-        if (hobbies && hobbies.length > 1000) {
+        if (languages && languages.length > 1000) {
             await interaction.reply({
-                content: 'Your hobbies list must contain less than 1000 characters!',
+                content: 'Your language list must contain less than 1000 characters!',
                 ephemeral: true
             });
 
@@ -56,17 +56,17 @@ export default class ProfileInfoHobbiesCommand extends BaseCommand {
         await interaction.deferReply({ ephemeral: true });
 
         const object: {
-            hobbies?: string | null | undefined,
+            languages?: string | null | undefined,
             updatedAt: Date
         } = {
             updatedAt: new Date()
         };
 
         if (remove) {
-            object.hobbies = null;
+            object.languages = null;
         }
-        else if (hobbies) {
-            object.hobbies = hobbies;
+        else if (languages) {
+            object.languages = languages;
         }
 
         await Profile.findOneAndUpdate({
@@ -76,6 +76,6 @@ export default class ProfileInfoHobbiesCommand extends BaseCommand {
             upsert: true
         });
 
-        await interaction.editReply({ content: "Successfully updated your hobbies." });
+        await interaction.editReply({ content: "Successfully updated your languages." });
     }
 }

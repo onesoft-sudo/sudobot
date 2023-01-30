@@ -116,6 +116,23 @@ export default class Logger extends Service {
     }
 
     async onMessageUpdate(oldMessage: Message, newMessage: Message) {
+        const row = new MessageActionRow()
+                        .addComponents(
+                            new MessageButton()
+                                .setLabel('Go to context')
+                                .setStyle('LINK')
+                                .setURL(newMessage.url)
+                        );
+
+        if (newMessage.type === 'REPLY') {
+            row.addComponents(
+                new MessageButton()
+                    .setLabel('Go to referenced message')
+                    .setStyle('LINK')
+                    .setURL(`https://discord.com/channels/${newMessage.guildId!}/${newMessage.channelId!}/${newMessage.reference!.messageId}`)
+            );
+        }
+
         await this.loggingChannel(newMessage.guild!.id)?.send({
             embeds: [
                 new MessageEmbed({
@@ -145,13 +162,7 @@ export default class Logger extends Service {
                 }),
             ],
             components: [
-                new MessageActionRow()
-                    .addComponents(
-                        new MessageButton()
-                            .setLabel('Go to context')
-                            .setStyle('LINK')
-                            .setURL(newMessage.url)
-                    )
+                row
             ]
         });
     }
@@ -203,19 +214,28 @@ export default class Logger extends Service {
             });
         }
 
+        const row = new MessageActionRow()
+                        .addComponents(
+                            new MessageButton()
+                                .setLabel('Go to context')
+                                .setStyle('LINK')
+                                .setURL(message.url)
+                        );
+
+        if (message.type === 'REPLY') {
+            row.addComponents(
+                new MessageButton()
+                    .setLabel('Go to referenced message')
+                    .setStyle('LINK')
+                    .setURL(`https://discord.com/channels/${message.guildId!}/${message.channelId!}/${message.reference!.messageId}`)
+            );
+        }
+
         await this.loggingChannel(message.guild!.id)?.send({
             embeds: [
                 embed
             ],
-            components: [
-                new MessageActionRow()
-                    .addComponents(
-                        new MessageButton()
-                            .setLabel('Go to context')
-                            .setStyle('LINK')
-                            .setURL(message.url)
-                    )
-            ],
+            components: [row],
             files
         });
     }

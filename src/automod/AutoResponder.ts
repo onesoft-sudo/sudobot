@@ -35,7 +35,7 @@ export default class AutoResponder extends Service {
                 return;
             }
 
-            if (message.content.includes(token)) {
+            if (message.content.toLowerCase().includes(token.toLowerCase())) {
                 await message.reply({ content: config.tokens[token] });
                 responseCount++;
             }
