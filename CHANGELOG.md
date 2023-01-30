@@ -1,3 +1,18 @@
+# [4.59.0](https://github.com/onesoft-sudo/sudobot/compare/v4.58.0...v4.59.0) (2023-01-30)
+
+
+### Bug Fixes
+
+* status code of the API login endpoint ([41e608c](https://github.com/onesoft-sudo/sudobot/commit/41e608c3a9d78190c3ef626ab6f57504251678c5))
+
+
+### Features
+
+* add profile subjects feature ([e017f71](https://github.com/onesoft-sudo/sudobot/commit/e017f71048d4020dcf4cdb33f584aebbe85b7ea0))
+* complete subjects feature ([f72d057](https://github.com/onesoft-sudo/sudobot/commit/f72d0579aab4873461162ab54658bdcdf55c23ea))
+
+
+
 # [4.58.0](https://github.com/onesoft-sudo/sudobot/compare/v4.57.0...v4.58.0) (2023-01-23)
 
 
@@ -31,15 +46,6 @@
 ### Bug Fixes
 
 * double creation of infraction logs ([f912b98](https://github.com/onesoft-sudo/sudobot/commit/f912b984d5c0ef3a70983fc09910d27d23ceecc8))
-
-
-
-## [4.56.1](https://github.com/onesoft-sudo/sudobot/compare/v4.56.0...v4.56.1) (2023-01-23)
-
-
-### Bug Fixes
-
-* command name ([8ae34fc](https://github.com/onesoft-sudo/sudobot/commit/8ae34fc63ae032f489e4745b6b1870619c36087a))
 
 
 
