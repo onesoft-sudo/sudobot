@@ -285,6 +285,13 @@ export default class ProfileCommand extends BaseCommand {
                     value: Util.escapeMarkdown(profile.languages)
                 });
             }
+
+            if (profile.subjects) {
+                fields.push({
+                    name: "Favourite Subjects/Fields",
+                    value: Util.escapeMarkdown(profile.subjects),
+                });
+            }
         }
 
         let banner: string | undefined;

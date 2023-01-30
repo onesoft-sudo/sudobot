@@ -49,6 +49,8 @@ const schema = new Schema({
     continent: String,
     job: String,
     zodiac: String,
+    languages: String,
+    subjects: String,
     guild_id: {
         type: String,
         required: true
