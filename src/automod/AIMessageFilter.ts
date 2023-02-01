@@ -48,7 +48,10 @@ export default class AIMessageFilter extends Service {
                         resource: analyzeRequest,
                     },
                     (err: any, response: any) => {
-                        if (err) throw err;
+                        if (err) {
+                            console.log(err);
+                            return;
+                        }
 
                         console.log(JSON.stringify(response.data.attributeScores, null, 4));
 
