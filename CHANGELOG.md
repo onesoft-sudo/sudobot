@@ -1,3 +1,12 @@
+# [4.60.0](https://github.com/onesoft-sudo/sudobot/compare/v4.59.1...v4.60.0) (2023-02-01)
+
+
+### Features
+
+* ai moderation ([47fb19b](https://github.com/onesoft-sudo/sudobot/commit/47fb19b1c9a1d45a628397d118dc46a15aefdc4d))
+
+
+
 ## [4.59.1](https://github.com/onesoft-sudo/sudobot/compare/v4.59.0...v4.59.1) (2023-01-30)
 
 
@@ -37,15 +46,6 @@
 ### Features
 
 * add support of rnavigating to replied message reference ([ade210e](https://github.com/onesoft-sudo/sudobot/commit/ade210e1b430eac9fedd9092d987a1c496de7ac1))
-
-
-
-## [4.56.3](https://github.com/onesoft-sudo/sudobot/compare/v4.56.2...v4.56.3) (2023-01-23)
-
-
-### Bug Fixes
-
-* token filter not working case insensitively ([0097784](https://github.com/onesoft-sudo/sudobot/commit/0097784ff66f665e071649abed16d116aa475bbd))
 
 
 
