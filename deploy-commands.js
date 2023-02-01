@@ -154,7 +154,7 @@ let commands = [
 				.addIntegerOption(option => option.setName('age').setDescription('Your age, put \'0\' to remove your age from the database'))
 		)
 		.addSubcommand(subcmd => 
-			subcmd.setName('subjects').setDescription('Set or edit the subjects you\'re interested in your studies or the subjects that you feel you are expert of')
+			subcmd.setName('subjects').setDescription('Set or edit the subjects you\'re interested in your studies or you feel you are expert of')
 				.addStringOption(option => option.setName('subjects').setDescription("The subjects, must be less than 2000 in length!"))
 				.addBooleanOption(option => option.setName('remove').setDescription("If true, the bot will remove your subjects information. Default is false"))
 		)

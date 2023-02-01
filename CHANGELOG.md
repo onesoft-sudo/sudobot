@@ -1,3 +1,12 @@
+## [4.59.1](https://github.com/onesoft-sudo/sudobot/compare/v4.59.0...v4.59.1) (2023-01-30)
+
+
+### Bug Fixes
+
+* slash command issues ([e9f2693](https://github.com/onesoft-sudo/sudobot/commit/e9f2693e6a1a432bd7f6d9f2a7b4fa072556bfe8))
+
+
+
 # [4.59.0](https://github.com/onesoft-sudo/sudobot/compare/v4.58.0...v4.59.0) (2023-01-30)
 
 
@@ -37,15 +46,6 @@
 ### Bug Fixes
 
 * token filter not working case insensitively ([0097784](https://github.com/onesoft-sudo/sudobot/commit/0097784ff66f665e071649abed16d116aa475bbd))
-
-
-
-## [4.56.2](https://github.com/onesoft-sudo/sudobot/compare/v4.56.1...v4.56.2) (2023-01-23)
-
-
-### Bug Fixes
-
-* double creation of infraction logs ([f912b98](https://github.com/onesoft-sudo/sudobot/commit/f912b984d5c0ef3a70983fc09910d27d23ceecc8))
 
 
 
