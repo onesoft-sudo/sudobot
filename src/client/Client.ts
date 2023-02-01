@@ -53,6 +53,7 @@ import InteractionRoleManager from '../services/InteractionRoleManager';
 import MessageRules from '../automod/MessageRules';
 import InviteTracker from '../services/InviteTracker';
 import Autobackup from '../services/Autobackup';
+import AIMessageFilter from '../automod/AIMessageFilter';
 
 export default class DiscordClient extends Client {
     private _commands = new Collection<string, BaseCommand>();
@@ -93,6 +94,7 @@ export default class DiscordClient extends Client {
     messageRules: MessageRules = {} as MessageRules;
     inviteTracker: InviteTracker = {} as InviteTracker;
     autobackup: Autobackup = {} as Autobackup;
+    aiMessageFilter: AIMessageFilter = {} as AIMessageFilter;
 
     aliases = {
         automod: path.resolve(__dirname, '..', 'automod'),
@@ -126,6 +128,7 @@ export default class DiscordClient extends Client {
         "@automod/MessageRules": "messageRules",
         "@services/InviteTracker": "inviteTracker",
         "@services/Autobackup": "autobackup",
+        "@automod/AIMessageFilter": "aiMessageFilter",
     };
 
     static client: DiscordClient;
