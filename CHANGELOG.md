@@ -1,3 +1,12 @@
+# [4.61.0](https://github.com/onesoft-sudo/sudobot/compare/v4.60.1...v4.61.0) (2023-02-02)
+
+
+### Features
+
+* add aimod command ([79fb281](https://github.com/onesoft-sudo/sudobot/commit/79fb28162ffc489de9381a6e74ed724a5be4275d))
+
+
+
 ## [4.60.1](https://github.com/onesoft-sudo/sudobot/compare/v4.60.0...v4.60.1) (2023-02-01)
 
 
@@ -37,15 +46,6 @@
 
 * add profile subjects feature ([e017f71](https://github.com/onesoft-sudo/sudobot/commit/e017f71048d4020dcf4cdb33f584aebbe85b7ea0))
 * complete subjects feature ([f72d057](https://github.com/onesoft-sudo/sudobot/commit/f72d0579aab4873461162ab54658bdcdf55c23ea))
-
-
-
-# [4.58.0](https://github.com/onesoft-sudo/sudobot/compare/v4.57.0...v4.58.0) (2023-01-23)
-
-
-### Features
-
-* add support of rnavigating to replied message reference ([7ebf6be](https://github.com/onesoft-sudo/sudobot/commit/7ebf6be056d2e91a4c094629e58a79cf5fd02a33))
 
 
 
