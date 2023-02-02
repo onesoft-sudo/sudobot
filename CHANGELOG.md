@@ -1,3 +1,12 @@
+# [4.62.0](https://github.com/onesoft-sudo/sudobot/compare/v4.61.0...v4.62.0) (2023-02-02)
+
+
+### Features
+
+* add AI moderator message analysis command ([451be8d](https://github.com/onesoft-sudo/sudobot/commit/451be8db6f9073e4fd11c26c914c685d0fc82790))
+
+
+
 # [4.61.0](https://github.com/onesoft-sudo/sudobot/compare/v4.60.1...v4.61.0) (2023-02-02)
 
 
@@ -31,21 +40,6 @@
 ### Bug Fixes
 
 * slash command issues ([e9f2693](https://github.com/onesoft-sudo/sudobot/commit/e9f2693e6a1a432bd7f6d9f2a7b4fa072556bfe8))
-
-
-
-# [4.59.0](https://github.com/onesoft-sudo/sudobot/compare/v4.58.0...v4.59.0) (2023-01-30)
-
-
-### Bug Fixes
-
-* status code of the API login endpoint ([41e608c](https://github.com/onesoft-sudo/sudobot/commit/41e608c3a9d78190c3ef626ab6f57504251678c5))
-
-
-### Features
-
-* add profile subjects feature ([e017f71](https://github.com/onesoft-sudo/sudobot/commit/e017f71048d4020dcf4cdb33f584aebbe85b7ea0))
-* complete subjects feature ([f72d057](https://github.com/onesoft-sudo/sudobot/commit/f72d0579aab4873461162ab54658bdcdf55c23ea))
 
 
 
