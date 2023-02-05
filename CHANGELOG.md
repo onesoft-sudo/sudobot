@@ -1,3 +1,12 @@
+# [4.63.0](https://github.com/onesoft-sudo/sudobot/compare/v4.62.0...v4.63.0) (2023-02-05)
+
+
+### Features
+
+* auto typing ([e280c0f](https://github.com/onesoft-sudo/sudobot/commit/e280c0f9f8aeb7716c4f8619e1a5db482c9d8393))
+
+
+
 # [4.62.0](https://github.com/onesoft-sudo/sudobot/compare/v4.61.0...v4.62.0) (2023-02-02)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * ai moderation ([47fb19b](https://github.com/onesoft-sudo/sudobot/commit/47fb19b1c9a1d45a628397d118dc46a15aefdc4d))
-
-
-
-## [4.59.1](https://github.com/onesoft-sudo/sudobot/compare/v4.59.0...v4.59.1) (2023-01-30)
-
-
-### Bug Fixes
-
-* slash command issues ([e9f2693](https://github.com/onesoft-sudo/sudobot/commit/e9f2693e6a1a432bd7f6d9f2a7b4fa072556bfe8))
 
 
 
