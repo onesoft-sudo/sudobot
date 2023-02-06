@@ -36,6 +36,14 @@ export default class TypeCommand extends BaseCommand {
             await message.reply(`${emoji('error')} Not a valid time duration.`);
             return;
         }
+        
+        if (client.utils.typingInterval) {
+            clearInterval(client.utils.typingInterval);
+        }
+
+        if (client.utils.typingTimeOut) {
+            clearTimeout(client.utils.typingTimeOut);
+        }
 
         await message.channel.sendTyping().catch(e => {
             console.log(e);
@@ -53,7 +61,7 @@ export default class TypeCommand extends BaseCommand {
                     clearInterval(client.utils.typingInterval);
                 }
             });
-        }, 10_000);
+        }, 15_000);
 
         if (duration)
             client.utils.typingTimeOut = setTimeout(() => {
