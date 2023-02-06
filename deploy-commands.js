@@ -324,6 +324,12 @@ let commands = [
 				.addStringOption(option => option.setName('query').setDescription('Search query'))),
 
 	// UTILS
+	new SlashCommandBuilder().setName('translate').setDescription('Translates the input text. Powered by Google Translate.')
+		.addStringOption(option => option.setName('text').setDescription("The text to translate").setRequired(true))
+		.addStringOption(option => option.setName("from").setDescription("Specify the language of the input text, defaults to automatic detection."))
+		.addStringOption(option => option.setName("to").setDescription("Specify the language to translate the input text, defaults to English."))
+		.addBooleanOption(option => option.setName("ephemeral").setDescription("Specify if the response should be ephemeral or not, defaults to false.")),
+
 	new SlashCommandBuilder().setName('snippet').setDescription('Snippets are instant custom messages')
 		.addSubcommand(subcommand =>
 			subcommand
@@ -593,6 +599,7 @@ let contextMenuCommands = [
 	new ContextMenuCommandBuilder().setName('Save Message').setType(ApplicationCommandType.Message),
 	new ContextMenuCommandBuilder().setName('Send Reply').setType(ApplicationCommandType.Message),
 	new ContextMenuCommandBuilder().setName('Report Message').setType(ApplicationCommandType.Message),
+	new ContextMenuCommandBuilder().setName('Translate to English').setType(ApplicationCommandType.Message),
 ].map(command => command.toJSON());
 
 commands = commands.concat(contextMenuCommands);

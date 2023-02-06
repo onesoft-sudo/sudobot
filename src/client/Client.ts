@@ -55,6 +55,7 @@ import InviteTracker from '../services/InviteTracker';
 import Autobackup from '../services/Autobackup';
 import AIMessageFilter from '../automod/AIMessageFilter';
 import Utilities from '../services/Utilities';
+import Translator from '../services/Translator';
 
 export default class DiscordClient extends Client {
     private _commands = new Collection<string, BaseCommand>();
@@ -97,6 +98,7 @@ export default class DiscordClient extends Client {
     autobackup: Autobackup = {} as Autobackup;
     aiMessageFilter: AIMessageFilter = {} as AIMessageFilter;
     utils: Utilities = {} as Utilities;
+    translator: Translator = {} as Translator;
 
     aliases = {
         automod: path.resolve(__dirname, '..', 'automod'),
@@ -132,6 +134,7 @@ export default class DiscordClient extends Client {
         "@services/Autobackup": "autobackup",
         "@automod/AIMessageFilter": "aiMessageFilter",
         "@services/Utilities": "utils",
+        "@services/Translator": "translator",
     };
 
     static client: DiscordClient;
