@@ -1,3 +1,17 @@
+# [4.64.0](https://github.com/onesoft-sudo/sudobot/compare/v4.63.0...v4.64.0) (2023-02-06)
+
+
+### Bug Fixes
+
+* type command issues ([4537842](https://github.com/onesoft-sudo/sudobot/commit/45378429a1b241af954b2d6f88f2e096c7e4255d))
+
+
+### Features
+
+* add translate command ([c339c31](https://github.com/onesoft-sudo/sudobot/commit/c339c311cd1a0bcb3d4607c95bb02616965ab369))
+
+
+
 # [4.63.0](https://github.com/onesoft-sudo/sudobot/compare/v4.62.0...v4.63.0) (2023-02-05)
 
 
@@ -31,15 +45,6 @@
 ### Bug Fixes
 
 * errors ([23ef7af](https://github.com/onesoft-sudo/sudobot/commit/23ef7af6852f8ebdee180b6728bbd8868be107c0))
-
-
-
-# [4.60.0](https://github.com/onesoft-sudo/sudobot/compare/v4.59.1...v4.60.0) (2023-02-01)
-
-
-### Features
-
-* ai moderation ([47fb19b](https://github.com/onesoft-sudo/sudobot/commit/47fb19b1c9a1d45a628397d118dc46a15aefdc4d))
 
 
 
