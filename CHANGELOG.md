@@ -1,3 +1,13 @@
+# [4.65.0](https://github.com/onesoft-sudo/sudobot/compare/v4.64.0...v4.65.0) (2023-02-10)
+
+
+### Features
+
+* add permission checking in unmute command ([4c73fe8](https://github.com/onesoft-sudo/sudobot/commit/4c73fe822404f2a109b71d667d9aceba6031ffbe))
+* **spamfilter:** add option to ignore moderators/admins or filter moderators ([e812435](https://github.com/onesoft-sudo/sudobot/commit/e8124352debec1d031cceefb7ba1bca8f013cfe1))
+
+
+
 # [4.64.0](https://github.com/onesoft-sudo/sudobot/compare/v4.63.0...v4.64.0) (2023-02-06)
 
 
@@ -36,15 +46,6 @@
 ### Features
 
 * add aimod command ([79fb281](https://github.com/onesoft-sudo/sudobot/commit/79fb28162ffc489de9381a6e74ed724a5be4275d))
-
-
-
-## [4.60.1](https://github.com/onesoft-sudo/sudobot/compare/v4.60.0...v4.60.1) (2023-02-01)
-
-
-### Bug Fixes
-
-* errors ([23ef7af](https://github.com/onesoft-sudo/sudobot/commit/23ef7af6852f8ebdee180b6728bbd8868be107c0))
 
 
 
