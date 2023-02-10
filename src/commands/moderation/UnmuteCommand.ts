@@ -27,6 +27,7 @@ import getMember from '../../utils/getMember';
 
 import PunishmentType from '../../types/PunishmentType';
 import UnmuteQueue from '../../queues/UnmuteQueue';
+import { hasPermission } from '../../utils/util';
 
 export async function unmute(client: DiscordClient, user: GuildMember, d: User) {
     try {            
@@ -198,6 +199,10 @@ export default class UnmuteCommand extends BaseCommand {
 
             console.log(user);
         }
+
+        if (!(await hasPermission(client, user, msg, null, "You don't have permission to unmute this user."))) {
+			return;
+		}
 
         await unmute(client, user, msg.member!.user as User);
 
