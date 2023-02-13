@@ -43,6 +43,7 @@ export type MessageFilterConfig = {
     rickrolls_enabled: boolean;
     off: boolean;
     invite_whitelist?: string[];
+    ignore_admins?: boolean;
 };
 
 export default class MessageFilter {
@@ -272,6 +273,9 @@ export default class MessageFilter {
         }
 
         if (this.config.ignore_staff && msg.member!.roles.cache.has(this.client.config.get('mod_role')))
+            return;
+
+        if (this.config.ignore_admins && msg.member!.roles.cache.has(this.client.config.get('admin')))
             return;
 
         const token = await this.filterBlockedTokens(msg);
