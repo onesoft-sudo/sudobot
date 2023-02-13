@@ -1,3 +1,12 @@
+# [4.67.0](https://github.com/onesoft-sudo/sudobot/compare/v4.66.0...v4.67.0) (2023-02-13)
+
+
+### Features
+
+* option to only allow admins to bypass filters ([20b14f6](https://github.com/onesoft-sudo/sudobot/commit/20b14f67e504a029b95fcaf5878bd0c557b2e792))
+
+
+
 # [4.66.0](https://github.com/onesoft-sudo/sudobot/compare/v4.65.0...v4.66.0) (2023-02-10)
 
 
@@ -37,15 +46,6 @@
 ### Features
 
 * auto typing ([e280c0f](https://github.com/onesoft-sudo/sudobot/commit/e280c0f9f8aeb7716c4f8619e1a5db482c9d8393))
-
-
-
-# [4.62.0](https://github.com/onesoft-sudo/sudobot/compare/v4.61.0...v4.62.0) (2023-02-02)
-
-
-### Features
-
-* add AI moderator message analysis command ([451be8d](https://github.com/onesoft-sudo/sudobot/commit/451be8db6f9073e4fd11c26c914c685d0fc82790))
 
 
 
