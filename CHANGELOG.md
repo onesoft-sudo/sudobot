@@ -1,3 +1,12 @@
+# [4.68.0](https://github.com/onesoft-sudo/sudobot/compare/v4.67.0...v4.68.0) (2023-02-13)
+
+
+### Features
+
+* add reminder for moderators ([8c5d694](https://github.com/onesoft-sudo/sudobot/commit/8c5d6949dd0ac79188e83f026e668b46d270e156))
+
+
+
 # [4.67.0](https://github.com/onesoft-sudo/sudobot/compare/v4.66.0...v4.67.0) (2023-02-13)
 
 
@@ -37,15 +46,6 @@
 ### Features
 
 * add translate command ([c339c31](https://github.com/onesoft-sudo/sudobot/commit/c339c311cd1a0bcb3d4607c95bb02616965ab369))
-
-
-
-# [4.63.0](https://github.com/onesoft-sudo/sudobot/compare/v4.62.0...v4.63.0) (2023-02-05)
-
-
-### Features
-
-* auto typing ([e280c0f](https://github.com/onesoft-sudo/sudobot/commit/e280c0f9f8aeb7716c4f8619e1a5db482c9d8393))
 
 
 
