@@ -106,6 +106,11 @@ export default class MessageFilter {
 
 		if (excluded.indexOf(msg.channel!.id) !== -1 || excluded.indexOf((msg.channel! as TextChannel).parent?.id) !== -1)
 			return;
+        
+        const chars = await this.filterAlmostSameChars(msg.content);
+        const words = await this.filterAlmostSameText(msg.content);
+
+        console.log("FILTER", chars, words);
     
         return await this.filterAlmostSameChars(msg.content) || await this.filterAlmostSameText(msg.content);
     }
