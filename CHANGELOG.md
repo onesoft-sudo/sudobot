@@ -1,3 +1,12 @@
+## [4.68.1](https://github.com/onesoft-sudo/sudobot/compare/v4.68.0...v4.68.1) (2023-02-16)
+
+
+### Bug Fixes
+
+* AFK command message length ([c80fb2b](https://github.com/onesoft-sudo/sudobot/commit/c80fb2b7ecb23a3c65bf6ec59572ecec87a96414))
+
+
+
 # [4.68.0](https://github.com/onesoft-sudo/sudobot/compare/v4.67.0...v4.68.0) (2023-02-13)
 
 
@@ -32,20 +41,6 @@
 
 * add permission checking in unmute command ([4c73fe8](https://github.com/onesoft-sudo/sudobot/commit/4c73fe822404f2a109b71d667d9aceba6031ffbe))
 * **spamfilter:** add option to ignore moderators/admins or filter moderators ([e812435](https://github.com/onesoft-sudo/sudobot/commit/e8124352debec1d031cceefb7ba1bca8f013cfe1))
-
-
-
-# [4.64.0](https://github.com/onesoft-sudo/sudobot/compare/v4.63.0...v4.64.0) (2023-02-06)
-
-
-### Bug Fixes
-
-* type command issues ([4537842](https://github.com/onesoft-sudo/sudobot/commit/45378429a1b241af954b2d6f88f2e096c7e4255d))
-
-
-### Features
-
-* add translate command ([c339c31](https://github.com/onesoft-sudo/sudobot/commit/c339c311cd1a0bcb3d4607c95bb02616965ab369))
 
 
 
