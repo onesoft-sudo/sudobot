@@ -36,6 +36,11 @@ export default class AFKCommand extends BaseCommand {
         if (message instanceof Message) {
             status = status?.trim() === '' ? undefined : status;
         }
+        
+        if (status && status.length > 100) {
+            message.reply(":x: AFK reason is too long. Make sure it has less than 100 characters.").catch(console.error);
+            return;
+        }
 
         await client.afkEngine.toggle(message, true, status);
     }
