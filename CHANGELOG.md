@@ -1,3 +1,12 @@
+## [4.68.2](https://github.com/onesoft-sudo/sudobot/compare/v4.68.1...v4.68.2) (2023-02-16)
+
+
+### Bug Fixes
+
+* repeated text filter errors ([777fb5e](https://github.com/onesoft-sudo/sudobot/commit/777fb5e36e9d4ec0638aad0f8ca238c3e929c202))
+
+
+
 ## [4.68.1](https://github.com/onesoft-sudo/sudobot/compare/v4.68.0...v4.68.1) (2023-02-16)
 
 
@@ -31,16 +40,6 @@
 ### Features
 
 * restrict spamreset command to admins only ([5243b85](https://github.com/onesoft-sudo/sudobot/commit/5243b850d3ace52a6af11488af56bc717ba85cfc))
-
-
-
-# [4.65.0](https://github.com/onesoft-sudo/sudobot/compare/v4.64.0...v4.65.0) (2023-02-10)
-
-
-### Features
-
-* add permission checking in unmute command ([4c73fe8](https://github.com/onesoft-sudo/sudobot/commit/4c73fe822404f2a109b71d667d9aceba6031ffbe))
-* **spamfilter:** add option to ignore moderators/admins or filter moderators ([e812435](https://github.com/onesoft-sudo/sudobot/commit/e8124352debec1d031cceefb7ba1bca8f013cfe1))
 
 
 
