@@ -145,11 +145,11 @@ export default class UserController extends Controller {
         const user = await User.findOne({ username });
 
         if (!user) {
-            return new Response(400, { error: "Username is incorrect." });
+            return new Response(400, { error: "Username or password is incorrect." });
         }
 
         if (!(await bcrypt.compare(password, user.password!))) {
-            return new Response(401, { error: "Password is incorrect." });
+            return new Response(401, { error: "Username or password is incorrect." });
         }
 
         let { token } = user;
