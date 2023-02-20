@@ -1,51 +1,45 @@
-## [4.60.1](https://github.com/onesoft-sudo/sudobot/compare/v4.60.0...v4.60.1) (2023-02-01)
+## [4.68.2](https://github.com/onesoft-sudo/sudobot/compare/v4.68.1...v4.68.2) (2023-02-16)
 
 
 ### Bug Fixes
 
-* errors ([23ef7af](https://github.com/onesoft-sudo/sudobot/commit/23ef7af6852f8ebdee180b6728bbd8868be107c0))
+* repeated text filter errors ([777fb5e](https://github.com/onesoft-sudo/sudobot/commit/777fb5e36e9d4ec0638aad0f8ca238c3e929c202))
 
 
 
-# [4.60.0](https://github.com/onesoft-sudo/sudobot/compare/v4.59.1...v4.60.0) (2023-02-01)
-
-
-### Features
-
-* ai moderation ([47fb19b](https://github.com/onesoft-sudo/sudobot/commit/47fb19b1c9a1d45a628397d118dc46a15aefdc4d))
-
-
-
-## [4.59.1](https://github.com/onesoft-sudo/sudobot/compare/v4.59.0...v4.59.1) (2023-01-30)
+## [4.68.1](https://github.com/onesoft-sudo/sudobot/compare/v4.68.0...v4.68.1) (2023-02-16)
 
 
 ### Bug Fixes
 
-* slash command issues ([e9f2693](https://github.com/onesoft-sudo/sudobot/commit/e9f2693e6a1a432bd7f6d9f2a7b4fa072556bfe8))
+* AFK command message length ([c80fb2b](https://github.com/onesoft-sudo/sudobot/commit/c80fb2b7ecb23a3c65bf6ec59572ecec87a96414))
 
 
 
-# [4.59.0](https://github.com/onesoft-sudo/sudobot/compare/v4.58.0...v4.59.0) (2023-01-30)
-
-
-### Bug Fixes
-
-* status code of the API login endpoint ([41e608c](https://github.com/onesoft-sudo/sudobot/commit/41e608c3a9d78190c3ef626ab6f57504251678c5))
+# [4.68.0](https://github.com/onesoft-sudo/sudobot/compare/v4.67.0...v4.68.0) (2023-02-13)
 
 
 ### Features
 
-* add profile subjects feature ([e017f71](https://github.com/onesoft-sudo/sudobot/commit/e017f71048d4020dcf4cdb33f584aebbe85b7ea0))
-* complete subjects feature ([f72d057](https://github.com/onesoft-sudo/sudobot/commit/f72d0579aab4873461162ab54658bdcdf55c23ea))
+* add reminder for moderators ([8c5d694](https://github.com/onesoft-sudo/sudobot/commit/8c5d6949dd0ac79188e83f026e668b46d270e156))
 
 
 
-# [4.58.0](https://github.com/onesoft-sudo/sudobot/compare/v4.57.0...v4.58.0) (2023-01-23)
+# [4.67.0](https://github.com/onesoft-sudo/sudobot/compare/v4.66.0...v4.67.0) (2023-02-13)
 
 
 ### Features
 
-* add support of rnavigating to replied message reference ([7ebf6be](https://github.com/onesoft-sudo/sudobot/commit/7ebf6be056d2e91a4c094629e58a79cf5fd02a33))
+* option to only allow admins to bypass filters ([20b14f6](https://github.com/onesoft-sudo/sudobot/commit/20b14f67e504a029b95fcaf5878bd0c557b2e792))
+
+
+
+# [4.66.0](https://github.com/onesoft-sudo/sudobot/compare/v4.65.0...v4.66.0) (2023-02-10)
+
+
+### Features
+
+* restrict spamreset command to admins only ([5243b85](https://github.com/onesoft-sudo/sudobot/commit/5243b850d3ace52a6af11488af56bc717ba85cfc))
 
 
 

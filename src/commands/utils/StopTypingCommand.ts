@@ -17,31 +17,26 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, Message } from 'discord.js';
+import { Message } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
-import InteractionOptions from '../../types/InteractionOptions';
+import ms from 'ms';
+import { emoji } from '../../utils/Emoji';
 
-export default class AFKCommand extends BaseCommand {
-    supportsInteractions = true;
-
+export default class StopTypingCommand extends BaseCommand {
     constructor() {
-        super('afk', 'utils', []);
+        super('stoptyping', 'settings', ['stoptype', 'typestop']);
     }
 
-    async run(client: DiscordClient, message: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
-        let status = options.isInteraction ? options.options.getString("reason") ?? undefined : options.args.join(" ");
+    async run(client: DiscordClient, message: Message, options: CommandOptions) {
+        if (client.utils.typingInterval)
+            clearInterval(client.utils.typingInterval);
 
-        if (message instanceof Message) {
-            status = status?.trim() === '' ? undefined : status;
-        }
-        
-        if (status && status.length > 100) {
-            message.reply(":x: AFK reason is too long. Make sure it has less than 100 characters.").catch(console.error);
-            return;
-        }
+        if (client.utils.typingTimeOut)
+            clearTimeout(client.utils.typingTimeOut);
 
-        await client.afkEngine.toggle(message, true, status);
+        message.react(emoji('check') as string).catch(console.error);
+        message.reply(`${emoji('check')} Stopped typing.`).catch(console.error);
     }
 }

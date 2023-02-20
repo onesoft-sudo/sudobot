@@ -18,7 +18,7 @@
 */
 
 import { channelMention } from "@discordjs/builders";
-import { Message, TextChannel, Guild } from "discord.js";
+import { Message, TextChannel, Guild, GuildMember, Util } from "discord.js";
 import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
 import { readFile } from 'fs/promises';
@@ -43,6 +43,8 @@ export type MessageFilterConfig = {
     rickrolls_enabled: boolean;
     off: boolean;
     invite_whitelist?: string[];
+    ignore_admins?: boolean;
+    staff_reminder?: boolean;
 };
 
 export default class MessageFilter {
@@ -104,6 +106,11 @@ export default class MessageFilter {
 
 		if (excluded.indexOf(msg.channel!.id) !== -1 || excluded.indexOf((msg.channel! as TextChannel).parent?.id) !== -1)
 			return;
+        
+        const chars = await this.filterAlmostSameChars(msg.content);
+        const words = await this.filterAlmostSameText(msg.content);
+
+        console.log("FILTER", chars, words);
     
         return await this.filterAlmostSameChars(msg.content) || await this.filterAlmostSameText(msg.content);
     }
@@ -264,6 +271,28 @@ export default class MessageFilter {
         return <TextChannel> await guild.channels.fetch(this.client.config.get('logging_channel'));
     }
 
+    async remindStaffIfNeeded(member: GuildMember) {
+        if (!member!.roles.cache.has(this.client.config.get('mod_role')) || !this.config.staff_reminder) {
+            return;
+        }
+
+        member.send({
+            embeds: [
+                new MessageEmbed({
+                    author: {
+                        iconURL: member.guild.iconURL() ?? undefined,
+                        name: `You've gotten a reminder notification in ${Util.escapeMarkdown(member.guild.name)}`
+                    },
+                    description: `You posted a blocked word or token.\nRemember you're a moderator, and we expect the moderators to discourage everyone about the usage of blocked words and not to use it themselves too. So, don't use blocked words please.\nHopefully you keep that in mind next time.`,
+                    footer: {
+                        text: "Reminded"
+                    }
+                })
+                .setTimestamp()
+            ]
+        }).catch(console.error);
+    }
+
     async start(msg: Message) {
         await this.load();
 
@@ -272,6 +301,9 @@ export default class MessageFilter {
         }
 
         if (this.config.ignore_staff && msg.member!.roles.cache.has(this.client.config.get('mod_role')))
+            return;
+
+        if (this.config.ignore_admins && msg.member!.roles.cache.has(this.client.config.get('admin')))
             return;
 
         const token = await this.filterBlockedTokens(msg);
@@ -312,6 +344,8 @@ export default class MessageFilter {
                     .setColor('#f14a60')
                 ]
             });
+
+            this.remindStaffIfNeeded(msg.member!);
 
             BlockedWordViolation.findOneAndUpdate({
                 guild_id: msg.guildId!,
@@ -369,6 +403,8 @@ export default class MessageFilter {
                     .setColor('#f14a60')
                 ]
             });
+
+            this.remindStaffIfNeeded(msg.member!);
 
             return;
         }
@@ -462,6 +498,8 @@ export default class MessageFilter {
                         .setTimestamp()
                     ]
                 });
+
+                this.remindStaffIfNeeded(msg.member!);
 
                 BlockedWordViolation.findOneAndUpdate({
                     guild_id: msg.guildId!,

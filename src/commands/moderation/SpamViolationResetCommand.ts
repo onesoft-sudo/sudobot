@@ -1,4 +1,4 @@
-import { Message, Interaction, CommandInteraction, Util } from "discord.js";
+import { Message, Interaction, CommandInteraction, Util, GuildMemberRoleManager } from "discord.js";
 import DiscordClient from "../../client/Client";
 import SpamViolation from "../../models/SpamViolation";
 import CommandOptions from "../../types/CommandOptions";
@@ -13,6 +13,11 @@ export default class SpamViolationResetCommand extends BaseCommand {
     aliases = ['spamreset', 'svreset'];
 
     async run(client: DiscordClient, message: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
+        if (!(message.member?.roles as GuildMemberRoleManager).cache.has(client.config.props[message.guildId!].admin)) {
+            await message.reply(`${emoji('error')} You don't have permission to run this command.`);
+            return;
+        }
+
         if (!options.isInteraction && options.args[0] === undefined) {
             await message.reply(`${emoji('error')} You must specify a user.`);
             return;

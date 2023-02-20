@@ -59,8 +59,12 @@ export default class SpamFilter {
 
         this.load(guild!);
 
-        if(author.bot || this.exclude.indexOf(channel.id) !== -1 || this.exclude.indexOf((channel as TextChannel).parent?.id!) !== -1 || !this.enabled || member!.roles.cache.has(this.client.config.get('mod_role'))) 
+        if(author.bot || this.exclude.indexOf(channel.id) !== -1 || this.exclude.indexOf((channel as TextChannel).parent?.id!) !== -1 || !this.enabled) 
             return;
+
+        if ((!this.config.disallow_mods && member!.roles.cache.has(this.client.config.get('mod_role'))) || member!.roles.cache.has(this.client.config.get('admin'))) {
+            return;
+        }
 
         if (!this.users[guild!.id]) {
             this.users[guild!.id] = new Collection();
