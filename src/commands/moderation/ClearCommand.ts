@@ -108,7 +108,7 @@ export default class ClearCommand extends BaseCommand {
             return;
         }
 
-        let member: GuildMember | undefined;
+        let member: GuildMember | undefined, hasMutedRole = false;
 
         if (user) {
         	try {
@@ -128,7 +128,11 @@ export default class ClearCommand extends BaseCommand {
         		}
 
                 member = _member;
-                await _member?.roles.add(client.config.props[message.guild!.id].mute_role);
+                hasMutedRole = _member?.roles.cache.has(client.config.props[message.guild!.id].mute_role) ?? false;
+
+                if (!hasMutedRole)
+                    await _member?.roles.add(client.config.props[message.guild!.id].mute_role);
+
         	}
         	catch (e) {
         		console.log(e);
@@ -225,7 +229,8 @@ export default class ClearCommand extends BaseCommand {
         });
         
         try {
-            await member?.roles.remove(client.config.props[message.guild!.id].mute_role);
+            if (hasMutedRole)
+                await member?.roles.remove(client.config.props[message.guild!.id].mute_role);
         }
         catch (e) {
             console.error(e);
