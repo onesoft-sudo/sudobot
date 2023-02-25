@@ -80,6 +80,12 @@ export class Config {
             "admin": snowflake.optional(),
             "lockall": zod.array(zod.string()).optional(),
             "warn_notallowed": zod.boolean().optional(),
+            "ai_mod": zod.object({
+                "enabled": zod.boolean().optional(),
+                "toxicity": zod.number().optional(),
+                "severe_toxicity": zod.number().optional(),
+                "threat": zod.number().optional(),
+            }).optional(),
             "role_commands": zod.record(
                 snowflake,
                 zod.array(zod.string().min(1))

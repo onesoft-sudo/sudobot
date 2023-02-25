@@ -326,8 +326,8 @@ let commands = [
 	// UTILS
 	new SlashCommandBuilder().setName('translate').setDescription('Translates the input text. Powered by Google Translate.')
 		.addStringOption(option => option.setName('text').setDescription("The text to translate").setRequired(true))
-		.addStringOption(option => option.setName("from").setDescription("Specify the language of the input text, defaults to automatic detection."))
-		.addStringOption(option => option.setName("to").setDescription("Specify the language to translate the input text, defaults to English."))
+		.addStringOption(option => option.setName("from").setDescription("Specify the language of the input text, defaults to automatic detection.").setAutocomplete(true))
+		.addStringOption(option => option.setName("to").setDescription("Specify the language to translate the input text, defaults to English.").setAutocomplete(true))
 		.addBooleanOption(option => option.setName("ephemeral").setDescription("Specify if the response should be ephemeral or not, defaults to false.")),
 
 	new SlashCommandBuilder().setName('snippet').setDescription('Snippets are instant custom messages')

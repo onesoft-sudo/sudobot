@@ -1,3 +1,21 @@
+# [4.70.0](https://github.com/onesoft-sudo/sudobot/compare/v4.69.0...v4.70.0) (2023-02-21)
+
+
+### Features
+
+* improved translation command ([09cda31](https://github.com/onesoft-sudo/sudobot/commit/09cda31bb501f00a68fd64707c44d885063a7760))
+
+
+
+# [4.69.0](https://github.com/onesoft-sudo/sudobot/compare/v4.68.2...v4.69.0) (2023-02-20)
+
+
+### Features
+
+* add penalize command ([3ae8a0f](https://github.com/onesoft-sudo/sudobot/commit/3ae8a0fd1ba081adf646ca43824381c166e51431))
+
+
+
 ## [4.68.2](https://github.com/onesoft-sudo/sudobot/compare/v4.68.1...v4.68.2) (2023-02-16)
 
 
@@ -22,24 +40,6 @@
 ### Features
 
 * add reminder for moderators ([8c5d694](https://github.com/onesoft-sudo/sudobot/commit/8c5d6949dd0ac79188e83f026e668b46d270e156))
-
-
-
-# [4.67.0](https://github.com/onesoft-sudo/sudobot/compare/v4.66.0...v4.67.0) (2023-02-13)
-
-
-### Features
-
-* option to only allow admins to bypass filters ([20b14f6](https://github.com/onesoft-sudo/sudobot/commit/20b14f67e504a029b95fcaf5878bd0c557b2e792))
-
-
-
-# [4.66.0](https://github.com/onesoft-sudo/sudobot/compare/v4.65.0...v4.66.0) (2023-02-10)
-
-
-### Features
-
-* restrict spamreset command to admins only ([5243b85](https://github.com/onesoft-sudo/sudobot/commit/5243b850d3ace52a6af11488af56bc717ba85cfc))
 
 
 
