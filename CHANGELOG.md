@@ -1,3 +1,12 @@
+## [4.70.1](https://github.com/onesoft-sudo/sudobot/compare/v4.70.0...v4.70.1) (2023-02-25)
+
+
+### Bug Fixes
+
+* clear command ([2eb7359](https://github.com/onesoft-sudo/sudobot/commit/2eb7359bbbde6d19186ba639f2492851a6e6b676))
+
+
+
 # [4.70.0](https://github.com/onesoft-sudo/sudobot/compare/v4.69.0...v4.70.0) (2023-02-21)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * AFK command message length ([c80fb2b](https://github.com/onesoft-sudo/sudobot/commit/c80fb2b7ecb23a3c65bf6ec59572ecec87a96414))
-
-
-
-# [4.68.0](https://github.com/onesoft-sudo/sudobot/compare/v4.67.0...v4.68.0) (2023-02-13)
-
-
-### Features
-
-* add reminder for moderators ([8c5d694](https://github.com/onesoft-sudo/sudobot/commit/8c5d6949dd0ac79188e83f026e668b46d270e156))
 
 
 
