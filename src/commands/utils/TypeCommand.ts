@@ -26,7 +26,7 @@ import { emoji } from '../../utils/Emoji';
 
 export default class TypeCommand extends BaseCommand {
     constructor() {
-        super('type', 'settings', ['starttyping']);
+        super('type', 'utils', ['starttyping']);
     }
 
     async run(client: DiscordClient, message: Message, options: CommandOptions) {

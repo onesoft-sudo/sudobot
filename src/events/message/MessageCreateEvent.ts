@@ -23,6 +23,7 @@ import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import path from 'path';
 import MessageEmbed from '../../client/MessageEmbed';
+import { emoji } from '../../utils/Emoji';
 
 export default class MessageCreateEvent extends BaseEvent {
     constructor() {
@@ -52,6 +53,17 @@ export default class MessageCreateEvent extends BaseEvent {
         await client.messageRules.onMessageCreate(message);
         client.aiMessageFilter.scanMessage(message).catch(console.log);
         await client.autoResponder.run(message);
+
+        if (client.aiChat.enabled && message.content.trim() !== '' && message.mentions.users.has(client.user!.id)) {
+            if (message.content.length >= 2000) {
+                message.reply(`${emoji('error')} Message content is too long.`).catch(console.log);
+            }
+            else {
+                await message.channel.sendTyping();
+                const reply = await client.aiChat.generateReply(message.content);
+                message.reply(reply ?? `${emoji('error')} An error has occurred.`).catch(console.log);
+            }            
+        }
         
         if (message.content.startsWith(client.config.get('prefix'))) {
             const [cmdName, ...args] = await message.content

@@ -56,6 +56,7 @@ import Autobackup from '../services/Autobackup';
 import AIMessageFilter from '../automod/AIMessageFilter';
 import Utilities from '../services/Utilities';
 import Translator from '../services/Translator';
+import AIChat from '../services/AIChat';
 
 export default class DiscordClient extends Client {
     private _commands = new Collection<string, BaseCommand>();
@@ -99,6 +100,7 @@ export default class DiscordClient extends Client {
     aiMessageFilter: AIMessageFilter = {} as AIMessageFilter;
     utils: Utilities = {} as Utilities;
     translator: Translator = {} as Translator;
+    aiChat: AIChat = {} as AIChat;
 
     aliases = {
         automod: path.resolve(__dirname, '..', 'automod'),
@@ -135,6 +137,7 @@ export default class DiscordClient extends Client {
         "@automod/AIMessageFilter": "aiMessageFilter",
         "@services/Utilities": "utils",
         "@services/Translator": "translator",
+        "@services/AIChat": "aiChat",
     };
 
     static client: DiscordClient;

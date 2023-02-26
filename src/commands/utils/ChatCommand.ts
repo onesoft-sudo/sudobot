@@ -23,19 +23,13 @@ import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import { emoji } from '../../utils/Emoji';
 
-export default class StopTypingCommand extends BaseCommand {
+export default class TypeCommand extends BaseCommand {
     constructor() {
-        super('stoptyping', 'utils', ['stoptype', 'typestop']);
+        super('chat', 'utils', ['startchat', 'chatbot', 'aichat', 'startai', 'stopchat', 'stopai']);
     }
 
     async run(client: DiscordClient, message: Message, options: CommandOptions) {
-        if (client.utils.typingInterval)
-            clearInterval(client.utils.typingInterval);
-
-        if (client.utils.typingTimeOut)
-            clearTimeout(client.utils.typingTimeOut);
-
-        message.react(emoji('check') as string).catch(console.error);
-        message.reply(`${emoji('check')} Stopped typing.`).catch(console.error);
+        client.aiChat.enabled = !client.aiChat.enabled;
+        message.reply(`${emoji('check')} Successfully turned ${client.aiChat.enabled ? 'on' : 'off'} AI chat replies.`).catch(console.error);
     }
 }
