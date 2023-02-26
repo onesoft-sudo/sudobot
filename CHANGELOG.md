@@ -1,3 +1,12 @@
+## [4.70.2](https://github.com/onesoft-sudo/sudobot/compare/v4.70.1...v4.70.2) (2023-02-26)
+
+
+### Bug Fixes
+
+* don't show beans and shots in infraction list ([1c3a424](https://github.com/onesoft-sudo/sudobot/commit/1c3a424ea84094ce0080af4976a0560fb6b87824))
+
+
+
 ## [4.70.1](https://github.com/onesoft-sudo/sudobot/compare/v4.70.0...v4.70.1) (2023-02-25)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * repeated text filter errors ([777fb5e](https://github.com/onesoft-sudo/sudobot/commit/777fb5e36e9d4ec0638aad0f8ca238c3e929c202))
-
-
-
-## [4.68.1](https://github.com/onesoft-sudo/sudobot/compare/v4.68.0...v4.68.1) (2023-02-16)
-
-
-### Bug Fixes
-
-* AFK command message length ([c80fb2b](https://github.com/onesoft-sudo/sudobot/commit/c80fb2b7ecb23a3c65bf6ec59572ecec87a96414))
 
 
 
