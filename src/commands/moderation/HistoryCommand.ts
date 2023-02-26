@@ -164,12 +164,24 @@ export default class HistoryCommand extends BaseCommand {
                 return await Punishment.find({ 
                     guild_id: msg.guild!.id,
                     user_id: user!.id,
+                    type: {
+                        $nin: [
+                            PunishmentType.BEAN,
+                            PunishmentType.SHOT,
+                        ]
+                    }
                 }).count();
             },
             async fetchData({ limit, offset }) {
                 const data = await Punishment.find({ 
                     guild_id: msg.guild!.id,
                     user_id: user!.id,
+                    type: {
+                        $nin: [
+                            PunishmentType.BEAN,
+                            PunishmentType.SHOT,
+                        ]
+                    }
                 }).skip(offset).limit(limit).sort({ createdAt: -1 });
 
                 return data;
