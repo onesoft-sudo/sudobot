@@ -1,3 +1,12 @@
+# [4.71.0](https://github.com/onesoft-sudo/sudobot/compare/v4.70.2...v4.71.0) (2023-02-26)
+
+
+### Features
+
+* ai chat system ([c90b87c](https://github.com/onesoft-sudo/sudobot/commit/c90b87c971f5e62371b1f625ed348b995b97df07))
+
+
+
 ## [4.70.2](https://github.com/onesoft-sudo/sudobot/compare/v4.70.1...v4.70.2) (2023-02-26)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * add penalize command ([3ae8a0f](https://github.com/onesoft-sudo/sudobot/commit/3ae8a0fd1ba081adf646ca43824381c166e51431))
-
-
-
-## [4.68.2](https://github.com/onesoft-sudo/sudobot/compare/v4.68.1...v4.68.2) (2023-02-16)
-
-
-### Bug Fixes
-
-* repeated text filter errors ([777fb5e](https://github.com/onesoft-sudo/sudobot/commit/777fb5e36e9d4ec0638aad0f8ca238c3e929c202))
 
 
 
