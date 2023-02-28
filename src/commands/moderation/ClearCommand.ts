@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, Emoji, GuildChannel, Message, TextChannel, User, Permissions, GuildMember } from 'discord.js';
+import { CommandInteraction, Emoji, GuildChannel, Message, TextChannel, User, Permissions, GuildMember, Collection } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -26,6 +26,48 @@ import MessageEmbed from '../../client/MessageEmbed';
 import getUser from '../../utils/getUser';
 import { emoji, fetchEmoji } from '../../utils/Emoji';
 import { hasPermission, shouldNotModerate } from '../../utils/util';
+
+interface ClearMessagesOptions {
+    count?: number;
+    user_id?: string;
+    bypass?: string[];
+}
+
+export async function clearMessages(channel: TextChannel, { count, user_id, bypass = [] }: ClearMessagesOptions) {
+    if (!count && !user_id) {
+        throw new Error("Either count or user_id needs to be specified");
+    }
+
+    if (count && count > 100) {
+        throw new Error("Count cannot be more than 100");
+    }
+
+    if (count && count < 2) {
+        throw new Error("Count cannot be less than 2");
+    }
+
+    let messages, deletedCount = 0;
+
+    do {
+        messages = await channel.messages.fetch({ limit: count ?? 100 });
+
+        messages = messages.filter(m => 
+            (!!user_id ? m.author.id === user_id : true) && 
+            !bypass.includes(m.id) && 
+            (Date.now() - m.createdTimestamp) <= (!!user_id && count !== undefined ? (1 * 60 * 60 * 1000) : (2 * 7 * 24 * 60 * 60 * 1000))
+        );
+
+        await channel.bulkDelete(messages);
+        deletedCount += messages.size;
+
+        if (count !== undefined) {
+            break;
+        }
+    }
+    while (count === undefined && messages.size >= 2);
+
+    return deletedCount;
+}
 
 export default class ClearCommand extends BaseCommand {
     supportsInteractions: boolean = true;
@@ -94,6 +136,38 @@ export default class ClearCommand extends BaseCommand {
     
                 return;
             }
+
+            console.log(options.args);
+
+            if (options.args[1] && !isNaN(parseInt(options.args[1]))) {
+                msgCount = parseInt(options.args[1]);
+                console.log("Count", msgCount);
+                msgCount = !msgCount ? 0 : msgCount;
+
+                if (msgCount !== 0 && msgCount < 2) {
+                    await message.reply({
+                        embeds: [
+                            new MessageEmbed()
+                            .setColor('#f14a60')
+                            .setDescription('Message count cannot be less than 2.')
+                        ]
+                    });
+        
+                    return; 
+                }
+
+                if (msgCount !== 0 && msgCount > 100) {
+                    await message.reply({
+                        embeds: [
+                            new MessageEmbed()
+                            .setColor('#f14a60')
+                            .setDescription('Message count cannot be more than 100.')
+                        ]
+                    });
+        
+                    return; 
+                }
+            }
         }
         
         if (msgCount === 0 && !user) {
@@ -139,7 +213,7 @@ export default class ClearCommand extends BaseCommand {
         	}
         }
 
-        let count = 0;
+        // let count = 0;
         (global as any).deletingMessages = true;
 
         if (message instanceof Message)
@@ -147,7 +221,8 @@ export default class ClearCommand extends BaseCommand {
         else 
             await message.deferReply({ ephemeral: true });
 
-        if (msgCount === 0 && user) {
+        /**
+         * if (msgCount === 0 && user) {
             console.log(user?.tag);
             
             let fetched;
@@ -219,6 +294,20 @@ export default class ClearCommand extends BaseCommand {
             }
             while (fetched >= 2);
         }
+         */
+
+        let count = 0;
+
+        try {
+            count = await clearMessages(channel as TextChannel, {
+                count: !msgCount || msgCount === 0 ? undefined : msgCount,
+                user_id: user?.id ?? undefined,
+                bypass: [message.id]
+            });
+        }
+        catch (e) {
+            console.log(e);            
+        }
 
         const reply = await message.channel?.send({
             embeds: [
@@ -229,7 +318,7 @@ export default class ClearCommand extends BaseCommand {
         });
         
         try {
-            if (hasMutedRole)
+            if (!hasMutedRole)
                 await member?.roles.remove(client.config.props[message.guild!.id].mute_role);
         }
         catch (e) {

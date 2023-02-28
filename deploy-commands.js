@@ -537,7 +537,7 @@ let commands = [
 
 	new SlashCommandBuilder().setName('clear').setDescription('Clear messages in bulk')
 		.addUserOption(option => option.setName('user').setDescription("The user"))
-		.addIntegerOption(option => option.setName('count').setDescription("The amount of messages to delete").setMaxValue(400).setMinValue(0))
+		.addIntegerOption(option => option.setName('count').setDescription("The amount of messages to delete").setMaxValue(100).setMinValue(2))
 		.addChannelOption(option => option.setName('channel').setDescription("The channel where the messages will be deleted")),
 
 	new SlashCommandBuilder().setName('echo').setDescription('Re-send a message from the bot system')
