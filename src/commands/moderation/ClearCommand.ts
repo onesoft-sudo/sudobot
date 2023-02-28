@@ -31,9 +31,10 @@ interface ClearMessagesOptions {
     count?: number;
     user_id?: string;
     bypass?: string[];
+    output?: boolean;
 }
 
-export async function clearMessages(channel: TextChannel, { count, user_id, bypass = [] }: ClearMessagesOptions) {
+export async function clearMessages(channel: TextChannel, { count, user_id, bypass = [], output = true }: ClearMessagesOptions) {
     if (!count && !user_id) {
         throw new Error("Either count or user_id needs to be specified");
     }
@@ -46,16 +47,20 @@ export async function clearMessages(channel: TextChannel, { count, user_id, bypa
         throw new Error("Count cannot be less than 2");
     }
 
-    let messages, deletedCount = 0;
+    let messages, deletedCount = 0, tag: string | undefined = undefined;
 
     do {
         messages = await channel.messages.fetch({ limit: count ?? 100 });
 
-        messages = messages.filter(m => 
-            (!!user_id ? m.author.id === user_id : true) && 
-            !bypass.includes(m.id) && 
-            (Date.now() - m.createdTimestamp) <= (!!user_id && count !== undefined ? (1 * 60 * 60 * 1000) : (2 * 7 * 24 * 60 * 60 * 1000))
-        );
+        messages = messages.filter(m => {
+            if (user_id && !tag && user_id === m.author.id) {
+                tag = m.author.tag;
+            }
+
+            return (!!user_id ? m.author.id === user_id : true) && 
+                !bypass.includes(m.id) && 
+                (Date.now() - m.createdTimestamp) <= (!!user_id && count === undefined ? (1 * 60 * 60 * 1000) : (2 * 7 * 24 * 60 * 60 * 1000));
+        });
 
         await channel.bulkDelete(messages);
         deletedCount += messages.size;
@@ -65,6 +70,18 @@ export async function clearMessages(channel: TextChannel, { count, user_id, bypa
         }
     }
     while (count === undefined && messages.size >= 2);
+    
+    channel.send({
+        embeds: [
+            new MessageEmbed()
+            .setColor('GREEN')
+            .setDescription((fetchEmoji('check') as Emoji).toString() + " Deleted " + deletedCount + " message(s)" + (user_id ? " from user " + tag : ''))
+        ]
+    })
+    .then(message => {
+        setTimeout(() => message.delete().catch(console.error), 5500);
+    })
+    .catch(console.error);
 
     return deletedCount;
 }
@@ -302,7 +319,8 @@ export default class ClearCommand extends BaseCommand {
             count = await clearMessages(channel as TextChannel, {
                 count: !msgCount || msgCount === 0 ? undefined : msgCount,
                 user_id: user?.id ?? undefined,
-                bypass: [message.id]
+                bypass: [message.id],
+                output: false
             });
         }
         catch (e) {

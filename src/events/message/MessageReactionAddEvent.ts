@@ -19,7 +19,9 @@
 
 import BaseEvent from '../../utils/structures/BaseEvent';
 import DiscordClient from '../../client/Client';
-import { Message, MessageReaction } from 'discord.js';
+import { Message, MessageReaction, ReactionUserManager, TextChannel } from 'discord.js';
+import { mute } from '../../commands/moderation/MuteCommand';
+import { clearMessages } from '../../commands/moderation/ClearCommand';
 
 export default class MessageReactionAddEvent extends BaseEvent {
     constructor() {
@@ -29,11 +31,78 @@ export default class MessageReactionAddEvent extends BaseEvent {
     async run(client: DiscordClient, reaction: MessageReaction) {
         console.log('inside');
         
+        console.log(reaction);
+
         if (!reaction || !reaction.message.guild || reaction.message.channel.type === 'DM') {
             return;
         }
         
         await (client.msg = <Message> reaction.message);
         await client.starboard.handle(reaction);
+
+        const tempmuteConfig = client.config.props[reaction.message.guildId!].tempmute;
+
+        if (tempmuteConfig && reaction.emoji.id && reaction.emoji.id === tempmuteConfig.emoji && reaction.count === 1 && reaction.message.author!.id !== client.user!.id) {
+            console.log("Report received");
+
+            try {
+                try {
+                    if (!(reaction.users as ReactionUserManager | undefined)) {
+                        await reaction.users.fetch();
+                    }
+                }
+                catch (e) {
+                    console.log(e);
+                }
+                
+                const user = reaction.users.cache.first();
+
+                if (!user)
+                    return;
+
+                console.log('user', user.id);
+
+                const member = await reaction.message.guild!.members.fetch(user.id);
+
+                if (!member)
+                    return;
+
+                console.log('member');
+
+                if (!member.roles.cache.has(client.config.props[reaction.message.guildId!].mod_role)) {
+                    reaction.remove().catch(console.log);
+                    return;
+                }
+
+                const authorMember = await reaction.message.guild!.members.fetch(reaction.message.author!.id); 
+
+                if (!authorMember) {
+                    console.log("Member is null");
+                    return;
+                }
+
+                if (authorMember.roles.cache.has(client.config.props[reaction.message.guildId!].mod_role)) {
+                    reaction.remove().catch(console.log); 
+                    return;
+                }
+
+                const role = await reaction.message.guild!.roles.fetch(client.config.props[reaction.message.guild!.id].mute_role);
+                await reaction.message.member!.roles.add(role!, tempmuteConfig.reason ?? undefined);
+                
+                await clearMessages(reaction.message.channel! as TextChannel, {
+                    count: 50,
+                    user_id: reaction.message.author!.id,
+                    output: true
+                });
+
+                await mute(client, Date.now() + tempmuteConfig.duration, reaction.message.member!, {
+                    guild: reaction.message.guild!,
+                    member: reaction.message.member!,
+                }, tempmuteConfig.duration, tempmuteConfig.reason ?? undefined, false, user);
+            }
+            catch (e) {
+                console.log(e);
+            }
+        }
     }
 }

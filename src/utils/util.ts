@@ -87,7 +87,7 @@ export function shouldNotModerate(client: DiscordClient, member: GuildMember) {
 	return role && role.trim() !== '' && member.roles.cache.has(role);
 }
 
-export async function hasPermission(client: DiscordClient, member: GuildMember, msg: Message | CommandInteraction | ContextMenuInteraction, mod: GuildMember | null, error: string = "You don't have permission to moderate this user") {
+export async function hasPermission(client: DiscordClient, member: GuildMember, msg: Message | CommandInteraction | ContextMenuInteraction, mod: GuildMember | null, error: string | null = "You don't have permission to moderate this user") {
 	let m = mod;
 	
 	if (!m) {
@@ -99,25 +99,27 @@ export async function hasPermission(client: DiscordClient, member: GuildMember, 
     }
 
 	if (member.id === m.id || member.roles.highest?.position >= m.roles.highest?.position) {
-        if (msg instanceof Interaction && msg.deferred) {
-            await msg.editReply({
+        if (error) {
+            if (msg instanceof Interaction && msg.deferred) {
+                await msg.editReply({
+                    embeds: [
+                        new MessageEmbed()
+                        .setColor('#f14a60')
+                        .setDescription(`:x: ${error}`)
+                    ]
+                });
+    
+                return false;
+            }
+    
+            await msg.reply({
                 embeds: [
                     new MessageEmbed()
                     .setColor('#f14a60')
                     .setDescription(`:x: ${error}`)
                 ]
             });
-
-            return false;
         }
-
-		await msg.reply({
-			embeds: [
-				new MessageEmbed()
-				.setColor('#f14a60')
-				.setDescription(`:x: ${error}`)
-			]
-		});
 
 		return false;
 	}
