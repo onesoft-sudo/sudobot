@@ -1,3 +1,12 @@
+# [4.72.0](https://github.com/onesoft-sudo/sudobot/compare/v4.71.0...v4.72.0) (2023-02-28)
+
+
+### Features
+
+* message reaction tempmutes ([d17283b](https://github.com/onesoft-sudo/sudobot/commit/d17283ba95103789faa275e6622a3b8bc2c1f411))
+
+
+
 # [4.71.0](https://github.com/onesoft-sudo/sudobot/compare/v4.70.2...v4.71.0) (2023-02-26)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * improved translation command ([09cda31](https://github.com/onesoft-sudo/sudobot/commit/09cda31bb501f00a68fd64707c44d885063a7760))
-
-
-
-# [4.69.0](https://github.com/onesoft-sudo/sudobot/compare/v4.68.2...v4.69.0) (2023-02-20)
-
-
-### Features
-
-* add penalize command ([3ae8a0f](https://github.com/onesoft-sudo/sudobot/commit/3ae8a0fd1ba081adf646ca43824381c166e51431))
 
 
 
