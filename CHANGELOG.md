@@ -1,3 +1,12 @@
+## [4.72.1](https://github.com/onesoft-sudo/sudobot/compare/v4.72.0...v4.72.1) (2023-03-01)
+
+
+### Bug Fixes
+
+* afk status ignore emoji ([cb23460](https://github.com/onesoft-sudo/sudobot/commit/cb23460e07545e4d757f52935bf9df072ef771c8))
+
+
+
 # [4.72.0](https://github.com/onesoft-sudo/sudobot/compare/v4.71.0...v4.72.0) (2023-02-28)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * clear command ([2eb7359](https://github.com/onesoft-sudo/sudobot/commit/2eb7359bbbde6d19186ba639f2492851a6e6b676))
-
-
-
-# [4.70.0](https://github.com/onesoft-sudo/sudobot/compare/v4.69.0...v4.70.0) (2023-02-21)
-
-
-### Features
-
-* improved translation command ([09cda31](https://github.com/onesoft-sudo/sudobot/commit/09cda31bb501f00a68fd64707c44d885063a7760))
 
 
 
