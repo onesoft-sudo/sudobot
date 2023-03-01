@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, Message } from 'discord.js';
+import { CommandInteraction, Message, Util } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -37,7 +37,7 @@ export default class AFKCommand extends BaseCommand {
             status = status?.trim() === '' ? undefined : status;
         }
         
-        if (status && status.length > 100) {
+        if (status && status.replace(/<\w+\:\d+>/gi, '').length > 200) {
             message.reply(":x: AFK reason is too long. Make sure it has less than 100 characters.").catch(console.error);
             return;
         }
