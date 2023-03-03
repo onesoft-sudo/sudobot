@@ -1,3 +1,12 @@
+## [4.72.3](https://github.com/onesoft-sudo/sudobot/compare/v4.72.2...v4.72.3) (2023-03-03)
+
+
+### Bug Fixes
+
+* clear command does not show user tag ([626951f](https://github.com/onesoft-sudo/sudobot/commit/626951f4cd4483fa03dd0bc9c0c74a9494bdc598))
+
+
+
 ## [4.72.2](https://github.com/onesoft-sudo/sudobot/compare/v4.72.1...v4.72.2) (2023-03-03)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * ai chat system ([c90b87c](https://github.com/onesoft-sudo/sudobot/commit/c90b87c971f5e62371b1f625ed348b995b97df07))
-
-
-
-## [4.70.2](https://github.com/onesoft-sudo/sudobot/compare/v4.70.1...v4.70.2) (2023-02-26)
-
-
-### Bug Fixes
-
-* don't show beans and shots in infraction list ([1c3a424](https://github.com/onesoft-sudo/sudobot/commit/1c3a424ea84094ce0080af4976a0560fb6b87824))
 
 
 
