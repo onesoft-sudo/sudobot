@@ -1,3 +1,12 @@
+## [4.72.2](https://github.com/onesoft-sudo/sudobot/compare/v4.72.1...v4.72.2) (2023-03-03)
+
+
+### Bug Fixes
+
+* double response to clear command ([2a40103](https://github.com/onesoft-sudo/sudobot/commit/2a40103f5374950728c73780535e098d66625155))
+
+
+
 ## [4.72.1](https://github.com/onesoft-sudo/sudobot/compare/v4.72.0...v4.72.1) (2023-03-01)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * don't show beans and shots in infraction list ([1c3a424](https://github.com/onesoft-sudo/sudobot/commit/1c3a424ea84094ce0080af4976a0560fb6b87824))
-
-
-
-## [4.70.1](https://github.com/onesoft-sudo/sudobot/compare/v4.70.0...v4.70.1) (2023-02-25)
-
-
-### Bug Fixes
-
-* clear command ([2eb7359](https://github.com/onesoft-sudo/sudobot/commit/2eb7359bbbde6d19186ba639f2492851a6e6b676))
 
 
 
