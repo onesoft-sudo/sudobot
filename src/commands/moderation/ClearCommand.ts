@@ -349,22 +349,22 @@ export default class ClearCommand extends BaseCommand {
         if (message instanceof Message)
             await message.react(emoji('check')!);
 
-        // setTimeout(async () => {
-        //     try {
-        //         if (message instanceof Message)
-        //             await message.delete();
-        //     }
-        //     catch (e) {
-        //         console.log(e);                
-        //     }
+        setTimeout(async () => {
+            try {
+                if (message instanceof Message)
+                    await message.delete();
+            }
+            catch (e) {
+                console.log(e);                
+            }
             
-        //     try {
-        //         await reply!.delete();
-        //     }
-        //     catch (e) {
-        //         console.log(e);                
-        //     }
-        // }, 5500);
+            // try {
+            //     await reply!.delete();
+            // }
+            // catch (e) {
+            //     console.log(e);                
+            // }
+        }, 5500);
 
         (global as any).deletingMessages = false;
     }
