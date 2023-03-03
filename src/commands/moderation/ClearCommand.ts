@@ -327,13 +327,13 @@ export default class ClearCommand extends BaseCommand {
             console.log(e);            
         }
 
-        const reply = await message.channel?.send({
-            embeds: [
-                new MessageEmbed()
-                .setColor('GREEN')
-                .setDescription((await fetchEmoji('check') as Emoji).toString() + " Deleted " + count + " message(s)" + (user ? " from user " + user.tag : ''))
-            ]
-        });
+        // const reply = await message.channel?.send({
+        //     embeds: [
+        //         new MessageEmbed()
+        //         .setColor('GREEN')
+        //         .setDescription((await fetchEmoji('check') as Emoji).toString() + " Deleted " + count + " message(s)" + (user ? " from user " + user.tag : ''))
+        //     ]
+        // });
         
         try {
             if (!hasMutedRole)
@@ -350,22 +350,22 @@ export default class ClearCommand extends BaseCommand {
         if (message instanceof Message)
             await message.react(emoji('check')!);
 
-        setTimeout(async () => {
-            try {
-                if (message instanceof Message)
-                    await message.delete();
-            }
-            catch (e) {
-                console.log(e);                
-            }
+        // setTimeout(async () => {
+        //     try {
+        //         if (message instanceof Message)
+        //             await message.delete();
+        //     }
+        //     catch (e) {
+        //         console.log(e);                
+        //     }
             
-            try {
-                await reply!.delete();
-            }
-            catch (e) {
-                console.log(e);                
-            }
-        }, 5500);
+        //     try {
+        //         await reply!.delete();
+        //     }
+        //     catch (e) {
+        //         console.log(e);                
+        //     }
+        // }, 5500);
 
         (global as any).deletingMessages = false;
     }
