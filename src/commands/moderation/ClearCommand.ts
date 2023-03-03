@@ -32,9 +32,10 @@ interface ClearMessagesOptions {
     user_id?: string;
     bypass?: string[];
     output?: boolean;
+    user?: User;
 }
 
-export async function clearMessages(channel: TextChannel, { count, user_id, bypass = [], output = true }: ClearMessagesOptions) {
+export async function clearMessages(channel: TextChannel, { count, user_id, bypass = [], output = true, user }: ClearMessagesOptions) {
     if (!count && !user_id) {
         throw new Error("Either count or user_id needs to be specified");
     }
@@ -47,7 +48,7 @@ export async function clearMessages(channel: TextChannel, { count, user_id, bypa
         throw new Error("Count cannot be less than 2");
     }
 
-    let messages, deletedCount = 0, tag: string | undefined = undefined;
+    let messages, deletedCount = 0, tag: string | undefined = user?.tag ?? undefined;
 
     do {
         messages = await channel.messages.fetch({ limit: count ?? 100 });
@@ -223,7 +224,6 @@ export default class ClearCommand extends BaseCommand {
 
                 if (!hasMutedRole)
                     await _member?.roles.add(client.config.props[message.guild!.id].mute_role);
-
         	}
         	catch (e) {
         		console.log(e);
@@ -313,14 +313,13 @@ export default class ClearCommand extends BaseCommand {
         }
          */
 
-        let count = 0;
-
         try {
-            count = await clearMessages(channel as TextChannel, {
+            await clearMessages(channel as TextChannel, {
                 count: !msgCount || msgCount === 0 ? undefined : msgCount,
                 user_id: user?.id ?? undefined,
                 bypass: [message.id],
-                output: false
+                output: false,
+                user: user ?? undefined
             });
         }
         catch (e) {
