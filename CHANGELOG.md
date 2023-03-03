@@ -1,3 +1,12 @@
+## [4.72.4](https://github.com/onesoft-sudo/sudobot/compare/v4.72.3...v4.72.4) (2023-03-03)
+
+
+### Bug Fixes
+
+* clear command does not show user tag ([3fb0db9](https://github.com/onesoft-sudo/sudobot/commit/3fb0db955e6d1475207a92b2abd0c986b1bd1ffc))
+
+
+
 ## [4.72.3](https://github.com/onesoft-sudo/sudobot/compare/v4.72.2...v4.72.3) (2023-03-03)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * message reaction tempmutes ([d17283b](https://github.com/onesoft-sudo/sudobot/commit/d17283ba95103789faa275e6622a3b8bc2c1f411))
-
-
-
-# [4.71.0](https://github.com/onesoft-sudo/sudobot/compare/v4.70.2...v4.71.0) (2023-02-26)
-
-
-### Features
-
-* ai chat system ([c90b87c](https://github.com/onesoft-sudo/sudobot/commit/c90b87c971f5e62371b1f625ed348b995b97df07))
 
 
 
