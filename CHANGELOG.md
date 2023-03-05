@@ -1,3 +1,12 @@
+# [4.73.0](https://github.com/onesoft-sudo/sudobot/compare/v4.72.4...v4.73.0) (2023-03-05)
+
+
+### Features
+
+* add ban auto command ([acf9505](https://github.com/onesoft-sudo/sudobot/commit/acf95058ac17d7d9eb7c38c25a01f50798ecc3c6))
+
+
+
 ## [4.72.4](https://github.com/onesoft-sudo/sudobot/compare/v4.72.3...v4.72.4) (2023-03-03)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * afk status ignore emoji ([cb23460](https://github.com/onesoft-sudo/sudobot/commit/cb23460e07545e4d757f52935bf9df072ef771c8))
-
-
-
-# [4.72.0](https://github.com/onesoft-sudo/sudobot/compare/v4.71.0...v4.72.0) (2023-02-28)
-
-
-### Features
-
-* message reaction tempmutes ([d17283b](https://github.com/onesoft-sudo/sudobot/commit/d17283ba95103789faa275e6622a3b8bc2c1f411))
 
 
 
