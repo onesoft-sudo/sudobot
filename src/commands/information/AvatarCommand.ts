@@ -109,7 +109,7 @@ export default class AvatarCommand extends BaseCommand {
         }
 
         const mainUser = user instanceof GuildMember ? user.user : user;
-
+        
         await msg.reply({
             embeds: [
                 new MessageEmbed()
@@ -118,12 +118,14 @@ export default class AvatarCommand extends BaseCommand {
                     name: user instanceof User ? mainUser!.tag : (user?.nickname !== null ? user?.nickname : user.user.tag)!
                 })
                 .setImage(mainUser!.displayAvatarURL({
-                    size: 4096
+                    size: 4096,
+                    dynamic: true,
                 }))
                 .setURL(mainUser!.displayAvatarURL({
-                    size: 4096
+                    size: 4096,
+                    dynamic: true
                 }))
-                .addField('Download', `[Click Here](${mainUser!.displayAvatarURL({ size: 4096 })})`)
+                .addField('Download', `[Click Here](${mainUser!.displayAvatarURL({ size: 4096, dynamic: true })})`)
                 .setFooter({
                     text: `${mainUser!.tag} (${mainUser!.id})`
                 })
