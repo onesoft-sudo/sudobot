@@ -60,7 +60,7 @@ export default class MessageCreateEvent extends BaseEvent {
             }
             else {
                 await message.channel.sendTyping();
-                const reply = await client.aiChat.generateReply(message.content);
+                const reply = await client.aiChat.generateReply(message.content, message);
                 message.reply(reply ?? `${emoji('error')} An error has occurred.`).catch(console.log);
             }            
         }
