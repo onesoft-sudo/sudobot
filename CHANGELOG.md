@@ -1,3 +1,12 @@
+## [4.73.1](https://github.com/onesoft-sudo/sudobot/compare/v4.73.0...v4.73.1) (2023-03-05)
+
+
+### Bug Fixes
+
+* avatar command not showing animated avatars ([60aabbf](https://github.com/onesoft-sudo/sudobot/commit/60aabbfeffcc1ab8dca344201dffa0b4650b4f93))
+
+
+
 # [4.73.0](https://github.com/onesoft-sudo/sudobot/compare/v4.72.4...v4.73.0) (2023-03-05)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * double response to clear command ([2a40103](https://github.com/onesoft-sudo/sudobot/commit/2a40103f5374950728c73780535e098d66625155))
-
-
-
-## [4.72.1](https://github.com/onesoft-sudo/sudobot/compare/v4.72.0...v4.72.1) (2023-03-01)
-
-
-### Bug Fixes
-
-* afk status ignore emoji ([cb23460](https://github.com/onesoft-sudo/sudobot/commit/cb23460e07545e4d757f52935bf9df072ef771c8))
 
 
 
