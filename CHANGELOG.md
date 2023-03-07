@@ -1,3 +1,12 @@
+# [4.74.0](https://github.com/onesoft-sudo/sudobot/compare/v4.73.1...v4.74.0) (2023-03-07)
+
+
+### Features
+
+* add cooldown to afk command ([7a37de2](https://github.com/onesoft-sudo/sudobot/commit/7a37de2d0fafcdee9e505821f262ca7b1507dcc0))
+
+
+
 ## [4.73.1](https://github.com/onesoft-sudo/sudobot/compare/v4.73.0...v4.73.1) (2023-03-05)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * clear command does not show user tag ([626951f](https://github.com/onesoft-sudo/sudobot/commit/626951f4cd4483fa03dd0bc9c0c74a9494bdc598))
-
-
-
-## [4.72.2](https://github.com/onesoft-sudo/sudobot/compare/v4.72.1...v4.72.2) (2023-03-03)
-
-
-### Bug Fixes
-
-* double response to clear command ([2a40103](https://github.com/onesoft-sudo/sudobot/commit/2a40103f5374950728c73780535e098d66625155))
 
 
 
