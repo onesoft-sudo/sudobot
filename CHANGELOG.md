@@ -1,3 +1,12 @@
+# [4.75.0](https://github.com/onesoft-sudo/sudobot/compare/v4.74.0...v4.75.0) (2023-03-07)
+
+
+### Features
+
+* add confession system ([e15e0ee](https://github.com/onesoft-sudo/sudobot/commit/e15e0eee5376cf841c40fea0363c90311a1fbdba))
+
+
+
 # [4.74.0](https://github.com/onesoft-sudo/sudobot/compare/v4.73.1...v4.74.0) (2023-03-07)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * clear command does not show user tag ([3fb0db9](https://github.com/onesoft-sudo/sudobot/commit/3fb0db955e6d1475207a92b2abd0c986b1bd1ffc))
-
-
-
-## [4.72.3](https://github.com/onesoft-sudo/sudobot/compare/v4.72.2...v4.72.3) (2023-03-03)
-
-
-### Bug Fixes
-
-* clear command does not show user tag ([626951f](https://github.com/onesoft-sudo/sudobot/commit/626951f4cd4483fa03dd0bc9c0c74a9494bdc598))
 
 
 
