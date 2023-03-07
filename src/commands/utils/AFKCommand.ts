@@ -22,15 +22,46 @@ import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
+import { formatDuration, intervalToDuration } from 'date-fns';
 
 export default class AFKCommand extends BaseCommand {
     supportsInteractions = true;
+    cooldownMap = new Map<string, [Date, number, NodeJS.Timeout]>();
 
     constructor() {
         super('afk', 'utils', []);
     }
 
     async run(client: DiscordClient, message: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
+        const entry = this.cooldownMap.get(message.member!.user.id);
+
+        if (entry) {
+            if (entry[1] > 5) {
+                if (message instanceof Message) {
+                    message.react('⏰').catch(console.error);
+                }
+                else {
+                    message.reply({
+                        content: `Please try again in ${formatDuration(intervalToDuration({
+                            start: new Date(),
+                            end: new Date(entry[0].getTime() + (10 * 60 * 1000))
+                        }))}`,
+                        ephemeral: true
+                    }).catch(console.error);
+                }
+
+                return;
+            }
+            else {
+                this.cooldownMap.set(message.member!.user.id, [entry[0], entry[1] + 1, entry[2]]);
+            }
+        }
+        else {
+            this.cooldownMap.set(message.member!.user.id, [new Date(), 0, setTimeout(() => {
+                this.cooldownMap.delete(message.member!.user.id);
+            }, 10 * 60 * 1000)]);
+        }
+
         let status = options.isInteraction ? options.options.getString("reason") ?? undefined : options.args.join(" ");
 
         if (message instanceof Message) {
