@@ -1,3 +1,12 @@
+# [4.76.0](https://github.com/onesoft-sudo/sudobot/compare/v4.75.0...v4.76.0) (2023-03-08)
+
+
+### Features
+
+* paginate profile command ([42c9b5b](https://github.com/onesoft-sudo/sudobot/commit/42c9b5b15f159b2c14c8683a97f60d7f655e3e63))
+
+
+
 # [4.75.0](https://github.com/onesoft-sudo/sudobot/compare/v4.74.0...v4.75.0) (2023-03-07)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * add ban auto command ([acf9505](https://github.com/onesoft-sudo/sudobot/commit/acf95058ac17d7d9eb7c38c25a01f50798ecc3c6))
-
-
-
-## [4.72.4](https://github.com/onesoft-sudo/sudobot/compare/v4.72.3...v4.72.4) (2023-03-03)
-
-
-### Bug Fixes
-
-* clear command does not show user tag ([3fb0db9](https://github.com/onesoft-sudo/sudobot/commit/3fb0db955e6d1475207a92b2abd0c986b1bd1ffc))
 
 
 
