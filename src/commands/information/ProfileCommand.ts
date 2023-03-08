@@ -331,7 +331,7 @@ export default class ProfileCommand extends BaseCommand {
                 }))
                 .setFields(currentPage === 1 ? fields : fields2)
                 .setFooter({
-                    text: `${member?.user.bot ? 'Bot' : 'User'} • ${member!.id} • $${currentPage === 1 ? "General Info" : "More Info"} • Has ${percentage.toString()}% permissions`
+                    text: `${member?.user.bot ? 'Bot' : 'User'} • ${member!.id} • ${currentPage === 1 ? "General Info" : "More Info"} • Has ${percentage.toString()}% permissions`
                 });
             },
             channel_id: msg.channelId!,
