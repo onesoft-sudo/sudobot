@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, Guild, GuildMember, Message, Permissions, User, UserFlags, Util } from 'discord.js';
+import { CommandInteraction, Guild, GuildMember, Message, MessageActionRow, MessageButton, Permissions, User, UserFlags, Util } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -27,6 +27,8 @@ import getMember from '../../utils/getMember';
 import { timeSince } from '../../utils/util';
 import { roleMention } from '@discordjs/builders';
 import Profile from '../../models/Profile';
+import Pagination from '../../utils/Pagination';
+import { emoji } from '../../utils/Emoji';
 
 export const getUserBadges = (user: User) => {
     const { FLAGS } = UserFlags;
@@ -209,10 +211,12 @@ export default class ProfileCommand extends BaseCommand {
             },
         ];
 
+        const fields2: { name: string, value: string, inline?: boolean }[] = [];
+
         const badges = getUserBadges(member!.user);
 
         if (badges.length > 0) {
-            fields.push({
+            fields2.push({
                 name: 'Badges',
                 value: badges.join("\n")
             });
@@ -225,7 +229,7 @@ export default class ProfileCommand extends BaseCommand {
 
         if (profile) {
             if (profile.gender) {
-                fields.push({
+                fields2.push({
                     name: "Gender",
                     inline: true,
                     value: profile.gender
@@ -233,7 +237,7 @@ export default class ProfileCommand extends BaseCommand {
             }
 
             if (profile.pronoun) {
-                fields.push({
+                fields2.push({
                     name: "Pronoun",
                     inline: true,
                     value: profile.pronoun.replace(/__/g, '/').replace(/_/g, ' ')
@@ -241,7 +245,7 @@ export default class ProfileCommand extends BaseCommand {
             }
 
             if (profile.age) {
-                fields.push({
+                fields2.push({
                     name: "Age",
                     inline: true,
                     value: profile.age + ''
@@ -249,14 +253,14 @@ export default class ProfileCommand extends BaseCommand {
             }
 
             if (profile.hobbies) {
-                fields.push({
+                fields2.push({
                     name: "Hobbies",
                     value: profile.hobbies
                 });
             }
 
             if (profile.continent) {
-                fields.push({
+                fields2.push({
                     name: "Continent",
                     inline: true,
                     value: profile.continent.replace(/_/g, ' ')
@@ -264,7 +268,7 @@ export default class ProfileCommand extends BaseCommand {
             }
 
             if (profile.zodiac) {
-                fields.push({
+                fields2.push({
                     name: "Zodiac Sign",
                     inline: true,
                     value: `:${profile.zodiac.toLowerCase()}: ${profile.zodiac}`
@@ -272,7 +276,7 @@ export default class ProfileCommand extends BaseCommand {
             }
 
             if (profile.job) {
-                fields.push({
+                fields2.push({
                     name: "Job/Occupation",
                     inline: true,
                     value: Util.escapeMarkdown(profile.job)
@@ -280,14 +284,14 @@ export default class ProfileCommand extends BaseCommand {
             }
 
             if (profile.languages) {
-                fields.push({
+                fields2.push({
                     name: "Languages Spoken",
                     value: Util.escapeMarkdown(profile.languages)
                 });
             }
 
             if (profile.subjects) {
-                fields.push({
+                fields2.push({
                     name: "Favourite Subjects/Fields",
                     value: Util.escapeMarkdown(profile.subjects),
                 });
@@ -309,9 +313,9 @@ export default class ProfileCommand extends BaseCommand {
         let percentage = <string> getPermissionLevel(member!, true);
         percentage = percentage.includes('.') ? percentage.substring(0, percentage.indexOf('.')) : percentage;
 
-        await this.deferReply(msg, {
-            embeds: [
-                new MessageEmbed({
+        const pagination = new Pagination([1, 2], {
+            embedBuilder({ currentPage }) {
+                return new MessageEmbed({
                     image: {
                         url: banner,
                     },
@@ -325,11 +329,39 @@ export default class ProfileCommand extends BaseCommand {
                 .setThumbnail(member!.displayAvatarURL({
                     size: 4096
                 }))
-                .setFields(fields)
+                .setFields(currentPage === 1 ? fields : fields2)
                 .setFooter({
-                    text: `${member?.user.bot ? 'Bot' : 'User'} • ${member!.id} • Has ${percentage.toString()}% permissions`
-                })
-            ]
+                    text: `${member?.user.bot ? 'Bot' : 'User'} • ${member!.id} • $${currentPage === 1 ? "General Info" : "More Info"} • Has ${percentage.toString()}% permissions`
+                });
+            },
+            channel_id: msg.channelId!,
+            guild_id: msg.guildId!,
+            limit: 1,
+            actionRowBuilder({ back, first, last, next }, id) {
+                const actionRow = new MessageActionRow<MessageButton>();
+
+                if (first)
+                    actionRow.addComponents(
+                        new MessageButton()
+                            .setCustomId(`pagination_first_${id}`)
+                            .setStyle("SECONDARY")
+                            .setEmoji(emoji('ArrowLeft')!)
+                            .setLabel("Show General Info")
+                    );
+
+                if (last)
+                    actionRow.addComponents(
+                        new MessageButton()
+                            .setCustomId(`pagination_last_${id}`)
+                            .setStyle("SECONDARY")
+                            .setLabel("Show More Info")
+                    );
+
+                return actionRow;
+            },
         });
+
+        const newMessage = await this.deferReply(msg, await pagination.getMessageOptions());
+        pagination.start(newMessage!).catch(console.error);
     }
 }

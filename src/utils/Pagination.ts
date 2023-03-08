@@ -45,7 +45,7 @@ export interface PaginationOptions<T> {
     fetchData?: (options: FetchDataOption) => Promise<T[]>;
     messageOptions?: ReplyMessageOptions & MessageOptions & InteractionReplyOptions & MessageEditOptions;
     embedBuilder: (options: EmbedBuilderOptions<T>) => MessageEmbed;
-    actionRowBuilder?: (options: { first: boolean, last: boolean, next: boolean, back: boolean }) => MessageActionRow<MessageButton>;
+    actionRowBuilder?: (options: { first: boolean, last: boolean, next: boolean, back: boolean }, id: string) => MessageActionRow<MessageButton>;
 }
 
 export default class Pagination<T> {
@@ -120,7 +120,7 @@ export default class Pagination<T> {
 
     getActionRow({ first, last, next, back }: { first: boolean, last: boolean, next: boolean, back: boolean } = { first: true, last: true, next: true, back: true }) {
         if (this.options.actionRowBuilder) {
-            return this.options.actionRowBuilder({ first, last, next, back });
+            return this.options.actionRowBuilder({ first, last, next, back }, this.id);
         }
 
         const actionRow = new MessageActionRow<MessageButton>();

@@ -75,7 +75,7 @@ export default abstract class BaseCommand {
         
     }
 
-    async deferReply(msg: Message | CommandInteraction | ContextMenuInteraction, options: MessageOptions | string | MessagePayload | WebhookEditMessageOptions, edit: boolean = false): Promise<Message | CommandInteraction> {
+    async deferReply(msg: Message | CommandInteraction | ContextMenuInteraction, options: MessageOptions | string | MessagePayload | WebhookEditMessageOptions, edit: boolean = false): Promise<Message> {
         if (msg instanceof Message) {
             return await msg[edit ? 'edit' : 'reply'](options as (MessageOptions & MessageEditOptions));
         }
