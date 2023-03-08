@@ -1,3 +1,12 @@
+## [4.76.1](https://github.com/onesoft-sudo/sudobot/compare/v4.76.0...v4.76.1) (2023-03-08)
+
+
+### Bug Fixes
+
+* uneeded $ in footer of profile command embed ([cacad31](https://github.com/onesoft-sudo/sudobot/commit/cacad317e7aac44f890b596d223ddd96b1a857c4))
+
+
+
 # [4.76.0](https://github.com/onesoft-sudo/sudobot/compare/v4.75.0...v4.76.0) (2023-03-08)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * avatar command not showing animated avatars ([60aabbf](https://github.com/onesoft-sudo/sudobot/commit/60aabbfeffcc1ab8dca344201dffa0b4650b4f93))
-
-
-
-# [4.73.0](https://github.com/onesoft-sudo/sudobot/compare/v4.72.4...v4.73.0) (2023-03-05)
-
-
-### Features
-
-* add ban auto command ([acf9505](https://github.com/onesoft-sudo/sudobot/commit/acf95058ac17d7d9eb7c38c25a01f50798ecc3c6))
 
 
 
