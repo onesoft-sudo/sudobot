@@ -1,3 +1,12 @@
+## [4.76.2](https://github.com/onesoft-sudo/sudobot/compare/v4.76.1...v4.76.2) (2023-03-08)
+
+
+### Bug Fixes
+
+* typo ([9ac5c23](https://github.com/onesoft-sudo/sudobot/commit/9ac5c23d420ecfcbc94b8cf86be43bd4ed693759))
+
+
+
 ## [4.76.1](https://github.com/onesoft-sudo/sudobot/compare/v4.76.0...v4.76.1) (2023-03-08)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * add cooldown to afk command ([7a37de2](https://github.com/onesoft-sudo/sudobot/commit/7a37de2d0fafcdee9e505821f262ca7b1507dcc0))
-
-
-
-## [4.73.1](https://github.com/onesoft-sudo/sudobot/compare/v4.73.0...v4.73.1) (2023-03-05)
-
-
-### Bug Fixes
-
-* avatar command not showing animated avatars ([60aabbf](https://github.com/onesoft-sudo/sudobot/commit/60aabbfeffcc1ab8dca344201dffa0b4650b4f93))
 
 
 
