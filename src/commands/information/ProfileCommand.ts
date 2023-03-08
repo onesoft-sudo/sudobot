@@ -337,6 +337,7 @@ export default class ProfileCommand extends BaseCommand {
             channel_id: msg.channelId!,
             guild_id: msg.guildId!,
             limit: 1,
+            timeout: 150_000,
             actionRowBuilder({ back, first, last, next }, id) {
                 const actionRow = new MessageActionRow<MessageButton>();
 
