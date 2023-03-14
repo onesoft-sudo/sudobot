@@ -1,3 +1,12 @@
+## [4.77.1](https://github.com/onesoft-sudo/sudobot/compare/v4.77.0...v4.77.1) (2023-03-14)
+
+
+### Bug Fixes
+
+* snipe command not showing correct message content ([c154b0e](https://github.com/onesoft-sudo/sudobot/commit/c154b0e9e56b2c859147123bdc8e511099d43a66))
+
+
+
 # [4.77.0](https://github.com/onesoft-sudo/sudobot/compare/v4.76.2...v4.77.0) (2023-03-14)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * paginate profile command ([42c9b5b](https://github.com/onesoft-sudo/sudobot/commit/42c9b5b15f159b2c14c8683a97f60d7f655e3e63))
-
-
-
-# [4.75.0](https://github.com/onesoft-sudo/sudobot/compare/v4.74.0...v4.75.0) (2023-03-07)
-
-
-### Features
-
-* add confession system ([e15e0ee](https://github.com/onesoft-sudo/sudobot/commit/e15e0eee5376cf841c40fea0363c90311a1fbdba))
 
 
 
