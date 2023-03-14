@@ -49,5 +49,8 @@ export default class MessageDeleteEvent extends BaseEvent {
             return;
 
         await client.logger.onMessageDelete(message);
+
+        if (message.content.trim() !== '')
+            client.utils.lastDeletedMessage = message;
     }
 }
