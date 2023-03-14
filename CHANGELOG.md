@@ -1,3 +1,12 @@
+# [4.77.0](https://github.com/onesoft-sudo/sudobot/compare/v4.76.2...v4.77.0) (2023-03-14)
+
+
+### Features
+
+* add snipe command ([66cca23](https://github.com/onesoft-sudo/sudobot/commit/66cca23497386784b7e6cd6bcbe6c85a65ee2ac6))
+
+
+
 ## [4.76.2](https://github.com/onesoft-sudo/sudobot/compare/v4.76.1...v4.76.2) (2023-03-08)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * add confession system ([e15e0ee](https://github.com/onesoft-sudo/sudobot/commit/e15e0eee5376cf841c40fea0363c90311a1fbdba))
-
-
-
-# [4.74.0](https://github.com/onesoft-sudo/sudobot/compare/v4.73.1...v4.74.0) (2023-03-07)
-
-
-### Features
-
-* add cooldown to afk command ([7a37de2](https://github.com/onesoft-sudo/sudobot/commit/7a37de2d0fafcdee9e505821f262ca7b1507dcc0))
 
 
 
