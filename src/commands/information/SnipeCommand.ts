@@ -25,7 +25,7 @@ export default class SnipeCommand extends BaseCommand {
                         iconURL: lastDeletedMessage.author.displayAvatarURL(),
                     },
                     color: 'RANDOM',
-                    description: message.content,
+                    description: lastDeletedMessage.content,
                     footer: {
                         text: "Sniped"
                     }
