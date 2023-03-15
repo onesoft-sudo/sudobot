@@ -1,3 +1,12 @@
+# [4.78.0](https://github.com/onesoft-sudo/sudobot/compare/v4.77.2...v4.78.0) (2023-03-15)
+
+
+### Features
+
+* add remind command ([cbbcf04](https://github.com/onesoft-sudo/sudobot/commit/cbbcf04c81a1bebd9e63332cee4f4d5cadf93846))
+
+
+
 ## [4.77.2](https://github.com/onesoft-sudo/sudobot/compare/v4.77.1...v4.77.2) (2023-03-15)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * typo ([9ac5c23](https://github.com/onesoft-sudo/sudobot/commit/9ac5c23d420ecfcbc94b8cf86be43bd4ed693759))
-
-
-
-## [4.76.1](https://github.com/onesoft-sudo/sudobot/compare/v4.76.0...v4.76.1) (2023-03-08)
-
-
-### Bug Fixes
-
-* uneeded $ in footer of profile command embed ([cacad31](https://github.com/onesoft-sudo/sudobot/commit/cacad317e7aac44f890b596d223ddd96b1a857c4))
 
 
 
