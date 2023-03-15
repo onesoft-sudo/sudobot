@@ -1,3 +1,12 @@
+## [4.77.2](https://github.com/onesoft-sudo/sudobot/compare/v4.77.1...v4.77.2) (2023-03-15)
+
+
+### Bug Fixes
+
+* **profiles:** animated avatars/banners are not showing ([b0fa27f](https://github.com/onesoft-sudo/sudobot/commit/b0fa27fe7d1def0559f6a4d3dedde25f2af530b2))
+
+
+
 ## [4.77.1](https://github.com/onesoft-sudo/sudobot/compare/v4.77.0...v4.77.1) (2023-03-14)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * uneeded $ in footer of profile command embed ([cacad31](https://github.com/onesoft-sudo/sudobot/commit/cacad317e7aac44f890b596d223ddd96b1a857c4))
-
-
-
-# [4.76.0](https://github.com/onesoft-sudo/sudobot/compare/v4.75.0...v4.76.0) (2023-03-08)
-
-
-### Features
-
-* paginate profile command ([42c9b5b](https://github.com/onesoft-sudo/sudobot/commit/42c9b5b15f159b2c14c8683a97f60d7f655e3e63))
 
 
 
