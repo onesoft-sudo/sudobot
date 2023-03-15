@@ -302,7 +302,7 @@ export default class ProfileCommand extends BaseCommand {
 
         try {
             await member?.user.fetch(true);
-            banner = member!.user!.bannerURL({ size: 4096 }) ?? undefined;
+            banner = member!.user!.bannerURL({ size: 4096, dynamic: true }) ?? undefined;
         }
         catch (e) {
             console.log(e);
@@ -327,7 +327,8 @@ export default class ProfileCommand extends BaseCommand {
                     iconURL: member!.user.displayAvatarURL()
                 })
                 .setThumbnail(member!.displayAvatarURL({
-                    size: 4096
+                    size: 4096,
+                    dynamic: true
                 }))
                 .setFields(currentPage === 1 ? fields : fields2)
                 .setFooter({
