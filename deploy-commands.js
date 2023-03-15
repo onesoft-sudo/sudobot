@@ -209,6 +209,10 @@ let commands = [
 		.addUserOption(option => option.setName('member').setDescription("Show someone else's activity")),
 
 	// AUTOMATION
+	new SlashCommandBuilder().setName('remind').setDescription('Let the system remind you something after a certain amount of time')
+		.addStringOption(option => option.setName("time").setDescription("Enter the time interval. For example, \"1 day\" or \"4h 45m\".").setRequired(true))
+		.addStringOption(option => option.setName("description").setDescription("Enter what should the system remind you.").setRequired(true)),
+
 	new SlashCommandBuilder().setName('ballot').setDescription('Ballot engine')
 		.addSubcommand(subcommand =>
 			subcommand

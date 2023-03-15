@@ -43,6 +43,7 @@
     "discord.js": "^13.7.0",
     "dot-object": "^2.1.4",
     "dotenv": "^16.0.1",
+    "enhanced-ms": "^2.2.0",
     "express": "^4.18.1",
     "express-rate-limit": "^6.6.0",
     "express-router": "^0.0.1",
