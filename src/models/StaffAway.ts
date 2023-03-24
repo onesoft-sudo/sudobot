@@ -24,6 +24,7 @@ export interface IStaffAway extends Document {
     reason?: string;
     guild_id: string;
     createdAt: Date;
+    enabled: boolean;
 }
 
 const schema = new Schema({
@@ -37,6 +38,11 @@ const schema = new Schema({
     },
     guild_id: {
         type: String,
+        required: true
+    },
+    enabled: {
+        type: Boolean,
+        default: true,
         required: true
     },
     createdAt: {

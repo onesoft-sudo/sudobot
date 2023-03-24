@@ -26,7 +26,7 @@ import { formatDuration, intervalToDuration } from 'date-fns';
 import StaffAway from '../../models/StaffAway';
 import { emoji } from '../../utils/Emoji';
 
-export default class AFKCommand extends BaseCommand {
+export default class StaffAwayCommand extends BaseCommand {
     supportsInteractions = true;
 
     constructor() {
@@ -61,7 +61,11 @@ export default class AFKCommand extends BaseCommand {
         }
         else {
             client.utils.findStaffAway(message.guildId!, message.author.id, true);
-            await entry.delete();
+            
+            await entry.updateOne({
+                enabled: false
+            });
+
             await message.reply(`${emoji('check')} Welcome back, we've removed your away status.`);
         }
     }

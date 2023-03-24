@@ -14,7 +14,7 @@ export default class Utilities extends Service {
     constructor(client: DiscordClient) {
         super(client);
 
-        StaffAway.find().then(list => {
+        StaffAway.find({ enabled: true }).then(list => {
             this.staffAwayList = list;
         }).catch(console.error);
     }
