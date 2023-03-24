@@ -1,3 +1,12 @@
+# [4.79.0](https://github.com/onesoft-sudo/sudobot/compare/v4.78.0...v4.79.0) (2023-03-24)
+
+
+### Features
+
+* staff away system ([cd7d97a](https://github.com/onesoft-sudo/sudobot/commit/cd7d97a9dae07383148fbf4bcdf1a57005093c7b))
+
+
+
 # [4.78.0](https://github.com/onesoft-sudo/sudobot/compare/v4.77.2...v4.78.0) (2023-03-15)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * add snipe command ([66cca23](https://github.com/onesoft-sudo/sudobot/commit/66cca23497386784b7e6cd6bcbe6c85a65ee2ac6))
-
-
-
-## [4.76.2](https://github.com/onesoft-sudo/sudobot/compare/v4.76.1...v4.76.2) (2023-03-08)
-
-
-### Bug Fixes
-
-* typo ([9ac5c23](https://github.com/onesoft-sudo/sudobot/commit/9ac5c23d420ecfcbc94b8cf86be43bd4ed693759))
 
 
 
