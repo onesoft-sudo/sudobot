@@ -1,3 +1,12 @@
+# [4.81.0](https://github.com/onesoft-sudo/sudobot/compare/v4.80.0...v4.81.0) (2023-03-24)
+
+
+### Features
+
+* add command for listing away staff ([4d310dd](https://github.com/onesoft-sudo/sudobot/commit/4d310dde0133e9f2269d7eab70dfe86ecdeaf600))
+
+
+
 # [4.80.0](https://github.com/onesoft-sudo/sudobot/compare/v4.79.1...v4.80.0) (2023-03-24)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * add remind command ([cbbcf04](https://github.com/onesoft-sudo/sudobot/commit/cbbcf04c81a1bebd9e63332cee4f4d5cadf93846))
-
-
-
-## [4.77.2](https://github.com/onesoft-sudo/sudobot/compare/v4.77.1...v4.77.2) (2023-03-15)
-
-
-### Bug Fixes
-
-* **profiles:** animated avatars/banners are not showing ([b0fa27f](https://github.com/onesoft-sudo/sudobot/commit/b0fa27fe7d1def0559f6a4d3dedde25f2af530b2))
 
 
 
