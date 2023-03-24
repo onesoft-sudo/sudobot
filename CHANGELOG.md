@@ -1,3 +1,12 @@
+# [4.80.0](https://github.com/onesoft-sudo/sudobot/compare/v4.79.1...v4.80.0) (2023-03-24)
+
+
+### Features
+
+* add command for listing away staff ([764c1e7](https://github.com/onesoft-sudo/sudobot/commit/764c1e75bda142b29f82e4a8970ca1466b735413))
+
+
+
 ## [4.79.1](https://github.com/onesoft-sudo/sudobot/compare/v4.79.0...v4.79.1) (2023-03-24)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **profiles:** animated avatars/banners are not showing ([b0fa27f](https://github.com/onesoft-sudo/sudobot/commit/b0fa27fe7d1def0559f6a4d3dedde25f2af530b2))
-
-
-
-## [4.77.1](https://github.com/onesoft-sudo/sudobot/compare/v4.77.0...v4.77.1) (2023-03-14)
-
-
-### Bug Fixes
-
-* snipe command not showing correct message content ([c154b0e](https://github.com/onesoft-sudo/sudobot/commit/c154b0e9e56b2c859147123bdc8e511099d43a66))
 
 
 
