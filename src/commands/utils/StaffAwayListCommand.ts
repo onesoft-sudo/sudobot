@@ -12,6 +12,11 @@ export default class StaffAwayCommand extends BaseCommand {
     }
 
     async run(client: DiscordClient, message: Message, options: CommandOptions) {
+        if (client.utils.staffAwayList.length === 0) {
+            await message.reply("No one has taken breaks.");
+            return;
+        }
+
         const pagination = new Pagination(client.utils.staffAwayList, {
             channel_id: message.channelId!,
             guild_id: message.guildId!,
