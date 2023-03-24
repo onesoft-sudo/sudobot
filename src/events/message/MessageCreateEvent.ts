@@ -130,5 +130,6 @@ export default class MessageCreateEvent extends BaseEvent {
         }
 
         await client.afkEngine.start(message);
+        await client.utils.checkStaffAway(message).catch(console.error);
     }
 }

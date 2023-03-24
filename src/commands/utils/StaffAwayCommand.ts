@@ -62,7 +62,7 @@ export default class AFKCommand extends BaseCommand {
         else {
             client.utils.findStaffAway(message.guildId!, message.author.id, true);
             await entry.delete();
-            await message.reply(`${emoji('check')} Welcome back, we removed your away status.`);
+            await message.reply(`${emoji('check')} Welcome back, we've removed your away status.`);
         }
     }
 }
