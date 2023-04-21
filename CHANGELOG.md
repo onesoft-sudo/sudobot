@@ -1,3 +1,12 @@
+# [4.82.0](https://github.com/onesoft-sudo/sudobot/compare/v4.81.0...v4.82.0) (2023-04-21)
+
+
+### Features
+
+* **welcomer:** added a new welcome message ([9592400](https://github.com/onesoft-sudo/sudobot/commit/95924003e6a940210f4cbb24c71a3be26ed1d0ff))
+
+
+
 # [4.81.0](https://github.com/onesoft-sudo/sudobot/compare/v4.80.0...v4.81.0) (2023-03-24)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * staff away system ([cd7d97a](https://github.com/onesoft-sudo/sudobot/commit/cd7d97a9dae07383148fbf4bcdf1a57005093c7b))
-
-
-
-# [4.78.0](https://github.com/onesoft-sudo/sudobot/compare/v4.77.2...v4.78.0) (2023-03-15)
-
-
-### Features
-
-* add remind command ([cbbcf04](https://github.com/onesoft-sudo/sudobot/commit/cbbcf04c81a1bebd9e63332cee4f4d5cadf93846))
 
 
 
