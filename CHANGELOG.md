@@ -1,3 +1,13 @@
+## [4.82.2](https://github.com/onesoft-sudo/sudobot/compare/v4.82.1...v4.82.2) (2023-04-22)
+
+
+### Bug Fixes
+
+* **antijoin:** running antijoin command affects all servers ([eeb9da8](https://github.com/onesoft-sudo/sudobot/commit/eeb9da8986ca9a5c47e38bf5d2c02364e48cf976))
+* **translator:** autocomplete errors ([2146b6c](https://github.com/onesoft-sudo/sudobot/commit/2146b6cf455c2d58ec94c6ee9fd1823d29170924))
+
+
+
 ## [4.82.1](https://github.com/onesoft-sudo/sudobot/compare/v4.82.0...v4.82.1) (2023-04-22)
 
 
@@ -31,15 +41,6 @@
 ### Features
 
 * add command for listing away staff ([764c1e7](https://github.com/onesoft-sudo/sudobot/commit/764c1e75bda142b29f82e4a8970ca1466b735413))
-
-
-
-## [4.79.1](https://github.com/onesoft-sudo/sudobot/compare/v4.79.0...v4.79.1) (2023-03-24)
-
-
-### Bug Fixes
-
-* issues with staff away feature ([64d9768](https://github.com/onesoft-sudo/sudobot/commit/64d9768da03c47040fcd734d296e523b5f3f640e))
 
 
 
