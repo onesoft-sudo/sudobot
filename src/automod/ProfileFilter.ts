@@ -24,6 +24,7 @@ import ProfileFilterRecord, { IProfileFilterRecord } from "../models/ProfileFilt
 import Punishment from "../models/Punishment";
 import PunishmentType from "../types/PunishmentType";
 import Service from "../utils/structures/Service";
+import { hasConfig } from "../utils/util";
 
 export enum ProfileFilterAction {
     NONE = 'none',
@@ -37,6 +38,9 @@ export enum ProfileFilterIssue {
 
 export default class ProfileFilter extends Service {
     hasIssues(member: GuildMember): ProfileFilterIssue | null {
+        if (!hasConfig(this.client, member.guild.id, "profile_filter"))
+            return null;
+        
         const config = this.client.config.props[member.guild.id];
         const { components } = config.profile_filter;
         
@@ -52,6 +56,9 @@ export default class ProfileFilter extends Service {
     }
 
     private testString(guildID: string, string: string) {
+        if (!hasConfig(this.client, guildID, "profile_filter"))
+            return false;
+        
         const config = this.client.config.props[guildID];
         const { inherit_from_words, inherit_from_regex, inherit_from_tokens, blocked_words, blocked_tokens, blocked_regex_patterns } = config.profile_filter;
         const words: string[] = inherit_from_words ? [...blocked_words, ...config.filters.words] : blocked_words;
@@ -82,6 +89,9 @@ export default class ProfileFilter extends Service {
     }
 
     async takeAction(member: GuildMember, issue: ProfileFilterIssue) {
+        if (!hasConfig(this.client, member.guild.id, "profile_filter"))
+            return;
+        
         const config = this.client.config.props[member.guild.id];
         const { actions } = config.profile_filter;
         
@@ -129,6 +139,9 @@ export default class ProfileFilter extends Service {
     }
 
     async check(member: GuildMember) {
+        if (!hasConfig(this.client, member.guild.id, "profile_filter"))
+            return;
+        
         const config = this.client.config.props[member.guild.id];
 
         if (!config.profile_filter.enabled || member.roles.cache.has(config.mod_role)) {

@@ -1,6 +1,7 @@
 import { Message, Util } from "discord.js";
 import MessageEmbed from "../client/MessageEmbed";
 import Service from "../utils/structures/Service";
+import { hasConfig } from "../utils/util";
 
 export enum MessageRuleType {
     RESTRICT_WORDS_IN_ROW = 'ruleRestrictWordsInRow',
@@ -23,6 +24,9 @@ export interface MessageRule {
 
 export default class MessageRules extends Service {
     async onMessageCreate(message: Message) {
+        if (!hasConfig(this.client, message.guildId!, "message_rules"))
+            return;
+        
         const { message_rules: { enabled, disabled_channels, rules }, mod_role } = this.client.config.props[message.guildId!];
 
         if (!enabled || disabled_channels.includes(message.channelId!) || message.member?.roles.cache.has(mod_role)) {

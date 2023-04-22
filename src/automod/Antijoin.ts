@@ -20,6 +20,7 @@
 import { GuildMember } from "discord.js";
 import Service from "../utils/structures/Service";
 
+// FIXME: Global enable/disable
 export default class Antijoin extends Service {
     enabled = false;
 

@@ -1,20 +1,17 @@
 import { Message } from "discord.js";
 import { google } from "googleapis";
 import Service from "../utils/structures/Service";
+import { hasConfig } from "../utils/util";
 
 export default class AIMessageFilter extends Service {
     async scanMessage(message: Message) {
-        if (!process.env.PERSPECTIVE_API_TOKEN) {
+        if (!process.env.PERSPECTIVE_API_TOKEN || !hasConfig(this.client, message.guildId!, "ai_mod")) {
             return;
         }
-
-        console.log("here: ai(1)");
 
         if (!message.content || message.content.trim() === "") {
             return;
         }
-
-        console.log("here: ai(2)");
 
         const config = this.client.config.props[message.guildId!].ai_mod;
 
@@ -23,8 +20,6 @@ export default class AIMessageFilter extends Service {
         if (!config?.enabled || message.member?.roles.cache.has(this.client.config.props[message.guildId!].mod_role)) {
             return;
         }
-
-        console.log("here: ai(3)");
 
         const DISCOVERY_URL = "https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1";
 

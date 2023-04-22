@@ -20,6 +20,7 @@
 import { Collection, Guild, GuildMember, TextChannel } from 'discord.js';
 import DiscordClient from '../client/Client';
 import { lockAll } from '../commands/moderation/LockallCommand';
+import { hasConfig } from '../utils/util';
 
 export default class AntiRaid {
     constructor(private client: DiscordClient, private joins = 0, private maxJoins = 0, private channels: string[] = [], private exclude = false, private time = 0, private enabled = false) {
@@ -35,6 +36,9 @@ export default class AntiRaid {
     }
 
     async start(member: GuildMember) {
+        if (!hasConfig(this.client, member.guild.id, "raid"))
+            return;
+        
         if (member.user.bot) {
             console.log('bot');
             return;

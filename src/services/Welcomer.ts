@@ -21,6 +21,7 @@ import { GuildMember, MessageEmbed, TextChannel } from "discord.js";
 import fs from 'fs';
 import path from "path";
 import Service from "../utils/structures/Service";
+import { hasConfig } from "../utils/util";
 
 export default class Welcomer extends Service {
     messages: string[] = JSON.parse(fs.readFileSync(path.resolve(process.env.SUDO_PREFIX ?? path.join(__dirname, '..', '..'), 'resources', 'welcome_messages.json')).toString());
@@ -67,6 +68,9 @@ export default class Welcomer extends Service {
     }
     
     async start(member: GuildMember, index?: number) {
+        if (!hasConfig(this.client, member.guild.id, "welcomer"))
+            return;
+
         if (this.client.config.props[member.guild.id].welcomer.enabled) {
             const { channel: channelID } = this.client.config.props[member.guild.id].welcomer;
             

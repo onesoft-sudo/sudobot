@@ -22,6 +22,7 @@ import { Collection, Emoji, Guild, GuildMember, TextChannel } from "discord.js";
 import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
 import { fetchEmoji } from "../utils/Emoji";
+import { hasConfig } from "../utils/util";
 
 export default class AutoClear {
     constructor(protected client: DiscordClient) {
@@ -29,7 +30,10 @@ export default class AutoClear {
     }
 
     async start(member: GuildMember, guild: Guild) {
-        const config = await this.client.config.props[guild.id].autoclear;
+        if (!hasConfig(this.client, guild.id, "autoclear"))
+            return;
+        
+        const config = this.client.config.props[guild.id].autoclear;
 
         if (config.enabled) {
             for await (const channelID of config.channels) {

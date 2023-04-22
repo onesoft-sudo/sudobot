@@ -23,6 +23,7 @@ import DiscordClient from "../client/Client";
 import { mute } from "../commands/moderation/MuteCommand";
 import { warn } from "../commands/moderation/WarnCommand";
 import KeyValuePair from "../types/KeyValuePair";
+import { hasConfig } from "../utils/util";
 
 export interface SpamFilterData {
     count: number,
@@ -54,6 +55,9 @@ export default class SpamFilter {
     }
 
     async start(message: Message) {
+        if (!hasConfig(this.client, message.guildId!, "spam_filter"))
+            return;
+        
         const { guild, author, member, channel } = message;
         const { default: SpamViolation } = this.SpamViolation;
 

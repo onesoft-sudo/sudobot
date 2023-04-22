@@ -261,3 +261,7 @@ export function generateInfractionDescription(client: DiscordClient, guildId: st
 
     return message;
 }
+
+export function hasConfig(client: DiscordClient, guildId: string, key: string) {
+    return !!client.config.props[guildId][key];
+}

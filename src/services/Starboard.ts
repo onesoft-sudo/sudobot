@@ -20,9 +20,13 @@
 import { MessageAttachment, MessageReaction, TextChannel } from "discord.js";
 import MessageEmbed from "../client/MessageEmbed";
 import Service from "../utils/structures/Service";
+import { hasConfig } from "../utils/util";
 
 export default class Starboard extends Service {
     async handle(reaction: MessageReaction) {
+        if (!hasConfig(this.client, reaction.message.guildId!, "starboard"))
+            return;
+        
         if (this.client.config.get('starboard').enabled) {
             let emoji = reaction.emoji.name;
             

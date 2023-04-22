@@ -19,9 +19,13 @@
 
 import { Message } from "discord.js";
 import Service from "../utils/structures/Service";
+import { hasConfig } from "../utils/util";
 
 export default class AutoResponder extends Service {
     async run(message: Message) {
+        if (!hasConfig(this.client, message.guildId!, "autoresponder"))
+            return;
+        
         const config = this.client.config.props[message.guild!.id]?.autoresponder;
 
         if (!config?.enabled) {

@@ -19,8 +19,12 @@
 
 import { GuildMember } from "discord.js";
 import DiscordClient from "../client/Client";
+import { hasConfig } from "../utils/util";
 
 export default async function autoRole(client: DiscordClient, member: GuildMember) {
+    if (!hasConfig(client, member.guild.id, "autorole"))
+        return;
+        
     const config = client.config.props[member.guild!.id].autorole;
 
     if (config.enabled) {

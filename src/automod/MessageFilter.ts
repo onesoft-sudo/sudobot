@@ -25,6 +25,7 @@ import { readFile } from 'fs/promises';
 import { join, resolve } from 'path';
 import BlockedWordViolation from "../models/BlockedWordViolation";
 import { BlockedWordType } from "../types/BlockedWordType";
+import { hasConfig } from "../utils/util";
 
 export type MessageFilterConfig = {
     words_enabled: boolean;
@@ -294,6 +295,9 @@ export default class MessageFilter {
     }
 
     async start(msg: Message) {
+        if (!hasConfig(this.client, msg.guildId!, "filters"))
+            return;
+        
         await this.load();
 
         if (this.config.off) {

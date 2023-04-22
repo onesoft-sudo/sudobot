@@ -21,9 +21,13 @@ import { GuildMember } from "discord.js";
 import { Request } from "express";
 import MessageEmbed from "../client/MessageEmbed";
 import Service from "../utils/structures/Service";
+import { hasConfig } from "../utils/util";
 
 export default class Verification extends Service {
-    async success(member: GuildMember, req: Request) {        
+    async success(member: GuildMember, req: Request) {     
+		if (!hasConfig(this.client, member.guild.id, "verification"))
+            return;
+		   
         await member.roles.remove(this.client.config.props[member.guild.id].verification.role);
 
 		try {
