@@ -63,6 +63,8 @@ export default class TranslateCommand extends BaseCommand {
             }
         }
 
+        console.log(matches);
+
         interaction.respond(matches).catch(console.error);
     }
 
@@ -88,6 +90,19 @@ export default class TranslateCommand extends BaseCommand {
 
         const from = message instanceof CommandInteraction ? message.options.getString("from") ?? "auto" : "auto";
         const to = message instanceof CommandInteraction ? message.options.getString("to") ?? "en" : "en";
+
+        console.log(from, to);
+
+        if (from != 'auto' && !this.languages[from]) {
+            await this.deferReply(message, ":x: Invalid language specified in the from option.");
+            return;
+        }
+
+        if (to != 'auto' && !this.languages[to]) {
+            await this.deferReply(message, ":x: Invalid language specified in the to option.");
+            return;
+        }
+
         const text =
             message instanceof Message
                 ? message.content.slice(client.config.props[message.guildId!].prefix.length).trim().slice(options.cmdName.length).trim()
