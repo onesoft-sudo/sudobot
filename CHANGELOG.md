@@ -1,3 +1,12 @@
+## [4.82.1](https://github.com/onesoft-sudo/sudobot/compare/v4.82.0...v4.82.1) (2023-04-22)
+
+
+### Bug Fixes
+
+* crashes when using incomplete config ([61e00a0](https://github.com/onesoft-sudo/sudobot/commit/61e00a0449f8aded2cb9092da3abb95ad6a874c0))
+
+
+
 # [4.82.0](https://github.com/onesoft-sudo/sudobot/compare/v4.81.0...v4.82.0) (2023-04-21)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * issues with staff away feature ([64d9768](https://github.com/onesoft-sudo/sudobot/commit/64d9768da03c47040fcd734d296e523b5f3f640e))
-
-
-
-# [4.79.0](https://github.com/onesoft-sudo/sudobot/compare/v4.78.0...v4.79.0) (2023-03-24)
-
-
-### Features
-
-* staff away system ([cd7d97a](https://github.com/onesoft-sudo/sudobot/commit/cd7d97a9dae07383148fbf4bcdf1a57005093c7b))
 
 
 
