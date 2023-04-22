@@ -32,12 +32,12 @@ export default class AntijoinCommand extends BaseCommand {
     }
 
     async run(client: DiscordClient, message: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
-        client.antijoin.toggle();
+        client.antijoin.toggle(message.guildId!);
 
         await message.reply({
             embeds: [
                 new MessageEmbed({
-                    description: 'Antijoin system was ' + (client.antijoin.enabled ? 'enabled' : 'disabled') + '.'
+                    description: 'Antijoin system was ' + (client.antijoin.map.get(message.guildId!) ? 'enabled' : 'disabled') + '.'
                 })
             ]
         });

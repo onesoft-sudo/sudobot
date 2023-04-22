@@ -20,12 +20,11 @@
 import { GuildMember } from "discord.js";
 import Service from "../utils/structures/Service";
 
-// FIXME: Global enable/disable
 export default class Antijoin extends Service {
-    enabled = false;
+    map = new Map<string, boolean>();
 
     async start(member: GuildMember) {
-        if (!this.enabled) {
+        if (!this.map.get(member.guild.id)) {
             return false;
         }
 
@@ -33,7 +32,10 @@ export default class Antijoin extends Service {
         return true;
     }
 
-    toggle() {
-        this.enabled = !this.enabled;
+    toggle(guildId: string) {
+        this.map.set(guildId, !this.map.get(guildId));
+
+        if (this.map.get(guildId) == false)
+            this.map.delete(guildId);
     }
 }
