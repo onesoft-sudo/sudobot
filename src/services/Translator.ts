@@ -1,7 +1,6 @@
 import axios from "axios";
 import Service from "../utils/structures/Service";
 
-// FIXME: Issue here
 export default class Translator extends Service {
     requestURL = "https://translate.google.com/translate_a/single?client=at&dt=t&dt=rm&dj=1";
 
