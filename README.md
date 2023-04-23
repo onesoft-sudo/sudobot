@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-A Discord bot for moderation purposes. <a href="https://docs.sudobot.onesoftnet.eu.org/features/screenshots/">Click here</a> to see the screenshots.
+A free and open source Discord bot for moderation purposes. <a href="https://docs.sudobot.onesoftnet.eu.org/features/screenshots/">Click here</a> to see the screenshots.
 </p>
 
 ### Features
@@ -26,7 +26,7 @@ A Discord bot for moderation purposes. <a href="https://docs.sudobot.onesoftnet.
 
 ### Getting started
 
-You can request an invite for SudoBot [here](https://sudobot.everything-server.ml/).
+You can request an invite for SudoBot [here](https://discord.gg/pazm3tqYh5), it's completely free.
 Alternatively, you can create your own Discord API application and then host SudoBot.
 
 ### Setup for Custom Hosting
