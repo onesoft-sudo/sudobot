@@ -129,7 +129,7 @@ Thanks to all the contributors!
 
 Copyright © 2022-2023 OSN and all the contributors of SudoBot.
 
-This project is supported by JetBrains s.r.o.
+This project is [supported](https://jb.gg/OpenSourceSupport) by JetBrains s.r.o.
 
 <a href="https://www.jetbrains.com" target="_blank"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" height="100" width="100"></a>
 
