@@ -131,6 +131,6 @@ Copyright © 2022-2023 OSN and all the contributors of SudoBot.
 
 This project is supported by JetBrains s.r.o.
 
-<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" height="100" width="100">
+<a href="https://www.jetbrains.com" target="_blank"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" height="100" width="100"></a>
 
 Copyright © 2000-2023 JetBrains s.r.o. JetBrains and the JetBrains logo are registered trademarks of JetBrains s.r.o.
