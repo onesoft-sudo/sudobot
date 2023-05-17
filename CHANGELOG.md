@@ -1,3 +1,12 @@
+# [4.83.0](https://github.com/onesoft-sudo/sudobot/compare/v4.82.2...v4.83.0) (2023-05-17)
+
+
+### Features
+
+* add nickname update command ([7d6b2ad](https://github.com/onesoft-sudo/sudobot/commit/7d6b2ad690399a7daa903534476d5b00db97da08))
+
+
+
 ## [4.82.2](https://github.com/onesoft-sudo/sudobot/compare/v4.82.1...v4.82.2) (2023-04-22)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * add command for listing away staff ([4d310dd](https://github.com/onesoft-sudo/sudobot/commit/4d310dde0133e9f2269d7eab70dfe86ecdeaf600))
-
-
-
-# [4.80.0](https://github.com/onesoft-sudo/sudobot/compare/v4.79.1...v4.80.0) (2023-03-24)
-
-
-### Features
-
-* add command for listing away staff ([764c1e7](https://github.com/onesoft-sudo/sudobot/commit/764c1e75bda142b29f82e4a8970ca1466b735413))
 
 
 
