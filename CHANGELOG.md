@@ -1,3 +1,12 @@
+## [4.83.2](https://github.com/onesoft-sudo/sudobot/compare/v4.83.1...v4.83.2) (2023-05-19)
+
+
+### Bug Fixes
+
+* wrong export ([d36ea27](https://github.com/onesoft-sudo/sudobot/commit/d36ea27abf504d9dd9379240050847448bd2cbfa))
+
+
+
 ## [4.83.1](https://github.com/onesoft-sudo/sudobot/compare/v4.83.0...v4.83.1) (2023-05-19)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * crashes when using incomplete config ([61e00a0](https://github.com/onesoft-sudo/sudobot/commit/61e00a0449f8aded2cb9092da3abb95ad6a874c0))
-
-
-
-# [4.82.0](https://github.com/onesoft-sudo/sudobot/compare/v4.81.0...v4.82.0) (2023-04-21)
-
-
-### Features
-
-* **welcomer:** added a new welcome message ([9592400](https://github.com/onesoft-sudo/sudobot/commit/95924003e6a940210f4cbb24c71a3be26ed1d0ff))
 
 
 
