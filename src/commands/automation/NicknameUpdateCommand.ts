@@ -3,7 +3,7 @@ import DiscordClient from '../../client/Client';
 import { Message } from 'discord.js';
 import CommandOptions from '../../types/CommandOptions';
 
-export class NicknameUpdateCommand extends BaseCommand {
+export default class NicknameUpdateCommand extends BaseCommand {
     name = "nicknameupdate";
     group = "automation";
     aliases = ["nupdate", "nickset", "nickupdate"];
