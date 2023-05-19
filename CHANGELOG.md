@@ -1,3 +1,12 @@
+## [4.83.1](https://github.com/onesoft-sudo/sudobot/compare/v4.83.0...v4.83.1) (2023-05-19)
+
+
+### Bug Fixes
+
+* build errors ([4ef35da](https://github.com/onesoft-sudo/sudobot/commit/4ef35da4a7634d4c14e72160006c963e30b77d02))
+
+
+
 # [4.83.0](https://github.com/onesoft-sudo/sudobot/compare/v4.82.2...v4.83.0) (2023-05-17)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * **welcomer:** added a new welcome message ([9592400](https://github.com/onesoft-sudo/sudobot/commit/95924003e6a940210f4cbb24c71a3be26ed1d0ff))
-
-
-
-# [4.81.0](https://github.com/onesoft-sudo/sudobot/compare/v4.80.0...v4.81.0) (2023-03-24)
-
-
-### Features
-
-* add command for listing away staff ([4d310dd](https://github.com/onesoft-sudo/sudobot/commit/4d310dde0133e9f2269d7eab70dfe86ecdeaf600))
 
 
 
