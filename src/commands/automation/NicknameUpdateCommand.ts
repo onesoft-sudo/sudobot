@@ -1,4 +1,4 @@
-import { BaseCommand } from '../../utils/structures/BaseCommand';
+import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import { Message } from 'discord.js';
 import CommandOptions from '../../types/CommandOptions';
@@ -9,7 +9,7 @@ export class NicknameUpdateCommand extends BaseCommand {
     aliases = ["nupdate", "nickset", "nickupdate"];
 
     async run(client: DiscordClient, message: Message, options: CommandOptions) {
-        const name = message.member.nickname;
+        const name = message.member!.nickname;
         
         if (!name) {
             await message.reply(":x: You don't have a nickname set.");
@@ -35,7 +35,7 @@ export class NicknameUpdateCommand extends BaseCommand {
             splitted.pop();
         }
 
-        message.member.setNickname(splitted.join(" ")).then(() => message.channel.send("Successfully updated your nickname.")).catch(e => {
+        message.member!.setNickname(splitted.join(" ")).then(() => message.channel.send("Successfully updated your nickname.")).catch(e => {
             console.log(e);
             message.channel.send("Failed to update your nickname.");
         });
