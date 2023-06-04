@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { BanOptions, CommandInteraction, Message, User } from 'discord.js';
+import { BanOptions, ChatInputApplicationCommandData, CommandInteraction, Message, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -155,7 +155,7 @@ export default class FakeBanCommand extends BaseCommand {
                             iconURL: msg.guild!.iconURL() ?? undefined
                         },
                         color: 0xf14a60,
-                        description: generateInfractionDescription(client, msg.guildId!, 'ban_message'),
+                        description: generateInfractionDescription(client, msg.guildId!, 'ban_message') + "\n||This was just a joke. You were not banned.||",
                         fields: [
                             {
                                 name: 'Reason',
