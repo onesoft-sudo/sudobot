@@ -46,7 +46,7 @@ export default class MessageCreateEvent extends BaseEvent {
     
                 if (command && command.supportsLegacy) {
                     message.reply({
-                        content: `This service was terminated in this server.`
+                        content: `This service was terminated in this server. Learn more at [Why did my server got terminated?](https://docs.sudobot.onesoftnet.eu.org/legal/why_did_my_server_get_terminated/)`
                     }).catch(console.error);
                 }
             }
