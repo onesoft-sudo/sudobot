@@ -20,6 +20,7 @@
 import BaseEvent from '../../utils/structures/BaseEvent';
 import { Message } from 'discord.js';
 import DiscordClient from '../../client/Client';
+import { isDisabledServer } from '../../utils/util';
 
 export default class MessageUpdateEvent extends BaseEvent {
     constructor() {
@@ -27,6 +28,9 @@ export default class MessageUpdateEvent extends BaseEvent {
     }
 
     async run(client: DiscordClient, oldMessage: Message, newMessage: Message) {
+        if (isDisabledServer(newMessage.guild!.id)) 
+            return;
+            
         if (oldMessage.author.bot || !oldMessage.guild || oldMessage.channel.type === 'DM' || oldMessage.content === newMessage.content)
             return;
 

@@ -23,6 +23,10 @@ import { GuildMember, Message, CommandInteraction, MessageEmbed, ContextMenuInte
 import Axios, { AxiosRequestHeaders } from 'axios';
 import { formatDistanceToNowStrict, formatDuration, intervalToDuration } from 'date-fns';
 
+export function isDisabledServer(gid: string) {
+    return !!DiscordClient.client.config.props[gid].disabled;
+}
+
 export function parseEmbedsInString(content: string) {
     const embedExpressions = content.matchAll(/embed\:(\{[^\n]+\})/g);
     const newContent = content.replace(/embed\:(\{[^\n]+\})/g, '');

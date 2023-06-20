@@ -20,6 +20,7 @@
 import BaseEvent from '../../utils/structures/BaseEvent';
 import DiscordClient from '../../client/Client';
 import { TextChannel, Collection, User, Message, GuildMember } from 'discord.js';
+import { isDisabledServer } from '../../utils/util';
 
 export default class RawEvent extends BaseEvent {
     events = {

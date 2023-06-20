@@ -22,6 +22,7 @@ import DiscordClient from '../../client/Client';
 import { GuildMember } from 'discord.js';
 import autoRole from '../../services/AutoRole';
 import GuildInfo, { IGuildInfo } from '../../models/GuildInfo';
+import { isDisabledServer } from '../../utils/util';
 
 export default class GuildMemberAddEvent extends BaseEvent {
     constructor() {
@@ -31,7 +32,10 @@ export default class GuildMemberAddEvent extends BaseEvent {
     async run(client: DiscordClient, member: GuildMember) {
         if (member.user.id === client.user!.id)
             return;
-        
+
+        if (isDisabledServer(member.guild.id)) 
+            return;
+
         let info: IGuildInfo | undefined | null;
 
         try {

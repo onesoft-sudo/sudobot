@@ -24,6 +24,7 @@ import CommandOptions from '../../types/CommandOptions';
 import path from 'path';
 import MessageEmbed from '../../client/MessageEmbed';
 import { emoji } from '../../utils/Emoji';
+import { isDisabledServer } from '../../utils/util';
 
 export default class MessageCreateEvent extends BaseEvent {
     constructor() {
@@ -33,6 +34,25 @@ export default class MessageCreateEvent extends BaseEvent {
     async run(client: DiscordClient, message: Message) {
         if (message.author.bot || !message.guild || message.channel.type === 'DM') 
             return;
+
+        if (isDisabledServer(message.guildId!)) {
+            if (message.content.startsWith(client.config.props[message.guildId!].prefix)) {
+                const [cmdName, ...args] = await message.content
+                    .slice(client.config.props[message.guildId!].prefix.length)
+                    .trim()
+                    .split(/ +/);
+                    
+                const command = client.commands.get(cmdName.toLowerCase());
+    
+                if (command && command.supportsLegacy) {
+                    message.reply({
+                        content: `This service was terminated in this server.`
+                    }).catch(console.error);
+                }
+            }
+
+            return;
+        }
 
         await client.setMessage(message);
 

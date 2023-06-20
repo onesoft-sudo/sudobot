@@ -21,6 +21,7 @@ import BaseEvent from '../../utils/structures/BaseEvent';
 import { GuildMember } from 'discord.js';
 import DiscordClient from '../../client/Client';
 import { ModalSubmitInteraction } from 'discord-modals';
+import { isDisabledServer } from '../../utils/util';
 
 export default class ModalSubmitEvent extends BaseEvent {
     constructor() {
@@ -28,6 +29,9 @@ export default class ModalSubmitEvent extends BaseEvent {
     }
 
     async run(client: DiscordClient, interaction: ModalSubmitInteraction) {
+        if (isDisabledServer(interaction.guild!.id)) 
+            return;
+            
         if (!interaction.guild || !interaction.channel || interaction.channel.type === 'DM') {
             if (interaction.isRepliable())
                 await interaction.reply({

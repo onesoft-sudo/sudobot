@@ -22,6 +22,7 @@ import DiscordClient from '../../client/Client';
 import { GuildBan } from 'discord.js';
 import Punishment from '../../models/Punishment';
 import PunishmentType from '../../types/PunishmentType';
+import { isDisabledServer } from '../../utils/util';
 
 export default class GuildBanRemoveEvent extends BaseEvent {
     constructor() {
@@ -29,6 +30,9 @@ export default class GuildBanRemoveEvent extends BaseEvent {
     }
     
     async run(client: DiscordClient, ban: GuildBan) {
+        if (isDisabledServer(ban.guild.id)) 
+            return;
+
         setTimeout(async () => {
             const logs = (await ban.guild.fetchAuditLogs({
                 limit: 1,

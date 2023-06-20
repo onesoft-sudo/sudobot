@@ -20,6 +20,7 @@
 import { GuildMember } from "discord.js";
 import DiscordClient from "../../client/Client";
 import BaseEvent from "../../utils/structures/BaseEvent";
+import { isDisabledServer } from "../../utils/util";
 
 export default class GuildMemberUpdateEvent extends BaseEvent {
     constructor() {
@@ -30,6 +31,9 @@ export default class GuildMemberUpdateEvent extends BaseEvent {
         if (newMember.user.bot) {
             return;
         }
+
+        if (isDisabledServer(newMember.guild.id)) 
+            return;
         
         client.logger.onMemberUpdate(oldMember, newMember);
         

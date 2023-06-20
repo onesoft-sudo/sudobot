@@ -22,6 +22,7 @@ import DiscordClient from '../../client/Client';
 import { Message, MessageReaction, ReactionUserManager, TextChannel } from 'discord.js';
 import { mute } from '../../commands/moderation/MuteCommand';
 import { clearMessages } from '../../commands/moderation/ClearCommand';
+import { isDisabledServer } from '../../utils/util';
 
 export default class MessageReactionAddEvent extends BaseEvent {
     constructor() {
@@ -29,6 +30,9 @@ export default class MessageReactionAddEvent extends BaseEvent {
     }
     
     async run(client: DiscordClient, reaction: MessageReaction) {
+        if (isDisabledServer(reaction.message.guildId!)) 
+            return;
+            
         console.log('inside');
         
         console.log(reaction);

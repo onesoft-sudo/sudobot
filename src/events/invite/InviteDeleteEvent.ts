@@ -20,6 +20,7 @@
 import { Invite } from "discord.js";
 import DiscordClient from "../../client/Client";
 import BaseEvent from "../../utils/structures/BaseEvent";
+import { isDisabledServer } from "../../utils/util";
 
 export default class InviteDeleteEvent extends BaseEvent {
     constructor() {
@@ -27,6 +28,9 @@ export default class InviteDeleteEvent extends BaseEvent {
     }
 
     async run(client: DiscordClient, invite: Invite) {
+        if (isDisabledServer(invite.guild?.id!)) 
+            return;
+
         await client.inviteTracker.onInviteDelete(invite);
     }
 }

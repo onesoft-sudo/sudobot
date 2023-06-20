@@ -22,6 +22,7 @@ import { GuildMember, Interaction, MessageEmbed } from 'discord.js';
 import DiscordClient from '../../client/Client';
 import InteractionOptions from '../../types/InteractionOptions';
 import AutoCompleteOptions from '../../types/AutoCompleteOptions';
+import { isDisabledServer } from '../../utils/util';
 
 export default class InteractionCreateEvent extends BaseEvent {
     constructor() {
@@ -35,6 +36,17 @@ export default class InteractionCreateEvent extends BaseEvent {
                     content: 'You cannot use this bot on DMs.',
                     ephemeral: true
                 }); 
+
+            return;
+        }
+
+        if (isDisabledServer(interaction.guild.id)) {
+            if (interaction.isRepliable()) {
+                interaction.reply({
+                    ephemeral: true,
+                    content: 'This service was terminated for this server.'
+                }).catch(console.error);
+            }
 
             return;
         }

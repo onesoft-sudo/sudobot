@@ -23,6 +23,7 @@ import { GuildMember } from 'discord.js';
 import UnverifiedMember from '../../models/UnverifiedMember';
 import Punishment from '../../models/Punishment';
 import PunishmentType from '../../types/PunishmentType';
+import { isDisabledServer } from '../../utils/util';
 
 export default class GuildMemberRemoveEvent extends BaseEvent {
     constructor() {
@@ -31,6 +32,9 @@ export default class GuildMemberRemoveEvent extends BaseEvent {
     
     async run(client: DiscordClient, member: GuildMember) {
         if (member.user.id === client.user!.id)
+            return;
+
+        if (isDisabledServer(member.guild.id)) 
             return;
 
         await client.logger.onGuildMemberRemove(member);

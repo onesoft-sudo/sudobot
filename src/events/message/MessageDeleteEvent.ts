@@ -21,6 +21,7 @@ import BaseEvent from '../../utils/structures/BaseEvent';
 import { Message } from 'discord.js';
 import DiscordClient from '../../client/Client';
 import Ballot from '../../models/Ballot';
+import { isDisabledServer } from '../../utils/util';
 
 export default class MessageDeleteEvent extends BaseEvent {
     constructor() {
@@ -28,6 +29,9 @@ export default class MessageDeleteEvent extends BaseEvent {
     }
 
     async run(client: DiscordClient, message: Message) {
+        if (isDisabledServer(message.guild!.id)) 
+            return;
+            
         if (message.author.id === client.user!.id && message.guild && message.channel.type !== 'DM') {
             const { id, channel: { id: channelID }, guild: { id: guildID }, embeds: { length } } = message;
 
