@@ -1,3 +1,12 @@
+# [4.84.0](https://github.com/onesoft-sudo/sudobot/compare/v4.83.3...v4.84.0) (2023-06-20)
+
+
+### Features
+
+* add support of disabling servers ([951a2fa](https://github.com/onesoft-sudo/sudobot/commit/951a2fae6b05fb1d3c5e6221354482a91386e0bd))
+
+
+
 ## [4.83.3](https://github.com/onesoft-sudo/sudobot/compare/v4.83.2...v4.83.3) (2023-06-04)
 
 
@@ -31,16 +40,6 @@
 ### Features
 
 * add nickname update command ([7d6b2ad](https://github.com/onesoft-sudo/sudobot/commit/7d6b2ad690399a7daa903534476d5b00db97da08))
-
-
-
-## [4.82.2](https://github.com/onesoft-sudo/sudobot/compare/v4.82.1...v4.82.2) (2023-04-22)
-
-
-### Bug Fixes
-
-* **antijoin:** running antijoin command affects all servers ([eeb9da8](https://github.com/onesoft-sudo/sudobot/commit/eeb9da8986ca9a5c47e38bf5d2c02364e48cf976))
-* **translator:** autocomplete errors ([2146b6c](https://github.com/onesoft-sudo/sudobot/commit/2146b6cf455c2d58ec94c6ee9fd1823d29170924))
 
 
 
