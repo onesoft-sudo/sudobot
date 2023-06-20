@@ -120,7 +120,7 @@ Thanks to all the contributors!
 ### Support
 
 - **Email**: rakinar2@onesoftnet.eu.org
-- **Discord Servers**: [The Everything Server](https://discord.gg/Km7ZcfXT6P), [OneSoftNet Server](https://discord.gg/892GWhTzgs)
+- **Discord Servers**: [OneSoftNet Server](https://discord.gg/892GWhTzgs)
 
 ### Extra 
 
