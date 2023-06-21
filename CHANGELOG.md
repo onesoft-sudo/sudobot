@@ -1,3 +1,12 @@
+## [4.84.1](https://github.com/onesoft-sudo/sudobot/compare/v4.84.0...v4.84.1) (2023-06-21)
+
+
+### Bug Fixes
+
+* broken markdown hyperlinks ([933cb29](https://github.com/onesoft-sudo/sudobot/commit/933cb29ecf2b2b67f43580bd744b43383a8bc117))
+
+
+
 # [4.84.0](https://github.com/onesoft-sudo/sudobot/compare/v4.83.3...v4.84.0) (2023-06-20)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * build errors ([4ef35da](https://github.com/onesoft-sudo/sudobot/commit/4ef35da4a7634d4c14e72160006c963e30b77d02))
-
-
-
-# [4.83.0](https://github.com/onesoft-sudo/sudobot/compare/v4.82.2...v4.83.0) (2023-05-17)
-
-
-### Features
-
-* add nickname update command ([7d6b2ad](https://github.com/onesoft-sudo/sudobot/commit/7d6b2ad690399a7daa903534476d5b00db97da08))
 
 
 
