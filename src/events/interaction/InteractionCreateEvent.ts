@@ -44,7 +44,7 @@ export default class InteractionCreateEvent extends BaseEvent {
             if (interaction.isRepliable()) {
                 interaction.reply({
                     ephemeral: true,
-                    content: 'This service was terminated for this server. Learn more at [Why did my server got terminated?](https://docs.sudobot.onesoftnet.eu.org/legal/why_did_my_server_get_terminated/)'
+                    content: 'This service was terminated for this server. Learn more at [Why did my server got terminated](https://docs.sudobot.onesoftnet.eu.org/legal/why_did_my_server_get_terminated/)?'
                 }).catch(console.error);
             }
 
