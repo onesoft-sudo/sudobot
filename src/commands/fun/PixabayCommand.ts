@@ -88,7 +88,6 @@ export async function illustration(cmd: BaseCommand, msg: Message | CommandInter
 
 export default class PixabayCommand extends BaseCommand {
     supportsInteractions: boolean = true;
-    coolDown = 4000;
 
     constructor() {
         super('pixabay', 'fun', []);

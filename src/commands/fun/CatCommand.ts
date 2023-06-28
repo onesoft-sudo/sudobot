@@ -28,7 +28,6 @@ import { deleteFile, download } from '../../utils/util';
 
 export default class CatCommand extends BaseCommand {
     supportsInteractions: boolean = true;
-    coolDown = 8000;
 
     constructor() {
         super('cat', 'fun', []);

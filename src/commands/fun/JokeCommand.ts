@@ -26,7 +26,6 @@ import axios from 'axios';
 
 export default class JokeCommand extends BaseCommand {
     supportsInteractions: boolean = true;
-    coolDown = 4000;
 
     constructor() {
         super('joke', 'fun', []);
