@@ -107,54 +107,57 @@ export default class BlockedWordCommand extends BaseCommand {
             break;
             
             case 'list':
-                const tokens: string[] = client.config.props[message.guildId!]?.filters.tokens ?? [];
-                const safeTokens: string[][] = [];
-                let length = 0;
+                {
+                    const words: string[] = client.config.props[message.guildId!]?.filters.words ?? [];
+                    const safeWords: string[][] = [];
+                    let length = 0;
 
-                for (const unsafeToken of tokens) {
-                    if (safeTokens.length === 0)
-                        safeTokens.push([]);
+                    for (const unsafeWord of words) {
+                        if (safeWords.length === 0)
+                            safeWords.push([]);
 
-                    const token = Util.escapeMarkdown(unsafeToken);
+                        const word = Util.escapeMarkdown(unsafeWord);
 
-                    if ((length + token.length) >= 3000) {
-                        safeTokens.push([token]);
-                        length = token.length;
-                        continue;
+                        if ((length + word.length) >= 3000) {
+                            safeWords.push([word]);
+                            length = word.length;
+                            continue;
+                        }
+
+                        const index = safeWords.length - 1;
+                        
+                        safeWords[index].push(word);
+                        length += word.length;
                     }
-
-                    const index = safeTokens.length - 1;
                     
-                    safeTokens[index].push(token);
-                    length += token.length;
+                    const pagination = new Pagination(safeWords, {
+                        channel_id: message.channelId!,
+                        guild_id: message.guildId!,
+                        limit: 1,
+                        timeout: 120_000,
+                        user_id: message.member!.user.id,
+                        embedBuilder({ currentPage, data, maxPages }) {
+                            return new MessageEmbed({
+                                author: {
+                                    name: `Blocked words in ${message.guild!.name}`,
+                                    iconURL: message.guild!.iconURL() ?? undefined
+                                },
+                                color: 0x007bff,
+                                description: '`' + data[0].join('`, `') + '`',
+                                footer: {
+                                    text: `Page ${currentPage} of ${maxPages}`
+                                }
+                            });
+                        },
+                    });
+
+                    let reply = await this.deferReply(message, await pagination.getMessageOptions());
+
+                    if (message instanceof CommandInteraction)
+                        reply = (await message.fetchReply()) as Message;
+
+                    pagination.start(reply);
                 }
-                
-                const pagination = new Pagination(safeTokens, {
-                    channel_id: message.channelId!,
-                    guild_id: message.guildId!,
-                    limit: 1,
-                    timeout: 120_000,
-                    user_id: message.member!.user.id,
-                    embedBuilder({ currentPage, data, maxPages }) {
-                        return new MessageEmbed({
-                            author: {
-                                name: `Blocked tokens in ${message.guild!.name}`,
-                                iconURL: message.guild!.iconURL() ?? undefined
-                            },
-                            description: '`' + data[0].join('`, `') + '`',
-                            footer: {
-                                text: `Page ${currentPage} of ${maxPages}`
-                            }
-                        });
-                    },
-                });
-
-                let reply = await this.deferReply(message, await pagination.getMessageOptions());
-
-                if (message instanceof CommandInteraction)
-                    reply = (await message.fetchReply()) as Message;
-
-                pagination.start(reply);
             break;
         }
     }
