@@ -17,12 +17,13 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, Message } from "discord.js";
+import { CommandInteraction, Message, MessageEmbed, Util } from "discord.js";
 import DiscordClient from "../../client/Client";
 import CommandOptions from "../../types/CommandOptions";
 import InteractionOptions from "../../types/InteractionOptions";
 import { emoji } from "../../utils/Emoji";
 import BaseCommand from "../../utils/structures/BaseCommand";
+import Pagination from "../../utils/Pagination";
 
 export default class BlockedWordCommand extends BaseCommand {
     name = "blockedword";
@@ -33,7 +34,7 @@ export default class BlockedWordCommand extends BaseCommand {
     async run(client: DiscordClient, message: Message | CommandInteraction, options: CommandOptions | InteractionOptions) {
         const subcommand = options.isInteraction ? options.options.getSubcommand(true) : options.argv[1];
 
-        const subcommands = ["add", "remove", "has"];
+        const subcommands = ["add", "remove", "has", "list"];
 
         if (!subcommand) {
             await message.reply(`${emoji('error')} You must provide a subcommand with this command. The valid subcommands are: \`${subcommands.join('`, `')}\`.`);
@@ -45,7 +46,7 @@ export default class BlockedWordCommand extends BaseCommand {
             return;
         }
 
-        if (!options.isInteraction && options.argv[2] === undefined) {
+        if (!options.isInteraction && options.argv[2] === undefined && subcommand !== 'list') {
             await message.reply(`${emoji('error')} You must specify a word ${subcommand === 'add' ? 'to block' : (subcommand === 'remove' ? 'to remove' : 'to check')}!`);
             return;
         }
@@ -103,6 +104,57 @@ export default class BlockedWordCommand extends BaseCommand {
                 
                 client.config.write();
                 await this.deferReply(message, `${emoji('check')} The given word(s) have been unblocked.`);
+            break;
+            
+            case 'list':
+                const tokens: string[] = client.config.props[message.guildId!]?.filters.tokens ?? [];
+                const safeTokens: string[][] = [];
+                let length = 0;
+
+                for (const unsafeToken of tokens) {
+                    if (safeTokens.length === 0)
+                        safeTokens.push([]);
+
+                    const token = Util.escapeMarkdown(unsafeToken);
+
+                    if ((length + token.length) >= 3000) {
+                        safeTokens.push([token]);
+                        length = token.length;
+                        continue;
+                    }
+
+                    const index = safeTokens.length - 1;
+                    
+                    safeTokens[index].push(token);
+                    length += token.length;
+                }
+                
+                const pagination = new Pagination(safeTokens, {
+                    channel_id: message.channelId!,
+                    guild_id: message.guildId!,
+                    limit: 1,
+                    timeout: 120_000,
+                    user_id: message.member!.user.id,
+                    embedBuilder({ currentPage, data, maxPages }) {
+                        return new MessageEmbed({
+                            author: {
+                                name: `Blocked tokens in ${message.guild!.name}`,
+                                iconURL: message.guild!.iconURL() ?? undefined
+                            },
+                            description: '`' + data[0].join('`, `') + '`',
+                            footer: {
+                                text: `Page ${currentPage} of ${maxPages}`
+                            }
+                        });
+                    },
+                });
+
+                let reply = await this.deferReply(message, await pagination.getMessageOptions());
+
+                if (message instanceof CommandInteraction)
+                    reply = (await message.fetchReply()) as Message;
+
+                pagination.start(reply);
             break;
         }
     }

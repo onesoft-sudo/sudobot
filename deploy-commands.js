@@ -95,6 +95,9 @@ let commands = [
 		.addSubcommand(subcmd => 
 			subcmd.setName("has").setDescription("Check if a word is blocked")
 				.addStringOption(option => option.setName("word").setDescription("The word").setRequired(true))
+		)
+		.addSubcommand(subcmd => 
+			subcmd.setName("list").setDescription("List the blocked words")
 		),
 		
 	new SlashCommandBuilder().setName('blockedtoken').setDescription('Manage blocked tokens')
@@ -109,6 +112,9 @@ let commands = [
 		.addSubcommand(subcmd => 
 			subcmd.setName("has").setDescription("Check if a token is blocked")
 				.addStringOption(option => option.setName("token").setDescription("The token").setRequired(true))
+		)
+		.addSubcommand(subcmd => 
+			subcmd.setName("list").setDescription("List the blocked tokens")
 		),
 
 	// INFORMATION
