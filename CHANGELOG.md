@@ -1,3 +1,12 @@
+## [4.85.1](https://github.com/onesoft-sudo/sudobot/compare/v4.85.0...v4.85.1) (2023-06-28)
+
+
+### Bug Fixes
+
+* blockedword list command shows tokens ([b918f23](https://github.com/onesoft-sudo/sudobot/commit/b918f23963d747f2397de39df33eeefcf3d6e158))
+
+
+
 # [4.85.0](https://github.com/onesoft-sudo/sudobot/compare/v4.84.2...v4.85.0) (2023-06-28)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * add support of disabling servers ([951a2fa](https://github.com/onesoft-sudo/sudobot/commit/951a2fae6b05fb1d3c5e6221354482a91386e0bd))
-
-
-
-## [4.83.3](https://github.com/onesoft-sudo/sudobot/compare/v4.83.2...v4.83.3) (2023-06-04)
-
-
-### Bug Fixes
-
-* add a confirmation message in fakeban command DM ([2a000d0](https://github.com/onesoft-sudo/sudobot/commit/2a000d065eb24495af0d5ad6acf32b35f6868264))
 
 
 
