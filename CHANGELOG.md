@@ -1,3 +1,12 @@
+# [4.85.0](https://github.com/onesoft-sudo/sudobot/compare/v4.84.2...v4.85.0) (2023-06-28)
+
+
+### Features
+
+* add `blockedtoken list` and `blockedword list` command ([b84af88](https://github.com/onesoft-sudo/sudobot/commit/b84af881e62c57b010e496e466856201e0bb9d07))
+
+
+
 ## [4.84.2](https://github.com/onesoft-sudo/sudobot/compare/v4.84.1...v4.84.2) (2023-06-28)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * add a confirmation message in fakeban command DM ([2a000d0](https://github.com/onesoft-sudo/sudobot/commit/2a000d065eb24495af0d5ad6acf32b35f6868264))
-
-
-
-## [4.83.2](https://github.com/onesoft-sudo/sudobot/compare/v4.83.1...v4.83.2) (2023-05-19)
-
-
-### Bug Fixes
-
-* wrong export ([d36ea27](https://github.com/onesoft-sudo/sudobot/commit/d36ea27abf504d9dd9379240050847448bd2cbfa))
 
 
 
