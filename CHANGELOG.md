@@ -1,3 +1,12 @@
+## [4.84.2](https://github.com/onesoft-sudo/sudobot/compare/v4.84.1...v4.84.2) (2023-06-28)
+
+
+### Bug Fixes
+
+* removed cooldown from commands under the fun category ([60d096c](https://github.com/onesoft-sudo/sudobot/commit/60d096cf2d1852ac2dbbac2275f0fb489d63d4fe))
+
+
+
 ## [4.84.1](https://github.com/onesoft-sudo/sudobot/compare/v4.84.0...v4.84.1) (2023-06-21)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * wrong export ([d36ea27](https://github.com/onesoft-sudo/sudobot/commit/d36ea27abf504d9dd9379240050847448bd2cbfa))
-
-
-
-## [4.83.1](https://github.com/onesoft-sudo/sudobot/compare/v4.83.0...v4.83.1) (2023-05-19)
-
-
-### Bug Fixes
-
-* build errors ([4ef35da](https://github.com/onesoft-sudo/sudobot/commit/4ef35da4a7634d4c14e72160006c963e30b77d02))
 
 
 
