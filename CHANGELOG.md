@@ -1,3 +1,12 @@
+## [4.85.2](https://github.com/onesoft-sudo/sudobot/compare/v4.85.1...v4.85.2) (2023-07-03)
+
+
+### Bug Fixes
+
+* don't depend on roles to determine permissions ([316a4ec](https://github.com/onesoft-sudo/sudobot/commit/316a4eced06cb38a72fd211c4d096362c7f148fe))
+
+
+
 ## [4.85.1](https://github.com/onesoft-sudo/sudobot/compare/v4.85.0...v4.85.1) (2023-06-28)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * broken markdown hyperlinks ([933cb29](https://github.com/onesoft-sudo/sudobot/commit/933cb29ecf2b2b67f43580bd744b43383a8bc117))
-
-
-
-# [4.84.0](https://github.com/onesoft-sudo/sudobot/compare/v4.83.3...v4.84.0) (2023-06-20)
-
-
-### Features
-
-* add support of disabling servers ([951a2fa](https://github.com/onesoft-sudo/sudobot/commit/951a2fae6b05fb1d3c5e6221354482a91386e0bd))
 
 
 
