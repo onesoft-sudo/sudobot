@@ -17,13 +17,14 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Message, Interaction, CacheType, CommandInteraction } from "discord.js";
+import { Message, Interaction, CacheType, CommandInteraction, Permissions } from "discord.js";
 import Client from "../../client/Client";
 import CommandOptions from "../../types/CommandOptions";
 import InteractionOptions from "../../types/InteractionOptions";
 import BaseCommand from "../../utils/structures/BaseCommand";
 
 export default class ButtonRoleCommand extends BaseCommand {
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
     name = "buttonrole";
     category = "automation";
     aliases = ['btnrole', 'brole'];

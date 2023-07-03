@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, Message, MessageEmbed, Util } from "discord.js";
+import { CommandInteraction, Message, MessageEmbed, Permissions, Util } from "discord.js";
 import DiscordClient from "../../client/Client";
 import CommandOptions from "../../types/CommandOptions";
 import InteractionOptions from "../../types/InteractionOptions";
@@ -26,6 +26,7 @@ import BaseCommand from "../../utils/structures/BaseCommand";
 import Pagination from "../../utils/Pagination";
 
 export default class BlockedWordCommand extends BaseCommand {
+    permissions = [Permissions.FLAGS.MANAGE_GUILD];
     name = "blockedword";
     group = "settings";
     aliases = ["bword", "blockedwords", "bannedword", "bannedword"];

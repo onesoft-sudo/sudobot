@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, Message, Role, TextChannel } from 'discord.js';
+import { CommandInteraction, Message, Permissions, Role, TextChannel } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -26,6 +26,7 @@ import MessageEmbed from '../../client/MessageEmbed';
 
 export default class UnlockCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    permissions = [Permissions.FLAGS.MANAGE_CHANNELS];
 
     constructor() {
         super('unlock', 'moderation', []);

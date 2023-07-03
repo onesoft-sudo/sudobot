@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Message, CacheType, CommandInteraction, User, Util } from "discord.js";
+import { Message, CacheType, CommandInteraction, User, Util, Permissions } from "discord.js";
 import DiscordClient from "../../client/Client";
 import MessageEmbed from "../../client/MessageEmbed";
 import CommandOptions from "../../types/CommandOptions";
@@ -32,6 +32,7 @@ export default class SendHistoryCommand extends BaseCommand {
     category = "moderation";
     aliases = ["histories", "dlhistory"];
     supportsInteractions = true;
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
 
     async run(client: DiscordClient, message: CommandInteraction<CacheType> | Message<boolean>, options: CommandOptions | InteractionOptions): Promise<void> {
         if (!options.isInteraction && options.args[0] === undefined) {

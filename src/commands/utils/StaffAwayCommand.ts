@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, Message, Util } from 'discord.js';
+import { CommandInteraction, Message, Permissions, Util } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -28,6 +28,7 @@ import { emoji } from '../../utils/Emoji';
 
 export default class StaffAwayCommand extends BaseCommand {
     supportsInteractions = true;
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
 
     constructor() {
         super('staffaway', 'utils', ['safk', 'saway']);

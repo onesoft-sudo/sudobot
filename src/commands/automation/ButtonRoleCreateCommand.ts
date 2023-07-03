@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { ButtonInteraction, CacheType, CommandInteraction, GuildChannel, Interaction, Message, MessageActionRow, MessageButton, MessageCollector, TextChannel, Util } from 'discord.js';
+import { ButtonInteraction, CacheType, CommandInteraction, GuildChannel, Interaction, Message, MessageActionRow, MessageButton, MessageCollector, Permissions, TextChannel, Util } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -28,6 +28,8 @@ import InteractionRole from '../../models/InteractionRole';
 import InteractionRoleMessage from '../../models/InteractionRoleMessage';
 
 export default class ButtonRoleCreateCommand extends BaseCommand {
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
+
     constructor() {
         super('buttonrole__create', 'automation', []);
     }

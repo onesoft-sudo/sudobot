@@ -18,7 +18,7 @@
 */
 
 import { formatDistanceToNowStrict } from "date-fns";
-import { Message, CacheType, CommandInteraction, GuildPreview } from "discord.js";
+import { Message, CacheType, CommandInteraction, GuildPreview, Permissions } from "discord.js";
 import Client from "../../client/Client";
 import MessageEmbed from "../../client/MessageEmbed";
 import CommandOptions from "../../types/CommandOptions";
@@ -27,6 +27,8 @@ import { emoji } from "../../utils/Emoji";
 import BaseCommand from "../../utils/structures/BaseCommand";
 
 export default class GuildLookupCommand extends BaseCommand {
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
+
     constructor() {
         super("guildlookup", "information", ["glookup", "guild", 'guildinfo']);
     }

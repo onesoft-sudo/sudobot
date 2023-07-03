@@ -27,6 +27,7 @@ import PunishmentAppeal from '../../models/PunishmentAppeal';
 export default class AppealCommand extends BaseCommand {
     supportsInteractions: boolean = true;
     supportsLegacy = false;
+    ownerOnly: boolean = true; // since this is an incomplete command
 
     constructor() {
         super('appeal', 'moderation', []);

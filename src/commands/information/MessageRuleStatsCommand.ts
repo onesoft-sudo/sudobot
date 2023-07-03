@@ -18,7 +18,7 @@
 */
 
 import { formatDistanceToNowStrict } from "date-fns";
-import { CommandInteraction, Message, Util } from "discord.js";
+import { CommandInteraction, Message, Permissions, Util } from "discord.js";
 import DiscordClient from "../../client/Client";
 import MessageEmbed from "../../client/MessageEmbed";
 import BlockedWordViolation from "../../models/BlockedWordViolation";
@@ -29,6 +29,7 @@ import BaseCommand from "../../utils/structures/BaseCommand";
 
 // TODO
 export default class MessageRuleStatsCommand extends BaseCommand {
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
     name = "messagerulestats";
     group = "information";
     aliases = [];

@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, Message } from 'discord.js';
+import { CommandInteraction, Message, Permissions } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -27,6 +27,7 @@ import { timeProcess, timeSince } from '../../utils/util';
 
 export default class QueuesCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
 
     constructor() {
         super('queues', 'automation', []);

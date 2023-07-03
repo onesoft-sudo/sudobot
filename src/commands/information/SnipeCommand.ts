@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Message } from "discord.js";
+import { Message, Permissions } from "discord.js";
 import DiscordClient from "../../client/Client";
 import MessageEmbed from "../../client/MessageEmbed";
 import CommandOptions from "../../types/CommandOptions";
@@ -25,6 +25,7 @@ import { emoji } from "../../utils/Emoji";
 import BaseCommand from "../../utils/structures/BaseCommand";
 
 export default class SnipeCommand extends BaseCommand {
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
     name = "snipe";
     category = "information";
 

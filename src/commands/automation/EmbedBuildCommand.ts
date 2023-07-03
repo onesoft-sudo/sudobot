@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, Message } from 'discord.js';
+import { CommandInteraction, Message, Permissions } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import InteractionOptions from '../../types/InteractionOptions';
@@ -26,6 +26,7 @@ import CommandOptions from '../../types/CommandOptions';
 import { emoji, fetchEmoji } from '../../utils/Emoji';
 
 export default class EmbedBuildCommand extends BaseCommand {
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
     supportsInteractions: boolean = false;
     supportsLegacy: boolean = false;
 

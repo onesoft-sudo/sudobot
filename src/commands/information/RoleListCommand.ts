@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, Interaction, Message, Role } from 'discord.js';
+import { CommandInteraction, Interaction, Message, Permissions, Role } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import InteractionOptions from '../../types/InteractionOptions';
@@ -27,6 +27,7 @@ import CommandOptions from '../../types/CommandOptions';
 import getRole from '../../utils/getRole';
 
 export default class RoleListCommand extends BaseCommand {
+    permissions = [Permissions.FLAGS.MANAGE_ROLES];
     supportsInteractions: boolean = true;
 
     constructor() {

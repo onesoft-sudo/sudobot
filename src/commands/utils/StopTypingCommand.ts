@@ -24,6 +24,8 @@ import CommandOptions from '../../types/CommandOptions';
 import { emoji } from '../../utils/Emoji';
 
 export default class StopTypingCommand extends BaseCommand {
+    ownerOnly: boolean = true;
+    
     constructor() {
         super('stoptyping', 'utils', ['stoptype', 'typestop']);
     }

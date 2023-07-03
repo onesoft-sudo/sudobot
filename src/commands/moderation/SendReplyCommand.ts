@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, ContextMenuInteraction, Message, MessageActionRow, Modal, ModalSubmitInteraction, NewsChannel, TextChannel, TextInputComponent, ThreadChannel, User } from 'discord.js';
+import { CommandInteraction, ContextMenuInteraction, Message, MessageActionRow, Modal, ModalSubmitInteraction, NewsChannel, Permissions, TextChannel, TextInputComponent, ThreadChannel, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import InteractionOptions from '../../types/InteractionOptions';
@@ -31,6 +31,7 @@ export default class SendReplyCommand extends BaseCommand {
     supportsContextMenu: boolean = true;
     supportsInteractions: boolean = true;
     supportsLegacy: boolean = false;
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
 
     constructor() {
         super('reply', 'moderation', ['Send Reply']);

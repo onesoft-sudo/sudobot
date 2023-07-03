@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Collection, CommandInteraction, Message, Role, TextChannel, User } from 'discord.js';
+import { Collection, CommandInteraction, Message, Permissions, Role, TextChannel, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import CommandOptions from '../../types/CommandOptions';
 import InteractionOptions from '../../types/InteractionOptions';
@@ -43,6 +43,7 @@ export async function lockAll(client: DiscordClient, role: Role, channels: Colle
 
 export default class LockallCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    permissions = [Permissions.FLAGS.MANAGE_CHANNELS];
 
     constructor() {
         super('lockall', 'moderation', []);

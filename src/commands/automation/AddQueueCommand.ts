@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Message } from 'discord.js';
+import { Message, PermissionResolvable, Permissions } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -25,8 +25,11 @@ import MessageEmbed from '../../client/MessageEmbed';
 import ms from 'ms';
 import { timeSince } from '../../utils/util';
 import CustomQueue from '../../queues/CustomQueue';
+import { PermissionFlagsBits } from 'discord-api-types/v10';
 
 export default class AddQueueCommand extends BaseCommand {
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
+
     constructor() {
         super('addqueue', 'automation', []);
     }

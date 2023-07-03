@@ -17,12 +17,14 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, Permissions } from "discord.js";
 import Client from "../../client/Client";
 import InteractionOptions from "../../types/InteractionOptions";
 import BaseCommand from "../../utils/structures/BaseCommand";
 
 export default class LookupCommand extends BaseCommand {
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
+
     supportsInteractions: boolean = true;
     supportsLegacy: boolean = false;
 

@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Message, Interaction, CacheType, CommandInteraction } from "discord.js";
+import { Message, Interaction, CacheType, CommandInteraction, Permissions } from "discord.js";
 import Client from "../../client/Client";
 import InteractionRole from "../../models/InteractionRole";
 import InteractionRoleMessage from "../../models/InteractionRoleMessage";
@@ -26,6 +26,7 @@ import InteractionOptions from "../../types/InteractionOptions";
 import BaseCommand from "../../utils/structures/BaseCommand";
 
 export default class ButtonRoleDeleteCommand extends BaseCommand {
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
     name = "buttonrole__delete";
     category = "automation";
 

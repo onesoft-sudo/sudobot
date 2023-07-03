@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, Interaction, InteractionCollector, Message, MessageActionRow, MessageButton, User } from 'discord.js';
+import { CommandInteraction, Interaction, InteractionCollector, Message, MessageActionRow, MessageButton, Permissions, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -28,6 +28,7 @@ import Note from '../../models/Note';
 
 export default class NotesCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
 
     constructor() {
         super('notes', 'moderation', []);

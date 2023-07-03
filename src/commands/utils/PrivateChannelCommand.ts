@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Message, Interaction, CacheType, CommandInteraction, Util, CategoryChannel, GuildMember, OverwriteResolvable } from "discord.js";
+import { Message, Interaction, CacheType, CommandInteraction, Util, CategoryChannel, GuildMember, OverwriteResolvable, Permissions } from "discord.js";
 import Client from "../../client/Client";
 import MessageEmbed from "../../client/MessageEmbed";
 import CommandOptions from "../../types/CommandOptions";
@@ -28,6 +28,7 @@ import BaseCommand from "../../utils/structures/BaseCommand";
 
 export default class PrivateChannelCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    permissions = [Permissions.FLAGS.MANAGE_CHANNELS];
 
     constructor() {
         super('privatechannel', 'utils', ['private', 'createpch']);

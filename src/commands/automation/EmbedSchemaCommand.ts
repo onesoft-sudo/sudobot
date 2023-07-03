@@ -17,12 +17,13 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { ColorResolvable, CommandInteraction, Util } from 'discord.js';
+import { ColorResolvable, CommandInteraction, Permissions, Util } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import InteractionOptions from '../../types/InteractionOptions';
 
 export default class EmbedSchemaCommand extends BaseCommand {
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
     supportsInteractions: boolean = false;
     supportsLegacy: boolean = false;
     supportsContextMenu: boolean = false;    

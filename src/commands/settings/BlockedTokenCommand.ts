@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, Message, Util } from "discord.js";
+import { CommandInteraction, Message, Permissions, Util } from "discord.js";
 import DiscordClient from "../../client/Client";
 import CommandOptions from "../../types/CommandOptions";
 import InteractionOptions from "../../types/InteractionOptions";
@@ -27,6 +27,7 @@ import Pagination from "../../utils/Pagination";
 import MessageEmbed from "../../client/MessageEmbed";
 
 export default class BlockedTokenCommand extends BaseCommand {
+    permissions = [Permissions.FLAGS.MANAGE_GUILD];
     name = "blockedtoken";
     group = "settings";
     aliases = ["btoken", "blockedtokens", "bannedtoken", "bannedtoken"];

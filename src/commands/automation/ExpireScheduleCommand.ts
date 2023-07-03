@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, Message, TextChannel } from 'discord.js';
+import { CommandInteraction, Message, Permissions, TextChannel } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -27,6 +27,7 @@ import ms from 'ms';
 import ExpireScheduleMessageQueue from '../../queues/ExpireScheduleMessageQueue';
 
 export default class ExpireScheduleCommand extends BaseCommand {
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
     supportsInteractions = true;
     
     constructor() {

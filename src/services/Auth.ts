@@ -31,26 +31,6 @@ export default class Auth extends Service {
             return false;
         }
 
-        const cmds: string[] = await this.client.config.get('global_commands');
-
-        if (cmds.indexOf(command.getName().toLowerCase()) !== -1) {
-            return true;
-        }
-
-        if (await member.roles.cache.has(await this.client.config.get('mod_role'))) {
-            let restricted: string[] = [];
-            const roleCommands: { [key: string]: string[] } = await this.client.config.get('role_commands');
-            
-            for (const roleID in roleCommands) {
-                if (await member.roles.cache.has(roleID)) {
-                    restricted = await roleCommands[roleID];
-                    break;
-                }
-            }
-
-            return restricted.indexOf(command.getName().toLowerCase()) === -1;
-        }
-
-        return false;
+        return true;
     }
 };

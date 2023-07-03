@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, Message, User } from 'discord.js';
+import { CommandInteraction, Message, Permissions, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -30,6 +30,7 @@ import PunishmentType from '../../types/PunishmentType';
 
 export default class WarningCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
 
     constructor() {
         super('warning', 'moderation', []);

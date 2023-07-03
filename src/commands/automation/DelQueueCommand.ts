@@ -23,8 +23,11 @@ import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import { clearTimeoutv2, getTimeout, getTimeouts } from '../../utils/setTimeout';
+import { Permissions } from 'discord.js';
 
 export default class DelQueueCommand extends BaseCommand {
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
+
     constructor() {
         super('delqueue', 'automation', []);
     }

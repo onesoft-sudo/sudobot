@@ -25,9 +25,11 @@ import InteractionOptions from '../../types/InteractionOptions';
 import MessageEmbed from '../../client/MessageEmbed';
 import { fetchEmojiStr } from '../../utils/Emoji';
 import Note from '../../models/Note';
+import { Permissions } from 'discord.js';
 
 export default class NotegetCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
 
     constructor() {
         super('noteget', 'moderation', []);

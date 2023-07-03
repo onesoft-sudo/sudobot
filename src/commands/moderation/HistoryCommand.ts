@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, ContextMenuInteraction, Message, User } from 'discord.js';
+import { CommandInteraction, ContextMenuInteraction, Message, Permissions, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -61,6 +61,7 @@ export const convert = (type: PunishmentType) => {
 export default class HistoryCommand extends BaseCommand {
     supportsInteractions: boolean = true;
     supportsContextMenu = true;
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
 
     constructor() {
         super('history', 'moderation', ['Moderation History']);

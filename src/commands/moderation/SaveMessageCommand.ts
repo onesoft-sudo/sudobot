@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { ContextMenuInteraction, Message } from "discord.js";
+import { ContextMenuInteraction, Message, Permissions } from "discord.js";
 import DiscordClient from "../../client/Client";
 import MessageEmbed from "../../client/MessageEmbed";
 import BaseCommand from "../../utils/structures/BaseCommand";
@@ -25,6 +25,7 @@ import BaseCommand from "../../utils/structures/BaseCommand";
 export default class SaveMessageCommand extends BaseCommand {
     supportsContextMenu: boolean = true;
     supportsLegacy = false;
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
 
     constructor() {
         super('Save Message', 'moderation', []);

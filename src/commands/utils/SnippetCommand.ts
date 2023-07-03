@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, FileOptions } from 'discord.js';
+import { CommandInteraction, FileOptions, Permissions } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import InteractionOptions from '../../types/InteractionOptions';
@@ -26,6 +26,7 @@ import path from 'path';
 export default class AddsnippetCommand extends BaseCommand {
     supportsInteractions: boolean = true;
     supportsLegacy: boolean = false;
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
 
     constructor() {
         super('snippet', 'utils', []);

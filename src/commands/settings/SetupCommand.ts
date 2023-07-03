@@ -27,6 +27,7 @@ import { fetchEmoji } from '../../utils/Emoji';
 
 export default class AboutCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    ownerOnly: boolean = true;
 
     constructor() {
         super('setup', 'settings', []);

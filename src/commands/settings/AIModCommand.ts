@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Message } from "discord.js";
+import { Message, Permissions } from "discord.js";
 import BaseCommand from "../../utils/structures/BaseCommand";
 import DiscordClient from "../../client/Client";
 import CommandOptions from "../../types/CommandOptions";
@@ -25,6 +25,7 @@ import { emoji } from "../../utils/Emoji";
 
 export default class AboutCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
 
     constructor() {
         super("aimod", "settings", []);

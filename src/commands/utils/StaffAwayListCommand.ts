@@ -18,7 +18,7 @@
 */
 
 import { userMention } from "@discordjs/builders";
-import { Message, Util } from "discord.js";
+import { Message, Permissions, Util } from "discord.js";
 import DiscordClient from "../../client/Client";
 import MessageEmbed from "../../client/MessageEmbed";
 import CommandOptions from "../../types/CommandOptions";
@@ -26,6 +26,8 @@ import Pagination from "../../utils/Pagination";
 import BaseCommand from "../../utils/structures/BaseCommand";
 
 export default class StaffAwayCommand extends BaseCommand {
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
+
     constructor() {
         super('staffawaylist', 'utils', ['safklist', 'sawaylist', 'awaylist']);
     }

@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { AutocompleteInteraction, CacheType, CommandInteraction, Message } from 'discord.js';
+import { AutocompleteInteraction, CacheType, CommandInteraction, Message, Permissions } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -30,6 +30,7 @@ import AutoCompleteOptions from '../../types/AutoCompleteOptions';
 export default class ConfigCommand extends BaseCommand {
     supportsInteractions: boolean = true;
     configDotted: { [key: string]: string[] } = {};
+    permissions = [Permissions.FLAGS.MANAGE_GUILD];
 
     constructor() {
         super('config', 'settings', []);

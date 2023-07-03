@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, EmojiIdentifierResolvable, FileOptions, Message, TextChannel, User } from 'discord.js';
+import { CommandInteraction, EmojiIdentifierResolvable, FileOptions, Message, Permissions, TextChannel, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
@@ -29,6 +29,7 @@ import { LogLevel } from '../../services/DebugLogger';
 
 export default class EchoCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
 
     constructor() {
         super('echo', 'moderation', []);

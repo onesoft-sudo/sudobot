@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandInteraction, EmojiIdentifierResolvable, GuildMember, Message, TextChannel, User } from 'discord.js';
+import { CommandInteraction, EmojiIdentifierResolvable, GuildMember, Message, Permissions, TextChannel, User } from 'discord.js';
 import BaseCommand from '../../utils/structures/BaseCommand';
 import DiscordClient from '../../client/Client';
 import MessageEmbed from '../../client/MessageEmbed';
@@ -27,6 +27,8 @@ import { fetchEmoji } from '../../utils/Emoji';
 import Ballot from '../../models/Ballot';
 
 export default class BallotCommand extends BaseCommand {
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
+
     supportsInteractions = true;
 
     constructor() {

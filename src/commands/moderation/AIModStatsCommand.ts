@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Message, Util } from "discord.js";
+import { Message, Permissions, Util } from "discord.js";
 import DiscordClient from "../../client/Client";
 import CommandOptions from "../../types/CommandOptions";
 import BaseCommand from "../../utils/structures/BaseCommand";
@@ -26,6 +26,7 @@ import MessageEmbed from "../../client/MessageEmbed";
 import { emoji } from "../../utils/Emoji";
 
 export default class AIModStats extends BaseCommand {
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
     name = "aimodstats";
     category = "moderation";
     aliases = ['aimodtest'];

@@ -19,7 +19,7 @@
 
 import { formatDistanceStrict, formatDistanceToNowStrict } from "date-fns";
 import { APIEmbedField } from "discord-api-types/v9";
-import { Util, Message, CacheType, CommandInteraction } from "discord.js";
+import { Util, Message, CacheType, CommandInteraction, Permissions } from "discord.js";
 import Client from "../../client/Client";
 import MessageEmbed from "../../client/MessageEmbed";
 import Punishment from "../../models/Punishment";
@@ -32,6 +32,7 @@ import BaseCommand from "../../utils/structures/BaseCommand";
 import { getUserBadges } from "./ProfileCommand";
 
 export default class UserLookupCommand extends BaseCommand {
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
     supportsInteractions: boolean = true;
 
     constructor() {

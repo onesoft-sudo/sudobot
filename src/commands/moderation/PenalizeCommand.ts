@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { BanOptions, CommandInteraction, Message, User } from "discord.js";
+import { BanOptions, CommandInteraction, Message, Permissions, User } from "discord.js";
 import BaseCommand from "../../utils/structures/BaseCommand";
 import DiscordClient from "../../client/Client";
 import CommandOptions from "../../types/CommandOptions";
@@ -28,6 +28,7 @@ import { shouldNotModerate, hasPermission } from "../../utils/util";
 
 export default class PenalizeCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
 
     constructor() {
         super("penalize", "moderation", ["pban", "penalty"]);

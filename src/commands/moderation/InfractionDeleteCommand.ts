@@ -18,7 +18,7 @@
 */
 
 import { formatDistanceToNowStrict } from "date-fns";
-import { Message, CacheType, CommandInteraction, User, Util } from "discord.js";
+import { Message, CacheType, CommandInteraction, User, Util, Permissions } from "discord.js";
 import Client from "../../client/Client";
 import MessageEmbed from "../../client/MessageEmbed";
 import Punishment from "../../models/Punishment";
@@ -33,6 +33,7 @@ export default class InfractionDeleteCommand extends BaseCommand {
     category = "moderation";
     aliases = [];
     supportsInteractions = true;
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
 
     async run(client: Client, message: CommandInteraction<CacheType> | Message<boolean>, options: CommandOptions | InteractionOptions): Promise<void> {
         if (!options.isInteraction && options.args[0] === undefined) {

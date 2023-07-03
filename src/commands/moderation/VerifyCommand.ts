@@ -27,6 +27,7 @@ import getMember from '../../utils/getMember';
 
 export default class VerifyCommand extends BaseCommand {
     supportsInteractions: boolean = true;
+    ownerOnly: boolean = true;
 
     constructor() {
         super('verify', 'moderation', []);

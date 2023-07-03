@@ -25,6 +25,8 @@ import ms from 'ms';
 import { emoji } from '../../utils/Emoji';
 
 export default class TypeCommand extends BaseCommand {
+    ownerOnly: boolean = true;
+    
     constructor() {
         super('type', 'utils', ['starttyping']);
     }

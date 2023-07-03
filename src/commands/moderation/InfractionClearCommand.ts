@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Message, CacheType, CommandInteraction } from "discord.js";
+import { Message, CacheType, CommandInteraction, Permissions } from "discord.js";
 import Client from "../../client/Client";
 import Punishment from "../../models/Punishment";
 import CommandOptions from "../../types/CommandOptions";
@@ -27,6 +27,7 @@ import getUser from "../../utils/getUser";
 import BaseCommand from "../../utils/structures/BaseCommand";
 
 export default class InfractionClearCommand extends BaseCommand {
+    permissions = [Permissions.FLAGS.MANAGE_MESSAGES];
     name = "infraction__clear";
     category = "moderation";
     aliases = [];
