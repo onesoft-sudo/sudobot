@@ -1,3 +1,17 @@
+# [4.86.0](https://github.com/onesoft-sudo/sudobot/compare/v4.85.2...v4.86.0) (2023-07-06)
+
+
+### Bug Fixes
+
+* commitlint packages ([5bc1b5d](https://github.com/onesoft-sudo/sudobot/commit/5bc1b5d24525fec1fe23bea99c627c82f7e5e59b))
+
+
+### Features
+
+* **v5:** initial commit ([5d3742b](https://github.com/onesoft-sudo/sudobot/commit/5d3742b53412f19b5c40f577e7426377ef707544))
+
+
+
 ## [4.85.2](https://github.com/onesoft-sudo/sudobot/compare/v4.85.1...v4.85.2) (2023-07-03)
 
 
@@ -31,15 +45,6 @@
 ### Bug Fixes
 
 * removed cooldown from commands under the fun category ([60d096c](https://github.com/onesoft-sudo/sudobot/commit/60d096cf2d1852ac2dbbac2275f0fb489d63d4fe))
-
-
-
-## [4.84.1](https://github.com/onesoft-sudo/sudobot/compare/v4.84.0...v4.84.1) (2023-06-21)
-
-
-### Bug Fixes
-
-* broken markdown hyperlinks ([933cb29](https://github.com/onesoft-sudo/sudobot/commit/933cb29ecf2b2b67f43580bd744b43383a8bc117))
 
 
 

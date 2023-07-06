@@ -1,46 +1,46 @@
 {
-    "name": "sudobot",
-    "description": "A Discord bot for moderation purposes.",
-    "version": "4.85.2",
-    "main": "build/index.js",
-    "license": "GPL-3.0-or-later",
-    "keywords": [
-        "bot",
-        "discord-bot",
-        "moderation",
-        "automoderation",
-        "discord-moderation",
-        "discord-moderation-bot",
-        "discord-automoderation",
-        "discord-automoderation-bot"
-    ],
-    "homepage": "https://github.com/onesoft-sudo/sudobot",
-    "icon": "https://res.cloudinary.com/rakinar2/image/upload/v1659628446/SudoBot-new_cvwphw.png",
-    "readme": "https://github.com/onesoft-sudo/sudobot#readme",
-    "author": {
-        "name": "Ar Rakin",
-        "email": "rakinar2@onesoftnet.eu.org",
-        "url": "https://virtual-designer.github.io"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/onesoft-sudo/sudobot"
-    },
-    "bugs": {
-        "url": "https://github.com/onesoft-sudo/sudobot/issues",
-        "email": "sudobot@onesoftnet.eu.org"
-    },
-    "devDependencies": {
-        "@commitlint/cli": "^17.6.6",
-        "@commitlint/config-conventional": "^17.6.6",
-        "husky": "^8.0.3"
-    },
-    "scripts": {
-        "start": "node build/index.js",
-        "prepare": "husky install",
-        "dev": "ts-node src/index.ts",
-        "dev:watch": "nodemon src/index.ts",
-        "lint": "eslint . --ext .ts",
-        "lint:fix": "eslint . --ext .ts --fix"
-    }
+  "name": "sudobot",
+  "description": "A Discord bot for moderation purposes.",
+  "version": "4.86.0",
+  "main": "build/index.js",
+  "license": "GPL-3.0-or-later",
+  "keywords": [
+    "bot",
+    "discord-bot",
+    "moderation",
+    "automoderation",
+    "discord-moderation",
+    "discord-moderation-bot",
+    "discord-automoderation",
+    "discord-automoderation-bot"
+  ],
+  "homepage": "https://github.com/onesoft-sudo/sudobot",
+  "icon": "https://res.cloudinary.com/rakinar2/image/upload/v1659628446/SudoBot-new_cvwphw.png",
+  "readme": "https://github.com/onesoft-sudo/sudobot#readme",
+  "author": {
+    "name": "Ar Rakin",
+    "email": "rakinar2@onesoftnet.eu.org",
+    "url": "https://virtual-designer.github.io"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/onesoft-sudo/sudobot"
+  },
+  "bugs": {
+    "url": "https://github.com/onesoft-sudo/sudobot/issues",
+    "email": "sudobot@onesoftnet.eu.org"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.6.6",
+    "@commitlint/config-conventional": "^17.6.6",
+    "husky": "^8.0.3"
+  },
+  "scripts": {
+    "start": "node build/index.js",
+    "prepare": "husky install",
+    "dev": "ts-node src/index.ts",
+    "dev:watch": "nodemon src/index.ts",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix"
+  }
 }
