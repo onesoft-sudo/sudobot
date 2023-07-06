@@ -71,17 +71,13 @@
     "@types/ms": "^0.7.31",
     "@types/node": "^17.0.33",
     "@types/randomstring": "^1.1.8",
-    "@types/supertest": "^2.0.12",
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.36.2",
     "@typescript-eslint/parser": "^5.36.2",
     "eslint": "^8.23.0",
     "eslint-plugin-unused-imports": "^2.0.0",
     "husky": "^8.0.1",
-    "jest": "^29.2.2",
     "nodemon": "^2.0.16",
-    "supertest": "^6.3.1",
-    "ts-jest": "^29.0.3",
     "ts-node": "^10.9.1",
     "typescript": "^4.6.4"
   },
@@ -97,7 +93,6 @@
     "prepare": "sh -c \"husky install; sh ./init.sh\" || echo \"Error while trying to prepare project.\"",
     "start": "pm2 start ./ecosystem.config.js --no-daemon",
     "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix",
-    "test": "jest -t --testPathPattern tests/*"
+    "lint:fix": "eslint . --ext .ts --fix"
   }
 }
