@@ -31,6 +31,8 @@
         "email": "sudobot@onesoftnet.eu.org"
     },
     "devDependencies": {
+        "@commitlint/cli": "^17.6.6",
+        "@commitlint/config-conventional": "^17.6.6",
         "husky": "^8.0.3"
     },
     "scripts": {
