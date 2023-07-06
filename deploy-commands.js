@@ -34,7 +34,7 @@ else {
     process.env.ENV = 'prod';
 }
 
-const { CLIENT_ID, GUILD_ID, TOKEN } = process.env;
+const { CLIENT_ID, HOME_GUILD_ID, TOKEN } = process.env;
 
 let commands = [
 	// SETTINGS
@@ -623,8 +623,8 @@ if (process.argv.includes('--clear')) {
 	contextMenuCommands = [];
 }
 
-const rest = new REST({ version: '9' }).setToken(TOKEN);
+const rest = new REST({ version: '10' }).setToken(TOKEN);
 
-rest.put(Routes[process.argv.includes('--guild') ? 'applicationGuildCommands' : 'applicationCommands'](CLIENT_ID, GUILD_ID), { body: commands })
+rest.put(Routes[process.argv.includes('--guild') ? 'applicationGuildCommands' : 'applicationCommands'](CLIENT_ID, HOME_GUILD_ID), { body: commands })
 	.then(() => console.log('Successfully registered application ' + (process.argv.includes('--guild') ? 'guild ' : '') + 'commands.'))
 	.catch(console.error);

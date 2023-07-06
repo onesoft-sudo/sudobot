@@ -33,14 +33,25 @@
   "devDependencies": {
     "@commitlint/cli": "^17.6.6",
     "@commitlint/config-conventional": "^17.6.6",
-    "husky": "^8.0.3"
+    "@typescript-eslint/eslint-plugin": "^5.61.0",
+    "@typescript-eslint/parser": "^5.61.0",
+    "husky": "^8.0.3",
+    "nodemon": "^2.0.22",
+    "ts-node": "^10.9.1"
+  },
+  
+  "dependencies": {
+    "discord.js": "^14.11.0",
+    "dotenv": "^16.3.1",
+    "zod": "^3.21.4"
   },
   "scripts": {
     "start": "node build/index.js",
     "prepare": "husky install",
     "dev": "ts-node src/index.ts",
     "dev:watch": "nodemon src/index.ts",
-    "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix"
+    "lint": "eslint src/ --ext .ts",
+    "lint:fix": "eslint src/ --ext .ts --fix",
+    "build": "tsc"
   }
 }

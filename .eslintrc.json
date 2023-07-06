@@ -7,7 +7,9 @@
     "plugins": [
         "@typescript-eslint"
     ],
-    "rules": {},
+    "rules": {
+        "@typescript-eslint/no-empty-function": "off"
+    },
     "root": true,
-    "ignorePatterns": ["./backup", "**/*.js"]
+    "ignorePatterns": ["./backup/**", "**/*.js"]
 }
