@@ -13,8 +13,8 @@ export interface LegacyCommandContext extends CommandContext {
     isLegacy: true;
     argv: string[];
     args: string[];
+    parsedArgs: string[];
     has(arg: string): boolean;
-    getOptionValue(option: string): string | undefined;
 }
 
 export interface ChatInputCommandContext extends CommandContext {
@@ -47,6 +47,7 @@ export default class CommandManager extends Service {
             argv: [commandName, ...commandArguments],
             args: commandArguments,
             config,
+            parsedArgs: [],
             has(arg: string) {
                 return this.args.includes(arg);
             },
