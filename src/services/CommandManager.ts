@@ -13,7 +13,7 @@ export interface LegacyCommandContext extends CommandContext {
     isLegacy: true;
     argv: string[];
     args: string[];
-    parsedArgs: string[];
+    parsedArgs: any[];
     has(arg: string): boolean;
 }
 
