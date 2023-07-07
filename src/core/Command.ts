@@ -44,6 +44,9 @@ export interface ValidationRule {
     typeErrorMessage?: string;
     entityNotNullErrorMessage?: string;
     entityNotNull?: boolean;
+    minValue?: number;
+    maxValue?: number;
+    minMaxErrorMessage?: string;
 }
 
 export default abstract class Command {
@@ -122,6 +125,15 @@ export default abstract class Command {
 
                     for (const type of rule.types) {
                         const prevLength = parsedArgs.length;
+
+                        if (/^(\-)?[\d\.]+$/.test(arg) && ((rule.minValue || rule.maxValue) && type === ArgumentType.Float || type === ArgumentType.Integer || type === ArgumentType.Number)) {
+                            const float = parseFloat(arg);
+
+                            if (!isNaN(float) && ((rule.minValue !== undefined && rule.minValue > float) || (rule.maxValue !== undefined && rule.maxValue < float))) {
+                                await message.reply(rule.minMaxErrorMessage ?? `Argument #${index} has a min/max numeric value range but the given value is out of range.`);
+                                return;
+                            }
+                        }
 
                         switch (type) {
                             case ArgumentType.Boolean:
