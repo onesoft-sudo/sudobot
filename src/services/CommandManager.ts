@@ -19,6 +19,7 @@ export interface LegacyCommandContext extends CommandContext {
 
 export interface ChatInputCommandContext extends CommandContext {
     isLegacy: false;
+    options: ChatInputCommandInteraction["options"];
 }
 
 export default class CommandManager extends Service {
@@ -78,7 +79,8 @@ export default class CommandManager extends Service {
 
         command.run(interaction, {
             isLegacy: false,
-            config
+            config,
+            options: interaction.options
         })
             .then(result => {
                 if (result && typeof result === 'object' && "__reply" in result && result.__reply === true) {
