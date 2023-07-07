@@ -1,0 +1,15 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DB_URL")
+}
+
+model Infraction {
+    id      Int    @id @default(autoincrement())
+    user_id String
+
+    @@map("infractions")
+}

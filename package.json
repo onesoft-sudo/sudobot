@@ -37,6 +37,7 @@
     "@typescript-eslint/parser": "^5.61.0",
     "husky": "^8.0.3",
     "nodemon": "^2.0.22",
+    "prisma": "^4.16.2",
     "ts-node": "^10.9.1"
   },
   "dependencies": {
