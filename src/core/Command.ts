@@ -1,4 +1,4 @@
-import { APIMessage, CacheType, Channel, ChatInputCommandInteraction, InteractionReplyOptions, Message, MessageCreateOptions, MessageMentions, PermissionResolvable, Role, Snowflake, User } from "discord.js";
+import { APIMessage, CacheType, Channel, ChatInputCommandInteraction, GuildMember, InteractionReplyOptions, Message, MessageCreateOptions, MessageMentions, PermissionResolvable, Role, Snowflake, User } from "discord.js";
 import { ChatInputCommandContext, LegacyCommandContext } from "../services/CommandManager";
 import { isSnowflake } from "../utils/utils";
 import Client from "./Client";
@@ -10,6 +10,7 @@ export type CommandReturn = ((MessageCreateOptions | APIMessage | InteractionRep
 // TODO: Complete this
 export enum ArgumentType {
     String = 1,
+    StringRest,
     Number,
     Integer,
     Float,
@@ -23,7 +24,7 @@ export enum ArgumentType {
 
 export type ArgumentTypeFromEnum<D extends ArgumentType> = D extends ArgumentType.Boolean ? boolean : (
     D extends (ArgumentType.Number | ArgumentType.Integer | ArgumentType.Float) ? number : (
-        D extends (ArgumentType.String | ArgumentType.Link) ? string : (
+        D extends (ArgumentType.String | ArgumentType.StringRest | ArgumentType.Link) ? string : (
             D extends ArgumentType.Snowflake ? Snowflake : (
                 D extends ArgumentType.User ? User : (
                     D extends ArgumentType.Role ? Role : (
@@ -59,17 +60,47 @@ export default abstract class Command {
     constructor(protected client: Client) { }
     abstract execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn>;
 
-    private async invalidValue(message: CommandMessage, index: number, typename: string) {
-        return await message.reply(`Argument #${index}: Invalid ${typename} value given`);
-    }
-
     async run(message: CommandMessage, context: AnyCommandContext) {
-        const { validationRules } = this;
+        const { validationRules, permissions } = this;
         const parsedArgs = [];
+
+        if (permissions.length > 0) {
+            let member: GuildMember = <any>message.member!;
+
+            if (!(member.permissions as any)?.has) {
+                try {
+                    member = await message.guild!.members.fetch(member.user.id);
+
+                    if (!member) {
+                        throw new Error("Invalid member");
+                    }
+                }
+                catch (e) {
+                    console.log(e);
+                    message.reply({
+                        content: `Sorry, I couldn't determine whether you have the enough permissions to perform this action or not. Please contact the bot developer.`,
+                        ephemeral: true
+                    }).catch(console.error);
+                    return;
+                }
+            }
+
+            for (const permission of permissions) {
+                if (!member.permissions.has(permission, true)) {
+                    await message.reply({
+                        content: `You don't have permission to run this command.`,
+                        ephemeral: true
+                    });
+
+                    return;
+                }
+            }
+        }
 
         if (context.isLegacy) {
             let index = 0;
 
+            loop:
             for await (const rule of validationRules) {
                 const arg = context.args[index];
 
@@ -198,6 +229,29 @@ export default abstract class Command {
                                 }
 
                                 break;
+
+                            case ArgumentType.StringRest:
+                                if (arg.trim() === '')
+                                    break;
+
+                                const config = this.client.configManager.config[message.guildId!];
+                                let str = ((message as Message).content ?? '')
+                                    .slice(config?.prefix.length)
+                                    .trimStart()
+                                    .slice(context.argv[0].length)
+                                    .trimStart();
+
+                                for (let i = 0; i < index; i++) {
+                                    str = str.slice(context.args[i].length).trimStart();
+                                }
+
+                                str = str.trimEnd();
+
+                                if (str === '')
+                                    break;
+
+                                parsedArgs[index] = str;
+                                break loop;
                         }
 
                         if (prevLength !== parsedArgs.length) {
