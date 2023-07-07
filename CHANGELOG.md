@@ -1,3 +1,12 @@
+# [4.90.0](https://github.com/onesoft-sudo/sudobot/compare/v4.89.0...v4.90.0) (2023-07-07)
+
+
+### Features
+
+* add prisma ([690b741](https://github.com/onesoft-sudo/sudobot/commit/690b7419ad866cc6edb6822ad70511748975ba63))
+
+
+
 # [4.89.0](https://github.com/onesoft-sudo/sudobot/compare/v4.88.0...v4.89.0) (2023-07-07)
 
 
@@ -45,15 +54,6 @@
 ### Features
 
 * **v5:** initial commit ([5d3742b](https://github.com/onesoft-sudo/sudobot/commit/5d3742b53412f19b5c40f577e7426377ef707544))
-
-
-
-## [4.85.2](https://github.com/onesoft-sudo/sudobot/compare/v4.85.1...v4.85.2) (2023-07-03)
-
-
-### Bug Fixes
-
-* don't depend on roles to determine permissions ([316a4ec](https://github.com/onesoft-sudo/sudobot/commit/316a4eced06cb38a72fd211c4d096362c7f148fe))
 
 
 
