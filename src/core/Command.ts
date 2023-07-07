@@ -1,4 +1,4 @@
-import { APIMessage, CacheType, Channel, ChatInputCommandInteraction, GuildMember, InteractionReplyOptions, Message, MessageCreateOptions, MessageMentions, PermissionResolvable, Role, Snowflake, User } from "discord.js";
+import { APIMessage, CacheType, Channel, ChatInputCommandInteraction, GuildMember, InteractionEditReplyOptions, InteractionReplyOptions, Message, MessageCreateOptions, MessageMentions, MessagePayload, PermissionResolvable, Role, Snowflake, User } from "discord.js";
 import { ChatInputCommandContext, LegacyCommandContext } from "../services/CommandManager";
 import { isSnowflake } from "../utils/utils";
 import Client from "./Client";
@@ -47,6 +47,8 @@ export interface ValidationRule {
     minValue?: number;
     maxValue?: number;
     minMaxErrorMessage?: string;
+    lengthMaxErrorMessage?: string;
+    lengthMax?: number;
 }
 
 export default abstract class Command {
@@ -62,6 +64,14 @@ export default abstract class Command {
 
     constructor(protected client: Client) { }
     abstract execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn>;
+
+    async deferredReply(message: CommandMessage, options: MessageCreateOptions | MessagePayload | InteractionEditReplyOptions | string) {
+        if (message instanceof ChatInputCommandInteraction) {
+            return await message.editReply(options);
+        }
+
+        return message.reply(options as any);
+    }
 
     async run(message: CommandMessage, context: AnyCommandContext) {
         const { validationRules, permissions } = this;
@@ -264,6 +274,11 @@ export default abstract class Command {
 
                                 parsedArgs[index] = str;
                                 break loop;
+                        }
+
+                        if (rule.lengthMax !== undefined && typeof parsedArgs[index] === 'string' && parsedArgs[index].length > rule.lengthMax) {
+                            await message.reply(rule.lengthMaxErrorMessage ?? `Argument #${index} is too long`);
+                            return;
                         }
 
                         if (prevLength !== parsedArgs.length) {
