@@ -8,7 +8,10 @@ export const name = "configManager";
 export const ConfigSchema = z.object({
     prefix: z.string(),
     mod_role: z.string().optional(),
-    admin_role: z.string().optional()
+    admin_role: z.string().optional(),
+    infractions: z.object({
+        send_ids_to_user: z.boolean().default(true)
+    })
 });
 
 export type Config = z.infer<typeof ConfigSchema>;

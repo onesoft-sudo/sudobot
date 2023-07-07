@@ -1,8 +1,10 @@
+import { PrismaClient } from '@prisma/client';
 import { Collection, Client as DiscordClient } from 'discord.js';
 import fs from 'fs/promises';
 import path from 'path';
 import CommandManager from '../services/CommandManager';
 import ConfigManager from '../services/ConfigManager';
+import InfractionManager from '../services/InfractionManager';
 import Command from './Command';
 import ServiceManager from './ServiceManager';
 
@@ -14,6 +16,7 @@ export default class Client extends DiscordClient {
     services = [
         "@services/ConfigManager",
         "@services/CommandManager",
+        "@services/InfractionManager",
     ];
 
     commandsDirectory = path.resolve(__dirname, "../commands");
@@ -23,6 +26,11 @@ export default class Client extends DiscordClient {
 
     configManager: ConfigManager = {} as ConfigManager;
     commandManager: CommandManager = {} as CommandManager;
+    infractionManager: InfractionManager = {} as InfractionManager;
+    prisma = new PrismaClient({
+        errorFormat: "pretty",
+        log: ['query', 'error', 'info', 'warn']
+    });
 
     commands = new Collection<string, Command>();
 
@@ -53,6 +61,8 @@ export default class Client extends DiscordClient {
             for (const alias of command.aliases) {
                 this.commands.set(alias, command);
             }
+
+            console.log('Loaded command: ', command.name);
         }
     }
 

@@ -2,7 +2,7 @@ import { ChatInputCommandInteraction, EmbedBuilder, PermissionsBitField, User, e
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class BanCommand extends Command {
-    name = "ban";
+    public readonly name = "ban";
 
     validationRules: ValidationRule[] = [
         {
@@ -43,6 +43,20 @@ export default class BanCommand extends Command {
             typeof context.parsedArgs[1] === 'string' ? context.parsedArgs[1] : context.parsedArgs[2]
         );
 
+        const id = await this.client.infractionManager.createUserBan(user, {
+            guild: message.guild!,
+            moderatorId: message.member!.user.id,
+            days,
+            reason,
+            notifyUser: context.isLegacy ? true : (context.options.getBoolean('notify') ?? true),
+            sendLog: true
+        });
+
+        if (!id) {
+            await this.deferredReply(message, `An error has occurred while performing this action. Please make sure that the bot has the required permissions to perform this action.`);
+            return;
+        }
+
         await this.deferredReply(message, {
             embeds: [
                 new EmbedBuilder({
@@ -63,7 +77,7 @@ export default class BanCommand extends Command {
                         },
                         {
                             name: "Infraction ID",
-                            value: "10012"
+                            value: `${id}`
                         }
                     ],
                     footer: {

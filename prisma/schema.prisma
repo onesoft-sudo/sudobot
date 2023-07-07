@@ -8,8 +8,15 @@ datasource db {
 }
 
 model Infraction {
-    id      Int    @id @default(autoincrement())
-    user_id String
+    id          Int       @id @default(autoincrement())
+    userId      String
+    guildId     String
+    reason      String?
+    moderatorId String
+    expiresAt   DateTime?
+    metadata    Json?
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @default(now()) @updatedAt
 
     @@map("infractions")
 }

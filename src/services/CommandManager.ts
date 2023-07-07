@@ -30,6 +30,7 @@ export default class CommandManager extends Service {
         const config = this.client.configManager.config[message.guildId!];
 
         if (!config) {
+            console.log("This guild is not configured: ", message.guildId!);
             return;
         }
 
