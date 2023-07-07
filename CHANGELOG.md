@@ -1,3 +1,19 @@
+# [4.89.0](https://github.com/onesoft-sudo/sudobot/compare/v4.88.0...v4.89.0) (2023-07-07)
+
+
+### Bug Fixes
+
+* typings ([c1c2083](https://github.com/onesoft-sudo/sudobot/commit/c1c208305ee3b1318d27987e0c6be913f20b756a))
+
+
+### Features
+
+* **commandManager:** pass interaction options to command handler ([5b7c597](https://github.com/onesoft-sudo/sudobot/commit/5b7c5975ed3fe7c8f290e2f67f5da9e3a78764fa))
+* **commands:** add a few new validation rules ([2d2f115](https://github.com/onesoft-sudo/sudobot/commit/2d2f115d3e21f9ae19335bce645db0ebe9b99114))
+* **commands:** add an incomplete ban command ([837f823](https://github.com/onesoft-sudo/sudobot/commit/837f82309c221b7384429ee4e7ecdff5b8044eed))
+
+
+
 # [4.88.0](https://github.com/onesoft-sudo/sudobot/compare/v4.87.0...v4.88.0) (2023-07-07)
 
 
@@ -38,15 +54,6 @@
 ### Bug Fixes
 
 * don't depend on roles to determine permissions ([316a4ec](https://github.com/onesoft-sudo/sudobot/commit/316a4eced06cb38a72fd211c4d096362c7f148fe))
-
-
-
-## [4.85.1](https://github.com/onesoft-sudo/sudobot/compare/v4.85.0...v4.85.1) (2023-06-28)
-
-
-### Bug Fixes
-
-* blockedword list command shows tokens ([b918f23](https://github.com/onesoft-sudo/sudobot/commit/b918f23963d747f2397de39df33eeefcf3d6e158))
 
 
 
