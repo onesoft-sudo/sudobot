@@ -1,3 +1,21 @@
+# [4.94.0](https://github.com/onesoft-sudo/sudobot/compare/v4.93.0...v4.94.0) (2023-07-08)
+
+
+### Bug Fixes
+
+* **CommandManager:** named arguments with ArgumentType.StringRest don't work ([a6b5d73](https://github.com/onesoft-sudo/sudobot/commit/a6b5d7367d1c1198c06daaf392b8cade15fef6dd))
+* **db:** prisma Infraction schema does not contain type ([b129ef3](https://github.com/onesoft-sudo/sudobot/commit/b129ef303e8919d179994fae650aecaef23455ec))
+
+
+### Features
+
+* **CommandManager:** named arguments ([4b8595f](https://github.com/onesoft-sudo/sudobot/commit/4b8595f93c7c152e9146f40b3ec2a4868f3d6301))
+* **commands:** add kick command ([17d6cfb](https://github.com/onesoft-sudo/sudobot/commit/17d6cfbda458929d5d7843a862990615449afb25))
+* **InfractionManager:** add method for kicking guild members ([326c16d](https://github.com/onesoft-sudo/sudobot/commit/326c16db6fa80d75813dc415512f59483dd02c22))
+* **utils:** add createModerationEmbed() helper function ([e8e9441](https://github.com/onesoft-sudo/sudobot/commit/e8e9441ee8e6a8fdfd664ce8fa6ccb4508449a34))
+
+
+
 # [4.93.0](https://github.com/onesoft-sudo/sudobot/compare/v4.92.0...v4.93.0) (2023-07-08)
 
 
@@ -31,22 +49,6 @@
 ### Features
 
 * add prisma ([690b741](https://github.com/onesoft-sudo/sudobot/commit/690b7419ad866cc6edb6822ad70511748975ba63))
-
-
-
-# [4.89.0](https://github.com/onesoft-sudo/sudobot/compare/v4.88.0...v4.89.0) (2023-07-07)
-
-
-### Bug Fixes
-
-* typings ([c1c2083](https://github.com/onesoft-sudo/sudobot/commit/c1c208305ee3b1318d27987e0c6be913f20b756a))
-
-
-### Features
-
-* **commandManager:** pass interaction options to command handler ([5b7c597](https://github.com/onesoft-sudo/sudobot/commit/5b7c5975ed3fe7c8f290e2f67f5da9e3a78764fa))
-* **commands:** add a few new validation rules ([2d2f115](https://github.com/onesoft-sudo/sudobot/commit/2d2f115d3e21f9ae19335bce645db0ebe9b99114))
-* **commands:** add an incomplete ban command ([837f823](https://github.com/onesoft-sudo/sudobot/commit/837f82309c221b7384429ee4e7ecdff5b8044eed))
 
 
 
