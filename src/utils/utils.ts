@@ -1,3 +1,6 @@
+import { APIEmbedField, ColorResolvable, EmbedBuilder, User, escapeMarkdown } from "discord.js";
+import { ActionDoneName } from "../services/InfractionManager";
+
 export function isSnowflake(input: string) {
     return /^\d{16,22}$/.test(input);
 }
@@ -48,4 +51,53 @@ export function stringToTimeInterval(input: string) {
     }
 
     return { error: undefined, seconds };
+}
+
+export interface CreateModerationEmbedOptions {
+    user: User;
+    actionDoneName: ActionDoneName;
+    reason?: string;
+    description?: string;
+    fields?: APIEmbedField[] | ((fields: APIEmbedField[], id: string, reason?: string) => Promise<APIEmbedField[]> | APIEmbedField[]);
+    id: string | number;
+    color?: ColorResolvable;
+}
+
+export async function createModerationEmbed({ user, actionDoneName, reason, description, fields, id, color = 0xf14a60 }: CreateModerationEmbedOptions) {
+    return new EmbedBuilder({
+        author: {
+            name: user.tag,
+            icon_url: user.displayAvatarURL()
+        },
+        description: description ?? `**${escapeMarkdown(user.tag)}** has been ${actionDoneName}.`,
+        fields: (typeof fields === 'function' ? (
+            await fields([
+                {
+                    name: 'Reason',
+                    value: reason ?? '*No reason provided*'
+                },
+                {
+                    name: "Infraction ID",
+                    value: `${id}`
+                }
+            ], `${id}`, reason)
+        ) : (
+            [
+                {
+                    name: 'Reason',
+                    value: reason ?? '*No reason provided*'
+                },
+                ...(fields ?? []),
+                {
+                    name: "Infraction ID",
+                    value: `${id}`
+                }
+            ]
+        )),
+        footer: {
+            text: actionDoneName[0].toUpperCase() + actionDoneName.substring(1)
+        },
+    })
+        .setTimestamp()
+        .setColor(color)
 }
