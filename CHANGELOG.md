@@ -1,3 +1,12 @@
+# [4.92.0](https://github.com/onesoft-sudo/sudobot/compare/v4.91.0...v4.92.0) (2023-07-08)
+
+
+### Features
+
+* **utils:** add stringToTimeInterval() function ([c5a49e0](https://github.com/onesoft-sudo/sudobot/commit/c5a49e05c98d45f32d62656d4b8070d0d0ce31c2))
+
+
+
 # [4.91.0](https://github.com/onesoft-sudo/sudobot/compare/v4.90.0...v4.91.0) (2023-07-07)
 
 
@@ -40,15 +49,6 @@
 * **commands:** add min and max value rule ([c2d3c57](https://github.com/onesoft-sudo/sudobot/commit/c2d3c57f7293f8fb364ff0c2375c72856f73f6c6))
 * **commands:** add StringRest argument type ([e00f895](https://github.com/onesoft-sudo/sudobot/commit/e00f895f2fc9e595291bc9dbfe4aa3641c7965f6))
 * **commands:** improved command argument validations ([add3445](https://github.com/onesoft-sudo/sudobot/commit/add34453631c5b41ccfd833344f5a77d3622a298))
-
-
-
-# [4.87.0](https://github.com/onesoft-sudo/sudobot/compare/v4.86.0...v4.87.0) (2023-07-06)
-
-
-### Features
-
-* **v5:** prepare the basic bot framework ([ea77bf3](https://github.com/onesoft-sudo/sudobot/commit/ea77bf3c0ad838b40d9f8bc247215a114015860e))
 
 
 
