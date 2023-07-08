@@ -1,6 +1,7 @@
 import { formatDistanceToNow } from "date-fns";
-import { ChatInputCommandInteraction, EmbedBuilder, PermissionsBitField, User, escapeMarkdown } from "discord.js";
+import { ChatInputCommandInteraction, PermissionsBitField, User, escapeMarkdown } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { createModerationEmbed } from "../../utils/utils";
 
 export default class BanCommand extends Command {
     public readonly name = "ban";
@@ -47,43 +48,30 @@ export default class BanCommand extends Command {
             moderatorId: message.member!.user.id,
             deleteMessageSeconds: deleteMessageSeconds,
             reason,
-            notifyUser: context.isLegacy ? true : (context.options.getBoolean('notify') ?? true),
+            notifyUser: context.isLegacy ? true : !context.options.getBoolean('silent'),
             sendLog: true
         });
 
         if (!id) {
-            await this.deferredReply(message, `An error has occurred while performing this action. Please make sure that the bot has the required permissions to perform this action.`);
+            await this.error(message);
             return;
         }
 
         await this.deferredReply(message, {
             embeds: [
-                new EmbedBuilder({
-                    author: {
-                        name: user.tag,
-                        icon_url: user.displayAvatarURL()
-                    },
-                    color: 0xf14a60,
+                await createModerationEmbed({
+                    user,
+                    actionDoneName: "banned",
                     description: `**${escapeMarkdown(user.tag)}** has been banned from this server.`,
                     fields: [
-                        {
-                            name: 'Reason',
-                            value: reason ?? '*No reason provided*'
-                        },
                         {
                             name: 'Message Deletion',
                             value: deleteMessageSeconds ? `Timeframe: ${formatDistanceToNow(new Date(Date.now() - (deleteMessageSeconds * 1000)))}\nMessages in this timeframe by this user will be removed.` : "*No message will be deleted*"
                         },
-                        {
-                            name: "Infraction ID",
-                            value: `${id}`
-                        }
                     ],
-                    footer: {
-                        text: "Banned"
-                    },
+                    id: `${id}`,
+                    reason
                 })
-                    .setTimestamp()
             ]
         });
     }
