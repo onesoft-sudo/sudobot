@@ -4,8 +4,7 @@ import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn
 
 export default class BanCommand extends Command {
     public readonly name = "ban";
-
-    validationRules: ValidationRule[] = [
+    public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.User],
             entityNotNull: true,
@@ -29,8 +28,7 @@ export default class BanCommand extends Command {
             lengthMax: 3999
         }
     ];
-
-    permissions = [PermissionsBitField.Flags.BanMembers];
+    public readonly permissions = [PermissionsBitField.Flags.BanMembers];
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         if (message instanceof ChatInputCommandInteraction)
