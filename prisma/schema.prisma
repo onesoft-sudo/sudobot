@@ -7,16 +7,29 @@ datasource db {
     url      = env("DB_URL")
 }
 
+enum InfractionType {
+    BAN
+    KICK
+    MUTE
+    WARNING
+    MASSBAN
+    TEMPBAN
+    MASSKICK
+    UNBAN
+    UNMUTE
+}
+
 model Infraction {
-    id          Int       @id @default(autoincrement())
+    id          Int            @id @default(autoincrement())
+    type        InfractionType
     userId      String
     guildId     String
     reason      String?
     moderatorId String
     expiresAt   DateTime?
     metadata    Json?
-    createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @default(now()) @updatedAt
+    createdAt   DateTime       @default(now())
+    updatedAt   DateTime       @default(now()) @updatedAt
 
     @@map("infractions")
 }
