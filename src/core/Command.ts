@@ -1,4 +1,5 @@
 import { APIMessage, CacheType, Channel, ChatInputCommandInteraction, GuildMember, InteractionEditReplyOptions, InteractionReplyOptions, Message, MessageCreateOptions, MessageMentions, MessagePayload, PermissionResolvable, Role, Snowflake, User } from "discord.js";
+import { dirname } from "path";
 import { ChatInputCommandContext, LegacyCommandContext } from "../services/CommandManager";
 import { isSnowflake, stringToTimeInterval } from "../utils/utils";
 import Client from "./Client";
@@ -54,7 +55,7 @@ export interface ValidationRule {
 
 export default abstract class Command {
     public readonly name: string = '';
-    public readonly group: string = '';
+    public readonly group: string = dirname(__dirname);
     public readonly aliases: string[] = [];
 
     public readonly supportsInteractions: boolean = true;
