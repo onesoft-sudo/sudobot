@@ -18,6 +18,7 @@ export enum ArgumentType {
     Boolean,
     Snowflake,
     User,
+    GuildMember,
     Channel,
     Role,
     Link,
@@ -30,7 +31,9 @@ export type ArgumentTypeFromEnum<D extends ArgumentType> = D extends ArgumentTyp
             D extends ArgumentType.Snowflake ? Snowflake : (
                 D extends ArgumentType.User ? User : (
                     D extends ArgumentType.Role ? Role : (
-                        D extends ArgumentType.Channel ? Channel : never
+                        D extends ArgumentType.Channel ? Channel : (
+                            D extends ArgumentType.GuildMember ? GuildMember : never
+                        )
                     )
                 )
             )
@@ -51,6 +54,7 @@ export interface ValidationRule {
     minMaxErrorMessage?: string;
     lengthMaxErrorMessage?: string;
     lengthMax?: number;
+    name?: string;
 }
 
 export default abstract class Command {
@@ -75,9 +79,14 @@ export default abstract class Command {
         return message.reply(options as any);
     }
 
+    async error(message: CommandMessage) {
+        return await this.deferredReply(message, `An error has occurred while performing this action. Please make sure that the bot has the required permissions to perform this action.`);
+    }
+
     async run(message: CommandMessage, context: AnyCommandContext) {
         const { validationRules, permissions } = this;
         const parsedArgs = [];
+        const parsedNamedArgs: Record<string, any> = {};
 
         if (permissions.length > 0) {
             let member: GuildMember = <any>message.member!;
@@ -226,6 +235,7 @@ export default abstract class Command {
                                 break;
 
                             case ArgumentType.User:
+                            case ArgumentType.GuildMember:
                             case ArgumentType.Channel:
                             case ArgumentType.Role:
                                 let id;
@@ -254,7 +264,11 @@ export default abstract class Command {
                                     else {
                                         entity = type === ArgumentType.Role ?
                                             await message.guild!.roles.fetch(id) :
-                                            await message.guild!.channels.fetch(id);
+                                            (
+                                                type === ArgumentType.Channel ?
+                                                    await message.guild!.channels.fetch(id) :
+                                                    await message.guild!.members.fetch(id)
+                                            );
                                     }
 
                                     if (!entity) {
@@ -297,6 +311,11 @@ export default abstract class Command {
                                     break;
 
                                 parsedArgs[index] = str;
+
+                                if (rule.name) {
+                                    parsedNamedArgs[rule.name] = parsedArgs[index];
+                                }
+
                                 break loop;
                         }
 
@@ -316,6 +335,10 @@ export default abstract class Command {
                     }
                 }
 
+                if (rule.name) {
+                    parsedNamedArgs[rule.name] = parsedArgs[index];
+                }
+
                 index++;
             }
         }
@@ -323,7 +346,8 @@ export default abstract class Command {
         return await this.execute(message, {
             ...context,
             ...(context.isLegacy ? {
-                parsedArgs
+                parsedArgs,
+                parsedNamedArgs
             } : {})
         });
     }
