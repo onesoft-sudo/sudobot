@@ -1,3 +1,12 @@
+# [4.91.0](https://github.com/onesoft-sudo/sudobot/compare/v4.90.0...v4.91.0) (2023-07-07)
+
+
+### Features
+
+* **commands:** complete ban command ([53e8943](https://github.com/onesoft-sudo/sudobot/commit/53e894387bfb6f5258ec3dc53bb72c885b922c7b))
+
+
+
 # [4.90.0](https://github.com/onesoft-sudo/sudobot/compare/v4.89.0...v4.90.0) (2023-07-07)
 
 
@@ -40,20 +49,6 @@
 ### Features
 
 * **v5:** prepare the basic bot framework ([ea77bf3](https://github.com/onesoft-sudo/sudobot/commit/ea77bf3c0ad838b40d9f8bc247215a114015860e))
-
-
-
-# [4.86.0](https://github.com/onesoft-sudo/sudobot/compare/v4.85.2...v4.86.0) (2023-07-06)
-
-
-### Bug Fixes
-
-* commitlint packages ([5bc1b5d](https://github.com/onesoft-sudo/sudobot/commit/5bc1b5d24525fec1fe23bea99c627c82f7e5e59b))
-
-
-### Features
-
-* **v5:** initial commit ([5d3742b](https://github.com/onesoft-sudo/sudobot/commit/5d3742b53412f19b5c40f577e7426377ef707544))
 
 
 
