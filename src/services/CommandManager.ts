@@ -14,6 +14,7 @@ export interface LegacyCommandContext extends CommandContext {
     argv: string[];
     args: string[];
     parsedArgs: any[];
+    parsedNamedArgs: Record<string, any>;
     has(arg: string): boolean;
 }
 
@@ -50,6 +51,7 @@ export default class CommandManager extends Service {
             args: commandArguments,
             config,
             parsedArgs: [],
+            parsedNamedArgs: {},
             has(arg: string) {
                 return this.args.includes(arg);
             },
