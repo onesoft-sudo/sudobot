@@ -10,7 +10,7 @@ export type CommonOptions = {
 };
 
 export type CreateUserBanOptions = CommonOptions & {
-    days?: number;
+    deleteMessageSeconds?: number;
 };
 
 export type ActionDoneName = "banned" | "muted" | "kicked";
@@ -71,7 +71,7 @@ export default class InfractionManager extends Service {
         }
     }
 
-    async createUserBan(user: User, { guild, moderatorId, reason, days, notifyUser }: CreateUserBanOptions) {
+    async createUserBan(user: User, { guild, moderatorId, reason, deleteMessageSeconds, notifyUser }: CreateUserBanOptions) {
         const { id } = await this.client.prisma.infraction.create({
             data: {
                 userId: user.id,
@@ -79,7 +79,7 @@ export default class InfractionManager extends Service {
                 reason,
                 moderatorId,
                 metadata: {
-                    days
+                    deleteMessageSeconds
                 },
             }
         });
@@ -95,7 +95,7 @@ export default class InfractionManager extends Service {
         try {
             await guild.bans.create(user, {
                 reason,
-                deleteMessageSeconds: days ? days * 24 * 60 * 60 : undefined
+                deleteMessageSeconds
             });
 
             return id;

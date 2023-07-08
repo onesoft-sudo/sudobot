@@ -1,6 +1,6 @@
 import { APIMessage, CacheType, Channel, ChatInputCommandInteraction, GuildMember, InteractionEditReplyOptions, InteractionReplyOptions, Message, MessageCreateOptions, MessageMentions, MessagePayload, PermissionResolvable, Role, Snowflake, User } from "discord.js";
 import { ChatInputCommandContext, LegacyCommandContext } from "../services/CommandManager";
-import { isSnowflake } from "../utils/utils";
+import { isSnowflake, stringToTimeInterval } from "../utils/utils";
 import Client from "./Client";
 
 export type CommandMessage = Message<boolean> | ChatInputCommandInteraction<CacheType>;
@@ -19,11 +19,12 @@ export enum ArgumentType {
     User,
     Channel,
     Role,
-    Link
+    Link,
+    TimeInterval
 }
 
 export type ArgumentTypeFromEnum<D extends ArgumentType> = D extends ArgumentType.Boolean ? boolean : (
-    D extends (ArgumentType.Number | ArgumentType.Integer | ArgumentType.Float) ? number : (
+    D extends (ArgumentType.Number | ArgumentType.Integer | ArgumentType.Float | ArgumentType.TimeInterval) ? number : (
         D extends (ArgumentType.String | ArgumentType.StringRest | ArgumentType.Link) ? string : (
             D extends ArgumentType.Snowflake ? Snowflake : (
                 D extends ArgumentType.User ? User : (
@@ -185,6 +186,28 @@ export default abstract class Command {
                                 }
 
                                 parsedArgs[index] = number;
+                                break;
+
+                            case ArgumentType.TimeInterval:
+                                const { seconds, error } = stringToTimeInterval(arg);
+
+                                if (error) {
+                                    if (rule.types.length === 1) {
+                                        await message.reply({
+                                            ephemeral: true,
+                                            content: error
+                                        }).catch(console.error);
+                                    }
+
+                                    break;
+                                }
+
+                                if (!isNaN(seconds) && ((rule.minValue !== undefined && rule.minValue > seconds) || (rule.maxValue !== undefined && rule.maxValue < seconds))) {
+                                    await message.reply(rule.minMaxErrorMessage ?? `Argument #${index} has a min/max numeric time value range but the given value is out of range.`);
+                                    return;
+                                }
+
+                                parsedArgs[index] = seconds;
                                 break;
 
                             case ArgumentType.String:
