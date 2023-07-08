@@ -1,4 +1,4 @@
-import { ColorResolvable, EmbedBuilder, EmbedField, Guild, User } from "discord.js";
+import { ColorResolvable, EmbedBuilder, EmbedField, Guild, GuildMember, User } from "discord.js";
 import Service from "../core/Service";
 
 export type CommonOptions = {
@@ -74,6 +74,7 @@ export default class InfractionManager extends Service {
     async createUserBan(user: User, { guild, moderatorId, reason, deleteMessageSeconds, notifyUser }: CreateUserBanOptions) {
         const { id } = await this.client.prisma.infraction.create({
             data: {
+                type: "BAN",
                 userId: user.id,
                 guildId: guild.id,
                 reason,
@@ -98,6 +99,38 @@ export default class InfractionManager extends Service {
                 deleteMessageSeconds
             });
 
+            return id;
+        }
+        catch (e) {
+            console.log(e);
+            return null;
+        }
+    }
+
+    async createMemberKick(member: GuildMember, { guild, moderatorId, reason, notifyUser }: CommonOptions) {
+        if (!member.kickable)
+            return null;
+
+        const { id } = await this.client.prisma.infraction.create({
+            data: {
+                type: "KICK",
+                userId: member.user.id,
+                guildId: guild.id,
+                reason,
+                moderatorId,
+            }
+        });
+
+        if (notifyUser) {
+            await this.sendDM(member.user, guild, {
+                id,
+                actionDoneName: "kicked",
+                reason,
+            });
+        }
+
+        try {
+            await member.kick(reason);
             return id;
         }
         catch (e) {
