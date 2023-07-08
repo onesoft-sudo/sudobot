@@ -1,3 +1,12 @@
+# [4.93.0](https://github.com/onesoft-sudo/sudobot/compare/v4.92.0...v4.93.0) (2023-07-08)
+
+
+### Features
+
+* **core:** commands now automatically use parent directory name as group ([7ee8b86](https://github.com/onesoft-sudo/sudobot/commit/7ee8b86fb80cbe84e59ffd8545bada82e36d1e8e))
+
+
+
 # [4.92.0](https://github.com/onesoft-sudo/sudobot/compare/v4.91.0...v4.92.0) (2023-07-08)
 
 
@@ -38,17 +47,6 @@
 * **commandManager:** pass interaction options to command handler ([5b7c597](https://github.com/onesoft-sudo/sudobot/commit/5b7c5975ed3fe7c8f290e2f67f5da9e3a78764fa))
 * **commands:** add a few new validation rules ([2d2f115](https://github.com/onesoft-sudo/sudobot/commit/2d2f115d3e21f9ae19335bce645db0ebe9b99114))
 * **commands:** add an incomplete ban command ([837f823](https://github.com/onesoft-sudo/sudobot/commit/837f82309c221b7384429ee4e7ecdff5b8044eed))
-
-
-
-# [4.88.0](https://github.com/onesoft-sudo/sudobot/compare/v4.87.0...v4.88.0) (2023-07-07)
-
-
-### Features
-
-* **commands:** add min and max value rule ([c2d3c57](https://github.com/onesoft-sudo/sudobot/commit/c2d3c57f7293f8fb364ff0c2375c72856f73f6c6))
-* **commands:** add StringRest argument type ([e00f895](https://github.com/onesoft-sudo/sudobot/commit/e00f895f2fc9e595291bc9dbfe4aa3641c7965f6))
-* **commands:** improved command argument validations ([add3445](https://github.com/onesoft-sudo/sudobot/commit/add34453631c5b41ccfd833344f5a77d3622a298))
 
 
 
