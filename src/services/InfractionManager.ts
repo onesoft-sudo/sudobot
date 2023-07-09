@@ -32,7 +32,7 @@ export type CreateUserBanOptions = CommonOptions & {
     deleteMessageSeconds?: number;
 };
 
-export type ActionDoneName = "banned" | "muted" | "kicked";
+export type ActionDoneName = "banned" | "muted" | "kicked" | "warned";
 
 export type SendDMOptions = {
     fields?: EmbedField[] | ((internalFields: EmbedField[]) => Promise<EmbedField[]> | EmbedField[]);
@@ -156,5 +156,29 @@ export default class InfractionManager extends Service {
             console.log(e);
             return null;
         }
+    }
+
+    async createMemberWarn(member: GuildMember, { guild, moderatorId, reason, notifyUser }: CommonOptions) {
+        const { id } = await this.client.prisma.infraction.create({
+            data: {
+                type: "WARNING",
+                userId: member.user.id,
+                guildId: guild.id,
+                reason,
+                moderatorId,
+            }
+        });
+
+        let result = false;
+
+        if (notifyUser) {
+            result = await this.sendDM(member.user, guild, {
+                id,
+                actionDoneName: "warned",
+                reason,
+            });
+        }
+
+        return { id, result };
     }
 }
