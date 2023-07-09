@@ -1,3 +1,12 @@
+# [4.96.0](https://github.com/onesoft-sudo/sudobot/compare/v4.95.0...v4.96.0) (2023-07-09)
+
+
+### Features
+
+* mute command ([58b76f6](https://github.com/onesoft-sudo/sudobot/commit/58b76f6ec0f5a63e2447aa4aba4184a6b92f2c4d))
+
+
+
 # [4.95.0](https://github.com/onesoft-sudo/sudobot/compare/v4.94.0...v4.95.0) (2023-07-09)
 
 
@@ -40,15 +49,6 @@
 ### Features
 
 * **utils:** add stringToTimeInterval() function ([c5a49e0](https://github.com/onesoft-sudo/sudobot/commit/c5a49e05c98d45f32d62656d4b8070d0d0ce31c2))
-
-
-
-# [4.91.0](https://github.com/onesoft-sudo/sudobot/compare/v4.90.0...v4.91.0) (2023-07-07)
-
-
-### Features
-
-* **commands:** complete ban command ([53e8943](https://github.com/onesoft-sudo/sudobot/commit/53e894387bfb6f5258ec3dc53bb72c885b922c7b))
 
 
 
