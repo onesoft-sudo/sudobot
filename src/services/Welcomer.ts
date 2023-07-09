@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { GuildMember, MessageEmbed, TextChannel } from "discord.js";
+import { GuildMember, MessageActionRow, MessageButton, MessageEmbed, TextChannel } from "discord.js";
 import fs from 'fs';
 import path from "path";
 import Service from "../utils/structures/Service";
@@ -61,21 +61,31 @@ export default class Welcomer extends Service {
                         text: 'Welcome'
                     }
                 })
-                .setColor('#007bff')
-                .setTimestamp()
+                    .setColor('#007bff')
+                    .setTimestamp()
+            ],
+            components: [
+                new MessageActionRow<MessageButton>()
+                    .addComponents(
+                        new MessageButton()
+                            .setCustomId(`say_hi__${member.user.id}`)
+                            .setLabel('Say Hi')
+                            .setEmoji('👋')
+                            .setStyle("SECONDARY")
+                    )
             ]
         };
     }
-    
+
     async start(member: GuildMember, index?: number) {
         if (!hasConfig(this.client, member.guild.id, "welcomer"))
             return;
 
         if (this.client.config.props[member.guild.id].welcomer.enabled) {
             const { channel: channelID } = this.client.config.props[member.guild.id].welcomer;
-            
+
             try {
-                const channel = (await member.guild.channels.fetch(channelID)) as TextChannel; 
+                const channel = (await member.guild.channels.fetch(channelID)) as TextChannel;
                 const options = this.generateEmbed(member, index);
 
                 if (!options) {
@@ -87,7 +97,7 @@ export default class Welcomer extends Service {
                 }
             }
             catch (e) {
-                console.log(e);                
+                console.log(e);
             }
         }
     }

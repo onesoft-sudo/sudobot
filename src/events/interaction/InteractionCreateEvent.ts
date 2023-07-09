@@ -17,11 +17,11 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import BaseEvent from '../../utils/structures/BaseEvent';
 import { GuildMember, Interaction, MessageEmbed } from 'discord.js';
 import DiscordClient from '../../client/Client';
-import InteractionOptions from '../../types/InteractionOptions';
 import AutoCompleteOptions from '../../types/AutoCompleteOptions';
+import InteractionOptions from '../../types/InteractionOptions';
+import BaseEvent from '../../utils/structures/BaseEvent';
 import { isDisabledServer } from '../../utils/util';
 
 export default class InteractionCreateEvent extends BaseEvent {
@@ -35,7 +35,7 @@ export default class InteractionCreateEvent extends BaseEvent {
                 await interaction.reply({
                     content: 'You cannot use this bot on DMs.',
                     ephemeral: true
-                }); 
+                });
 
             return;
         }
@@ -52,6 +52,19 @@ export default class InteractionCreateEvent extends BaseEvent {
         }
 
         if (interaction.isButton()) {
+            if (interaction.customId.startsWith('say_hi__')) {
+                const [, id] = interaction.customId.split('__');
+
+                await interaction.reply({
+                    content: `<@${id}>, ${interaction.user.toString()} says hi to you!`,
+                    allowedMentions: {
+                        users: []
+                    }
+                });
+
+                return;
+            }
+
             await client.interactionRoleManager.onButtonInteraction(interaction);
             return;
         }
@@ -75,8 +88,8 @@ export default class InteractionCreateEvent extends BaseEvent {
                     await interaction.reply({
                         embeds: [
                             new MessageEmbed()
-                            .setColor('#f14a60')
-                            .setDescription(":x: You don't have permission to run this command.")
+                                .setColor('#f14a60')
+                                .setDescription(":x: You don't have permission to run this command.")
                         ],
                         ephemeral: true
                     });
@@ -138,7 +151,7 @@ export default class InteractionCreateEvent extends BaseEvent {
                 if (!allowed) {
                     return;
                 }
-                
+
                 if (!(await command.perms(client, interaction))) {
                     return;
                 }
