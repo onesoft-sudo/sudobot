@@ -1,3 +1,12 @@
+# [4.95.0](https://github.com/onesoft-sudo/sudobot/compare/v4.94.0...v4.95.0) (2023-07-09)
+
+
+### Features
+
+* **commands:** add warn command ([62d2b19](https://github.com/onesoft-sudo/sudobot/commit/62d2b19ca0cb99eec3d1676facafcbc4bca748f2))
+
+
+
 # [4.94.0](https://github.com/onesoft-sudo/sudobot/compare/v4.93.0...v4.94.0) (2023-07-08)
 
 
@@ -40,15 +49,6 @@
 ### Features
 
 * **commands:** complete ban command ([53e8943](https://github.com/onesoft-sudo/sudobot/commit/53e894387bfb6f5258ec3dc53bb72c885b922c7b))
-
-
-
-# [4.90.0](https://github.com/onesoft-sudo/sudobot/compare/v4.89.0...v4.90.0) (2023-07-07)
-
-
-### Features
-
-* add prisma ([690b741](https://github.com/onesoft-sudo/sudobot/commit/690b7419ad866cc6edb6822ad70511748975ba63))
 
 
 
