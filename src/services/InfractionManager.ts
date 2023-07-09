@@ -17,7 +17,8 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { ColorResolvable, EmbedBuilder, EmbedField, Guild, GuildMember, User } from "discord.js";
+import { formatDistanceToNowStrict } from "date-fns";
+import { APIEmbedField, ColorResolvable, EmbedBuilder, EmbedField, Guild, GuildMember, User } from "discord.js";
 import Service from "../core/Service";
 
 export type CommonOptions = {
@@ -32,10 +33,14 @@ export type CreateUserBanOptions = CommonOptions & {
     deleteMessageSeconds?: number;
 };
 
+export type CreateMemberMuteOptions = CommonOptions & {
+    duration?: number;
+};
+
 export type ActionDoneName = "banned" | "muted" | "kicked" | "warned";
 
 export type SendDMOptions = {
-    fields?: EmbedField[] | ((internalFields: EmbedField[]) => Promise<EmbedField[]> | EmbedField[]);
+    fields?: APIEmbedField[] | ((internalFields: APIEmbedField[]) => Promise<APIEmbedField[]> | APIEmbedField[]);
     description?: string;
     actionDoneName: ActionDoneName;
     id: string | number;
@@ -176,6 +181,51 @@ export default class InfractionManager extends Service {
                 id,
                 actionDoneName: "warned",
                 reason,
+            });
+        }
+
+        return { id, result };
+    }
+
+    async createMemberMute(member: GuildMember, { guild, moderatorId, reason, notifyUser, duration }: CreateMemberMuteOptions) {
+        const mutedRole = this.client.configManager.config[guild.id]?.muting?.role;
+
+        if (!mutedRole) {
+            return { error: "Muted role is not configured, please set the muted role to use this command" };
+        }
+
+        try {
+            await member.roles.add(mutedRole);
+        }
+        catch (e) {
+            console.log(e);
+            return { error: "Failed to assign the muted role to this user. Make sure that I have enough permissions to do it." };
+        }
+
+        const { id } = await this.client.prisma.infraction.create({
+            data: {
+                type: "MUTE",
+                userId: member.user.id,
+                guildId: guild.id,
+                reason,
+                moderatorId,
+                expiresAt: duration ? new Date(Date.now() + duration) : undefined
+            }
+        });
+
+        let result = !notifyUser;
+
+        if (notifyUser) {
+            result = await this.sendDM(member.user, guild, {
+                id,
+                actionDoneName: "muted",
+                reason,
+                fields: [
+                    {
+                        name: "Duration",
+                        value: `${duration ? formatDistanceToNowStrict(new Date(Date.now() - duration)) : "*No duration set*"}`
+                    }
+                ]
             });
         }
 

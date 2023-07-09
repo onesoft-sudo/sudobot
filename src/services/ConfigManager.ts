@@ -21,8 +21,13 @@ import fs from 'fs/promises';
 import path from 'path';
 import { z } from 'zod';
 import Service from "../core/Service";
+import { isSnowflake } from '../utils/utils';
 
 export const name = "configManager";
+
+const zSnowflake = z.custom<string>(data => {
+    return typeof data === 'string' && isSnowflake(data)
+});
 
 export const ConfigSchema = z.object({
     prefix: z.string(),
@@ -30,7 +35,10 @@ export const ConfigSchema = z.object({
     admin_role: z.string().optional(),
     infractions: z.object({
         send_ids_to_user: z.boolean().default(true)
-    })
+    }).optional(),
+    muting: z.object({
+        role: zSnowflake.optional()
+    }).optional()
 });
 
 export type Config = z.infer<typeof ConfigSchema>;
