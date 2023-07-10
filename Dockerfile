@@ -1,4 +1,4 @@
-FROM node:18-buster
+FROM node:20-buster
 
 WORKDIR /app
 
@@ -13,8 +13,12 @@ COPY src ./src
 
 RUN npm ci --progress=false --no-audit --loglevel=error
 RUN npm run build
+RUN npm prune --production
 
-COPY . .
+COPY package.json .
+COPY package-lock.json .
+COPY init.sh .
+COPY build .
 
 EXPOSE 4000
 CMD ["npm", "run", "start"]
