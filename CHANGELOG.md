@@ -1,3 +1,12 @@
+# [4.97.0](https://github.com/onesoft-sudo/sudobot/compare/v4.96.0...v4.97.0) (2023-07-10)
+
+
+### Features
+
+* **commands:** add system command ([78bb5e2](https://github.com/onesoft-sudo/sudobot/commit/78bb5e25676eb3179109c275f1f8d2c8d63e754a))
+
+
+
 # [4.96.0](https://github.com/onesoft-sudo/sudobot/compare/v4.95.0...v4.96.0) (2023-07-09)
 
 
@@ -40,15 +49,6 @@
 ### Features
 
 * **core:** commands now automatically use parent directory name as group ([7ee8b86](https://github.com/onesoft-sudo/sudobot/commit/7ee8b86fb80cbe84e59ffd8545bada82e36d1e8e))
-
-
-
-# [4.92.0](https://github.com/onesoft-sudo/sudobot/compare/v4.91.0...v4.92.0) (2023-07-08)
-
-
-### Features
-
-* **utils:** add stringToTimeInterval() function ([c5a49e0](https://github.com/onesoft-sudo/sudobot/commit/c5a49e05c98d45f32d62656d4b8070d0d0ce31c2))
 
 
 
