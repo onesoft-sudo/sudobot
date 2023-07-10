@@ -1,13 +1,14 @@
-import { resolve, join } from "path";
+import express, { Request as ExpressRequest, Response as ExpressResponse } from "express";
 import fs from "fs/promises";
+import { join, resolve } from "path";
 import Client from "../core/Client";
-import express, { Response as ExpressResponse, Request as ExpressRequest } from 'express';
-import Response from "./Response";
 import Controller from "./Controller";
+import Response from "./Response";
 
 export type ControllerFunction = ((request: ExpressRequest) => any) & {
     __controller_path?: string;
     __controller_method?: string;
+    __controller_middleware?: Function[];
 };
 
 export function Path(uri: string) {
@@ -36,6 +37,18 @@ export function Method(methodName: string) {
     };
 }
 
+export function Middleware(middleware: Function[]) {
+    return (target: Controller, propertyKey: string, descriptor: PropertyDescriptor) => {
+        (target as any).handlerMethods ??= new Set();
+        (target as any).handlerMethods.add(propertyKey);
+
+        Object.defineProperty(target[propertyKey as keyof Controller], "__controller_middleware", {
+            writable: false,
+            value: middleware,
+        });
+    };
+}
+
 export default class Server {
     protected expressApp = express();
     protected port = process.env.PORT ?? 4000;
@@ -48,7 +61,7 @@ export default class Server {
     async boot() {
         const router = express.Router();
         await this.loadControllers(undefined, router);
-        this.expressApp.use('/', router);
+        this.expressApp.use("/", router);
     }
 
     async loadControllers(directory = this.controllersDirectory, router: express.Router) {
@@ -63,7 +76,7 @@ export default class Server {
                 continue;
             }
 
-            if (!file.endsWith('.ts') && !file.endsWith('.js')) {
+            if (!file.endsWith(".ts") && !file.endsWith(".js")) {
                 continue;
             }
 
@@ -75,44 +88,44 @@ export default class Server {
             for (const methodName of ((controller as any).handlerMethods as Set<string>).values()) {
                 const controllerFunction = controller[methodName as keyof Controller] as unknown as ControllerFunction;
 
-                if (typeof controllerFunction !== 'function') {
+                if (typeof controllerFunction !== "function") {
                     console.log(`[Server] Not a function (${methodName}), ignoring.`);
                     continue;
                 }
 
-                const { __controller_path: path, __controller_method: method } = controllerFunction;
+                const { __controller_path: path, __controller_method: method, __controller_middleware: middleware } = controllerFunction;
 
                 if (!path) {
                     console.error(`[Server] No path specified at function ${methodName} in controller ${file}. Skipping.`);
                     continue;
                 }
 
-                if (method && !['get', 'post', 'head', 'put', 'patch', 'delete'].includes(method)) {
+                if (method && !["get", "post", "head", "put", "patch", "delete"].includes(method)) {
                     console.error(`[Server] Invalid method '${method}' specified at function ${methodName} in controller ${file}. Skipping.`);
                     continue;
                 }
 
-                console.log(`Added handler for ${method?.toUpperCase() ?? 'GET'} ${path}`);
+                console.log(`Added handler for ${method?.toUpperCase() ?? "GET"} ${path}`);
 
-                (router[(method ?? 'get') as keyof typeof router] as Function)(path, async (req: ExpressRequest, res: ExpressResponse) => {
-                    const userResponse = await controllerFunction.bind(controller)(req);
+                (router[(method ?? "get") as keyof typeof router] as Function)(
+                    path,
+                    ...(middleware ?? []),
+                    async (req: ExpressRequest, res: ExpressResponse) => {
+                        const userResponse = await controllerFunction.bind(controller)(req);
 
-                    if (userResponse instanceof Response) {
-                        userResponse.send(res);
+                        if (userResponse instanceof Response) {
+                            userResponse.send(res);
+                        } else if (userResponse && typeof userResponse === "object") {
+                            res.json(userResponse);
+                        } else if (typeof userResponse === "string") {
+                            res.send(userResponse);
+                        } else if (typeof userResponse === "number") {
+                            res.send(userResponse.toString());
+                        } else {
+                            console.log("Invalid value returned from controller. Not sending a response.");
+                        }
                     }
-                    else if (userResponse && typeof userResponse === 'object') {
-                        res.json(userResponse);
-                    }
-                    else if (typeof userResponse === 'string') {
-                        res.send(userResponse);
-                    }
-                    else if (typeof userResponse === 'number') {
-                        res.send(userResponse.toString());
-                    }
-                    else {
-                        console.log("Invalid value returned from controller. Not sending a response.");
-                    }
-                });
+                );
             }
         }
     }
