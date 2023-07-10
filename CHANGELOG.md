@@ -1,3 +1,12 @@
+# [4.98.0](https://github.com/onesoft-sudo/sudobot/compare/v4.97.0...v4.98.0) (2023-07-10)
+
+
+### Features
+
+* **services:** add logger service ([cf6fd2a](https://github.com/onesoft-sudo/sudobot/commit/cf6fd2add0475c96f010718829a28a5f41320f24))
+
+
+
 # [4.97.0](https://github.com/onesoft-sudo/sudobot/compare/v4.96.0...v4.97.0) (2023-07-10)
 
 
@@ -40,15 +49,6 @@
 * **commands:** add kick command ([17d6cfb](https://github.com/onesoft-sudo/sudobot/commit/17d6cfbda458929d5d7843a862990615449afb25))
 * **InfractionManager:** add method for kicking guild members ([326c16d](https://github.com/onesoft-sudo/sudobot/commit/326c16db6fa80d75813dc415512f59483dd02c22))
 * **utils:** add createModerationEmbed() helper function ([e8e9441](https://github.com/onesoft-sudo/sudobot/commit/e8e9441ee8e6a8fdfd664ce8fa6ccb4508449a34))
-
-
-
-# [4.93.0](https://github.com/onesoft-sudo/sudobot/compare/v4.92.0...v4.93.0) (2023-07-08)
-
-
-### Features
-
-* **core:** commands now automatically use parent directory name as group ([7ee8b86](https://github.com/onesoft-sudo/sudobot/commit/7ee8b86fb80cbe84e59ffd8545bada82e36d1e8e))
 
 
 
