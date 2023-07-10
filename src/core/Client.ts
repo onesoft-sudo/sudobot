@@ -27,6 +27,7 @@ import InfractionManager from '../services/InfractionManager';
 import LoggerService from '../services/LoggerService';
 import Command from './Command';
 import ServiceManager from './ServiceManager';
+import Server from '../api/Server';
 
 export default class Client extends DiscordClient {
     aliases = {
@@ -54,6 +55,8 @@ export default class Client extends DiscordClient {
         errorFormat: "pretty",
         log: ['query', 'error', 'info', 'warn']
     });
+
+    server = new Server(this);
 
     commands = new Collection<string, Command>();
 

@@ -42,6 +42,7 @@ const client = new Client({
 (async () => {
     await client.boot();
     await client.loadEvents();
-    await client.loadCommands();
-    await client.login(process.env.TOKEN);
+    // await client.loadCommands();
+    // await client.login(process.env.TOKEN);
+    client.server.start();
 })();

@@ -25,5 +25,6 @@ export default class ReadyEvent extends Event {
 
     async execute() {
         console.log("The bot has logged in.");
+        this.client.server.start();
     }
 }
