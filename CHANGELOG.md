@@ -1,3 +1,12 @@
+## [4.98.1](https://github.com/onesoft-sudo/sudobot/compare/v4.98.0...v4.98.1) (2023-07-10)
+
+
+### Bug Fixes
+
+* system command shows operational status even if the latency is high ([a4642a4](https://github.com/onesoft-sudo/sudobot/commit/a4642a4bae0bf5d3e0881e57fb8279a69bddcb1b))
+
+
+
 # [4.98.0](https://github.com/onesoft-sudo/sudobot/compare/v4.97.0...v4.98.0) (2023-07-10)
 
 
@@ -31,24 +40,6 @@
 ### Features
 
 * **commands:** add warn command ([62d2b19](https://github.com/onesoft-sudo/sudobot/commit/62d2b19ca0cb99eec3d1676facafcbc4bca748f2))
-
-
-
-# [4.94.0](https://github.com/onesoft-sudo/sudobot/compare/v4.93.0...v4.94.0) (2023-07-08)
-
-
-### Bug Fixes
-
-* **CommandManager:** named arguments with ArgumentType.StringRest don't work ([a6b5d73](https://github.com/onesoft-sudo/sudobot/commit/a6b5d7367d1c1198c06daaf392b8cade15fef6dd))
-* **db:** prisma Infraction schema does not contain type ([b129ef3](https://github.com/onesoft-sudo/sudobot/commit/b129ef303e8919d179994fae650aecaef23455ec))
-
-
-### Features
-
-* **CommandManager:** named arguments ([4b8595f](https://github.com/onesoft-sudo/sudobot/commit/4b8595f93c7c152e9146f40b3ec2a4868f3d6301))
-* **commands:** add kick command ([17d6cfb](https://github.com/onesoft-sudo/sudobot/commit/17d6cfbda458929d5d7843a862990615449afb25))
-* **InfractionManager:** add method for kicking guild members ([326c16d](https://github.com/onesoft-sudo/sudobot/commit/326c16db6fa80d75813dc415512f59483dd02c22))
-* **utils:** add createModerationEmbed() helper function ([e8e9441](https://github.com/onesoft-sudo/sudobot/commit/e8e9441ee8e6a8fdfd664ce8fa6ccb4508449a34))
 
 
 
