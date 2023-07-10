@@ -58,6 +58,7 @@ export default class SystemCommand extends Command {
 
         const systemLatency = reply.createdTimestamp - message.createdTimestamp;
         const memoryUsage = process.memoryUsage();
+        const systemLatencyEmoji = emoji(systemLatency);
 
         await reply.edit({
             embeds: [
@@ -67,11 +68,11 @@ export default class SystemCommand extends Command {
                         name: "System Status"
                     },
                     color: 0x007bff,
-                    description: `${this.emoji('check')} Operational`,
+                    description: systemLatencyEmoji === '🔴' ? `${this.emoji('error')} Elevated latency/downtime` : `${this.emoji('check')} Operational`,
                     fields: [
                         {
                             name: "System Latency",
-                            value: (emoji(systemLatency) + " " + systemLatency + "ms").trimStart()
+                            value: (systemLatencyEmoji + " " + systemLatency + "ms").trimStart()
                         },
                         {
                             name: "API Latency",
