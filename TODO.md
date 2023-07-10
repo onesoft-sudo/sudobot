@@ -1,5 +1,6 @@
 # Todo
 
-* Use prisma as the ORM and PostgreSQL as the main database
-* Create `InfractionManager` service class
-* Complete the `ban` command
+* Add the other moderation commands
+* Create an API using express to provide a way to change settings outside of Discord
+* Start working on AutoMod
+* Performance optimizations (https://shitcorp.github.io/Discord-Bots-At-Scale/)
