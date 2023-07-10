@@ -25,12 +25,9 @@ const intents = [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.GuildMessageTyping,
     GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.DirectMessages,
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.GuildModeration,
-    GatewayIntentBits.GuildPresences,
 ];
 
 const partials = [
