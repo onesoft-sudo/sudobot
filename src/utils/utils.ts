@@ -138,3 +138,7 @@ export function isTextableChannel(channel: Channel | ThreadChannel, DMs = false)
         ChannelType.PublicThread,
     ].includes(channel.type);
 }
+
+export function developmentMode() {
+    return process.env.NODE_ENV !== "production" && process.env.SUDO_ENV !== "production";
+}
