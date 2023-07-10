@@ -38,6 +38,9 @@ export const GuildConfigSchema = z.object({
     }).optional(),
     muting: z.object({
         role: zSnowflake.optional()
+    }).optional(),
+    logging: z.object({
+        primary_channel: zSnowflake.optional()
     }).optional()
 });
 
@@ -53,8 +56,9 @@ interface ConfigContainer<C> {
 }
 
 export default class ConfigManager extends Service {
-    configPath = path.resolve(__dirname, "../../config/config.json");
-    systemConfigPath = path.resolve(__dirname, "../../config/system.json");
+    protected configPath = path.resolve(__dirname, "../../config/config.json");
+    protected systemConfigPath = path.resolve(__dirname, "../../config/system.json");
+
     config: ConfigContainer<GuildConfig> = {} as ConfigContainer<GuildConfig>;
     systemConfig: SystemConfig = {};
 

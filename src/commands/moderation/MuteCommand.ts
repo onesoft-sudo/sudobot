@@ -18,7 +18,7 @@
 */
 
 import { formatDistanceToNowStrict } from "date-fns";
-import { ChatInputCommandInteraction, PermissionsBitField, escapeMarkdown } from "discord.js";
+import { ChatInputCommandInteraction, PermissionsBitField, User, escapeMarkdown } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { createModerationEmbed, stringToTimeInterval } from "../../utils/utils";
 
@@ -93,7 +93,7 @@ export default class MuteCommand extends Command {
 
         const { id, result, error } = await this.client.infractionManager.createMemberMute(member, {
             guild: message.guild!,
-            moderatorId: message.member!.user.id,
+            moderator: message.member!.user as User,
             notifyUser: true,
             reason,
             sendLog: true,

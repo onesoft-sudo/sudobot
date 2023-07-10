@@ -24,6 +24,7 @@ import path from 'path';
 import CommandManager from '../services/CommandManager';
 import ConfigManager from '../services/ConfigManager';
 import InfractionManager from '../services/InfractionManager';
+import LoggerService from '../services/LoggerService';
 import Command from './Command';
 import ServiceManager from './ServiceManager';
 
@@ -36,6 +37,7 @@ export default class Client extends DiscordClient {
         "@services/ConfigManager",
         "@services/CommandManager",
         "@services/InfractionManager",
+        "@services/LoggerService",
     ];
 
     commandsDirectory = path.resolve(__dirname, "../commands");
@@ -46,6 +48,8 @@ export default class Client extends DiscordClient {
     configManager: ConfigManager = {} as ConfigManager;
     commandManager: CommandManager = {} as CommandManager;
     infractionManager: InfractionManager = {} as InfractionManager;
+    logger: LoggerService = {} as LoggerService;
+
     prisma = new PrismaClient({
         errorFormat: "pretty",
         log: ['query', 'error', 'info', 'warn']

@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { ChatInputCommandInteraction, PermissionsBitField, escapeMarkdown } from "discord.js";
+import { ChatInputCommandInteraction, PermissionsBitField, User, escapeMarkdown } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { createModerationEmbed } from "../../utils/utils";
 
@@ -62,7 +62,7 @@ export default class WarnCommand extends Command {
 
         const { id, result } = await this.client.infractionManager.createMemberWarn(member, {
             guild: message.guild!,
-            moderatorId: message.member!.user.id,
+            moderator: message.member!.user as User,
             notifyUser: true,
             reason,
             sendLog: true

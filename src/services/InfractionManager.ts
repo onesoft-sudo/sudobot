@@ -24,7 +24,7 @@ import Service from "../core/Service";
 export type CommonOptions = {
     reason?: string;
     guild: Guild;
-    moderatorId: string;
+    moderator: User;
     notifyUser?: boolean;
     sendLog?: boolean;
 };
@@ -95,18 +95,27 @@ export default class InfractionManager extends Service {
         }
     }
 
-    async createUserBan(user: User, { guild, moderatorId, reason, deleteMessageSeconds, notifyUser }: CreateUserBanOptions) {
+    async createUserBan(user: User, { guild, moderator, reason, deleteMessageSeconds, notifyUser }: CreateUserBanOptions) {
         const { id } = await this.client.prisma.infraction.create({
             data: {
                 type: "BAN",
                 userId: user.id,
                 guildId: guild.id,
                 reason,
-                moderatorId,
+                moderatorId: moderator.id,
                 metadata: {
                     deleteMessageSeconds
                 },
             }
+        });
+
+        this.client.logger.logUserBan({
+            moderator,
+            guild,
+            id: `${id}`,
+            user,
+            deleteMessageSeconds,
+            reason
         });
 
         if (notifyUser) {
@@ -131,7 +140,7 @@ export default class InfractionManager extends Service {
         }
     }
 
-    async createMemberKick(member: GuildMember, { guild, moderatorId, reason, notifyUser }: CommonOptions) {
+    async createMemberKick(member: GuildMember, { guild, moderator, reason, notifyUser }: CommonOptions) {
         if (!member.kickable)
             return null;
 
@@ -141,8 +150,16 @@ export default class InfractionManager extends Service {
                 userId: member.user.id,
                 guildId: guild.id,
                 reason,
-                moderatorId,
+                moderatorId: moderator.id,
             }
+        });
+
+        this.client.logger.logMemberKick({
+            moderator,
+            guild,
+            id: `${id}`,
+            member,
+            reason,
         });
 
         if (notifyUser) {
@@ -163,15 +180,23 @@ export default class InfractionManager extends Service {
         }
     }
 
-    async createMemberWarn(member: GuildMember, { guild, moderatorId, reason, notifyUser }: CommonOptions) {
+    async createMemberWarn(member: GuildMember, { guild, moderator, reason, notifyUser }: CommonOptions) {
         const { id } = await this.client.prisma.infraction.create({
             data: {
                 type: "WARNING",
                 userId: member.user.id,
                 guildId: guild.id,
                 reason,
-                moderatorId,
+                moderatorId: moderator.id,
             }
+        });
+
+        this.client.logger.logMemberWarning({
+            moderator,
+            member,
+            guild,
+            id: `${id}`,
+            reason
         });
 
         let result = false;
@@ -187,7 +212,7 @@ export default class InfractionManager extends Service {
         return { id, result };
     }
 
-    async createMemberMute(member: GuildMember, { guild, moderatorId, reason, notifyUser, duration }: CreateMemberMuteOptions) {
+    async createMemberMute(member: GuildMember, { guild, moderator, reason, notifyUser, duration }: CreateMemberMuteOptions) {
         const mutedRole = this.client.configManager.config[guild.id]?.muting?.role;
 
         if (!mutedRole) {
@@ -208,9 +233,18 @@ export default class InfractionManager extends Service {
                 userId: member.user.id,
                 guildId: guild.id,
                 reason,
-                moderatorId,
+                moderatorId: moderator.id,
                 expiresAt: duration ? new Date(Date.now() + duration) : undefined
             }
+        });
+
+        this.client.logger.logMemberMute({
+            moderator,
+            member,
+            guild,
+            id: `${id}`,
+            duration,
+            reason
         });
 
         let result = !notifyUser;

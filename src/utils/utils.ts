@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { APIEmbedField, ColorResolvable, EmbedBuilder, User, escapeMarkdown } from "discord.js";
+import { APIEmbedField, Channel, ChannelType, ColorResolvable, EmbedBuilder, NewsChannel, TextChannel, ThreadChannel, User, escapeMarkdown } from "discord.js";
 import Client from "../core/Client";
 import { ActionDoneName } from "../services/InfractionManager";
 
@@ -124,4 +124,17 @@ export async function createModerationEmbed({ user, actionDoneName, reason, desc
 
 export function getEmoji(client: Client, name: string) {
     return client.configManager.systemConfig.emojis?.[name] ?? '';
+}
+
+export function isTextableChannel(channel: Channel | ThreadChannel, DMs = false): channel is (TextChannel | NewsChannel | ThreadChannel) {
+    return [
+        ...(DMs ? [
+            ChannelType.DM,
+            ChannelType.GroupDM
+        ] : []),
+        ChannelType.GuildAnnouncement,
+        ChannelType.GuildText,
+        ChannelType.PrivateThread,
+        ChannelType.PublicThread,
+    ].includes(channel.type);
 }

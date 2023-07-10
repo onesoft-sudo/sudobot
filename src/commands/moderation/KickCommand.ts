@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { ChatInputCommandInteraction, GuildMember, PermissionsBitField, escapeMarkdown } from "discord.js";
+import { ChatInputCommandInteraction, GuildMember, PermissionsBitField, User, escapeMarkdown } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { createModerationEmbed } from "../../utils/utils";
 
@@ -62,7 +62,7 @@ export default class KickCommand extends Command {
 
         const id = await this.client.infractionManager.createMemberKick(member, {
             guild: message.guild!,
-            moderatorId: message.member!.user.id,
+            moderator: message.member!.user as User,
             reason,
             notifyUser: context.isLegacy ? true : !context.options.getBoolean('silent'),
             sendLog: true

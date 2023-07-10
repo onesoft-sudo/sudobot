@@ -64,7 +64,7 @@ export default class BanCommand extends Command {
 
         const id = await this.client.infractionManager.createUserBan(user, {
             guild: message.guild!,
-            moderatorId: message.member!.user.id,
+            moderator: message.member!.user as User,
             deleteMessageSeconds: deleteMessageSeconds,
             reason,
             notifyUser: context.isLegacy ? true : !context.options.getBoolean('silent'),
