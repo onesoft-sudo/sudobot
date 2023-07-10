@@ -17,11 +17,11 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Message, Permissions } from 'discord.js';
-import BaseCommand from '../../utils/structures/BaseCommand';
+import { Message } from 'discord.js';
 import DiscordClient from '../../client/Client';
 import CommandOptions from '../../types/CommandOptions';
 import { emoji } from '../../utils/Emoji';
+import BaseCommand from '../../utils/structures/BaseCommand';
 
 export default class WelcomeMsgCommand extends BaseCommand {
     permissions = [Permissions.FLAGS.MANAGE_GUILD];
@@ -69,7 +69,7 @@ export default class WelcomeMsgCommand extends BaseCommand {
             await message.reply(`${emoji('check')} Welcomer random messages are ${client.config.props[message.guild!.id].welcomer.randomize ? 'enabled' : 'disabled'}.${client.config.props[message.guild!.id].welcomer.message && client.config.props[message.guild!.id].welcomer.randomize ? '\nNote: A custom welcome message is already set. Both random and custom messages will be shown.' : ''}`);
         }
         else if (options.options.includes('--preview')) {
-            const options = client.welcomer.generateEmbed(message.member!);
+            const options = client.welcomer.generateMessageOptions(message.member!);
 
             if (!options) {
                 await message.reply(`${emoji('error')} No welcome message set and randomization is disabled. Please configure one of those first!`);

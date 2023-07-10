@@ -26,8 +26,8 @@ import { hasConfig } from "../utils/util";
 export default class Welcomer extends Service {
     messages: string[] = JSON.parse(fs.readFileSync(path.resolve(process.env.SUDO_PREFIX ?? path.join(__dirname, '..', '..'), 'resources', 'welcome_messages.json')).toString());
 
-    generateEmbed(member: GuildMember, index?: number) {
-        const { message, randomize } = this.client.config.props[member.guild.id].welcomer;
+    generateMessageOptions(member: GuildMember, index?: number) {
+        const { message, randomize, embed } = this.client.config.props[member.guild.id].welcomer;
         let content: string = message ?? '';
 
         if (randomize) {
@@ -49,8 +49,10 @@ export default class Welcomer extends Service {
             .replace(/:mention:/g, member.toString());
 
         return {
-            content: member.toString(),
-            embeds: [
+            content: member.toString() + (
+                !embed ? "\n" + content : ""
+            ),
+            embeds: embed ? [
                 new MessageEmbed({
                     author: {
                         iconURL: member.displayAvatarURL(),
@@ -63,7 +65,7 @@ export default class Welcomer extends Service {
                 })
                     .setColor('#007bff')
                     .setTimestamp()
-            ],
+            ] : [],
             components: [
                 new MessageActionRow<MessageButton>()
                     .addComponents(
@@ -86,7 +88,7 @@ export default class Welcomer extends Service {
 
             try {
                 const channel = (await member.guild.channels.fetch(channelID)) as TextChannel;
-                const options = this.generateEmbed(member, index);
+                const options = this.generateMessageOptions(member, index);
 
                 if (!options) {
                     return;
