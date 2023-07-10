@@ -69,7 +69,7 @@ export default class Client extends DiscordClient {
                 continue;
             }
 
-            if (!file.endsWith('.ts')) {
+            if (!file.endsWith('.ts') && !file.endsWith('.js')) {
                 continue;
             }
 
@@ -97,7 +97,7 @@ export default class Client extends DiscordClient {
                 continue;
             }
 
-            if (!file.endsWith('.ts')) {
+            if (!file.endsWith('.ts') && !file.endsWith('.js')) {
                 continue;
             }
 

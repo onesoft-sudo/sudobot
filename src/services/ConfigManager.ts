@@ -29,7 +29,7 @@ const zSnowflake = z.custom<string>(data => {
     return typeof data === 'string' && isSnowflake(data)
 });
 
-export const ConfigSchema = z.object({
+export const GuildConfigSchema = z.object({
     prefix: z.string(),
     mod_role: z.string().optional(),
     admin_role: z.string().optional(),
@@ -41,18 +41,27 @@ export const ConfigSchema = z.object({
     }).optional()
 });
 
-export type Config = z.infer<typeof ConfigSchema>;
+export const SystemConfigSchema = z.object({
+    emojis: z.record(z.string()).optional(),
+});
 
-interface ConfigContainer {
-    [guildID: string]: Config | undefined;
+export type GuildConfig = z.infer<typeof GuildConfigSchema>;
+export type SystemConfig = z.infer<typeof SystemConfigSchema>;
+
+interface ConfigContainer<C> {
+    [guildID: string]: C | undefined;
 }
 
 export default class ConfigManager extends Service {
     configPath = path.resolve(__dirname, "../../config/config.json");
-    config: ConfigContainer = {} as ConfigContainer;
+    systemConfigPath = path.resolve(__dirname, "../../config/system.json");
+    config: ConfigContainer<GuildConfig> = {} as ConfigContainer<GuildConfig>;
+    systemConfig: SystemConfig = {};
 
     async boot() {
         const configFileBuffer = await fs.readFile(this.configPath);
+        const systemConfigFileBuffer = await fs.readFile(this.systemConfigPath);
         this.config = JSON.parse(configFileBuffer.toString());
+        this.systemConfig = JSON.parse(systemConfigFileBuffer.toString());
     }
 }

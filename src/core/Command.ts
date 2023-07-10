@@ -20,7 +20,7 @@
 import { APIMessage, CacheType, Channel, ChatInputCommandInteraction, GuildMember, InteractionEditReplyOptions, InteractionReplyOptions, Message, MessageCreateOptions, MessageMentions, MessagePayload, PermissionResolvable, Role, Snowflake, User } from "discord.js";
 import { dirname } from "path";
 import { ChatInputCommandContext, LegacyCommandContext } from "../services/CommandManager";
-import { isSnowflake, stringToTimeInterval } from "../utils/utils";
+import { getEmoji, isSnowflake, stringToTimeInterval } from "../utils/utils";
 import Client from "./Client";
 
 export type CommandMessage = Message<boolean> | ChatInputCommandInteraction<CacheType>;
@@ -100,6 +100,10 @@ export default abstract class Command {
 
     async error(message: CommandMessage) {
         return await this.deferredReply(message, `An error has occurred while performing this action. Please make sure that the bot has the required permissions to perform this action.`);
+    }
+
+    emoji(name: string) {
+        return getEmoji(this.client, name);
     }
 
     async run(message: CommandMessage, context: AnyCommandContext) {
@@ -314,6 +318,7 @@ export default abstract class Command {
                                     break;
 
                                 const config = this.client.configManager.config[message.guildId!];
+
                                 let str = ((message as Message).content ?? '')
                                     .slice(config?.prefix.length)
                                     .trimStart()

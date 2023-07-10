@@ -18,6 +18,7 @@
 */
 
 import { APIEmbedField, ColorResolvable, EmbedBuilder, User, escapeMarkdown } from "discord.js";
+import Client from "../core/Client";
 import { ActionDoneName } from "../services/InfractionManager";
 
 export function isSnowflake(input: string) {
@@ -119,4 +120,8 @@ export async function createModerationEmbed({ user, actionDoneName, reason, desc
     })
         .setTimestamp()
         .setColor(color)
+}
+
+export function getEmoji(client: Client, name: string) {
+    return client.configManager.systemConfig.emojis?.[name] ?? '';
 }

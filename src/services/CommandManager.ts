@@ -19,13 +19,13 @@
 
 import { ChatInputCommandInteraction, Message } from "discord.js";
 import Service from "../core/Service";
-import { Config } from "./ConfigManager";
+import { GuildConfig } from "./ConfigManager";
 
 export const name = "commandManager";
 
 export interface CommandContext {
     isLegacy: boolean;
-    config: Config;
+    config: GuildConfig;
 }
 
 export interface LegacyCommandContext extends CommandContext {
