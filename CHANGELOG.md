@@ -1,3 +1,12 @@
+# [4.100.0](https://github.com/onesoft-sudo/sudobot/compare/v4.99.0...v4.100.0) (2023-07-11)
+
+
+### Features
+
+* **api:** add middleware support ([1347d3e](https://github.com/onesoft-sudo/sudobot/commit/1347d3eb739d02c03524e946fa78687f50bdd7da))
+
+
+
 # [4.99.0](https://github.com/onesoft-sudo/sudobot/compare/v4.98.1...v4.99.0) (2023-07-10)
 
 
@@ -37,15 +46,6 @@
 ### Features
 
 * **commands:** add system command ([78bb5e2](https://github.com/onesoft-sudo/sudobot/commit/78bb5e25676eb3179109c275f1f8d2c8d63e754a))
-
-
-
-# [4.96.0](https://github.com/onesoft-sudo/sudobot/compare/v4.95.0...v4.96.0) (2023-07-09)
-
-
-### Features
-
-* mute command ([58b76f6](https://github.com/onesoft-sudo/sudobot/commit/58b76f6ec0f5a63e2447aa4aba4184a6b92f2c4d))
 
 
 
