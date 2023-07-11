@@ -1,3 +1,12 @@
+# [4.101.0](https://github.com/onesoft-sudo/sudobot/compare/v4.100.0...v4.101.0) (2023-07-11)
+
+
+### Features
+
+* **automod:** add word and token filters ([8f4268a](https://github.com/onesoft-sudo/sudobot/commit/8f4268a6c33dcf738e6a7533e552881b8d382f6c))
+
+
+
 # [4.100.0](https://github.com/onesoft-sudo/sudobot/compare/v4.99.0...v4.100.0) (2023-07-11)
 
 
@@ -37,15 +46,6 @@
 ### Features
 
 * **services:** add logger service ([cf6fd2a](https://github.com/onesoft-sudo/sudobot/commit/cf6fd2add0475c96f010718829a28a5f41320f24))
-
-
-
-# [4.97.0](https://github.com/onesoft-sudo/sudobot/compare/v4.96.0...v4.97.0) (2023-07-10)
-
-
-### Features
-
-* **commands:** add system command ([78bb5e2](https://github.com/onesoft-sudo/sudobot/commit/78bb5e25676eb3179109c275f1f8d2c8d63e754a))
 
 
 
