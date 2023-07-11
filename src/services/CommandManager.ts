@@ -54,6 +54,9 @@ export default class CommandManager extends Service {
             return;
         }
 
+        if (!message.content.startsWith(config.prefix))
+            return;
+
         const commandText = message.content.substring(config.prefix.length);
         const [commandName, ...commandArguments] = commandText
             .split(/ +/);

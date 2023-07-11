@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { ChannelType, ClientEvents, Message, MessageType } from "discord.js";
+import { ChannelType, ClientEvents, GuildMember, Message, MessageType } from "discord.js";
 import Client from "../../core/Client";
 import Event from "../../core/Event";
 
@@ -27,7 +27,7 @@ export default class MessageCreateEvent extends Event {
     public types = [
         MessageType.Default,
         MessageType.Reply,
-    ]
+    ];
 
     constructor(protected client: Client) {
         super(client);
@@ -43,9 +43,31 @@ export default class MessageCreateEvent extends Event {
         if (message.channel.type === ChannelType.DM)
             return;
 
+        let member: GuildMember = <any>message.member!;
+
+        if (!(member.permissions as any)?.has) {
+            try {
+                member = await message.guild!.members.fetch(member.user.id);
+
+                if (!member) {
+                    throw new Error("Invalid member");
+                }
+
+                (message.member as any) = member;
+            }
+            catch (e) {
+                console.log(e);
+            }
+        }
+
+        const deleted = await this.client.messageFilter.onMessageCreate(message).catch(console.error);
+
+        if (deleted)
+            return;
+
         const value = await this.client.commandManager.runCommandFromMessage(message).catch(console.error);
 
-        if (!value) {
+        if (value === false) {
             console.log("Command not found");
         }
     }

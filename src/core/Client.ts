@@ -21,17 +21,19 @@ import { PrismaClient } from '@prisma/client';
 import { Collection, Client as DiscordClient } from 'discord.js';
 import fs from 'fs/promises';
 import path from 'path';
+import Server from '../api/Server';
+import MessageFilter from '../automod/MessageFilter';
 import CommandManager from '../services/CommandManager';
 import ConfigManager from '../services/ConfigManager';
 import InfractionManager from '../services/InfractionManager';
 import LoggerService from '../services/LoggerService';
 import Command from './Command';
 import ServiceManager from './ServiceManager';
-import Server from '../api/Server';
 
 export default class Client extends DiscordClient {
     aliases = {
-        "@services": path.resolve(__dirname, "../services")
+        "@services": path.resolve(__dirname, "../services"),
+        "@automod": path.resolve(__dirname, "../automod"),
     };
 
     services = [
@@ -39,6 +41,7 @@ export default class Client extends DiscordClient {
         "@services/CommandManager",
         "@services/InfractionManager",
         "@services/LoggerService",
+        "@automod/MessageFilter",
     ];
 
     commandsDirectory = path.resolve(__dirname, "../commands");
@@ -50,6 +53,7 @@ export default class Client extends DiscordClient {
     commandManager: CommandManager = {} as CommandManager;
     infractionManager: InfractionManager = {} as InfractionManager;
     logger: LoggerService = {} as LoggerService;
+    messageFilter: MessageFilter = {} as MessageFilter;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",

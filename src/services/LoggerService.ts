@@ -18,7 +18,7 @@
 */
 
 import { formatDistanceToNowStrict } from "date-fns";
-import { APIEmbedField, BanOptions, ColorResolvable, Colors, EmbedBuilder, EmbedData, Guild, GuildMember, MessageCreateOptions, MessagePayload, User } from "discord.js";
+import { APIEmbedField, BanOptions, ColorResolvable, Colors, EmbedBuilder, EmbedData, Guild, GuildMember, MessageCreateOptions, MessagePayload, User, escapeMarkdown } from "discord.js";
 import Service from "../core/Service";
 import { isTextableChannel } from "../utils/utils";
 
@@ -27,8 +27,9 @@ export const name = "logger";
 export default class LoggerService extends Service {
     private async send(guild: Guild, options: string | MessagePayload | MessageCreateOptions) {
         const channelId = this.client.configManager.config[guild.id]?.logging?.primary_channel;
+        const enabled = this.client.configManager.config[guild.id]?.logging?.enabled;
 
-        if (!channelId)
+        if (!enabled || !channelId)
             return null;
 
         try {
@@ -158,6 +159,24 @@ export default class LoggerService extends Service {
             color: Colors.Gold,
         });
     }
+
+    async logBlockedWordOrToken({ guild, user, isToken, token, word, content }: BlockedTokenOrWordOptions) {
+        this.sendLogEmbed(guild, {
+            user,
+            title: `Posted blocked ${isToken ? "token" : "word"}(s)`,
+            footerText: "AutoMod",
+            color: Colors.Yellow,
+            fields: [
+                {
+                    name: isToken ? "Token" : "Word",
+                    value: `||${escapeMarkdown((isToken ? token : word)!)}||`
+                }
+            ],
+            options: {
+                description: `${content}`,
+            }
+        });
+    }
 }
 
 interface LogUserBanOptions extends BanOptions, CommonUserActionOptions {
@@ -168,6 +187,15 @@ interface CommonUserActionOptions {
     moderator: User;
     guild: Guild;
     id: string;
+}
+
+interface BlockedTokenOrWordOptions {
+    isToken: boolean;
+    token?: string;
+    word?: string;
+    guild: Guild;
+    user: User;
+    content: string;
 }
 
 interface CreateLogEmbedOptions {
