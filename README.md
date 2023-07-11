@@ -31,6 +31,10 @@ Alternatively, you can create your own Discord API application and then host Sud
 
 ### Setup for Custom Hosting
 
+### Note
+
+**It's not recommended to build and use the code from `main` branch, because we're migrating from v4 to v5 with big changes. Some commands/features may not be available or complete. Therefore use a stable release.**
+
 #### Requirements
 * NodeJS version 16 or higher
 * MongoDB version 5.0 or higher ([Go to MongoDB Atlas for a free MongoDB cluster](https://www.mongodb.com/atlas))
@@ -120,7 +124,7 @@ Thanks to all the contributors!
 ### Support
 
 - **Email**: rakinar2@onesoftnet.eu.org
-- **Discord Servers**: [OneSoftNet Server](https://discord.gg/892GWhTzgs)
+- **Discord Servers**: [Silly Cats Server](https://discord.gg/catss), [OneSoftNet Server](https://discord.gg/892GWhTzgs)
 
 ### Extra 
 
