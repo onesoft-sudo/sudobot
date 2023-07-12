@@ -1,34 +1,35 @@
 /**
-* This file is part of SudoBot.
-* 
-* Copyright (C) 2021-2023 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by 
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-* 
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License 
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2023 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
-import { PrismaClient } from '@prisma/client';
-import { Collection, Client as DiscordClient } from 'discord.js';
-import fs from 'fs/promises';
-import path from 'path';
-import Server from '../api/Server';
-import MessageFilter from '../automod/MessageFilter';
-import CommandManager from '../services/CommandManager';
-import ConfigManager from '../services/ConfigManager';
-import InfractionManager from '../services/InfractionManager';
-import LoggerService from '../services/LoggerService';
-import Command from './Command';
-import ServiceManager from './ServiceManager';
+import { PrismaClient } from "@prisma/client";
+import { Collection, Client as DiscordClient } from "discord.js";
+import fs from "fs/promises";
+import path from "path";
+import Server from "../api/Server";
+import Antispam from "../automod/Antispam";
+import MessageFilter from "../automod/MessageFilter";
+import CommandManager from "../services/CommandManager";
+import ConfigManager from "../services/ConfigManager";
+import InfractionManager from "../services/InfractionManager";
+import LoggerService from "../services/LoggerService";
+import Command from "./Command";
+import ServiceManager from "./ServiceManager";
 
 export default class Client extends DiscordClient {
     aliases = {
@@ -42,6 +43,7 @@ export default class Client extends DiscordClient {
         "@services/InfractionManager",
         "@services/LoggerService",
         "@automod/MessageFilter",
+        "@automod/Antispam",
     ];
 
     commandsDirectory = path.resolve(__dirname, "../commands");
@@ -54,10 +56,11 @@ export default class Client extends DiscordClient {
     infractionManager: InfractionManager = {} as InfractionManager;
     logger: LoggerService = {} as LoggerService;
     messageFilter: MessageFilter = {} as MessageFilter;
+    antispam: Antispam = {} as Antispam;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",
-        log: ['query', 'error', 'info', 'warn']
+        log: ["query", "error", "info", "warn"],
     });
 
     server = new Server(this);
@@ -80,7 +83,7 @@ export default class Client extends DiscordClient {
                 continue;
             }
 
-            if (!file.endsWith('.ts') && !file.endsWith('.js')) {
+            if (!file.endsWith(".ts") && !file.endsWith(".js")) {
                 continue;
             }
 
@@ -92,7 +95,7 @@ export default class Client extends DiscordClient {
                 this.commands.set(alias, command);
             }
 
-            console.log('Loaded command: ', command.name);
+            console.log("Loaded command: ", command.name);
         }
     }
 
@@ -108,7 +111,7 @@ export default class Client extends DiscordClient {
                 continue;
             }
 
-            if (!file.endsWith('.ts') && !file.endsWith('.js')) {
+            if (!file.endsWith(".ts") && !file.endsWith(".js")) {
                 continue;
             }
 
