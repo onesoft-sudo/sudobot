@@ -1,3 +1,12 @@
+# [4.102.0](https://github.com/onesoft-sudo/sudobot/compare/v4.101.0...v4.102.0) (2023-07-12)
+
+
+### Features
+
+* **automod:** message filters ([a52dafe](https://github.com/onesoft-sudo/sudobot/commit/a52dafeec7449073f26e4efa25e02618e50ea537))
+
+
+
 # [4.101.0](https://github.com/onesoft-sudo/sudobot/compare/v4.100.0...v4.101.0) (2023-07-11)
 
 
@@ -37,15 +46,6 @@
 ### Bug Fixes
 
 * system command shows operational status even if the latency is high ([a4642a4](https://github.com/onesoft-sudo/sudobot/commit/a4642a4bae0bf5d3e0881e57fb8279a69bddcb1b))
-
-
-
-# [4.98.0](https://github.com/onesoft-sudo/sudobot/compare/v4.97.0...v4.98.0) (2023-07-10)
-
-
-### Features
-
-* **services:** add logger service ([cf6fd2a](https://github.com/onesoft-sudo/sudobot/commit/cf6fd2add0475c96f010718829a28a5f41320f24))
 
 
 
