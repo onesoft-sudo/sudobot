@@ -1,3 +1,12 @@
+# [4.103.0](https://github.com/onesoft-sudo/sudobot/compare/v4.102.0...v4.103.0) (2023-07-12)
+
+
+### Features
+
+* **automod:** add an anti-spam service ([6f286a6](https://github.com/onesoft-sudo/sudobot/commit/6f286a6c057bffdb854ded8c4c4d118ad7b8bf1a))
+
+
+
 # [4.102.0](https://github.com/onesoft-sudo/sudobot/compare/v4.101.0...v4.102.0) (2023-07-12)
 
 
@@ -37,15 +46,6 @@
 
 * add an API ([dd2a3b0](https://github.com/onesoft-sudo/sudobot/commit/dd2a3b0a865422a274d7b4d32d2a068ed881695e))
 * **utils:** add developmentMode() function ([f3510a8](https://github.com/onesoft-sudo/sudobot/commit/f3510a8755a6a615237a63cd3de19f14075a8ce1))
-
-
-
-## [4.98.1](https://github.com/onesoft-sudo/sudobot/compare/v4.98.0...v4.98.1) (2023-07-10)
-
-
-### Bug Fixes
-
-* system command shows operational status even if the latency is high ([a4642a4](https://github.com/onesoft-sudo/sudobot/commit/a4642a4bae0bf5d3e0881e57fb8279a69bddcb1b))
 
 
 
