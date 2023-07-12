@@ -54,6 +54,13 @@ export const GuildConfigSchema = z.object({
                 .optional(),
         })
         .optional(),
+    antispam: z
+        .object({
+            enabled: z.boolean().optional().default(false),
+            limit: z.number().int().default(-1).optional(),
+            timeframe: z.number().int().default(-1).optional(),
+        })
+        .optional(),
 });
 
 export type GuildConfig = z.infer<typeof GuildConfigSchema>;
