@@ -78,7 +78,15 @@ export const GuildConfigSchema = z.object({
             enabled: z.boolean().optional().default(false),
             limit: z.number().int().default(-1).optional(),
             timeframe: z.number().int().default(-1).optional(),
-            mute_duration: z.number().int().default(-1).optional()
+            mute_duration: z.number().int().default(-1).optional(),
+            action: z.union([
+                z.literal("verbal_warn"), 
+                z.literal("warn"), 
+                z.literal("warn"), 
+                z.literal("mute"), 
+                z.literal("mute_clear"), 
+                z.literal("auto")
+            ]).optional()
         })
         .optional()
 });

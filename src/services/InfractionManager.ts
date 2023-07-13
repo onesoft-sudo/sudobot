@@ -29,7 +29,8 @@ import {
     Message,
     MessageResolvable,
     TextChannel,
-    User
+    User,
+    escapeMarkdown
 } from "discord.js";
 import Service from "../core/Service";
 import { getEmoji } from "../utils/utils";
@@ -255,7 +256,7 @@ export default class InfractionManager extends Service {
                 try {
                     await messageChannel.bulkDelete(messages);
                     const reply = await messageChannel.send(
-                        `${getEmoji(this.client, "check")} Deleted ${count} messages from user @${user.username}`
+                        `${getEmoji(this.client, "check")} Deleted ${count} messages from user **@${escapeMarkdown(user.username)}**`
                     );
 
                     setTimeout(() => reply.delete().catch(console.error), 5000);
