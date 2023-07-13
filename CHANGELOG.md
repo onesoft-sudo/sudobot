@@ -1,3 +1,18 @@
+# [4.105.0](https://github.com/onesoft-sudo/sudobot/compare/v4.104.0...v4.105.0) (2023-07-13)
+
+
+### Bug Fixes
+
+* remove uneeded debug logs ([729208b](https://github.com/onesoft-sudo/sudobot/commit/729208bc0b44cafb3adb543f8d16f83b03ccf392))
+
+
+### Features
+
+* **automod:** customization of actions if spam is detected ([0c52594](https://github.com/onesoft-sudo/sudobot/commit/0c525943f23090300cfc65c5974cc5b90906d1bf))
+* **utils:** add an internal logger ([37b468b](https://github.com/onesoft-sudo/sudobot/commit/37b468bba8cfca4dcd4b719fede00435f17f2e57))
+
+
+
 # [4.104.0](https://github.com/onesoft-sudo/sudobot/compare/v4.103.0...v4.104.0) (2023-07-13)
 
 
@@ -31,15 +46,6 @@
 ### Features
 
 * **automod:** add word and token filters ([8f4268a](https://github.com/onesoft-sudo/sudobot/commit/8f4268a6c33dcf738e6a7533e552881b8d382f6c))
-
-
-
-# [4.100.0](https://github.com/onesoft-sudo/sudobot/compare/v4.99.0...v4.100.0) (2023-07-11)
-
-
-### Features
-
-* **api:** add middleware support ([1347d3e](https://github.com/onesoft-sudo/sudobot/commit/1347d3eb739d02c03524e946fa78687f50bdd7da))
 
 
 
