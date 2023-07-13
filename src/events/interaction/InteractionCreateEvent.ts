@@ -19,13 +19,14 @@
 
 import { ClientEvents, Interaction } from "discord.js";
 import Event from "../../core/Event";
+import { logError } from "../../utils/logger";
 
 export default class InteractionCreateEvent extends Event {
     public name: keyof ClientEvents = 'interactionCreate';
 
     async execute(interaction: Interaction) {
         if (interaction.isChatInputCommand()) {
-            this.client.commandManager.runCommandFromChatInputCommandInteraction(interaction).catch(console.error);
+            this.client.commandManager.runCommandFromChatInputCommandInteraction(interaction).catch(logError);
             return;
         }
     }

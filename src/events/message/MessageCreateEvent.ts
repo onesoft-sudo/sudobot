@@ -20,6 +20,7 @@
 import { ChannelType, ClientEvents, GuildMember, Message, MessageType } from "discord.js";
 import Client from "../../core/Client";
 import Event from "../../core/Event";
+import { logError, logWarn } from "../../utils/logger";
 
 export default class MessageCreateEvent extends Event {
     public name: keyof ClientEvents = "messageCreate";
@@ -49,20 +50,20 @@ export default class MessageCreateEvent extends Event {
 
                 (message.member as any) = member;
             } catch (e) {
-                console.log(e);
+                logError(e);
             }
         }
 
-        const deleted = await this.client.messageFilter.onMessageCreate(message).catch(console.error);
+        const deleted = await this.client.messageFilter.onMessageCreate(message).catch(logError);
 
         if (deleted) return;
 
-        await this.client.antispam.onMessageCreate(message).catch(console.error);
+        await this.client.antispam.onMessageCreate(message).catch(logError);
 
-        const value = await this.client.commandManager.runCommandFromMessage(message).catch(console.error);
+        const value = await this.client.commandManager.runCommandFromMessage(message).catch(logError);
 
         if (value === false) {
-            console.log("Command not found");
+            logWarn("Command not found");
         }
     }
 }

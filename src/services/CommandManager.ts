@@ -19,6 +19,7 @@
 
 import { ChatInputCommandInteraction, Message } from "discord.js";
 import Service from "../core/Service";
+import { logError, logWarn } from "../utils/logger";
 import { GuildConfig } from "./ConfigManager";
 
 export const name = "commandManager";
@@ -50,7 +51,7 @@ export default class CommandManager extends Service {
         const config = this.client.configManager.config[message.guildId!];
 
         if (!config) {
-            console.log("This guild is not configured: ", message.guildId!);
+            logWarn("This guild is not configured: ", message.guildId!);
             return;
         }
 
@@ -83,7 +84,7 @@ export default class CommandManager extends Service {
                     message.reply(result as any).catch(console.error);
                 }
             })
-            .catch(console.error);
+            .catch(logError);
 
         return true;
     }
@@ -92,6 +93,7 @@ export default class CommandManager extends Service {
         const config = this.client.configManager.config[interaction.guildId!];
 
         if (!config) {
+            logWarn("This guild is not configured: ", interaction.guildId!);
             return;
         }
 
@@ -112,6 +114,6 @@ export default class CommandManager extends Service {
                     interaction.reply(result as any).catch(console.error);
                 }
             })
-            .catch(console.error);
+            .catch(logError);
     }
 }

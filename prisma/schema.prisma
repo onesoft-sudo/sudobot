@@ -17,6 +17,7 @@ enum InfractionType {
     MASSKICK
     UNBAN
     UNMUTE
+    BULKDELETEMSG
 }
 
 model Infraction {
@@ -32,4 +33,13 @@ model Infraction {
     updatedAt   DateTime       @default(now()) @updatedAt
 
     @@map("infractions")
+}
+
+model SpamRecord {
+    id       Int    @id @default(autoincrement())
+    user_id  String
+    guild_id String
+    level    Int    @default(1)
+
+    @@map("spam_records")
 }

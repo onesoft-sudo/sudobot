@@ -21,6 +21,7 @@ import express, { Request as ExpressRequest, Response as ExpressResponse } from 
 import fs from "fs/promises";
 import { join, resolve } from "path";
 import Client from "../core/Client";
+import { log, logError, logInfo, logWarn } from "../utils/logger";
 import Controller from "./Controller";
 import Response from "./Response";
 
@@ -40,7 +41,7 @@ export function Path(uri: string) {
             value: uri,
         });
 
-        console.log("Found controller function: ", propertyKey);
+        log("Found controller function: ", propertyKey);
     };
 }
 
@@ -102,29 +103,29 @@ export default class Server {
             const { default: ControllerClass } = await import(filePath);
             const controller: Controller = new ControllerClass(this.client);
 
-            console.log((controller as any).handlerMethods);
+            log((controller as any).handlerMethods);
 
             for (const methodName of ((controller as any).handlerMethods as Set<string>).values()) {
                 const controllerFunction = controller[methodName as keyof Controller] as unknown as ControllerFunction;
 
                 if (typeof controllerFunction !== "function") {
-                    console.log(`[Server] Not a function (${methodName}), ignoring.`);
+                    logWarn(`[Server] Not a function (${methodName}), ignoring.`);
                     continue;
                 }
 
                 const { __controller_path: path, __controller_method: method, __controller_middleware: middleware } = controllerFunction;
 
                 if (!path) {
-                    console.error(`[Server] No path specified at function ${methodName} in controller ${file}. Skipping.`);
+                    logError(`[Server] No path specified at function ${methodName} in controller ${file}. Skipping.`);
                     continue;
                 }
 
                 if (method && !["get", "post", "head", "put", "patch", "delete"].includes(method)) {
-                    console.error(`[Server] Invalid method '${method}' specified at function ${methodName} in controller ${file}. Skipping.`);
+                    logError(`[Server] Invalid method '${method}' specified at function ${methodName} in controller ${file}. Skipping.`);
                     continue;
                 }
 
-                console.log(`Added handler for ${method?.toUpperCase() ?? "GET"} ${path}`);
+                log(`Added handler for ${method?.toUpperCase() ?? "GET"} ${path}`);
 
                 (router[(method ?? "get") as keyof typeof router] as Function)(
                     path,
@@ -141,7 +142,7 @@ export default class Server {
                         } else if (typeof userResponse === "number") {
                             res.send(userResponse.toString());
                         } else {
-                            console.log("Invalid value returned from controller. Not sending a response.");
+                            logWarn("Invalid value was returned from the controller. Not sending a response.");
                         }
                     }
                 );
@@ -150,6 +151,6 @@ export default class Server {
     }
 
     async start() {
-        this.expressApp.listen(this.port, () => console.log(`API server is listening at port ${this.port}`));
+        this.expressApp.listen(this.port, () => logInfo(`API server is listening at port ${this.port}`));
     }
 }

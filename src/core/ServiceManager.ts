@@ -17,6 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
+import { logInfo } from "../utils/logger";
 import Client from "./Client";
 
 export default class ServiceManager {
@@ -30,7 +31,7 @@ export default class ServiceManager {
                 replacedService = replacedService.replace(alias, this.client.aliases[alias as keyof typeof this.client.aliases]);
             }
 
-            console.log("Loading service: ", service);
+            logInfo("Loading service: ", service);
 
             const { default: Service, name } = await import(replacedService);
             const serviceInstance = new Service(this.client);

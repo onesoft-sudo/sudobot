@@ -20,6 +20,7 @@
 import { APIMessage, CacheType, Channel, ChatInputCommandInteraction, GuildMember, InteractionEditReplyOptions, InteractionReplyOptions, Message, MessageCreateOptions, MessageMentions, MessagePayload, PermissionResolvable, Role, Snowflake, User } from "discord.js";
 import { dirname } from "path";
 import { ChatInputCommandContext, LegacyCommandContext } from "../services/CommandManager";
+import { logError } from "../utils/logger";
 import { getEmoji, isSnowflake, stringToTimeInterval } from "../utils/utils";
 import Client from "./Client";
 
@@ -123,11 +124,11 @@ export default abstract class Command {
                     }
                 }
                 catch (e) {
-                    console.log(e);
+                    logError(e);
                     message.reply({
                         content: `Sorry, I couldn't determine whether you have the enough permissions to perform this action or not. Please contact the bot developer.`,
                         ephemeral: true
-                    }).catch(console.error);
+                    }).catch(logError);
                     return;
                 }
             }
@@ -229,7 +230,7 @@ export default abstract class Command {
                                         await message.reply({
                                             ephemeral: true,
                                             content: error
-                                        }).catch(console.error);
+                                        }).catch(logError);
                                     }
 
                                     break;
@@ -301,7 +302,7 @@ export default abstract class Command {
                                     parsedArgs[index] = entity;
                                 }
                                 catch (e) {
-                                    console.log(e);
+                                    logError(e);
 
                                     if (rule.entityNotNull) {
                                         await message.reply(rule.entityNotNullErrorMessage ?? `Argument ${index} is invalid`);

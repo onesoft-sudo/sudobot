@@ -19,6 +19,7 @@
 
 import { Message, PermissionsBitField } from "discord.js";
 import Service from "../core/Service";
+import { logError } from "../utils/logger";
 
 export const name = "messageFilter";
 
@@ -65,19 +66,19 @@ export default class MessageFilter extends Service {
                 user: message.author,
                 token: !tokenSafe ? token : undefined,
                 word: !wordSafe ? word : undefined,
-            }).catch(console.error);
+            }).catch(logError);
         }
 
         if (!message.deletable)
             return false;
 
         if (!tokenSafe && (config.delete_message === true || (typeof config.delete_message === 'object' && config.delete_message.blocked_tokens))) {
-            message.delete().catch(console.error);
+            message.delete().catch(logError);
             return true;
         }
 
         if (!wordSafe && (config.delete_message === true || (typeof config.delete_message === 'object' && config.delete_message.blocked_words))) {
-            message.delete().catch(console.error);
+            message.delete().catch(logError);
             return true;
         }
 

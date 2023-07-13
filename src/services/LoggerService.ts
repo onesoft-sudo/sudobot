@@ -20,6 +20,7 @@
 import { formatDistanceToNowStrict } from "date-fns";
 import { APIEmbedField, BanOptions, ColorResolvable, Colors, EmbedBuilder, EmbedData, Guild, GuildMember, MessageCreateOptions, MessagePayload, User, escapeMarkdown } from "discord.js";
 import Service from "../core/Service";
+import { logError } from "../utils/logger";
 import { isTextableChannel } from "../utils/utils";
 
 export const name = "logger";
@@ -41,7 +42,7 @@ export default class LoggerService extends Service {
             return await channel.send(options);
         }
         catch (e) {
-            console.log(e);
+            logError(e);
             return null;
         }
     }

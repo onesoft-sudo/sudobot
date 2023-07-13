@@ -28,6 +28,7 @@ import CommandManager from "../services/CommandManager";
 import ConfigManager from "../services/ConfigManager";
 import InfractionManager from "../services/InfractionManager";
 import LoggerService from "../services/LoggerService";
+import { logInfo } from "../utils/logger";
 import Command from "./Command";
 import ServiceManager from "./ServiceManager";
 
@@ -95,7 +96,7 @@ export default class Client extends DiscordClient {
                 this.commands.set(alias, command);
             }
 
-            console.log("Loaded command: ", command.name);
+            logInfo("Loaded command: ", command.name);
         }
     }
 

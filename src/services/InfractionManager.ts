@@ -33,6 +33,7 @@ import {
     escapeMarkdown
 } from "discord.js";
 import Service from "../core/Service";
+import { log, logError } from "../utils/logger";
 import { getEmoji } from "../utils/utils";
 
 export type CommonOptions = {
@@ -112,7 +113,7 @@ export default class InfractionManager extends Service {
 
             return true;
         } catch (e) {
-            console.log(e);
+            logError(e);
             return false;
         }
     }
@@ -156,7 +157,7 @@ export default class InfractionManager extends Service {
 
             return id;
         } catch (e) {
-            console.log(e);
+            logError(e);
             return null;
         }
     }
@@ -194,7 +195,7 @@ export default class InfractionManager extends Service {
             await member.kick(reason);
             return id;
         } catch (e) {
-            console.log(e);
+            logError(e);
             return null;
         }
     }
@@ -239,13 +240,13 @@ export default class InfractionManager extends Service {
             let messages: Collection<string, Message> | MessageResolvable[] | null = messagesToDelete ?? null;
 
             if (messages === null) {
-                console.log("The messagesToDelete was option not provided. Fetching messages manually.");
+                log("The messagesToDelete was option not provided. Fetching messages manually.");
 
                 try {
                     messages = await messageChannel.messages.fetch({ limit: 100 });
                     messages = messages.filter((m) => m.author.id === user.id && Date.now() - m.createdAt.getTime() <= 1000 * 60 * 60 * 24 * 7 * 2);
                 } catch (e) {
-                    console.log(e);
+                    logError(e);
                     messages = null;
                 }
             }
@@ -259,10 +260,10 @@ export default class InfractionManager extends Service {
                         `${getEmoji(this.client, "check")} Deleted ${count} messages from user **@${escapeMarkdown(user.username)}**`
                     );
 
-                    setTimeout(() => reply.delete().catch(console.error), 5000);
+                    setTimeout(() => reply.delete().catch(logError), 5000);
                     return true;
                 } catch (e) {
-                    console.log(e);
+                    logError(e);
                 }
             }
 
@@ -283,7 +284,7 @@ export default class InfractionManager extends Service {
         try {
             await member.roles.add(mutedRole);
         } catch (e) {
-            console.log(e);
+            logError(e);
             return { error: "Failed to assign the muted role to this user. Make sure that I have enough permissions to do it." };
         }
 
@@ -318,7 +319,7 @@ export default class InfractionManager extends Service {
             reason:
                 bulkDeleteReason ??
                 `This user was muted with delete messages option specified. The mute reason was: ${reason ?? "*No reason provided*"}`
-        }).catch(console.error);
+        }).catch(logError);
 
         let result = !notifyUser;
 
