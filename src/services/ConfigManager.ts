@@ -28,7 +28,8 @@ export * from "../types/GuildConfigSchema";
 export const name = "configManager";
 
 export const SystemConfigSchema = z.object({
-    emojis: z.record(z.string()).optional()
+    emojis: z.record(z.string()).optional().default({}),
+    system_admins: z.array(z.string()).default([])
 });
 
 export type SystemConfig = z.infer<typeof SystemConfigSchema>;
@@ -41,12 +42,12 @@ export default class ConfigManager extends Service {
     protected systemConfigPath = path.resolve(__dirname, "../../config/system.json");
 
     config: ConfigContainer = {} as ConfigContainer;
-    systemConfig: SystemConfig = {};
+    systemConfig: SystemConfig = {} as SystemConfig;
 
     async boot() {
         const configFileBuffer = await fs.readFile(this.configPath);
         const systemConfigFileBuffer = await fs.readFile(this.systemConfigPath);
         this.config = ConfigContainerSchema.parse(JSON.parse(configFileBuffer.toString()));
-        this.systemConfig = JSON.parse(systemConfigFileBuffer.toString());
+        this.systemConfig = SystemConfigSchema.parse(JSON.parse(systemConfigFileBuffer.toString()));
     }
 }
