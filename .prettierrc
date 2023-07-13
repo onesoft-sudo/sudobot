@@ -1,4 +1,5 @@
 {
     "editorconfig": true,
     "printWidth": 150,
+    "trailingComma": "none"
 }

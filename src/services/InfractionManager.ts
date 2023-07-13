@@ -1,25 +1,38 @@
 /**
-* This file is part of SudoBot.
-* 
-* Copyright (C) 2021-2023 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by 
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-* 
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License 
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2023 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 import { formatDistanceToNowStrict } from "date-fns";
-import { APIEmbedField, ColorResolvable, EmbedBuilder, EmbedField, Guild, GuildMember, User } from "discord.js";
+import {
+    APIEmbedField,
+    Collection,
+    ColorResolvable,
+    EmbedBuilder,
+    EmbedField,
+    Guild,
+    GuildMember,
+    Message,
+    MessageResolvable,
+    TextChannel,
+    User
+} from "discord.js";
 import Service from "../core/Service";
+import { getEmoji } from "../utils/utils";
 
 export type CommonOptions = {
     reason?: string;
@@ -35,6 +48,15 @@ export type CreateUserBanOptions = CommonOptions & {
 
 export type CreateMemberMuteOptions = CommonOptions & {
     duration?: number;
+    messagesToDelete?: MessageResolvable[];
+    messageChannel?: TextChannel;
+    bulkDeleteReason?: string;
+};
+
+export type BulkDeleteMessagesOptions = CommonOptions & {
+    user: User;
+    messagesToDelete?: MessageResolvable[];
+    messageChannel?: TextChannel;
 };
 
 export type ActionDoneName = "banned" | "muted" | "kicked" | "warned";
@@ -55,13 +77,15 @@ export default class InfractionManager extends Service {
         console.log(this.client.configManager.config[guild.id]);
 
         const internalFields: EmbedField[] = [
-            ...(this.client.configManager.config[guild.id]!.infractions?.send_ids_to_user ? [
-                {
-                    name: "Infraction ID",
-                    value: `${id}`,
-                    inline: false,
-                }
-            ] : [])
+            ...(this.client.configManager.config[guild.id]!.infractions?.send_ids_to_user
+                ? [
+                      {
+                          name: "Infraction ID",
+                          value: `${id}`,
+                          inline: false
+                      }
+                  ]
+                : [])
         ];
 
         try {
@@ -76,10 +100,10 @@ export default class InfractionManager extends Service {
                         fields: [
                             {
                                 name: "Reason",
-                                value: reason ?? '*No reason provided*'
+                                value: reason ?? "*No reason provided*"
                             },
-                            ...(fields ? (typeof fields === 'function' ? await fields(internalFields) : fields) : []),
-                            ...(typeof fields === 'function' ? [] : internalFields ?? []),
+                            ...(fields ? (typeof fields === "function" ? await fields(internalFields) : fields) : []),
+                            ...(typeof fields === "function" ? [] : internalFields ?? [])
                         ]
                     })
                         .setTimestamp()
@@ -88,8 +112,7 @@ export default class InfractionManager extends Service {
             });
 
             return true;
-        }
-        catch (e) {
+        } catch (e) {
             console.log(e);
             return false;
         }
@@ -105,7 +128,7 @@ export default class InfractionManager extends Service {
                 moderatorId: moderator.id,
                 metadata: {
                     deleteMessageSeconds
-                },
+                }
             }
         });
 
@@ -122,7 +145,7 @@ export default class InfractionManager extends Service {
             await this.sendDM(user, guild, {
                 id,
                 actionDoneName: "banned",
-                reason,
+                reason
             });
         }
 
@@ -133,16 +156,14 @@ export default class InfractionManager extends Service {
             });
 
             return id;
-        }
-        catch (e) {
+        } catch (e) {
             console.log(e);
             return null;
         }
     }
 
     async createMemberKick(member: GuildMember, { guild, moderator, reason, notifyUser }: CommonOptions) {
-        if (!member.kickable)
-            return null;
+        if (!member.kickable) return null;
 
         const { id } = await this.client.prisma.infraction.create({
             data: {
@@ -150,7 +171,7 @@ export default class InfractionManager extends Service {
                 userId: member.user.id,
                 guildId: guild.id,
                 reason,
-                moderatorId: moderator.id,
+                moderatorId: moderator.id
             }
         });
 
@@ -159,22 +180,21 @@ export default class InfractionManager extends Service {
             guild,
             id: `${id}`,
             member,
-            reason,
+            reason
         });
 
         if (notifyUser) {
             await this.sendDM(member.user, guild, {
                 id,
                 actionDoneName: "kicked",
-                reason,
+                reason
             });
         }
 
         try {
             await member.kick(reason);
             return id;
-        }
-        catch (e) {
+        } catch (e) {
             console.log(e);
             return null;
         }
@@ -187,7 +207,7 @@ export default class InfractionManager extends Service {
                 userId: member.user.id,
                 guildId: guild.id,
                 reason,
-                moderatorId: moderator.id,
+                moderatorId: moderator.id
             }
         });
 
@@ -205,24 +225,65 @@ export default class InfractionManager extends Service {
             result = await this.sendDM(member.user, guild, {
                 id,
                 actionDoneName: "warned",
-                reason,
+                reason
             });
         }
 
         return { id, result };
     }
 
-    async createMemberMute(member: GuildMember, { guild, moderator, reason, notifyUser, duration }: CreateMemberMuteOptions) {
+    async bulkDeleteMessages({ user, messagesToDelete, messageChannel }: BulkDeleteMessagesOptions) {
+        // TODO: Create a new record in the database for this action
+        // TODO: Send a moderatiom log to the logging channel
+
+        if (messageChannel && !(messagesToDelete && messagesToDelete.length === 0)) {
+            let messages: Collection<string, Message> | MessageResolvable[] | null = messagesToDelete ?? null;
+
+            if (messages === null) {
+                console.log("The messagesToDelete was option not provided. Fetching messages manually.");
+
+                try {
+                    messages = await messageChannel.messages.fetch({ limit: 100 });
+                    messages = messages.filter((m) => m.author.id === user.id && Date.now() - m.createdAt.getTime() <= 1000 * 60 * 60 * 24 * 7 * 2);
+                } catch (e) {
+                    console.log(e);
+                    messages = null;
+                }
+            }
+
+            const count = messages ? (messages instanceof Collection ? messages.size : messages.length) : 0;
+
+            if (messages && count > 0) {
+                try {
+                    await messageChannel.bulkDelete(messages);
+                    const reply = await messageChannel.send(
+                        `${getEmoji(this.client, "check")} Deleted ${count} messages from user @${user.username}`
+                    );
+
+                    setTimeout(() => reply.delete().catch(console.error), 5000);
+                    return true;
+                } catch (e) {
+                    console.log(e);
+                }
+            }
+
+            return false;
+        }
+    }
+
+    async createMemberMute(
+        member: GuildMember,
+        { guild, moderator, reason, notifyUser, duration, messagesToDelete, messageChannel, bulkDeleteReason }: CreateMemberMuteOptions
+    ) {
         const mutedRole = this.client.configManager.config[guild.id]?.muting?.role;
 
         if (!mutedRole) {
-            return { error: "Muted role is not configured, please set the muted role to use this command" };
+            return { error: "Muted role is not configured, please set the muted role to perform this operation." };
         }
 
         try {
             await member.roles.add(mutedRole);
-        }
-        catch (e) {
+        } catch (e) {
             console.log(e);
             return { error: "Failed to assign the muted role to this user. Make sure that I have enough permissions to do it." };
         }
@@ -246,6 +307,19 @@ export default class InfractionManager extends Service {
             duration,
             reason
         });
+
+        this.bulkDeleteMessages({
+            user: member.user,
+            guild,
+            moderator,
+            messagesToDelete,
+            messageChannel,
+            sendLog: true,
+            notifyUser: false,
+            reason:
+                bulkDeleteReason ??
+                `This user was muted with delete messages option specified. The mute reason was: ${reason ?? "*No reason provided*"}`
+        }).catch(console.error);
 
         let result = !notifyUser;
 
