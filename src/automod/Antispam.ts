@@ -47,7 +47,6 @@ export default class Antispam extends Service {
                 const timestamps = delayedInfo.timestamps.filter((timestamp) => config.antispam?.timeframe! + timestamp >= Date.now());
 
                 if (timestamps.length >= config.antispam?.limit!) {
-                    console.log("Spam", timestamps.length);
                     (message.channel as TextChannel)
                         .bulkDelete(delayedInfo.messages, false)
                         .then(() => {
