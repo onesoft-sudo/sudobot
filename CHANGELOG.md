@@ -1,3 +1,12 @@
+# [4.104.0](https://github.com/onesoft-sudo/sudobot/compare/v4.103.0...v4.104.0) (2023-07-13)
+
+
+### Features
+
+* **automod:** improved spam filter ([943f690](https://github.com/onesoft-sudo/sudobot/commit/943f690c3d112cfc763004171b2b630eff428407))
+
+
+
 # [4.103.0](https://github.com/onesoft-sudo/sudobot/compare/v4.102.0...v4.103.0) (2023-07-12)
 
 
@@ -31,21 +40,6 @@
 ### Features
 
 * **api:** add middleware support ([1347d3e](https://github.com/onesoft-sudo/sudobot/commit/1347d3eb739d02c03524e946fa78687f50bdd7da))
-
-
-
-# [4.99.0](https://github.com/onesoft-sudo/sudobot/compare/v4.98.1...v4.99.0) (2023-07-10)
-
-
-### Bug Fixes
-
-* remove unused intents ([11e4c79](https://github.com/onesoft-sudo/sudobot/commit/11e4c79eecff281426c1f81d4c3a47353a951267))
-
-
-### Features
-
-* add an API ([dd2a3b0](https://github.com/onesoft-sudo/sudobot/commit/dd2a3b0a865422a274d7b4d32d2a068ed881695e))
-* **utils:** add developmentMode() function ([f3510a8](https://github.com/onesoft-sudo/sudobot/commit/f3510a8755a6a615237a63cd3de19f14075a8ce1))
 
 
 
