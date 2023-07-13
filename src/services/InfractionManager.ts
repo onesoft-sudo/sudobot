@@ -74,8 +74,6 @@ export const name = "infractionManager";
 
 export default class InfractionManager extends Service {
     private async sendDM(user: User, guild: Guild, { fields, description, actionDoneName, id, reason, color }: SendDMOptions) {
-        console.log(this.client.configManager.config[guild.id]);
-
         const internalFields: EmbedField[] = [
             ...(this.client.configManager.config[guild.id]!.infractions?.send_ids_to_user
                 ? [
