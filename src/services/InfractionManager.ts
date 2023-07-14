@@ -61,7 +61,7 @@ export type BulkDeleteMessagesOptions = CommonOptions & {
     messageChannel?: TextChannel;
 };
 
-export type ActionDoneName = "banned" | "muted" | "kicked" | "warned";
+export type ActionDoneName = "banned" | "muted" | "kicked" | "warned" | "unbanned" | "unmuted";
 
 export type SendDMOptions = {
     fields?: APIEmbedField[] | ((internalFields: APIEmbedField[]) => Promise<APIEmbedField[]> | APIEmbedField[]);
@@ -155,6 +155,34 @@ export default class InfractionManager extends Service {
                 deleteMessageSeconds
             });
 
+            return id;
+        } catch (e) {
+            logError(e);
+            return null;
+        }
+    }
+
+    async removeUserBan(user: User, { guild, moderator, reason }: CommonOptions & { user: User }) {
+        const { id } = await this.client.prisma.infraction.create({
+            data: {
+                type: "UNBAN",
+                userId: user.id,
+                guildId: guild.id,
+                reason,
+                moderatorId: moderator.id,
+            }
+        });
+
+        this.client.logger.logUserUnban({
+            moderator,
+            guild,
+            id: `${id}`,
+            user,
+            reason
+        });
+
+        try {
+            await guild.bans.remove(user);
             return id;
         } catch (e) {
             logError(e);

@@ -119,6 +119,18 @@ export default class LoggerService extends Service {
         });
     }
 
+    async logUserUnban({ moderator, user, reason, guild, id }: LogUserUnbanOptions) {
+        this.sendLogEmbed(guild, {
+            user,
+            title: 'A user was unbanned',
+            footerText: 'Unbanned',
+            reason: reason ?? null,
+            moderator,
+            id,
+            color: Colors.Green,
+        });
+    }
+
     async logMemberKick({ moderator, member, reason, guild, id }: CommonUserActionOptions & { member: GuildMember, reason?: string }) {
         this.sendLogEmbed(guild, {
             user: member.user,
@@ -182,6 +194,11 @@ export default class LoggerService extends Service {
 
 interface LogUserBanOptions extends BanOptions, CommonUserActionOptions {
     user: User;
+}
+
+interface LogUserUnbanOptions extends CommonUserActionOptions {
+    user: User;
+    reason?: string;
 }
 
 interface CommonUserActionOptions {
