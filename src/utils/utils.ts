@@ -140,5 +140,6 @@ export function isTextableChannel(channel: Channel | ThreadChannel, DMs = false)
 }
 
 export function developmentMode() {
-    return process.env.NODE_ENV !== "production" && process.env.SUDO_ENV !== "production";
+    return ['dev', 'development'].includes(process.env.NODE_ENV?.toLowerCase()!) ||
+        ['dev', 'development'].includes(process.env.SUDO_ENV?.toLowerCase()!);
 }
