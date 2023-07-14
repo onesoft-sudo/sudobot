@@ -1,3 +1,12 @@
+## [4.107.1](https://github.com/onesoft-sudo/sudobot/compare/v4.107.0...v4.107.1) (2023-07-14)
+
+
+### Bug Fixes
+
+* queue manager attempts to delete the same queue twice ([94bfbba](https://github.com/onesoft-sudo/sudobot/commit/94bfbba077ccad45434ad0c09f7a7f5c4daf0abf))
+
+
+
 # [4.107.0](https://github.com/onesoft-sudo/sudobot/compare/v4.106.0...v4.107.0) (2023-07-14)
 
 
@@ -50,15 +59,6 @@
 ### Features
 
 * **automod:** improved spam filter ([943f690](https://github.com/onesoft-sudo/sudobot/commit/943f690c3d112cfc763004171b2b630eff428407))
-
-
-
-# [4.103.0](https://github.com/onesoft-sudo/sudobot/compare/v4.102.0...v4.103.0) (2023-07-12)
-
-
-### Features
-
-* **automod:** add an anti-spam service ([6f286a6](https://github.com/onesoft-sudo/sudobot/commit/6f286a6c057bffdb854ded8c4c4d118ad7b8bf1a))
 
 
 
