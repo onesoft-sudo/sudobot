@@ -19,7 +19,7 @@
 
 import { ClientEvents } from "discord.js";
 import Event from "../core/Event";
-import { logInfo } from "../utils/logger";
+import { logError, logInfo } from "../utils/logger";
 
 export default class ReadyEvent extends Event {
     public name: keyof ClientEvents = 'ready';
@@ -27,5 +27,6 @@ export default class ReadyEvent extends Event {
     async execute() {
         logInfo("The bot has logged in.");
         this.client.server.start();
+        this.client.queueManager.onReady().catch(logError);
     }
 }
