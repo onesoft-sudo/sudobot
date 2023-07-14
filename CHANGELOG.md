@@ -1,3 +1,12 @@
+## [4.107.2](https://github.com/onesoft-sudo/sudobot/compare/v4.107.1...v4.107.2) (2023-07-14)
+
+
+### Bug Fixes
+
+* development mode toggling ([266cd8e](https://github.com/onesoft-sudo/sudobot/commit/266cd8eb53db8f511bf5ae372db22062ee1d1f86))
+
+
+
 ## [4.107.1](https://github.com/onesoft-sudo/sudobot/compare/v4.107.0...v4.107.1) (2023-07-14)
 
 
@@ -50,15 +59,6 @@
 
 * **automod:** customization of actions if spam is detected ([0c52594](https://github.com/onesoft-sudo/sudobot/commit/0c525943f23090300cfc65c5974cc5b90906d1bf))
 * **utils:** add an internal logger ([37b468b](https://github.com/onesoft-sudo/sudobot/commit/37b468bba8cfca4dcd4b719fede00435f17f2e57))
-
-
-
-# [4.104.0](https://github.com/onesoft-sudo/sudobot/compare/v4.103.0...v4.104.0) (2023-07-13)
-
-
-### Features
-
-* **automod:** improved spam filter ([943f690](https://github.com/onesoft-sudo/sudobot/commit/943f690c3d112cfc763004171b2b630eff428407))
 
 
 
