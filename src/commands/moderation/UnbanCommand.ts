@@ -69,7 +69,8 @@ export default class UnbanCommand extends Command {
                     actionDoneName: "unbanned",
                     description: `**${escapeMarkdown(user.tag)}** has been unbanned.`,
                     id: `${id}`,
-                    reason
+                    reason,
+                    color: "Green"
                 })
             ]
         });
