@@ -22,6 +22,7 @@ import fs from 'fs';
 import path from "path";
 import Service from "../utils/structures/Service";
 import { hasConfig } from "../utils/util";
+import { emoji } from "../utils/Emoji";
 
 export default class Welcomer extends Service {
     messages: string[] = JSON.parse(fs.readFileSync(path.resolve(process.env.SUDO_PREFIX ?? path.join(__dirname, '..', '..'), 'resources', 'welcome_messages.json')).toString());
@@ -72,7 +73,7 @@ export default class Welcomer extends Service {
                         new MessageButton()
                             .setCustomId(`say_hi__${member.user.id}`)
                             .setLabel('Say Hi')
-                            .setEmoji('👋')
+                            .setEmoji(emoji('wave')! as any)
                             .setStyle("SECONDARY")
                     )
             ]
