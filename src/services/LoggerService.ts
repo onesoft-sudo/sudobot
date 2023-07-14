@@ -171,6 +171,18 @@ export default class LoggerService extends Service {
             id,
             color: Colors.Gold,
         });
+
+    }
+    async logMemberUnmute({ moderator, member, reason, guild, id }: CommonUserActionOptions & { member: GuildMember, reason?: string }) {
+        this.sendLogEmbed(guild, {
+            user: member.user,
+            title: 'A member was unmuted',
+            footerText: 'Unmuted',
+            reason: reason ?? null,
+            moderator,
+            id,
+            color: Colors.Green,
+        });
     }
 
     async logBlockedWordOrToken({ guild, user, isToken, token, word, content }: BlockedTokenOrWordOptions) {

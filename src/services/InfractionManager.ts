@@ -32,7 +32,10 @@ import {
     User,
     escapeMarkdown
 } from "discord.js";
+import path from "path";
 import Service from "../core/Service";
+import UnmuteQueue from "../queues/UnmuteQueue";
+import QueueEntry from "../utils/QueueEntry";
 import { log, logError } from "../utils/logger";
 import { getEmoji } from "../utils/utils";
 
@@ -53,6 +56,7 @@ export type CreateMemberMuteOptions = CommonOptions & {
     messagesToDelete?: MessageResolvable[];
     messageChannel?: TextChannel;
     bulkDeleteReason?: string;
+    autoRemoveQueue?: boolean;
 };
 
 export type BulkDeleteMessagesOptions = CommonOptions & {
@@ -79,12 +83,12 @@ export default class InfractionManager extends Service {
         const internalFields: EmbedField[] = [
             ...(this.client.configManager.config[guild.id]!.infractions?.send_ids_to_user
                 ? [
-                      {
-                          name: "Infraction ID",
-                          value: `${id}`,
-                          inline: false
-                      }
-                  ]
+                    {
+                        name: "Infraction ID",
+                        value: `${id}`,
+                        inline: false
+                    }
+                ]
                 : [])
         ];
 
@@ -301,7 +305,7 @@ export default class InfractionManager extends Service {
 
     async createMemberMute(
         member: GuildMember,
-        { guild, moderator, reason, notifyUser, duration, messagesToDelete, messageChannel, bulkDeleteReason }: CreateMemberMuteOptions
+        { guild, moderator, reason, notifyUser, duration, messagesToDelete, messageChannel, bulkDeleteReason, sendLog, autoRemoveQueue }: CreateMemberMuteOptions
     ) {
         const mutedRole = this.client.configManager.config[guild.id]?.muting?.role;
 
@@ -316,6 +320,29 @@ export default class InfractionManager extends Service {
             return { error: "Failed to assign the muted role to this user. Make sure that I have enough permissions to do it." };
         }
 
+        if (autoRemoveQueue) {
+            for (const queue of this.client.queueManager.queues.values()) {
+                if (queue instanceof UnmuteQueue && queue.args[0] === member.user.id) {
+                    await this.client.queueManager.remove(queue);
+                }
+            }
+        }
+
+        let queueId: number | undefined;
+
+        if (duration) {
+            queueId = await this.client.queueManager.add(new QueueEntry({
+                args: [member.user.id],
+                guild,
+                client: this.client,
+                createdAt: new Date(),
+                filePath: path.resolve(__dirname, '../queues/UnmuteQueue'),
+                name: "UnmuteQueue",
+                userId: moderator.id,
+                willRunAt: new Date(Date.now() + duration),
+            }));
+        }
+
         const { id } = await this.client.prisma.infraction.create({
             data: {
                 type: "MUTE",
@@ -323,18 +350,21 @@ export default class InfractionManager extends Service {
                 guildId: guild.id,
                 reason,
                 moderatorId: moderator.id,
-                expiresAt: duration ? new Date(Date.now() + duration) : undefined
+                expiresAt: duration ? new Date(Date.now() + duration) : undefined,
+                queueId
             }
         });
 
-        this.client.logger.logMemberMute({
-            moderator,
-            member,
-            guild,
-            id: `${id}`,
-            duration,
-            reason
-        });
+        if (sendLog) {
+            this.client.logger.logMemberMute({
+                moderator,
+                member,
+                guild,
+                id: `${id}`,
+                duration,
+                reason
+            });
+        }
 
         this.bulkDeleteMessages({
             user: member.user,
@@ -362,6 +392,66 @@ export default class InfractionManager extends Service {
                         value: `${duration ? formatDistanceToNowStrict(new Date(Date.now() - duration)) : "*No duration set*"}`
                     }
                 ]
+            });
+        }
+
+        return { id, result };
+    }
+
+    async removeMemberMute(
+        member: GuildMember,
+        { guild, moderator, reason, notifyUser, autoRemoveQueue }: CommonOptions & { autoRemoveQueue?: boolean }
+    ): Promise<{ error?: string, result?: boolean, id?: number }> {
+        const mutedRole = this.client.configManager.config[guild.id]?.muting?.role;
+
+        if (!mutedRole) {
+            return { error: "Muted role is not configured, please set the muted role to perform this operation." };
+        }
+
+        try {
+            await member.roles.remove(mutedRole);
+        } catch (e) {
+            logError(e);
+            return { error: "Failed to remove the muted role to this user. Make sure that I have enough permissions to do it." };
+        }
+
+        if (autoRemoveQueue) {
+            log("Autoremove", this.client.queueManager.queues);
+
+            for (const queue of this.client.queueManager.queues.values()) {
+                if (queue.options.name === "UnmuteQueue" && queue.options.args[0] === member.user.id) {
+                    log("Called");
+                    await this.client.queueManager.remove(queue);
+                }
+            }
+        }
+
+        const { id } = await this.client.prisma.infraction.create({
+            data: {
+                type: "UNMUTE",
+                userId: member.user.id,
+                guildId: guild.id,
+                reason,
+                moderatorId: moderator.id,
+            }
+        });
+
+        this.client.logger.logMemberUnmute({
+            moderator,
+            member,
+            guild,
+            id: `${id}`,
+            reason
+        });
+
+        let result = !notifyUser;
+
+        if (notifyUser) {
+            result = await this.sendDM(member.user, guild, {
+                id,
+                actionDoneName: "unmuted",
+                reason,
+                color: "Green"
             });
         }
 
