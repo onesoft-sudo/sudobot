@@ -94,7 +94,7 @@ export default class MuteCommand extends Command {
         const { id, result, error } = await this.client.infractionManager.createMemberMute(member, {
             guild: message.guild!,
             moderator: message.member!.user as User,
-            notifyUser: true,
+            notifyUser: !context.isLegacy ? !context.options.getBoolean('silent') ?? true : true,
             reason,
             sendLog: true,
             duration: duration ? duration * 1000 : undefined        /* Convert the duration from seconds to milliseconds */
