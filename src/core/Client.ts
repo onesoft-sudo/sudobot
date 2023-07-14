@@ -28,6 +28,7 @@ import CommandManager from "../services/CommandManager";
 import ConfigManager from "../services/ConfigManager";
 import InfractionManager from "../services/InfractionManager";
 import LoggerService from "../services/LoggerService";
+import QueueManager from "../services/QueueManager";
 import { logInfo } from "../utils/logger";
 import Command from "./Command";
 import ServiceManager from "./ServiceManager";
@@ -45,6 +46,7 @@ export default class Client extends DiscordClient {
         "@services/LoggerService",
         "@automod/MessageFilter",
         "@automod/Antispam",
+        "@services/QueueManager",
     ];
 
     commandsDirectory = path.resolve(__dirname, "../commands");
@@ -58,6 +60,7 @@ export default class Client extends DiscordClient {
     logger: LoggerService = {} as LoggerService;
     messageFilter: MessageFilter = {} as MessageFilter;
     antispam: Antispam = {} as Antispam;
+    queueManager: QueueManager = {} as QueueManager;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",

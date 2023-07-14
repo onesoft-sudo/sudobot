@@ -31,7 +31,7 @@
     "email": "sudobot@onesoftnet.eu.org"
   },
   "dependencies": {
-    "@prisma/client": "^5.0.0",
+    "@prisma/client": "^4.16.2",
     "date-fns": "^2.30.0",
     "discord.js": "^14.11.0",
     "dotenv": "^16.3.1",
@@ -54,7 +54,7 @@
     "@types/express": "^4.17.17",
     "@types/node": "^20.4.0",
     "husky": "^8.0.3",
-    "prisma": "^5.0.0",
+    "prisma": "^4.16.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   }

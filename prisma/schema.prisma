@@ -31,15 +31,33 @@ model Infraction {
     metadata    Json?
     createdAt   DateTime       @default(now())
     updatedAt   DateTime       @default(now()) @updatedAt
+    queueId     Int?
 
     @@map("infractions")
 }
 
 model SpamRecord {
-    id       Int    @id @default(autoincrement())
-    user_id  String
-    guild_id String
-    level    Int    @default(1)
+    id        Int      @id @default(autoincrement())
+    user_id   String
+    guild_id  String
+    level     Int      @default(1)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
 
     @@map("spam_records")
+}
+
+model Queue {
+    id         Int      @id @default(autoincrement())
+    user_id    String
+    guild_id   String
+    channel_id String?
+    message_id String?
+    file_name  String
+    name       String
+    args       String[] @default([])
+    createdAt  DateTime @default(now())
+    willRunAt  DateTime
+
+    @@map("queues")
 }

@@ -1,4 +1,4 @@
-FROM node:20-buster
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -10,6 +10,10 @@ COPY package-lock.json .
 COPY tsconfig.json .
 COPY init.sh .
 COPY src ./src
+
+FROM node:20-alpine
+
+WORKDIR /app
 
 RUN npm ci --progress=false --no-audit --loglevel=error
 RUN npm run build
