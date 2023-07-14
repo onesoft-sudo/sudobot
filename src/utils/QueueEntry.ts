@@ -79,6 +79,6 @@ export default class QueueEntry {
 
         clearTimeout(this.timeout);
         this.timeout = undefined;
-        this.deleteDatabaseRecord().catch(console.error);
+        return this.deleteDatabaseRecord();
     }
 }

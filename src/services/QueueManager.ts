@@ -80,7 +80,7 @@ export default class QueueManager extends Service {
             await queue.creatingRecord;
 
         this.queues.delete(queue.id.toString());
-        queue.clearTimeout();
+        await queue.clearTimeout();
         return queue.id;
     }
 
@@ -90,6 +90,6 @@ export default class QueueManager extends Service {
         if (!queue)
             return null;
 
-        return this.remove(queue);
+        return await this.remove(queue);
     }
 }

@@ -321,8 +321,11 @@ export default class InfractionManager extends Service {
         }
 
         if (autoRemoveQueue) {
+            log("Autoremove", this.client.queueManager.queues);
+
             for (const queue of this.client.queueManager.queues.values()) {
-                if (queue instanceof UnmuteQueue && queue.args[0] === member.user.id) {
+                if (queue.options.name === "UnmuteQueue" && queue.options.guild.id === member.guild.id && queue.options.args[0] === member.user.id) {
+                    log("Called");
                     await this.client.queueManager.remove(queue);
                 }
             }
@@ -413,17 +416,6 @@ export default class InfractionManager extends Service {
         } catch (e) {
             logError(e);
             return { error: "Failed to remove the muted role to this user. Make sure that I have enough permissions to do it." };
-        }
-
-        if (autoRemoveQueue) {
-            log("Autoremove", this.client.queueManager.queues);
-
-            for (const queue of this.client.queueManager.queues.values()) {
-                if (queue.options.name === "UnmuteQueue" && queue.options.args[0] === member.user.id) {
-                    log("Called");
-                    await this.client.queueManager.remove(queue);
-                }
-            }
         }
 
         const { id } = await this.client.prisma.infraction.create({
