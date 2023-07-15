@@ -8,5 +8,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Prepare environment
+        run: echo "DEBUG=1" > .env.docker 
+
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag sudobot:$(date +%s)
