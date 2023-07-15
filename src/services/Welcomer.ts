@@ -98,10 +98,7 @@ export default class Welcomer extends Service {
         try {
             if (!messageId) {
                 await interaction.reply({
-                    content: interaction.user.id === memberId ? `<@${memberId}>, you said Hi to yourself!` : `<@${memberId}>, **${Util.escapeMarkdown(interaction.user.username)}** says Hi to you!`,
-                    allowedMentions: {
-                        users: []
-                    }
+                    content: interaction.user.id === memberId ? `<@${memberId}>, you said Hi to yourself!` : `<@${memberId}>, <@${interaction.user.id}> says Hi to you!`,
                 });
 
                 const reply = <Message> await interaction.fetchReply();
@@ -113,9 +110,6 @@ export default class Welcomer extends Service {
                     components: [
                         component
                     ],
-                    allowedMentions: {
-                        users: []
-                    }
                 });
 
                 messageId = reply.id;
@@ -127,10 +121,7 @@ export default class Welcomer extends Service {
                     throw new Error();
 
                 await message.edit({
-                    content: interaction.user.id === memberId ? `<@${memberId}>, you said Hi to yourself!` : `<@${memberId}>, **${Util.escapeMarkdown(interaction.user.username)}** says Hi to you!`,
-                    allowedMentions: {
-                        users: []
-                    }
+                    content: interaction.user.id === memberId ? `<@${memberId}>, you said Hi to yourself!` : `<@${memberId}>, <@${interaction.user.id}> says Hi to you!`,
                 });
 
                 await interaction.update({
