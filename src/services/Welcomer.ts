@@ -26,6 +26,7 @@ import { emoji } from "../utils/Emoji";
 
 export default class Welcomer extends Service {
     messages: string[] = JSON.parse(fs.readFileSync(path.resolve(process.env.SUDO_PREFIX ?? path.join(__dirname, '..', '..'), 'resources', 'welcome_messages.json')).toString());
+    updatingMessage: boolean = false;
 
     generateMessageOptions(member: GuildMember, index?: number) {
         const { message, randomize, embed } = this.client.config.props[member.guild.id].welcomer;
@@ -90,6 +91,14 @@ export default class Welcomer extends Service {
         if (!interaction.customId.startsWith("say_hi__"))
             return;
 
+        if (this.updatingMessage) {
+            await interaction.reply({
+                content: "Whoa there! That was too quick! Please try again in a second. I had to ratelimit this in order to prevent spam!"
+            }).catch(console.error);
+            
+            return;
+        } 
+
         let [, memberId, messageId] = interaction.customId.split('__');
 
         if (messageId)
@@ -97,11 +106,13 @@ export default class Welcomer extends Service {
 
         try {
             if (!messageId) {
-                await interaction.reply({
+                this.updatingMessage = true;
+
+                const reply = await interaction.reply({
                     content: interaction.user.id === memberId ? `<@${memberId}>, you said Hi to yourself!` : `<@${memberId}>, <@${interaction.user.id}> says Hi to you!`,
+                    fetchReply: true
                 });
 
-                const reply = <Message> await interaction.fetchReply();
                 const component = this.createComponent(memberId);
 
                 component.components[0].setCustomId(`say_hi__${memberId}__${reply.id}`);
@@ -113,6 +124,7 @@ export default class Welcomer extends Service {
                 });
 
                 messageId = reply.id;
+                this.updatingMessage = false;
             }
             else {
                 const message = await interaction.channel!.messages.fetch(messageId);
@@ -130,6 +142,7 @@ export default class Welcomer extends Service {
             }
         }
         catch (e) {
+            this.updatingMessage = false;
             console.log(e);
             return;
         }
