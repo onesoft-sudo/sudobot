@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { GuildMember, MessageActionRow, MessageButton, MessageEmbed, TextChannel } from "discord.js";
+import { ButtonInteraction, GuildMember, MessageActionRow, MessageButton, MessageEmbed, TextChannel, Util, Message } from "discord.js";
 import fs from 'fs';
 import path from "path";
 import Service from "../utils/structures/Service";
@@ -68,16 +68,80 @@ export default class Welcomer extends Service {
                     .setTimestamp()
             ] : [],
             components: [
-                new MessageActionRow<MessageButton>()
-                    .addComponents(
-                        new MessageButton()
-                            .setCustomId(`say_hi__${member.user.id}`)
-                            .setLabel('Say Hi')
-                            .setEmoji(emoji('wave')! as any)
-                            .setStyle("SECONDARY")
-                    )
+                this.createComponent(member.user.id)
             ]
         };
+    }
+
+    createComponent(memberId: string) {
+        return new MessageActionRow<MessageButton>()
+                .addComponents(
+                    new MessageButton()
+                        .setCustomId(`say_hi__${memberId}`)
+                        .setLabel('Say Hi')
+                        .setEmoji(emoji('wave')! as any)
+                        .setStyle("SECONDARY")
+                );
+    }
+
+    async onButtonInteraction(interaction: ButtonInteraction) {
+        console.log(interaction.customId);
+
+        if (!interaction.customId.startsWith("say_hi__"))
+            return;
+
+        let [, memberId, messageId] = interaction.customId.split('__');
+
+        if (messageId)
+            await interaction.deferUpdate();
+
+        try {
+            if (!messageId) {
+                await interaction.reply({
+                    content: interaction.user.id === memberId ? `<@${memberId}>, you said Hi to yourself!` : `<@${memberId}>, **${Util.escapeMarkdown(interaction.user.username)}** says Hi to you!`,
+                    allowedMentions: {
+                        users: []
+                    }
+                });
+
+                const reply = <Message> await interaction.fetchReply();
+                const component = this.createComponent(memberId);
+
+                component.components[0].setCustomId(`say_hi__${memberId}__${reply.id}`);
+                
+                await (interaction.message as Message).edit({
+                    components: [
+                        component
+                    ],
+                    allowedMentions: {
+                        users: []
+                    }
+                });
+
+                messageId = reply.id;
+            }
+            else {
+                const message = await interaction.channel!.messages.fetch(messageId);
+                
+                if (!message)
+                    throw new Error();
+
+                await message.edit({
+                    content: interaction.user.id === memberId ? `<@${memberId}>, you said Hi to yourself!` : `<@${memberId}>, **${Util.escapeMarkdown(interaction.user.username)}** says Hi to you!`,
+                    allowedMentions: {
+                        users: []
+                    }
+                });
+
+                await interaction.update({
+                    content: interaction.message.content
+                });
+            }
+        }
+        catch (e) {
+            console.log(e);
+            return;
+        }
     }
 
     async start(member: GuildMember, index?: number) {

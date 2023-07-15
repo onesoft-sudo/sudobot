@@ -53,15 +53,7 @@ export default class InteractionCreateEvent extends BaseEvent {
 
         if (interaction.isButton()) {
             if (interaction.customId.startsWith('say_hi__')) {
-                const [, id] = interaction.customId.split('__');
-
-                await interaction.reply({
-                    content: `<@${id}>, ${interaction.user.toString()} says hi to you!`,
-                    allowedMentions: {
-                        users: []
-                    }
-                });
-
+                await client.welcomer.onButtonInteraction(interaction);
                 return;
             }
 
