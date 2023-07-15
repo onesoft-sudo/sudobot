@@ -1,0 +1,20 @@
+services:
+    web:
+        build: .
+        ports:
+            - 4000
+    postgres:
+        image: "postgres:15-alpine"
+        restart: always
+        environment:  
+            POSTGRES_PASSWORD: root
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+    
+volumes:
+    pgdata:    
+    adminer:
+        image: adminer
+        restart: always
+        ports:
+            - 8080:8080
