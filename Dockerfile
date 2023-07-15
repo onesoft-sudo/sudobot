@@ -2,10 +2,9 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-RUN rm -f .env
 COPY .env.docker ./.env
 COPY package.json .
-RUN npm install --dev
+RUN npm install -D
 
 COPY tsconfig.json .
 COPY src ./src
