@@ -1,24 +1,38 @@
 /**
-* This file is part of SudoBot.
-* 
-* Copyright (C) 2021-2023 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by 
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-* 
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License 
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2023 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 import { formatDistanceToNowStrict } from "date-fns";
-import { APIEmbedField, BanOptions, ColorResolvable, Colors, EmbedBuilder, EmbedData, Guild, GuildMember, MessageCreateOptions, MessagePayload, User, escapeMarkdown } from "discord.js";
+import {
+    APIEmbedField,
+    BanOptions,
+    ColorResolvable,
+    Colors,
+    EmbedBuilder,
+    EmbedData,
+    Guild,
+    GuildMember,
+    MessageCreateOptions,
+    MessagePayload,
+    TextChannel,
+    User,
+    escapeMarkdown
+} from "discord.js";
 import Service from "../core/Service";
 import { logError } from "../utils/logger";
 import { isTextableChannel } from "../utils/utils";
@@ -30,18 +44,15 @@ export default class LoggerService extends Service {
         const channelId = this.client.configManager.config[guild.id]?.logging?.primary_channel;
         const enabled = this.client.configManager.config[guild.id]?.logging?.enabled;
 
-        if (!enabled || !channelId)
-            return null;
+        if (!enabled || !channelId) return null;
 
         try {
             const channel = await guild.channels.fetch(channelId);
 
-            if (!channel || !isTextableChannel(channel))
-                return null;
+            if (!channel || !isTextableChannel(channel)) return null;
 
             return await channel.send(options);
-        }
-        catch (e) {
+        } catch (e) {
             logError(e);
             return null;
         }
@@ -50,53 +61,61 @@ export default class LoggerService extends Service {
     private createLogEmbed({ options, title, user, fields, footerText, timestamp, moderator, reason, id, color }: CreateLogEmbedOptions) {
         const embed = new EmbedBuilder({
             title,
-            author: user ? {
-                name: user.tag,
-                iconURL: user.displayAvatarURL()
-            } : undefined,
-            fields: moderator || fields ? [
-                ...(reason !== undefined ? [
-                    {
-                        name: 'Reason',
-                        value: `${reason ?? '*No reason provided*'}`
-                    }
-                ] : []),
-                ...(fields ?? []),
-                ...(moderator ? [
-                    {
-                        name: 'Responsible Moderator',
-                        value: `${moderator.tag} (${moderator.id})`
-                    }
-                ] : []),
-                ...(id ? [
-                    {
-                        name: 'Infraction ID',
-                        value: `${id}`
-                    }
-                ] : []),
-            ] : undefined,
-            footer: footerText ? {
-                text: footerText
-            } : undefined,
+            author: user
+                ? {
+                      name: user.tag,
+                      iconURL: user.displayAvatarURL()
+                  }
+                : undefined,
+            fields:
+                moderator || fields
+                    ? [
+                          ...(reason !== undefined
+                              ? [
+                                    {
+                                        name: "Reason",
+                                        value: `${reason ?? "*No reason provided*"}`
+                                    }
+                                ]
+                              : []),
+                          ...(fields ?? []),
+                          ...(moderator
+                              ? [
+                                    {
+                                        name: "Responsible Moderator",
+                                        value: moderator.id === this.client.user?.id ? "System" : `${moderator.tag} (${moderator.id})`
+                                    }
+                                ]
+                              : []),
+                          ...(id
+                              ? [
+                                    {
+                                        name: "Infraction ID",
+                                        value: `${id}`
+                                    }
+                                ]
+                              : [])
+                      ]
+                    : undefined,
+            footer: footerText
+                ? {
+                      text: footerText
+                  }
+                : undefined,
             ...options
         });
 
-        if (timestamp === undefined)
-            embed.setTimestamp();
-        else if (timestamp)
-            embed.setTimestamp(timestamp);
+        if (timestamp === undefined) embed.setTimestamp();
+        else if (timestamp) embed.setTimestamp(timestamp);
 
-        if (color)
-            embed.setColor(color);
+        if (color) embed.setColor(color);
 
         return embed;
     }
 
     private async sendLogEmbed(guild: Guild, options: CreateLogEmbedOptions, extraOptions?: MessagePayload | MessageCreateOptions) {
         return await this.send(guild, {
-            embeds: [
-                this.createLogEmbed(options)
-            ],
+            embeds: [this.createLogEmbed(options)],
             ...((extraOptions as any) ?? {})
         });
     }
@@ -104,8 +123,8 @@ export default class LoggerService extends Service {
     async logUserBan({ moderator, user, deleteMessageSeconds, reason, guild, id }: LogUserBanOptions) {
         this.sendLogEmbed(guild, {
             user,
-            title: 'A user was banned',
-            footerText: 'Banned',
+            title: "A user was banned",
+            footerText: "Banned",
             reason: reason ?? null,
             moderator,
             id,
@@ -113,7 +132,9 @@ export default class LoggerService extends Service {
             fields: [
                 {
                     name: "Message Deletion Timeframe",
-                    value: deleteMessageSeconds ? formatDistanceToNowStrict(new Date(Date.now() - (deleteMessageSeconds * 1000))) : "*No timeframe provided*"
+                    value: deleteMessageSeconds
+                        ? formatDistanceToNowStrict(new Date(Date.now() - deleteMessageSeconds * 1000))
+                        : "*No timeframe provided*"
                 }
             ]
         });
@@ -122,20 +143,20 @@ export default class LoggerService extends Service {
     async logUserUnban({ moderator, user, reason, guild, id }: LogUserUnbanOptions) {
         this.sendLogEmbed(guild, {
             user,
-            title: 'A user was unbanned',
-            footerText: 'Unbanned',
+            title: "A user was unbanned",
+            footerText: "Unbanned",
             reason: reason ?? null,
             moderator,
             id,
-            color: Colors.Green,
+            color: Colors.Green
         });
     }
 
-    async logMemberKick({ moderator, member, reason, guild, id }: CommonUserActionOptions & { member: GuildMember, reason?: string }) {
+    async logMemberKick({ moderator, member, reason, guild, id }: CommonUserActionOptions & { member: GuildMember; reason?: string }) {
         this.sendLogEmbed(guild, {
             user: member.user,
-            title: 'A member was kicked',
-            footerText: 'Kicked',
+            title: "A member was kicked",
+            footerText: "Kicked",
             reason: reason ?? null,
             moderator,
             id,
@@ -143,11 +164,18 @@ export default class LoggerService extends Service {
         });
     }
 
-    async logMemberMute({ moderator, member, reason, guild, id, duration }: CommonUserActionOptions & { member: GuildMember, reason?: string, duration?: number }) {
+    async logMemberMute({
+        moderator,
+        member,
+        reason,
+        guild,
+        id,
+        duration
+    }: CommonUserActionOptions & { member: GuildMember; reason?: string; duration?: number }) {
         this.sendLogEmbed(guild, {
             user: member.user,
-            title: 'A member was muted',
-            footerText: 'Muted',
+            title: "A member was muted",
+            footerText: "Muted",
             reason: reason ?? null,
             moderator,
             id,
@@ -161,27 +189,57 @@ export default class LoggerService extends Service {
         });
     }
 
-    async logMemberWarning({ moderator, member, reason, guild, id }: CommonUserActionOptions & { member: GuildMember, reason?: string }) {
+    async logMemberWarning({ moderator, member, reason, guild, id }: CommonUserActionOptions & { member: GuildMember; reason?: string }) {
         this.sendLogEmbed(guild, {
             user: member.user,
-            title: 'A member was warned',
-            footerText: 'Warned',
+            title: "A member was warned",
+            footerText: "Warned",
             reason: reason ?? null,
             moderator,
             id,
-            color: Colors.Gold,
+            color: Colors.Gold
         });
-
     }
-    async logMemberUnmute({ moderator, member, reason, guild, id }: CommonUserActionOptions & { member: GuildMember, reason?: string }) {
+
+    async logBulkDeleteMessages({
+        moderator,
+        user,
+        reason,
+        guild,
+        id,
+        count,
+        channel
+    }: CommonUserActionOptions & { user: User; reason?: string; count: number; channel: TextChannel }) {
         this.sendLogEmbed(guild, {
-            user: member.user,
-            title: 'A member was unmuted',
-            footerText: 'Unmuted',
+            user,
+            title: "Messages deleted in bulk",
+            footerText: "Deleted",
             reason: reason ?? null,
             moderator,
             id,
-            color: Colors.Green,
+            color: Colors.DarkRed,
+            fields: [
+                {
+                    name: "Deleted Message Count",
+                    value: `${count}`
+                },
+                {
+                    name: "Channel",
+                    value: `${channel.toString()} (${channel.id})`
+                }
+            ]
+        });
+    }
+
+    async logMemberUnmute({ moderator, member, reason, guild, id }: CommonUserActionOptions & { member: GuildMember; reason?: string }) {
+        this.sendLogEmbed(guild, {
+            user: member.user,
+            title: "A member was unmuted",
+            footerText: "Unmuted",
+            reason: reason ?? null,
+            moderator,
+            id,
+            color: Colors.Green
         });
     }
 
@@ -198,7 +256,7 @@ export default class LoggerService extends Service {
                 }
             ],
             options: {
-                description: `${content}`,
+                description: `${content}`
             }
         });
     }

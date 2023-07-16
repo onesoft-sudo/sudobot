@@ -34,7 +34,6 @@ import {
 } from "discord.js";
 import path from "path";
 import Service from "../core/Service";
-import UnmuteQueue from "../queues/UnmuteQueue";
 import QueueEntry from "../utils/QueueEntry";
 import { log, logError } from "../utils/logger";
 import { getEmoji } from "../utils/utils";
@@ -83,12 +82,12 @@ export default class InfractionManager extends Service {
         const internalFields: EmbedField[] = [
             ...(this.client.configManager.config[guild.id]!.infractions?.send_ids_to_user
                 ? [
-                    {
-                        name: "Infraction ID",
-                        value: `${id}`,
-                        inline: false
-                    }
-                ]
+                      {
+                          name: "Infraction ID",
+                          value: `${id}`,
+                          inline: false
+                      }
+                  ]
                 : [])
         ];
 
@@ -173,7 +172,7 @@ export default class InfractionManager extends Service {
                 userId: user.id,
                 guildId: guild.id,
                 reason,
-                moderatorId: moderator.id,
+                moderatorId: moderator.id
             }
         });
 
@@ -264,10 +263,7 @@ export default class InfractionManager extends Service {
         return { id, result };
     }
 
-    async bulkDeleteMessages({ user, messagesToDelete, messageChannel }: BulkDeleteMessagesOptions) {
-        // TODO: Create a new record in the database for this action
-        // TODO: Send a moderatiom log to the logging channel
-
+    async bulkDeleteMessages({ user, messagesToDelete, messageChannel, guild, moderator, reason, sendLog }: BulkDeleteMessagesOptions) {
         if (messageChannel && !(messagesToDelete && messagesToDelete.length === 0)) {
             let messages: Collection<string, Message> | MessageResolvable[] | null = messagesToDelete ?? null;
 
@@ -284,6 +280,33 @@ export default class InfractionManager extends Service {
             }
 
             const count = messages ? (messages instanceof Collection ? messages.size : messages.length) : 0;
+
+            const { id } = await this.client.prisma.infraction.create({
+                data: {
+                    type: "BULKDELETEMSG",
+                    guildId: guild.id,
+                    moderatorId: moderator.id,
+                    userId: user.id,
+                    metadata: {
+                        count
+                    },
+                    reason
+                }
+            });
+
+            if (sendLog) {
+                this.client.logger
+                    .logBulkDeleteMessages({
+                        channel: messageChannel,
+                        count,
+                        guild,
+                        id: `${id}`,
+                        user,
+                        moderator,
+                        reason
+                    })
+                    .catch(logError);
+            }
 
             if (messages && count > 0) {
                 try {
@@ -305,7 +328,18 @@ export default class InfractionManager extends Service {
 
     async createMemberMute(
         member: GuildMember,
-        { guild, moderator, reason, notifyUser, duration, messagesToDelete, messageChannel, bulkDeleteReason, sendLog, autoRemoveQueue }: CreateMemberMuteOptions
+        {
+            guild,
+            moderator,
+            reason,
+            notifyUser,
+            duration,
+            messagesToDelete,
+            messageChannel,
+            bulkDeleteReason,
+            sendLog,
+            autoRemoveQueue
+        }: CreateMemberMuteOptions
     ) {
         const mutedRole = this.client.configManager.config[guild.id]?.muting?.role;
 
@@ -334,16 +368,18 @@ export default class InfractionManager extends Service {
         let queueId: number | undefined;
 
         if (duration) {
-            queueId = await this.client.queueManager.add(new QueueEntry({
-                args: [member.user.id],
-                guild,
-                client: this.client,
-                createdAt: new Date(),
-                filePath: path.resolve(__dirname, '../queues/UnmuteQueue'),
-                name: "UnmuteQueue",
-                userId: moderator.id,
-                willRunAt: new Date(Date.now() + duration),
-            }));
+            queueId = await this.client.queueManager.add(
+                new QueueEntry({
+                    args: [member.user.id],
+                    guild,
+                    client: this.client,
+                    createdAt: new Date(),
+                    filePath: path.resolve(__dirname, "../queues/UnmuteQueue"),
+                    name: "UnmuteQueue",
+                    userId: moderator.id,
+                    willRunAt: new Date(Date.now() + duration)
+                })
+            );
         }
 
         const { id } = await this.client.prisma.infraction.create({
@@ -404,7 +440,7 @@ export default class InfractionManager extends Service {
     async removeMemberMute(
         member: GuildMember,
         { guild, moderator, reason, notifyUser, autoRemoveQueue }: CommonOptions & { autoRemoveQueue?: boolean }
-    ): Promise<{ error?: string, result?: boolean, id?: number }> {
+    ): Promise<{ error?: string; result?: boolean; id?: number }> {
         const mutedRole = this.client.configManager.config[guild.id]?.muting?.role;
 
         if (!mutedRole) {
@@ -424,7 +460,7 @@ export default class InfractionManager extends Service {
                 userId: member.user.id,
                 guildId: guild.id,
                 reason,
-                moderatorId: moderator.id,
+                moderatorId: moderator.id
             }
         });
 
