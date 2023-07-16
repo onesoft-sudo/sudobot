@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { Infraction } from "@prisma/client";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
     APIEmbedField,
@@ -30,7 +31,9 @@ import {
     MessageResolvable,
     TextChannel,
     User,
-    escapeMarkdown
+    escapeCodeBlock,
+    escapeMarkdown,
+    time
 } from "discord.js";
 import path from "path";
 import Service from "../core/Service";
@@ -78,6 +81,88 @@ export type SendDMOptions = {
 export const name = "infractionManager";
 
 export default class InfractionManager extends Service {
+    generateInfractionDetailsEmbed(user: User | null, infraction: Infraction) {
+        let metadataString = "";
+
+        if (infraction.metadata && typeof infraction.metadata === "object") {
+            metadataString += "```\n";
+
+            for (const [key, value] of Object.entries(infraction.metadata as Record<string, string>)) {
+                log(key, value);
+                metadataString += `${key}: ${escapeCodeBlock(`${value}`)}\n`;
+            }
+
+            metadataString += "\n```";
+        }
+
+        return new EmbedBuilder({
+            author: {
+                name: user?.username ?? "Unknown User",
+                iconURL: user?.displayAvatarURL() ?? undefined
+            },
+            color: 0x007bff,
+            fields: [
+                {
+                    name: "ID",
+                    value: infraction.id.toString(),
+                    inline: true
+                },
+                {
+                    name: "Action Type",
+                    value:
+                        infraction.type === "BULKDELETEMSG" ? "Bulk message delete" : infraction.type[0] + infraction.type.substring(1).toLowerCase(),
+                    inline: true
+                },
+                ...(infraction.queueId
+                    ? [
+                          {
+                              name: "Associated Queue ID",
+                              value: infraction.queueId.toString(),
+                              inline: true
+                          }
+                      ]
+                    : []),
+                {
+                    name: "User",
+                    value: `${user?.username ?? `<@${infraction.userId}>`} (${infraction.userId})`
+                },
+                {
+                    name: "Responsible Moderator",
+                    value: `<@${infraction.moderatorId}> (${infraction.moderatorId})`,
+                    inline: true
+                },
+                {
+                    name: "Metadata",
+                    value: metadataString === "" ? "*No metadata available*" : metadataString
+                },
+                {
+                    name: "Reason",
+                    value: infraction.reason ?? "*No reason provided*"
+                },
+
+                {
+                    name: "Created At",
+                    value: `${infraction.createdAt.toLocaleString()} (${time(infraction.createdAt)})`,
+                    inline: true
+                },
+                {
+                    name: "Updated At",
+                    value: `${infraction.updatedAt.toLocaleString()} (${time(infraction.updatedAt)})`,
+                    inline: true
+                },
+                ...(infraction.expiresAt
+                    ? [
+                          {
+                              name: `Expire${infraction.expiresAt.getTime() <= Date.now() ? "d" : "s"} At`,
+                              value: `${infraction.expiresAt.toLocaleString()} (${time(infraction.expiresAt)})`,
+                              inline: true
+                          }
+                      ]
+                    : [])
+            ]
+        }).setTimestamp();
+    }
+
     private async sendDM(user: User, guild: Guild, { fields, description, actionDoneName, id, reason, color }: SendDMOptions) {
         const internalFields: EmbedField[] = [
             ...(this.client.configManager.config[guild.id]!.infractions?.send_ids_to_user
