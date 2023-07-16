@@ -512,10 +512,11 @@ let commands = [
 				.addIntegerOption(option => option.setName('id').setDescription("The infraction ID").setRequired(true))	
 		)
 		.addSubcommand(subcommand => 
-			subcommand.setName('reasonupdate').setDescription("Update reason of an infraction")
+			subcommand.setName('edit').setDescription("Update reason of an infraction")
 				.addIntegerOption(option => option.setName('id').setDescription("The infraction ID").setRequired(true))	
-				.addStringOption(option => option.setName('reason').setDescription("New reason to set").setRequired(true))	
-				.addBooleanOption(option => option.setName('silent').setDescription("Specify if the bot should not let the user know about this"))	
+				.addStringOption(option => option.setName('new_reason').setDescription("New reason to set"))	
+				.addStringOption(option => option.setName('new_duration').setDescription("New duration to set"))	
+				.addBooleanOption(option => option.setName('silent').setDescription("Specify if the bot should not let the user know about this, defaults to true"))	
 		)
 		.addSubcommand(subcommand => 
 			subcommand.setName('delete').setDescription("Delete an infraction")
