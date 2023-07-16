@@ -27,6 +27,7 @@ import { emoji } from "../utils/Emoji";
 export default class Welcomer extends Service {
     messages: string[] = JSON.parse(fs.readFileSync(path.resolve(process.env.SUDO_PREFIX ?? path.join(__dirname, '..', '..'), 'resources', 'welcome_messages.json')).toString());
     updatingMessage: boolean = false;
+    lastUpdate = Date.now();
 
     generateMessageOptions(member: GuildMember, index?: number) {
         const { message, randomize, embed } = this.client.config.props[member.guild.id].welcomer;
@@ -91,9 +92,10 @@ export default class Welcomer extends Service {
         if (!interaction.customId.startsWith("say_hi__"))
             return;
 
-        if (this.updatingMessage) {
+        if (this.updatingMessage || Date.now() - this.lastUpdate <= 800) {
             await interaction.reply({
-                content: "Whoa there! That was too quick! Please try again in a second. I had to ratelimit this in order to prevent spam!"
+                content: "Whoa there! That was too quick! Please try again in a second. I had to ratelimit this in order to prevent spam!",
+                ephemeral: true
             }).catch(console.error);
             
             return;
@@ -109,7 +111,7 @@ export default class Welcomer extends Service {
                 this.updatingMessage = true;
 
                 const reply = await interaction.reply({
-                    content: interaction.user.id === memberId ? `<@${memberId}>, you said Hi to yourself!` : `<@${memberId}>, <@${interaction.user.id}> says Hi to you!`,
+                    content: `<@${memberId}>, the following users have said Hi to you:\n\n${interaction.user.id === memberId ? "* You!" : `* <@${interaction.user.id}>`}`,
                     fetchReply: true
                 });
 
@@ -132,8 +134,20 @@ export default class Welcomer extends Service {
                 if (!message)
                     throw new Error();
 
+                if (
+                    (interaction.user.id === memberId && message.content.includes("* You")) ||
+                    (interaction.user.id !== memberId && message.content.includes(`* <@${interaction.user.id}>`))
+                ) {
+                    await interaction.followUp({
+                        content: "You've already greeted the user!",
+                        ephemeral: true
+                    });
+
+                    return;
+                }
+
                 await message.edit({
-                    content: interaction.user.id === memberId ? `<@${memberId}>, you said Hi to yourself!` : `<@${memberId}>, <@${interaction.user.id}> says Hi to you!`,
+                    content: message.content + "\n" + (interaction.user.id === memberId ? `* You!` : `* <@${interaction.user.id}>`),
                 });
 
                 await interaction.update({
@@ -146,6 +160,8 @@ export default class Welcomer extends Service {
             console.log(e);
             return;
         }
+
+        this.lastUpdate = Date.now();
     }
 
     async start(member: GuildMember, index?: number) {
