@@ -26,8 +26,13 @@ const zSnowflake = z.custom<string>((data) => {
 
 export const GuildConfigSchema = z.object({
     prefix: z.string(),
-    mod_role: z.string().optional(),
-    admin_role: z.string().optional(),
+    permissions: z
+        .object({
+            mod_role: zSnowflake.optional(),
+            admin_role: zSnowflake.optional()
+        })
+        .optional()
+        .default({}),
     infractions: z
         .object({
             send_ids_to_user: z.boolean().default(true)
@@ -79,14 +84,16 @@ export const GuildConfigSchema = z.object({
             limit: z.number().int().default(-1).optional(),
             timeframe: z.number().int().default(-1).optional(),
             mute_duration: z.number().int().default(-1).optional(),
-            action: z.union([
-                z.literal("verbal_warn"), 
-                z.literal("warn"), 
-                z.literal("warn"), 
-                z.literal("mute"), 
-                z.literal("mute_clear"), 
-                z.literal("auto")
-            ]).optional()
+            action: z
+                .union([
+                    z.literal("verbal_warn"),
+                    z.literal("warn"),
+                    z.literal("warn"),
+                    z.literal("mute"),
+                    z.literal("mute_clear"),
+                    z.literal("auto")
+                ])
+                .optional()
         })
         .optional()
 });

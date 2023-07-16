@@ -17,11 +17,11 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { GuildMember, Message, TextChannel } from "discord.js";
+import { GuildMember, Message, PermissionFlagsBits, TextChannel } from "discord.js";
 import Service from "../core/Service";
 import { GuildConfig } from "../types/GuildConfigSchema";
 import { log, logError } from "../utils/logger";
-import { isTextableChannel } from "../utils/utils";
+import { isImmuneToAutoMod, isTextableChannel } from "../utils/utils";
 
 interface SpamUserInfo {
     timestamps: number[];
@@ -67,31 +67,30 @@ export default class Antispam extends Service {
     }
 
     async verballyWarnUser(message: Message) {
-        await message.channel.send({
-            content: `Hey ${message.author.toString()}, don't spam here!`
-        }).catch(logError);
+        await message.channel
+            .send({
+                content: `Hey ${message.author.toString()}, don't spam here!`
+            })
+            .catch(logError);
     }
 
     async takeAction(message: Message) {
         log("Triggered");
-        
+
         const { antispam } = this.client.configManager.config[message.guildId!];
 
         if (antispam?.action === "mute_clear" || antispam?.action === "mute") {
             await this.muteUser(message, antispam);
-        } 
-        else if (antispam?.action === "warn") {
+        } else if (antispam?.action === "warn") {
             await this.warnUser(message, antispam);
-        } 
-        else if (antispam?.action === "verbal_warn") {
+        } else if (antispam?.action === "verbal_warn") {
             await this.verballyWarnUser(message);
-        }
-        else if (antispam?.action === "auto") {
+        } else if (antispam?.action === "auto") {
             let record = await this.client.prisma.spamRecord.findFirst({
                 where: {
                     guild_id: message.guildId!,
-                    user_id: message.author.id,
-                },
+                    user_id: message.author.id
+                }
             });
 
             if (!record) {
@@ -102,8 +101,7 @@ export default class Antispam extends Service {
                         level: 1
                     }
                 });
-            }
-            else {
+            } else {
                 await this.client.prisma.spamRecord.update({
                     data: {
                         level: {
@@ -117,20 +115,17 @@ export default class Antispam extends Service {
             }
 
             if (record.level === 1) {
-                await this.verballyWarnUser(message); 
-            }
-            else if (record.level === 2) {
-                await this.warnUser(message, antispam); 
-            }
-            else {
-                await this.muteUser(message, antispam); 
+                await this.verballyWarnUser(message);
+            } else if (record.level === 2) {
+                await this.warnUser(message, antispam);
+            } else {
+                await this.muteUser(message, antispam);
             }
         }
     }
 
     async onMessageCreate(message: Message) {
-        if (!isTextableChannel(message.channel)) 
-            return;
+        if (!isTextableChannel(message.channel)) return;
 
         const config = this.client.configManager.config[message.guildId!];
 
@@ -141,6 +136,10 @@ export default class Antispam extends Service {
             config.antispam.limit < 1 ||
             config.antispam.timeframe < 1
         ) {
+            return;
+        }
+
+        if (isImmuneToAutoMod(this.client, message.member!, PermissionFlagsBits.ManageMessages)) {
             return;
         }
 
