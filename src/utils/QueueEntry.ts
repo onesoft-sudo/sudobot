@@ -8,15 +8,13 @@ export default class QueueEntry {
     public readonly creatingRecord: Promise<void> | undefined;
 
     constructor(public readonly options: QueueConstructorOptions) {
-        if (options.id)
-            this.id = options.id;
-        else
-            this.creatingRecord = this.createDatabaseRecord().catch(logError);
+        if (options.id) this.id = options.id;
+        else this.creatingRecord = this.createDatabaseRecord().catch(logError);
 
         log(options.filePath);
     }
 
-    private async createDatabaseRecord() {
+    async createDatabaseRecord() {
         const { id } = await this.options.client.prisma.queue.create({
             data: {
                 channel_id: this.options.channelId,
@@ -33,16 +31,30 @@ export default class QueueEntry {
         this.id = id;
     }
 
-    private async deleteDatabaseRecord() {
+    async updateTime(time: Date) {
+        await this.clearTimeout(false);
+        this.options.willRunAt = time;
+
+        await this.options.client.prisma.queue.update({
+            where: {
+                id: this.options.id
+            },
+            data: {
+                willRunAt: time
+            }
+        });
+
+        this.setTimeout();
+    }
+
+    async deleteDatabaseRecord() {
         log("Deleting", this.id);
 
-        await this.options.client.prisma.queue.delete({
+        return await this.options.client.prisma.queue.delete({
             where: {
                 id: this.id
             }
         });
-
-        log("Deleted");
     }
 
     async run(): Promise<any> {
@@ -51,8 +63,7 @@ export default class QueueEntry {
             const { default: QueueClass }: { default: new (options: QueueConstructorOptions) => Queue } = await import(this.options.filePath);
             const queue = new QueueClass(this.options);
             await queue.run(...this.options.args);
-        }
-        catch (e) {
+        } catch (e) {
             logError(e);
             logError("Error occurred during running the queue.");
         }
@@ -65,20 +76,20 @@ export default class QueueEntry {
 
         this.timeout = setTimeout(() => {
             this.run().catch(console.error);
-            this.deleteDatabaseRecord().catch(console.error);
+            this.deleteDatabaseRecord().catch(logError);
         }, this.options.willRunAt.getTime() - Date.now());
     }
 
-    clearTimeout() {
+    clearTimeout(deleteRecord: boolean = false) {
         log(this.timeout);
 
-        if (this.timeout === undefined)
-            return;
+        if (this.timeout === undefined) return;
 
         log("Queue timeout cleared: ", path.basename(this.options.filePath));
 
         clearTimeout(this.timeout);
         this.timeout = undefined;
-        return this.deleteDatabaseRecord();
+
+        if (deleteRecord) return this.deleteDatabaseRecord();
     }
 }
