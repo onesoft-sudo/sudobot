@@ -10,8 +10,8 @@ COPY tsconfig.json .
 COPY src ./src
 COPY prisma ./prisma
 
-RUN npm run build
 RUN npx prisma generate
+RUN npm run build
 RUN npm prune --production
 
 EXPOSE 4000
