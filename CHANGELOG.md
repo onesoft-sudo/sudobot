@@ -1,3 +1,21 @@
+# [4.109.0](https://github.com/onesoft-sudo/sudobot/compare/v4.108.0...v4.109.0) (2023-07-16)
+
+
+### Bug Fixes
+
+* **queues:** queues persist between restarts even after expiring ([d47ff46](https://github.com/onesoft-sudo/sudobot/commit/d47ff4661d3597504686e751007c65f92374eee3))
+
+
+### Features
+
+* **client:** add fetchUserSafe() function that does not throw an error ([6e072fa](https://github.com/onesoft-sudo/sudobot/commit/6e072fad918c405feb9023d139a845d980bc1617))
+* **commands:** add infraction management commands ([ae96f9c](https://github.com/onesoft-sudo/sudobot/commit/ae96f9c8e7dcaa97b739bb5988efc901d02c64a3))
+* **commands:** add or/and permission checking ([68aa859](https://github.com/onesoft-sudo/sudobot/commit/68aa859c663372342ca1ad685b4977532c09c181))
+* **infractionManager:** add a generateInfractionDetailsEmbed() function ([5dea82f](https://github.com/onesoft-sudo/sudobot/commit/5dea82f559fb820b23ce1a56bb6f9ab52b9c835c))
+* **types:** add infraction model type ([a9eae05](https://github.com/onesoft-sudo/sudobot/commit/a9eae05d565e4a46495458463b3319294880b3ed))
+
+
+
 # [4.108.0](https://github.com/onesoft-sudo/sudobot/compare/v4.107.2...v4.108.0) (2023-07-16)
 
 
@@ -48,16 +66,6 @@
 * **commands:** add unmute command ([2692aaa](https://github.com/onesoft-sudo/sudobot/commit/2692aaa74e3926a53642c320bf44d995023faff6))
 * **events:** load queues when the bot logs in ([3dba287](https://github.com/onesoft-sudo/sudobot/commit/3dba28739a3824d2a6c5200764eaf66bc2b40fd5))
 * **queues:** add unmute queue ([3945974](https://github.com/onesoft-sudo/sudobot/commit/3945974e14d407cb2102d09ebe16535a462c4aa8))
-
-
-
-# [4.106.0](https://github.com/onesoft-sudo/sudobot/compare/v4.105.0...v4.106.0) (2023-07-13)
-
-
-### Features
-
-* add eval command for executing javascript code ([39eedc9](https://github.com/onesoft-sudo/sudobot/commit/39eedc98c75224f8a73f86db427d90035f45f608))
-* **commands:** add system admin only command security support ([1145b2c](https://github.com/onesoft-sudo/sudobot/commit/1145b2c3cb781759f9b8a0025dbea81aa2cb37ed))
 
 
 
