@@ -18,7 +18,7 @@
  */
 
 import { PrismaClient } from "@prisma/client";
-import { Collection, Client as DiscordClient } from "discord.js";
+import { Collection, Client as DiscordClient, UserResolvable } from "discord.js";
 import fs from "fs/promises";
 import path from "path";
 import Server from "../api/Server";
@@ -29,14 +29,14 @@ import ConfigManager from "../services/ConfigManager";
 import InfractionManager from "../services/InfractionManager";
 import LoggerService from "../services/LoggerService";
 import QueueManager from "../services/QueueManager";
-import { logInfo } from "../utils/logger";
+import { logError, logInfo } from "../utils/logger";
 import Command from "./Command";
 import ServiceManager from "./ServiceManager";
 
 export default class Client extends DiscordClient {
     aliases = {
         "@services": path.resolve(__dirname, "../services"),
-        "@automod": path.resolve(__dirname, "../automod"),
+        "@automod": path.resolve(__dirname, "../automod")
     };
 
     services = [
@@ -46,7 +46,7 @@ export default class Client extends DiscordClient {
         "@services/LoggerService",
         "@automod/MessageFilter",
         "@automod/Antispam",
-        "@services/QueueManager",
+        "@services/QueueManager"
     ];
 
     commandsDirectory = path.resolve(__dirname, "../commands");
@@ -64,7 +64,7 @@ export default class Client extends DiscordClient {
 
     prisma = new PrismaClient({
         errorFormat: "pretty",
-        log: ["query", "error", "info", "warn"],
+        log: ["query", "error", "info", "warn"]
     });
 
     server = new Server(this);
@@ -73,6 +73,15 @@ export default class Client extends DiscordClient {
 
     async boot() {
         await this.serviceManager.loadServices();
+    }
+
+    async fetchUserSafe(user: UserResolvable) {
+        try {
+            return await this.users.fetch(user);
+        } catch (e) {
+            logError(e);
+            return null;
+        }
     }
 
     async loadCommands(directory = this.commandsDirectory) {
