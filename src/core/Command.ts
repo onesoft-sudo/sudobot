@@ -1,23 +1,40 @@
 /**
-* This file is part of SudoBot.
-* 
-* Copyright (C) 2021-2023 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by 
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-* 
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License 
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2023 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
-import { APIMessage, CacheType, Channel, ChatInputCommandInteraction, GuildMember, InteractionDeferReplyOptions, InteractionEditReplyOptions, InteractionReplyOptions, Message, MessageCreateOptions, MessageMentions, MessagePayload, PermissionResolvable, Role, Snowflake, User } from "discord.js";
+import {
+    APIMessage,
+    CacheType,
+    Channel,
+    ChatInputCommandInteraction,
+    GuildMember,
+    InteractionDeferReplyOptions,
+    InteractionEditReplyOptions,
+    InteractionReplyOptions,
+    Message,
+    MessageCreateOptions,
+    MessageMentions,
+    MessagePayload,
+    PermissionResolvable,
+    Role,
+    Snowflake,
+    User
+} from "discord.js";
 import { dirname } from "path";
 import { ChatInputCommandContext, LegacyCommandContext } from "../services/CommandManager";
 import { logError } from "../utils/logger";
@@ -45,21 +62,23 @@ export enum ArgumentType {
     TimeInterval
 }
 
-export type ArgumentTypeFromEnum<D extends ArgumentType> = D extends ArgumentType.Boolean ? boolean : (
-    D extends (ArgumentType.Number | ArgumentType.Integer | ArgumentType.Float | ArgumentType.TimeInterval) ? number : (
-        D extends (ArgumentType.String | ArgumentType.StringRest | ArgumentType.Link) ? string : (
-            D extends ArgumentType.Snowflake ? Snowflake : (
-                D extends ArgumentType.User ? User : (
-                    D extends ArgumentType.Role ? Role : (
-                        D extends ArgumentType.Channel ? Channel : (
-                            D extends ArgumentType.GuildMember ? GuildMember : never
-                        )
-                    )
-                )
-            )
-        )
-    )
-);
+export type ArgumentTypeFromEnum<D extends ArgumentType> = D extends ArgumentType.Boolean
+    ? boolean
+    : D extends ArgumentType.Number | ArgumentType.Integer | ArgumentType.Float | ArgumentType.TimeInterval
+    ? number
+    : D extends ArgumentType.String | ArgumentType.StringRest | ArgumentType.Link
+    ? string
+    : D extends ArgumentType.Snowflake
+    ? Snowflake
+    : D extends ArgumentType.User
+    ? User
+    : D extends ArgumentType.Role
+    ? Role
+    : D extends ArgumentType.Channel
+    ? Channel
+    : D extends ArgumentType.GuildMember
+    ? GuildMember
+    : never;
 
 export interface ValidationRule {
     types?: ArgumentType[];
@@ -78,7 +97,7 @@ export interface ValidationRule {
 }
 
 export default abstract class Command {
-    public readonly name: string = '';
+    public readonly name: string = "";
     public readonly group: string = dirname(__dirname);
     public readonly aliases: string[] = [];
 
@@ -87,14 +106,14 @@ export default abstract class Command {
 
     public readonly permissions: PermissionResolvable[] = [];
     public readonly validationRules: ValidationRule[] = [];
+    public readonly permissionMode: "or" | "and" = "and";
     public readonly systemAdminOnly: boolean = false;
 
-    constructor(protected client: Client) { }
+    constructor(protected client: Client) {}
     abstract execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn>;
 
     async deferIfInteraction(message: CommandMessage, options?: InteractionDeferReplyOptions) {
-        if (message instanceof ChatInputCommandInteraction) 
-            await message.deferReply(options).catch(logError);
+        if (message instanceof ChatInputCommandInteraction) await message.deferReply(options).catch(logError);
     }
 
     async deferredReply(message: CommandMessage, options: MessageCreateOptions | MessagePayload | InteractionEditReplyOptions | string) {
@@ -106,7 +125,10 @@ export default abstract class Command {
     }
 
     async error(message: CommandMessage) {
-        return await this.deferredReply(message, `An error has occurred while performing this action. Please make sure that the bot has the required permissions to perform this action.`);
+        return await this.deferredReply(
+            message,
+            `An error has occurred while performing this action. Please make sure that the bot has the required permissions to perform this action.`
+        );
     }
 
     emoji(name: string) {
@@ -115,10 +137,12 @@ export default abstract class Command {
 
     async run(message: CommandMessage, context: AnyCommandContext) {
         if (this.systemAdminOnly && !this.client.configManager.systemConfig.system_admins.includes(message.member!.user.id)) {
-            message.reply({
-                content: `${this.emoji("error")} You don't have permission to run this command.`,
-                ephemeral: true
-            }).catch(logError);
+            message
+                .reply({
+                    content: `${this.emoji("error")} You don't have permission to run this command.`,
+                    ephemeral: true
+                })
+                .catch(logError);
 
             return;
         }
@@ -137,34 +161,48 @@ export default abstract class Command {
                     if (!member) {
                         throw new Error("Invalid member");
                     }
-                }
-                catch (e) {
+                } catch (e) {
                     logError(e);
-                    message.reply({
-                        content: `Sorry, I couldn't determine whether you have the enough permissions to perform this action or not. Please contact the bot developer.`,
-                        ephemeral: true
-                    }).catch(logError);
+                    message
+                        .reply({
+                            content: `Sorry, I couldn't determine whether you have the enough permissions to perform this action or not. Please contact the bot developer.`,
+                            ephemeral: true
+                        })
+                        .catch(logError);
                     return;
                 }
             }
 
-            for (const permission of permissions) {
-                if (!member.permissions.has(permission, true)) {
+            if (this.permissionMode === "and") {
+                for (const permission of permissions) {
+                    if (!member.permissions.has(permission, true)) {
+                        await message.reply({
+                            content: `${this.emoji("error")} You don't have permission to run this command.`,
+                            ephemeral: true
+                        });
+
+                        return;
+                    }
+                }
+            } else
+                orMode: {
+                    for (const permission of permissions) {
+                        if (member.permissions.has(permission, true)) {
+                            break orMode;
+                        }
+                    }
+
                     await message.reply({
-                        content: `${this.emoji("error")} You don't have permission to run this command.`,
+                        content: `${this.emoji("error")} You don't have enough permissions to run this command.`,
                         ephemeral: true
                     });
-
-                    return;
                 }
-            }
         }
 
         if (context.isLegacy) {
             let index = 0;
 
-            loop:
-            for await (const rule of validationRules) {
+            loop: for await (const rule of validationRules) {
                 const arg = context.args[index];
 
                 if (arg === undefined) {
@@ -186,19 +224,30 @@ export default abstract class Command {
                     for (const type of rule.types) {
                         const prevLength = parsedArgs.length;
 
-                        if (/^(\-)?[\d\.]+$/.test(arg) && ((rule.minValue || rule.maxValue) && type === ArgumentType.Float || type === ArgumentType.Integer || type === ArgumentType.Number)) {
+                        if (
+                            /^(\-)?[\d\.]+$/.test(arg) &&
+                            (((rule.minValue || rule.maxValue) && type === ArgumentType.Float) ||
+                                type === ArgumentType.Integer ||
+                                type === ArgumentType.Number)
+                        ) {
                             const float = parseFloat(arg);
 
-                            if (!isNaN(float) && ((rule.minValue !== undefined && rule.minValue > float) || (rule.maxValue !== undefined && rule.maxValue < float))) {
-                                await message.reply(rule.minMaxErrorMessage ?? `Argument #${index} has a min/max numeric value range but the given value is out of range.`);
+                            if (
+                                !isNaN(float) &&
+                                ((rule.minValue !== undefined && rule.minValue > float) || (rule.maxValue !== undefined && rule.maxValue < float))
+                            ) {
+                                await message.reply(
+                                    rule.minMaxErrorMessage ??
+                                        `Argument #${index} has a min/max numeric value range but the given value is out of range.`
+                                );
                                 return;
                             }
                         }
 
                         switch (type) {
                             case ArgumentType.Boolean:
-                                if (['true', 'false'].includes(arg.toLowerCase())) {
-                                    parsedArgs[index] = arg.toLowerCase() === 'true';
+                                if (["true", "false"].includes(arg.toLowerCase())) {
+                                    parsedArgs[index] = arg.toLowerCase() === "true";
                                 }
 
                                 break;
@@ -242,17 +291,26 @@ export default abstract class Command {
 
                                 if (error) {
                                     if (rule.types.length === 1) {
-                                        await message.reply({
-                                            ephemeral: true,
-                                            content: error
-                                        }).catch(logError);
+                                        await message
+                                            .reply({
+                                                ephemeral: true,
+                                                content: error
+                                            })
+                                            .catch(logError);
                                     }
 
                                     break;
                                 }
 
-                                if (!isNaN(seconds) && ((rule.minValue !== undefined && rule.minValue > seconds) || (rule.maxValue !== undefined && rule.maxValue < seconds))) {
-                                    await message.reply(`${this.emoji("error")} ` + rule.minMaxErrorMessage ?? `Argument #${index} has a min/max numeric time value range but the given value is out of range.`);
+                                if (
+                                    !isNaN(seconds) &&
+                                    ((rule.minValue !== undefined && rule.minValue > seconds) ||
+                                        (rule.maxValue !== undefined && rule.maxValue < seconds))
+                                ) {
+                                    await message.reply(
+                                        `${this.emoji("error")} ` + rule.minMaxErrorMessage ??
+                                            `Argument #${index} has a min/max numeric time value range but the given value is out of range.`
+                                    );
                                     return;
                                 }
 
@@ -260,15 +318,13 @@ export default abstract class Command {
                                 break;
 
                             case ArgumentType.String:
-                                if (arg.trim() === '')
-                                    break;
+                                if (arg.trim() === "") break;
 
                                 parsedArgs[index] = arg;
                                 break;
 
                             case ArgumentType.Snowflake:
-                                if (!isSnowflake(arg))
-                                    break;
+                                if (!isSnowflake(arg)) break;
 
                                 parsedArgs[index] = arg;
                                 break;
@@ -281,33 +337,27 @@ export default abstract class Command {
 
                                 if (MessageMentions.UsersPattern.test(arg)) {
                                     id = arg.substring(arg.includes("!") ? 3 : 2, arg.length - 1);
-                                }
-                                else if (MessageMentions.ChannelsPattern.test(arg)) {
+                                } else if (MessageMentions.ChannelsPattern.test(arg)) {
                                     id = arg.substring(2, arg.length - 1);
-                                }
-                                else if (MessageMentions.RolesPattern.test(arg)) {
+                                } else if (MessageMentions.RolesPattern.test(arg)) {
                                     id = arg.substring(3, arg.length - 1);
-                                }
-                                else if (isSnowflake(arg)) {
+                                } else if (isSnowflake(arg)) {
                                     id = arg;
-                                }
-                                else {
+                                } else {
                                     break;
                                 }
 
                                 try {
                                     let entity = null;
 
-                                    if (type === ArgumentType.User)
-                                        entity = await this.client.users.fetch(id)
+                                    if (type === ArgumentType.User) entity = await this.client.users.fetch(id);
                                     else {
-                                        entity = type === ArgumentType.Role ?
-                                            await message.guild!.roles.fetch(id) :
-                                            (
-                                                type === ArgumentType.Channel ?
-                                                    await message.guild!.channels.fetch(id) :
-                                                    await message.guild!.members.fetch(id)
-                                            );
+                                        entity =
+                                            type === ArgumentType.Role
+                                                ? await message.guild!.roles.fetch(id)
+                                                : type === ArgumentType.Channel
+                                                ? await message.guild!.channels.fetch(id)
+                                                : await message.guild!.members.fetch(id);
                                     }
 
                                     if (!entity) {
@@ -315,12 +365,13 @@ export default abstract class Command {
                                     }
 
                                     parsedArgs[index] = entity;
-                                }
-                                catch (e) {
+                                } catch (e) {
                                     logError(e);
 
                                     if (rule.entityNotNull) {
-                                        await message.reply(`${this.emoji("error")} ` + rule.entityNotNullErrorMessage ?? `Argument ${index} is invalid`);
+                                        await message.reply(
+                                            `${this.emoji("error")} ` + rule.entityNotNullErrorMessage ?? `Argument ${index} is invalid`
+                                        );
                                         return;
                                     }
 
@@ -330,12 +381,11 @@ export default abstract class Command {
                                 break;
 
                             case ArgumentType.StringRest:
-                                if (arg.trim() === '')
-                                    break;
+                                if (arg.trim() === "") break;
 
                                 const config = this.client.configManager.config[message.guildId!];
 
-                                let str = ((message as Message).content ?? '')
+                                let str = ((message as Message).content ?? "")
                                     .slice(config?.prefix.length)
                                     .trimStart()
                                     .slice(context.argv[0].length)
@@ -347,8 +397,7 @@ export default abstract class Command {
 
                                 str = str.trimEnd();
 
-                                if (str === '')
-                                    break;
+                                if (str === "") break;
 
                                 parsedArgs[index] = str;
 
@@ -359,7 +408,7 @@ export default abstract class Command {
                                 break loop;
                         }
 
-                        if (rule.lengthMax !== undefined && typeof parsedArgs[index] === 'string' && parsedArgs[index].length > rule.lengthMax) {
+                        if (rule.lengthMax !== undefined && typeof parsedArgs[index] === "string" && parsedArgs[index].length > rule.lengthMax) {
                             await message.reply(`${this.emoji("error")} ` + rule.lengthMaxErrorMessage ?? `Argument #${index} is too long`);
                             return;
                         }
@@ -385,10 +434,12 @@ export default abstract class Command {
 
         return await this.execute(message, {
             ...context,
-            ...(context.isLegacy ? {
-                parsedArgs,
-                parsedNamedArgs
-            } : {})
+            ...(context.isLegacy
+                ? {
+                      parsedArgs,
+                      parsedNamedArgs
+                  }
+                : {})
         });
     }
 }
