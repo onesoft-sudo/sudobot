@@ -18,7 +18,7 @@
 */
 
 import { channelMention } from "@discordjs/builders";
-import { Message, TextChannel, Guild, GuildMember, Util } from "discord.js";
+import { Message, TextChannel, Guild, GuildMember, Util, Permissions } from "discord.js";
 import DiscordClient from "../client/Client";
 import MessageEmbed from "../client/MessageEmbed";
 import { readFile } from 'fs/promises';
@@ -308,6 +308,9 @@ export default class MessageFilter {
             return;
 
         if (this.config.ignore_admins && msg.member!.roles.cache.has(this.client.config.get('admin')))
+            return;
+
+        if (msg.member!.permissions.has(Permissions.FLAGS.MANAGE_GUILD, true)) 
             return;
 
         const token = await this.filterBlockedTokens(msg);
