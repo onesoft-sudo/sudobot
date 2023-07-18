@@ -1,3 +1,17 @@
+# [4.110.0](https://github.com/onesoft-sudo/sudobot/compare/v4.109.1...v4.110.0) (2023-07-18)
+
+
+### Bug Fixes
+
+* use readonly properties ([e365084](https://github.com/onesoft-sudo/sudobot/commit/e365084780059595cdd17a8f3a1de05cdfd65b56))
+
+
+### Features
+
+* **commands:** add infraction create command ([5cb7ceb](https://github.com/onesoft-sudo/sudobot/commit/5cb7cebc277dddc6fb6de60a6c4413dfe46971cb))
+
+
+
 ## [4.109.1](https://github.com/onesoft-sudo/sudobot/compare/v4.109.0...v4.109.1) (2023-07-16)
 
 
@@ -45,15 +59,6 @@
 ### Bug Fixes
 
 * development mode toggling ([266cd8e](https://github.com/onesoft-sudo/sudobot/commit/266cd8eb53db8f511bf5ae372db22062ee1d1f86))
-
-
-
-## [4.107.1](https://github.com/onesoft-sudo/sudobot/compare/v4.107.0...v4.107.1) (2023-07-14)
-
-
-### Bug Fixes
-
-* queue manager attempts to delete the same queue twice ([94bfbba](https://github.com/onesoft-sudo/sudobot/commit/94bfbba077ccad45434ad0c09f7a7f5c4daf0abf))
 
 
 
