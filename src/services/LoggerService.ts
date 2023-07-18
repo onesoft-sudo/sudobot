@@ -67,36 +67,37 @@ export default class LoggerService extends Service {
                       iconURL: user.displayAvatarURL()
                   }
                 : undefined,
-            fields:
-                moderator || fields
-                    ? [
-                          ...(reason !== undefined
-                              ? [
-                                    {
-                                        name: "Reason",
-                                        value: `${reason ?? "*No reason provided*"}`
-                                    }
-                                ]
-                              : []),
-                          ...(fields ?? []),
-                          ...(moderator
-                              ? [
-                                    {
-                                        name: "Responsible Moderator",
-                                        value: moderator.id === this.client.user?.id ? "System" : `${moderator.tag} (${moderator.id})`
-                                    }
-                                ]
-                              : []),
-                          ...(id
-                              ? [
-                                    {
-                                        name: "Infraction ID",
-                                        value: `${id}`
-                                    }
-                                ]
-                              : [])
-                      ]
-                    : undefined,
+            fields: [
+                ...(reason !== undefined
+                  ? [
+                        {
+                            name: "Reason",
+                            value: `${reason ?? "*No reason provided*"}`
+                        }
+                    ]
+                  : []),
+                ...(fields ?? []),
+                ...(moderator
+                  ? [
+                        {
+                            name: "Responsible Moderator",
+                            value: moderator.id === this.client.user?.id ? "System" : `${moderator.tag} (${moderator.id})`
+                        }
+                    ]
+                  : []),
+                ...(id
+                      ? [
+                            {
+                                name: "Infraction ID",
+                                value: `${id}`
+                            }
+                        ]
+                  : []),
+                ...(user ? [{
+                    name: "User ID",
+                    value: user.id
+                }] : [])
+            ],
             footer: footerText
                 ? {
                       text: footerText
@@ -120,11 +121,11 @@ export default class LoggerService extends Service {
         });
     }
 
-    async logUserBan({ moderator, user, deleteMessageSeconds, reason, guild, id }: LogUserBanOptions) {
-        this.sendLogEmbed(guild, {
+    async logUserBan({ moderator, user, deleteMessageSeconds, reason, guild, id, duration }: LogUserBanOptions) {
+        await this.sendLogEmbed(guild, {
             user,
             title: "A user was banned",
-            footerText: "Banned",
+            footerText: (duration ? "Temporarily " : "") + "Banned",
             reason: reason ?? null,
             moderator,
             id,
@@ -135,7 +136,13 @@ export default class LoggerService extends Service {
                     value: deleteMessageSeconds
                         ? formatDistanceToNowStrict(new Date(Date.now() - deleteMessageSeconds * 1000))
                         : "*No timeframe provided*"
-                }
+                },
+                ...(duration ? [
+                    {
+                        name: "Duration",
+                        value: formatDistanceToNowStrict(new Date(Date.now() - duration))
+                    }
+                ] : [])
             ]
         });
     }
@@ -264,6 +271,7 @@ export default class LoggerService extends Service {
 
 interface LogUserBanOptions extends BanOptions, CommonUserActionOptions {
     user: User;
+    duration?: number;
 }
 
 interface LogUserUnbanOptions extends CommonUserActionOptions {
