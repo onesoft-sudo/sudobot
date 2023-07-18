@@ -32,7 +32,7 @@ export default class InfractionViewCommand extends Command {
     ];
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
     public readonly permissionMode = "or";
-    public aliases: string[] = ["i"];
+    public readonly aliases: string[] = ["i"];
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         const id = context.isLegacy ? context.parsedNamedArgs.id : context.options.getInteger("id", true);
