@@ -20,7 +20,6 @@
 import {
     APIMessage,
     CacheType,
-    Channel,
     ChatInputCommandInteraction,
     GuildMember,
     InteractionDeferReplyOptions,
@@ -30,10 +29,7 @@ import {
     MessageCreateOptions,
     MessageMentions,
     MessagePayload,
-    PermissionResolvable,
-    Role,
-    Snowflake,
-    User
+    PermissionResolvable
 } from "discord.js";
 import { dirname } from "path";
 import { ChatInputCommandContext, LegacyCommandContext } from "../services/CommandManager";
@@ -45,7 +41,6 @@ export type CommandMessage = Message<boolean> | ChatInputCommandInteraction<Cach
 export type AnyCommandContext = LegacyCommandContext | ChatInputCommandContext;
 export type CommandReturn = ((MessageCreateOptions | APIMessage | InteractionReplyOptions) & { __reply?: boolean }) | undefined | null | void;
 
-// TODO: Complete this
 export enum ArgumentType {
     String = 1,
     StringRest,
@@ -61,24 +56,6 @@ export enum ArgumentType {
     Link,
     TimeInterval
 }
-
-export type ArgumentTypeFromEnum<D extends ArgumentType> = D extends ArgumentType.Boolean
-    ? boolean
-    : D extends ArgumentType.Number | ArgumentType.Integer | ArgumentType.Float | ArgumentType.TimeInterval
-    ? number
-    : D extends ArgumentType.String | ArgumentType.StringRest | ArgumentType.Link
-    ? string
-    : D extends ArgumentType.Snowflake
-    ? Snowflake
-    : D extends ArgumentType.User
-    ? User
-    : D extends ArgumentType.Role
-    ? Role
-    : D extends ArgumentType.Channel
-    ? Channel
-    : D extends ArgumentType.GuildMember
-    ? GuildMember
-    : never;
 
 export interface ValidationRule {
     types?: ArgumentType[];
@@ -315,6 +292,15 @@ export default abstract class Command {
                                 }
 
                                 parsedArgs[index] = seconds;
+                                break;
+
+                            case ArgumentType.Link:
+                                try {
+                                    parsedArgs[index] = new URL(arg);
+                                } catch (e) {
+                                    break;
+                                }
+
                                 break;
 
                             case ArgumentType.String:
