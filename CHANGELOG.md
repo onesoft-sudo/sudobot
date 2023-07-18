@@ -1,3 +1,12 @@
+## [4.110.1](https://github.com/onesoft-sudo/sudobot/compare/v4.110.0...v4.110.1) (2023-07-18)
+
+
+### Bug Fixes
+
+* **commands:** validation of ArgumentType.Link wasn't implmented ([2189233](https://github.com/onesoft-sudo/sudobot/commit/218923309eff9d16740ccd70128927bb6bd54fb9))
+
+
+
 # [4.110.0](https://github.com/onesoft-sudo/sudobot/compare/v4.109.1...v4.110.0) (2023-07-18)
 
 
@@ -50,15 +59,6 @@
 ### Features
 
 * **infractionManager:** send logs and create infraction record on bulk message delete ([0e1ce72](https://github.com/onesoft-sudo/sudobot/commit/0e1ce72c126be29203c144828694a308d15773ec))
-
-
-
-## [4.107.2](https://github.com/onesoft-sudo/sudobot/compare/v4.107.1...v4.107.2) (2023-07-14)
-
-
-### Bug Fixes
-
-* development mode toggling ([266cd8e](https://github.com/onesoft-sudo/sudobot/commit/266cd8eb53db8f511bf5ae372db22062ee1d1f86))
 
 
 
