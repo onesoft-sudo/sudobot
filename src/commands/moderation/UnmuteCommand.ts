@@ -60,7 +60,6 @@ export default class UnmuteCommand extends Command {
         const { id } = <any>await this.client.infractionManager.removeMemberMute(member, {
             guild: message.guild!,
             moderator: this.client.user!,
-            autoRemoveQueue: true,
             notifyUser: !context.isLegacy ? !context.options.getBoolean('silent') ?? true : true,
             reason,
             sendLog: true,

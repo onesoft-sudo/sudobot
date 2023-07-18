@@ -14,7 +14,6 @@ export default class UnmuteQueue extends Queue {
             await this.client.infractionManager.removeMemberMute(member, {
                 guild: this.guild,
                 moderator: this.client.user!,
-                autoRemoveQueue: true,
                 notifyUser: true,
                 reason: "*Your mute has expired*",
                 sendLog: true

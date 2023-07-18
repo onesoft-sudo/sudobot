@@ -545,7 +545,7 @@ export default class InfractionManager extends Service {
 
     async removeMemberMute(
         member: GuildMember,
-        { guild, moderator, reason, notifyUser, autoRemoveQueue }: CommonOptions & { autoRemoveQueue?: boolean }
+        { guild, moderator, reason, notifyUser }: CommonOptions
     ): Promise<{ error?: string; result?: boolean; id?: number }> {
         const mutedRole = this.client.configManager.config[guild.id]?.muting?.role;
 
