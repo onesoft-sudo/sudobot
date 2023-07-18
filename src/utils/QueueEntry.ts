@@ -54,7 +54,7 @@ export default class QueueEntry {
             where: {
                 id: this.id
             }
-        });
+        }).catch(logError);
     }
 
     async run(): Promise<any> {

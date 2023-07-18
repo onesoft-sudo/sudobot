@@ -78,7 +78,7 @@ export default class QueueManager extends Service {
         if (queue.creatingRecord) await queue.creatingRecord;
 
         this.queues.delete(queue.id.toString());
-        await queue.clearTimeout();
+        await queue.clearTimeout(true);
         return queue.id;
     }
 
