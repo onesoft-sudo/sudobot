@@ -110,7 +110,9 @@ export default class InfractionManager extends Service {
                 {
                     name: "Action Type",
                     value:
-                        infraction.type === "BULKDELETEMSG" ? "Bulk message delete" : infraction.type[0] + infraction.type.substring(1).toLowerCase(),
+                        infraction.type === InfractionType.BULK_DELETE_MESSAGE
+                            ? "Bulk message delete"
+                            : infraction.type[0] + infraction.type.substring(1).toLowerCase(),
                     inline: true
                 },
                 ...(infraction.queueId
@@ -368,7 +370,7 @@ export default class InfractionManager extends Service {
 
             const { id } = await this.client.prisma.infraction.create({
                 data: {
-                    type: InfractionType.BULKDELETEMSG,
+                    type: InfractionType.BULK_DELETE_MESSAGE,
                     guildId: guild.id,
                     moderatorId: moderator.id,
                     userId: user.id,
@@ -475,7 +477,8 @@ export default class InfractionManager extends Service {
                 reason,
                 moderatorId: moderator.id,
                 expiresAt: duration ? new Date(Date.now() + duration) : undefined,
-                queueId
+                queueId,
+                metadata: duration ? { duration } : undefined
             }
         });
 

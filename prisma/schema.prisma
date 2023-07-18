@@ -17,7 +17,9 @@ enum InfractionType {
     MASSKICK
     UNBAN
     UNMUTE
-    BULKDELETEMSG
+    BULK_DELETE_MESSAGE
+    TIMEOUT
+    TIMEOUT_REMOVE
 }
 
 model Infraction {
