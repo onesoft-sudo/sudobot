@@ -26,7 +26,7 @@ export default class ReadyEvent extends Event {
 
     async execute() {
         logInfo("The bot has logged in.");
-        this.client.server.start();
+        this.client.server.start().catch(logError);
         this.client.queueManager.onReady().catch(logError);
     }
 }

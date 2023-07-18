@@ -17,17 +17,17 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { GatewayIntentBits, Partials } from "discord.js";
+import { IntentsBitField, Partials } from "discord.js";
 import 'dotenv/config';
 import Client from "./core/Client";
 
 const intents = [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.MessageContent,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildMessageReactions,
-    GatewayIntentBits.GuildModeration,
+    IntentsBitField.Flags.Guilds,
+    IntentsBitField.Flags.GuildMessages,
+    IntentsBitField.Flags.GuildMessages,
+    IntentsBitField.Flags.GuildMembers,
+    IntentsBitField.Flags.GuildMessageReactions,
+    IntentsBitField.Flags.GuildModeration,
 ];
 
 const partials = [

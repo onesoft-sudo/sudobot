@@ -25,3 +25,4 @@ setup.sh
 .devcontainer/
 /backup
 /.env.docker
+/.idea
