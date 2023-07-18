@@ -52,7 +52,6 @@ export default class UnbanCommand extends Command {
         const id = await this.client.infractionManager.removeUserBan(user, {
             guild: message.guild!,
             moderator: message.member!.user! as User,
-            user,
             reason,
             sendLog: true
         }).catch(logError);
