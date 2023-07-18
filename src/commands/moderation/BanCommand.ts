@@ -20,7 +20,7 @@
 import { formatDistanceToNow } from "date-fns";
 import { ChatInputCommandInteraction, PermissionsBitField, User, escapeMarkdown } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { createModerationEmbed } from "../../utils/utils";
+import { createModerationEmbed, stringToTimeInterval } from "../../utils/utils";
 
 export default class BanCommand extends Command {
     public readonly name = "ban";
@@ -39,7 +39,8 @@ export default class BanCommand extends Command {
             typeErrorMessage: "You have specified an invalid argument. The system expected you to provide a ban reason or the message deletion range here.",
             minValue: 0,
             maxValue: 604800,
-            lengthMax: 3999
+            lengthMax: 3999,
+            timeMilliseconds: false
         },
         {
             types: [ArgumentType.StringRest],
@@ -55,20 +56,68 @@ export default class BanCommand extends Command {
             await message.deferReply();
 
         const user: User = context.isLegacy ? context.parsedArgs[0] : context.options.getUser("user", true);
-        const deleteMessageSeconds = !context.isLegacy ? context.options.getInteger("days") ?? undefined : (
+        let deleteMessageSeconds = !context.isLegacy ? undefined : (
             typeof context.parsedArgs[1] === 'number' ? context.parsedArgs[1] : undefined
         );
         const reason = !context.isLegacy ? context.options.getString('reason') ?? undefined : (
             typeof context.parsedArgs[1] === 'string' ? context.parsedArgs[1] : context.parsedArgs[2]
         );
+        let durationMs: undefined | number = undefined;
+
+        ifContextIsNotLegacyForDeleteTimeframe:
+        if (!context.isLegacy) {
+            const input = context.options.getString('deletion_timeframe');
+
+            if (!input)
+                break ifContextIsNotLegacyForDeleteTimeframe;
+
+            const { result, error } = stringToTimeInterval(input);
+
+            if (error) {
+                await this.deferredReply(message, {
+                    content: `${this.emoji('error')} ${error} provided in the \`deletion_timeframe\` option`
+                });
+
+                return;
+            }
+
+            if (result < 0 || result > 604800) {
+                await this.deferredReply(message, `${this.emoji('error')} The message deletion range must be a time interval from 0 second to 604800 seconds (7 days).`);
+                return;
+            }
+
+            deleteMessageSeconds = result;
+        }
+
+        ifContextIsNotLegacy:
+        if (!context.isLegacy) {
+            const input = context.options.getString('duration');
+
+            if (!input)
+                break ifContextIsNotLegacy;
+
+            const { result, error } = stringToTimeInterval(input, { milliseconds: true });
+
+            if (error) {
+                await this.deferredReply(message, {
+                    content: `${this.emoji('error')} ${error} provided in the \`duration\` option`
+                });
+
+                return;
+            }
+
+            durationMs = result;
+        }
 
         const id = await this.client.infractionManager.createUserBan(user, {
             guild: message.guild!,
             moderator: message.member!.user as User,
-            deleteMessageSeconds: deleteMessageSeconds,
+            deleteMessageSeconds,
             reason,
             notifyUser: context.isLegacy ? true : !context.options.getBoolean('silent'),
-            sendLog: true
+            sendLog: true,
+            duration: durationMs,
+            autoRemoveQueue: true
         });
 
         if (!id) {

@@ -431,18 +431,18 @@ let commands = [
 	new SlashCommandBuilder().setName('ban').setDescription('Ban a user')
 		.addUserOption(option => option.setName('user').setDescription("The user").setRequired(true))
 		.addStringOption(option => option.setName('reason').setDescription("The reason for banning this user"))
-		.addIntegerOption(option => option.setName('days').setDescription("The days old messages to delete of this user").setMinValue(0).setMaxValue(7)),
+		.addStringOption(option => option.setName('deletion_timeframe').setDescription("The message deletion timeframe (must be in range 0-604800)")),
 
 	new SlashCommandBuilder().setName('softban').setDescription('Softban a user')
 		.addUserOption(option => option.setName('user').setDescription("The user").setRequired(true))
 		.addStringOption(option => option.setName('reason').setDescription("The reason for softbanning this user"))
-		.addIntegerOption(option => option.setName('days').setDescription("The days old messages to delete of this user (default is 7)").setMinValue(0).setMaxValue(7)),
+        .addStringOption(option => option.setName('deletion_timeframe').setDescription("The message deletion timeframe (must be in range 0-604800)")),
 
 	new SlashCommandBuilder().setName('tempban').setDescription('Temporarily ban a user')
 		.addUserOption(option => option.setName('user').setDescription("The user").setRequired(true))
 		.addStringOption(option => option.setName('time').setDescription("TBan duration").setRequired(true))
-		.addStringOption(option => option.setName('reason').setDescription("The reason for softbanning this user"))
-		.addIntegerOption(option => option.setName('days').setDescription("The days old messages to delete of this user (default is 7)").setMinValue(0).setMaxValue(7)),
+		.addStringOption(option => option.setName('reason').setDescription("The reason for tempbanning this user"))
+        .addStringOption(option => option.setName('deletion_timeframe').setDescription("The message deletion timeframe (must be in range 0-604800)")),
 
 	new SlashCommandBuilder().setName('massban').setDescription('Ban multiple users')
 		.addStringOption(option => option.setName('users').setDescription("The user IDs (separated by spaces)").setRequired(true))
