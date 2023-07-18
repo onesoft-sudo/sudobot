@@ -51,6 +51,8 @@ export type CommonOptions = {
 
 export type CreateUserBanOptions = CommonOptions & {
     deleteMessageSeconds?: number;
+    duration?: number;
+    autoRemoveQueue?: boolean;
 };
 
 export type CreateMemberMuteOptions = CommonOptions & {
@@ -208,34 +210,57 @@ export default class InfractionManager extends Service {
         }
     }
 
-    async createUserBan(user: User, { guild, moderator, reason, deleteMessageSeconds, notifyUser }: CreateUserBanOptions) {
+    async createUserBan(user: User, {
+        guild,
+        moderator,
+        reason,
+        deleteMessageSeconds,
+        notifyUser,
+        duration,
+        sendLog,
+        autoRemoveQueue
+    }: CreateUserBanOptions) {
         const { id } = await this.client.prisma.infraction.create({
             data: {
-                type: InfractionType.BAN,
+                type: duration ? InfractionType.TEMPBAN : InfractionType.BAN,
                 userId: user.id,
                 guildId: guild.id,
                 reason,
                 moderatorId: moderator.id,
                 metadata: {
-                    deleteMessageSeconds
+                    deleteMessageSeconds,
+                    duration
                 }
             }
         });
 
-        this.client.logger.logUserBan({
-            moderator,
-            guild,
-            id: `${id}`,
-            user,
-            deleteMessageSeconds,
-            reason
-        });
+        if (autoRemoveQueue) {
+            log("Auto remove", this.client.queueManager.queues);
+            await this.autoRemoveUnbanQueue(guild, user).catch(logError);
+        }
+
+        if (sendLog)
+            this.client.logger.logUserBan({
+                moderator,
+                guild,
+                id: `${id}`,
+                user,
+                deleteMessageSeconds,
+                reason,
+                duration
+            });
 
         if (notifyUser) {
             await this.sendDM(user, guild, {
                 id,
                 actionDoneName: "banned",
-                reason
+                reason,
+                fields: duration ? [
+                    {
+                        name: "Duration",
+                        value: formatDistanceToNowStrict(new Date(Date.now() - duration))
+                    }
+                ] : undefined
             });
         }
 
@@ -245,14 +270,42 @@ export default class InfractionManager extends Service {
                 deleteMessageSeconds
             });
 
+            log("Seconds: " + deleteMessageSeconds);
+
+            if (duration) {
+                log("Added unban queue");
+
+                await this.client.queueManager.add(new QueueEntry({
+                    args: [user.id],
+                    client: this.client,
+                    filePath: path.resolve(__dirname, "../queues/UnbanQueue"),
+                    guild,
+                    name: "UnbanQueue",
+                    createdAt: new Date(),
+                    userId: user.id,
+                    willRunAt: new Date(Date.now() + duration),
+                }));
+            }
+
             return id;
         } catch (e) {
             logError(e);
+            await this.autoRemoveUnbanQueue(guild, user).catch(logError);
             return null;
         }
     }
 
-    async removeUserBan(user: User, { guild, moderator, reason }: CommonOptions & { user: User }) {
+    private async autoRemoveUnbanQueue(guild: Guild, user: User) {
+        log("Auto remove", this.client.queueManager.queues);
+
+        for (const queue of this.client.queueManager.queues.values()) {
+            if (queue.options.name === "UnbanQueue" && queue.options.guild.id === guild.id && queue.options.args[0] === user.id) {
+                await this.client.queueManager.remove(queue);
+            }
+        }
+    }
+
+    async removeUserBan(user: User, { guild, moderator, reason, autoRemoveQueue = true, sendLog }: CommonOptions & { autoRemoveQueue?: boolean }) {
         const { id } = await this.client.prisma.infraction.create({
             data: {
                 type: InfractionType.UNBAN,
@@ -263,13 +316,17 @@ export default class InfractionManager extends Service {
             }
         });
 
-        this.client.logger.logUserUnban({
-            moderator,
-            guild,
-            id: `${id}`,
-            user,
-            reason
-        });
+        if (sendLog)
+            this.client.logger.logUserUnban({
+                moderator,
+                guild,
+                id: `${id}`,
+                user,
+                reason
+            });
+
+        if (autoRemoveQueue)
+            await this.autoRemoveUnbanQueue(guild, user);
 
         try {
             await guild.bans.remove(user);
@@ -442,7 +499,7 @@ export default class InfractionManager extends Service {
         }
 
         if (autoRemoveQueue) {
-            log("Autoremove", this.client.queueManager.queues);
+            log("Auto remove", this.client.queueManager.queues);
 
             for (const queue of this.client.queueManager.queues.values()) {
                 if (queue.options.name === "UnmuteQueue" && queue.options.guild.id === member.guild.id && queue.options.args[0] === member.user.id) {
