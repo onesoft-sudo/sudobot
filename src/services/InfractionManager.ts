@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Infraction } from "@prisma/client";
+import { Infraction, InfractionType } from "@prisma/client";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
     APIEmbedField,
@@ -209,7 +209,7 @@ export default class InfractionManager extends Service {
     async createUserBan(user: User, { guild, moderator, reason, deleteMessageSeconds, notifyUser }: CreateUserBanOptions) {
         const { id } = await this.client.prisma.infraction.create({
             data: {
-                type: "BAN",
+                type: InfractionType.BAN,
                 userId: user.id,
                 guildId: guild.id,
                 reason,
@@ -253,7 +253,7 @@ export default class InfractionManager extends Service {
     async removeUserBan(user: User, { guild, moderator, reason }: CommonOptions & { user: User }) {
         const { id } = await this.client.prisma.infraction.create({
             data: {
-                type: "UNBAN",
+                type: InfractionType.UNBAN,
                 userId: user.id,
                 guildId: guild.id,
                 reason,
@@ -283,7 +283,7 @@ export default class InfractionManager extends Service {
 
         const { id } = await this.client.prisma.infraction.create({
             data: {
-                type: "KICK",
+                type: InfractionType.KICK,
                 userId: member.user.id,
                 guildId: guild.id,
                 reason,
@@ -319,7 +319,7 @@ export default class InfractionManager extends Service {
     async createMemberWarn(member: GuildMember, { guild, moderator, reason, notifyUser }: CommonOptions) {
         const { id } = await this.client.prisma.infraction.create({
             data: {
-                type: "WARNING",
+                type: InfractionType.WARNING,
                 userId: member.user.id,
                 guildId: guild.id,
                 reason,
@@ -368,7 +368,7 @@ export default class InfractionManager extends Service {
 
             const { id } = await this.client.prisma.infraction.create({
                 data: {
-                    type: "BULKDELETEMSG",
+                    type: InfractionType.BULKDELETEMSG,
                     guildId: guild.id,
                     moderatorId: moderator.id,
                     userId: user.id,
@@ -469,7 +469,7 @@ export default class InfractionManager extends Service {
 
         const { id } = await this.client.prisma.infraction.create({
             data: {
-                type: "MUTE",
+                type: InfractionType.MUTE,
                 userId: member.user.id,
                 guildId: guild.id,
                 reason,
@@ -541,7 +541,7 @@ export default class InfractionManager extends Service {
 
         const { id } = await this.client.prisma.infraction.create({
             data: {
-                type: "UNMUTE",
+                type: InfractionType.UNMUTE,
                 userId: member.user.id,
                 guildId: guild.id,
                 reason,
