@@ -71,6 +71,7 @@ export interface ValidationRule {
     lengthMaxErrorMessage?: string;
     lengthMax?: number;
     name?: string;
+    timeMilliseconds?: boolean;
 }
 
 export default abstract class Command {
@@ -264,7 +265,9 @@ export default abstract class Command {
                                 break;
 
                             case ArgumentType.TimeInterval:
-                                const { seconds, error } = stringToTimeInterval(arg);
+                                const { result, error } = stringToTimeInterval(arg, {
+                                    milliseconds: rule.timeMilliseconds ?? false
+                                });
 
                                 if (error) {
                                     if (rule.types.length === 1) {
@@ -280,9 +283,9 @@ export default abstract class Command {
                                 }
 
                                 if (
-                                    !isNaN(seconds) &&
-                                    ((rule.minValue !== undefined && rule.minValue > seconds) ||
-                                        (rule.maxValue !== undefined && rule.maxValue < seconds))
+                                    !isNaN(result) &&
+                                    ((rule.minValue !== undefined && rule.minValue > result) ||
+                                        (rule.maxValue !== undefined && rule.maxValue < result))
                                 ) {
                                     await message.reply(
                                         `${this.emoji("error")} ` + rule.minMaxErrorMessage ??
@@ -291,7 +294,7 @@ export default abstract class Command {
                                     return;
                                 }
 
-                                parsedArgs[index] = seconds;
+                                parsedArgs[index] = result;
                                 break;
 
                             case ArgumentType.Link:

@@ -39,7 +39,7 @@ export function isSnowflake(input: string) {
     return /^\d{16,22}$/.test(input);
 }
 
-export function stringToTimeInterval(input: string) {
+export function stringToTimeInterval(input: string, { milliseconds = false } = {}) {
     let seconds = 0;
     let number = "";
 
@@ -51,7 +51,7 @@ export function stringToTimeInterval(input: string) {
             const float = parseFloat(number);
 
             if (isNaN(float)) {
-                return { error: "Invalid numeric time value", seconds: NaN };
+                return { error: "Invalid numeric time value", result: NaN };
             }
 
             if (unit === "s") {
@@ -69,14 +69,14 @@ export function stringToTimeInterval(input: string) {
             } else if (unit === "y") {
                 seconds += float * 60 * 60 * 24 * 365;
             } else {
-                return { error: "Invalid time unit", seconds: NaN };
+                return { error: "Invalid time unit", result: NaN };
             }
 
             number = "";
         }
     }
 
-    return { error: undefined, seconds };
+    return { error: undefined, result: seconds * (milliseconds ? 1000 : 1) };
 }
 
 export interface CreateModerationEmbedOptions {

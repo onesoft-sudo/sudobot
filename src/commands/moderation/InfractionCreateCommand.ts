@@ -56,12 +56,12 @@ export default class InfractionCreateCommand extends Command {
                 moderatorId: interaction.user.id,
                 type: type as InfractionType,
                 reason,
-                metadata: parsedDuration?.seconds
+                metadata: parsedDuration?.result
                     ? {
-                          duration: parsedDuration.seconds * 1000
+                          duration: parsedDuration.result * 1000
                       }
                     : undefined,
-                expiresAt: parsedDuration?.seconds ? new Date(parsedDuration?.seconds * 1000 + Date.now()) : undefined
+                expiresAt: parsedDuration?.result ? new Date(parsedDuration?.result * 1000 + Date.now()) : undefined
             }
         });
 

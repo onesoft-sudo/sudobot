@@ -67,7 +67,7 @@ export default class MuteCommand extends Command {
         )) ?? undefined;
 
         if (typeof duration === 'string') {
-            const { error, seconds } = stringToTimeInterval(duration);
+            const { error, result } = stringToTimeInterval(duration);
 
             if (error) {
                 await message.reply({
@@ -78,7 +78,7 @@ export default class MuteCommand extends Command {
                 return;
             }
 
-            duration = seconds;
+            duration = result;
         }
 
         const reason = (!context.isLegacy ? context.options.getString('reason') ?? undefined : (

@@ -59,12 +59,12 @@ export default class InfractionEditCommand extends Command {
             return;
         }
 
-        if (newDurationSeconds?.seconds && infraction.expiresAt && infraction.expiresAt.getTime() <= Date.now()) {
+        if (newDurationSeconds?.result && infraction.expiresAt && infraction.expiresAt.getTime() <= Date.now()) {
             await interaction.editReply(`${this.emoji("error")} That infraction is expired, so you can't change it's duration!`);
             return;
         }
 
-        if (newDurationSeconds?.seconds && infraction.createdAt.getTime() + newDurationSeconds?.seconds * 1000 <= Date.now()) {
+        if (newDurationSeconds?.result && infraction.createdAt.getTime() + newDurationSeconds?.result * 1000 <= Date.now()) {
             await interaction.editReply(
                 `${this.emoji(
                     "error"
@@ -73,7 +73,7 @@ export default class InfractionEditCommand extends Command {
             return;
         }
 
-        if (newDurationSeconds?.seconds && infraction.expiresAt === null) {
+        if (newDurationSeconds?.result && infraction.expiresAt === null) {
             await interaction.editReply(
                 `${this.emoji("error")} This infraction did not have a duration in the first place, so you can't set one now.`
             );
@@ -87,7 +87,7 @@ export default class InfractionEditCommand extends Command {
             const queue = this.client.queueManager.queues.get(`${infraction.queueId}`);
 
             if (queue) {
-                await queue.updateTime(new Date(infraction.createdAt.getTime() + newDurationSeconds.seconds * 1000));
+                await queue.updateTime(new Date(infraction.createdAt.getTime() + newDurationSeconds.result * 1000));
             }
         }
 
@@ -109,12 +109,12 @@ export default class InfractionEditCommand extends Command {
                                       }
                                   ]
                                 : []),
-                            ...(newDurationSeconds?.seconds
+                            ...(newDurationSeconds?.result
                                 ? [
                                       {
                                           name: "Duration",
                                           value: formatDistanceToNowStrict(
-                                              new Date(infraction.createdAt.getTime() + newDurationSeconds.seconds * 1000)
+                                              new Date(infraction.createdAt.getTime() + newDurationSeconds.result * 1000)
                                           )
                                       }
                                   ]
@@ -132,7 +132,7 @@ export default class InfractionEditCommand extends Command {
         await this.client.prisma.infraction.update({
             data: {
                 reason: newReason ?? undefined,
-                expiresAt: newDurationSeconds ? new Date(infraction.createdAt.getTime() + newDurationSeconds.seconds * 1000) : undefined
+                expiresAt: newDurationSeconds ? new Date(infraction.createdAt.getTime() + newDurationSeconds.result * 1000) : undefined
             },
             where: { id }
         });
@@ -152,11 +152,11 @@ export default class InfractionEditCommand extends Command {
                                   }
                               ]
                             : []),
-                        ...(newDurationSeconds?.seconds
+                        ...(newDurationSeconds?.result
                             ? [
                                   {
                                       name: "New Duration",
-                                      value: formatDistanceToNowStrict(new Date(infraction.createdAt.getTime() + newDurationSeconds.seconds * 1000))
+                                      value: formatDistanceToNowStrict(new Date(infraction.createdAt.getTime() + newDurationSeconds.result * 1000))
                                   }
                               ]
                             : []),
