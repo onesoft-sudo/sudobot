@@ -26,6 +26,7 @@ const { config } = require('dotenv');
 const { existsSync } = require('fs');
 const path = require('path');
 const { ApplicationCommandType } = require('discord-api-types/v10');
+const { InfractionType } = require('@prisma/client');
 
 if (existsSync(path.join(__dirname, '.env'))) {
     config();
@@ -533,9 +534,49 @@ let commands = [
 			subcommand.setName('create').setDescription("Add infractions to a user")
 				.addUserOption(option => option.setName('user').setDescription("The target user").setRequired(true))	
 				.addStringOption(option => option.setName('type').setDescription("Specify infraction type").setChoices(
-					...['Ban', "Mute", "Hardmute", "Kick", "Warning", "Softban", "Tempban", "Unmute", "Unban", "Timeout", "Timeout Remove", "Bean", "Shot"].map(option => ({ name: option, value: option.toLowerCase().replace(' ', '_') }))
+					{
+						name: "Ban",
+						value: InfractionType.BAN
+					},
+					{
+						name: "Kick",
+						value: InfractionType.KICK
+					},
+					{
+						name: "Mute",
+						value: InfractionType.MUTE
+					},
+					{
+						name: "Warning",
+						value: InfractionType.WARNING
+					},
+					{
+						name: "Unmute",
+						value: InfractionType.UNMUTE
+					},
+					{
+						name: "Unban",
+						value: InfractionType.UNBAN
+					},
+					{
+						name: "Bulk message delete",
+						value: InfractionType.BULKDELETEMSG
+					},
+					{
+						name: "Temporary Ban",
+						value: InfractionType.TEMPBAN
+					},
+					{
+						name: "Timeout",
+						value: InfractionType.TIMEOUT
+					},
+					{
+						name: "Timeout remove",
+						value: InfractionType.TIMEOUT_REMOVE
+					}
 				).setRequired(true))
 				.addStringOption(option => option.setName('reason').setDescription("The reason for giving this infraction"))
+				.addStringOption(option => option.setName('duration').setDescription("The duration of this infraction (e.g. 45, 1h30m)"))
 		),
 
 	new SlashCommandBuilder().setName('notes').setDescription('Fetch all notes for a user')

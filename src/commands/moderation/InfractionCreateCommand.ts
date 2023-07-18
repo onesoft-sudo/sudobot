@@ -17,15 +17,56 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { InfractionType } from "@prisma/client";
+import { ChatInputCommandInteraction, PermissionsBitField } from "discord.js";
+import Command, { CommandReturn, ValidationRule } from "../../core/Command";
+import { ChatInputCommandContext } from "../../services/CommandManager";
+import { stringToTimeInterval } from "../../utils/utils";
 
 export default class InfractionCreateCommand extends Command {
-    public readonly name = "infractioncreate";
+    public readonly name = "infraction__create";
     public readonly validationRules: ValidationRule[] = [];
-    public readonly permissions = [];
+    public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
     public readonly supportsLegacy: boolean = false;
+    public readonly permissionMode = "or";
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
-        // TODO
+    async execute(interaction: ChatInputCommandInteraction, context: ChatInputCommandContext): Promise<CommandReturn> {
+        const user = interaction.options.getUser("user", true);
+        const type = interaction.options.getString("type", true);
+        const reason = interaction.options.getString("reason");
+        const duration = interaction.options.getString("duration");
+        const parsedDuration = duration ? stringToTimeInterval(duration) : null;
+
+        if (parsedDuration && parsedDuration.error) {
+            await interaction.reply(`${this.emoji("error")} ${parsedDuration.error} provided in the \`duration\` field`);
+            return;
+        }
+
+        if (!(type in InfractionType)) {
+            await interaction.reply(`${this.emoji("error")} Invalid infraction type provided in the \`type\` field`);
+            return;
+        }
+
+        await interaction.deferReply();
+
+        const infraction = await this.client.prisma.infraction.create({
+            data: {
+                userId: user.id,
+                guildId: interaction.guildId!,
+                moderatorId: interaction.user.id,
+                type: type as InfractionType,
+                reason,
+                metadata: parsedDuration?.seconds
+                    ? {
+                          duration: parsedDuration.seconds * 1000
+                      }
+                    : undefined,
+                expiresAt: parsedDuration?.seconds ? new Date(parsedDuration?.seconds * 1000 + Date.now()) : undefined
+            }
+        });
+
+        await interaction.editReply({
+            embeds: [this.client.infractionManager.generateInfractionDetailsEmbed(user, infraction).setTitle("Infraction Created")]
+        });
     }
 }
