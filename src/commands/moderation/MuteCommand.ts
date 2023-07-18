@@ -97,7 +97,8 @@ export default class MuteCommand extends Command {
             notifyUser: !context.isLegacy ? !context.options.getBoolean('silent') ?? true : true,
             reason,
             sendLog: true,
-            duration: duration ? duration * 1000 : undefined        /* Convert the duration from seconds to milliseconds */
+            duration: duration ? duration * 1000 : undefined        /* Convert the duration from seconds to milliseconds */,
+            autoRemoveQueue: true
         });
 
         if (error || !id) {
