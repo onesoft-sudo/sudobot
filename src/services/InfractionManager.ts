@@ -41,45 +41,6 @@ import QueueEntry from "../utils/QueueEntry";
 import { log, logError } from "../utils/logger";
 import { getEmoji } from "../utils/utils";
 
-export type CommonOptions = {
-    reason?: string;
-    guild: Guild;
-    moderator: User;
-    notifyUser?: boolean;
-    sendLog?: boolean;
-};
-
-export type CreateUserBanOptions = CommonOptions & {
-    deleteMessageSeconds?: number;
-    duration?: number;
-    autoRemoveQueue?: boolean;
-};
-
-export type CreateMemberMuteOptions = CommonOptions & {
-    duration?: number;
-    messagesToDelete?: MessageResolvable[];
-    messageChannel?: TextChannel;
-    bulkDeleteReason?: string;
-    autoRemoveQueue?: boolean;
-};
-
-export type BulkDeleteMessagesOptions = CommonOptions & {
-    user: User;
-    messagesToDelete?: MessageResolvable[];
-    messageChannel?: TextChannel;
-};
-
-export type ActionDoneName = "banned" | "muted" | "kicked" | "warned" | "unbanned" | "unmuted";
-
-export type SendDMOptions = {
-    fields?: APIEmbedField[] | ((internalFields: APIEmbedField[]) => Promise<APIEmbedField[]> | APIEmbedField[]);
-    description?: string;
-    actionDoneName: ActionDoneName;
-    id: string | number;
-    reason?: string;
-    color?: ColorResolvable;
-};
-
 export const name = "infractionManager";
 
 export default class InfractionManager extends Service {
@@ -631,3 +592,42 @@ export default class InfractionManager extends Service {
         return { id, result };
     }
 }
+
+export type CommonOptions = {
+    reason?: string;
+    guild: Guild;
+    moderator: User;
+    notifyUser?: boolean;
+    sendLog?: boolean;
+};
+
+export type CreateUserBanOptions = CommonOptions & {
+    deleteMessageSeconds?: number;
+    duration?: number;
+    autoRemoveQueue?: boolean;
+};
+
+export type CreateMemberMuteOptions = CommonOptions & {
+    duration?: number;
+    messagesToDelete?: MessageResolvable[];
+    messageChannel?: TextChannel;
+    bulkDeleteReason?: string;
+    autoRemoveQueue?: boolean;
+};
+
+export type BulkDeleteMessagesOptions = CommonOptions & {
+    user: User;
+    messagesToDelete?: MessageResolvable[];
+    messageChannel?: TextChannel;
+};
+
+export type ActionDoneName = "banned" | "muted" | "kicked" | "warned" | "unbanned" | "unmuted";
+
+export type SendDMOptions = {
+    fields?: APIEmbedField[] | ((internalFields: APIEmbedField[]) => Promise<APIEmbedField[]> | APIEmbedField[]);
+    description?: string;
+    actionDoneName: ActionDoneName;
+    id: string | number;
+    reason?: string;
+    color?: ColorResolvable;
+};
