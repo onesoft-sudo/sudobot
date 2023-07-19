@@ -290,6 +290,21 @@ export default class LoggerService extends Service {
             }
         });
     }
+
+    async logMemberMassKick({ users, reason, guild, moderator }: Omit<LogUserMassBanOptions, 'deleteMessageSeconds'>) {
+        await this.sendLogEmbed(guild, {
+            title: "A masskick was executed",
+            footerText: "Kicked",
+            reason: reason ?? null,
+            moderator,
+            color: Colors.Orange,
+            options: {
+                description: `The following users were kicked:\n\n${users.reduce(
+                    (acc, user) => acc + (acc === '' ? '' : '\n') + "<@" + user + "> (`" + user + "`)", ''
+                )}`
+            }
+        });
+    }
 }
 
 interface LogUserBanOptions extends BanOptions, CommonUserActionOptions {

@@ -680,6 +680,89 @@ export default class InfractionManager extends Service {
 
         return { success: true };
     }
+
+    async createMemberMassKick({ users, sendLog, reason, moderator, guild, callAfterEach, callback }: Omit<CreateUserMassBanOptions, 'deleteMessageSeconds'>) {
+        if (users.length > 10) {
+            return { error: "Cannot perform this operation on more than 10 users" };
+        }
+
+        const startTime = Date.now();
+
+        const createInfractionData = [];
+        const skippedUsers: string[] = [];
+        const completedUsers: string[] = [];
+        let count = 0;
+        let calledJustNow = false;
+
+        if (callback) {
+            await callback({
+                count,
+                users,
+                completedUsers,
+                skippedUsers
+            }).catch(logError);
+        }
+
+        for (const user of users) {
+            if (callAfterEach && callback && count !== 0 && count % callAfterEach === 0) {
+                await callback({
+                    count,
+                    users,
+                    completedUsers,
+                    skippedUsers
+                }).catch(logError);
+
+                calledJustNow = true;
+            }
+            else
+                calledJustNow = false;
+
+            try {
+                const member = guild.members.cache.get(user) ?? await guild.members.fetch(user);
+                await member.kick(reason);
+
+                completedUsers.push(user);
+
+                createInfractionData.push({
+                    type: InfractionType.MASSKICK,
+                    userId: user,
+                    reason,
+                    moderatorId: moderator.id,
+                    guildId: guild.id,
+                });
+            }
+            catch (e) {
+                logError(e);
+                skippedUsers.push(user);
+            }
+
+            count++;
+        }
+
+        if (!calledJustNow && callback) {
+            await callback({
+                count,
+                users,
+                completedUsers,
+                skippedUsers,
+                completedIn: Math.round((Date.now() - startTime) / 1000)
+            }).catch(logError);
+        }
+
+        await this.client.prisma.infraction.createMany({
+            data: createInfractionData,
+        });
+
+        if (sendLog)
+            await this.client.logger.logUserMassBan({
+                users: completedUsers,
+                reason,
+                guild,
+                moderator,
+            });
+
+        return { success: true };
+    }
 }
 
 export type CreateUserMassBanOptions = Omit<CreateUserBanOptions & {
