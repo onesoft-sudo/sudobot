@@ -1,3 +1,19 @@
+# [4.112.0](https://github.com/onesoft-sudo/sudobot/compare/v4.111.0...v4.112.0) (2023-07-19)
+
+
+### Bug Fixes
+
+* emojis not working ([9289e6e](https://github.com/onesoft-sudo/sudobot/commit/9289e6e19fd1d639f52e13a7cb3dbebfae2ee802))
+* unused argument ([6d4c093](https://github.com/onesoft-sudo/sudobot/commit/6d4c093dfd59e88d69e5b34b9a015ccdbaa986a0))
+
+
+### Features
+
+* **commands:** add massban command ([fc5ba6c](https://github.com/onesoft-sudo/sudobot/commit/fc5ba6c9d558a8af512c9878fa42c7e3082e574b))
+* force sync emojis if `sync_emojis` option is enabled in system config ([954b186](https://github.com/onesoft-sudo/sudobot/commit/954b1868d0d1ad3db8a11e7114b135fe351d8a2b))
+
+
+
 # [4.111.0](https://github.com/onesoft-sudo/sudobot/compare/v4.110.1...v4.111.0) (2023-07-18)
 
 
@@ -47,24 +63,6 @@
 ### Bug Fixes
 
 * **build:** build failure due to prisma client not being generated ([a3d9fc4](https://github.com/onesoft-sudo/sudobot/commit/a3d9fc4bb0bb7140fa66255c33591eb7d02b5150))
-
-
-
-# [4.109.0](https://github.com/onesoft-sudo/sudobot/compare/v4.108.0...v4.109.0) (2023-07-16)
-
-
-### Bug Fixes
-
-* **queues:** queues persist between restarts even after expiring ([d47ff46](https://github.com/onesoft-sudo/sudobot/commit/d47ff4661d3597504686e751007c65f92374eee3))
-
-
-### Features
-
-* **client:** add fetchUserSafe() function that does not throw an error ([6e072fa](https://github.com/onesoft-sudo/sudobot/commit/6e072fad918c405feb9023d139a845d980bc1617))
-* **commands:** add infraction management commands ([ae96f9c](https://github.com/onesoft-sudo/sudobot/commit/ae96f9c8e7dcaa97b739bb5988efc901d02c64a3))
-* **commands:** add or/and permission checking ([68aa859](https://github.com/onesoft-sudo/sudobot/commit/68aa859c663372342ca1ad685b4977532c09c181))
-* **infractionManager:** add a generateInfractionDetailsEmbed() function ([5dea82f](https://github.com/onesoft-sudo/sudobot/commit/5dea82f559fb820b23ce1a56bb6f9ab52b9c835c))
-* **types:** add infraction model type ([a9eae05](https://github.com/onesoft-sudo/sudobot/commit/a9eae05d565e4a46495458463b3319294880b3ed))
 
 
 
