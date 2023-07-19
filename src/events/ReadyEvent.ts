@@ -19,7 +19,7 @@
 
 import { ClientEvents } from "discord.js";
 import Event from "../core/Event";
-import { logError, logInfo } from "../utils/logger";
+import { logError, logInfo, logWarn } from "../utils/logger";
 
 export default class ReadyEvent extends Event {
     public name: keyof ClientEvents = 'ready';
@@ -28,5 +28,25 @@ export default class ReadyEvent extends Event {
         logInfo("The bot has logged in.");
         this.client.server.start().catch(logError);
         this.client.queueManager.onReady().catch(logError);
+        const homeGuild = await this.client.getHomeGuild();
+
+        if (this.client.configManager.systemConfig.sync_emojis) {
+            try {
+                const emojis = await homeGuild.emojis.fetch();
+
+                for (const [id, emoji] of emojis) {
+                    if (!this.client.emojis.cache.has(id)) {
+                        this.client.emojis.cache.set(id, emoji);
+                        this.client.emojiMap.set(emoji.name ?? emoji.identifier, emoji);
+                    }
+                }
+
+                logInfo("Successfully synced the emojis of home guild.");
+            }
+            catch (e) {
+                logError(e);
+                logWarn("Failed to fetch some of the emojis. The bot may not show some of the emojis in it's responses.");
+            }
+        }
     }
 }
