@@ -1,3 +1,12 @@
+# [4.113.0](https://github.com/onesoft-sudo/sudobot/compare/v4.112.0...v4.113.0) (2023-07-19)
+
+
+### Features
+
+* add masskick command ([3b761d5](https://github.com/onesoft-sudo/sudobot/commit/3b761d51f3c127eda65438d8d5716400f11ef5b8))
+
+
+
 # [4.112.0](https://github.com/onesoft-sudo/sudobot/compare/v4.111.0...v4.112.0) (2023-07-19)
 
 
@@ -54,15 +63,6 @@
 ### Features
 
 * **commands:** add infraction create command ([5cb7ceb](https://github.com/onesoft-sudo/sudobot/commit/5cb7cebc277dddc6fb6de60a6c4413dfe46971cb))
-
-
-
-## [4.109.1](https://github.com/onesoft-sudo/sudobot/compare/v4.109.0...v4.109.1) (2023-07-16)
-
-
-### Bug Fixes
-
-* **build:** build failure due to prisma client not being generated ([a3d9fc4](https://github.com/onesoft-sudo/sudobot/commit/a3d9fc4bb0bb7140fa66255c33591eb7d02b5150))
 
 
 
