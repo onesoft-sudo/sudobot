@@ -1,3 +1,12 @@
+# [4.114.0](https://github.com/onesoft-sudo/sudobot/compare/v4.113.0...v4.114.0) (2023-07-19)
+
+
+### Features
+
+* add clear command ([b52070c](https://github.com/onesoft-sudo/sudobot/commit/b52070c1e1e299487cba2e74436c988c3ab0a432))
+
+
+
 # [4.113.0](https://github.com/onesoft-sudo/sudobot/compare/v4.112.0...v4.113.0) (2023-07-19)
 
 
@@ -49,20 +58,6 @@
 ### Bug Fixes
 
 * **commands:** validation of ArgumentType.Link wasn't implmented ([2189233](https://github.com/onesoft-sudo/sudobot/commit/218923309eff9d16740ccd70128927bb6bd54fb9))
-
-
-
-# [4.110.0](https://github.com/onesoft-sudo/sudobot/compare/v4.109.1...v4.110.0) (2023-07-18)
-
-
-### Bug Fixes
-
-* use readonly properties ([e365084](https://github.com/onesoft-sudo/sudobot/commit/e365084780059595cdd17a8f3a1de05cdfd65b56))
-
-
-### Features
-
-* **commands:** add infraction create command ([5cb7ceb](https://github.com/onesoft-sudo/sudobot/commit/5cb7cebc277dddc6fb6de60a6c4413dfe46971cb))
 
 
 
