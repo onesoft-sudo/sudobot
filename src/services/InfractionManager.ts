@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Infraction, InfractionType } from "@prisma/client";
+import { Infraction, InfractionType, Prisma } from "@prisma/client";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
     APIEmbedField,
@@ -33,13 +33,13 @@ import {
     User,
     escapeCodeBlock,
     escapeMarkdown,
-    time
+    time, UserResolvable
 } from "discord.js";
 import path from "path";
 import Service from "../core/Service";
 import QueueEntry from "../utils/QueueEntry";
 import { log, logError } from "../utils/logger";
-import { getEmoji } from "../utils/utils";
+import { getEmoji, wait } from "../utils/utils";
 
 export const name = "infractionManager";
 
@@ -591,7 +591,108 @@ export default class InfractionManager extends Service {
 
         return { id, result };
     }
+
+    async createUserMassBan({ users, sendLog, reason, deleteMessageSeconds, moderator, guild, callAfterEach, callback }: CreateUserMassBanOptions) {
+        if (users.length > 20) {
+            return { error: "Cannot perform this operation on more than 20 users" };
+        }
+
+        const startTime = Date.now();
+
+        const createInfractionData = [];
+        const skippedUsers: string[] = [];
+        const completedUsers: string[] = [];
+        let count = 0;
+        let calledJustNow = false;
+
+        if (callback) {
+            await callback({
+                count,
+                users,
+                completedUsers,
+                skippedUsers
+            }).catch(logError);
+        }
+
+        for (const user of users) {
+            if (callAfterEach && callback && count !== 0 && count % callAfterEach === 0) {
+                await callback({
+                    count,
+                    users,
+                    completedUsers,
+                    skippedUsers
+                }).catch(logError);
+
+                calledJustNow = true;
+            }
+            else
+                calledJustNow = false;
+
+            try {
+                await guild.bans.create(user, {
+                    reason,
+                    deleteMessageSeconds
+                });
+
+                completedUsers.push(user);
+
+                createInfractionData.push({
+                    type: InfractionType.MASSBAN,
+                    userId: user,
+                    reason,
+                    moderatorId: moderator.id,
+                    guildId: guild.id,
+                    metadata: {
+                        deleteMessageSeconds
+                    }
+                });
+            }
+            catch (e) {
+                logError(e);
+                skippedUsers.push(user);
+            }
+
+            count++;
+        }
+
+        if (!calledJustNow && callback) {
+            await callback({
+                count,
+                users,
+                completedUsers,
+                skippedUsers,
+                completedIn: Math.round((Date.now() - startTime) / 1000)
+            }).catch(logError);
+        }
+
+        await this.client.prisma.infraction.createMany({
+            data: createInfractionData,
+        });
+
+        if (sendLog)
+            await this.client.logger.logUserMassBan({
+                users: completedUsers,
+                reason,
+                guild,
+                moderator,
+                deleteMessageSeconds
+            });
+
+        return { success: true };
+    }
 }
+
+export type CreateUserMassBanOptions = Omit<CreateUserBanOptions & {
+    users: readonly string[],
+    callback?: (options: {
+        count: number,
+        users: readonly string[],
+        completedUsers: readonly string[],
+        skippedUsers: readonly string[],
+        completedIn?: number
+    }) => Promise<any> | any,
+    callAfterEach?: number
+}, "duration" | "autoRemoveQueue" | "notifyUser">;
 
 export type CommonOptions = {
     reason?: string;

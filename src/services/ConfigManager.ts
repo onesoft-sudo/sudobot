@@ -29,6 +29,7 @@ export const name = "configManager";
 
 export const SystemConfigSchema = z.object({
     emojis: z.record(z.string()).optional().default({}),
+    sync_emojis: z.boolean().default(false),
     system_admins: z.array(z.string()).default([])
 });
 

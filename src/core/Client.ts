@@ -18,7 +18,7 @@
  */
 
 import { PrismaClient } from "@prisma/client";
-import { Collection, Client as DiscordClient, UserResolvable } from "discord.js";
+import { Collection, Client as DiscordClient, UserResolvable, GuildEmoji } from "discord.js";
 import fs from "fs/promises";
 import path from "path";
 import Server from "../api/Server";
@@ -70,6 +70,7 @@ export default class Client extends DiscordClient {
     server = new Server(this);
 
     commands = new Collection<string, Command>();
+    emojiMap = new Collection<string, GuildEmoji>;
 
     async boot() {
         await this.serviceManager.loadServices();
@@ -131,6 +132,24 @@ export default class Client extends DiscordClient {
             const { default: Event } = await import(filePath);
             const event = new Event(this);
             this.on(event.name, event.execute.bind(event));
+        }
+    }
+
+    async getHomeGuild() {
+        const id = process.env.HOME_GUILD_ID;
+
+        if (!id) {
+            logError("Environment variable `HOME_GUILD_ID` is not set. The bot can't work without it. Please follow the setup guide in the bot documentation.");
+            process.exit(-1);
+        }
+
+        try {
+            return this.guilds.cache.get(id) || (await this.guilds.fetch(id));
+        }
+        catch (e) {
+            logError(e);
+            logError("Error fetching home guild: make sure the ID inside `HOME_GUILD_ID` environment variable is correct.");
+            process.exit(-1);
         }
     }
 }

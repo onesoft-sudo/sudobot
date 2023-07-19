@@ -322,6 +322,8 @@ export default abstract class Command {
                             case ArgumentType.GuildMember:
                             case ArgumentType.Channel:
                             case ArgumentType.Role:
+                                // TODO: Use message.mentions object to improve performance and reduce API requests
+
                                 let id;
 
                                 if (MessageMentions.UsersPattern.test(arg)) {

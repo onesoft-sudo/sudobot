@@ -31,7 +31,7 @@ import {
     MessagePayload,
     TextChannel,
     User,
-    escapeMarkdown
+    escapeMarkdown, UserResolvable
 } from "discord.js";
 import Service from "../core/Service";
 import { logError } from "../utils/logger";
@@ -267,11 +267,38 @@ export default class LoggerService extends Service {
             }
         });
     }
+
+    async logUserMassBan({ users, reason, guild, moderator, deleteMessageSeconds }: LogUserMassBanOptions) {
+        await this.sendLogEmbed(guild, {
+            title: "A massban was executed",
+            footerText: "Banned",
+            reason: reason ?? null,
+            moderator,
+            color: Colors.Red,
+            fields: [
+                {
+                    name: "Message Deletion Timeframe",
+                    value: deleteMessageSeconds
+                        ? formatDistanceToNowStrict(new Date(Date.now() - deleteMessageSeconds * 1000))
+                        : "*No timeframe provided*"
+                },
+            ],
+            options: {
+                description: `The following users were banned:\n\n${users.reduce(
+                    (acc, user) => acc + (acc === '' ? '' : '\n') + "<@" + user + "> (`" + user + "`)", ''
+                )}`
+            }
+        });
+    }
 }
 
 interface LogUserBanOptions extends BanOptions, CommonUserActionOptions {
     user: User;
     duration?: number;
+}
+
+interface LogUserMassBanOptions extends BanOptions, Omit<CommonUserActionOptions, 'id'> {
+    users: string[];
 }
 
 interface LogUserUnbanOptions extends CommonUserActionOptions {
