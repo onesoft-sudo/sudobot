@@ -140,7 +140,7 @@ export async function createModerationEmbed({
 }
 
 export function getEmoji(client: Client, name: string) {
-    return client.configManager.systemConfig.emojis?.[name] ?? "";
+    return client.configManager.systemConfig.emojis?.[name] ?? client.emojiMap.get(name)?.toString() ?? client.emojis.cache.find(e => e.name === name)?.toString() ?? "";
 }
 
 export function isTextableChannel(channel: Channel | ThreadChannel, DMs = false): channel is TextChannel | NewsChannel | ThreadChannel {
@@ -167,4 +167,8 @@ export function isImmuneToAutoMod(client: Client, member: GuildMember, permissio
         member.permissions.has(PermissionFlagsBits.ManageGuild, true) ||
         (permission && member.permissions.has(permission, true))
     );
+}
+
+export function wait(time: number) {
+    return new Promise(resolve => setTimeout(resolve, time));
 }
