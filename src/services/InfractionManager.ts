@@ -368,25 +368,38 @@ export default class InfractionManager extends Service {
         return { id, result };
     }
 
-    async bulkDeleteMessages({ user, messagesToDelete, messageChannel, guild, moderator, reason, sendLog }: BulkDeleteMessagesOptions) {
+    async bulkDeleteMessages({ user, messagesToDelete, messageChannel, guild, moderator, reason, sendLog, count: messageCount }: BulkDeleteMessagesOptions) {
         if (messageChannel && !(messagesToDelete && messagesToDelete.length === 0)) {
-            let messages: Collection<string, Message> | MessageResolvable[] | null = messagesToDelete ?? null;
+            let messages: MessageResolvable[] | null = messagesToDelete ?? null;
 
             if (messages === null) {
                 log("The messagesToDelete was option not provided. Fetching messages manually.");
 
                 try {
-                    messages = await messageChannel.messages.fetch({ limit: 100 });
-                    messages = messages.filter((m) => m.author.id === user.id && Date.now() - m.createdAt.getTime() <= 1000 * 60 * 60 * 24 * 7 * 2);
+                    const allMessages = await messageChannel.messages.fetch({ limit: 100 });
+                    messages = [];
+
+                    let i = 0;
+
+                    for (const [id, m] of allMessages) {
+                        if (messageCount && i >= messageCount) {
+                            break;
+                        }
+
+                        if ((user ? m.author.id === user.id : true) && Date.now() - m.createdAt.getTime() <= 1000 * 60 * 60 * 24 * 7 * 2) {
+                            messages.push(m);
+                            i++;
+                        }
+                    }
                 } catch (e) {
                     logError(e);
                     messages = null;
                 }
             }
 
-            const count = messages ? (messages instanceof Collection ? messages.size : messages.length) : 0;
+            const count = messages ? messages.length : 0;
 
-            const { id } = await this.client.prisma.infraction.create({
+            const { id } = user ? await this.client.prisma.infraction.create({
                 data: {
                     type: InfractionType.BULK_DELETE_MESSAGE,
                     guildId: guild.id,
@@ -397,7 +410,7 @@ export default class InfractionManager extends Service {
                     },
                     reason
                 }
-            });
+            }) : { id: 0 };
 
             if (sendLog) {
                 this.client.logger
@@ -405,7 +418,7 @@ export default class InfractionManager extends Service {
                         channel: messageChannel,
                         count,
                         guild,
-                        id: `${id}`,
+                        id: id === 0 ? undefined : `${id}`,
                         user,
                         moderator,
                         reason
@@ -417,7 +430,7 @@ export default class InfractionManager extends Service {
                 try {
                     await messageChannel.bulkDelete(messages);
                     const reply = await messageChannel.send(
-                        `${getEmoji(this.client, "check")} Deleted ${count} messages from user **@${escapeMarkdown(user.username)}**`
+                        `${getEmoji(this.client, "check")} Deleted ${count} messages${user ? ` from user **@${escapeMarkdown(user.username)}**` : ""}`
                     );
 
                     setTimeout(() => reply.delete().catch(logError), 5000);
@@ -800,9 +813,10 @@ export type CreateMemberMuteOptions = CommonOptions & {
 };
 
 export type BulkDeleteMessagesOptions = CommonOptions & {
-    user: User;
+    user?: User;
     messagesToDelete?: MessageResolvable[];
     messageChannel?: TextChannel;
+    count?: number;
 };
 
 export type ActionDoneName = "banned" | "muted" | "kicked" | "warned" | "unbanned" | "unmuted";

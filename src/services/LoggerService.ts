@@ -216,7 +216,7 @@ export default class LoggerService extends Service {
         id,
         count,
         channel
-    }: CommonUserActionOptions & { user: User; reason?: string; count: number; channel: TextChannel }) {
+    }: Omit<CommonUserActionOptions, 'id'> & { user?: User; reason?: string; count: number; channel: TextChannel, id?: string }) {
         this.sendLogEmbed(guild, {
             user,
             title: "Messages deleted in bulk",

@@ -87,6 +87,7 @@ export default class Client extends DiscordClient {
 
     async loadCommands(directory = this.commandsDirectory) {
         const files = await fs.readdir(directory);
+        const includeOnly = process.env.COMMANDS?.split(';');
 
         for (const file of files) {
             const filePath = path.join(directory, file);
@@ -98,6 +99,10 @@ export default class Client extends DiscordClient {
             }
 
             if (!file.endsWith(".ts") && !file.endsWith(".js")) {
+                continue;
+            }
+
+            if (includeOnly && !includeOnly.includes(file.replace(/\.(ts|js)/gi, ""))) {
                 continue;
             }
 
