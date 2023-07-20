@@ -28,9 +28,7 @@ export * from "../types/GuildConfigSchema";
 
 export const name = "configManager";
 
-export const GuildConfigContainerSchema = z.object({
-    "$schema": z.string().optional()
-}).and(z.record(z.string(), GuildConfigSchema));
+export const GuildConfigContainerSchema = z.record(z.string(), GuildConfigSchema);
 
 export type GuildConfigContainer = z.infer<typeof GuildConfigContainerSchema>;
 
@@ -44,7 +42,13 @@ export default class ConfigManager extends Service {
     async boot() {
         const configFileBuffer = await fs.readFile(this.configPath);
         const systemConfigFileBuffer = await fs.readFile(this.systemConfigPath);
-        this.config = GuildConfigContainerSchema.parse(JSON.parse(configFileBuffer.toString()));
+        const configJSON = JSON.parse(configFileBuffer.toString());
+
+        if ("$schema" in configJSON) {
+            delete configJSON.$schema;
+        }
+
+        this.config = GuildConfigContainerSchema.parse(configJSON);
         this.systemConfig = SystemConfigSchema.parse(JSON.parse(systemConfigFileBuffer.toString()));
     }
 }
