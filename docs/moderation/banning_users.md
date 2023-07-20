@@ -1,23 +1,26 @@
 # Banning Users
 
 ## Normal Ban
+
 Use the `-ban` command to ban a user, regardless if they are in the server or not.
 
-##### Legacy Command
+**Legacy Command**
+
 ```
 -ban <UserID|UserMention|UserTag> [-d=DAYS] [Reason]
-``` 
+```
 
-**Options**: 
+**Options**:
 
-- `-d`: Specify the how many days old messages to delete. Must be in range of 0-7. Default is - "Don't delete any".
+* `-d`: Specify the how many days old messages to delete. Must be in range of 0-7. Default is - "Don't delete any".
 
-##### Slash Command
+**Slash Command**
+
 ```
 /ban <User> [days] [reason]
 ```
 
-##### Examples
+**Examples**
 
 ```
 -ban @Someone
@@ -29,19 +32,22 @@ Use the `-ban` command to ban a user, regardless if they are in the server or no
 ```
 
 ## Temporary Ban
+
 Temporarily ban users.
 
-##### Legacy Command
+**Legacy Command**
+
 ```
 -tempban <UserID|UserMention> <Time> [Reason]
-``` 
+```
 
-##### Slash Command
+**Slash Command**
+
 ```
 /tempban <UserID> <Time> [days] [reason]
 ```
 
-##### Examples
+**Examples**
 
 ```
 -tempban @Someone 1h
@@ -51,23 +57,26 @@ Temporarily ban users.
 ```
 
 ## Softban
+
 Ban a user and unban immediately to remove messages from the user.
 
-##### Legacy Command
+**Legacy Command**
+
 ```
 -softban <UserID|UserMention> [-d=DAYS_OF_MESSAGE_DELETION] [Reason]
-``` 
+```
 
-##### Slash Command
+**Slash Command**
+
 ```
 /softban <UserID> [-d=DAYS_OF_MESSAGE_DELETION] [days] [reason]
 ```
 
-**Options**: 
+**Options**:
 
-- `-d`: Specify the how many days old messages to delete. Must be in range of 0-7. Default is `7`.
+* `-d`: Specify the how many days old messages to delete. Must be in range of 0-7. Default is `7`.
 
-##### Examples
+**Examples**
 
 ```
 -tempban @Someone 1h
@@ -77,23 +86,26 @@ Ban a user and unban immediately to remove messages from the user.
 ```
 
 ## Mass Ban
+
 Use the `-massban` command to massban users.
 
-##### Legacy Command
+**Legacy Command**
+
 ```
 -massban <...UserIDs|UserMentions> [Reason]
-``` 
+```
 
-##### Slash Command
+**Slash Command**
+
 ```
 /massban <...UserIDs> [days] [reason]
 ```
 
-!!! note
+{% hint style="info" %}
+While using slash command, the IDs must be separated with spaces.
+{% endhint %}
 
-    While using slash command, the IDs must be separated with spaces.
-
-##### Examples
+**Examples**
 
 ```
 -massban 23626825621964 217216291276407
@@ -102,19 +114,22 @@ Use the `-massban` command to massban users.
 ```
 
 ## Unbanning
+
 Use the `-unban` command to unban users.
 
-##### Legacy Command
+**Legacy Command**
+
 ```
 -unban <UserID>
-``` 
+```
 
-##### Slash Command
+**Slash Command**
+
 ```
 /unban <UserID>
 ```
 
-##### Examples
+**Examples**
 
 ```
 -unban 7485692162169

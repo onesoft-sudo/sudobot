@@ -1,11 +1,13 @@
 # Taking notes for a user
 
-##### Legacy Command
+**Legacy Command**
+
 ```
 -note <UserID|UserMention|UserTag> <...NoteContent>
 ```
 
-##### Slash Command
+**Slash Command**
+
 ```
 /note <User> <Content>
 ```
@@ -19,20 +21,21 @@
 
 ## Viewing notes
 
-##### Legacy Command
+**Legacy Command**
+
 ```
 -noteget <NoteID>
 ```
 
-##### Slash Command
+**Slash Command**
+
 ```
 /noteget <NoteID>
 ```
 
-!!! info
-
-    Note IDs are shown when you create them. Also, running `-notes` command will list all notes for a user with their IDs.
-
+{% hint style="info" %}
+Note IDs are shown when you create them. Also, running `-notes` command will list all notes for a user with their IDs.
+{% endhint %}
 
 #### Examples
 
@@ -42,12 +45,14 @@
 
 ## Viewing all notes for a user
 
-##### Legacy Command
+**Legacy Command**
+
 ```
 -notes <UserID|UserMention|UserTag>
 ```
 
-##### Slash Command
+**Slash Command**
+
 ```
 /notes <User>
 ```
@@ -61,12 +66,14 @@
 
 ## Deleting notes
 
-##### Legacy Command
+**Legacy Command**
+
 ```
 -notedel <NoteID>
 ```
 
-##### Slash Command
+**Slash Command**
+
 ```
 /notedel <NoteID>
 ```

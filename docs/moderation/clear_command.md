@@ -2,24 +2,29 @@
 
 Sudobot has `-clear` command which can delete messages in bulk.
 
-!!! warning
-    Messages deleted using this command won't be logged.
+{% hint style="warning" %}
+Messages deleted using this command won't be logged.
+{% endhint %}
 
-##### Legacy Command
+**Legacy Command**
+
 ```
 -clear <UserID|UserMention>
 ```
 
-##### Slash Command
+**Slash Command**
+
 ```
 /clear [User] [MessageCount] [Channel]
 ```
 
-!!! note
-    While using slash command, you must specify either the message count or the user.
+{% hint style="warning" %}
+While using slash command, you must specify either the message count or the user.
+{% endhint %}
 
-!!! info
-    This operation might take some time depending on the amount of messages.
+{% hint style="info" %}
+This operation might take some time depending on the amount of messages.
+{% endhint %}
 
 #### Examples
 

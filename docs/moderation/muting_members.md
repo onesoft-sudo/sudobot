@@ -2,20 +2,21 @@
 
 Use the `-mute` command to mute members. This will assign a muted role to the member and each channel is expected to have a permission override for this role which denies the `SEND_MESSAGES` permission.
 
-##### Legacy Command
+**Legacy Command**
+
 ```
 -mute <UserID|UserMention|UserTag> [-t=TIME] [Reason] 
 ```
 
-##### Slash Command
+**Slash Command**
+
 ```
 /mute <Member> [Time] [Reason] [Hardmute]
 ```
 
-!!! info
-
-    Hardmuting means not only muting but also taking out all other roles except the muted role. They'll be given back when the unmute command is run or the mute duration expires.
-
+{% hint style="info" %}
+Hardmuting means not only muting but also taking out all other roles except the muted role. They'll be given back when the unmute command is run or the mute duration expires.
+{% endhint %}
 
 #### Examples
 
@@ -31,12 +32,14 @@ Use the `-mute` command to mute members. This will assign a muted role to the me
 
 Use the `-unmute` command to unmute members.
 
-##### Legacy Command
+**Legacy Command**
+
 ```
 -unmute <UserID|UserMention|UserTag>
 ```
 
-##### Slash Command
+**Slash Command**
+
 ```
 /unmute <Member>
 ```

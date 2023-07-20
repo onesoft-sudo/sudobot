@@ -2,21 +2,25 @@
 
 You can lock channels using `-lock` command. This sets a permission override to the target channel that denies `SEND_MESSAGES` permission for `@everyone` role.
 
-!!! warning
-    If other roles have `SEND_MESSAGES` permission allowed then members having them could bypass the channel lock. You should take care about this.
+{% hint style="warning" %}
+If other roles have `SEND_MESSAGES` permission allowed then members having them could bypass the channel lock. You should take care about this.
+{% endhint %}
 
-##### Legacy Command
+**Legacy Command**
+
 ```
 -lock [ChannelID|ChannelMention]
 ```
 
-##### Slash Command
+**Slash Command**
+
 ```
 /lock [Channel]
 ```
 
-!!! note
-    If the channel is not specified then the system will lock the current channel.
+{% hint style="info" %}
+If the channel is not specified then the system will lock the current channel.
+{% endhint %}
 
 #### Examples
 
@@ -28,12 +32,14 @@ You can lock channels using `-lock` command. This sets a permission override to 
 
 ## Locking Channels in Bulk
 
-##### Legacy Command
+**Legacy Command**
+
 ```
 -lockall <...ChannelIDs|ChannelMentions> [--raid]
 ```
 
-##### Slash Command
+**Slash Command**
+
 ```
 /lockall <...ChannelIDs> [Role] [Raid]
 ```
@@ -53,18 +59,21 @@ You can lock channels using `-lock` command. This sets a permission override to 
 
 You can unlock channels back using `-unlock` command. This sets a permission override to the target channel that reverts the `SEND_MESSAGES` permission for `@everyone` role as it was before.
 
-##### Legacy Command
+**Legacy Command**
+
 ```
 -unlock [ChannelID|ChannelMention]
 ```
 
-##### Slash Command
+**Slash Command**
+
 ```
 /unlock [Channel]
 ```
 
-!!! note
-    If the channel is not specified then the system will unlock the current channel.
+{% hint style="info" %}
+If the channel is not specified then the system will unlock the current channel.
+{% endhint %}
 
 #### Examples
 
@@ -76,12 +85,14 @@ You can unlock channels back using `-unlock` command. This sets a permission ove
 
 ## Unlocking Channels in Bulk
 
-##### Legacy Command
+**Legacy Command**
+
 ```
 -unlockall <...ChannelIDs|ChannelMentions> [--raid]
 ```
 
-##### Slash Command
+**Slash Command**
+
 ```
 /unlockall <...Channels> [Role] [Raid]
 ```
