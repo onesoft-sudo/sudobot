@@ -1,12 +1,12 @@
 # Table of contents
 
 * [SudoBot](README.md)
-* [automoderation](automoderation/README.md)
-  * [Automoderation](automoderation/index.md)
-* [features](features/README.md)
+* [Auto Moderation](automoderation/README.md)
+  * [Auto Moderation](automoderation/index.md)
+* [Features](features/README.md)
   * [Features](features/index.md)
   * [Screenshots](features/screenshots.md)
-* [legal](legal/README.md)
+* [Legal](legal/README.md)
   * [Privacy Policy](legal/privacy.md)
   * [Terms of Service](legal/terms.md)
   * [Why did the bot in my server get terminated?](legal/why\_did\_my\_server\_get\_terminated.md)
