@@ -10,7 +10,7 @@
   * [Privacy Policy](legal/privacy.md)
   * [Terms of Service](legal/terms.md)
   * [Why did the bot in my server get terminated?](legal/why\_did\_my\_server\_get\_terminated.md)
-* [moderation](moderation/README.md)
+* [Moderation](moderation/README.md)
   * [Banning Users](moderation/banning\_users.md)
   * [Clearing messages in bulk](moderation/clear\_command.md)
   * [Moderation](moderation/index.md)
