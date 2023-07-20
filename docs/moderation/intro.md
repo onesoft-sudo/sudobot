@@ -1,4 +1,4 @@
-# Moderation
+# Introduction to SudoBot's Moderation Tools
 
 SudoBot has these manual moderation tools:
 
