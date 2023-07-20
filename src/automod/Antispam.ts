@@ -49,7 +49,8 @@ export default class Antispam extends Service {
                 messageChannel: antispam?.action === "mute_clear" || antispam?.action === "auto" ? (message.channel! as TextChannel) : undefined,
                 notifyUser: true,
                 reason: "Spam detected",
-                sendLog: true
+                sendLog: true,
+                autoRemoveQueue: true
             })
             .catch(logError);
     }
