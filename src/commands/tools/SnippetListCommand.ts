@@ -1,4 +1,4 @@
-/*
+/**
  * This file is part of SudoBot.
  *
  * Copyright (C) 2021-2023 OSN Developers.
@@ -17,18 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { z } from "zod";
+import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
-export const SystemConfigSchema = z.object({
-    $schema: z.string().optional(),
-    emojis: z.record(z.string()).optional().default({}),
-    sync_emojis: z.boolean().default(false),
-    system_admins: z.array(z.string()).default([]),
-    snippets: z
-        .object({
-            save_attachments: z.boolean().default(false).optional()
-        })
-        .optional()
-});
+export default class SnippetListCommand extends Command {
+    public readonly name = "snippet__list";
+    public readonly validationRules: ValidationRule[] = [];
+    public readonly permissions = [];
 
-export type SystemConfig = z.infer<typeof SystemConfigSchema>;
+    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {}
+}

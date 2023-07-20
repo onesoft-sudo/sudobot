@@ -3,5 +3,8 @@
     "emojis": {
         "check": "<:check:1034487044333895731>"
     },
-    "system_admins": ["774553653394538506"]
+    "system_admins": ["774553653394538506"],
+    "snippets": {
+        "save_attachments": true
+    }
 }

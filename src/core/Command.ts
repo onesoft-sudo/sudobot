@@ -102,10 +102,12 @@ export default abstract class Command {
         return message.reply(options as any);
     }
 
-    async error(message: CommandMessage) {
+    async error(message: CommandMessage, errorMessage?: string) {
         return await this.deferredReply(
             message,
-            `An error has occurred while performing this action. Please make sure that the bot has the required permissions to perform this action.`
+            errorMessage
+                ? `${this.emoji("error")} ${errorMessage}`
+                : `⚠️ An error has occurred while performing this action. Please make sure that the bot has the required permissions to perform this action.`
         );
     }
 

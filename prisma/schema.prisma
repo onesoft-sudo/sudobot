@@ -63,3 +63,19 @@ model Queue {
 
     @@map("queues")
 }
+
+model Snippet {
+    id          Int      @id @default(autoincrement())
+    name        String
+    user_id     String
+    guild_id    String
+    roles       String[] @default([])
+    channels    String[] @default([])
+    users       String[] @default([])
+    attachments String[] @default([])
+    content     String?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @default(now()) @updatedAt
+
+    @@map("snippets")
+}

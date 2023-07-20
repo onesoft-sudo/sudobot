@@ -32,6 +32,8 @@ import {
     User,
     escapeMarkdown
 } from "discord.js";
+import { mkdirSync } from "fs";
+import path from "path";
 import Client from "../core/Client";
 import { ActionDoneName } from "../services/InfractionManager";
 
@@ -140,7 +142,12 @@ export async function createModerationEmbed({
 }
 
 export function getEmoji(client: Client, name: string) {
-    return client.configManager.systemConfig.emojis?.[name] ?? client.emojiMap.get(name)?.toString() ?? client.emojis.cache.find(e => e.name === name)?.toString() ?? "";
+    return (
+        client.configManager.systemConfig.emojis?.[name] ??
+        client.emojiMap.get(name)?.toString() ??
+        client.emojis.cache.find((e) => e.name === name)?.toString() ??
+        ""
+    );
 }
 
 export function isTextableChannel(channel: Channel | ThreadChannel, DMs = false): channel is TextChannel | NewsChannel | ThreadChannel {
@@ -170,5 +177,13 @@ export function isImmuneToAutoMod(client: Client, member: GuildMember, permissio
 }
 
 export function wait(time: number) {
-    return new Promise(resolve => setTimeout(resolve, time));
+    return new Promise((resolve) => setTimeout(resolve, time));
+}
+
+export function sudoPrefix(pathLike: string, createDirIfNotExists = false) {
+    const directoryOrFile = path.resolve(process.env.SUDO_PREFIX ?? __dirname, process.env.SUDO_PREFIX ? "" : "../..", pathLike);
+
+    if (createDirIfNotExists) mkdirSync(directoryOrFile, { recursive: true });
+
+    return directoryOrFile;
 }

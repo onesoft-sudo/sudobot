@@ -18,17 +18,18 @@
  */
 
 import { PrismaClient } from "@prisma/client";
-import { Collection, Client as DiscordClient, UserResolvable, GuildEmoji } from "discord.js";
+import { Collection, Client as DiscordClient, GuildEmoji, UserResolvable } from "discord.js";
 import fs from "fs/promises";
 import path from "path";
 import Server from "../api/Server";
-import Antispam from "../automod/Antispam";
-import MessageFilter from "../automod/MessageFilter";
-import CommandManager from "../services/CommandManager";
-import ConfigManager from "../services/ConfigManager";
-import InfractionManager from "../services/InfractionManager";
-import LoggerService from "../services/LoggerService";
-import QueueManager from "../services/QueueManager";
+import type Antispam from "../automod/Antispam";
+import type MessageFilter from "../automod/MessageFilter";
+import type CommandManager from "../services/CommandManager";
+import type ConfigManager from "../services/ConfigManager";
+import type InfractionManager from "../services/InfractionManager";
+import type LoggerService from "../services/LoggerService";
+import type QueueManager from "../services/QueueManager";
+import type SnippetManager from "../services/SnippetManager";
 import { logError, logInfo } from "../utils/logger";
 import Command from "./Command";
 import ServiceManager from "./ServiceManager";
@@ -46,7 +47,8 @@ export default class Client extends DiscordClient {
         "@services/LoggerService",
         "@automod/MessageFilter",
         "@automod/Antispam",
-        "@services/QueueManager"
+        "@services/QueueManager",
+        "@services/SnippetManager"
     ];
 
     commandsDirectory = path.resolve(__dirname, "../commands");
@@ -61,6 +63,7 @@ export default class Client extends DiscordClient {
     messageFilter: MessageFilter = {} as MessageFilter;
     antispam: Antispam = {} as Antispam;
     queueManager: QueueManager = {} as QueueManager;
+    snippetManager: SnippetManager = {} as SnippetManager;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",
@@ -70,7 +73,7 @@ export default class Client extends DiscordClient {
     server = new Server(this);
 
     commands = new Collection<string, Command>();
-    emojiMap = new Collection<string, GuildEmoji>;
+    emojiMap = new Collection<string, GuildEmoji>();
 
     async boot() {
         await this.serviceManager.loadServices();
@@ -87,7 +90,7 @@ export default class Client extends DiscordClient {
 
     async loadCommands(directory = this.commandsDirectory) {
         const files = await fs.readdir(directory);
-        const includeOnly = process.env.COMMANDS?.split(';');
+        const includeOnly = process.env.COMMANDS?.split(",");
 
         for (const file of files) {
             const filePath = path.join(directory, file);
@@ -144,14 +147,15 @@ export default class Client extends DiscordClient {
         const id = process.env.HOME_GUILD_ID;
 
         if (!id) {
-            logError("Environment variable `HOME_GUILD_ID` is not set. The bot can't work without it. Please follow the setup guide in the bot documentation.");
+            logError(
+                "Environment variable `HOME_GUILD_ID` is not set. The bot can't work without it. Please follow the setup guide in the bot documentation."
+            );
             process.exit(-1);
         }
 
         try {
             return this.guilds.cache.get(id) || (await this.guilds.fetch(id));
-        }
-        catch (e) {
+        } catch (e) {
             logError(e);
             logError("Error fetching home guild: make sure the ID inside `HOME_GUILD_ID` environment variable is correct.");
             process.exit(-1);
