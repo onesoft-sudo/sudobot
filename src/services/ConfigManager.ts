@@ -22,33 +22,29 @@ import path from "path";
 import { z } from "zod";
 import Service from "../core/Service";
 import { GuildConfigSchema } from "../types/GuildConfigSchema";
+import { SystemConfig, SystemConfigSchema } from "../types/SystemConfigSchema";
 
 export * from "../types/GuildConfigSchema";
 
 export const name = "configManager";
 
-export const SystemConfigSchema = z.object({
-    emojis: z.record(z.string()).optional().default({}),
-    sync_emojis: z.boolean().default(false),
-    system_admins: z.array(z.string()).default([])
-});
+export const GuildConfigContainerSchema = z.object({
+    "$schema": z.string().optional()
+}).and(z.record(z.string(), GuildConfigSchema));
 
-export type SystemConfig = z.infer<typeof SystemConfigSchema>;
-
-export const ConfigContainerSchema = z.record(z.string(), GuildConfigSchema);
-export type ConfigContainer = z.infer<typeof ConfigContainerSchema>;
+export type GuildConfigContainer = z.infer<typeof GuildConfigContainerSchema>;
 
 export default class ConfigManager extends Service {
     protected configPath = path.resolve(__dirname, "../../config/config.json");
     protected systemConfigPath = path.resolve(__dirname, "../../config/system.json");
 
-    config: ConfigContainer = {} as ConfigContainer;
+    config: GuildConfigContainer = {} as GuildConfigContainer;
     systemConfig: SystemConfig = {} as SystemConfig;
 
     async boot() {
         const configFileBuffer = await fs.readFile(this.configPath);
         const systemConfigFileBuffer = await fs.readFile(this.systemConfigPath);
-        this.config = ConfigContainerSchema.parse(JSON.parse(configFileBuffer.toString()));
+        this.config = GuildConfigContainerSchema.parse(JSON.parse(configFileBuffer.toString()));
         this.systemConfig = SystemConfigSchema.parse(JSON.parse(systemConfigFileBuffer.toString()));
     }
 }
