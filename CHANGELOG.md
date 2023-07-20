@@ -1,3 +1,12 @@
+## [4.114.1](https://github.com/onesoft-sudo/sudobot/compare/v4.114.0...v4.114.1) (2023-07-20)
+
+
+### Bug Fixes
+
+* **antispam:** not removing unmute queues ([f31a389](https://github.com/onesoft-sudo/sudobot/commit/f31a3890807efcdcb3110959d66b386a4ecf95a9))
+
+
+
 # [4.114.0](https://github.com/onesoft-sudo/sudobot/compare/v4.113.0...v4.114.0) (2023-07-19)
 
 
@@ -49,15 +58,6 @@
 * add tempban command ([1a9eba2](https://github.com/onesoft-sudo/sudobot/commit/1a9eba2f541325cdcccd848804057321b33f9a14))
 * **commands:** ban command now accepts a duration via slash command options ([de0e9d3](https://github.com/onesoft-sudo/sudobot/commit/de0e9d350b799febaf8d68cd4f50f97ca3fe0c27))
 * **infractionManager:** add tempban support ([73c9699](https://github.com/onesoft-sudo/sudobot/commit/73c9699760659844ddbc454e863644dd1389551c))
-
-
-
-## [4.110.1](https://github.com/onesoft-sudo/sudobot/compare/v4.110.0...v4.110.1) (2023-07-18)
-
-
-### Bug Fixes
-
-* **commands:** validation of ArgumentType.Link wasn't implmented ([2189233](https://github.com/onesoft-sudo/sudobot/commit/218923309eff9d16740ccd70128927bb6bd54fb9))
 
 
 
