@@ -3,8 +3,6 @@ node_modules/
 .vscode/
 .idea/
 *.db
-config/*
-!config/sample-config.json
 test.ts
 test.js
 src/commands/test/

@@ -1,0 +1,35 @@
+{
+    "$schema": "./schema/config.json",
+    "911987536379912193": {
+        "prefix": "-",
+        "infractions": {
+            "send_ids_to_user": true
+        },
+        "muting": {
+            "role": "963418517565214770"
+        },
+        "logging": {
+            "enabled": true,
+            "primary_channel": "961547831536136212"
+        },
+        "message_filter": {
+            "enabled": true,
+            "send_logs": true,
+            "delete_message": true,
+            "data": {
+                "blocked_tokens": [
+                    "testing"
+                ],
+                "blocked_words": [
+                    "hello"
+                ]
+            }
+        },
+        "antispam": {
+            "enabled": true,
+            "limit": 7,
+            "timeframe": 6000,
+            "action": "auto"
+        }
+    }
+}
