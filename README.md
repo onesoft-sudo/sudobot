@@ -26,14 +26,14 @@ A free and open source Discord bot for moderation purposes. <a href="https://doc
 
 ### Getting started
 
-You can request an invite for SudoBot [here](https://discord.gg/pazm3tqYh5), it's completely free.
+You can request an invitation for SudoBot [here](https://discord.gg/pazm3tqYh5), it's completely free.
 Alternatively, you can create your own Discord API application and then host SudoBot.
 
 ### Setup for Custom Hosting
 
 ### Note
 
-**It's not recommended to build and use the code from `main` branch, because we're migrating from v4 to v5 with big changes. Some commands/features may not be available or complete, or the bot may not work at all. Therefore use a stable release.**
+**It's not recommended to build and use the code from `main` branch, because we're migrating from v4 to v5 with big changes. Some commands/features may not be available or complete, or the bot may not work at all. Therefore, use a stable release.**
 
 Please look at [this page]() of the documentation.
 
