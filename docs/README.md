@@ -10,6 +10,8 @@ title: Documentation
 This documentation is not complete yet. We're trying to finish writing the docs as soon as possible. If you find something wrong, feel free to create an issue on GitHub.
 {% endhint %}
 
+## Welcome to SudoBot Documentation!
+
 The ultimate solution for Discord Server Moderation.
 
 ## Invite SudoBot
@@ -26,4 +28,3 @@ Read the terms [here](../legal/terms/) and if you agree with those then you can 
 ## Downloads
 
 You can download the latest release [here](https://github.com/onesoft-sudo/sudobot/releases/). Also the emojis used in the bot are available [here](https://www.onesoftnet.eu.org/downloads/sudo/emojis/) for free.
-
