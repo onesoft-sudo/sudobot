@@ -22,19 +22,24 @@ import path from "path";
 import fs from "fs/promises";
 import { existsSync } from "fs";
 import { GuildConfigContainerSchema } from "../src/services/ConfigManager";
+import { SystemConfigSchema } from "../src/types/SystemConfigSchema";
 
 (async () => {
     const SCHEMA_DIR = path.join(__dirname, "../config/schema");
     const GUILD_CONFIG_SCHEMA_FILE = path.join(SCHEMA_DIR, "config.json");
     const SYSTEM_CONFIG_SCHEMA_FILE = path.join(SCHEMA_DIR, "system.json");
 
-    console.log("Generating schemas...");
+    console.info("Generating schemas...");
 
-    const schema = zodToJsonSchema(GuildConfigContainerSchema);
+    const guildConfigSchema = zodToJsonSchema(GuildConfigContainerSchema);
+    const systemConfigSchema = zodToJsonSchema(SystemConfigSchema);
+
+    console.info("Writing schemas...");
 
     if (!existsSync(SCHEMA_DIR)) {
         await fs.mkdir(SCHEMA_DIR);
     }
 
-    await fs.writeFile(GUILD_CONFIG_SCHEMA_FILE, JSON.stringify(schema, null, 4));
+    await fs.writeFile(GUILD_CONFIG_SCHEMA_FILE, JSON.stringify(guildConfigSchema, null, 4));
+    await fs.writeFile(SYSTEM_CONFIG_SCHEMA_FILE, JSON.stringify(systemConfigSchema, null, 4));
 })();

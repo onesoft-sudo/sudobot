@@ -21,6 +21,7 @@
 import { z } from "zod";
 
 export const SystemConfigSchema = z.object({
+    "$schema": z.string().optional(),
     emojis: z.record(z.string()).optional().default({}),
     sync_emojis: z.boolean().default(false),
     system_admins: z.array(z.string()).default([])
