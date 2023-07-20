@@ -24,3 +24,4 @@ setup.sh
 /backup
 /.env.docker
 /.idea
+/storage
