@@ -16,11 +16,11 @@ The ultimate solution for Discord Server Moderation.
 
 ## Invite SudoBot
 
-Read the terms [here](../legal/terms/) and if you agree with those then you can submit an invite request [here](https://forms.gle/943kW9q25MpKEwW26).
+Read the terms [here](legal/terms.md) and if you agree with those then you can submit an invite request [here](https://forms.gle/943kW9q25MpKEwW26).
 
 ## Features
 
-* Strong automoderation tools like Anti-raid systems and spam filters
+* Strong auto moderation tools like Anti-raid systems and spam filters
 * Various message filters
 * A lot of manual moderation tools
 * Secure

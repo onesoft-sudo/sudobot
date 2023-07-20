@@ -1,4 +1,5 @@
 # Terms of Service
+
 Last updated: 10 November 2022
 
 Please read these terms of service (“terms”, “terms of service”) carefully before using the Discord Bot, SudoBot (the “service”) operated by OSN Inc (“us”, ‘we”, “our”).
@@ -11,7 +12,7 @@ By using this service or visiting this website YOU AGREE TO THE FOLLOWING CONDIT
 
 * You will not use the service to do something illegal. We will not be liable for anything that you do.
 * You will not use the service in a NSFW/Religious Discord Server.
-* You will not use `echo` command of the service to echo out NSFW, racist, religious, or something wrong. 
+* You will not use `echo` command of the service to echo out NSFW, racist, religious, or something wrong.
 * You will not use the service to do something that is harmful to other people or potentially hurts someone.
 * You will not use the service in a Discord Server that has less than 100 (One Hundred) members.
 * You will not use the service in a non-Community server.
@@ -23,7 +24,7 @@ If you do not agree to these terms then you should stop using the services from 
 
 ### Privacy Policy
 
-Before you continue using our website we advise you to read our [Privacy Policy](../privacy) regarding our user data collection. It will help you better understand our practices.
+Before you continue using our website we advise you to read our [Privacy Policy](privacy.md) regarding our user data collection. It will help you better understand our practices.
 
 ### Copyright
 
