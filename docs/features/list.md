@@ -1,4 +1,4 @@
-# Features
+# Features of SudoBot
 
 SudoBot has the following features:
 
