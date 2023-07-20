@@ -1,4 +1,4 @@
-# Automoderation
+# Introduction to SudoBot's Auto Moderation
 
 SudoBot can also automoderate your server(s). You need to configure it according to your needs, which can be done at the dashboard or if you're an advanced user, you can use the `/config` slash command with appropriate options.
 
