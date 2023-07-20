@@ -1,8 +1,8 @@
 ---
-title: Home
+title: Documentation
 ---
 
-# SudoBot
+# Documentation
 
 ![](https://res.cloudinary.com/rakinar2/image/upload/v1659628446/SudoBot-new\_cvwphw.png)
 
