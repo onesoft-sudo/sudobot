@@ -4,4 +4,6 @@ title: Screenshots
 
 # Screenshots
 
-![Screenshot 1](../assets/images/screenshot.png)
+{% hint style="info" %}
+Screenshots aren't available right now. We'll be adding new screenshots very soon.
+{% endhint %}
