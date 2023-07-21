@@ -1,3 +1,12 @@
+# [4.116.0](https://github.com/onesoft-sudo/sudobot/compare/v4.115.0...v4.116.0) (2023-07-21)
+
+
+### Features
+
+* **snippets:** complete snippet create, delete, rename and list commands ([e92118e](https://github.com/onesoft-sudo/sudobot/commit/e92118ef00d90fb449e80ad83ba5269cfc1c1be8))
+
+
+
 # [4.115.0](https://github.com/onesoft-sudo/sudobot/compare/v4.114.2...v4.115.0) (2023-07-20)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * add clear command ([b52070c](https://github.com/onesoft-sudo/sudobot/commit/b52070c1e1e299487cba2e74436c988c3ab0a432))
-
-
-
-# [4.113.0](https://github.com/onesoft-sudo/sudobot/compare/v4.112.0...v4.113.0) (2023-07-19)
-
-
-### Features
-
-* add masskick command ([3b761d5](https://github.com/onesoft-sudo/sudobot/commit/3b761d51f3c127eda65438d8d5716400f11ef5b8))
 
 
 
