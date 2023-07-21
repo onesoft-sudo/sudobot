@@ -111,7 +111,7 @@ export default class Welcomer extends Service {
                 this.updatingMessage = true;
 
                 const reply = await interaction.reply({
-                    content: `<@${memberId}>, the following users have said Hi to you:\n\n${interaction.user.id === memberId ? "* You!" : `* <@${interaction.user.id}>`}`,
+                    content: `${interaction.user.id === memberId ? `<@${interaction.user.id}> (You)` : `<@${interaction.user.id}>`} says hi!`,
                     fetchReply: true
                 });
 
@@ -127,6 +127,21 @@ export default class Welcomer extends Service {
 
                 messageId = reply.id;
                 this.updatingMessage = false;
+
+                setTimeout(async () => {
+                    try {
+                        component.components[0].setDisabled(true);
+
+                        await (interaction.message as Message).edit({
+                            components: [
+                                component
+                            ],
+                        });
+                    }
+                    catch (e) {
+                        console.log(e);
+                    }
+                }, 120_000);
             }
             else {
                 const message = await interaction.channel!.messages.fetch(messageId);
@@ -134,20 +149,20 @@ export default class Welcomer extends Service {
                 if (!message)
                     throw new Error();
 
-                if (
-                    (interaction.user.id === memberId && message.content.includes("* You")) ||
-                    (interaction.user.id !== memberId && message.content.includes(`* <@${interaction.user.id}>`))
-                ) {
-                    await interaction.followUp({
-                        content: "You've already greeted the user!",
-                        ephemeral: true
-                    });
+                // if (
+                //     (interaction.user.id === memberId && message.content.includes("You")) ||
+                //     (interaction.user.id !== memberId && message.content.includes(`<@${interaction.user.id}>`))
+                // ) {
+                //     await interaction.followUp({
+                //         content: "You've already greeted the user!",
+                //         ephemeral: true
+                //     });
 
-                    return;
-                }
+                //     return;
+                // }
 
                 await message.edit({
-                    content: message.content + "\n" + (interaction.user.id === memberId ? `* You!` : `* <@${interaction.user.id}>`),
+                    content: message.content.replace(/ says hi\!$/gi, "") + ", " + (interaction.user.id === memberId ? `You!` : `<@${interaction.user.id}>`) + " says hi!",
                 });
 
                 await interaction.update({
