@@ -56,6 +56,10 @@ export default class SnippetManager extends Service {
             return { error: "A snippet with the same name already exists" };
         }
 
+        if (this.client.commands.has(name)) {
+            return { error: "Sorry, there's a built-in internal command already with that name" };
+        }
+
         const filesDownloaded = [];
 
         log(attachments);
@@ -129,6 +133,10 @@ export default class SnippetManager extends Service {
     async renameSnippet({ name, guildId, newName }: Pick<CreateSnippetOptions, "name" | "guildId"> & { newName: string }){
         if (!this.snippets.has(name)) {
             return { error: "No snippet found with that name" };
+        }
+
+        if (this.client.commands.has(newName)) {
+            return { error: "Sorry, there's a built-in internal command already with that name" };
         }
 
         await this.client.prisma.snippet.updateMany({
