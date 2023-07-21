@@ -19,7 +19,7 @@
 
 import { ChatInputCommandInteraction, Message } from "discord.js";
 import Service from "../core/Service";
-import { logError, logWarn } from "../utils/logger";
+import { logError, logWarn, log } from "../utils/logger";
 import { GuildConfig } from "./ConfigManager";
 
 export const name = "commandManager";
@@ -65,7 +65,8 @@ export default class CommandManager extends Service {
         const command = this.client.commands.get(commandName);
 
         if (!command) {
-            return false;
+            log("Command not found, trying to find a snippet");
+            return await this.client.snippetManager.onMessageCreate(message, commandName);
         }
 
         command.run(message, <LegacyCommandContext>{

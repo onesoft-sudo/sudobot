@@ -18,24 +18,32 @@
  */
 
 import { Snippet } from "@prisma/client";
-import { Attachment, Collection } from "discord.js";
+import { Attachment, Collection, Message, MessageCreateOptions } from "discord.js";
 import fs from "fs/promises";
 import { basename } from "path";
 import Service from "../core/Service";
 import { downloadFile } from "../utils/download";
-import { log, logError, logInfo } from "../utils/logger";
+import { log, logError, logInfo, LogLevel, logWarn, logWithLevel } from "../utils/logger";
 import { sudoPrefix } from "../utils/utils";
+import { existsSync } from "fs";
 
 export const name = "snippetManager";
 
 export default class SnippetManager extends Service {
-    public readonly snippets = new Collection<string, Snippet>();
+    public readonly snippets: Record<string, Collection<string, Snippet>> = {};
 
     async boot() {
         const snippets = await this.client.prisma.snippet.findMany();
 
+        for (const guildId of this.client.guilds.cache.keys()) {
+            this.snippets[guildId] = new Collection<string, Snippet>();
+        }
+
         for (const snippet of snippets) {
-            this.snippets.set(snippet.name, snippet);
+            if (!this.snippets[snippet.guild_id])
+                this.snippets[snippet.guild_id] = new Collection<string, Snippet>();
+
+            this.snippets[snippet.guild_id].set(snippet.name, snippet);
         }
     }
 
@@ -52,7 +60,7 @@ export default class SnippetManager extends Service {
             return { error: "Content or attachment is required to create a snippet" };
         }
 
-        if (this.snippets.has(name)) {
+        if (this.snippets[guildId].has(name)) {
             return { error: "A snippet with the same name already exists" };
         }
 
@@ -107,13 +115,13 @@ export default class SnippetManager extends Service {
             }
         });
 
-        this.snippets.set(snippet.name, snippet);
+        this.snippets[guildId].set(snippet.name, snippet);
 
         return { snippet };
     }
 
-    async deleteSnippet({ name, guildId }: Pick<CreateSnippetOptions, "name" | "guildId">) {
-        if (!this.snippets.has(name)) {
+    async deleteSnippet({ name, guildId }: CommonSnippetActionOptions) {
+        if (!this.snippets[guildId].has(name)) {
             return { error: "No snippet found with that name" };
         }
 
@@ -124,14 +132,14 @@ export default class SnippetManager extends Service {
             }
         });
 
-        await this.removeFiles(this.snippets.get(name)!.attachments, guildId);
-        this.snippets.delete(name);
+        await this.removeFiles(this.snippets[guildId].get(name)!.attachments, guildId);
+        this.snippets[guildId].delete(name);
 
         return { success: true };
     }
 
-    async renameSnippet({ name, guildId, newName }: Pick<CreateSnippetOptions, "name" | "guildId"> & { newName: string }){
-        if (!this.snippets.has(name)) {
+    async renameSnippet({ name, guildId, newName }: CommonSnippetActionOptions & { newName: string }){
+        if (!this.snippets[guildId].has(name)) {
             return { error: "No snippet found with that name" };
         }
 
@@ -149,20 +157,68 @@ export default class SnippetManager extends Service {
             }
         });
 
-        const snippet = this.snippets.get(name)!;
+        const snippet = this.snippets[guildId].get(name)!;
         snippet.name = newName;
-        this.snippets.set(newName, snippet);
-        this.snippets.delete(name);
+        this.snippets[guildId].set(newName, snippet);
+        this.snippets[guildId].delete(name);
 
         return { success: true, snippet };
     }
+
+    async createMessageOptionsFromSnippet({ name, guildId }: CommonSnippetActionOptions) {
+        if (!this.snippets[guildId].has(name)) {
+            return { error: "No snippet found with that name", found: false };
+        }
+
+        const snippet = this.snippets[guildId].get(name)!;
+
+        if (!snippet.content && snippet.attachments.length === 0)
+            throw new Error("Corrupted database: snippet attachment and content both are unusable")
+
+        const files = [];
+
+        for (const attachment of snippet.attachments) {
+            const file = sudoPrefix(`storage/snippet_attachments/${guildId}/${attachment}`, false);
+
+            if (!existsSync(file)) {
+                logWithLevel(LogLevel.CRITICAL, `Could find attachment: ${file}`);
+                continue;
+            }
+
+            files.push(file);
+        }
+
+        return {
+            options: {
+                content: snippet.content ?? undefined,
+                files
+            } as MessageCreateOptions,
+            found: true
+        };
+    }
+
+    async onMessageCreate(message: Message, commandName: string) {
+        const { options, found } = await this.createMessageOptionsFromSnippet({ name: commandName, guildId: message.guildId! });
+
+        if (!found || !options) {
+            log("Snippet not found");
+            return false;
+        }
+
+        await message.channel.send(options).catch(logError);
+        return true;
+    }
 }
 
-interface CreateSnippetOptions {
-    name: string;
+
+interface CommonSnippetActionOptions {
+    name: string,
+    guildId: string
+}
+
+interface CreateSnippetOptions extends CommonSnippetActionOptions {
     content?: string;
     attachments?: Attachment[];
-    guildId: string;
     userId: string;
     roles: string[];
     users: string[];

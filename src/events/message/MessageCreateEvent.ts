@@ -20,7 +20,7 @@
 import { ChannelType, ClientEvents, GuildMember, Message, MessageType } from "discord.js";
 import Client from "../../core/Client";
 import Event from "../../core/Event";
-import { logError, logWarn } from "../../utils/logger";
+import { logError, log } from "../../utils/logger";
 
 export default class MessageCreateEvent extends Event {
     public name: keyof ClientEvents = "messageCreate";
@@ -63,7 +63,7 @@ export default class MessageCreateEvent extends Event {
         const value = await this.client.commandManager.runCommandFromMessage(message).catch(logError);
 
         if (value === false) {
-            logWarn("Command not found");
+            log("Command or snippet not found: all strategies failed");
         }
     }
 }

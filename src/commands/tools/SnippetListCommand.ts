@@ -35,7 +35,7 @@ export default class SnippetListCommand extends Command {
     public readonly aliases: string[] = ["listtags", "taglist", "listsnippets", "snippetlist"];
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
-        const snippets = [...this.client.snippetManager.snippets.keys()];
+        const snippets = [...this.client.snippetManager.snippets[message.guildId!].keys()];
 
         if (snippets.length === 0) {
             await this.deferredReply(message, "This server does not have any snippets/tags yet.");
