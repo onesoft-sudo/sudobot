@@ -1,3 +1,17 @@
+# [4.117.0](https://github.com/onesoft-sudo/sudobot/compare/v4.116.0...v4.117.0) (2023-07-21)
+
+
+### Bug Fixes
+
+* commands and snippets overlap ([e61e549](https://github.com/onesoft-sudo/sudobot/commit/e61e5499eea45e17fb12a3421bf80b33c778d06b))
+
+
+### Features
+
+* **snippets:** use snippets as commands ([fc2cf75](https://github.com/onesoft-sudo/sudobot/commit/fc2cf7560be5dbc8a454ec242e2814de7ed55ce5))
+
+
+
 # [4.116.0](https://github.com/onesoft-sudo/sudobot/compare/v4.115.0...v4.116.0) (2023-07-21)
 
 
@@ -36,15 +50,6 @@
 ### Bug Fixes
 
 * **antispam:** not removing unmute queues ([f31a389](https://github.com/onesoft-sudo/sudobot/commit/f31a3890807efcdcb3110959d66b386a4ecf95a9))
-
-
-
-# [4.114.0](https://github.com/onesoft-sudo/sudobot/compare/v4.113.0...v4.114.0) (2023-07-19)
-
-
-### Features
-
-* add clear command ([b52070c](https://github.com/onesoft-sudo/sudobot/commit/b52070c1e1e299487cba2e74436c988c3ab0a432))
 
 
 
