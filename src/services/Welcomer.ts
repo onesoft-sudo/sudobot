@@ -162,7 +162,7 @@ export default class Welcomer extends Service {
                 // }
 
                 await message.edit({
-                    content: message.content.replace(/ says hi\!$/gi, "") + ", " + (interaction.user.id === memberId ? `You!` : `<@${interaction.user.id}>`) + " says hi!",
+                    content: message.content.replace(/ says hi\!$/gi, "") + ", " + (interaction.user.id === memberId ? `<@${interaction.user.id}> (You)` : `<@${interaction.user.id}>`) + " says hi!",
                 });
 
                 await interaction.update({
