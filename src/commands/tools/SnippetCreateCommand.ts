@@ -49,6 +49,12 @@ export default class SnippetCreateCommand extends Command {
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         const name: string = context.isLegacy ? context.parsedNamedArgs.name : context.options.getString("name", true);
+
+        if (/\s/.test(name)) {
+            await this.error(message, "Snippet name cannot contain spaces!");
+            return;
+        }
+
         const content: string | undefined = context.isLegacy ? context.parsedNamedArgs.content : context.options.getString("content", true);
 
         if (message instanceof Message && !content && message.attachments.size === 0) {

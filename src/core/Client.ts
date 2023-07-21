@@ -22,6 +22,9 @@ import { Collection, Client as DiscordClient, GuildEmoji, UserResolvable } from 
 import fs from "fs/promises";
 import path from "path";
 import Server from "../api/Server";
+import { logError, logInfo } from "../utils/logger";
+import Command from "./Command";
+import ServiceManager from "./ServiceManager";
 import type Antispam from "../automod/Antispam";
 import type MessageFilter from "../automod/MessageFilter";
 import type CommandManager from "../services/CommandManager";
@@ -30,11 +33,8 @@ import type InfractionManager from "../services/InfractionManager";
 import type LoggerService from "../services/LoggerService";
 import type QueueManager from "../services/QueueManager";
 import type SnippetManager from "../services/SnippetManager";
-import { logError, logInfo } from "../utils/logger";
-import Command from "./Command";
-import ServiceManager from "./ServiceManager";
 
-export default class Client extends DiscordClient {
+export default class Client<Ready extends boolean = boolean> extends DiscordClient<Ready> {
     aliases = {
         "@services": path.resolve(__dirname, "../services"),
         "@automod": path.resolve(__dirname, "../automod")
@@ -48,7 +48,7 @@ export default class Client extends DiscordClient {
         "@automod/MessageFilter",
         "@automod/Antispam",
         "@services/QueueManager",
-        "@services/SnippetManager"
+        "@services/SnippetManager",
     ];
 
     commandsDirectory = path.resolve(__dirname, "../commands");

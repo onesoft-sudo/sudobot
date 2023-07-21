@@ -125,6 +125,29 @@ export default class SnippetManager extends Service {
 
         return { success: true };
     }
+
+    async renameSnippet({ name, guildId, newName }: Pick<CreateSnippetOptions, "name" | "guildId"> & { newName: string }){
+        if (!this.snippets.has(name)) {
+            return { error: "No snippet found with that name" };
+        }
+
+        await this.client.prisma.snippet.updateMany({
+            where: {
+                name,
+                guild_id: guildId
+            },
+            data: {
+                name: newName
+            }
+        });
+
+        const snippet = this.snippets.get(name)!;
+        snippet.name = newName;
+        this.snippets.set(newName, snippet);
+        this.snippets.delete(name);
+
+        return { success: true, snippet };
+    }
 }
 
 interface CreateSnippetOptions {

@@ -32,12 +32,14 @@
   },
   "dependencies": {
     "@prisma/client": "^4.16.2",
+    "@types/uuid": "^9.0.2",
     "axios": "^1.4.0",
     "date-fns": "^2.30.0",
     "discord.js": "^14.11.0",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "prisma": "^4.16.2",
+    "uuid": "^9.0.0",
     "zod": "^3.21.4"
   },
   "devDependencies": {

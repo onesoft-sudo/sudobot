@@ -364,7 +364,11 @@ let commands = [
 			subcommand
 				.setName('delete')
 				.setDescription('Delete a snippet')
-				.addStringOption(option => option.setName('name').setDescription('The snippet name').setRequired(true))),
+				.addStringOption(option => option.setName('name').setDescription('The snippet name').setRequired(true)))
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('list')
+                .setDescription('List all snippets in this guild')),
 	
 	new SlashCommandBuilder().setName('afk').setDescription('Set your AFK status')
 		.addStringOption(option => option.setName('reason').setDescription("The reason for going AFK")),
@@ -533,7 +537,7 @@ let commands = [
 		.addSubcommand(subcommand => 
 			subcommand.setName('create').setDescription("Add infractions to a user")
 				.addUserOption(option => option.setName('user').setDescription("The target user").setRequired(true))	
-				.addStringOption(option => option.setName('type').setDescription("Specify infraction type").setChoices(
+				.addStringOption(option => option.setName('type').setDescription("Specify infraction type").setChoices(...[
 					{
 						name: "Ban",
 						value: InfractionType.BAN
@@ -560,7 +564,7 @@ let commands = [
 					},
 					{
 						name: "Bulk message delete",
-						value: InfractionType.BULKDELETEMSG
+						value: InfractionType.BULK_DELETE_MESSAGE
 					},
 					{
 						name: "Temporary Ban",
@@ -574,7 +578,7 @@ let commands = [
 						name: "Timeout remove",
 						value: InfractionType.TIMEOUT_REMOVE
 					}
-				).setRequired(true))
+				].map(o => ({ ...o, value: o.value.toLowerCase() }))).setRequired(true))
 				.addStringOption(option => option.setName('reason').setDescription("The reason for giving this infraction"))
 				.addStringOption(option => option.setName('duration').setDescription("The duration of this infraction (e.g. 45, 1h30m)"))
 		),

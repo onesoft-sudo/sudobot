@@ -21,7 +21,7 @@ import { PermissionsBitField, escapeCodeBlock, escapeInlineCode } from "discord.
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class SnippetCommand extends Command {
-    public readonly subcommands = ["list", "create", "delete"];
+    public readonly subcommands = ["list", "create", "delete", "rename"];
     public readonly name = "snippet";
     public readonly validationRules: ValidationRule[] = [
         {
@@ -63,6 +63,7 @@ export default class SnippetCommand extends Command {
         }
 
         if (context.isLegacy && subcommand.toLowerCase() !== "list") {
+            /* Ensure that `parsedNamedArgs.name` is populated */
             if (context.args[1] === undefined) {
                 await this.error(message, "Please provide a snippet/tag name to perform this action!");
                 return;
@@ -81,7 +82,8 @@ export default class SnippetCommand extends Command {
                           parsedNamedArgs: {
                               ...context.parsedNamedArgs,
                               name: context.parsedNamedArgs.name,
-                              content: context.parsedNamedArgs.content
+                              content: context.parsedNamedArgs.content,
+                              new_name: subcommand === 'rename' ? context.parsedNamedArgs.content.split(/ +/)[0] : undefined
                           }
                       }
                     : {})
