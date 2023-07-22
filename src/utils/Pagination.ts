@@ -19,17 +19,21 @@
 
 import {
     ActionRowBuilder,
-    APIMessage, ButtonBuilder,
+    ButtonBuilder,
+    ButtonInteraction,
+    ButtonStyle,
+    ComponentType,
     EmbedBuilder,
+    InteractionCollector,
     InteractionReplyOptions,
-    MessageEditOptions,
-    MessageReplyOptions,
-    ButtonStyle, Message, InteractionCollector,
     InteractionType,
-    ComponentType, ButtonInteraction
+    Message,
+    MessageEditOptions,
+    MessageReplyOptions
 } from "discord.js";
-import Client from "../core/Client";
 import * as uuid from 'uuid';
+import Client from "../core/Client";
+import { log } from "./logger";
 import { getEmoji } from "./utils";
 
 export default class Pagination<T> {
@@ -72,8 +76,8 @@ export default class Pagination<T> {
     }
 
     async getMessageOptions(page: number = 1, actionRowOptions: { first: boolean, last: boolean, next: boolean, back: boolean } | undefined = undefined, optionsToMerge: MessageOptions = {}) {
-        const options = {...this.options.messageOptions, ...optionsToMerge};
-        const actionRowOptionsDup = actionRowOptions ? {...actionRowOptions} : { first: true, last: true, next: true, back: true };
+        const options = { ...this.options.messageOptions, ...optionsToMerge };
+        const actionRowOptionsDup = actionRowOptions ? { ...actionRowOptions } : { first: true, last: true, next: true, back: true };
 
         if (this.options.maxData && this.maxPage === 0)
             this.maxPage = await this.options.maxData({
@@ -140,7 +144,7 @@ export default class Pagination<T> {
         const collector = new InteractionCollector(this.client, {
             guild: this.options.guildId,
             channel: this.options.channelId,
-            interactionType: InteractionType.ApplicationCommand,
+            interactionType: InteractionType.MessageComponent,
             componentType: ComponentType.Button,
             message,
             time: this.options.timeout ?? 60_000,
@@ -158,6 +162,7 @@ export default class Pagination<T> {
         });
 
         collector.on("collect", async (interaction: ButtonInteraction) => {
+            log("Here 2");
             if (!interaction.customId.endsWith(this.id)) {
                 return;
             }
