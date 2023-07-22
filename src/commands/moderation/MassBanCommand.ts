@@ -17,16 +17,29 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { EmbedBuilder, Message, PermissionsBitField, User } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { isSnowflake, stringToTimeInterval } from "../../utils/utils";
+import { PermissionsBitField, SlashCommandBuilder, User } from "discord.js";
+import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { log, logError } from "../../utils/logger";
+import { isSnowflake, stringToTimeInterval } from "../../utils/utils";
 
 export default class MassBanCommand extends Command {
     public readonly name = "massban";
     public readonly validationRules: ValidationRule[] = [];
     public readonly permissions = [PermissionsBitField.Flags.BanMembers];
     public readonly aliases = ["mban"];
+
+    public readonly description = "Ban multiple users at the same time.";
+    public readonly detailedDscription = "This command can ban multiple users. This is helpful if you want to quickly ban server raiders. The message deletion timeframe is 7 days by default.";
+    public readonly argumentSyntaxes = [
+        "<...UserIDs|UserMentions> [Reason]",
+    ];
+
+    public readonly botRequiredPermissions = [PermissionsBitField.Flags.BanMembers];
+
+    public readonly slashCommandBuilder = new SlashCommandBuilder()
+        .addUserOption(option => option.setName('users').setDescription("The users to ban").setRequired(true))
+        .addStringOption(option => option.setName('reason').setDescription("The reason for taking this action"))
+        .addStringOption(option => option.setName('deletion_timeframe').setDescription("The message deletion timeframe (must be in range 0-604800)"));
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         if (context.isLegacy && context.args[0] === undefined) {
@@ -59,10 +72,10 @@ export default class MassBanCommand extends Command {
             }
 
             if (id && !isSnowflake(id)) {
-               return {
+                return {
                     __reply: true,
-                   content: `\`${id}\` is not a valid user mention format or the ID is incorrect.`
-               };
+                    content: `\`${id}\` is not a valid user mention format or the ID is incorrect.`
+                };
             }
 
             if (!id)

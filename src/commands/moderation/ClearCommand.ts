@@ -22,6 +22,7 @@ import {
     ChatInputCommandInteraction,
     Message,
     PermissionsBitField,
+    SlashCommandBuilder,
     TextChannel,
     User
 } from "discord.js";
@@ -68,6 +69,20 @@ export default class ClearCommand extends Command {
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.ManageMessages];
+
+    public readonly description = "Clear messages in bulk.";
+    public readonly detailedDscription = "This command clears messages in bulk, by user or by count or both. This operation may take some time to complete.";
+    public readonly argumentSyntaxes = [
+        "<count>",
+        "<UserID|UserMention> [count]",
+    ];
+
+    public readonly botRequiredPermissions = [PermissionsBitField.Flags.ManageMessages];
+
+    public readonly slashCommandBuilder = new SlashCommandBuilder()
+        .addUserOption(option => option.setName('user').setDescription("The user"))
+        .addIntegerOption(option => option.setName('count').setDescription("The amount of messages to delete").setMaxValue(100).setMinValue(2))
+        .addChannelOption(option => option.setName('channel').setDescription("The channel where the messages will be deleted"));
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         const count: number | undefined = !context.isLegacy ? context.options.getInteger('count') ?? undefined : (

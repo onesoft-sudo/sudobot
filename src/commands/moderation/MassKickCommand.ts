@@ -17,16 +17,28 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { EmbedBuilder, Message, PermissionsBitField, User } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { isSnowflake, stringToTimeInterval } from "../../utils/utils";
+import { PermissionsBitField, SlashCommandBuilder, User } from "discord.js";
+import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { log, logError } from "../../utils/logger";
+import { isSnowflake } from "../../utils/utils";
 
 export default class MassKickCommand extends Command {
     public readonly name = "masskick";
     public readonly validationRules: ValidationRule[] = [];
     public readonly permissions = [PermissionsBitField.Flags.KickMembers];
     public readonly aliases = ["mkick"];
+
+    public readonly description = "Kick multiple users at the same time.";
+    public readonly detailedDscription = "This command can kick multiple users. This is helpful if you want to quickly kick server raiders.";
+    public readonly argumentSyntaxes = [
+        "<...UserIDs|UserMentions> [Reason]",
+    ];
+
+    public readonly botRequiredPermissions = [PermissionsBitField.Flags.KickMembers];
+
+    public readonly slashCommandBuilder = new SlashCommandBuilder()
+        .addUserOption(option => option.setName('users').setDescription("The users to kick").setRequired(true))
+        .addStringOption(option => option.setName('reason').setDescription("The reason for taking this action"));
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         if (context.isLegacy && context.args[0] === undefined) {
@@ -59,10 +71,10 @@ export default class MassKickCommand extends Command {
             }
 
             if (id && !isSnowflake(id)) {
-               return {
+                return {
                     __reply: true,
-                   content: `\`${id}\` is not a valid user mention format or the ID is incorrect.`
-               };
+                    content: `\`${id}\` is not a valid user mention format or the ID is incorrect.`
+                };
             }
 
             if (!id)

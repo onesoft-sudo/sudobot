@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { ChatInputCommandInteraction, GuildMember, PermissionsBitField, User, escapeMarkdown } from "discord.js";
+import { ChatInputCommandInteraction, GuildMember, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { createModerationEmbed } from "../../utils/utils";
 
@@ -41,6 +41,19 @@ export default class KickCommand extends Command {
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.KickMembers];
+
+    public readonly description = "Kicks a server member.";
+    public readonly detailedDscription = "This command kicks a server member.";
+    public readonly argumentSyntaxes = [
+        "<UserID|UserMention> [reason]",
+    ];
+
+    public readonly botRequiredPermissions = [PermissionsBitField.Flags.KickMembers];
+
+    public readonly slashCommandBuilder = new SlashCommandBuilder()
+        .addUserOption(option => option.setName('member').setDescription("The member").setRequired(true))
+        .addStringOption(option => option.setName('reason').setDescription("The reason for kicking this user"))
+        .addBooleanOption(option => option.setName('silent').setDescription("Specify if the system should not notify the user about this action. Defaults to false"));
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         const member: GuildMember | null = context.isLegacy ? context.parsedNamedArgs.member : context.options.getMember("member");

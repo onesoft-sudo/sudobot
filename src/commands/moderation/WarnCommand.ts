@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { ChatInputCommandInteraction, PermissionsBitField, User, escapeMarkdown } from "discord.js";
+import { ChatInputCommandInteraction, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { createModerationEmbed } from "../../utils/utils";
 
@@ -41,6 +41,18 @@ export default class WarnCommand extends Command {
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.ManageMessages];
+
+    public readonly description = "Warns a server member.";
+    public readonly detailedDscription = "This command warns a server member, by sending a DM to them.";
+    public readonly argumentSyntaxes = [
+        "<UserID|UserMention> [reason]",
+    ];
+
+    public readonly botRequiredPermissions = [PermissionsBitField.Flags.ManageMessages];
+
+    public readonly slashCommandBuilder = new SlashCommandBuilder()
+        .addUserOption(option => option.setName('member').setDescription("The member").setRequired(true))
+        .addStringOption(option => option.setName('reason').setDescription("The reason for warning this user"));
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         const member = context.isLegacy ? context.parsedNamedArgs.member : context.options.getMember('member');

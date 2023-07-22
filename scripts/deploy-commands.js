@@ -29,10 +29,10 @@ const { ApplicationCommandType } = require('discord-api-types/v10');
 const { InfractionType } = require('@prisma/client');
 
 if (existsSync(path.join(__dirname, '.env'))) {
-    config();
+	config();
 }
 else {
-    process.env.ENV = 'prod';
+	process.env.ENV = 'prod';
 }
 
 const { CLIENT_ID, HOME_GUILD_ID, TOKEN } = process.env;
@@ -83,52 +83,52 @@ let commands = [
 	new SlashCommandBuilder().setName('config').setDescription('View/change the system settings for this server')
 		.addStringOption(option => option.setName('key').setDescription('The setting key (e.g. spam_filter.enabled)').setRequired(true).setAutocomplete(true))
 		.addStringOption(option => option.setName('value').setDescription('New value for the setting')),
-		
+
 	new SlashCommandBuilder().setName('blockedword').setDescription('Manage blocked words')
-		.addSubcommand(subcmd => 
+		.addSubcommand(subcmd =>
 			subcmd.setName("add").setDescription("Block words")
 				.addStringOption(option => option.setName("words").setDescription("The words that should be blocked; separated by spaces").setRequired(true))
 		)
-		.addSubcommand(subcmd => 
+		.addSubcommand(subcmd =>
 			subcmd.setName("remove").setDescription("Remove blocked words")
 				.addStringOption(option => option.setName("words").setDescription("The words that should be removed from blocklist; separated by spaces").setRequired(true))
 		)
-		.addSubcommand(subcmd => 
+		.addSubcommand(subcmd =>
 			subcmd.setName("has").setDescription("Check if a word is blocked")
 				.addStringOption(option => option.setName("word").setDescription("The word").setRequired(true))
 		)
-		.addSubcommand(subcmd => 
+		.addSubcommand(subcmd =>
 			subcmd.setName("list").setDescription("List the blocked words")
 		),
-		
+
 	new SlashCommandBuilder().setName('blockedtoken').setDescription('Manage blocked tokens')
-		.addSubcommand(subcmd => 
+		.addSubcommand(subcmd =>
 			subcmd.setName("add").setDescription("Block a token")
 				.addStringOption(option => option.setName("token").setDescription("The token that should be blocked").setRequired(true))
 		)
-		.addSubcommand(subcmd => 
+		.addSubcommand(subcmd =>
 			subcmd.setName("remove").setDescription("Remove a blocked token")
 				.addStringOption(option => option.setName("token").setDescription("The token that should be removed from blocklist").setRequired(true))
 		)
-		.addSubcommand(subcmd => 
+		.addSubcommand(subcmd =>
 			subcmd.setName("has").setDescription("Check if a token is blocked")
 				.addStringOption(option => option.setName("token").setDescription("The token").setRequired(true))
 		)
-		.addSubcommand(subcmd => 
+		.addSubcommand(subcmd =>
 			subcmd.setName("list").setDescription("List the blocked tokens")
 		),
 
 	// INFORMATION
 	new SlashCommandBuilder().setName('messagerulestats').setDescription('View stats of message rules (blocked words/tokens etc)')
 		.addUserOption(option =>
-			option.setName('user').setDescription('The user to search').setRequired(true)	
+			option.setName('user').setDescription('The user to search').setRequired(true)
 		)
 		.addStringOption(option =>
-			option.setName('word_or_token').setDescription('The word/token to search').setRequired(true)	
+			option.setName('word_or_token').setDescription('The word/token to search').setRequired(true)
 		),
 
 	new SlashCommandBuilder().setName('profileinfo').setDescription('Manage your profile information in the bot')
-		.addSubcommand(subcmd => 
+		.addSubcommand(subcmd =>
 			subcmd.setName('set').setDescription('Set or edit your profile information')
 				.addStringOption(option => option.setName('gender').setDescription('Your gender').setChoices(...(['Male', 'Female', 'Other', "None"].map(op => ({ name: op, value: op })))))
 				.addStringOption(option => option.setName('zodiac').setDescription('Your zodiac sign').setChoices(...([
@@ -160,22 +160,22 @@ let commands = [
 				.addStringOption(option => option.setName('pronoun').setDescription('Your pronoun').setChoices(...(['He/Him', 'She/Her', 'They/Them', "Any Pronoun", "Other Pronouns", "None"].map(op => ({ name: op, value: op.replace(/ /g, '_').replace(/\//g, '__') })))))
 				.addIntegerOption(option => option.setName('age').setDescription('Your age, put \'0\' to remove your age from the database'))
 		)
-		.addSubcommand(subcmd => 
+		.addSubcommand(subcmd =>
 			subcmd.setName('subjects').setDescription('Set or edit the subjects you\'re interested in your studies or you feel you are expert of')
 				.addStringOption(option => option.setName('subjects').setDescription("The subjects, must be less than 2000 in length!"))
 				.addBooleanOption(option => option.setName('remove').setDescription("If true, the bot will remove your subjects information. Default is false"))
 		)
-		.addSubcommand(subcmd => 
+		.addSubcommand(subcmd =>
 			subcmd.setName('bio').setDescription('Set or edit your bio')
 				.addStringOption(option => option.setName('bio').setDescription("The bio, must be less than 2000 in length!"))
 				.addBooleanOption(option => option.setName('remove').setDescription("If true, the bot will remove your bio. Default is false"))
 		)
-		.addSubcommand(subcmd => 
+		.addSubcommand(subcmd =>
 			subcmd.setName('hobbies').setDescription('Set or edit your hobbes')
 				.addStringOption(option => option.setName('hobbies').setDescription("Your hobbies, must be less than 1000 in length!"))
 				.addBooleanOption(option => option.setName('remove').setDescription("If true, the bot will remove your hobby information. Default is false"))
 		)
-		.addSubcommand(subcmd => 
+		.addSubcommand(subcmd =>
 			subcmd.setName('languages').setDescription('Set or edit your languages that you speak')
 				.addStringOption(option => option.setName('languages').setDescription("Your languages, must be less than 1000 in length!"))
 				.addBooleanOption(option => option.setName('remove').setDescription("If true, the bot will remove your language information. Default is false"))
@@ -184,14 +184,14 @@ let commands = [
 	new SlashCommandBuilder().setName('stats').setDescription('Show the server statistics'),
 	new SlashCommandBuilder().setName('lookup').setDescription('Lookup something')
 		.addSubcommand(subcommand => subcommand.setName("user").setDescription("User lookup")
-			.addUserOption(option => option.setName("user").setDescription("The user to search").setRequired(true))	
-			)
-			.addSubcommand(subcommand => subcommand.setName("guild").setDescription("Server/Guild lookup")
-				.addStringOption(option => option.setName("guild_id").setDescription("The ID of the server/guild to lookup").setRequired(true))	
-			)
-			.addSubcommand(subcommand => subcommand.setName("avatar").setDescription("Avatar lookup using Google Image Search")
-				.addUserOption(option => option.setName("user").setDescription("The user to lookup").setRequired(true))	
-			),
+			.addUserOption(option => option.setName("user").setDescription("The user to search").setRequired(true))
+		)
+		.addSubcommand(subcommand => subcommand.setName("guild").setDescription("Server/Guild lookup")
+			.addStringOption(option => option.setName("guild_id").setDescription("The ID of the server/guild to lookup").setRequired(true))
+		)
+		.addSubcommand(subcommand => subcommand.setName("avatar").setDescription("Avatar lookup using Google Image Search")
+			.addUserOption(option => option.setName("user").setDescription("The user to lookup").setRequired(true))
+		),
 
 	new SlashCommandBuilder().setName('profile').setDescription('Show someone\'s profile')
 		.addUserOption(option => option.setName('user').setDescription('The user')),
@@ -199,17 +199,17 @@ let commands = [
 		.addUserOption(option => option.setName('user').setDescription('The user')),
 	new SlashCommandBuilder().setName('rolelist').setDescription('List all roles or show info about a role')
 		.addRoleOption(option => option.setName('role').setDescription('The role'))
-		.addStringOption(option => 
+		.addStringOption(option =>
 			option
-			.setName('order')
-			.setDescription('Order style of the list (according to the role positions)')
-			.setChoices({
-				name: "Ascending",
-				value: "a"
-			}, {
-				name: "Descending",
-				value: "d"
-			})
+				.setName('order')
+				.setDescription('Order style of the list (according to the role positions)')
+				.setChoices({
+					name: "Ascending",
+					value: "a"
+				}, {
+					name: "Descending",
+					value: "d"
+				})
 		),
 
 	new SlashCommandBuilder().setName('spotify').setDescription('Shows your or someone else\'s current Spotify listening activity')
@@ -233,10 +233,10 @@ let commands = [
 				.setName('view')
 				.setDescription('Get information/stats about a ballot')
 				.addStringOption(option => option.setName('id').setDescription('The ballot ID'))),
-		
+
 	new SlashCommandBuilder().setName('embed').setDescription('Make an embed')
-		.addSubcommand(subcmd => 
-		     subcmd.setName("send").setDescription("Make and send an embed")
+		.addSubcommand(subcmd =>
+			subcmd.setName("send").setDescription("Make and send an embed")
 				.addStringOption(option => option.setName('author_name').setDescription('The embed author name'))
 				.addStringOption(option => option.setName('author_iconurl').setDescription('The embed author icon URL'))
 				.addStringOption(option => option.setName('title').setDescription('The embed title'))
@@ -251,8 +251,8 @@ let commands = [
 				.addStringOption(option => option.setName('url').setDescription('The embed URL'))
 				.addStringOption(option => option.setName('fields').setDescription('The embed fields, should be in `Field 1: Value 1, Field 2: Value 2` format'))
 		)
-		.addSubcommand(subcmd => 
-		     subcmd.setName("schema").setDescription("Make and send an embed schema representation")
+		.addSubcommand(subcmd =>
+			subcmd.setName("schema").setDescription("Make and send an embed schema representation")
 				.addStringOption(option => option.setName('author_name').setDescription('The embed author name'))
 				.addStringOption(option => option.setName('author_iconurl').setDescription('The embed author icon URL'))
 				.addStringOption(option => option.setName('title').setDescription('The embed title'))
@@ -267,17 +267,17 @@ let commands = [
 				.addStringOption(option => option.setName('url').setDescription('The embed URL'))
 				.addStringOption(option => option.setName('fields').setDescription('The embed fields, should be in `Field 1: Value 1, Field 2: Value 2` format'))
 		)
-		.addSubcommand(subcmd => 
-		     subcmd.setName("build").setDescription("Build an embed from schema")
+		.addSubcommand(subcmd =>
+			subcmd.setName("build").setDescription("Build an embed from schema")
 				.addStringOption(option => option.setName('json_schema').setDescription('The embed JSON schema'))
 		),
 
 	new SlashCommandBuilder().setName('buttonrole').setDescription('Button role management')
-		.addSubcommand(subcmd => 
-			subcmd.setName("create").setDescription("Create a new button role provider message")	
+		.addSubcommand(subcmd =>
+			subcmd.setName("create").setDescription("Create a new button role provider message")
 		)
-		.addSubcommand(subcmd => 
-			subcmd.setName("delete").setDescription("Delete button role provider message information")	
+		.addSubcommand(subcmd =>
+			subcmd.setName("delete").setDescription("Delete button role provider message information")
 				.addStringOption(option => option.setName('message_id').setDescription("The message ID to delete").setRequired(true))
 		),
 
@@ -311,7 +311,7 @@ let commands = [
 
 	new SlashCommandBuilder().setName('httpdog').setDescription('Fetch a funny dog meme associated with an HTTP status code')
 		.addIntegerOption(option => option.setName('status').setDescription('The HTTP status Code').setRequired(true).setMinValue(100).setMaxValue(599)),
-		
+
 	new SlashCommandBuilder().setName('pixabay').setDescription('Search & fetch images from the Pixabay API')
 		.addSubcommand(subcommand =>
 			subcommand
@@ -365,67 +365,67 @@ let commands = [
 				.setName('delete')
 				.setDescription('Delete a snippet')
 				.addStringOption(option => option.setName('name').setDescription('The snippet name').setRequired(true)))
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('list')
-                .setDescription('List all snippets in this guild')),
-	
+		.addSubcommand(subcommand =>
+			subcommand
+				.setName('list')
+				.setDescription('List all snippets in this guild')),
+
 	new SlashCommandBuilder().setName('afk').setDescription('Set your AFK status')
 		.addStringOption(option => option.setName('reason').setDescription("The reason for going AFK")),
-	
+
 	new SlashCommandBuilder().setName('confess').setDescription('Confess something')
 		.addStringOption(option => option.setName('description').setDescription("Confession description...").setRequired(true))
 		.addBooleanOption(option => option.setName('anonymous').setDescription("Specify if the confession should be anonymous or not, default is True")),
-	
+
 	new SlashCommandBuilder().setName('private').setDescription('Create a private channel for specific members')
 		.addUserOption(option => option.setName('member').setDescription("The member to add in the private channel").setRequired(true))
 		.addChannelOption(option => option.setName('category').setDescription("Create channel in the specified category")),
-	
+
 	new SlashCommandBuilder().setName('hash').setDescription('Generate hash for a string (text) data')
 		.addStringOption(option => option.setName('content').setDescription("The content to be hashed").setRequired(true))
-		.addStringOption(option => 
+		.addStringOption(option =>
 			option
-			.setName('algorithm')
-			.setDescription("Hash algorithm")
-			.setChoices(
-				{
-					name: 'SHA1',
-					value: 'sha1'
-				},
-				{
-					name: 'SHA256',
-					value: 'sha256'
-				},
-				{
-					name: 'SHA512',
-					value: 'sha512'
-				},
-				{
-					name: 'MD5',
-					value: 'md5'
-				},
-			)
+				.setName('algorithm')
+				.setDescription("Hash algorithm")
+				.setChoices(
+					{
+						name: 'SHA1',
+						value: 'sha1'
+					},
+					{
+						name: 'SHA256',
+						value: 'sha256'
+					},
+					{
+						name: 'SHA512',
+						value: 'sha512'
+					},
+					{
+						name: 'MD5',
+						value: 'md5'
+					},
+				)
 		)
-		.addStringOption(option => 
+		.addStringOption(option =>
 			option
-			.setName('digest')
-			.setDescription("Digest mode")
-			.setChoices(
-				{
-					name: 'HEX',
-					value: 'hex'
-				},
-				{
-					name: 'Base64',
-					value: 'base64'
-				},
-				{
-					name: 'Base64 URL',
-					value: 'base64url'
-				},
-			)
+				.setName('digest')
+				.setDescription("Digest mode")
+				.setChoices(
+					{
+						name: 'HEX',
+						value: 'hex'
+					},
+					{
+						name: 'Base64',
+						value: 'base64'
+					},
+					{
+						name: 'Base64 URL',
+						value: 'base64url'
+					},
+				)
 		),
-	
+
 	new SlashCommandBuilder().setName('announce').setDescription('Announce something')
 		.addStringOption(option => option.setName('content').setDescription("The announcemnt message content")),
 
@@ -440,13 +440,13 @@ let commands = [
 	new SlashCommandBuilder().setName('softban').setDescription('Softban a user')
 		.addUserOption(option => option.setName('user').setDescription("The user").setRequired(true))
 		.addStringOption(option => option.setName('reason').setDescription("The reason for softbanning this user"))
-        .addStringOption(option => option.setName('deletion_timeframe').setDescription("The message deletion timeframe (must be in range 0-604800)")),
+		.addStringOption(option => option.setName('deletion_timeframe').setDescription("The message deletion timeframe (must be in range 0-604800)")),
 
 	new SlashCommandBuilder().setName('tempban').setDescription('Temporarily ban a user')
 		.addUserOption(option => option.setName('user').setDescription("The user").setRequired(true))
 		.addStringOption(option => option.setName('time').setDescription("TBan duration").setRequired(true))
 		.addStringOption(option => option.setName('reason').setDescription("The reason for tempbanning this user"))
-        .addStringOption(option => option.setName('deletion_timeframe').setDescription("The message deletion timeframe (must be in range 0-604800)")),
+		.addStringOption(option => option.setName('deletion_timeframe').setDescription("The message deletion timeframe (must be in range 0-604800)")),
 
 	new SlashCommandBuilder().setName('massban').setDescription('Ban multiple users')
 		.addStringOption(option => option.setName('users').setDescription("The user IDs (separated by spaces)").setRequired(true))
@@ -512,31 +512,31 @@ let commands = [
 		.addNumberOption(option => option.setName('id').setDescription("The note ID").setRequired(true)),
 
 	new SlashCommandBuilder().setName('infraction').setDescription('Manage infractions')
-		.addSubcommand(subcommand => 
+		.addSubcommand(subcommand =>
 			subcommand.setName('view').setDescription("View information about an infraction")
-				.addIntegerOption(option => option.setName('id').setDescription("The infraction ID").setRequired(true))	
+				.addIntegerOption(option => option.setName('id').setDescription("The infraction ID").setRequired(true))
 		)
-		.addSubcommand(subcommand => 
+		.addSubcommand(subcommand =>
 			subcommand.setName('edit').setDescription("Update reason of an infraction")
-				.addIntegerOption(option => option.setName('id').setDescription("The infraction ID").setRequired(true))	
-				.addStringOption(option => option.setName('new_reason').setDescription("New reason to set"))	
-				.addStringOption(option => option.setName('new_duration').setDescription("New duration to set"))	
-				.addBooleanOption(option => option.setName('silent').setDescription("Specify if the bot should not let the user know about this, defaults to true"))	
+				.addIntegerOption(option => option.setName('id').setDescription("The infraction ID").setRequired(true))
+				.addStringOption(option => option.setName('new_reason').setDescription("New reason to set"))
+				.addStringOption(option => option.setName('new_duration').setDescription("New duration to set"))
+				.addBooleanOption(option => option.setName('silent').setDescription("Specify if the bot should not let the user know about this, defaults to true"))
 		)
-		.addSubcommand(subcommand => 
+		.addSubcommand(subcommand =>
 			subcommand.setName('delete').setDescription("Delete an infraction")
-				.addIntegerOption(option => option.setName('id').setDescription("The infraction ID").setRequired(true))	
+				.addIntegerOption(option => option.setName('id').setDescription("The infraction ID").setRequired(true))
 		)
-		.addSubcommand(subcommand => 
+		.addSubcommand(subcommand =>
 			subcommand.setName('clear').setDescription("Clear infractions for a user")
-				.addUserOption(option => option.setName('user').setDescription("The target user").setRequired(true))	
+				.addUserOption(option => option.setName('user').setDescription("The target user").setRequired(true))
 				.addStringOption(option => option.setName('type').setDescription("Specify infraction type").setChoices(
 					...['Ban', "Mute", "Hardmute", "Kick", "Warning", "Softban", "Tempban", "Unmute", "Unban", "Timeout", "Timeout Remove", "Bean", "Shot"].map(option => ({ name: option, value: option.toLowerCase().replace(' ', '_') }))
 				))
 		)
-		.addSubcommand(subcommand => 
+		.addSubcommand(subcommand =>
 			subcommand.setName('create').setDescription("Add infractions to a user")
-				.addUserOption(option => option.setName('user').setDescription("The target user").setRequired(true))	
+				.addUserOption(option => option.setName('user').setDescription("The target user").setRequired(true))
 				.addStringOption(option => option.setName('type').setDescription("Specify infraction type").setChoices(...[
 					{
 						name: "Ban",

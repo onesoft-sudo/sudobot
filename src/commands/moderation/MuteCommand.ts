@@ -18,7 +18,7 @@
 */
 
 import { formatDistanceToNowStrict } from "date-fns";
-import { ChatInputCommandInteraction, PermissionsBitField, User, escapeMarkdown } from "discord.js";
+import { ChatInputCommandInteraction, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { createModerationEmbed, stringToTimeInterval } from "../../utils/utils";
 
@@ -50,6 +50,22 @@ export default class MuteCommand extends Command {
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers];
+
+    public readonly description = "Mutes a server member.";
+    public readonly detailedDscription = "This command mutes a server member. You can specify a duration or make it indefinite. The muted role needs to be configured for this command to work!";
+    public readonly argumentSyntaxes = [
+        "<UserID|UserMention> [reason]",
+        "<UserID|UserMention> [duration] [reason]",
+    ];
+
+    public readonly botRequiredPermissions = [PermissionsBitField.Flags.ModerateMembers];
+
+    public readonly slashCommandBuilder = new SlashCommandBuilder()
+        .addUserOption(option => option.setName('member').setDescription("The member").setRequired(true))
+        .addStringOption(option => option.setName('reason').setDescription("The reason for muting this user"))
+        .addStringOption(option => option.setName('time').setDescription("Mute duration"))
+        .addBooleanOption(option => option.setName('hardmute').setDescription("Specify if the system should take out all roles of the user during the mute"))
+        .addBooleanOption(option => option.setName('silent').setDescription("Specify if the system should not notify the user about this action. Defaults to false"));
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         const member = context.isLegacy ? context.parsedNamedArgs.member : context.options.getMember('member');

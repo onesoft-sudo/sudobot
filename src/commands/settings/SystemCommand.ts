@@ -41,6 +41,7 @@ export default class SystemCommand extends Command {
     public readonly name = "system";
     public readonly validationRules: ValidationRule[] = [];
     public readonly permissions = [];
+    public readonly description = "Shows the bot system status.";
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         let reply = <Message>await message.reply({

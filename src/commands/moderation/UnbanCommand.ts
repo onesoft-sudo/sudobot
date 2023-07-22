@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { PermissionsBitField, User, escapeMarkdown } from "discord.js";
+import { PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { logError } from "../../utils/logger";
 import { createModerationEmbed } from "../../utils/utils";
@@ -42,6 +42,18 @@ export default class UnbanCommand extends Command {
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.BanMembers];
+
+    public readonly description = "Unbans a user.";
+    public readonly detailedDscription = "This command unbans the given user.";
+    public readonly argumentSyntaxes = [
+        "<UserID|UserMention> [Reason]",
+    ];
+
+    public readonly botRequiredPermissions = [PermissionsBitField.Flags.BanMembers];
+
+    public readonly slashCommandBuilder = new SlashCommandBuilder()
+        .addUserOption(option => option.setName('user').setDescription("The user").setRequired(true))
+        .addStringOption(option => option.setName('reason').setDescription("The reason for unbanning this user"));
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);

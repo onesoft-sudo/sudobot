@@ -34,6 +34,11 @@ export default class InfractionViewCommand extends Command {
     public readonly permissionMode = "or";
     public readonly aliases: string[] = ["i"];
 
+    public readonly description = "View an infraction by ID.";
+    public readonly argumentSyntaxes = [
+        "<InfractionID>",
+    ];
+
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         const id = context.isLegacy ? context.parsedNamedArgs.id : context.options.getInteger("id", true);
 

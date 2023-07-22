@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { escapeCodeBlock, escapeMarkdown } from "discord.js";
+import { SlashCommandBuilder, escapeCodeBlock, escapeMarkdown } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { logError } from "../../utils/logger";
 
@@ -33,6 +33,17 @@ export default class EvalCommand extends Command {
     ];
     public readonly systemAdminOnly = true;
     public errorOccurred: boolean = false;
+
+    public readonly description = "Execute JavaScript code.";
+    public readonly detailedDscription = "This command executes arbitrary JavaScript code. Must be used with caution.";
+    public readonly argumentSyntaxes = [
+        "<...Code>",
+    ];
+
+    public readonly botRequiredPermissions = [];
+
+    public readonly slashCommandBuilder = new SlashCommandBuilder()
+        .addStringOption(option => option.setName('code').setDescription("The code to execute").setRequired(true));
 
     createUncaughtExecptionHandler(message: CommandMessage) {
         return (e: Error) => {
@@ -54,7 +65,7 @@ export default class EvalCommand extends Command {
         return (e: unknown) => {
             this.errorOccurred = true;
             logError(e);
-            
+
             this.deferredReply(message, {
                 embeds: [
                     {
@@ -71,7 +82,7 @@ export default class EvalCommand extends Command {
 
         const code = context.isLegacy ? context.parsedNamedArgs.code : context.options.getString("code", true);
         this.deferIfInteraction(message);
-        
+
         const exceptionHandler = this.createUncaughtExecptionHandler(message);
         const rejectionHandler = this.createUnhandledRejection(message);
 

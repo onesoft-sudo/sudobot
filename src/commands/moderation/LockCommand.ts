@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { OverwriteType, PermissionsBitField, TextChannel } from "discord.js";
+import { OverwriteType, PermissionsBitField, SlashCommandBuilder, TextChannel } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { logError } from "../../utils/logger";
 import { isTextableChannel } from "../../utils/utils";
@@ -33,6 +33,17 @@ export default class LockCommand extends Command {
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.ManageChannels];
+
+    public readonly description = "Locks a channel.";
+    public readonly detailedDscription = "This command locks down a channel. If no channel is given, the current channel will be locked.";
+    public readonly argumentSyntaxes = [
+        "[ChannelID|ChannelMention]",
+    ];
+
+    public readonly botRequiredPermissions = [PermissionsBitField.Flags.ManageChannels];
+
+    public readonly slashCommandBuilder = new SlashCommandBuilder()
+        .addChannelOption(option => option.setName('channel').setDescription("The channel that will be locked. Default is the current channel"));
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         const channel: TextChannel = (context.isLegacy ? context.parsedNamedArgs.channel : context.options.getChannel("channel")) ?? message.channel!;

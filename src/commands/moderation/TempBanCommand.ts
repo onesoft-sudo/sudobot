@@ -18,10 +18,10 @@
  */
 
 import { formatDistanceToNow, formatDistanceToNowStrict } from "date-fns";
-import { ChatInputCommandInteraction, PermissionsBitField, User, escapeMarkdown } from "discord.js";
+import { PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { createModerationEmbed, stringToTimeInterval } from "../../utils/utils";
 import { log } from "../../utils/logger";
+import { createModerationEmbed, stringToTimeInterval } from "../../utils/utils";
 
 export default class BanCommand extends Command {
     public readonly name = "tempban";
@@ -61,6 +61,21 @@ export default class BanCommand extends Command {
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.BanMembers];
+
+    public readonly description = "Temporarily bans a user.";
+    public readonly detailedDscription = "This command temporarily bans a user. They'll be automatically unbanned after the specified duration.";
+    public readonly argumentSyntaxes = [
+        "<UserID|UserMention> <duration> [reason]",
+    ];
+
+    public readonly botRequiredPermissions = [PermissionsBitField.Flags.BanMembers];
+
+    public readonly slashCommandBuilder = new SlashCommandBuilder()
+        .addUserOption(option => option.setName('user').setDescription("The user").setRequired(true))
+        .addStringOption(option => option.setName('reason').setDescription("The reason for banning this user"))
+        .addStringOption(option => option.setName('duration').setDescription("Ban duration"))
+        .addStringOption(option => option.setName('deletion_timeframe').setDescription("The message deletion timeframe (must be in range 0-604800)"))
+        .addBooleanOption(option => option.setName('silent').setDescription("Specify if the system should not notify the user about this action. Defaults to false"));
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);

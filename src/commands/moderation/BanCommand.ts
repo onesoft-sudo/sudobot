@@ -18,7 +18,7 @@
 */
 
 import { formatDistanceToNow } from "date-fns";
-import { ChatInputCommandInteraction, PermissionsBitField, User, escapeMarkdown } from "discord.js";
+import { ChatInputCommandInteraction, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { createModerationEmbed, stringToTimeInterval } from "../../utils/utils";
 
@@ -50,6 +50,21 @@ export default class BanCommand extends Command {
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.BanMembers];
+
+    public readonly description = "Bans a user.";
+    public readonly detailedDscription = "This command can ban users in the server or outside of the server. If the user is not in the server, you must specify their ID to ban them.";
+    public readonly argumentSyntaxes = [
+        "<UserID|UserMention> [Reason]",
+        "<UserID|UserMention> [MessageDeletionTime] [Reason]"
+    ];
+
+    public readonly botRequiredPermissions = [PermissionsBitField.Flags.BanMembers];
+
+    public readonly slashCommandBuilder = new SlashCommandBuilder()
+        .addUserOption(option => option.setName('user').setDescription("The user").setRequired(true))
+        .addStringOption(option => option.setName('reason').setDescription("The reason for banning this user"))
+        .addStringOption(option => option.setName('deletion_timeframe').setDescription("The message deletion timeframe (must be in range 0-604800s)"))
+        .addBooleanOption(option => option.setName('silent').setDescription("Specify if the system should not notify the user about this action. Defaults to false"));
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         if (message instanceof ChatInputCommandInteraction)
