@@ -17,11 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { zodToJsonSchema } from "zod-to-json-schema";
-import path from "path";
-import fs from "fs/promises";
 import { existsSync } from "fs";
-import { GuildConfigContainerSchema } from "../src/services/ConfigManager";
+import fs from "fs/promises";
+import path from "path";
+import { z } from "zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
+import { GuildConfigSchema } from "../src/services/ConfigManager";
 import { SystemConfigSchema } from "../src/types/SystemConfigSchema";
 
 (async () => {
@@ -31,7 +32,7 @@ import { SystemConfigSchema } from "../src/types/SystemConfigSchema";
 
     console.info("Generating schemas...");
 
-    const guildConfigSchema = zodToJsonSchema(GuildConfigContainerSchema);
+    const guildConfigSchema = zodToJsonSchema(z.record(z.string(), GuildConfigSchema.or(z.string())));
     const systemConfigSchema = zodToJsonSchema(SystemConfigSchema);
 
     console.info("Writing schemas...");
