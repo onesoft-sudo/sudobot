@@ -1,3 +1,17 @@
+# [4.118.0](https://github.com/onesoft-sudo/sudobot/compare/v4.117.0...v4.118.0) (2023-07-22)
+
+
+### Bug Fixes
+
+* **schema_gen:** warning on the  field that it should be an object ([c0ce059](https://github.com/onesoft-sudo/sudobot/commit/c0ce05999f204c10d4bd0ccd6f2121c245b3b2bf))
+
+
+### Features
+
+* channel locking and unlocking support ([346caad](https://github.com/onesoft-sudo/sudobot/commit/346caad413a85c8f13892104297ed91523e7d138))
+
+
+
 # [4.117.0](https://github.com/onesoft-sudo/sudobot/compare/v4.116.0...v4.117.0) (2023-07-21)
 
 
@@ -41,15 +55,6 @@
 ### Bug Fixes
 
 * build failure ([356ce2e](https://github.com/onesoft-sudo/sudobot/commit/356ce2e7851ef56efbf7d0834f264aad240e1ffe))
-
-
-
-## [4.114.1](https://github.com/onesoft-sudo/sudobot/compare/v4.114.0...v4.114.1) (2023-07-20)
-
-
-### Bug Fixes
-
-* **antispam:** not removing unmute queues ([f31a389](https://github.com/onesoft-sudo/sudobot/commit/f31a3890807efcdcb3110959d66b386a4ecf95a9))
 
 
 
