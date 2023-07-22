@@ -20,7 +20,6 @@
 import {
     Channel,
     ChatInputCommandInteraction,
-    GuildChannel,
     Message,
     PermissionsBitField,
     TextChannel,
@@ -33,8 +32,8 @@ import Command, {
     CommandReturn,
     ValidationRule
 } from "../../core/Command";
-import { isTextableChannel } from "../../utils/utils";
 import { logError } from "../../utils/logger";
+import { isTextableChannel } from "../../utils/utils";
 
 export default class ClearCommand extends Command {
     public readonly name = "clear";
