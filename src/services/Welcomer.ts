@@ -30,7 +30,7 @@ export default class Welcomer extends Service {
     lastUpdate = Date.now();
 
     generateMessageOptions(member: GuildMember, index?: number) {
-        const { message, randomize, embed } = this.client.config.props[member.guild.id].welcomer;
+        const { message, randomize, embed, color } = this.client.config.props[member.guild.id].welcomer;
         let content: string = message ?? '';
 
         if (randomize) {
@@ -66,7 +66,7 @@ export default class Welcomer extends Service {
                         text: 'Welcome'
                     }
                 })
-                    .setColor('#007bff')
+                    .setColor(color ?? '#007bff')
                     .setTimestamp()
             ] : [],
             components: [
