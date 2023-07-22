@@ -149,17 +149,17 @@ export default class Welcomer extends Service {
                 if (!message)
                     throw new Error();
 
-                // if (
-                //     (interaction.user.id === memberId && message.content.includes("You")) ||
-                //     (interaction.user.id !== memberId && message.content.includes(`<@${interaction.user.id}>`))
-                // ) {
-                //     await interaction.followUp({
-                //         content: "You've already greeted the user!",
-                //         ephemeral: true
-                //     });
+                if (
+                    (interaction.user.id === memberId && message.content.includes("You")) ||
+                    (interaction.user.id !== memberId && message.content.includes(`<@${interaction.user.id}>`))
+                ) {
+                    await interaction.followUp({
+                        content: "You've already greeted the user!",
+                        ephemeral: true
+                    });
 
-                //     return;
-                // }
+                    return;
+                }
 
                 await message.edit({
                     content: message.content.replace(/ says hi\!$/gi, "") + ", " + (interaction.user.id === memberId ? `<@${interaction.user.id}> (You)` : `<@${interaction.user.id}>`) + " says hi!",
