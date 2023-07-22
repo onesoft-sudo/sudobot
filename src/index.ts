@@ -16,6 +16,7 @@
 * You should have received a copy of the GNU Affero General Public License 
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
+import "reflect-metadata";
 
 import { GatewayIntentBits, Partials } from "discord.js";
 import 'dotenv/config';
@@ -34,7 +35,7 @@ const partials = [
     Partials.Channel
 ];
 
-const client = new Client({
+export const client = new Client({
     intents,
     partials
 });
