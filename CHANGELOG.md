@@ -1,3 +1,19 @@
+# [4.119.0](https://github.com/onesoft-sudo/sudobot/compare/v4.118.0...v4.119.0) (2023-07-22)
+
+
+### Bug Fixes
+
+* **paginator:** buttons not working ([8c7b7c8](https://github.com/onesoft-sudo/sudobot/commit/8c7b7c882465b64102e15cc1880b41cb94a0f78a))
+
+
+### Features
+
+* add command metadata properties ([d516d11](https://github.com/onesoft-sudo/sudobot/commit/d516d11cdc1f79f98b43520d6208c0915dddb909))
+* add GatewayEventListener method decorator ([399af2c](https://github.com/onesoft-sudo/sudobot/commit/399af2ce5c59b8e810fb23ff7cb3928558db335e))
+* add help command ([e21a14e](https://github.com/onesoft-sudo/sudobot/commit/e21a14e2f09c845851d198ca50ee0beceef2473a))
+
+
+
 # [4.118.0](https://github.com/onesoft-sudo/sudobot/compare/v4.117.0...v4.118.0) (2023-07-22)
 
 
@@ -46,15 +62,6 @@
 ### Features
 
 * add snippet manager and snippet creation command ([18920ba](https://github.com/onesoft-sudo/sudobot/commit/18920ba532bd4c2a622ed413e0040ef50ef0f5ce))
-
-
-
-## [4.114.2](https://github.com/onesoft-sudo/sudobot/compare/v4.114.1...v4.114.2) (2023-07-20)
-
-
-### Bug Fixes
-
-* build failure ([356ce2e](https://github.com/onesoft-sudo/sudobot/commit/356ce2e7851ef56efbf7d0834f264aad240e1ffe))
 
 
 
