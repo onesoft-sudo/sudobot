@@ -20,12 +20,12 @@
 import { z } from "zod";
 import { isSnowflake } from "../utils/utils";
 
-const zSnowflake = z.custom<string>((data) => {
+const zSnowflake = z.custom<string>(data => {
     return typeof data === "string" && isSnowflake(data);
 });
 
 export const GuildConfigSchema = z.object({
-    prefix: z.string(),
+    prefix: z.string().default("-"),
     permissions: z
         .object({
             mod_role: zSnowflake.optional(),
