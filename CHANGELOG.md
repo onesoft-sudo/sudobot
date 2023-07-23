@@ -1,3 +1,12 @@
+# [4.121.0](https://github.com/onesoft-sudo/sudobot/compare/v4.120.0...v4.121.0) (2023-07-23)
+
+
+### Features
+
+* **commands:** add about command ([0ff38fa](https://github.com/onesoft-sudo/sudobot/commit/0ff38fa0aa7abb05ad183f94bd5b21179e4a02cb))
+
+
+
 # [4.120.0](https://github.com/onesoft-sudo/sudobot/compare/v4.119.0...v4.120.0) (2023-07-23)
 
 
@@ -48,15 +57,6 @@
 ### Features
 
 * **snippets:** use snippets as commands ([fc2cf75](https://github.com/onesoft-sudo/sudobot/commit/fc2cf7560be5dbc8a454ec242e2814de7ed55ce5))
-
-
-
-# [4.116.0](https://github.com/onesoft-sudo/sudobot/compare/v4.115.0...v4.116.0) (2023-07-21)
-
-
-### Features
-
-* **snippets:** complete snippet create, delete, rename and list commands ([e92118e](https://github.com/onesoft-sudo/sudobot/commit/e92118ef00d90fb449e80ad83ba5269cfc1c1be8))
 
 
 
