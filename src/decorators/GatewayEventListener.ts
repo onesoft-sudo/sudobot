@@ -1,8 +1,7 @@
 import { ClientEvents } from "discord.js";
-import Command from "../core/Command";
 
 export function CommandGatewayEventListener<K extends keyof ClientEvents>(event: K) {
-    return (target: Command, methodName: string, descriptor: TypedPropertyDescriptor<any>) => {
+    return (target: Object, methodName: string, descriptor: TypedPropertyDescriptor<any>) => {
         const metadata = Reflect.getMetadata("event_listeners", target) ?? [];
 
         metadata.push({

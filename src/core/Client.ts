@@ -117,15 +117,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
                 this.commands.set(alias, command);
             }
 
-            const metadata: { event: string; handler: Function }[] | undefined = Reflect.getMetadata("event_listeners", CommandClass.prototype);
-
-            if (metadata) {
-                for (const data of metadata) {
-                    this.on(data.event, data.handler.bind(command));
-                    log("Added event listener for event: ", data.event);
-                }
-            }
-
+            this.loadEventListenersFromMetadata(CommandClass, command);
             logInfo("Loaded command: ", command.name);
         }
     }
@@ -149,6 +141,17 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
             const { default: Event } = await import(filePath);
             const event = new Event(this);
             this.on(event.name, event.execute.bind(event));
+        }
+    }
+
+    loadEventListenersFromMetadata<I extends Object = Object>(Class: I["constructor"], instance?: I) {
+        const metadata: { event: string; handler: Function }[] | undefined = Reflect.getMetadata("event_listeners", Class.prototype);
+
+        if (metadata) {
+            for (const data of metadata) {
+                this.on(data.event, instance ? data.handler.bind(instance) : data.handler);
+                log("Added event listener for event: ", data.event);
+            }
         }
     }
 
