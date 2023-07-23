@@ -6,7 +6,8 @@ export function CommandGatewayEventListener(event: keyof ClientEvents) {
 
         metadata.push({
             event,
-            handler: descriptor.value
+            handler: descriptor.value,
+            methodName
         });
 
         Reflect.defineMetadata("event_listeners", metadata, target);

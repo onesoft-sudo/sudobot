@@ -24,6 +24,7 @@ import path from "path";
 import Server from "../api/Server";
 import type Antispam from "../automod/Antispam";
 import type MessageFilter from "../automod/MessageFilter";
+import { SuppressErrorsMetadata } from "../decorators/SuppressErrors";
 import type CommandManager from "../services/CommandManager";
 import type ConfigManager from "../services/ConfigManager";
 import type InfractionManager from "../services/InfractionManager";
@@ -144,12 +145,42 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         }
     }
 
+    private supressErrorMessagesHandler(suppressErrors: SuppressErrorsMetadata, e: unknown) {
+        if (suppressErrors.mode === "log") {
+            logError(e);
+        } else if (suppressErrors.mode === "disabled") {
+            throw e;
+        }
+    }
+
     loadEventListenersFromMetadata<I extends Object = Object>(Class: I["constructor"], instance?: I) {
-        const metadata: { event: string; handler: Function }[] | undefined = Reflect.getMetadata("event_listeners", Class.prototype);
+        const metadata: { event: string; handler: Function; methodName: string }[] | undefined = Reflect.getMetadata(
+            "event_listeners",
+            Class.prototype
+        );
 
         if (metadata) {
             for (const data of metadata) {
-                this.on(data.event, instance ? data.handler.bind(instance) : data.handler);
+                const callback = instance ? data.handler.bind(instance) : data.handler;
+                const suppressErrors: SuppressErrorsMetadata | undefined = Reflect.getMetadata("supress_errors", Class.prototype, data.methodName);
+
+                this.on(
+                    data.event,
+                    suppressErrors
+                        ? (...args: any[]) => {
+                              try {
+                                  const ret = callback(...args);
+
+                                  if (ret instanceof Promise) ret.catch(e => this.supressErrorMessagesHandler(suppressErrors, e));
+
+                                  return ret;
+                              } catch (e) {
+                                  this.supressErrorMessagesHandler(suppressErrors, e);
+                              }
+                          }
+                        : callback
+                );
+
                 log("Added event listener for event: ", data.event);
             }
         }
