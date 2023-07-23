@@ -1,3 +1,12 @@
+# [4.123.0](https://github.com/onesoft-sudo/sudobot/compare/v4.122.0...v4.123.0) (2023-07-23)
+
+
+### Features
+
+* add a default value for prefix in guild config schema ([5afa976](https://github.com/onesoft-sudo/sudobot/commit/5afa9760020e512e81ce4d3dc0f4679f21f0367b))
+
+
+
 # [4.122.0](https://github.com/onesoft-sudo/sudobot/compare/v4.121.0...v4.122.0) (2023-07-23)
 
 
@@ -38,20 +47,6 @@
 * add command metadata properties ([d516d11](https://github.com/onesoft-sudo/sudobot/commit/d516d11cdc1f79f98b43520d6208c0915dddb909))
 * add GatewayEventListener method decorator ([399af2c](https://github.com/onesoft-sudo/sudobot/commit/399af2ce5c59b8e810fb23ff7cb3928558db335e))
 * add help command ([e21a14e](https://github.com/onesoft-sudo/sudobot/commit/e21a14e2f09c845851d198ca50ee0beceef2473a))
-
-
-
-# [4.118.0](https://github.com/onesoft-sudo/sudobot/compare/v4.117.0...v4.118.0) (2023-07-22)
-
-
-### Bug Fixes
-
-* **schema_gen:** warning on the  field that it should be an object ([c0ce059](https://github.com/onesoft-sudo/sudobot/commit/c0ce05999f204c10d4bd0ccd6f2121c245b3b2bf))
-
-
-### Features
-
-* channel locking and unlocking support ([346caad](https://github.com/onesoft-sudo/sudobot/commit/346caad413a85c8f13892104297ed91523e7d138))
 
 
 
