@@ -22,9 +22,6 @@ import { Collection, Client as DiscordClient, GuildEmoji, UserResolvable } from 
 import fs from "fs/promises";
 import path from "path";
 import Server from "../api/Server";
-import { logError, logInfo } from "../utils/logger";
-import Command from "./Command";
-import ServiceManager from "./ServiceManager";
 import type Antispam from "../automod/Antispam";
 import type MessageFilter from "../automod/MessageFilter";
 import type CommandManager from "../services/CommandManager";
@@ -33,6 +30,9 @@ import type InfractionManager from "../services/InfractionManager";
 import type LoggerService from "../services/LoggerService";
 import type QueueManager from "../services/QueueManager";
 import type SnippetManager from "../services/SnippetManager";
+import { log, logError, logInfo } from "../utils/logger";
+import type Command from "./Command";
+import ServiceManager from "./ServiceManager";
 
 export default class Client<Ready extends boolean = boolean> extends DiscordClient<Ready> {
     aliases = {
@@ -48,7 +48,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@automod/MessageFilter",
         "@automod/Antispam",
         "@services/QueueManager",
-        "@services/SnippetManager",
+        "@services/SnippetManager"
     ];
 
     commandsDirectory = path.resolve(__dirname, "../commands");
@@ -109,12 +109,21 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
                 continue;
             }
 
-            const { default: Command } = await import(filePath);
-            const command = new Command(this);
+            const { default: CommandClass }: { default: new (client: Client) => Command } = await import(filePath);
+            const command = new CommandClass(this);
             this.commands.set(command.name, command);
 
             for (const alias of command.aliases) {
                 this.commands.set(alias, command);
+            }
+
+            const metadata: { event: string; handler: Function }[] | undefined = Reflect.getMetadata("event_listeners", CommandClass.prototype);
+
+            if (metadata) {
+                for (const data of metadata) {
+                    this.on(data.event, data.handler.bind(command));
+                    log("Added event listener for event: ", data.event);
+                }
             }
 
             logInfo("Loaded command: ", command.name);
