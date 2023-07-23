@@ -1,3 +1,12 @@
+# [4.120.0](https://github.com/onesoft-sudo/sudobot/compare/v4.119.0...v4.120.0) (2023-07-23)
+
+
+### Features
+
+* the GatewayEventListener() decorator is now available for Service classes ([232abe7](https://github.com/onesoft-sudo/sudobot/commit/232abe73d8a1cf17522d2cb5af426aa02b627aff))
+
+
+
 # [4.119.0](https://github.com/onesoft-sudo/sudobot/compare/v4.118.0...v4.119.0) (2023-07-22)
 
 
@@ -48,20 +57,6 @@
 ### Features
 
 * **snippets:** complete snippet create, delete, rename and list commands ([e92118e](https://github.com/onesoft-sudo/sudobot/commit/e92118ef00d90fb449e80ad83ba5269cfc1c1be8))
-
-
-
-# [4.115.0](https://github.com/onesoft-sudo/sudobot/compare/v4.114.2...v4.115.0) (2023-07-20)
-
-
-### Bug Fixes
-
-* config manager causing a ZodError ([f0eed9e](https://github.com/onesoft-sudo/sudobot/commit/f0eed9e2d996d1fda7eac20ae3ecf370e8a1002b))
-
-
-### Features
-
-* add snippet manager and snippet creation command ([18920ba](https://github.com/onesoft-sudo/sudobot/commit/18920ba532bd4c2a622ed413e0040ef50ef0f5ce))
 
 
 
