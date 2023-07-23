@@ -1,3 +1,12 @@
+# [4.122.0](https://github.com/onesoft-sudo/sudobot/compare/v4.121.0...v4.122.0) (2023-07-23)
+
+
+### Features
+
+* add SuppressErrors() decorator ([d7d1a2a](https://github.com/onesoft-sudo/sudobot/commit/d7d1a2a975a6e2f0de61cb4c8b91919e2607aa7f))
+
+
+
 # [4.121.0](https://github.com/onesoft-sudo/sudobot/compare/v4.120.0...v4.121.0) (2023-07-23)
 
 
@@ -43,20 +52,6 @@
 ### Features
 
 * channel locking and unlocking support ([346caad](https://github.com/onesoft-sudo/sudobot/commit/346caad413a85c8f13892104297ed91523e7d138))
-
-
-
-# [4.117.0](https://github.com/onesoft-sudo/sudobot/compare/v4.116.0...v4.117.0) (2023-07-21)
-
-
-### Bug Fixes
-
-* commands and snippets overlap ([e61e549](https://github.com/onesoft-sudo/sudobot/commit/e61e5499eea45e17fb12a3421bf80b33c778d06b))
-
-
-### Features
-
-* **snippets:** use snippets as commands ([fc2cf75](https://github.com/onesoft-sudo/sudobot/commit/fc2cf7560be5dbc8a454ec242e2814de7ed55ce5))
 
 
 
