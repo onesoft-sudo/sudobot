@@ -132,16 +132,13 @@ export default class Welcomer extends Service {
                     try {
                         component.components[0].setDisabled(true);
 
-                        await (interaction.message as Message).edit({
-                            components: [
-                                component
-                            ],
-                        });
+                        await (interaction.message as Message).delete().catch(console.error);
+                        await (reply as Message).delete().catch(console.error);
                     }
                     catch (e) {
                         console.log(e);
                     }
-                }, 120_000);
+                }, 240_000);
             }
             else {
                 const message = await interaction.channel!.messages.fetch(messageId);

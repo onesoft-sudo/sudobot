@@ -69,6 +69,94 @@ export default class Logger extends Service {
         return this.client.guilds.cache.get(id)?.channels.cache.get(this.client.config.props[id].logging_channel_join_leave) as TextChannel | null;
     }
 
+    async onRoleCreate(role: Role) {
+        this.loggingChannel(role.guild.id)?.send({
+            embeds: [
+                new MessageEmbed({
+                    title: "Role created",
+                    fields: [
+                        {
+                            name: "Role",
+                            value: `Name: ${role.name}\nID: ${role.id}\nMention: ${role.toString()}`
+                        }
+                    ],
+                    footer: {
+                        text: "Created"
+                    },
+                    color: 0x007bff
+                })
+                .setTimestamp()
+            ],
+            allowedMentions: {
+                roles: []
+            }
+        });
+    }
+
+
+    async onRoleDelete(role: Role) {
+        this.loggingChannel(role.guild.id)?.send({
+            embeds: [
+                new MessageEmbed({
+                    title: "Role deleted",
+                    fields: [
+                        {
+                            name: "Role",
+                            value: `Name: ${role.name}\nID: ${role.id}\nMention: ${role.toString()}`
+                        }
+                    ],
+                    footer: {
+                        text: "Deleted"
+                    },
+                    color: 0xf14a60
+                })
+                .setTimestamp()
+            ],
+            allowedMentions: {
+                roles: []
+            }
+        });
+    }
+
+
+    async onRoleUpdate(oldRole: Role, newRole: Role) {
+        this.loggingChannel(newRole.guild.id)?.send({
+            embeds: [
+                new MessageEmbed({
+                    title: "Role updated",
+                    fields: [
+                        ...(newRole.name !== oldRole.name ? [
+                            {
+                                name: "Name",
+                                value: `New Name: ${newRole.name}\nOld Name: ${oldRole.name}`
+                            }
+                        ] : []),
+                        ...(newRole.color !== oldRole.color ? [
+                            {
+                                name: "Color",
+                                value: `New Color: ${newRole.hexColor}\nOld Color: ${oldRole.hexColor}`
+                            }
+                        ] : []),
+                        ...(!newRole.permissions.equals(oldRole.permissions) ? [
+                            {
+                                name: "New Permissions",
+                                value: `\`${newRole.permissions.toArray().join('`, `')}\``
+                            }
+                        ] : []),
+                    ],
+                    footer: {
+                        text: "Updated"
+                    },
+                })
+                .setTimestamp()
+                .setColor("GREEN")
+            ],
+            allowedMentions: {
+                roles: []
+            }
+        });
+    }
+
     async onChannelCreate(channel: GuildChannel) {
         this.loggingChannel(channel.guild.id)?.send({
             embeds: [
