@@ -33,6 +33,9 @@ import {
     User,
     GuildMember,
     Util,
+    GuildChannel,
+    Role,
+    Collection,
 } from "discord.js";
 import ms from "ms";
 import BaseMessageEmbed from "../client/MessageEmbed";
@@ -64,6 +67,135 @@ export default class Logger extends Service {
 
     loggingChannelJoinLeave(id: string) {
         return this.client.guilds.cache.get(id)?.channels.cache.get(this.client.config.props[id].logging_channel_join_leave) as TextChannel | null;
+    }
+
+    async onChannelCreate(channel: GuildChannel) {
+        this.loggingChannel(channel.guild.id)?.send({
+            embeds: [
+                new MessageEmbed({
+                    title: `Channel${channel.type === "GUILD_CATEGORY" ? " Category" : ""} Created`,
+                    color: 0x07bff,
+                    fields: [
+                        {
+                            name: "Channel",
+                            value: `#${channel.name} (${channel.toString()}, ${channel.id})`
+                        },
+                        {
+                            name: "Type",
+                            value: channel.type.replace("GUILD_", '')
+                        }
+                    ],
+                    footer: {
+                        text: 'Created'
+                    }
+                }).setTimestamp()
+            ]
+        }).catch(console.error);
+    }
+
+    async onChannelDelete(channel: GuildChannel) {
+        this.loggingChannel(channel.guild.id)?.send({
+            embeds: [
+                new MessageEmbed({
+                    title: `Channel${channel.type === "GUILD_CATEGORY" ? " Category" : ""} Deleted`,
+                    color: 0xf14a60,
+                    fields: [
+                        {
+                            name: "Channel",
+                            value: `#${channel.name} (${channel.id})`
+                        },
+                        {
+                            name: "Type",
+                            value: channel.type.replace("GUILD_", '')
+                        }
+                    ],
+                    footer: {
+                        text: 'Deleted'
+                    }
+                }).setTimestamp()
+            ]
+        }).catch(console.error);
+    }
+
+    async onMemberRoleAdd(member: GuildMember, roles: Role[]) {
+        this.loggingChannel(member.guild.id)?.send({
+            embeds: [
+                new MessageEmbed({
+                    title: `Roles added to member`,
+                    color: 0xf14a60,
+                    fields: [
+                        {
+                            name: "Member",
+                            value: `${member.user.toString()} (${member.user.id})`
+                        },
+                        {
+                            name: "Roles",
+                            value: `${roles.map(r => r.toString()).join(', ')}`
+                        }
+                    ],
+                    footer: {
+                        text: 'Roles Added'
+                    }
+                }).setTimestamp()
+            ],
+            allowedMentions: {
+                roles: [],
+                users: []
+            }
+        }).catch(console.error);
+    }
+
+    async onMemberRoleRemove(member: GuildMember, roles: Role[]) {
+        this.loggingChannel(member.guild.id)?.send({
+            embeds: [
+                new MessageEmbed({
+                    title: `Roles removed from member`,
+                    color: 0xf14a60,
+                    fields: [
+                        {
+                            name: "Member",
+                            value: `${member.user.toString()} (${member.user.id})`
+                        },
+                        {
+                            name: "Roles",
+                            value: `${roles.map(r => r.toString()).join(', ')}`
+                        }
+                    ],
+                    footer: {
+                        text: 'Roles Removed'
+                    }
+                }).setTimestamp()
+            ],
+            allowedMentions: {
+                roles: [],
+                users: []
+            }
+        }).catch(console.error);
+    }
+
+    
+    async onBulkDelete(messages: Collection<string, Message>) {
+        this.loggingChannel(messages.at(0)?.guildId!)?.send({
+            embeds: [
+                new MessageEmbed({
+                    title: `Messages deleted in bulk`,
+                    color: 0xf14a60,
+                    fields: [
+                        {
+                            name: "Channel",
+                            value: `${messages.at(0)?.channel.toString()} (${messages.at(0)?.channelId})`
+                        },
+                        {
+                            name: "Count",
+                            value: `${messages.size}`
+                        }
+                    ],
+                    footer: {
+                        text: 'Deleted'
+                    }
+                }).setTimestamp()
+            ]
+        }).catch(console.error);
     }
 
     async onAIModMessageDelete(message: Message, config: any, response: any, meta: any) {

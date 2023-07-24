@@ -36,6 +36,16 @@ export default class GuildMemberUpdateEvent extends BaseEvent {
             return;
         
         client.logger.onMemberUpdate(oldMember, newMember);
+
+        if (!oldMember.roles.cache.equals(newMember.roles.cache)) {
+            const added = newMember.roles.cache.difference(oldMember.roles.cache);
+            const removed = newMember.roles.cache.difference(oldMember.roles.cache);
+
+            if (added.size > 0)
+                client.logger.onMemberRoleAdd(newMember, [...added.values()]).catch(console.error);
+            else if (removed.size > 0)
+                client.logger.onMemberRoleRemove(newMember, [...removed.values()]).catch(console.error);
+        }
         
         if (oldMember.premiumSinceTimestamp !== newMember.premiumSinceTimestamp) {
             if (oldMember.premiumSince !== null && newMember.premiumSince === null) {
