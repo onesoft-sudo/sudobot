@@ -167,7 +167,8 @@ export default class WelcomerService extends Service {
             .replace(/:discriminator:/gi, member.user.discriminator)
             .replace(/:createdAt:/gi, `${time(member.user.createdTimestamp)}`)
             .replace(/:age:/gi, formatDistanceToNowStrict(member.user.createdTimestamp))
-            .replace(/:mention:/gi, member.user.toString());
+            .replace(/:mention:/gi, member.user.toString())
+            .replace(/:guild:/gi, member.guild.name);
     }
 
     generateContent(member: GuildMember, { custom_message, randomize, mention }: NotUndefined<GuildConfig["welcomer"]>) {
