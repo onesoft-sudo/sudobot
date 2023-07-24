@@ -33,7 +33,7 @@ Alternatively, you can create your own Discord API application and then host Sud
 
 ### Note
 
-**It's not recommended to build and use the code from `main` branch, because we're migrating from v4 to v5 with big changes. Some commands/features may not be available or complete, or the bot may not work at all. Therefore, use a stable release, before 4.85.**
+**It's not recommended to build and use the code from `main` branch, because we're migrating from v4 to v5 with big changes. Some commands/features may not be available or complete, but we encourage you to use the latest versions. A lot of issues were fixed in the latest releases.**
 
 Please look at [this page](https://docs.sudobot.onesoftnet.eu.org/getting-started) of the documentation.
 
