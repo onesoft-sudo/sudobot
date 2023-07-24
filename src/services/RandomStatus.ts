@@ -29,7 +29,8 @@ export default class RandomStatus extends Service {
         
         await this.client.user?.setActivity({
             type: this.client.config.props.status?.type ?? 'WATCHING',
-            name: this.client.config.props.status?.name ?? 'over the server'
+            name: this.client.config.props.status?.name ?? 'over the server',
+            url: this.client.config.props.status?.type === "STREAMING" ? "https://twitch.tv/rakinar2" : ""
         });
 
         await this.client.user?.setStatus(status!);

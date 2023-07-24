@@ -77,6 +77,14 @@ let commands = [
 			{
 				name: 'Competing',
 				value: 'COMPETING'
+			},
+			{
+				name: 'Listening',
+				value: 'LISTENING'
+			},
+			{
+				name: 'Streaming',
+				value: 'STREAMING'
 			}
 		])),
 	new SlashCommandBuilder().setName('config').setDescription('View/change the system settings for this server')
