@@ -7,7 +7,10 @@ export default class RoleUpdateEvent extends BaseEvent {
         super('roleUpdate');
     }
 
-    async run(client: DiscordClient, oldRole: Role, newRole: Role) {
+    async run(client: DiscordClient, oldRole: Role, newRole: Role) { 
+        if (oldRole.name === newRole.name && oldRole.icon === newRole.icon) 
+            return;
+        
         await client.logger.onRoleUpdate(oldRole, newRole);
     }
 }
