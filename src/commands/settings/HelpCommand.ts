@@ -19,7 +19,7 @@
 
 import { EmbedBuilder, PermissionResolvable } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { CommandGatewayEventListener } from "../../decorators/GatewayEventListener";
+import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import Pagination from "../../utils/Pagination";
 import { log } from "../../utils/logger";
 
@@ -58,7 +58,7 @@ export default class HelpCommand extends Command {
 
     public readonly commandInformation: Array<CommandInfo> = [];
 
-    @CommandGatewayEventListener("ready")
+    @GatewayEventListener("ready")
     async onReady() {
         log("Attempting to read and extract meta info from all the loaded commands...");
 
@@ -99,9 +99,8 @@ export default class HelpCommand extends Command {
                 timeout: 200_000,
                 userId: message.member!.user.id,
                 embedBuilder({ currentPage, maxPages, data }) {
-                    let description = `Run \`${
-                        this.client.configManager.config[message.guildId!].prefix
-                    }help <commandName>\` to get help about a specific command.\n\`<...>\` means required argument, \`[...]\` means optional argument.\n\n`;
+                    let description = `Run \`${this.client.configManager.config[message.guildId!].prefix
+                        }help <commandName>\` to get help about a specific command.\n\`<...>\` means required argument, \`[...]\` means optional argument.\n\n`;
 
                     for (const commandInfo of data) {
                         description += `**${commandInfo.name}**\n`;
