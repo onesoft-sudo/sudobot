@@ -30,6 +30,16 @@
             "limit": 7,
             "timeframe": 6000,
             "action": "auto"
+        },
+        "welcomer": {
+            "enabled": true,
+            "channel": "911987536883245081",
+            "embed": true,
+            "randomize": true,
+            "mention": true,
+            "say_hi_button": true,
+            "say_hi_emoji": "default",
+            "say_hi_expire_after": 10000
         }
     }
 }

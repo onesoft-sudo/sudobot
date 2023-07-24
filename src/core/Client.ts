@@ -31,6 +31,7 @@ import type InfractionManager from "../services/InfractionManager";
 import type LoggerService from "../services/LoggerService";
 import type QueueManager from "../services/QueueManager";
 import type SnippetManager from "../services/SnippetManager";
+import type WelcomerService from "../services/WelcomerService";
 import { log, logError, logInfo } from "../utils/logger";
 import type Command from "./Command";
 import ServiceManager from "./ServiceManager";
@@ -49,6 +50,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@automod/MessageFilter",
         "@automod/Antispam",
         "@services/QueueManager",
+        "@services/WelcomerService",
         "@services/SnippetManager"
     ];
 
@@ -65,6 +67,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     antispam: Antispam = {} as Antispam;
     queueManager: QueueManager = {} as QueueManager;
     snippetManager: SnippetManager = {} as SnippetManager;
+    welcomerService: WelcomerService = {} as WelcomerService;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",
@@ -168,16 +171,16 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
                     data.event,
                     suppressErrors
                         ? (...args: any[]) => {
-                              try {
-                                  const ret = callback(...args);
+                            try {
+                                const ret = callback(...args);
 
-                                  if (ret instanceof Promise) ret.catch(e => this.supressErrorMessagesHandler(suppressErrors, e));
+                                if (ret instanceof Promise) ret.catch(e => this.supressErrorMessagesHandler(suppressErrors, e));
 
-                                  return ret;
-                              } catch (e) {
-                                  this.supressErrorMessagesHandler(suppressErrors, e);
-                              }
-                          }
+                                return ret;
+                            } catch (e) {
+                                this.supressErrorMessagesHandler(suppressErrors, e);
+                            }
+                        }
                         : callback
                 );
 

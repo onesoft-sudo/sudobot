@@ -95,7 +95,19 @@ export const GuildConfigSchema = z.object({
                 ])
                 .optional()
         })
-        .optional()
+        .optional(),
+    welcomer: z.object({
+        enabled: z.boolean().optional().default(false),
+        custom_message: z.string().optional(),
+        randomize: z.boolean().optional().default(false),
+        mention: z.boolean().optional().default(false),
+        say_hi_button: z.boolean().optional().default(false),
+        say_hi_emoji: z.string().optional().default("default"),
+        say_hi_expire_after: z.number().int().min(5_000).max(10 * 60_000).default(5 * 60_000),
+        channel: zSnowflake,
+        embed: z.boolean().optional().default(true),
+        color: z.number().int().min(0x000000).max(0xffffff).default(0x007bff)
+    }).optional()
 });
 
 export type GuildConfig = z.infer<typeof GuildConfigSchema>;
