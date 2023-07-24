@@ -1,3 +1,12 @@
+# [4.126.0](https://github.com/onesoft-sudo/sudobot/compare/v4.125.0...v4.126.0) (2023-07-24)
+
+
+### Features
+
+* **types:** add HasEventListeners interface ([3b6efdf](https://github.com/onesoft-sudo/sudobot/commit/3b6efdfde805a8a1f241c1fb2b93e265471036dc))
+
+
+
 # [4.125.0](https://github.com/onesoft-sudo/sudobot/compare/v4.124.0...v4.125.0) (2023-07-24)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * add SuppressErrors() decorator ([d7d1a2a](https://github.com/onesoft-sudo/sudobot/commit/d7d1a2a975a6e2f0de61cb4c8b91919e2607aa7f))
-
-
-
-# [4.121.0](https://github.com/onesoft-sudo/sudobot/compare/v4.120.0...v4.121.0) (2023-07-23)
-
-
-### Features
-
-* **commands:** add about command ([0ff38fa](https://github.com/onesoft-sudo/sudobot/commit/0ff38fa0aa7abb05ad183f94bd5b21179e4a02cb))
 
 
 
