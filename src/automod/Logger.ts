@@ -130,7 +130,12 @@ export default class Logger extends Service {
                                 name: "Name",
                                 value: `New Name: ${newRole.name}\nOld Name: ${oldRole.name}`
                             }
-                        ] : []),
+                        ] : [
+                            {
+                                name: "Name",
+                                value: `${newRole.name}`
+                            }
+                        ]),
                         ...(newRole.color !== oldRole.color ? [
                             {
                                 name: "Color",
@@ -143,6 +148,16 @@ export default class Logger extends Service {
                                 value: `\`${newRole.permissions.toArray().join('`, `')}\``
                             }
                         ] : []),
+                        ...(oldRole.icon !== newRole.icon ? [
+                            {
+                                name: "Icon",
+                                value: `New Icon: ${newRole.iconURL()}\nOld Icon: ${oldRole.iconURL()}`
+                            }
+                        ] : []),
+                        {
+                            name: "ID",
+                            value: `${newRole.id}`
+                        }
                     ],
                     footer: {
                         text: "Updated"
