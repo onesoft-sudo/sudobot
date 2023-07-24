@@ -19,13 +19,13 @@
 
 import { Snippet } from "@prisma/client";
 import { Attachment, Collection, Message, MessageCreateOptions } from "discord.js";
+import { existsSync } from "fs";
 import fs from "fs/promises";
 import { basename } from "path";
 import Service from "../core/Service";
 import { downloadFile } from "../utils/download";
-import { log, logError, logInfo, LogLevel, logWarn, logWithLevel } from "../utils/logger";
+import { LogLevel, log, logError, logInfo, logWithLevel } from "../utils/logger";
 import { sudoPrefix } from "../utils/utils";
-import { existsSync } from "fs";
 
 export const name = "snippetManager";
 
@@ -138,7 +138,7 @@ export default class SnippetManager extends Service {
         return { success: true };
     }
 
-    async renameSnippet({ name, guildId, newName }: CommonSnippetActionOptions & { newName: string }){
+    async renameSnippet({ name, guildId, newName }: CommonSnippetActionOptions & { newName: string }) {
         if (!this.snippets[guildId].has(name)) {
             return { error: "No snippet found with that name" };
         }
@@ -166,7 +166,7 @@ export default class SnippetManager extends Service {
     }
 
     async createMessageOptionsFromSnippet({ name, guildId }: CommonSnippetActionOptions) {
-        if (!this.snippets[guildId].has(name)) {
+        if (!this.snippets[guildId]?.has(name)) {
             return { error: "No snippet found with that name", found: false };
         }
 
