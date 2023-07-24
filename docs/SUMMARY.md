@@ -1,6 +1,7 @@
 # Table of contents
 
 * [Documentation](README.md)
+* [Getting Started](getting-started.md)
 * [Features](features/README.md)
   * [Features](features/features.md)
   * [Screenshots](features/screenshots.md)
