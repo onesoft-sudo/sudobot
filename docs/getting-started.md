@@ -1,6 +1,6 @@
 # Getting Started
 
-Thanks for choosing SudoBot! In this article you'll learn how to set up a custom instance of SudoBot and configure it so that does exactly what you want.
+Thanks for choosing SudoBot! In this article you'll learn how to set up a custom instance of SudoBot and configure it so that it does exactly what you want.
 
 {% hint style="info" %}
 If you don't want to set the bot up yourself and want a pre-hosted solution for free, you can contact [@rakinar2](https://discord.com/users/774553653394538506) at Discord. Your Discord server should have at least 50 members to be eligible.
