@@ -248,6 +248,42 @@ export default class Logger extends Service {
         }).catch(console.error);
     }
 
+    async onMemberRoleUpdate(newMember: GuildMember, oldMember: GuildMember) {
+        this.loggingChannel(newMember.guild.id)?.send({
+            embeds: [
+                new MessageEmbed({
+                    author: {
+                        name: newMember.user.username,
+                        icon_url: newMember.displayAvatarURL()
+                    },
+                    title: `Roles modified`,
+                    color: 0xf14a60,
+                    fields: [
+                        {
+                            name: "Member",
+                            value: `${newMember.user.toString()} (${newMember.user.id})`
+                        },
+                        {
+                            name: "Old Roles",
+                            value: `${oldMember.roles.cache.map(r => r.toString()).join(', ')}`
+                        },
+                        {
+                            name: "New Roles",
+                            value: `${newMember.roles.cache.map(r => r.toString()).join(', ')}`
+                        }
+                    ],
+                    footer: {
+                        text: 'Roles Updated'
+                    }
+                }).setTimestamp()
+            ],
+            allowedMentions: {
+                roles: [],
+                users: []
+            }
+        }).catch(console.error);
+    }
+
     async onMemberRoleRemove(member: GuildMember, roles: Role[]) {
         this.loggingChannel(member.guild.id)?.send({
             embeds: [
