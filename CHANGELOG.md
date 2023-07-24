@@ -1,3 +1,12 @@
+# [4.125.0](https://github.com/onesoft-sudo/sudobot/compare/v4.124.0...v4.125.0) (2023-07-24)
+
+
+### Features
+
+* **welcomer:** add new welcome message placeholder ([54150ee](https://github.com/onesoft-sudo/sudobot/commit/54150ee5d21fa204c43e491d66af6f593a37dec1))
+
+
+
 # [4.124.0](https://github.com/onesoft-sudo/sudobot/compare/v4.123.0...v4.124.0) (2023-07-24)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * **commands:** add about command ([0ff38fa](https://github.com/onesoft-sudo/sudobot/commit/0ff38fa0aa7abb05ad183f94bd5b21179e4a02cb))
-
-
-
-# [4.120.0](https://github.com/onesoft-sudo/sudobot/compare/v4.119.0...v4.120.0) (2023-07-23)
-
-
-### Features
-
-* the GatewayEventListener() decorator is now available for Service classes ([232abe7](https://github.com/onesoft-sudo/sudobot/commit/232abe73d8a1cf17522d2cb5af426aa02b627aff))
 
 
 
