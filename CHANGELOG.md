@@ -1,3 +1,17 @@
+# [4.124.0](https://github.com/onesoft-sudo/sudobot/compare/v4.123.0...v4.124.0) (2023-07-24)
+
+
+### Bug Fixes
+
+* snippet manager causing crash ([3cc1bd1](https://github.com/onesoft-sudo/sudobot/commit/3cc1bd11468382a9c7c02b9661cd4c02f83b62a3))
+
+
+### Features
+
+* add welcomer service ([2970782](https://github.com/onesoft-sudo/sudobot/commit/2970782d530c6b1e137732af23168ddbac8b84cb))
+
+
+
 # [4.123.0](https://github.com/onesoft-sudo/sudobot/compare/v4.122.0...v4.123.0) (2023-07-23)
 
 
@@ -31,22 +45,6 @@
 ### Features
 
 * the GatewayEventListener() decorator is now available for Service classes ([232abe7](https://github.com/onesoft-sudo/sudobot/commit/232abe73d8a1cf17522d2cb5af426aa02b627aff))
-
-
-
-# [4.119.0](https://github.com/onesoft-sudo/sudobot/compare/v4.118.0...v4.119.0) (2023-07-22)
-
-
-### Bug Fixes
-
-* **paginator:** buttons not working ([8c7b7c8](https://github.com/onesoft-sudo/sudobot/commit/8c7b7c882465b64102e15cc1880b41cb94a0f78a))
-
-
-### Features
-
-* add command metadata properties ([d516d11](https://github.com/onesoft-sudo/sudobot/commit/d516d11cdc1f79f98b43520d6208c0915dddb909))
-* add GatewayEventListener method decorator ([399af2c](https://github.com/onesoft-sudo/sudobot/commit/399af2ce5c59b8e810fb23ff7cb3928558db335e))
-* add help command ([e21a14e](https://github.com/onesoft-sudo/sudobot/commit/e21a14e2f09c845851d198ca50ee0beceef2473a))
 
 
 
