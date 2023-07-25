@@ -47,7 +47,7 @@ Thanks to all the contributors!
 ### Support
 
 - **Email**: rakinar2@onesoftnet.eu.org
-- **Discord Servers**: [Silly Cats Server](https://discord.gg/catss), [OneSoftNet Server](https://discord.gg/892GWhTzgs)
+- **Discord Servers**: [Silly Cats Server](https://discord.gg/sillycats), [OneSoftNet Server](https://discord.gg/892GWhTzgs)
 
 ### Extra 
 
