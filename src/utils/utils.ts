@@ -27,6 +27,7 @@ import {
     NewsChannel,
     PermissionFlagsBits,
     PermissionResolvable,
+    PermissionsBitField,
     TextChannel,
     ThreadChannel,
     User,
@@ -145,7 +146,7 @@ export function getEmoji(client: Client, name: string) {
     return (
         client.configManager.systemConfig.emojis?.[name] ??
         client.emojiMap.get(name)?.toString() ??
-        client.emojis.cache.find((e) => e.name === name)?.toString() ??
+        client.emojis.cache.find(e => e.name === name)?.toString() ??
         ""
     );
 }
@@ -177,7 +178,7 @@ export function isImmuneToAutoMod(client: Client, member: GuildMember, permissio
 }
 
 export function wait(time: number) {
-    return new Promise((resolve) => setTimeout(resolve, time));
+    return new Promise(resolve => setTimeout(resolve, time));
 }
 
 export function sudoPrefix(pathLike: string, createDirIfNotExists = false) {
@@ -186,4 +187,31 @@ export function sudoPrefix(pathLike: string, createDirIfNotExists = false) {
     if (createDirIfNotExists) mkdirSync(directoryOrFile, { recursive: true });
 
     return directoryOrFile;
+}
+
+export function getPermissionNames(permissionsBit: bigint) {
+    const result = [];
+    const permissions = new PermissionsBitField(permissionsBit);
+
+    for (const permission of Object.keys(PermissionsBitField.Flags) as (keyof typeof PermissionsBitField.Flags)[]) {
+        if (permissions.has(PermissionsBitField.Flags[permission])) {
+            result.push(permission);
+        }
+    }
+
+    return result;
+}
+
+export function forceGetPermissionNames(permissions: PermissionResolvable[]) {
+    const strings: string[] = [];
+
+    for (const permission of permissions) {
+        if (typeof permission === "bigint") {
+            strings.push(...getPermissionNames(permission));
+        } else if (typeof permission === "string") {
+            strings.push(permission);
+        } else throw new Error("Unknown permission type");
+    }
+
+    return strings;
 }

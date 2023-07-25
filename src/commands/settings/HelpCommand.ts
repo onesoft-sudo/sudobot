@@ -17,11 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { EmbedBuilder, PermissionResolvable } from "discord.js";
+import { Collection, EmbedBuilder, PermissionResolvable, escapeCodeBlock, escapeInlineCode } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import Pagination from "../../utils/Pagination";
 import { log } from "../../utils/logger";
+import { forceGetPermissionNames } from "../../utils/utils";
 
 export interface CommandInfo {
     name: string;
@@ -46,6 +47,11 @@ export default class HelpCommand extends Command {
             types: [ArgumentType.String],
             name: "command",
             optional: true
+        },
+        {
+            types: [ArgumentType.String],
+            name: "subcommand",
+            optional: true
         }
     ];
     public readonly permissions = [];
@@ -56,7 +62,7 @@ export default class HelpCommand extends Command {
 
     public readonly argumentSyntaxes = ["[command]"];
 
-    public readonly commandInformation: Array<CommandInfo> = [];
+    public readonly commandInformation = new Collection<string, CommandInfo>();
 
     @GatewayEventListener("ready")
     async onReady() {
@@ -64,8 +70,9 @@ export default class HelpCommand extends Command {
 
         for await (const command of this.client.commands.values()) {
             if (command.name.includes("__")) continue;
+            if (this.commandInformation.has(command.name)) continue;
 
-            this.commandInformation.push({
+            this.commandInformation.set(command.name, {
                 name: command.name,
                 aliases: command.aliases,
                 group: command.group,
@@ -83,15 +90,16 @@ export default class HelpCommand extends Command {
         }
 
         this.commandInformation.sort((a, b) => a.name.localeCompare(b.name, ["en-US"]));
-        log("Successfully read metadata of " + this.commandInformation.length + " commands");
+        log("Successfully read metadata of " + this.commandInformation.size + " commands");
     }
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
-        const subcommand = context.isLegacy ? context.parsedNamedArgs.command : context.options.getString("command");
+        const commandName = context.isLegacy ? context.parsedNamedArgs.command : context.options.getString("command");
+        const subcommand = context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getString("subcommand");
 
-        if (!subcommand) {
-            const pagination = new Pagination(this.commandInformation, {
+        if (!commandName) {
+            const pagination = new Pagination([...this.commandInformation.values()], {
                 channelId: message.channelId!,
                 client: this.client,
                 guildId: message.guildId!,
@@ -99,8 +107,9 @@ export default class HelpCommand extends Command {
                 timeout: 200_000,
                 userId: message.member!.user.id,
                 embedBuilder({ currentPage, maxPages, data }) {
-                    let description = `Run \`${this.client.configManager.config[message.guildId!].prefix
-                        }help <commandName>\` to get help about a specific command.\n\`<...>\` means required argument, \`[...]\` means optional argument.\n\n`;
+                    let description: string = `Run \`${
+                        this.client.configManager.config[message.guildId!].prefix
+                    }help <commandName>\` to get help about a specific command.\n\`<...>\` means required argument, \`[...]\` means optional argument.\n\n`;
 
                     for (const commandInfo of data) {
                         description += `**${commandInfo.name}**\n`;
@@ -130,7 +139,119 @@ export default class HelpCommand extends Command {
             const reply = await this.deferredReply(message, await pagination.getMessageOptions(1));
             await pagination.start(reply);
         } else {
-            throw new Error("TODO: This part of the command isn't implemented");
+            const name = subcommand ? `${commandName} ${subcommand}` : commandName;
+            const command = this.client.commands.get(subcommand ? `${commandName}__${subcommand}` : commandName);
+
+            if (!command) {
+                await this.error(
+                    message,
+                    subcommand
+                        ? `No command \`${commandName}\` or no subcommand \`${subcommand}\` exists.`
+                        : `No command named \`${escapeInlineCode(escapeCodeBlock(commandName))}\` exists!`
+                );
+                return;
+            }
+
+            const options = command.availableOptions ? Object.entries(command.availableOptions) : [];
+
+            await this.deferredReply(message, {
+                embeds: [
+                    new EmbedBuilder({
+                        title: `${this.client.configManager.config[message.guildId!].prefix}${name}${command.beta ? ` [BETA]` : ""}`,
+                        color: 0x007bff,
+                        fields: [
+                            {
+                                name: "Name",
+                                value: `\`${name}\``,
+                                inline: true
+                            },
+                            {
+                                name: "Group",
+                                value: `\`${command.group}\``,
+                                inline: true
+                            },
+                            ...(command.aliases.length > 0
+                                ? [
+                                      {
+                                          name: "Aliases",
+                                          value: command.aliases.map(c => `\`${c}\``).join("\n")
+                                      }
+                                  ]
+                                : []),
+                            {
+                                name: "Description",
+                                value: command.detailedDscription ?? command.description ?? "*No description available*"
+                            },
+                            {
+                                name: "Syntax",
+                                value: `\`\`\`\n${
+                                    command.argumentSyntaxes
+                                        ? command.argumentSyntaxes
+                                              .map(s => `${this.client.configManager.config[message.guildId!].prefix}${name} ${s}`)
+                                              .join("\n")
+                                        : `${this.client.configManager.config[message.guildId!].prefix}${name}`
+                                }\n\`\`\``
+                            },
+                            ...(command.subcommands.length > 0
+                                ? [
+                                      {
+                                          name: "Subcommands",
+                                          value: `Run \`${this.client.configManager.config[message.guildId!].prefix}help ${
+                                              command.name
+                                          } <subcommand>\` to see information about specific subcommands.\n\n* ${command.subcommands
+                                              .map(s => `\`${s}\``)
+                                              .join("\n* ")}`
+                                      }
+                                  ]
+                                : []),
+                            ...(command.botRequiredPermissions.length > 0
+                                ? [
+                                      {
+                                          name: "Required Bot Permissions",
+                                          value: "`" + forceGetPermissionNames(command.botRequiredPermissions).join("`\n`") + "`",
+                                          inline: true
+                                      }
+                                  ]
+                                : []),
+                            ...(command.permissions.length > 0
+                                ? [
+                                      {
+                                          name: "Required User Permissions",
+                                          value:
+                                              "`" +
+                                              forceGetPermissionNames(command.permissions).join(
+                                                  `\`\n${command.permissionMode === "or" ? "or, " : ""}\``
+                                              ) +
+                                              "`",
+                                          inline: true
+                                      }
+                                  ]
+                                : []),
+                            ...(options.length > 0
+                                ? [
+                                      {
+                                          name: "Options",
+                                          value: options.map(([name, description]) => `* \`${name}\` - ${description}`).join("\n")
+                                      }
+                                  ]
+                                : []),
+                            {
+                                name: "Mode",
+                                value: `${this.emoji(command.supportsLegacy ? "check" : "error")} Legacy Command\n${this.emoji(
+                                    command.supportsInteractions ? "check" : "error"
+                                )} Interaction-based Command`
+                            },
+                            {
+                                name: "Other Information",
+                                value: `Available since \`${command.since}\`.\n${command.beta ? "This command is under beta testing.\n" : ""}${
+                                    command.systemAdminOnly ? "This command can only be used by the System Administrators of the bot.\n" : ""
+                                }`,
+                                inline: true
+                            }
+                        ]
+                    }).setTimestamp()
+                ]
+            });
         }
     }
 }

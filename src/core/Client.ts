@@ -20,7 +20,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Collection, Client as DiscordClient, GuildEmoji, UserResolvable } from "discord.js";
 import fs from "fs/promises";
-import path from "path";
+import path, { basename, dirname } from "path";
 import Server from "../api/Server";
 import type Antispam from "../automod/Antispam";
 import type MessageFilter from "../automod/MessageFilter";
@@ -115,6 +115,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
 
             const { default: CommandClass }: { default: new (client: Client) => Command } = await import(filePath);
             const command = new CommandClass(this);
+            command.group = basename(dirname(filePath));
             this.commands.set(command.name, command);
 
             for (const alias of command.aliases) {
@@ -171,16 +172,16 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
                     data.event,
                     suppressErrors
                         ? (...args: any[]) => {
-                            try {
-                                const ret = callback(...args);
+                              try {
+                                  const ret = callback(...args);
 
-                                if (ret instanceof Promise) ret.catch(e => this.supressErrorMessagesHandler(suppressErrors, e));
+                                  if (ret instanceof Promise) ret.catch(e => this.supressErrorMessagesHandler(suppressErrors, e));
 
-                                return ret;
-                            } catch (e) {
-                                this.supressErrorMessagesHandler(suppressErrors, e);
-                            }
-                        }
+                                  return ret;
+                              } catch (e) {
+                                  this.supressErrorMessagesHandler(suppressErrors, e);
+                              }
+                          }
                         : callback
                 );
 

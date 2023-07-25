@@ -32,7 +32,6 @@ import {
     PermissionResolvable,
     SlashCommandBuilder
 } from "discord.js";
-import { dirname } from "path";
 import { ChatInputCommandContext, LegacyCommandContext } from "../services/CommandManager";
 import { logError } from "../utils/logger";
 import { getEmoji, isSnowflake, stringToTimeInterval } from "../utils/utils";
@@ -77,7 +76,7 @@ export interface ValidationRule {
 
 export default abstract class Command {
     public readonly name: string = "";
-    public readonly group: string = dirname(__dirname);
+    public group: string = "Default";
     public readonly aliases: string[] = [];
 
     public readonly supportsInteractions: boolean = true;
@@ -95,9 +94,13 @@ export default abstract class Command {
     public readonly beta: boolean = false;
     public readonly since: string = "1.0.0";
     public readonly botRequiredPermissions: PermissionResolvable[] = [];
-    public readonly slashCommandBuilder?: Partial<Pick<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>> | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>;
+    public readonly slashCommandBuilder?:
+        | Partial<Pick<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">>
+        | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
 
-    constructor(protected client: Client) { }
+    public readonly subcommands: string[] = [];
+
+    constructor(protected client: Client) {}
 
     abstract execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn>;
 
@@ -229,7 +232,7 @@ export default abstract class Command {
                             ) {
                                 await message.reply(
                                     rule.minMaxErrorMessage ??
-                                    `Argument #${index} has a min/max numeric value range but the given value is out of range.`
+                                        `Argument #${index} has a min/max numeric value range but the given value is out of range.`
                                 );
                                 return;
                             }
@@ -302,7 +305,7 @@ export default abstract class Command {
                                 ) {
                                     await message.reply(
                                         `${this.emoji("error")} ` + rule.minMaxErrorMessage ??
-                                        `Argument #${index} has a min/max numeric time value range but the given value is out of range.`
+                                            `Argument #${index} has a min/max numeric time value range but the given value is out of range.`
                                     );
                                     return;
                                 }
@@ -360,8 +363,8 @@ export default abstract class Command {
                                             type === ArgumentType.Role
                                                 ? await message.guild!.roles.fetch(id)
                                                 : type === ArgumentType.Channel
-                                                    ? await message.guild!.channels.fetch(id)
-                                                    : await message.guild!.members.fetch(id);
+                                                ? await message.guild!.channels.fetch(id)
+                                                : await message.guild!.members.fetch(id);
                                     }
 
                                     if (!entity) {
@@ -440,9 +443,9 @@ export default abstract class Command {
             ...context,
             ...(context.isLegacy
                 ? {
-                    parsedArgs,
-                    parsedNamedArgs
-                }
+                      parsedArgs,
+                      parsedNamedArgs
+                  }
                 : {})
         });
     }
