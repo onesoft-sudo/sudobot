@@ -1,3 +1,12 @@
+# [4.128.0](https://github.com/onesoft-sudo/sudobot/compare/v4.127.0...v4.128.0) (2023-07-25)
+
+
+### Features
+
+* implement permissions system for snippets ([df7f22b](https://github.com/onesoft-sudo/sudobot/commit/df7f22b19ffebb1507eaf167a9b65644cb2f1386))
+
+
+
 # [4.127.0](https://github.com/onesoft-sudo/sudobot/compare/v4.126.0...v4.127.0) (2023-07-25)
 
 
@@ -41,15 +50,6 @@
 ### Features
 
 * add welcomer service ([2970782](https://github.com/onesoft-sudo/sudobot/commit/2970782d530c6b1e137732af23168ddbac8b84cb))
-
-
-
-# [4.123.0](https://github.com/onesoft-sudo/sudobot/compare/v4.122.0...v4.123.0) (2023-07-23)
-
-
-### Features
-
-* add a default value for prefix in guild config schema ([5afa976](https://github.com/onesoft-sudo/sudobot/commit/5afa9760020e512e81ce4d3dc0f4679f21f0367b))
 
 
 
