@@ -18,7 +18,7 @@
  */
 
 import { Snippet } from "@prisma/client";
-import { Attachment, Collection, Message, MessageCreateOptions } from "discord.js";
+import { Attachment, Collection, GuildMember, Message, MessageCreateOptions } from "discord.js";
 import { existsSync } from "fs";
 import fs from "fs/promises";
 import { basename } from "path";
@@ -40,8 +40,7 @@ export default class SnippetManager extends Service {
         }
 
         for (const snippet of snippets) {
-            if (!this.snippets[snippet.guild_id])
-                this.snippets[snippet.guild_id] = new Collection<string, Snippet>();
+            if (!this.snippets[snippet.guild_id]) this.snippets[snippet.guild_id] = new Collection<string, Snippet>();
 
             this.snippets[snippet.guild_id].set(snippet.name, snippet);
         }
@@ -165,7 +164,15 @@ export default class SnippetManager extends Service {
         return { success: true, snippet };
     }
 
-    async createMessageOptionsFromSnippet({ name, guildId }: CommonSnippetActionOptions) {
+    async createMessageOptionsFromSnippet({
+        name,
+        guildId,
+        channelId,
+        member
+    }: CommonSnippetActionOptions & {
+        channelId: string;
+        member: GuildMember;
+    }) {
         if (!this.snippets[guildId]?.has(name)) {
             return { error: "No snippet found with that name", found: false };
         }
@@ -173,7 +180,19 @@ export default class SnippetManager extends Service {
         const snippet = this.snippets[guildId].get(name)!;
 
         if (!snippet.content && snippet.attachments.length === 0)
-            throw new Error("Corrupted database: snippet attachment and content both are unusable")
+            throw new Error("Corrupted database: snippet attachment and content both are unusable");
+
+        if (
+            (snippet.channels.length > 0 && !snippet.channels.includes(channelId)) ||
+            (snippet.users.length > 0 && !snippet.users.includes(member.user.id)) ||
+            (snippet.roles.length > 0 && !member.roles.cache.hasAll(...snippet.roles))
+        ) {
+            log("Channel/user doesn't have permission to run this snippet.");
+
+            return {
+                options: undefined
+            };
+        }
 
         const files = [];
 
@@ -198,7 +217,12 @@ export default class SnippetManager extends Service {
     }
 
     async onMessageCreate(message: Message, commandName: string) {
-        const { options, found } = await this.createMessageOptionsFromSnippet({ name: commandName, guildId: message.guildId! });
+        const { options, found } = await this.createMessageOptionsFromSnippet({
+            name: commandName,
+            guildId: message.guildId!,
+            channelId: message.channelId!,
+            member: message.member! as GuildMember
+        });
 
         if (!found || !options) {
             log("Snippet not found");
@@ -210,10 +234,9 @@ export default class SnippetManager extends Service {
     }
 }
 
-
 interface CommonSnippetActionOptions {
-    name: string,
-    guildId: string
+    name: string;
+    guildId: string;
 }
 
 interface CreateSnippetOptions extends CommonSnippetActionOptions {
