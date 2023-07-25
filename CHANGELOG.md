@@ -1,3 +1,17 @@
+# [4.127.0](https://github.com/onesoft-sudo/sudobot/compare/v4.126.0...v4.127.0) (2023-07-25)
+
+
+### Bug Fixes
+
+* add command metadata ([7c662d2](https://github.com/onesoft-sudo/sudobot/commit/7c662d2eb63cdd72dbd695d9a58a821ab6f43c99))
+
+
+### Features
+
+* complete help command ([1b8ad97](https://github.com/onesoft-sudo/sudobot/commit/1b8ad972e7018da1264e15376e9202ed166d1c34))
+
+
+
 # [4.126.0](https://github.com/onesoft-sudo/sudobot/compare/v4.125.0...v4.126.0) (2023-07-24)
 
 
@@ -36,15 +50,6 @@
 ### Features
 
 * add a default value for prefix in guild config schema ([5afa976](https://github.com/onesoft-sudo/sudobot/commit/5afa9760020e512e81ce4d3dc0f4679f21f0367b))
-
-
-
-# [4.122.0](https://github.com/onesoft-sudo/sudobot/compare/v4.121.0...v4.122.0) (2023-07-23)
-
-
-### Features
-
-* add SuppressErrors() decorator ([d7d1a2a](https://github.com/onesoft-sudo/sudobot/commit/d7d1a2a975a6e2f0de61cb4c8b91919e2607aa7f))
 
 
 
