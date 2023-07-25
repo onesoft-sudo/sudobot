@@ -33,84 +33,119 @@ export default class InfractionCommand extends Command {
     ];
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
     public readonly permissionMode = "or";
-    public readonly description = "Clear messages in bulk.";
-    public readonly detailedDscription = "This command clears messages in bulk, by user or by count or both. This operation may take some time to complete.";
-    public readonly argumentSyntaxes = [
-        "<count>",
-        "<UserID|UserMention> [count]",
-    ];
+    public readonly description = "Manage infractions.";
+    public readonly detailedDscription = "Use this command to manage infractions.";
+    public readonly argumentSyntaxes = ["<subcommand> [...args]"];
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
         .addSubcommand(subcommand =>
-            subcommand.setName('view').setDescription("View information about an infraction")
-                .addIntegerOption(option => option.setName('id').setDescription("The infraction ID").setRequired(true))
+            subcommand
+                .setName("view")
+                .setDescription("View information about an infraction")
+                .addIntegerOption(option => option.setName("id").setDescription("The infraction ID").setRequired(true))
         )
         .addSubcommand(subcommand =>
-            subcommand.setName('edit').setDescription("Update reason of an infraction")
-                .addIntegerOption(option => option.setName('id').setDescription("The infraction ID").setRequired(true))
-                .addStringOption(option => option.setName('new_reason').setDescription("New reason to set"))
-                .addStringOption(option => option.setName('new_duration').setDescription("New duration to set"))
-                .addBooleanOption(option => option.setName('silent').setDescription("Specify if the bot should not let the user know about this, defaults to true"))
+            subcommand
+                .setName("edit")
+                .setDescription("Update reason of an infraction")
+                .addIntegerOption(option => option.setName("id").setDescription("The infraction ID").setRequired(true))
+                .addStringOption(option => option.setName("new_reason").setDescription("New reason to set"))
+                .addStringOption(option => option.setName("new_duration").setDescription("New duration to set"))
+                .addBooleanOption(option =>
+                    option.setName("silent").setDescription("Specify if the bot should not let the user know about this, defaults to true")
+                )
         )
         .addSubcommand(subcommand =>
-            subcommand.setName('delete').setDescription("Delete an infraction")
-                .addIntegerOption(option => option.setName('id').setDescription("The infraction ID").setRequired(true))
+            subcommand
+                .setName("delete")
+                .setDescription("Delete an infraction")
+                .addIntegerOption(option => option.setName("id").setDescription("The infraction ID").setRequired(true))
         )
         .addSubcommand(subcommand =>
-            subcommand.setName('clear').setDescription("Clear infractions for a user")
-                .addUserOption(option => option.setName('user').setDescription("The target user").setRequired(true))
-                .addStringOption(option => option.setName('type').setDescription("Specify infraction type").setChoices(
-                    ...['Ban', "Mute", "Hardmute", "Kick", "Warning", "Softban", "Tempban", "Unmute", "Unban", "Timeout", "Timeout Remove", "Bean", "Shot"]
-                        .map(option => ({ name: option, value: option.toLowerCase().replace(' ', '_') }))
-                ))
+            subcommand
+                .setName("clear")
+                .setDescription("Clear infractions for a user")
+                .addUserOption(option => option.setName("user").setDescription("The target user").setRequired(true))
+                .addStringOption(option =>
+                    option
+                        .setName("type")
+                        .setDescription("Specify infraction type")
+                        .setChoices(
+                            ...[
+                                "Ban",
+                                "Mute",
+                                "Hardmute",
+                                "Kick",
+                                "Warning",
+                                "Softban",
+                                "Tempban",
+                                "Unmute",
+                                "Unban",
+                                "Timeout",
+                                "Timeout Remove",
+                                "Bean",
+                                "Shot"
+                            ].map(option => ({ name: option, value: option.toLowerCase().replace(" ", "_") }))
+                        )
+                )
         )
         .addSubcommand(subcommand =>
-            subcommand.setName('create').setDescription("Add infractions to a user")
-                .addUserOption(option => option.setName('user').setDescription("The target user").setRequired(true))
-                .addStringOption(option => option.setName('type').setDescription("Specify infraction type").setChoices(...[
-                    {
-                        name: "Ban",
-                        value: InfractionType.BAN
-                    },
-                    {
-                        name: "Kick",
-                        value: InfractionType.KICK
-                    },
-                    {
-                        name: "Mute",
-                        value: InfractionType.MUTE
-                    },
-                    {
-                        name: "Warning",
-                        value: InfractionType.WARNING
-                    },
-                    {
-                        name: "Unmute",
-                        value: InfractionType.UNMUTE
-                    },
-                    {
-                        name: "Unban",
-                        value: InfractionType.UNBAN
-                    },
-                    {
-                        name: "Bulk message delete",
-                        value: InfractionType.BULK_DELETE_MESSAGE
-                    },
-                    {
-                        name: "Temporary Ban",
-                        value: InfractionType.TEMPBAN
-                    },
-                    {
-                        name: "Timeout",
-                        value: InfractionType.TIMEOUT
-                    },
-                    {
-                        name: "Timeout remove",
-                        value: InfractionType.TIMEOUT_REMOVE
-                    }
-                ].map(o => ({ ...o, value: o.value.toLowerCase() }))).setRequired(true))
-                .addStringOption(option => option.setName('reason').setDescription("The reason for giving this infraction"))
-                .addStringOption(option => option.setName('duration').setDescription("The duration of this infraction (e.g. 45, 1h30m)"))
+            subcommand
+                .setName("create")
+                .setDescription("Add infractions to a user")
+                .addUserOption(option => option.setName("user").setDescription("The target user").setRequired(true))
+                .addStringOption(option =>
+                    option
+                        .setName("type")
+                        .setDescription("Specify infraction type")
+                        .setChoices(
+                            ...[
+                                {
+                                    name: "Ban",
+                                    value: InfractionType.BAN
+                                },
+                                {
+                                    name: "Kick",
+                                    value: InfractionType.KICK
+                                },
+                                {
+                                    name: "Mute",
+                                    value: InfractionType.MUTE
+                                },
+                                {
+                                    name: "Warning",
+                                    value: InfractionType.WARNING
+                                },
+                                {
+                                    name: "Unmute",
+                                    value: InfractionType.UNMUTE
+                                },
+                                {
+                                    name: "Unban",
+                                    value: InfractionType.UNBAN
+                                },
+                                {
+                                    name: "Bulk message delete",
+                                    value: InfractionType.BULK_DELETE_MESSAGE
+                                },
+                                {
+                                    name: "Temporary Ban",
+                                    value: InfractionType.TEMPBAN
+                                },
+                                {
+                                    name: "Timeout",
+                                    value: InfractionType.TIMEOUT
+                                },
+                                {
+                                    name: "Timeout remove",
+                                    value: InfractionType.TIMEOUT_REMOVE
+                                }
+                            ].map(o => ({ ...o, value: o.value.toLowerCase() }))
+                        )
+                        .setRequired(true)
+                )
+                .addStringOption(option => option.setName("reason").setDescription("The reason for giving this infraction"))
+                .addStringOption(option => option.setName("duration").setDescription("The duration of this infraction (e.g. 45, 1h30m)"))
         );
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
@@ -140,10 +175,10 @@ export default class InfractionCommand extends Command {
                 ...context,
                 ...(context.isLegacy
                     ? {
-                        parsedNamedArgs: {
-                            id: parseInt(context.args[1])
-                        }
-                    }
+                          parsedNamedArgs: {
+                              id: parseInt(context.args[1])
+                          }
+                      }
                     : {})
             });
         }

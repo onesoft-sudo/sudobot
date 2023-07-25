@@ -30,6 +30,10 @@ export default class InfractionCreateCommand extends Command {
     public readonly supportsLegacy: boolean = false;
     public readonly permissionMode = "or";
 
+    public readonly description = "Create infractions.";
+    public readonly detailedDscription = "Create and assign an infraction to someone.";
+    public readonly argumentSyntaxes = ["<user> <type> [reason] [duration]"];
+
     async execute(interaction: ChatInputCommandInteraction, context: ChatInputCommandContext): Promise<CommandReturn> {
         const user = interaction.options.getUser("user", true);
         const type = interaction.options.getString("type", true);

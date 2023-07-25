@@ -33,6 +33,10 @@ export default class InfractionDeleteCommand extends Command {
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
     public readonly permissionMode = "or";
 
+    public readonly description = "Delete infractions.";
+    public readonly detailedDscription = "Delete an infraction for an user.";
+    public readonly argumentSyntaxes = ["<infraction_id>"];
+
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         const id = context.isLegacy ? context.parsedNamedArgs.id : context.options.getInteger("id", true);
 

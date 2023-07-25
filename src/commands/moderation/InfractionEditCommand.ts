@@ -30,6 +30,10 @@ export default class InfractionEditCommand extends Command {
     public readonly permissionMode = "or";
     public readonly supportsLegacy: boolean = false;
 
+    public readonly description = "Edit infractions.";
+    public readonly detailedDscription = "Update an infraction with a new reason or duration or both.";
+    public readonly argumentSyntaxes = ["<infraction_id> [new_reason] [new_duration]"];
+
     async execute(interaction: ChatInputCommandInteraction, context: ChatInputCommandContext): Promise<CommandReturn> {
         const id = interaction.options.getInteger("id", true);
         const newReason = interaction.options.getString("new_reason");
