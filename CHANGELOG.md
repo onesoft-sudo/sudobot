@@ -1,3 +1,20 @@
+# [4.130.0](https://github.com/onesoft-sudo/sudobot/compare/v4.129.0...v4.130.0) (2023-07-26)
+
+
+### Bug Fixes
+
+* about command is missing meta info ([a8a8b58](https://github.com/onesoft-sudo/sudobot/commit/a8a8b58cf6affa833e5f278416361239ef4c17c0))
+* restrict guilds to manage infractions ([2ca2e92](https://github.com/onesoft-sudo/sudobot/commit/2ca2e925a35f2ec8ac4004ea742dd69298780264))
+* snippet commands are missing meta info ([6a2cb45](https://github.com/onesoft-sudo/sudobot/commit/6a2cb45fb8abccad68f58b9a64f9feae54bb0f1a))
+
+
+### Features
+
+* add infraction clear command ([92ca282](https://github.com/onesoft-sudo/sudobot/commit/92ca282c714918dbecf65fe09838acba31eb93fa))
+* add infraction list command ([a6551d9](https://github.com/onesoft-sudo/sudobot/commit/a6551d905d907fa62a516c4f89b273ceb14e2d15))
+
+
+
 # [4.129.0](https://github.com/onesoft-sudo/sudobot/compare/v4.128.0...v4.129.0) (2023-07-26)
 
 
@@ -41,15 +58,6 @@
 ### Features
 
 * **types:** add HasEventListeners interface ([3b6efdf](https://github.com/onesoft-sudo/sudobot/commit/3b6efdfde805a8a1f241c1fb2b93e265471036dc))
-
-
-
-# [4.125.0](https://github.com/onesoft-sudo/sudobot/compare/v4.124.0...v4.125.0) (2023-07-24)
-
-
-### Features
-
-* **welcomer:** add new welcome message placeholder ([54150ee](https://github.com/onesoft-sudo/sudobot/commit/54150ee5d21fa204c43e491d66af6f593a37dec1))
 
 
 
