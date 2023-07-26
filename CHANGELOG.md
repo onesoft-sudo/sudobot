@@ -1,3 +1,13 @@
+# [4.132.0](https://github.com/onesoft-sudo/sudobot/compare/v4.131.0...v4.132.0) (2023-07-26)
+
+
+### Features
+
+* **commands:** add echo command ([a841124](https://github.com/onesoft-sudo/sudobot/commit/a841124f81a74f46720017f45af8defbba777289))
+* **commands:** add send command ([be651a2](https://github.com/onesoft-sudo/sudobot/commit/be651a2378a728fd3a58d0bf886fce73ef0cf9cb))
+
+
+
 # [4.131.0](https://github.com/onesoft-sudo/sudobot/compare/v4.130.0...v4.131.0) (2023-07-26)
 
 
@@ -51,20 +61,6 @@
 ### Features
 
 * implement permissions system for snippets ([df7f22b](https://github.com/onesoft-sudo/sudobot/commit/df7f22b19ffebb1507eaf167a9b65644cb2f1386))
-
-
-
-# [4.127.0](https://github.com/onesoft-sudo/sudobot/compare/v4.126.0...v4.127.0) (2023-07-25)
-
-
-### Bug Fixes
-
-* add command metadata ([7c662d2](https://github.com/onesoft-sudo/sudobot/commit/7c662d2eb63cdd72dbd695d9a58a821ab6f43c99))
-
-
-### Features
-
-* complete help command ([1b8ad97](https://github.com/onesoft-sudo/sudobot/commit/1b8ad972e7018da1264e15376e9202ed166d1c34))
 
 
 
