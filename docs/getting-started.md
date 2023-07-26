@@ -6,6 +6,20 @@ Thanks for choosing SudoBot! In this article you'll learn how to set up a custom
 If you don't want to set the bot up yourself and want a pre-hosted solution for free, you can contact [@rakinar2](https://discord.com/users/774553653394538506) at Discord. Your Discord server should have at least 50 members to be eligible.
 {% endhint %}
 
+## Requirements
+
+These are the requirements to host SudoBot:
+
+* A Discord API Application token (Go to [Discord Developer Portal](https://discord.com/developers/applications) to obtain a token)
+* [Node.js](https://nodejs.org) version 18 or higher
+* A MySQL or PostgreSQL database (If you're looking for a free PostgresSQL hosting service, check out [Supabase](https://supabase.com))
+
+Additionally, you can also set these up if you want to use them:
+
+* Cat and dog API Token (for fetching cat and dog images using `cat` and `dog` commands, the tokens can be obtained at [thecatapi.com](https://thecatapi.com) and [thedogapi.com](https://thedogapi.com))
+* Pixabay API Token to use the `pixabay` command (can be obtained [here](https://pixabay.com/api/docs/))
+* A Discord Webhook URL for sending error reports
+
 ## Cloning the project and setting up
 
 First of all, clone the repository using [git](https://git-scm.com) or download the [latest release](https://github.com/onesoft-sudo/sudobot/releases/latest) and extract it.&#x20;
