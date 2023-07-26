@@ -96,7 +96,7 @@ export default class SnippetCommand extends Command {
 
         await this.deferIfInteraction(message);
 
-        const command = await this.client.commands.get(`snippet__${subcommand}`);
+        const command = this.client.commands.get(`snippet__${subcommand}`);
 
         if (command) {
             return await command.execute(message, {
