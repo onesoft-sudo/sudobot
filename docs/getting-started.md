@@ -22,7 +22,7 @@ Additionally, you can also set these up if you want to use them:
 
 ## Cloning the project and setting up
 
-First of all, clone the repository using [git](https://git-scm.com) or download the [latest release](https://github.com/onesoft-sudo/sudobot/releases/latest) and extract it.&#x20;
+First of all, clone the repository using [git](https://git-scm.com) or download the [latest release](https://github.com/onesoft-sudo/sudobot/releases/latest) and extract it.
 
 To clone the repository, run this command:
 
@@ -109,15 +109,15 @@ npx prisma db push
 
 This will create the necessary tables for you inside the database.
 
-## Configuration&#x20;
+## Configuration
 
-Now it's time to configure the bot. Now, SudoBot comes with the config files bundled already, but you should edit them.&#x20;
+Now it's time to configure the bot. Now, SudoBot comes with the config files bundled already, but you should edit them.
 
 **Step 1.** Open up `config/config.json` and you have two options:
 
 Remove everything inside of the file, and just put an empty object `{}` inside of that file and save it if you don't want to configure anything and just want the default settings. Or,
 
-Manually set the settings inside of the file. If you're following along this documentation and have ran the script `generate-config-schema.ts` (previously specified [here](getting-started.md#cloning-the-project-and-setting-up)), then when you edit the file, you can remove everything inside of the file, and put the following JSON object inside of that file:&#x20;
+Manually set the settings inside of the file. If you're following along this documentation and have ran the script `generate-config-schema.ts` (previously specified [here](getting-started.md#cloning-the-project-and-setting-up)), then when you edit the file, you can remove everything inside of the file, and put the following JSON object inside of that file:
 
 ```
 {
@@ -134,6 +134,16 @@ If you're using an IDE or editor like [VS Code](https://code.visualstudio.com/) 
 
 **Step 2.** Open up `config/system.json` file and similarly here you'll get autocompletion. But you don't need to delete everything here, just change the `system_admins` property to your User ID. System Admins are those who have full access to the bot and can control everything. They are able to run commands like `-eval`.
 
+## Registering Application Commands
+
+If you want to use the application slash commands and context menu commands of SudoBot, you have to register it to the API first. To do that, simply run:
+
+```
+npx ts-node scripts/deploy-commands.ts
+```
+
+Pass the `--guild` option to register guild commands instead of global commands, and `--clear` to clear all the registered slash commands in the API.
+
 ## Building the bot
 
 Now that we have configured the bot and specified every setting, we can go ahead an invoke the TypeScript compiler (`tsc`) to build the bot and generate compiled JavaScript files that the NodeJS interpreter can run. To compile the bot, simply run:
@@ -142,7 +152,7 @@ Now that we have configured the bot and specified every setting, we can go ahead
 npm run build
 ```
 
-## Starting the bot&#x20;
+## Starting the bot
 
 Now it's time to start the bot. Run the following command to start the bot:
 
@@ -150,7 +160,7 @@ Now it's time to start the bot. Run the following command to start the bot:
 npm start
 ```
 
-And if everything was configured correctly, the bot will log in successfully to Discord.\
+And if everything was configured correctly, the bot will log in successfully to Discord.
 Congratulations, you've set up your own instance of SudoBot!
 
 ## Help & Support
