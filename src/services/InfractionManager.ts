@@ -17,23 +17,21 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Infraction, InfractionType, Prisma } from "@prisma/client";
+import { Infraction, InfractionType } from "@prisma/client";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
     APIEmbedField,
-    Collection,
     ColorResolvable,
     EmbedBuilder,
     EmbedField,
     Guild,
     GuildMember,
-    Message,
     MessageResolvable,
     TextChannel,
     User,
     escapeCodeBlock,
     escapeMarkdown,
-    time, UserResolvable
+    time
 } from "discord.js";
 import path from "path";
 import Service from "../core/Service";
@@ -171,16 +169,62 @@ export default class InfractionManager extends Service {
         }
     }
 
-    async createUserBan(user: User, {
-        guild,
-        moderator,
-        reason,
-        deleteMessageSeconds,
-        notifyUser,
-        duration,
-        sendLog,
-        autoRemoveQueue
-    }: CreateUserBanOptions) {
+    async createUserSoftban(
+        user: User,
+        { guild, moderator, reason, deleteMessageSeconds, notifyUser, sendLog }: CreateUserBanOptions & { deleteMessageSeconds: number }
+    ) {
+        const { id } = await this.client.prisma.infraction.create({
+            data: {
+                type: InfractionType.SOFTBAN,
+                userId: user.id,
+                guildId: guild.id,
+                reason,
+                moderatorId: moderator.id,
+                metadata: {
+                    deleteMessageSeconds
+                }
+            }
+        });
+
+        if (sendLog)
+            this.client.logger.logUserSoftBan({
+                moderator,
+                guild,
+                id: `${id}`,
+                user,
+                deleteMessageSeconds,
+                reason
+            });
+
+        if (notifyUser) {
+            await this.sendDM(user, guild, {
+                id,
+                actionDoneName: "softbanned",
+                reason
+            });
+        }
+
+        try {
+            await guild.bans.create(user, {
+                reason,
+                deleteMessageSeconds
+            });
+
+            log("Seconds: " + deleteMessageSeconds);
+
+            await wait(1500);
+            await guild.bans.remove(user, `Softban remove: ${reason}`);
+            return id;
+        } catch (e) {
+            logError(e);
+            return null;
+        }
+    }
+
+    async createUserBan(
+        user: User,
+        { guild, moderator, reason, deleteMessageSeconds, notifyUser, duration, sendLog, autoRemoveQueue }: CreateUserBanOptions
+    ) {
         const { id } = await this.client.prisma.infraction.create({
             data: {
                 type: duration ? InfractionType.TEMPBAN : InfractionType.BAN,
@@ -216,12 +260,14 @@ export default class InfractionManager extends Service {
                 id,
                 actionDoneName: "banned",
                 reason,
-                fields: duration ? [
-                    {
-                        name: "Duration",
-                        value: formatDistanceToNowStrict(new Date(Date.now() - duration))
-                    }
-                ] : undefined
+                fields: duration
+                    ? [
+                          {
+                              name: "Duration",
+                              value: formatDistanceToNowStrict(new Date(Date.now() - duration))
+                          }
+                      ]
+                    : undefined
             });
         }
 
@@ -236,16 +282,18 @@ export default class InfractionManager extends Service {
             if (duration) {
                 log("Added unban queue");
 
-                await this.client.queueManager.add(new QueueEntry({
-                    args: [user.id],
-                    client: this.client,
-                    filePath: path.resolve(__dirname, "../queues/UnbanQueue"),
-                    guild,
-                    name: "UnbanQueue",
-                    createdAt: new Date(),
-                    userId: user.id,
-                    willRunAt: new Date(Date.now() + duration),
-                }));
+                await this.client.queueManager.add(
+                    new QueueEntry({
+                        args: [user.id],
+                        client: this.client,
+                        filePath: path.resolve(__dirname, "../queues/UnbanQueue"),
+                        guild,
+                        name: "UnbanQueue",
+                        createdAt: new Date(),
+                        userId: user.id,
+                        willRunAt: new Date(Date.now() + duration)
+                    })
+                );
             }
 
             return id;
@@ -286,8 +334,7 @@ export default class InfractionManager extends Service {
                 reason
             });
 
-        if (autoRemoveQueue)
-            await this.autoRemoveUnbanQueue(guild, user);
+        if (autoRemoveQueue) await this.autoRemoveUnbanQueue(guild, user);
 
         try {
             await guild.bans.remove(user);
@@ -368,7 +415,16 @@ export default class InfractionManager extends Service {
         return { id, result };
     }
 
-    async bulkDeleteMessages({ user, messagesToDelete, messageChannel, guild, moderator, reason, sendLog, count: messageCount }: BulkDeleteMessagesOptions) {
+    async bulkDeleteMessages({
+        user,
+        messagesToDelete,
+        messageChannel,
+        guild,
+        moderator,
+        reason,
+        sendLog,
+        count: messageCount
+    }: BulkDeleteMessagesOptions) {
         if (messageChannel && !(messagesToDelete && messagesToDelete.length === 0)) {
             let messages: MessageResolvable[] | null = messagesToDelete ?? null;
 
@@ -399,18 +455,20 @@ export default class InfractionManager extends Service {
 
             const count = messages ? messages.length : 0;
 
-            const { id } = user ? await this.client.prisma.infraction.create({
-                data: {
-                    type: InfractionType.BULK_DELETE_MESSAGE,
-                    guildId: guild.id,
-                    moderatorId: moderator.id,
-                    userId: user.id,
-                    metadata: {
-                        count
-                    },
-                    reason
-                }
-            }) : { id: 0 };
+            const { id } = user
+                ? await this.client.prisma.infraction.create({
+                      data: {
+                          type: InfractionType.BULK_DELETE_MESSAGE,
+                          guildId: guild.id,
+                          moderatorId: moderator.id,
+                          userId: user.id,
+                          metadata: {
+                              count
+                          },
+                          reason
+                      }
+                  })
+                : { id: 0 };
 
             if (sendLog) {
                 this.client.logger
@@ -637,9 +695,7 @@ export default class InfractionManager extends Service {
                 }).catch(logError);
 
                 calledJustNow = true;
-            }
-            else
-                calledJustNow = false;
+            } else calledJustNow = false;
 
             try {
                 await guild.bans.create(user, {
@@ -659,8 +715,7 @@ export default class InfractionManager extends Service {
                         deleteMessageSeconds
                     }
                 });
-            }
-            catch (e) {
+            } catch (e) {
                 logError(e);
                 skippedUsers.push(user);
             }
@@ -679,7 +734,7 @@ export default class InfractionManager extends Service {
         }
 
         await this.client.prisma.infraction.createMany({
-            data: createInfractionData,
+            data: createInfractionData
         });
 
         if (sendLog)
@@ -694,7 +749,15 @@ export default class InfractionManager extends Service {
         return { success: true };
     }
 
-    async createMemberMassKick({ users, sendLog, reason, moderator, guild, callAfterEach, callback }: Omit<CreateUserMassBanOptions, 'deleteMessageSeconds'>) {
+    async createMemberMassKick({
+        users,
+        sendLog,
+        reason,
+        moderator,
+        guild,
+        callAfterEach,
+        callback
+    }: Omit<CreateUserMassBanOptions, "deleteMessageSeconds">) {
         if (users.length > 10) {
             return { error: "Cannot perform this operation on more than 10 users" };
         }
@@ -726,12 +789,10 @@ export default class InfractionManager extends Service {
                 }).catch(logError);
 
                 calledJustNow = true;
-            }
-            else
-                calledJustNow = false;
+            } else calledJustNow = false;
 
             try {
-                const member = guild.members.cache.get(user) ?? await guild.members.fetch(user);
+                const member = guild.members.cache.get(user) ?? (await guild.members.fetch(user));
                 await member.kick(reason);
 
                 completedUsers.push(user);
@@ -741,10 +802,9 @@ export default class InfractionManager extends Service {
                     userId: user,
                     reason,
                     moderatorId: moderator.id,
-                    guildId: guild.id,
+                    guildId: guild.id
                 });
-            }
-            catch (e) {
+            } catch (e) {
                 logError(e);
                 skippedUsers.push(user);
             }
@@ -763,7 +823,7 @@ export default class InfractionManager extends Service {
         }
 
         await this.client.prisma.infraction.createMany({
-            data: createInfractionData,
+            data: createInfractionData
         });
 
         if (sendLog)
@@ -771,24 +831,27 @@ export default class InfractionManager extends Service {
                 users: completedUsers,
                 reason,
                 guild,
-                moderator,
+                moderator
             });
 
         return { success: true };
     }
 }
 
-export type CreateUserMassBanOptions = Omit<CreateUserBanOptions & {
-    users: readonly string[],
-    callback?: (options: {
-        count: number,
-        users: readonly string[],
-        completedUsers: readonly string[],
-        skippedUsers: readonly string[],
-        completedIn?: number
-    }) => Promise<any> | any,
-    callAfterEach?: number
-}, "duration" | "autoRemoveQueue" | "notifyUser">;
+export type CreateUserMassBanOptions = Omit<
+    CreateUserBanOptions & {
+        users: readonly string[];
+        callback?: (options: {
+            count: number;
+            users: readonly string[];
+            completedUsers: readonly string[];
+            skippedUsers: readonly string[];
+            completedIn?: number;
+        }) => Promise<any> | any;
+        callAfterEach?: number;
+    },
+    "duration" | "autoRemoveQueue" | "notifyUser"
+>;
 
 export type CommonOptions = {
     reason?: string;
@@ -819,7 +882,7 @@ export type BulkDeleteMessagesOptions = CommonOptions & {
     count?: number;
 };
 
-export type ActionDoneName = "banned" | "muted" | "kicked" | "warned" | "unbanned" | "unmuted";
+export type ActionDoneName = "banned" | "muted" | "kicked" | "warned" | "unbanned" | "unmuted" | "softbanned";
 
 export type SendDMOptions = {
     fields?: APIEmbedField[] | ((internalFields: APIEmbedField[]) => Promise<APIEmbedField[]> | APIEmbedField[]);

@@ -31,7 +31,7 @@ import {
     MessagePayload,
     TextChannel,
     User,
-    escapeMarkdown, UserResolvable
+    escapeMarkdown
 } from "discord.js";
 import Service from "../core/Service";
 import { logError } from "../utils/logger";
@@ -69,34 +69,38 @@ export default class LoggerService extends Service {
                 : undefined,
             fields: [
                 ...(reason !== undefined
-                  ? [
-                        {
-                            name: "Reason",
-                            value: `${reason ?? "*No reason provided*"}`
-                        }
-                    ]
-                  : []),
+                    ? [
+                          {
+                              name: "Reason",
+                              value: `${reason ?? "*No reason provided*"}`
+                          }
+                      ]
+                    : []),
                 ...(fields ?? []),
                 ...(moderator
-                  ? [
-                        {
-                            name: "Responsible Moderator",
-                            value: moderator.id === this.client.user?.id ? "System" : `${moderator.tag} (${moderator.id})`
-                        }
-                    ]
-                  : []),
+                    ? [
+                          {
+                              name: "Responsible Moderator",
+                              value: moderator.id === this.client.user?.id ? "System" : `${moderator.tag} (${moderator.id})`
+                          }
+                      ]
+                    : []),
                 ...(id
-                      ? [
-                            {
-                                name: "Infraction ID",
-                                value: `${id}`
-                            }
-                        ]
-                  : []),
-                ...(user ? [{
-                    name: "User ID",
-                    value: user.id
-                }] : [])
+                    ? [
+                          {
+                              name: "Infraction ID",
+                              value: `${id}`
+                          }
+                      ]
+                    : []),
+                ...(user
+                    ? [
+                          {
+                              name: "User ID",
+                              value: user.id
+                          }
+                      ]
+                    : [])
             ],
             footer: footerText
                 ? {
@@ -137,12 +141,34 @@ export default class LoggerService extends Service {
                         ? formatDistanceToNowStrict(new Date(Date.now() - deleteMessageSeconds * 1000))
                         : "*No timeframe provided*"
                 },
-                ...(duration ? [
-                    {
-                        name: "Duration",
-                        value: formatDistanceToNowStrict(new Date(Date.now() - duration))
-                    }
-                ] : [])
+                ...(duration
+                    ? [
+                          {
+                              name: "Duration",
+                              value: formatDistanceToNowStrict(new Date(Date.now() - duration))
+                          }
+                      ]
+                    : [])
+            ]
+        });
+    }
+
+    async logUserSoftBan({ moderator, user, deleteMessageSeconds, reason, guild, id }: LogUserBanOptions) {
+        await this.sendLogEmbed(guild, {
+            user,
+            title: "A user was softbanned",
+            footerText: "Softbanned",
+            reason: reason ?? null,
+            moderator,
+            id,
+            color: Colors.Red,
+            fields: [
+                {
+                    name: "Message Deletion Timeframe",
+                    value: deleteMessageSeconds
+                        ? formatDistanceToNowStrict(new Date(Date.now() - deleteMessageSeconds * 1000))
+                        : "*No timeframe provided*"
+                }
             ]
         });
     }
@@ -216,7 +242,7 @@ export default class LoggerService extends Service {
         id,
         count,
         channel
-    }: Omit<CommonUserActionOptions, 'id'> & { user?: User; reason?: string; count: number; channel: TextChannel, id?: string }) {
+    }: Omit<CommonUserActionOptions, "id"> & { user?: User; reason?: string; count: number; channel: TextChannel; id?: string }) {
         this.sendLogEmbed(guild, {
             user,
             title: "Messages deleted in bulk",
@@ -281,17 +307,18 @@ export default class LoggerService extends Service {
                     value: deleteMessageSeconds
                         ? formatDistanceToNowStrict(new Date(Date.now() - deleteMessageSeconds * 1000))
                         : "*No timeframe provided*"
-                },
+                }
             ],
             options: {
                 description: `The following users were banned:\n\n${users.reduce(
-                    (acc, user) => acc + (acc === '' ? '' : '\n') + "<@" + user + "> (`" + user + "`)", ''
+                    (acc, user) => acc + (acc === "" ? "" : "\n") + "<@" + user + "> (`" + user + "`)",
+                    ""
                 )}`
             }
         });
     }
 
-    async logMemberMassKick({ users, reason, guild, moderator }: Omit<LogUserMassBanOptions, 'deleteMessageSeconds'>) {
+    async logMemberMassKick({ users, reason, guild, moderator }: Omit<LogUserMassBanOptions, "deleteMessageSeconds">) {
         await this.sendLogEmbed(guild, {
             title: "A masskick was executed",
             footerText: "Kicked",
@@ -300,7 +327,8 @@ export default class LoggerService extends Service {
             color: Colors.Orange,
             options: {
                 description: `The following users were kicked:\n\n${users.reduce(
-                    (acc, user) => acc + (acc === '' ? '' : '\n') + "<@" + user + "> (`" + user + "`)", ''
+                    (acc, user) => acc + (acc === "" ? "" : "\n") + "<@" + user + "> (`" + user + "`)",
+                    ""
                 )}`
             }
         });
@@ -312,7 +340,7 @@ interface LogUserBanOptions extends BanOptions, CommonUserActionOptions {
     duration?: number;
 }
 
-interface LogUserMassBanOptions extends BanOptions, Omit<CommonUserActionOptions, 'id'> {
+interface LogUserMassBanOptions extends BanOptions, Omit<CommonUserActionOptions, "id"> {
     users: string[];
 }
 
