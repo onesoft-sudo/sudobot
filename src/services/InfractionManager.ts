@@ -304,6 +304,63 @@ export default class InfractionManager extends Service {
         }
     }
 
+    async createUserFakeBan(
+        user: User,
+        { guild, moderator, reason, deleteMessageSeconds, notifyUser, duration, sendLog, autoRemoveQueue }: CreateUserBanOptions
+    ) {
+        const id = Math.round(Math.random() * 1000);
+
+        if (sendLog)
+            this.client.logger.logUserBan({
+                moderator,
+                guild,
+                id: `${id}`,
+                user,
+                deleteMessageSeconds,
+                reason,
+                duration
+            });
+
+        if (notifyUser) {
+            await this.sendDM(user, guild, {
+                id,
+                actionDoneName: "banned",
+                reason,
+                fields: duration
+                    ? [
+                          {
+                              name: "Duration",
+                              value: formatDistanceToNowStrict(new Date(Date.now() - duration))
+                          }
+                      ]
+                    : undefined
+            });
+        }
+
+        return id;
+    }
+
+    async createUserBean(user: User, { guild, moderator, reason }: Pick<CreateUserBanOptions, "guild" | "moderator" | "reason">) {
+        const { id } = await this.client.prisma.infraction.create({
+            data: {
+                type: InfractionType.BEAN,
+                userId: user.id,
+                guildId: guild.id,
+                reason,
+                moderatorId: moderator.id
+            }
+        });
+
+        await this.sendDM(user, guild, {
+            id,
+            actionDoneName: "beaned",
+            reason,
+            color: 0x007bff
+        });
+
+        return id;
+    }
+
     private async autoRemoveUnbanQueue(guild: Guild, user: User) {
         log("Auto remove", this.client.queueManager.queues);
 
@@ -882,7 +939,7 @@ export type BulkDeleteMessagesOptions = CommonOptions & {
     count?: number;
 };
 
-export type ActionDoneName = "banned" | "muted" | "kicked" | "warned" | "unbanned" | "unmuted" | "softbanned";
+export type ActionDoneName = "banned" | "muted" | "kicked" | "warned" | "unbanned" | "unmuted" | "softbanned" | "beaned";
 
 export type SendDMOptions = {
     fields?: APIEmbedField[] | ((internalFields: APIEmbedField[]) => Promise<APIEmbedField[]> | APIEmbedField[]);

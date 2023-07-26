@@ -21,6 +21,7 @@ enum InfractionType {
     BULK_DELETE_MESSAGE
     TIMEOUT
     TIMEOUT_REMOVE
+    BEAN
 }
 
 model Infraction {
