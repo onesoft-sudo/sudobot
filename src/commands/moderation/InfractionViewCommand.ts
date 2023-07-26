@@ -35,15 +35,13 @@ export default class InfractionViewCommand extends Command {
     public readonly aliases: string[] = ["i"];
 
     public readonly description = "View an infraction by ID.";
-    public readonly argumentSyntaxes = [
-        "<InfractionID>",
-    ];
+    public readonly argumentSyntaxes = ["<InfractionID>"];
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         const id = context.isLegacy ? context.parsedNamedArgs.id : context.options.getInteger("id", true);
 
         const infraction = await this.client.prisma.infraction.findFirst({
-            where: { id }
+            where: { id, guildId: message.guildId! }
         });
 
         if (!infraction) {

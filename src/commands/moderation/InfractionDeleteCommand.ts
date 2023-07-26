@@ -40,14 +40,18 @@ export default class InfractionDeleteCommand extends Command {
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         const id = context.isLegacy ? context.parsedNamedArgs.id : context.options.getInteger("id", true);
 
-        const infraction = await this.client.prisma.infraction.delete({
-            where: { id }
+        const infraction = await this.client.prisma.infraction.findFirst({
+            where: { id, guildId: message.guildId! }
         });
 
         if (!infraction) {
             await this.deferredReply(message, `${this.emoji("error")} Could not find an infraction with that ID!`);
             return;
         }
+
+        await this.client.prisma.infraction.deleteMany({
+            where: { id, guildId: message.guildId! }
+        });
 
         const user = await this.client.fetchUserSafe(infraction.userId);
 

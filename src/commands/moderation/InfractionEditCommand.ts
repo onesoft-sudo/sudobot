@@ -55,7 +55,7 @@ export default class InfractionEditCommand extends Command {
         }
 
         const infraction = await this.client.prisma.infraction.findFirst({
-            where: { id }
+            where: { id, guildId: interaction.guildId! }
         });
 
         if (!infraction) {
