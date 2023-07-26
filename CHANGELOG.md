@@ -1,3 +1,19 @@
+# [4.131.0](https://github.com/onesoft-sudo/sudobot/compare/v4.130.0...v4.131.0) (2023-07-26)
+
+
+### Bug Fixes
+
+* removed unneeded await's ([40636d9](https://github.com/onesoft-sudo/sudobot/commit/40636d9d1b25c5ba8d40468e9558f0a67cdeaef1))
+
+
+### Features
+
+* **commands:** add bean command ([9fe65cb](https://github.com/onesoft-sudo/sudobot/commit/9fe65cb33d3861262db133bde203014a7972eeae))
+* **commands:** add embed management commands ([f26f0ba](https://github.com/onesoft-sudo/sudobot/commit/f26f0bae38f474d1f423a43087ffcd6144759087))
+* **commands:** add fakeban command ([3d458b5](https://github.com/onesoft-sudo/sudobot/commit/3d458b5e78b77a5e46ba7a6c76ba9a5430917609))
+
+
+
 # [4.130.0](https://github.com/onesoft-sudo/sudobot/compare/v4.129.0...v4.130.0) (2023-07-26)
 
 
@@ -49,15 +65,6 @@
 ### Features
 
 * complete help command ([1b8ad97](https://github.com/onesoft-sudo/sudobot/commit/1b8ad972e7018da1264e15376e9202ed166d1c34))
-
-
-
-# [4.126.0](https://github.com/onesoft-sudo/sudobot/compare/v4.125.0...v4.126.0) (2023-07-24)
-
-
-### Features
-
-* **types:** add HasEventListeners interface ([3b6efdf](https://github.com/onesoft-sudo/sudobot/commit/3b6efdfde805a8a1f241c1fb2b93e265471036dc))
 
 
 
