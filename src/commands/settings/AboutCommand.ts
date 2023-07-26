@@ -25,6 +25,8 @@ export default class AboutCommand extends Command {
     public readonly permissions = [];
     public readonly metadata = require("../../../package.json");
 
+    public readonly description = "Show information about the bot";
+
     async execute(): Promise<CommandReturn> {
         return {
             __reply: true,
