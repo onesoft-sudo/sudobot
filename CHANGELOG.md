@@ -1,3 +1,17 @@
+# [4.129.0](https://github.com/onesoft-sudo/sudobot/compare/v4.128.0...v4.129.0) (2023-07-26)
+
+
+### Bug Fixes
+
+* wrong class name in tempban command ([60f4870](https://github.com/onesoft-sudo/sudobot/commit/60f487014862dc7b7988e5a82249a32dad137a86))
+
+
+### Features
+
+* **commands:** add softban command ([579c3a8](https://github.com/onesoft-sudo/sudobot/commit/579c3a852774d822eb87209e72c9c98f4de00bbb))
+
+
+
 # [4.128.0](https://github.com/onesoft-sudo/sudobot/compare/v4.127.0...v4.128.0) (2023-07-25)
 
 
@@ -36,20 +50,6 @@
 ### Features
 
 * **welcomer:** add new welcome message placeholder ([54150ee](https://github.com/onesoft-sudo/sudobot/commit/54150ee5d21fa204c43e491d66af6f593a37dec1))
-
-
-
-# [4.124.0](https://github.com/onesoft-sudo/sudobot/compare/v4.123.0...v4.124.0) (2023-07-24)
-
-
-### Bug Fixes
-
-* snippet manager causing crash ([3cc1bd1](https://github.com/onesoft-sudo/sudobot/commit/3cc1bd11468382a9c7c02b9661cd4c02f83b62a3))
-
-
-### Features
-
-* add welcomer service ([2970782](https://github.com/onesoft-sudo/sudobot/commit/2970782d530c6b1e137732af23168ddbac8b84cb))
 
 
 
