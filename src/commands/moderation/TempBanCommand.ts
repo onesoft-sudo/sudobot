@@ -23,7 +23,7 @@ import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn
 import { log } from "../../utils/logger";
 import { createModerationEmbed, stringToTimeInterval } from "../../utils/utils";
 
-export default class BanCommand extends Command {
+export default class TempBanCommand extends Command {
     public readonly name = "tempban";
     public readonly validationRules: ValidationRule[] = [
         {
@@ -45,37 +45,38 @@ export default class BanCommand extends Command {
         {
             types: [ArgumentType.TimeInterval, ArgumentType.StringRest],
             optional: true,
-            typeErrorMessage: "You have specified an invalid argument. The system expected you to provide a ban reason or the message deletion timeframe here.",
+            typeErrorMessage:
+                "You have specified an invalid argument. The system expected you to provide a ban reason or the message deletion timeframe here.",
             lengthMax: 3999,
             minValue: 0,
             maxValue: 604800,
-            name: 'timeframeOrReason',
-            minMaxErrorMessage: "The message deletion range must be a time interval from 0 second to 604800 seconds (7 days).",
+            name: "timeframeOrReason",
+            minMaxErrorMessage: "The message deletion range must be a time interval from 0 second to 604800 seconds (7 days)."
         },
         {
             types: [ArgumentType.StringRest],
             optional: true,
             typeErrorMessage: "You have specified an invalid ban reason.",
             lengthMax: 3999,
-            name: 'reason'
+            name: "reason"
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.BanMembers];
 
     public readonly description = "Temporarily bans a user.";
     public readonly detailedDscription = "This command temporarily bans a user. They'll be automatically unbanned after the specified duration.";
-    public readonly argumentSyntaxes = [
-        "<UserID|UserMention> <duration> [reason]",
-    ];
+    public readonly argumentSyntaxes = ["<UserID|UserMention> <duration> [reason]"];
 
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.BanMembers];
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addUserOption(option => option.setName('user').setDescription("The user").setRequired(true))
-        .addStringOption(option => option.setName('reason').setDescription("The reason for banning this user"))
-        .addStringOption(option => option.setName('duration').setDescription("Ban duration"))
-        .addStringOption(option => option.setName('deletion_timeframe').setDescription("The message deletion timeframe (must be in range 0-604800)"))
-        .addBooleanOption(option => option.setName('silent').setDescription("Specify if the system should not notify the user about this action. Defaults to false"));
+        .addUserOption(option => option.setName("user").setDescription("The user").setRequired(true))
+        .addStringOption(option => option.setName("reason").setDescription("The reason for banning this user"))
+        .addStringOption(option => option.setName("duration").setDescription("Ban duration"))
+        .addStringOption(option => option.setName("deletion_timeframe").setDescription("The message deletion timeframe (must be in range 0-604800)"))
+        .addBooleanOption(option =>
+            option.setName("silent").setDescription("Specify if the system should not notify the user about this action. Defaults to false")
+        );
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
@@ -83,23 +84,27 @@ export default class BanCommand extends Command {
         const user: User = context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user", true);
 
         let duration = !context.isLegacy ? undefined : context.parsedNamedArgs.duration;
-        let messageDeletionTimeframe = !context.isLegacy ? undefined : (
-            typeof context.parsedNamedArgs.timeframeOrReason === 'number' ? context.parsedNamedArgs.timeframeOrReason : undefined
-        );
-        const reason = !context.isLegacy ? context.options.getString('reason') ?? undefined : (
-            typeof context.parsedNamedArgs.timeframeOrReason === 'string' ? context.parsedNamedArgs.timeframeOrReason : context.parsedNamedArgs.reason
-        );
+        let messageDeletionTimeframe = !context.isLegacy
+            ? undefined
+            : typeof context.parsedNamedArgs.timeframeOrReason === "number"
+            ? context.parsedNamedArgs.timeframeOrReason
+            : undefined;
+        const reason = !context.isLegacy
+            ? context.options.getString("reason") ?? undefined
+            : typeof context.parsedNamedArgs.timeframeOrReason === "string"
+            ? context.parsedNamedArgs.timeframeOrReason
+            : context.parsedNamedArgs.reason;
 
         log(user.id, duration, messageDeletionTimeframe, reason);
 
         if (!context.isLegacy) {
-            const input = context.options.getString('duration', true);
+            const input = context.options.getString("duration", true);
 
             const { result, error } = stringToTimeInterval(input, { milliseconds: true });
 
             if (error) {
                 await this.deferredReply(message, {
-                    content: `${this.emoji('error')} ${error} provided in the \`duration\` option`
+                    content: `${this.emoji("error")} ${error} provided in the \`duration\` option`
                 });
 
                 return;
@@ -108,25 +113,26 @@ export default class BanCommand extends Command {
             duration = result;
         }
 
-        ifContextIsNotLegacy:
-        if (!context.isLegacy) {
-            const input = context.options.getString('deletion_timeframe');
+        ifContextIsNotLegacy: if (!context.isLegacy) {
+            const input = context.options.getString("deletion_timeframe");
 
-            if (!input)
-                break ifContextIsNotLegacy;
+            if (!input) break ifContextIsNotLegacy;
 
             const { result, error } = stringToTimeInterval(input);
 
             if (error) {
                 await this.deferredReply(message, {
-                    content: `${this.emoji('error')} ${error} provided in the \`deletion_timeframe\` option`
+                    content: `${this.emoji("error")} ${error} provided in the \`deletion_timeframe\` option`
                 });
 
                 return;
             }
 
             if (result < 0 || result > 604800) {
-                await this.deferredReply(message, `${this.emoji('error')} The message deletion range must be a time interval from 0 second to 604800 seconds (7 days).`);
+                await this.deferredReply(
+                    message,
+                    `${this.emoji("error")} The message deletion range must be a time interval from 0 second to 604800 seconds (7 days).`
+                );
                 return;
             }
 
@@ -138,7 +144,7 @@ export default class BanCommand extends Command {
             moderator: message.member!.user as User,
             deleteMessageSeconds: messageDeletionTimeframe,
             reason,
-            notifyUser: context.isLegacy ? true : !context.options.getBoolean('silent'),
+            notifyUser: context.isLegacy ? true : !context.options.getBoolean("silent"),
             sendLog: true,
             duration,
             autoRemoveQueue: true
@@ -157,8 +163,12 @@ export default class BanCommand extends Command {
                     description: `**${escapeMarkdown(user.tag)}** was temporarily banned from this server.`,
                     fields: [
                         {
-                            name: 'Message Deletion',
-                            value: messageDeletionTimeframe ? `Timeframe: ${formatDistanceToNow(new Date(Date.now() - (messageDeletionTimeframe * 1000)))}\nMessages in this timeframe by this user will be removed.` : "*No message will be deleted*"
+                            name: "Message Deletion",
+                            value: messageDeletionTimeframe
+                                ? `Timeframe: ${formatDistanceToNow(
+                                      new Date(Date.now() - messageDeletionTimeframe * 1000)
+                                  )}\nMessages in this timeframe by this user will be removed.`
+                                : "*No message will be deleted*"
                         },
                         {
                             name: "Duration",
@@ -166,7 +176,7 @@ export default class BanCommand extends Command {
                         }
                     ],
                     id: `${id}`,
-                    reason,
+                    reason
                 })
             ]
         });
