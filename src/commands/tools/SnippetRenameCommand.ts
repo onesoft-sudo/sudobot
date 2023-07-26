@@ -17,14 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Command, {
-    AnyCommandContext,
-    ArgumentType,
-    CommandMessage,
-    CommandReturn,
-    ValidationRule
-} from "../../core/Command";
-import { escapeCodeBlock, escapeInlineCode, PermissionsBitField } from "discord.js";
+import { PermissionsBitField, escapeCodeBlock, escapeInlineCode } from "discord.js";
+import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class SnippetRenameCommand extends Command {
     public readonly name = "snippet__rename";
@@ -40,7 +34,7 @@ export default class SnippetRenameCommand extends Command {
             requiredErrorMessage: "Please specify a new name to set!",
             typeErrorMessage: "Please specify a valid snippet/tag name!",
             name: "new_name"
-        },
+        }
     ];
     public readonly permissions = [
         PermissionsBitField.Flags.BanMembers,
@@ -52,8 +46,8 @@ export default class SnippetRenameCommand extends Command {
     public readonly aliases: string[] = ["renametag", "mvtag", "renamesnippet", "mvsnippet"];
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
-        const name: string = context.isLegacy ? context.parsedNamedArgs.name : context.options.getString("name", true);
-        const newName: string = context.isLegacy ? context.parsedNamedArgs.new_name : context.options.getString("name", true);
+        const name: string = context.isLegacy ? context.parsedNamedArgs.name : context.options.getString("old_name", true);
+        const newName: string = context.isLegacy ? context.parsedNamedArgs.new_name : context.options.getString("new_name", true);
 
         if (/\s/.test(name)) {
             await this.error(message, "Snippet name cannot contain spaces!");
@@ -76,6 +70,9 @@ export default class SnippetRenameCommand extends Command {
             return;
         }
 
-        await this.deferredReply(message, `${this.emoji('success')} Successfully renamed the snippet/tag to \`${escapeInlineCode(escapeCodeBlock(newName))}\`.`);
+        await this.deferredReply(
+            message,
+            `${this.emoji("success")} Successfully renamed the snippet/tag to \`${escapeInlineCode(escapeCodeBlock(newName))}\`.`
+        );
     }
 }

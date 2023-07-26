@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { PermissionsBitField, escapeCodeBlock, escapeInlineCode } from "discord.js";
+import { PermissionsBitField, SlashCommandBuilder, escapeCodeBlock, escapeInlineCode } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class SnippetCommand extends Command {
@@ -49,6 +49,30 @@ export default class SnippetCommand extends Command {
     ];
     public readonly permissionMode = "or";
     public readonly aliases = ["tag", "tags", "snippets"];
+    public readonly description = "Manage snippets/tags.";
+
+    public readonly slashCommandBuilder = new SlashCommandBuilder()
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("create")
+                .setDescription("Create a snippet")
+                .addStringOption(option => option.setName("name").setDescription("The snippet name").setRequired(true))
+                .addStringOption(option => option.setName("content").setDescription("The snippet content").setRequired(true))
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("delete")
+                .setDescription("Delete a snippet")
+                .addStringOption(option => option.setName("name").setDescription("The snippet name").setRequired(true))
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("rename")
+                .setDescription("Rename a snippet")
+                .addStringOption(option => option.setName("old_name").setDescription("The old snippet name").setRequired(true))
+                .addStringOption(option => option.setName("new_name").setDescription("New snippet name to set").setRequired(true))
+        )
+        .addSubcommand(subcommand => subcommand.setName("list").setDescription("List all snippets in the server"));
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         const subcommand: string = context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true);
@@ -83,7 +107,7 @@ export default class SnippetCommand extends Command {
                               ...context.parsedNamedArgs,
                               name: context.parsedNamedArgs.name,
                               content: context.parsedNamedArgs.content,
-                              new_name: subcommand === 'rename' ? context.parsedNamedArgs.content.split(/ +/)[0] : undefined
+                              new_name: subcommand === "rename" ? context.parsedNamedArgs.content.split(/ +/)[0] : undefined
                           }
                       }
                     : {})
