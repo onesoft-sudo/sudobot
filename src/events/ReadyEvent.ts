@@ -22,10 +22,11 @@ import Event from "../core/Event";
 import { logError, logInfo, logWarn } from "../utils/logger";
 
 export default class ReadyEvent extends Event {
-    public name: keyof ClientEvents = 'ready';
+    public name: keyof ClientEvents = "ready";
 
     async execute() {
         logInfo("The bot has logged in.");
+        await this.client.server.onReady();
         this.client.server.start().catch(logError);
         this.client.queueManager.onReady().catch(logError);
         const homeGuild = await this.client.getHomeGuild();
@@ -42,8 +43,7 @@ export default class ReadyEvent extends Event {
                 }
 
                 logInfo("Successfully synced the emojis of home guild.");
-            }
-            catch (e) {
+            } catch (e) {
                 logError(e);
                 logWarn("Failed to fetch some of the emojis. The bot may not show some of the emojis in it's responses.");
             }
