@@ -18,12 +18,60 @@
  */
 
 import { InfractionType } from "@prisma/client";
-import { PermissionsBitField, SlashCommandBuilder } from "discord.js";
+import { MessageMentions, PermissionsBitField, SlashCommandBuilder } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { isSnowflake } from "../../utils/utils";
+
+const infractionTypes = [
+    {
+        name: "Ban",
+        value: InfractionType.BAN
+    },
+    {
+        name: "Kick",
+        value: InfractionType.KICK
+    },
+    {
+        name: "Mute",
+        value: InfractionType.MUTE
+    },
+    {
+        name: "Warning",
+        value: InfractionType.WARNING
+    },
+    {
+        name: "Unmute",
+        value: InfractionType.UNMUTE
+    },
+    {
+        name: "Unban",
+        value: InfractionType.UNBAN
+    },
+    {
+        name: "Bulk message delete",
+        value: InfractionType.BULK_DELETE_MESSAGE
+    },
+    {
+        name: "Temporary Ban",
+        value: InfractionType.TEMPBAN
+    },
+    {
+        name: "Softban",
+        value: InfractionType.SOFTBAN
+    },
+    {
+        name: "Timeout",
+        value: InfractionType.TIMEOUT
+    },
+    {
+        name: "Timeout remove",
+        value: InfractionType.TIMEOUT_REMOVE
+    }
+].map(o => ({ ...o, value: o.value.toLowerCase() }));
 
 export default class InfractionCommand extends Command {
     public readonly name = "infraction";
-    public readonly subcommands = ["view", "create", "edit", "delete"];
+    public readonly subcommands = ["view", "create", "edit", "delete", "list", "clear"];
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.String],
@@ -47,7 +95,7 @@ export default class InfractionCommand extends Command {
         .addSubcommand(subcommand =>
             subcommand
                 .setName("edit")
-                .setDescription("Update reason of an infraction")
+                .setDescription("Update reason/duration of an infraction")
                 .addIntegerOption(option => option.setName("id").setDescription("The infraction ID").setRequired(true))
                 .addStringOption(option => option.setName("new_reason").setDescription("New reason to set"))
                 .addStringOption(option => option.setName("new_duration").setDescription("New duration to set"))
@@ -70,24 +118,14 @@ export default class InfractionCommand extends Command {
                     option
                         .setName("type")
                         .setDescription("Specify infraction type")
-                        .setChoices(
-                            ...[
-                                "Ban",
-                                "Mute",
-                                "Hardmute",
-                                "Kick",
-                                "Warning",
-                                "Softban",
-                                "Tempban",
-                                "Unmute",
-                                "Unban",
-                                "Timeout",
-                                "Timeout Remove",
-                                "Bean",
-                                "Shot"
-                            ].map(option => ({ name: option, value: option.toLowerCase().replace(" ", "_") }))
-                        )
+                        .setChoices(...infractionTypes)
                 )
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("list")
+                .setDescription("List infractions for a user")
+                .addUserOption(option => option.setName("user").setDescription("The target user").setRequired(true))
         )
         .addSubcommand(subcommand =>
             subcommand
@@ -98,50 +136,7 @@ export default class InfractionCommand extends Command {
                     option
                         .setName("type")
                         .setDescription("Specify infraction type")
-                        .setChoices(
-                            ...[
-                                {
-                                    name: "Ban",
-                                    value: InfractionType.BAN
-                                },
-                                {
-                                    name: "Kick",
-                                    value: InfractionType.KICK
-                                },
-                                {
-                                    name: "Mute",
-                                    value: InfractionType.MUTE
-                                },
-                                {
-                                    name: "Warning",
-                                    value: InfractionType.WARNING
-                                },
-                                {
-                                    name: "Unmute",
-                                    value: InfractionType.UNMUTE
-                                },
-                                {
-                                    name: "Unban",
-                                    value: InfractionType.UNBAN
-                                },
-                                {
-                                    name: "Bulk message delete",
-                                    value: InfractionType.BULK_DELETE_MESSAGE
-                                },
-                                {
-                                    name: "Temporary Ban",
-                                    value: InfractionType.TEMPBAN
-                                },
-                                {
-                                    name: "Timeout",
-                                    value: InfractionType.TIMEOUT
-                                },
-                                {
-                                    name: "Timeout remove",
-                                    value: InfractionType.TIMEOUT_REMOVE
-                                }
-                            ].map(o => ({ ...o, value: o.value.toLowerCase() }))
-                        )
+                        .setChoices(...infractionTypes)
                         .setRequired(true)
                 )
                 .addStringOption(option => option.setName("reason").setDescription("The reason for giving this infraction"))
@@ -151,19 +146,55 @@ export default class InfractionCommand extends Command {
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         const subcommand = context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true);
 
-        if ((subcommand === "edit" || subcommand === "create") && context.isLegacy) {
+        if (subcommand === "list" && context.isLegacy) {
+            await message.reply(`${this.emoji("error")} Please use the command \`-l\` instead`);
+            return;
+        }
+
+        if ((subcommand === "edit" || subcommand === "create" || subcommand === "clear") && context.isLegacy) {
             await message.reply(`${this.emoji("error")} Please use the slash command \`/infraction ${subcommand}\` to perform this action.`);
             return;
         }
 
-        if (context.isLegacy && !context.args[1]) {
-            await message.reply(`${this.emoji("error")} Please provide an infraction ID to perform this action!`);
-            return;
-        }
+        if (["clear", "list"].includes(subcommand)) {
+            if (context.isLegacy && !context.args[1]) {
+                await message.reply(`${this.emoji("error")} Please provide a user to perform this action!`);
+                return;
+            }
 
-        if (context.isLegacy && isNaN(parseInt(context.args[1]))) {
-            await message.reply(`${this.emoji("error")} Please provide a __valid__ infraction ID to perform this action!`);
-            return;
+            if (context.isLegacy) {
+                let userId = "";
+
+                if (isSnowflake(context.args[1])) {
+                    userId = context.args[1];
+                } else if (MessageMentions.UsersPattern.test(context.args[1])) {
+                    userId = context.args[1].substring(context.args[1].includes("!") ? 3 : 2, context.args[1].length - 1);
+                } else {
+                    await message.reply(`${this.emoji("error")} Please provide a valid user mention or ID to perform this action!`);
+                    return;
+                }
+
+                const user = this.client.fetchUserSafe(userId);
+
+                if (!user) {
+                    await message.reply(`${this.emoji("error")} That user does not exist!`);
+                    return;
+                }
+
+                context.parsedNamedArgs.user = user;
+            }
+        } else {
+            if (context.isLegacy && !context.args[1]) {
+                await message.reply(`${this.emoji("error")} Please provide an infraction ID to perform this action!`);
+                return;
+            }
+
+            if (context.isLegacy && isNaN(parseInt(context.args[1]))) {
+                await message.reply(`${this.emoji("error")} Please provide a __valid__ infraction ID to perform this action!`);
+                return;
+            }
+
+            if (context.isLegacy) context.parsedNamedArgs.id = parseInt(context.args[1]);
         }
 
         await this.deferIfInteraction(message);
@@ -172,14 +203,7 @@ export default class InfractionCommand extends Command {
 
         if (command) {
             return await command.execute(message, {
-                ...context,
-                ...(context.isLegacy
-                    ? {
-                          parsedNamedArgs: {
-                              id: parseInt(context.args[1])
-                          }
-                      }
-                    : {})
+                ...context
             });
         }
     }
