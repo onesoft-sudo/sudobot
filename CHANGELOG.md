@@ -1,3 +1,12 @@
+## [4.132.1](https://github.com/onesoft-sudo/sudobot/compare/v4.132.0...v4.132.1) (2023-07-27)
+
+
+### Bug Fixes
+
+* better type safety ([c5c5c2e](https://github.com/onesoft-sudo/sudobot/commit/c5c5c2eff36a9ff5a353c7e3363e5d9d90e7b08f))
+
+
+
 # [4.132.0](https://github.com/onesoft-sudo/sudobot/compare/v4.131.0...v4.132.0) (2023-07-26)
 
 
@@ -52,15 +61,6 @@
 ### Features
 
 * **commands:** add softban command ([579c3a8](https://github.com/onesoft-sudo/sudobot/commit/579c3a852774d822eb87209e72c9c98f4de00bbb))
-
-
-
-# [4.128.0](https://github.com/onesoft-sudo/sudobot/compare/v4.127.0...v4.128.0) (2023-07-25)
-
-
-### Features
-
-* implement permissions system for snippets ([df7f22b](https://github.com/onesoft-sudo/sudobot/commit/df7f22b19ffebb1507eaf167a9b65644cb2f1386))
 
 
 
