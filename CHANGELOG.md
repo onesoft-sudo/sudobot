@@ -1,3 +1,18 @@
+# [4.133.0](https://github.com/onesoft-sudo/sudobot/compare/v4.132.1...v4.133.0) (2023-07-27)
+
+
+### Bug Fixes
+
+* anti raid systems and logging ([28474dc](https://github.com/onesoft-sudo/sudobot/commit/28474dc35b3413e52109b2aece222ed84dc771c9))
+
+
+### Features
+
+* add anti raid systems ([4b5fed9](https://github.com/onesoft-sudo/sudobot/commit/4b5fed9ed53997fad47317558ec3c72662423167))
+* add channel lock manager ([f776e71](https://github.com/onesoft-sudo/sudobot/commit/f776e71e97d66c8e96c452d8868d866106546115))
+
+
+
 ## [4.132.1](https://github.com/onesoft-sudo/sudobot/compare/v4.132.0...v4.132.1) (2023-07-27)
 
 
@@ -47,20 +62,6 @@
 
 * add infraction clear command ([92ca282](https://github.com/onesoft-sudo/sudobot/commit/92ca282c714918dbecf65fe09838acba31eb93fa))
 * add infraction list command ([a6551d9](https://github.com/onesoft-sudo/sudobot/commit/a6551d905d907fa62a516c4f89b273ceb14e2d15))
-
-
-
-# [4.129.0](https://github.com/onesoft-sudo/sudobot/compare/v4.128.0...v4.129.0) (2023-07-26)
-
-
-### Bug Fixes
-
-* wrong class name in tempban command ([60f4870](https://github.com/onesoft-sudo/sudobot/commit/60f487014862dc7b7988e5a82249a32dad137a86))
-
-
-### Features
-
-* **commands:** add softban command ([579c3a8](https://github.com/onesoft-sudo/sudobot/commit/579c3a852774d822eb87209e72c9c98f4de00bbb))
 
 
 
