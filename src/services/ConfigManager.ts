@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import fs from "fs/promises";
+import fs, { writeFile } from "fs/promises";
 import path from "path";
 import { z } from "zod";
 import Service from "../core/Service";
@@ -34,6 +34,7 @@ export type GuildConfigContainer = z.infer<typeof GuildConfigContainerSchema>;
 export default class ConfigManager extends Service {
     protected configPath = path.resolve(__dirname, "../../config/config.json");
     protected systemConfigPath = path.resolve(__dirname, "../../config/system.json");
+    protected configSchemaPath = "";
 
     config: GuildConfigContainer = {} as GuildConfigContainer;
     systemConfig: SystemConfig = {} as SystemConfig;
@@ -44,10 +45,24 @@ export default class ConfigManager extends Service {
         const configJSON = JSON.parse(configFileBuffer.toString());
 
         if ("$schema" in configJSON) {
+            this.configSchemaPath = configJSON.$schema;
             delete configJSON.$schema;
         }
 
         this.config = GuildConfigContainerSchema.parse(configJSON);
         this.systemConfig = SystemConfigSchema.parse(JSON.parse(systemConfigFileBuffer.toString()));
+    }
+
+    async write() {
+        const json = JSON.stringify(
+            {
+                $schema: this.configSchemaPath,
+                ...this.config
+            },
+            null,
+            4
+        );
+
+        await writeFile(this.configPath, json, { encoding: "utf-8" });
     }
 }

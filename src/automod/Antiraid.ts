@@ -17,9 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { GuildMember } from "discord.js";
+import { Guild, GuildMember } from "discord.js";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
+import { GuildConfig } from "../types/GuildConfigSchema";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { logError } from "../utils/logger";
 
@@ -62,18 +63,15 @@ export default class Antiraid extends Service implements HasEventListeners {
                             : "Automatic"
                 });
 
-            if (config.action === "lock" || config.action === "lock_and_antijoin") {
-                await this.client.channelLockManager
-                    .lockGuild(member.guild, {
-                        moderator: this.client.user!,
-                        channelMode: config.channel_mode,
-                        channels: config.channels,
-                        ignorePrivateChannels: config.ignore_private_channels,
-                        reason: "Possible raid detected"
-                    })
-                    .catch(logError);
+            this.map.set(member.guild.id, { count: count + 1, locked: true });
 
-                this.map.set(member.guild.id, { count: count + 1, locked: true });
+            if (config.action === "lock_and_antijoin") {
+                await this.lock(member.guild, config);
+                this.antijoin(member.guild);
+            } else if (config.action === "antijoin" || config.action === "auto") {
+                this.antijoin(member.guild);
+            } else if (config.action === "lock") {
+                await this.lock(member.guild, config);
             }
         } else if (!locked) {
             this.map.set(member.guild.id, { count: count + 1, locked });
@@ -86,5 +84,21 @@ export default class Antiraid extends Service implements HasEventListeners {
                 info.timer = undefined;
             }, config.timeframe);
         }
+    }
+
+    lock(guild: Guild, config: Exclude<GuildConfig["antiraid"], undefined>) {
+        return this.client.channelLockManager
+            .lockGuild(guild, {
+                moderator: this.client.user!,
+                channelMode: config.channel_mode,
+                channels: config.channels,
+                ignorePrivateChannels: config.ignore_private_channels,
+                reason: "Possible raid detected"
+            })
+            .catch(logError);
+    }
+
+    antijoin(guild: Guild) {
+        return this.client.antijoin.enable(guild);
     }
 }
