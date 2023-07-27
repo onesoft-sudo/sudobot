@@ -36,7 +36,7 @@ export default class InfractionListCommand extends Command {
     ];
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
     public readonly permissionMode = "or";
-    public readonly aliases: string[] = ["l"];
+    public readonly aliases: string[] = ["l", "history"];
 
     public readonly description = "View infractions of a user.";
     public readonly argumentSyntaxes = ["<UserID|UserMention>"];
