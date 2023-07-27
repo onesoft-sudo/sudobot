@@ -26,6 +26,7 @@ import type Antiraid from "../automod/Antiraid";
 import type Antispam from "../automod/Antispam";
 import type MessageFilter from "../automod/MessageFilter";
 import { SuppressErrorsMetadata } from "../decorators/SuppressErrors";
+import type ChannelLockManager from "../services/ChannelLockManager";
 import type CommandManager from "../services/CommandManager";
 import type ConfigManager from "../services/ConfigManager";
 import type InfractionManager from "../services/InfractionManager";
@@ -51,6 +52,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@services/QueueManager",
         "@services/WelcomerService",
         "@services/SnippetManager",
+        "@services/ChannelLockManager",
 
         "@automod/MessageFilter",
         "@automod/Antispam",
@@ -72,6 +74,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     snippetManager: SnippetManager = {} as SnippetManager;
     welcomerService: WelcomerService = {} as WelcomerService;
     antiraid: Antiraid = {} as Antiraid;
+    channelLockManager: ChannelLockManager = {} as ChannelLockManager;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",

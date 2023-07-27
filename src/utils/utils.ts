@@ -26,6 +26,7 @@ import {
     GuildMember,
     NewsChannel,
     PermissionFlagsBits,
+    PermissionOverwrites,
     PermissionResolvable,
     PermissionsBitField,
     TextChannel,
@@ -218,4 +219,8 @@ export function forceGetPermissionNames(permissions: PermissionResolvable[]) {
     }
 
     return strings;
+}
+
+export function getChannelPermissionOverride(permission: PermissionResolvable, permissionOverwrites: PermissionOverwrites) {
+    return permissionOverwrites.allow.has(permission, true) ? true : permissionOverwrites.deny.has(permission, true) ? true : null;
 }

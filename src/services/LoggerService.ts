@@ -26,6 +26,7 @@ import {
     EmbedBuilder,
     EmbedData,
     Guild,
+    GuildChannel,
     GuildMember,
     MessageCreateOptions,
     MessagePayload,
@@ -122,6 +123,78 @@ export default class LoggerService extends Service {
         return await this.send(guild, {
             embeds: [this.createLogEmbed(options)],
             ...((extraOptions as any) ?? {})
+        });
+    }
+
+    async logRaid({ guild, action }: { guild: Guild; action: string }) {
+        await this.sendLogEmbed(guild, {
+            title: "Possible raid detected",
+            reason: "Too many users joined in a short timeframe.",
+            color: Colors.Red,
+            fields: [
+                {
+                    name: "Action",
+                    value: action
+                }
+            ],
+            footerText: "Raid detected"
+        });
+    }
+
+    async logServerLockOrUnlock({
+        guild,
+        action,
+        moderator,
+        countInvalidChannel,
+        countSkipped,
+        countFailed,
+        countSuccess
+    }: {
+        guild: Guild;
+        action: "Locked" | "Unlocked";
+        moderator: User;
+        countInvalidChannel: number;
+        countSkipped: number;
+        countFailed: number;
+        countSuccess: number;
+    }) {
+        await this.sendLogEmbed(guild, {
+            title: `Server ${action.toLowerCase()}`,
+            reason: "The user ran a command to perform this action",
+            moderator,
+            color: 0x007bff,
+            footerText: action,
+            options: {
+                description: `Results:\n\n${countInvalidChannel === 0 ? "" : `InvalidChannel: ${countInvalidChannel}\n`}${
+                    countSkipped === 0 ? "" : `Skipped: ${countSkipped}\n`
+                }${countSuccess === 0 ? "" : `Success: ${countSuccess}\n`}${countFailed === 0 ? "" : `Failed: ${countFailed}\n`}`
+            }
+        });
+    }
+
+    async logChannelLockOrUnlock({
+        guild,
+        action,
+        moderator,
+        channel
+    }: {
+        guild: Guild;
+        action: "Locked" | "Unlocked";
+        moderator: User;
+        channel: GuildChannel;
+    }) {
+        await this.sendLogEmbed(guild, {
+            title: `Channel ${action.toLowerCase()}`,
+            reason: "The user ran a command to perform this action",
+            moderator,
+            color: 0x007bff,
+            footerText: action,
+            fields: [
+                {
+                    name: "Channel",
+                    value: `${channel.toString()} (${channel.id})`
+                }
+            ]
         });
     }
 

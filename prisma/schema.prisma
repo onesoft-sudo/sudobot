@@ -81,3 +81,14 @@ model Snippet {
 
     @@map("snippets")
 }
+
+model ChannelLock {
+    id          Int      @id @default(autoincrement())
+    guild_id    String
+    channel_id  String
+    permissions Json
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @default(now()) @updatedAt
+
+    @@map("channel_locks")
+}
