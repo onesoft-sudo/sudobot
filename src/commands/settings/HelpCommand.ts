@@ -98,6 +98,13 @@ export default class HelpCommand extends Command {
         const commandName = context.isLegacy ? context.parsedNamedArgs.command : context.options.getString("command");
         const subcommand = context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getString("subcommand");
 
+        const config = this.client.configManager.config[message.guildId!];
+
+        if (!config) {
+            await this.error(message, "This server isn't configured. Please ask a system administrator to configure this server.");
+            return;
+        }
+
         if (!commandName) {
             const pagination = new Pagination([...this.commandInformation.values()], {
                 channelId: message.channelId!,
@@ -107,9 +114,7 @@ export default class HelpCommand extends Command {
                 timeout: 200_000,
                 userId: message.member!.user.id,
                 embedBuilder({ currentPage, maxPages, data }) {
-                    let description: string = `Run \`${
-                        this.client.configManager.config[message.guildId!].prefix
-                    }help <commandName>\` to get help about a specific command.\n\`<...>\` means required argument, \`[...]\` means optional argument.\n\n`;
+                    let description: string = `Run \`${config.prefix}help <commandName>\` to get help about a specific command.\n\`<...>\` means required argument, \`[...]\` means optional argument.\n\n`;
 
                     for (const commandInfo of data) {
                         description += `**${commandInfo.name}**\n`;
@@ -157,7 +162,7 @@ export default class HelpCommand extends Command {
             await this.deferredReply(message, {
                 embeds: [
                     new EmbedBuilder({
-                        title: `${this.client.configManager.config[message.guildId!].prefix}${name}${command.beta ? ` [BETA]` : ""}`,
+                        title: `${config.prefix}${name}${command.beta ? ` [BETA]` : ""}`,
                         color: 0x007bff,
                         fields: [
                             {
@@ -186,17 +191,15 @@ export default class HelpCommand extends Command {
                                 name: "Syntax",
                                 value: `\`\`\`\n${
                                     command.argumentSyntaxes
-                                        ? command.argumentSyntaxes
-                                              .map(s => `${this.client.configManager.config[message.guildId!].prefix}${name} ${s}`)
-                                              .join("\n")
-                                        : `${this.client.configManager.config[message.guildId!].prefix}${name}`
+                                        ? command.argumentSyntaxes.map(s => `${config.prefix}${name} ${s}`).join("\n")
+                                        : `${config.prefix}${name}`
                                 }\n\`\`\``
                             },
                             ...(command.subcommands.length > 0
                                 ? [
                                       {
                                           name: "Subcommands",
-                                          value: `Run \`${this.client.configManager.config[message.guildId!].prefix}help ${
+                                          value: `Run \`${config.prefix}help ${
                                               command.name
                                           } <subcommand>\` to see information about specific subcommands.\n\n* ${command.subcommands
                                               .map(s => `\`${s}\``)

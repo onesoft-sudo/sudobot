@@ -22,6 +22,7 @@ import { Collection, Client as DiscordClient, GuildEmoji, UserResolvable } from 
 import fs from "fs/promises";
 import path, { basename, dirname } from "path";
 import Server from "../api/Server";
+import type Antiraid from "../automod/Antiraid";
 import type Antispam from "../automod/Antispam";
 import type MessageFilter from "../automod/MessageFilter";
 import { SuppressErrorsMetadata } from "../decorators/SuppressErrors";
@@ -47,11 +48,13 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@services/CommandManager",
         "@services/InfractionManager",
         "@services/LoggerService",
-        "@automod/MessageFilter",
-        "@automod/Antispam",
         "@services/QueueManager",
         "@services/WelcomerService",
-        "@services/SnippetManager"
+        "@services/SnippetManager",
+
+        "@automod/MessageFilter",
+        "@automod/Antispam",
+        "@automod/Antiraid"
     ];
 
     commandsDirectory = path.resolve(__dirname, "../commands");
@@ -68,6 +71,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     queueManager: QueueManager = {} as QueueManager;
     snippetManager: SnippetManager = {} as SnippetManager;
     welcomerService: WelcomerService = {} as WelcomerService;
+    antiraid: Antiraid = {} as Antiraid;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",

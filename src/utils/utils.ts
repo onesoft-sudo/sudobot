@@ -168,7 +168,11 @@ export function developmentMode() {
 }
 
 export function isImmuneToAutoMod(client: Client, member: GuildMember, permission?: PermissionResolvable[] | PermissionResolvable) {
-    const adminRole = client.configManager.config[member.guild.id].permissions.admin_role;
+    const config = client.configManager.config[member.guild.id];
+
+    if (!config) return true;
+
+    const adminRole = config.permissions.admin_role;
 
     return (
         (adminRole && member.roles.cache.has(adminRole)) ||

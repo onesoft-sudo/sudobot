@@ -28,8 +28,7 @@ export * from "../types/GuildConfigSchema";
 
 export const name = "configManager";
 
-export const GuildConfigContainerSchema = z.record(z.string(), GuildConfigSchema);
-
+export const GuildConfigContainerSchema = z.record(z.string(), GuildConfigSchema.optional().or(z.undefined()));
 export type GuildConfigContainer = z.infer<typeof GuildConfigContainerSchema>;
 
 export default class ConfigManager extends Service {

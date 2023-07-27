@@ -78,7 +78,11 @@ export default class Antispam extends Service {
     async takeAction(message: Message) {
         log("Triggered");
 
-        const { antispam } = this.client.configManager.config[message.guildId!];
+        const config = this.client.configManager.config[message.guildId!];
+
+        if (!config) return;
+
+        const { antispam } = config;
 
         if (antispam?.action === "mute_clear" || antispam?.action === "mute") {
             await this.muteUser(message, antispam);
@@ -156,7 +160,7 @@ export default class Antispam extends Service {
 
             info.timeout = setTimeout(() => {
                 const delayedInfo = this.map[message.guildId!][message.author.id] ?? ({} as SpamUserInfo);
-                const timestamps = delayedInfo.timestamps.filter((timestamp) => config.antispam?.timeframe! + timestamp >= Date.now());
+                const timestamps = delayedInfo.timestamps.filter(timestamp => config.antispam?.timeframe! + timestamp >= Date.now());
 
                 if (timestamps.length >= config.antispam?.limit!) {
                     this.takeAction(message).catch(console.error);
