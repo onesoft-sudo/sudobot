@@ -1,3 +1,13 @@
+# [4.135.0](https://github.com/onesoft-sudo/sudobot/compare/v4.134.0...v4.135.0) (2023-07-27)
+
+
+### Features
+
+* **commands:** add cat command ([aff6b34](https://github.com/onesoft-sudo/sudobot/commit/aff6b344e505e701bfd09ba147a38d9f2c571b58))
+* **commands:** add dog command ([fda97b5](https://github.com/onesoft-sudo/sudobot/commit/fda97b522102052ab73fd50db6b8547ff668841c))
+
+
+
 # [4.134.0](https://github.com/onesoft-sudo/sudobot/compare/v4.133.0...v4.134.0) (2023-07-27)
 
 
@@ -38,22 +48,6 @@
 
 * **commands:** add echo command ([a841124](https://github.com/onesoft-sudo/sudobot/commit/a841124f81a74f46720017f45af8defbba777289))
 * **commands:** add send command ([be651a2](https://github.com/onesoft-sudo/sudobot/commit/be651a2378a728fd3a58d0bf886fce73ef0cf9cb))
-
-
-
-# [4.131.0](https://github.com/onesoft-sudo/sudobot/compare/v4.130.0...v4.131.0) (2023-07-26)
-
-
-### Bug Fixes
-
-* removed unneeded await's ([40636d9](https://github.com/onesoft-sudo/sudobot/commit/40636d9d1b25c5ba8d40468e9558f0a67cdeaef1))
-
-
-### Features
-
-* **commands:** add bean command ([9fe65cb](https://github.com/onesoft-sudo/sudobot/commit/9fe65cb33d3861262db133bde203014a7972eeae))
-* **commands:** add embed management commands ([f26f0ba](https://github.com/onesoft-sudo/sudobot/commit/f26f0bae38f474d1f423a43087ffcd6144759087))
-* **commands:** add fakeban command ([3d458b5](https://github.com/onesoft-sudo/sudobot/commit/3d458b5e78b77a5e46ba7a6c76ba9a5430917609))
 
 
 
