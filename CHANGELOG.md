@@ -1,3 +1,17 @@
+# [5.0.0](https://github.com/onesoft-sudo/sudobot/compare/v4.135.0...v5.0.0) (2023-07-27)
+
+
+### Documentation
+
+* update getting started page ([7b6952b](https://github.com/onesoft-sudo/sudobot/commit/7b6952b025d8a9c2b35fbed7ea8a1fbeaf4f335c))
+
+
+### BREAKING CHANGES
+
+* Mark the commit as the starting point of v5
+
+
+
 # [4.135.0](https://github.com/onesoft-sudo/sudobot/compare/v4.134.0...v4.135.0) (2023-07-27)
 
 
@@ -38,16 +52,6 @@
 ### Bug Fixes
 
 * better type safety ([c5c5c2e](https://github.com/onesoft-sudo/sudobot/commit/c5c5c2eff36a9ff5a353c7e3363e5d9d90e7b08f))
-
-
-
-# [4.132.0](https://github.com/onesoft-sudo/sudobot/compare/v4.131.0...v4.132.0) (2023-07-26)
-
-
-### Features
-
-* **commands:** add echo command ([a841124](https://github.com/onesoft-sudo/sudobot/commit/a841124f81a74f46720017f45af8defbba777289))
-* **commands:** add send command ([be651a2](https://github.com/onesoft-sudo/sudobot/commit/be651a2378a728fd3a58d0bf886fce73ef0cf9cb))
 
 
 
