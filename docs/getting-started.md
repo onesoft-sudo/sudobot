@@ -75,6 +75,8 @@ A few more environment variables can be specified:
 
 * `DEBUG`: Used by the [Prisma](https://prisma.io/) ORM. This enables extra debug logging, aka Verbose Mode.
 * `SUDO_ENV` and `NODE_ENV`: If one of these is set to `dev`, then the bot will enter Verbose Mode, and log everything that it does or happens. This is useful if you want to debug the bot or troubleshoot something.
+* `CAT_API_TOKEN`: The Cat API token to use when fetching cat images, using `cat` command.
+* `DOG_API_TOKEN`: The Dog API token to use when fetching dog images, using `dog` command.
 
 ## Setting up a Database for the bot
 
