@@ -104,7 +104,7 @@ export const GuildConfigSchema = z.object({
             action: z.union([z.literal("auto"), z.literal("lock"), z.literal("antijoin"), z.literal("lock_and_antijoin")]).optional(),
             send_log: z.boolean().optional().default(true),
             channels: z.array(zSnowflake).default([]),
-            channel_mode: z.literal("exclude").or(z.literal("include")).default("include"),
+            channel_mode: z.literal("exclude").or(z.literal("include")).default("exclude"),
             ignore_private_channels: z.boolean().optional().default(true)
         })
         .optional(),

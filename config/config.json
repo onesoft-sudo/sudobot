@@ -40,6 +40,14 @@
             "say_hi_button": true,
             "say_hi_emoji": "default",
             "say_hi_expire_after": 10000
+        },
+        "antiraid": {
+            "enabled": true,
+            "max_joins": 10,
+            "action": "lock",
+            "timeframe": 60000,
+            "send_log": true,
+            "channel_mode": "exclude"
         }
     }
 }

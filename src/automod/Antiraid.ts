@@ -49,26 +49,32 @@ export default class Antiraid extends Service implements HasEventListeners {
         const { count, locked } = info;
 
         if (!locked && count > config.max_joins) {
-            this.client.logger.logRaid({
-                guild: member.guild,
-                action:
-                    config.action === "lock"
-                        ? "Locked the server"
-                        : config.action === "antijoin"
-                        ? "Turned on anti join system"
-                        : config.action === "lock_and_antijoin"
-                        ? "Locked the server and turned on anti join system"
-                        : "Automatic"
-            });
+            if (config.send_log)
+                this.client.logger.logRaid({
+                    guild: member.guild,
+                    action:
+                        config.action === "lock"
+                            ? "Locked the server"
+                            : config.action === "antijoin"
+                            ? "Turned on anti join system"
+                            : config.action === "lock_and_antijoin"
+                            ? "Locked the server and turned on anti join system"
+                            : "Automatic"
+                });
 
-            await this.client.channelLockManager
-                .lockGuild(member.guild, {
-                    moderator: this.client.user!,
-                    channelMode: config.channel_mode,
-                    channels: config.channels,
-                    ignorePrivateChannels: config.ignore_private_channels
-                })
-                .catch(logError);
+            if (config.action === "lock" || config.action === "lock_and_antijoin") {
+                await this.client.channelLockManager
+                    .lockGuild(member.guild, {
+                        moderator: this.client.user!,
+                        channelMode: config.channel_mode,
+                        channels: config.channels,
+                        ignorePrivateChannels: config.ignore_private_channels,
+                        reason: "Possible raid detected"
+                    })
+                    .catch(logError);
+
+                this.map.set(member.guild.id, { count: count + 1, locked: true });
+            }
         } else if (!locked) {
             this.map.set(member.guild.id, { count: count + 1, locked });
         }

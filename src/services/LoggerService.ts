@@ -148,7 +148,8 @@ export default class LoggerService extends Service {
         countInvalidChannel,
         countSkipped,
         countFailed,
-        countSuccess
+        countSuccess,
+        reason
     }: {
         guild: Guild;
         action: "Locked" | "Unlocked";
@@ -157,10 +158,11 @@ export default class LoggerService extends Service {
         countSkipped: number;
         countFailed: number;
         countSuccess: number;
+        reason?: string;
     }) {
         await this.sendLogEmbed(guild, {
             title: `Server ${action.toLowerCase()}`,
-            reason: "The user ran a command to perform this action",
+            reason: reason ?? "The user ran a command to perform this action",
             moderator,
             color: 0x007bff,
             footerText: action,
@@ -176,16 +178,18 @@ export default class LoggerService extends Service {
         guild,
         action,
         moderator,
-        channel
+        channel,
+        reason
     }: {
         guild: Guild;
         action: "Locked" | "Unlocked";
         moderator: User;
         channel: GuildChannel;
+        reason?: string;
     }) {
         await this.sendLogEmbed(guild, {
             title: `Channel ${action.toLowerCase()}`,
-            reason: "The user ran a command to perform this action",
+            reason: reason ?? "The user ran a command to perform this action",
             moderator,
             color: 0x007bff,
             footerText: action,

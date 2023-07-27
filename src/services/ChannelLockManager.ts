@@ -29,6 +29,7 @@ type ChannelLockOptions = {
     channelMode?: "exclude" | "include";
     ignorePrivateChannels?: boolean;
     moderator: User;
+    reason?: string;
 };
 
 export default class ChannelLockManager extends Service {
@@ -40,7 +41,7 @@ export default class ChannelLockManager extends Service {
         );
     }
 
-    async lockGuild(guild: Guild, { moderator, channels = [], channelMode = "include", ignorePrivateChannels = true }: ChannelLockOptions) {
+    async lockGuild(guild: Guild, { reason, moderator, channels = [], channelMode = "include", ignorePrivateChannels = true }: ChannelLockOptions) {
         let countSuccess = 0,
             countFailed = 0,
             countSkipped = 0,
@@ -121,7 +122,8 @@ export default class ChannelLockManager extends Service {
             countSuccess,
             countFailed,
             countInvalidChannel,
-            countSkipped
+            countSkipped,
+            reason
         });
 
         return {
@@ -134,7 +136,7 @@ export default class ChannelLockManager extends Service {
 
     async unlockGuild(
         guild: Guild,
-        { channels = [], channelMode = "include", ignorePrivateChannels = true, force, moderator }: ChannelLockOptions & { force?: boolean }
+        { channels = [], channelMode = "include", ignorePrivateChannels = true, force, moderator, reason }: ChannelLockOptions & { force?: boolean }
     ) {
         let countSuccess = 0,
             countFailed = 0,
@@ -215,7 +217,8 @@ export default class ChannelLockManager extends Service {
             countSuccess,
             countFailed,
             countInvalidChannel,
-            countSkipped
+            countSkipped,
+            reason
         });
 
         return {
@@ -226,7 +229,7 @@ export default class ChannelLockManager extends Service {
         };
     }
 
-    async lock(channel: TextChannel, moderator: User) {
+    async lock(channel: TextChannel, moderator: User, reason?: string) {
         try {
             const options = {
                 Connect: false,
@@ -254,7 +257,8 @@ export default class ChannelLockManager extends Service {
                     guild: channel.guild,
                     action: "Locked",
                     channel,
-                    moderator
+                    moderator,
+                    reason
                 })
                 .catch(logError);
 
@@ -271,7 +275,7 @@ export default class ChannelLockManager extends Service {
         }
     }
 
-    async unlock(channel: TextChannel, moderator: User, force?: boolean) {
+    async unlock(channel: TextChannel, moderator: User, reason?: string, force?: boolean) {
         try {
             const channelLock = await this.client.prisma.channelLock.findFirst({
                 where: {
@@ -299,7 +303,8 @@ export default class ChannelLockManager extends Service {
                     guild: channel.guild,
                     action: "Unlocked",
                     channel,
-                    moderator
+                    moderator,
+                    reason
                 })
                 .catch(logError);
 
