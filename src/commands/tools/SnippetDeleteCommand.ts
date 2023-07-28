@@ -17,14 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Command, {
-    AnyCommandContext,
-    ArgumentType,
-    CommandMessage,
-    CommandReturn,
-    ValidationRule
-} from "../../core/Command";
 import { PermissionsBitField } from "discord.js";
+import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class SnippetDeleteCommand extends Command {
     public readonly name = "snippet__delete";
@@ -34,7 +28,7 @@ export default class SnippetDeleteCommand extends Command {
             requiredErrorMessage: "Please specify the name of the snippet/tag to remove!",
             typeErrorMessage: "Please specify a valid snippet/tag name!",
             name: "name"
-        },
+        }
     ];
     public readonly permissions = [
         PermissionsBitField.Flags.BanMembers,
@@ -58,6 +52,6 @@ export default class SnippetDeleteCommand extends Command {
             return;
         }
 
-        await this.deferredReply(message, `${this.emoji('success')} Successfully deleted the snippet/tag.`);
+        await this.deferredReply(message, `${this.emoji("check")} Successfully deleted the snippet/tag.`);
     }
 }
