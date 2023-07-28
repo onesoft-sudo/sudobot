@@ -24,6 +24,8 @@ export default class MessageDeleteEvent extends Event {
     public name: keyof ClientEvents = "messageDelete";
 
     async execute(message: Message) {
+        if (message.author.bot) return;
+
         await this.client.logger.logMessageDelete(message);
     }
 }

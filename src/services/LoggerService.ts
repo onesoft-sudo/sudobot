@@ -168,6 +168,7 @@ export default class LoggerService extends Service {
             {
                 title: "Message Updated",
                 user: newMessage.author,
+                color: 0x007bff,
                 options: {
                     description: `**-+-+Before**\n${oldMessage.content}\n\n**-+-+After**\n${newMessage.content}`
                 },

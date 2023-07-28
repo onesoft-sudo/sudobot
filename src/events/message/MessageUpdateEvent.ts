@@ -24,6 +24,8 @@ export default class MessageUpdateEvent extends Event {
     public name: keyof ClientEvents = "messageUpdate";
 
     async execute(oldMessage: Message, newMessage: Message) {
+        if (newMessage.author.bot || oldMessage.content === newMessage.content) return;
+
         await this.client.logger.logMessageEdit(oldMessage, newMessage);
     }
 }
