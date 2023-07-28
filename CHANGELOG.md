@@ -1,3 +1,12 @@
+# [5.3.0](https://github.com/onesoft-sudo/sudobot/compare/v5.2.1...v5.3.0) (2023-07-28)
+
+
+### Features
+
+* **infractionManager:** support muting without role -> timeout ([a3597d6](https://github.com/onesoft-sudo/sudobot/commit/a3597d69856872fe478ffed8e7d254b63d3d59e5))
+
+
+
 ## [5.2.1](https://github.com/onesoft-sudo/sudobot/compare/v5.2.0...v5.2.1) (2023-07-28)
 
 
@@ -42,20 +51,6 @@
 ### Features
 
 * **automod:** add profile filter ([1cd5d21](https://github.com/onesoft-sudo/sudobot/commit/1cd5d2105bae24bb855b11b97f8b8bd09f62b14c))
-
-
-
-# [5.0.0](https://github.com/onesoft-sudo/sudobot/compare/v4.135.0...v5.0.0) (2023-07-27)
-
-
-### Documentation
-
-* update getting started page ([7b6952b](https://github.com/onesoft-sudo/sudobot/commit/7b6952b025d8a9c2b35fbed7ea8a1fbeaf4f335c))
-
-
-### BREAKING CHANGES
-
-* Mark the commit as the starting point of v5
 
 
 
