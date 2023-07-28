@@ -75,7 +75,7 @@ export default class WelcomerService extends Service {
                 components: actionRow
             });
 
-            if (actionRow && say_hi_button) {
+            if (actionRow && say_hi_button && say_hi_expire_after) {
                 setTimeout(() => {
                     const row = actionRow;
 
