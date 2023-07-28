@@ -1,3 +1,13 @@
+## [5.2.1](https://github.com/onesoft-sudo/sudobot/compare/v5.2.0...v5.2.1) (2023-07-28)
+
+
+### Bug Fixes
+
+* add command metadata ([8e80fdd](https://github.com/onesoft-sudo/sudobot/commit/8e80fddc509ba4f6c042739adff0175e77ef46b6))
+* deploy script not working with npm scripts ([33bfccf](https://github.com/onesoft-sudo/sudobot/commit/33bfccf351e9fc81e00dd2a3291d4b33a855b813))
+
+
+
 # [5.2.0](https://github.com/onesoft-sudo/sudobot/compare/v5.1.1...v5.2.0) (2023-07-28)
 
 
@@ -46,16 +56,6 @@
 ### BREAKING CHANGES
 
 * Mark the commit as the starting point of v5
-
-
-
-# [4.135.0](https://github.com/onesoft-sudo/sudobot/compare/v4.134.0...v4.135.0) (2023-07-27)
-
-
-### Features
-
-* **commands:** add cat command ([aff6b34](https://github.com/onesoft-sudo/sudobot/commit/aff6b344e505e701bfd09ba147a38d9f2c571b58))
-* **commands:** add dog command ([fda97b5](https://github.com/onesoft-sudo/sudobot/commit/fda97b522102052ab73fd50db6b8547ff668841c))
 
 
 
