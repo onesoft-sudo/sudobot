@@ -1,3 +1,17 @@
+# [5.2.0](https://github.com/onesoft-sudo/sudobot/compare/v5.1.1...v5.2.0) (2023-07-28)
+
+
+### Bug Fixes
+
+* permission issues ([af522ea](https://github.com/onesoft-sudo/sudobot/commit/af522ea208f4ff51278c9bd8a040b9b3fd4a5088))
+
+
+### Features
+
+* add note management commands ([45bcda7](https://github.com/onesoft-sudo/sudobot/commit/45bcda7502512e2c2b66fbfc3367e015a45ade43))
+
+
+
 ## [5.1.1](https://github.com/onesoft-sudo/sudobot/compare/v5.1.0...v5.1.1) (2023-07-28)
 
 
@@ -42,15 +56,6 @@
 
 * **commands:** add cat command ([aff6b34](https://github.com/onesoft-sudo/sudobot/commit/aff6b344e505e701bfd09ba147a38d9f2c571b58))
 * **commands:** add dog command ([fda97b5](https://github.com/onesoft-sudo/sudobot/commit/fda97b522102052ab73fd50db6b8547ff668841c))
-
-
-
-# [4.134.0](https://github.com/onesoft-sudo/sudobot/compare/v4.133.0...v4.134.0) (2023-07-27)
-
-
-### Features
-
-* add anti join systems ([27ff091](https://github.com/onesoft-sudo/sudobot/commit/27ff091947928db7319b3c03b1470f76eaffe361))
 
 
 
