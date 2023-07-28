@@ -577,14 +577,23 @@ export default class InfractionManager extends Service {
         const mutedRole = this.client.configManager.config[guild.id]?.muting?.role;
 
         if (!mutedRole) {
-            return { error: "Muted role is not configured, please set the muted role to perform this operation." };
-        }
+            if (!duration) {
+                return { error: "Muted role is not configured and duration wasn't provided, please set the muted role to perform this operation." };
+            }
 
-        try {
-            await member.roles.add(mutedRole);
-        } catch (e) {
-            logError(e);
-            return { error: "Failed to assign the muted role to this user. Make sure that I have enough permissions to do it." };
+            try {
+                await member.disableCommunicationUntil(new Date(Date.now() + duration), reason);
+            } catch (e) {
+                logError(e);
+                return { error: "Failed to timeout user, make sure I have enough permissions!" };
+            }
+        } else {
+            try {
+                await member.roles.add(mutedRole);
+            } catch (e) {
+                logError(e);
+                return { error: "Failed to assign the muted role to this user. Make sure that I have enough permissions to do it." };
+            }
         }
 
         if (autoRemoveQueue) {
@@ -678,14 +687,23 @@ export default class InfractionManager extends Service {
         const mutedRole = this.client.configManager.config[guild.id]?.muting?.role;
 
         if (!mutedRole) {
-            return { error: "Muted role is not configured, please set the muted role to perform this operation." };
-        }
+            if (!member.isCommunicationDisabled()) {
+                return { error: "This user is not muted" };
+            }
 
-        try {
-            await member.roles.remove(mutedRole);
-        } catch (e) {
-            logError(e);
-            return { error: "Failed to remove the muted role to this user. Make sure that I have enough permissions to do it." };
+            try {
+                await member.disableCommunicationUntil(null, reason);
+            } catch (e) {
+                logError(e);
+                return { error: "Failed to remove timeout from user, make sure I have enough permissions!" };
+            }
+        } else {
+            try {
+                await member.roles.remove(mutedRole);
+            } catch (e) {
+                logError(e);
+                return { error: "Failed to remove the muted role to this user. Make sure that I have enough permissions to do it." };
+            }
         }
 
         const { id } = await this.client.prisma.infraction.create({
