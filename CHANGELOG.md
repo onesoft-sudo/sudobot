@@ -1,3 +1,12 @@
+## [5.4.1](https://github.com/onesoft-sudo/sudobot/compare/v5.4.0...v5.4.1) (2023-07-28)
+
+
+### Bug Fixes
+
+* welcomer config ([60a3aa8](https://github.com/onesoft-sudo/sudobot/commit/60a3aa890b1494c4bf375f4102b0304d96f05bdf))
+
+
+
 # [5.4.0](https://github.com/onesoft-sudo/sudobot/compare/v5.3.0...v5.4.0) (2023-07-28)
 
 
@@ -42,15 +51,6 @@
 ### Features
 
 * add note management commands ([45bcda7](https://github.com/onesoft-sudo/sudobot/commit/45bcda7502512e2c2b66fbfc3367e015a45ade43))
-
-
-
-## [5.1.1](https://github.com/onesoft-sudo/sudobot/compare/v5.1.0...v5.1.1) (2023-07-28)
-
-
-### Bug Fixes
-
-* ensure the best security ([561b31d](https://github.com/onesoft-sudo/sudobot/commit/561b31dfe322dede3aadc31c506e4b9d91ca7cd1))
 
 
 
