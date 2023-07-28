@@ -190,6 +190,8 @@ export default abstract class Command {
                         content: `${this.emoji("error")} You don't have enough permissions to run this command.`,
                         ephemeral: true
                     });
+
+                    return;
                 }
         }
 
