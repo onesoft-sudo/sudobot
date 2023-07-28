@@ -1,3 +1,17 @@
+# [5.1.0](https://github.com/onesoft-sudo/sudobot/compare/v5.0.0...v5.1.0) (2023-07-28)
+
+
+### Bug Fixes
+
+* message filter not ignoring staff ([f7b8f7f](https://github.com/onesoft-sudo/sudobot/commit/f7b8f7f1fa86fb5a1202cc736049e50a4fbdfe2b))
+
+
+### Features
+
+* **automod:** add profile filter ([1cd5d21](https://github.com/onesoft-sudo/sudobot/commit/1cd5d2105bae24bb855b11b97f8b8bd09f62b14c))
+
+
+
 # [5.0.0](https://github.com/onesoft-sudo/sudobot/compare/v4.135.0...v5.0.0) (2023-07-27)
 
 
@@ -43,15 +57,6 @@
 
 * add anti raid systems ([4b5fed9](https://github.com/onesoft-sudo/sudobot/commit/4b5fed9ed53997fad47317558ec3c72662423167))
 * add channel lock manager ([f776e71](https://github.com/onesoft-sudo/sudobot/commit/f776e71e97d66c8e96c452d8868d866106546115))
-
-
-
-## [4.132.1](https://github.com/onesoft-sudo/sudobot/compare/v4.132.0...v4.132.1) (2023-07-27)
-
-
-### Bug Fixes
-
-* better type safety ([c5c5c2e](https://github.com/onesoft-sudo/sudobot/commit/c5c5c2eff36a9ff5a353c7e3363e5d9d90e7b08f))
 
 
 
