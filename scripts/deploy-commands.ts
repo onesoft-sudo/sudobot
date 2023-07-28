@@ -26,10 +26,8 @@ import { SlashCommandBuilder } from "discord.js";
 import { config } from "dotenv";
 import { existsSync } from "fs";
 import path from "path";
-import Client from "../src/core/Client";
-import type Command from "../src/core/Command";
 
-function makeSlashCommandBuilder(command: Command) {
+function makeSlashCommandBuilder(command: any) {
     const builder: SlashCommandBuilder = (command.slashCommandBuilder as SlashCommandBuilder) ?? new SlashCommandBuilder();
 
     if (!builder.name) builder.setName(command.name);
@@ -39,8 +37,10 @@ function makeSlashCommandBuilder(command: Command) {
 }
 
 (async () => {
-    if (existsSync(path.join(__dirname, ".env"))) {
-        config();
+    if (existsSync(path.join(__dirname, ".env")) || existsSync(path.join(__dirname, "../.env"))) {
+        config({
+            path: existsSync(path.join(__dirname, ".env")) ? undefined : path.join(__dirname, "../.env")
+        });
     } else {
         process.env.ENV = "prod";
     }
@@ -50,6 +50,11 @@ function makeSlashCommandBuilder(command: Command) {
     const commands: SlashCommandBuilder[] = [];
 
     if (!process.argv.includes("--clear")) {
+        const clientPath = path.resolve(existsSync(path.join(__dirname, "../build")) ? "build" : "src", "core/Client");
+
+        console.info("Importing client from: ", clientPath);
+
+        const { default: Client } = await import(clientPath);
         const client = new Client({
             intents: []
         });
@@ -63,6 +68,13 @@ function makeSlashCommandBuilder(command: Command) {
             commands.push(makeSlashCommandBuilder(command));
         }
     }
+
+    console.table(
+        commands.map(c => ({
+            name: c.name,
+            description: c.description
+        }))
+    );
 
     const rest = new REST({ version: "10" }).setToken(TOKEN!);
 
