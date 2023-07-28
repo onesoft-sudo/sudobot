@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { GuildMember, PermissionFlagsBits } from "discord.js";
+import { GuildMember, PermissionFlagsBits, PermissionResolvable } from "discord.js";
 import Service from "../core/Service";
 import { log } from "../utils/logger";
 
@@ -50,5 +50,21 @@ export default class PermissionManager extends Service {
         }
 
         return true;
+    }
+
+    isImmuneToAutoMod(member: GuildMember, permission?: PermissionResolvable[] | PermissionResolvable) {
+        if (this.client.configManager.systemConfig.system_admins.includes(member.user.id)) return true;
+
+        const config = this.client.configManager.config[member.guild.id];
+
+        if (!config) return true;
+
+        const adminRole = config.permissions.admin_role;
+
+        return (
+            (adminRole && member.roles.cache.has(adminRole)) ||
+            member.permissions.has(PermissionFlagsBits.ManageGuild, true) ||
+            (permission && member.permissions.has(permission, true))
+        );
     }
 }

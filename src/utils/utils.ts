@@ -25,7 +25,6 @@ import {
     EmbedBuilder,
     GuildMember,
     NewsChannel,
-    PermissionFlagsBits,
     PermissionOverwrites,
     PermissionResolvable,
     PermissionsBitField,
@@ -169,19 +168,7 @@ export function developmentMode() {
 }
 
 export function isImmuneToAutoMod(client: Client, member: GuildMember, permission?: PermissionResolvable[] | PermissionResolvable) {
-    if (client.configManager.systemConfig.system_admins.includes(member.user.id)) return true;
-
-    const config = client.configManager.config[member.guild.id];
-
-    if (!config) return true;
-
-    const adminRole = config.permissions.admin_role;
-
-    return (
-        (adminRole && member.roles.cache.has(adminRole)) ||
-        member.permissions.has(PermissionFlagsBits.ManageGuild, true) ||
-        (permission && member.permissions.has(permission, true))
-    );
+    return client.permissionManager.isImmuneToAutoMod(member, permission);
 }
 
 export function wait(time: number) {
