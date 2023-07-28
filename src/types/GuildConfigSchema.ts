@@ -47,7 +47,8 @@ export const GuildConfigSchema = z.object({
     logging: z
         .object({
             enabled: z.boolean().default(false),
-            primary_channel: zSnowflake.optional()
+            primary_channel: zSnowflake.optional(),
+            message_logging_channel: zSnowflake.optional()
         })
         .optional(),
     message_filter: z

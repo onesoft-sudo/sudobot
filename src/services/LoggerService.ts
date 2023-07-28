@@ -20,7 +20,11 @@
 import { formatDistanceToNowStrict } from "date-fns";
 import {
     APIEmbedField,
+    ActionRowBuilder,
+    AttachmentBuilder,
     BanOptions,
+    ButtonBuilder,
+    ButtonStyle,
     ColorResolvable,
     Colors,
     EmbedBuilder,
@@ -28,21 +32,29 @@ import {
     Guild,
     GuildChannel,
     GuildMember,
+    Message,
     MessageCreateOptions,
     MessagePayload,
+    MessageType,
     TextChannel,
     User,
     escapeMarkdown
 } from "discord.js";
 import Service from "../core/Service";
+import { NotUndefined } from "../types/NotUndefined";
 import { logError } from "../utils/logger";
 import { isTextableChannel } from "../utils/utils";
+import { GuildConfig } from "./ConfigManager";
 
 export const name = "logger";
 
+type LoggingChannelType = Exclude<keyof NotUndefined<GuildConfig["logging"]>, "enabled">;
+
 export default class LoggerService extends Service {
-    private async send(guild: Guild, options: string | MessagePayload | MessageCreateOptions) {
-        const channelId = this.client.configManager.config[guild.id]?.logging?.primary_channel;
+    private async send(guild: Guild, options: string | MessagePayload | MessageCreateOptions, channel?: LoggingChannelType) {
+        const channelId =
+            this.client.configManager.config[guild.id]?.logging?.[channel ?? "primary_channel"] ??
+            this.client.configManager.config[guild.id]?.logging?.primary_channel;
         const enabled = this.client.configManager.config[guild.id]?.logging?.enabled;
 
         if (!enabled || !channelId) return null;
@@ -119,11 +131,130 @@ export default class LoggerService extends Service {
         return embed;
     }
 
-    private async sendLogEmbed(guild: Guild, options: CreateLogEmbedOptions, extraOptions?: MessagePayload | MessageCreateOptions) {
-        return await this.send(guild, {
-            embeds: [this.createLogEmbed(options)],
-            ...((extraOptions as any) ?? {})
-        });
+    private async sendLogEmbed(
+        guild: Guild,
+        options: CreateLogEmbedOptions,
+        extraOptions?: MessagePayload | MessageCreateOptions,
+        channel?: LoggingChannelType
+    ) {
+        return await this.send(
+            guild,
+            {
+                embeds: [this.createLogEmbed(options)],
+                ...((extraOptions as any) ?? {})
+            },
+            channel
+        );
+    }
+
+    async logMessageEdit(oldMessage: Message, newMessage: Message) {
+        const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+            new ButtonBuilder()
+                .setStyle(ButtonStyle.Link)
+                .setLabel("Go to context")
+                .setURL(`https://discord.com/channels/${newMessage.guildId!}/${newMessage.channelId!}/${newMessage.id}`)
+        );
+
+        if (newMessage.type === MessageType.Reply)
+            row.addComponents(
+                new ButtonBuilder()
+                    .setStyle(ButtonStyle.Link)
+                    .setLabel("Go to referenced message")
+                    .setURL(`https://discord.com/channels/${newMessage.guildId!}/${newMessage.channelId!}/${newMessage.reference!.messageId}`)
+            );
+
+        await this.sendLogEmbed(
+            newMessage.guild!,
+            {
+                title: "Message Updated",
+                user: newMessage.author,
+                options: {
+                    description: `**-+-+Before**\n${oldMessage.content}\n\n**-+-+After**\n${newMessage.content}`
+                },
+                fields: [
+                    {
+                        name: "User",
+                        value: `${newMessage.author.toString()}\nUsername: ${newMessage.author.username}\nID: ${newMessage.author.id})`
+                    },
+                    {
+                        name: "Channel",
+                        value: `${newMessage.channel.toString()}\nName: ${(newMessage.channel as TextChannel).name}\nID: ${newMessage.channel.id})`
+                    },
+                    {
+                        name: "Message",
+                        value: `Link: [Click here](${`https://discord.com/channels/${newMessage.guildId!}/${newMessage.channelId!}/${
+                            newMessage.id
+                        }`})\nID: ${newMessage.id}`
+                    }
+                ],
+                footerText: "Updated"
+            },
+            {
+                components: [row]
+            },
+            "message_logging_channel"
+        );
+    }
+
+    async logMessageDelete(message: Message) {
+        const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+            new ButtonBuilder()
+                .setStyle(ButtonStyle.Link)
+                .setLabel("Go to context")
+                .setURL(`https://discord.com/channels/${message.guildId!}/${message.channelId!}/${message.id}`)
+        );
+
+        if (message.type === MessageType.Reply)
+            row.addComponents(
+                new ButtonBuilder()
+                    .setStyle(ButtonStyle.Link)
+                    .setLabel("Go to referenced message")
+                    .setURL(`https://discord.com/channels/${message.guildId!}/${message.channelId!}/${message.reference!.messageId}`)
+            );
+
+        await this.sendLogEmbed(
+            message.guild!,
+            {
+                title: "Message Deleted",
+                color: Colors.Red,
+                user: message.author,
+                options: {
+                    description: message.content
+                },
+                fields: [
+                    {
+                        name: "User",
+                        value: `${message.author.toString()}\nUsername: ${message.author.username}\nID: ${message.author.id})`
+                    },
+                    {
+                        name: "Channel",
+                        value: `${message.channel.toString()}\nName: ${(message.channel as TextChannel).name}\nID: ${message.channel.id})`
+                    },
+                    {
+                        name: "Message",
+                        value: `Link: [Click here](${`https://discord.com/channels/${message.guildId!}/${message.channelId!}/${message.id}`})\nID: ${
+                            message.id
+                        }`
+                    }
+                ],
+                footerText: "Deleted"
+            },
+            {
+                components: [row],
+                files: [
+                    ...message.attachments
+                        .map(
+                            a =>
+                                ({
+                                    attachment: a.proxyURL,
+                                    name: a.name
+                                } as AttachmentBuilder)
+                        )
+                        .values()
+                ]
+            },
+            "message_logging_channel"
+        );
     }
 
     async logRaid({ guild, action }: { guild: Guild; action: string }) {
