@@ -1,3 +1,12 @@
+## [5.1.1](https://github.com/onesoft-sudo/sudobot/compare/v5.1.0...v5.1.1) (2023-07-28)
+
+
+### Bug Fixes
+
+* ensure the best security ([561b31d](https://github.com/onesoft-sudo/sudobot/commit/561b31dfe322dede3aadc31c506e4b9d91ca7cd1))
+
+
+
 # [5.1.0](https://github.com/onesoft-sudo/sudobot/compare/v5.0.0...v5.1.0) (2023-07-28)
 
 
@@ -42,21 +51,6 @@
 ### Features
 
 * add anti join systems ([27ff091](https://github.com/onesoft-sudo/sudobot/commit/27ff091947928db7319b3c03b1470f76eaffe361))
-
-
-
-# [4.133.0](https://github.com/onesoft-sudo/sudobot/compare/v4.132.1...v4.133.0) (2023-07-27)
-
-
-### Bug Fixes
-
-* anti raid systems and logging ([28474dc](https://github.com/onesoft-sudo/sudobot/commit/28474dc35b3413e52109b2aece222ed84dc771c9))
-
-
-### Features
-
-* add anti raid systems ([4b5fed9](https://github.com/onesoft-sudo/sudobot/commit/4b5fed9ed53997fad47317558ec3c72662423167))
-* add channel lock manager ([f776e71](https://github.com/onesoft-sudo/sudobot/commit/f776e71e97d66c8e96c452d8868d866106546115))
 
 
 
