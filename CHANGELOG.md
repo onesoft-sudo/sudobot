@@ -1,3 +1,17 @@
+# [5.4.0](https://github.com/onesoft-sudo/sudobot/compare/v5.3.0...v5.4.0) (2023-07-28)
+
+
+### Bug Fixes
+
+* emojis are not visible ([87943b4](https://github.com/onesoft-sudo/sudobot/commit/87943b44a59994b9a287302b565bd2faca0d242a))
+
+
+### Features
+
+* add snippet file pushing support and randomization support ([3e8bd9f](https://github.com/onesoft-sudo/sudobot/commit/3e8bd9fdf1a48dec479e6c2dbd56083acd529360))
+
+
+
 # [5.3.0](https://github.com/onesoft-sudo/sudobot/compare/v5.2.1...v5.3.0) (2023-07-28)
 
 
@@ -37,20 +51,6 @@
 ### Bug Fixes
 
 * ensure the best security ([561b31d](https://github.com/onesoft-sudo/sudobot/commit/561b31dfe322dede3aadc31c506e4b9d91ca7cd1))
-
-
-
-# [5.1.0](https://github.com/onesoft-sudo/sudobot/compare/v5.0.0...v5.1.0) (2023-07-28)
-
-
-### Bug Fixes
-
-* message filter not ignoring staff ([f7b8f7f](https://github.com/onesoft-sudo/sudobot/commit/f7b8f7f1fa86fb5a1202cc736049e50a4fbdfe2b))
-
-
-### Features
-
-* **automod:** add profile filter ([1cd5d21](https://github.com/onesoft-sudo/sudobot/commit/1cd5d2105bae24bb855b11b97f8b8bd09f62b14c))
 
 
 
