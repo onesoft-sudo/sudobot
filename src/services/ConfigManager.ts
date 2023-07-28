@@ -18,11 +18,11 @@
  */
 
 import fs, { writeFile } from "fs/promises";
-import path from "path";
 import { z } from "zod";
 import Service from "../core/Service";
 import { GuildConfigSchema } from "../types/GuildConfigSchema";
 import { SystemConfig, SystemConfigSchema } from "../types/SystemConfigSchema";
+import { sudoPrefix } from "../utils/utils";
 
 export * from "../types/GuildConfigSchema";
 
@@ -32,8 +32,8 @@ export const GuildConfigContainerSchema = z.record(z.string(), GuildConfigSchema
 export type GuildConfigContainer = z.infer<typeof GuildConfigContainerSchema>;
 
 export default class ConfigManager extends Service {
-    protected configPath = path.resolve(__dirname, "../../config/config.json");
-    protected systemConfigPath = path.resolve(__dirname, "../../config/system.json");
+    protected configPath = sudoPrefix("config/config.json");
+    protected systemConfigPath = sudoPrefix("config/system.json");
     protected configSchemaPath = "";
 
     config: GuildConfigContainer = {} as GuildConfigContainer;
