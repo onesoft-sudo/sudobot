@@ -1,3 +1,17 @@
+# [5.5.0](https://github.com/onesoft-sudo/sudobot/compare/v5.4.1...v5.5.0) (2023-07-28)
+
+
+### Bug Fixes
+
+* welcomer ([618539e](https://github.com/onesoft-sudo/sudobot/commit/618539ea25ec9e09a2aac0e6d03a8df8b8d52a24))
+
+
+### Features
+
+* message logging support ([41c5f8a](https://github.com/onesoft-sudo/sudobot/commit/41c5f8ac15151a0c5a7153b03235d319509dd07a))
+
+
+
 ## [5.4.1](https://github.com/onesoft-sudo/sudobot/compare/v5.4.0...v5.4.1) (2023-07-28)
 
 
@@ -37,20 +51,6 @@
 
 * add command metadata ([8e80fdd](https://github.com/onesoft-sudo/sudobot/commit/8e80fddc509ba4f6c042739adff0175e77ef46b6))
 * deploy script not working with npm scripts ([33bfccf](https://github.com/onesoft-sudo/sudobot/commit/33bfccf351e9fc81e00dd2a3291d4b33a855b813))
-
-
-
-# [5.2.0](https://github.com/onesoft-sudo/sudobot/compare/v5.1.1...v5.2.0) (2023-07-28)
-
-
-### Bug Fixes
-
-* permission issues ([af522ea](https://github.com/onesoft-sudo/sudobot/commit/af522ea208f4ff51278c9bd8a040b9b3fd4a5088))
-
-
-### Features
-
-* add note management commands ([45bcda7](https://github.com/onesoft-sudo/sudobot/commit/45bcda7502512e2c2b66fbfc3367e015a45ade43))
 
 
 
