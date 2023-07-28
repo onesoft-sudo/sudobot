@@ -127,7 +127,7 @@ export const GuildConfigSchema = z.object({
                 .default(5 * 60_000),
             channel: zSnowflake,
             embed: z.boolean().optional().default(true),
-            color: z.number().int().min(0x000000).max(0xffffff).default(0x007bff)
+            color: z.number().int().min(0x000000).max(0xffffff).default(0x007bff).or(z.string().startsWith("#"))
         })
         .optional(),
     profile_filter: z

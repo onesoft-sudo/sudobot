@@ -38,7 +38,7 @@
             "randomize": true,
             "mention": true,
             "say_hi_button": true,
-            "say_hi_emoji": "default",
+            "say_hi_emoji": "rakin",
             "say_hi_expire_after": 10000
         },
         "antiraid": {

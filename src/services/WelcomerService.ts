@@ -18,7 +18,7 @@
  */
 
 import { formatDistanceToNowStrict } from "date-fns";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, GuildMember, Interaction, time } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ColorResolvable, EmbedBuilder, GuildMember, Interaction, time } from "discord.js";
 import { readFile } from "fs/promises";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
@@ -61,7 +61,13 @@ export default class WelcomerService extends Service {
 
             if (!channel.isTextBased()) return;
 
-            const actionRow = say_hi_button ? [this.generateActionRow(member.user.id, welcomer)] : undefined;
+            const actionRow = say_hi_button
+                ? [
+                      this.generateActionRow(member.user.id, {
+                          say_hi_emoji: welcomer.say_hi_emoji
+                      })
+                  ]
+                : undefined;
 
             const reply = await channel.send({
                 content: `${mention ? member.user.toString() + "\n" : ""}${!embed ? this.generateContent(member, welcomer) : ""}`,
@@ -151,13 +157,15 @@ export default class WelcomerService extends Service {
     }
 
     generateActionRow(memberId: string, { say_hi_emoji }: Pick<NotUndefined<GuildConfig["welcomer"]>, "say_hi_emoji">) {
-        return new ActionRowBuilder<ButtonBuilder>().addComponents(
-            new ButtonBuilder()
-                .setCustomId(`welcomer_say_hi__${memberId}`)
-                .setEmoji(!say_hi_emoji || say_hi_emoji === "default" ? "👋" : say_hi_emoji)
-                .setLabel("Say Hi!")
-                .setStyle(ButtonStyle.Secondary)
-        );
+        const emoji =
+            !say_hi_emoji || say_hi_emoji === "default"
+                ? "👋"
+                : this.client.emojis.cache.find(e => e.name === say_hi_emoji || e.identifier === say_hi_emoji);
+        const button = new ButtonBuilder().setCustomId(`welcomer_say_hi__${memberId}`).setLabel("Say Hi!").setStyle(ButtonStyle.Secondary);
+
+        if (emoji) button.setEmoji(emoji.toString());
+
+        return new ActionRowBuilder<ButtonBuilder>().addComponents(button);
     }
 
     pickRandomWelcomeMessage() {
@@ -188,8 +196,9 @@ export default class WelcomerService extends Service {
             description: this.generateContent(member, welcomer),
             footer: {
                 text: "Welcome"
-            },
-            color: welcomer.color
-        }).setTimestamp();
+            }
+        })
+            .setColor(welcomer.color as ColorResolvable)
+            .setTimestamp();
     }
 }
