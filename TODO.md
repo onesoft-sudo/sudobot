@@ -5,3 +5,4 @@
 * Start working on AutoMod
 * Performance optimizations (https://shitcorp.github.io/Discord-Bots-At-Scale/)
 * Improved permission system
+* Check role position before taking moderation action (e.g. ban, kick)

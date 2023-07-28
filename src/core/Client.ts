@@ -26,6 +26,7 @@ import type Antijoin from "../automod/Antijoin";
 import type Antiraid from "../automod/Antiraid";
 import type Antispam from "../automod/Antispam";
 import type MessageFilter from "../automod/MessageFilter";
+import type ProfileFilter from "../automod/ProfileFilter";
 import { SuppressErrorsMetadata } from "../decorators/SuppressErrors";
 import type ChannelLockManager from "../services/ChannelLockManager";
 import type CommandManager from "../services/CommandManager";
@@ -58,7 +59,8 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@automod/MessageFilter",
         "@automod/Antispam",
         "@automod/Antiraid",
-        "@automod/Antijoin"
+        "@automod/Antijoin",
+        "@automod/ProfileFilter"
     ];
 
     commandsDirectory = path.resolve(__dirname, "../commands");
@@ -78,6 +80,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     antiraid: Antiraid = {} as Antiraid;
     channelLockManager: ChannelLockManager = {} as ChannelLockManager;
     antijoin: Antijoin = {} as Antijoin;
+    profileFilter: ProfileFilter = {} as ProfileFilter;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",

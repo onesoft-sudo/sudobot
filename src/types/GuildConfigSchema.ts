@@ -126,6 +126,29 @@ export const GuildConfigSchema = z.object({
             embed: z.boolean().optional().default(true),
             color: z.number().int().min(0x000000).max(0xffffff).default(0x007bff)
         })
+        .optional(),
+    profile_filter: z
+        .object({
+            enabled: z.boolean().optional().default(false),
+            scan: z.array(z.literal("status").or(z.literal("nickname")).or(z.literal("username"))).default([]),
+            actions: z
+                .object({
+                    status: z.literal("mute").or(z.literal("warn")).or(z.literal("none")).default("none"),
+                    nickname: z.literal("mute").or(z.literal("warn")).or(z.literal("none")).default("none"),
+                    username: z.literal("mute").or(z.literal("warn")).or(z.literal("none")).default("none")
+                })
+                .default({})
+                .optional(),
+            inherit_from_message_filter: z
+                .object({
+                    tokens: z.boolean().optional().default(false),
+                    words: z.boolean().optional().default(false)
+                })
+                .default({})
+                .optional(),
+            tokens: z.array(z.string()).default([]).optional(),
+            words: z.array(z.string()).default([]).optional()
+        })
         .optional()
 });
 
