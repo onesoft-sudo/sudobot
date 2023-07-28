@@ -33,6 +33,7 @@ import type CommandManager from "../services/CommandManager";
 import type ConfigManager from "../services/ConfigManager";
 import type InfractionManager from "../services/InfractionManager";
 import type LoggerService from "../services/LoggerService";
+import type PermissionManager from "../services/PermissionManager";
 import type QueueManager from "../services/QueueManager";
 import type SnippetManager from "../services/SnippetManager";
 import type WelcomerService from "../services/WelcomerService";
@@ -55,6 +56,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@services/WelcomerService",
         "@services/SnippetManager",
         "@services/ChannelLockManager",
+        "@services/PermissionManager",
 
         "@automod/MessageFilter",
         "@automod/Antispam",
@@ -81,6 +83,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     channelLockManager: ChannelLockManager = {} as ChannelLockManager;
     antijoin: Antijoin = {} as Antijoin;
     profileFilter: ProfileFilter = {} as ProfileFilter;
+    permissionManager: PermissionManager = {} as PermissionManager;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",

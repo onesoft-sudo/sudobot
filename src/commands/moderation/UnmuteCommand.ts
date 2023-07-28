@@ -1,21 +1,21 @@
 /**
-* This file is part of SudoBot.
-* 
-* Copyright (C) 2021-2023 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by 
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-* 
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License 
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2023 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 import { GuildMember, PermissionsBitField, SlashCommandBuilder, escapeMarkdown } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
@@ -45,16 +45,16 @@ export default class UnmuteCommand extends Command {
 
     public readonly description = "Unmutes a server member.";
     public readonly detailedDscription = "This command unmutes a server member. The muted role needs to be configured for this command to work!";
-    public readonly argumentSyntaxes = [
-        "<UserID|UserMention> [reason]",
-    ];
+    public readonly argumentSyntaxes = ["<UserID|UserMention> [reason]"];
 
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.ModerateMembers];
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addUserOption(option => option.setName('member').setDescription("The member").setRequired(true))
-        .addStringOption(option => option.setName('reason').setDescription("The reason for unmuting this user"))
-        .addBooleanOption(option => option.setName('silent').setDescription("Specify if the system should not notify the user about this action. Defaults to false"));
+        .addUserOption(option => option.setName("member").setDescription("The member").setRequired(true))
+        .addStringOption(option => option.setName("reason").setDescription("The reason for unmuting this user"))
+        .addBooleanOption(option =>
+            option.setName("silent").setDescription("Specify if the system should not notify the user about this action. Defaults to false")
+        );
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         const member: GuildMember = context.isLegacy ? context.parsedNamedArgs.member : context.options.getMember("member");
@@ -68,15 +68,22 @@ export default class UnmuteCommand extends Command {
         }
 
         await this.deferIfInteraction(message);
-        const reason: string | undefined = (!context.isLegacy ? context.options.getString('reason') : context.parsedNamedArgs.reason) ?? undefined;
+        const reason: string | undefined = (!context.isLegacy ? context.options.getString("reason") : context.parsedNamedArgs.reason) ?? undefined;
 
-        const { id } = <any>await this.client.infractionManager.removeMemberMute(member, {
-            guild: message.guild!,
-            moderator: this.client.user!,
-            notifyUser: !context.isLegacy ? !context.options.getBoolean('silent') ?? true : true,
-            reason,
-            sendLog: true,
-        }).catch(logError);
+        if (!this.client.permissionManager.shouldModerate(member, message.member! as GuildMember)) {
+            await this.error(message, "You don't have permission to unmute this user!");
+            return;
+        }
+
+        const { id } = <any>await this.client.infractionManager
+            .removeMemberMute(member, {
+                guild: message.guild!,
+                moderator: this.client.user!,
+                notifyUser: !context.isLegacy ? !context.options.getBoolean("silent") ?? true : true,
+                reason,
+                sendLog: true
+            })
+            .catch(logError);
 
         if (!id) {
             await this.error(message);

@@ -29,7 +29,8 @@ export const GuildConfigSchema = z.object({
     permissions: z
         .object({
             mod_role: zSnowflake.optional(),
-            admin_role: zSnowflake.optional()
+            admin_role: zSnowflake.optional(),
+            staff_role: zSnowflake.optional()
         })
         .optional()
         .default({}),

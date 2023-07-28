@@ -18,9 +18,10 @@
  */
 
 import { InfractionType } from "@prisma/client";
-import { ChatInputCommandInteraction, PermissionsBitField } from "discord.js";
+import { ChatInputCommandInteraction, GuildMember, PermissionsBitField } from "discord.js";
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 import { ChatInputCommandContext } from "../../services/CommandManager";
+import { logError } from "../../utils/logger";
 import { stringToTimeInterval } from "../../utils/utils";
 
 export default class InfractionCreateCommand extends Command {
@@ -52,6 +53,17 @@ export default class InfractionCreateCommand extends Command {
         }
 
         await interaction.deferReply();
+
+        try {
+            const member = interaction.guild!.members.cache.get(user.id) ?? (await interaction.guild!.members.fetch(user.id));
+
+            if (!this.client.permissionManager.shouldModerate(member, interaction.member! as GuildMember)) {
+                await this.error(interaction, "You don't have permission to create infractions for this user!");
+                return;
+            }
+        } catch (e) {
+            logError(e);
+        }
 
         const infraction = await this.client.prisma.infraction.create({
             data: {

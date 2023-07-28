@@ -18,9 +18,9 @@
  */
 
 import { formatDistanceToNow, formatDistanceToNowStrict } from "date-fns";
-import { PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
+import { GuildMember, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { log } from "../../utils/logger";
+import { log, logError } from "../../utils/logger";
 import { createModerationEmbed, stringToTimeInterval } from "../../utils/utils";
 
 export default class TempBanCommand extends Command {
@@ -137,6 +137,17 @@ export default class TempBanCommand extends Command {
             }
 
             messageDeletionTimeframe = result;
+        }
+
+        try {
+            const member = message.guild!.members.cache.get(user.id) ?? (await message.guild!.members.fetch(user.id));
+
+            if (!this.client.permissionManager.shouldModerate(member, message.member! as GuildMember)) {
+                await this.error(message, "You don't have permission to ban this user!");
+                return;
+            }
+        } catch (e) {
+            logError(e);
         }
 
         const id = await this.client.infractionManager.createUserBan(user, {

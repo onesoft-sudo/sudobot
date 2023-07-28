@@ -1,38 +1,24 @@
 /*
-* This file is part of SudoBot.
-* 
-* Copyright (C) 2021-2023 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by 
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-* 
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License 
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2023 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
-import {
-    Channel,
-    ChatInputCommandInteraction,
-    Message,
-    PermissionsBitField,
-    SlashCommandBuilder,
-    TextChannel,
-    User
-} from "discord.js";
-import Command, {
-    AnyCommandContext,
-    ArgumentType,
-    CommandMessage,
-    CommandReturn,
-    ValidationRule
-} from "../../core/Command";
+import { Channel, ChatInputCommandInteraction, GuildMember, Message, PermissionsBitField, SlashCommandBuilder, TextChannel, User } from "discord.js";
+import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { logError } from "../../utils/logger";
 import { isTextableChannel } from "../../utils/utils";
 
@@ -65,48 +51,67 @@ export default class ClearCommand extends Command {
             entityNotNull: true,
             entityNotNullErrorMessage: "This channel does not exist! If it's an ID, make sure it's correct!",
             name: "channel",
-            typeErrorMessage: "Please specify a valid text channel at position 3!",
+            typeErrorMessage: "Please specify a valid text channel at position 3!"
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.ManageMessages];
 
     public readonly description = "Clear messages in bulk.";
-    public readonly detailedDscription = "This command clears messages in bulk, by user or by count or both. This operation may take some time to complete.";
-    public readonly argumentSyntaxes = [
-        "<count>",
-        "<UserID|UserMention> [count]",
-    ];
+    public readonly detailedDscription =
+        "This command clears messages in bulk, by user or by count or both. This operation may take some time to complete.";
+    public readonly argumentSyntaxes = ["<count>", "<UserID|UserMention> [count]"];
 
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.ManageMessages];
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addUserOption(option => option.setName('user').setDescription("The user"))
-        .addIntegerOption(option => option.setName('count').setDescription("The amount of messages to delete").setMaxValue(100).setMinValue(2))
-        .addChannelOption(option => option.setName('channel').setDescription("The channel where the messages will be deleted"));
+        .addUserOption(option => option.setName("user").setDescription("The user"))
+        .addIntegerOption(option => option.setName("count").setDescription("The amount of messages to delete").setMaxValue(100).setMinValue(2))
+        .addChannelOption(option => option.setName("channel").setDescription("The channel where the messages will be deleted"));
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
-        const count: number | undefined = !context.isLegacy ? context.options.getInteger('count') ?? undefined : (
-            typeof context.parsedNamedArgs.countOrUser === 'number' ? context.parsedNamedArgs.countOrUser : context.parsedNamedArgs.count
-        );
+        const count: number | undefined = !context.isLegacy
+            ? context.options.getInteger("count") ?? undefined
+            : typeof context.parsedNamedArgs.countOrUser === "number"
+            ? context.parsedNamedArgs.countOrUser
+            : context.parsedNamedArgs.count;
 
-        const user: User | undefined = !context.isLegacy ? context.options.getUser('user') ?? undefined : (
-            typeof context.parsedNamedArgs.countOrUser !== 'number' ? context.parsedNamedArgs.countOrUser : undefined
-        );
+        const user: User | undefined = !context.isLegacy
+            ? context.options.getUser("user") ?? undefined
+            : typeof context.parsedNamedArgs.countOrUser !== "number"
+            ? context.parsedNamedArgs.countOrUser
+            : undefined;
 
-        const channel: Channel | undefined = !context.isLegacy ? context.options.getChannel('channel') ?? undefined : context.parsedNamedArgs.channel ?? undefined;
+        const channel: Channel | undefined = !context.isLegacy
+            ? context.options.getChannel("channel") ?? undefined
+            : context.parsedNamedArgs.channel ?? undefined;
 
         if (channel && !isTextableChannel(channel)) {
             return {
                 __reply: true,
-                content: `${this.emoji('error')} The given channel is not a text channel`
+                content: `${this.emoji("error")} The given channel is not a text channel`
             };
         }
 
-        if ((!count && count !== 0) && !user) {
+        if (!count && count !== 0 && !user) {
             return {
                 __reply: true,
-                content: `${this.emoji('error')} Please specify a user or message count, otherwise the system cannot determine how many messages to delete!`
+                content: `${this.emoji(
+                    "error"
+                )} Please specify a user or message count, otherwise the system cannot determine how many messages to delete!`
             };
+        }
+
+        if (user) {
+            try {
+                const member = message.guild!.members.cache.get(user.id) ?? (await message.guild!.members.fetch(user.id));
+
+                if (!this.client.permissionManager.shouldModerate(member, message.member! as GuildMember)) {
+                    await this.error(message, "You don't have permission to clear messages from this user!");
+                    return;
+                }
+            } catch (e) {
+                logError(e);
+            }
         }
 
         if (message instanceof Message) {
@@ -126,7 +131,6 @@ export default class ClearCommand extends Command {
             count
         });
 
-        if (message instanceof ChatInputCommandInteraction)
-            await message.editReply(`${this.emoji('check')} Operation completed.`);
+        if (message instanceof ChatInputCommandInteraction) await message.editReply(`${this.emoji("check")} Operation completed.`);
     }
 }

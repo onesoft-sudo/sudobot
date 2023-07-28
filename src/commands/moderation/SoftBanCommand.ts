@@ -18,8 +18,9 @@
  */
 
 import { formatDistanceToNow } from "date-fns";
-import { PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
+import { GuildMember, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { logError } from "../../utils/logger";
 import { createModerationEmbed, stringToTimeInterval } from "../../utils/utils";
 
 export default class SoftBanCommand extends Command {
@@ -115,6 +116,17 @@ export default class SoftBanCommand extends Command {
         }
 
         messageDeletionTimeframe ??= 604800;
+
+        try {
+            const member = message.guild!.members.cache.get(user.id) ?? (await message.guild!.members.fetch(user.id));
+
+            if (!this.client.permissionManager.shouldModerate(member, message.member! as GuildMember)) {
+                await this.error(message, "You don't have permission to softban this user!");
+                return;
+            }
+        } catch (e) {
+            logError(e);
+        }
 
         const id = await this.client.infractionManager.createUserSoftban(user, {
             guild: message.guild!,
