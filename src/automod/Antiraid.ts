@@ -60,6 +60,8 @@ export default class Antiraid extends Service implements HasEventListeners {
                             ? "Turned on anti join system"
                             : config.action === "lock_and_antijoin"
                             ? "Locked the server and turned on anti join system"
+                            : config.action === "none"
+                            ? "None"
                             : "Automatic"
                 });
 

@@ -59,12 +59,13 @@ export default class PermissionManager extends Service {
 
         if (!config) return true;
 
-        const adminRole = config.permissions.admin_role;
+        const { admin_role, mod_role, staff_role } = config.permissions ?? {};
 
-        return (
-            (adminRole && member.roles.cache.has(adminRole)) ||
-            member.permissions.has(PermissionFlagsBits.ManageGuild, true) ||
-            (permission && member.permissions.has(permission, true))
-        );
+        if (member.roles.cache.hasAny(admin_role ?? "_", mod_role ?? "_", staff_role ?? "_")) {
+            log("Member has roles that are immune to automod");
+            return true;
+        }
+
+        return member.permissions.has(PermissionFlagsBits.ManageGuild, true) || (permission && member.permissions.has(permission, true));
     }
 }

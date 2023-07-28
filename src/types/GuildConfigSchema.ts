@@ -102,7 +102,9 @@ export const GuildConfigSchema = z.object({
             enabled: z.boolean().optional().default(false),
             max_joins: z.number().int().default(-1).optional(),
             timeframe: z.number().int().default(-1).optional(),
-            action: z.union([z.literal("auto"), z.literal("lock"), z.literal("antijoin"), z.literal("lock_and_antijoin")]).optional(),
+            action: z
+                .union([z.literal("auto"), z.literal("lock"), z.literal("antijoin"), z.literal("lock_and_antijoin"), z.literal("none")])
+                .optional(),
             send_log: z.boolean().optional().default(true),
             channels: z.array(zSnowflake).default([]),
             channel_mode: z.literal("exclude").or(z.literal("include")).default("exclude"),
