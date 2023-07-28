@@ -26,6 +26,8 @@ export default class DogCommand extends Command {
     public readonly validationRules: ValidationRule[] = [];
     public readonly permissions = [];
 
+    public readonly description = "Fetch a random doggy image";
+
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         if (!process.env.DOG_API_TOKEN) {
             await this.error(message, "Dog API token is not set. Please ask the system administrator to set the token.");

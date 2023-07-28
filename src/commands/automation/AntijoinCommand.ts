@@ -26,6 +26,8 @@ export default class AntijoinCommand extends Command {
     public readonly permissions = [PermissionsBitField.Flags.KickMembers];
     public readonly aliases = ["raidmode"];
 
+    public readonly description = "Turn anti join mode on or off";
+
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         const enabled = this.client.antijoin.toggle(message.guild!);
 
