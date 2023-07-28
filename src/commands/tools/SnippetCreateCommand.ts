@@ -65,7 +65,7 @@ export default class SnippetCreateCommand extends Command {
         log("Name: " + name);
         log("Content: " + content);
 
-        const { error, snippet } = await this.client.snippetManager.createSnippet({
+        const { error } = await this.client.snippetManager.createSnippet({
             name,
             content,
             channels: [],
@@ -73,7 +73,8 @@ export default class SnippetCreateCommand extends Command {
             roles: [],
             users: [],
             userId: message.member!.user.id,
-            attachments: message instanceof Message ? [...message.attachments.values()] : undefined
+            attachments: message instanceof Message ? [...message.attachments.values()] : undefined,
+            randomize: context.isLegacy ? false : context.options.getBoolean("randomize") ?? false
         });
 
         if (error) {

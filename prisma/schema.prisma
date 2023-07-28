@@ -76,7 +76,8 @@ model Snippet {
     channels    String[] @default([])
     users       String[] @default([])
     attachments String[] @default([])
-    content     String?
+    content     String[] @default([])
+    randomize   Boolean  @default(false)
     createdAt   DateTime @default(now())
     updatedAt   DateTime @default(now()) @updatedAt
 

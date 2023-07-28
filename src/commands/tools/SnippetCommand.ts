@@ -21,7 +21,7 @@ import { PermissionsBitField, SlashCommandBuilder, escapeCodeBlock, escapeInline
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class SnippetCommand extends Command {
-    public readonly subcommands = ["list", "create", "delete", "rename"];
+    public readonly subcommands = ["list", "create", "delete", "rename", "randomize", "pushfile", "pushfiles"];
     public readonly name = "snippet";
     public readonly validationRules: ValidationRule[] = [
         {
