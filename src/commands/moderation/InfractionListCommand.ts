@@ -69,8 +69,12 @@ export default class InfractionListCommand extends Command {
                     description += `**ID**: \`${infraction.id}\`\n`;
                     description += `Responsible Moderator: <@${infraction.moderatorId}>\n`;
                     description += `Reason:\n${infraction.reason ? `\`\`\`\n${infraction.reason}\n\`\`\`` : "*No reason provided*"}\n`;
-                    description += `Created at: ${infraction.createdAt} (${formatDistanceToNowStrict(infraction.createdAt, { addSuffix: true })})\n`;
-                    description += `Updated at: ${infraction.updatedAt} (${formatDistanceToNowStrict(infraction.updatedAt, { addSuffix: true })})\n`;
+                    description += `Created at: ${infraction.createdAt.toLocaleString()} (${formatDistanceToNowStrict(infraction.createdAt, {
+                        addSuffix: true
+                    })})\n`;
+                    description += `Updated at: ${infraction.updatedAt.toLocaleString()} (${formatDistanceToNowStrict(infraction.updatedAt, {
+                        addSuffix: true
+                    })})\n`;
                     description += `\n`;
                 }
 
