@@ -19,17 +19,11 @@
 
 import { ClientEvents, GuildMember } from "discord.js";
 import Event from "../../core/Event";
-import { logError } from "../../utils/logger";
 
-export default class GuildMemberAddEvent extends Event {
-    public name: keyof ClientEvents = "guildMemberAdd";
+export default class GuildMemberRemoveEvent extends Event {
+    public name: keyof ClientEvents = "guildMemberRemove";
 
     async execute(member: GuildMember) {
-        await this.client.logger.logGuildMemberAdd(member);
-
-        if (this.client.antijoin.map.get(member.guild.id)) {
-            await member.kick("Anti join system is enabled").catch(logError);
-            return;
-        }
+        await this.client.logger.logGuildMemberRemove(member);
     }
 }

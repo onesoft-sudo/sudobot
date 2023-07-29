@@ -38,7 +38,9 @@ import {
     MessageType,
     TextChannel,
     User,
-    escapeMarkdown
+    escapeMarkdown,
+    roleMention,
+    time
 } from "discord.js";
 import Service from "../core/Service";
 import { NotUndefined } from "../types/NotUndefined";
@@ -144,6 +146,104 @@ export default class LoggerService extends Service {
                 ...((extraOptions as any) ?? {})
             },
             channel
+        );
+    }
+
+    /*
+     * Logging methods.
+     */
+
+    async logGuildMemberAdd(member: GuildMember) {
+        let members = 0,
+            bots = 0;
+
+        for (const [, m] of member.guild.members.cache) {
+            if (m.user.bot) bots++;
+            else members++;
+        }
+
+        await this.sendLogEmbed(
+            member.guild,
+            {
+                title: "New member joined",
+                user: member.user,
+                color: 0x007bff,
+                options: {
+                    description: `${member.user.toString()} just joined the server!`
+                },
+                fields: [
+                    {
+                        name: "New Account?",
+                        value: Date.now() - member.user.createdTimestamp < 3 * 24 * 60 * 60 * 1000 ? ":warning: Yes" : "No",
+                        inline: true
+                    },
+                    {
+                        name: "Bot?",
+                        value: member.user.bot ? "Yes" : "No",
+                        inline: true
+                    },
+                    {
+                        name: "Account Created At",
+                        value: `${member.user.createdAt.toLocaleString()} (${time(member.user.createdTimestamp)})`
+                    },
+                    {
+                        name: "User Information",
+                        value: `Username: ${member.user.username}\nMention: ${member.user.toString()}\nID: ${member.user.id}`,
+                        inline: true
+                    },
+                    {
+                        name: "Positions",
+                        value: `Among all members: ${members + bots}th\nAmong the human members: ${members}th\nAmong the bots: ${bots}th`,
+                        inline: true
+                    }
+                ],
+                footerText: `Joined • ${
+                    member.guild.members.cache.size >= member.guild.memberCount ? member.guild.members.cache.size : member.guild.memberCount
+                } members total`
+            },
+            undefined,
+            "join_leave_channel"
+        );
+    }
+
+    async logGuildMemberRemove(member: GuildMember) {
+        await this.sendLogEmbed(
+            member.guild,
+            {
+                title: "Member left",
+                user: member.user,
+                color: 0xf14a60,
+                fields: [
+                    {
+                        name: "Roles",
+                        value:
+                            member.roles.cache.size === 1
+                                ? "**No roles**"
+                                : member.roles.cache
+                                      .filter(role => role.id !== member.guild.id)
+                                      .sort((m1, m2) => m2.position - m1.position)
+                                      .reduce((acc, role) => `${acc} ${roleMention(role.id)}`, "")
+                    },
+                    {
+                        name: "Joined At",
+                        value: `${member.joinedAt!.toLocaleString()} (${time(member.joinedTimestamp!)})`
+                    },
+                    {
+                        name: "User Information",
+                        value: `Username: ${member.user.username}\nMention: ${member.user.toString()}\nID: ${member.user.id}`
+                    },
+                    {
+                        name: "Bot?",
+                        value: member.user.bot ? "Yes" : "No",
+                        inline: true
+                    }
+                ],
+                footerText: `Left • ${
+                    member.guild.members.cache.size >= member.guild.memberCount ? member.guild.members.cache.size : member.guild.memberCount
+                } members total`
+            },
+            undefined,
+            "join_leave_channel"
         );
     }
 
