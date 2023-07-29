@@ -1,3 +1,18 @@
+# [5.6.0](https://github.com/onesoft-sudo/sudobot/compare/v5.5.2...v5.6.0) (2023-07-29)
+
+
+### Bug Fixes
+
+* content option should be required in echo command ([680dd56](https://github.com/onesoft-sudo/sudobot/commit/680dd564af76f8fbab86cb597260b079ab70550f))
+* **snippets:** randomization option doesn't take effect till restart ([b2b220e](https://github.com/onesoft-sudo/sudobot/commit/b2b220e9ecb47717046d17901f4c32941a05b790))
+
+
+### Features
+
+* **welcomer:** delete welcome messages after certain period of time ([ba58fc9](https://github.com/onesoft-sudo/sudobot/commit/ba58fc949eb420aa2693a0103087968705d39e9e))
+
+
+
 ## [5.5.2](https://github.com/onesoft-sudo/sudobot/compare/v5.5.1...v5.5.2) (2023-07-29)
 
 
@@ -37,20 +52,6 @@
 ### Bug Fixes
 
 * welcomer config ([60a3aa8](https://github.com/onesoft-sudo/sudobot/commit/60a3aa890b1494c4bf375f4102b0304d96f05bdf))
-
-
-
-# [5.4.0](https://github.com/onesoft-sudo/sudobot/compare/v5.3.0...v5.4.0) (2023-07-28)
-
-
-### Bug Fixes
-
-* emojis are not visible ([87943b4](https://github.com/onesoft-sudo/sudobot/commit/87943b44a59994b9a287302b565bd2faca0d242a))
-
-
-### Features
-
-* add snippet file pushing support and randomization support ([3e8bd9f](https://github.com/onesoft-sudo/sudobot/commit/3e8bd9fdf1a48dec479e6c2dbd56083acd529360))
 
 
 
