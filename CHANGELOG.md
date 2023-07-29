@@ -1,3 +1,12 @@
+## [5.12.3](https://github.com/onesoft-sudo/sudobot/compare/v5.12.2...v5.12.3) (2023-07-29)
+
+
+### Bug Fixes
+
+* allow bot admins to take moderation actions ([908d1b2](https://github.com/onesoft-sudo/sudobot/commit/908d1b2286292ec2a1daaf4f1175c4f007b6be49))
+
+
+
 ## [5.12.2](https://github.com/onesoft-sudo/sudobot/compare/v5.12.1...v5.12.2) (2023-07-29)
 
 
@@ -33,20 +42,6 @@
 * infraction list and clear commands not working ([b1ed25c](https://github.com/onesoft-sudo/sudobot/commit/b1ed25c411585958ad54accbf3a8524e1a1e6d81))
 * infraction list and clear commands not working ([ae22c33](https://github.com/onesoft-sudo/sudobot/commit/ae22c33d9914c1504afb8a1a13f4953d174c5797))
 * list and clear infraction command ([3f74866](https://github.com/onesoft-sudo/sudobot/commit/3f74866a1a3c14b8ecdde5b8f1609a4e6281d6a9))
-
-
-
-# [5.11.0](https://github.com/onesoft-sudo/sudobot/compare/v5.10.0...v5.11.0) (2023-07-29)
-
-
-### Bug Fixes
-
-* paginator causing crashes ([5f799d3](https://github.com/onesoft-sudo/sudobot/commit/5f799d3e355af8e5d425fcc2950bcfbbfeb48f7a))
-
-
-### Features
-
-* **logger:** add timeout logs ([9aecc8c](https://github.com/onesoft-sudo/sudobot/commit/9aecc8c14a1d517dea6547113000e363f9258b71))
 
 
 
