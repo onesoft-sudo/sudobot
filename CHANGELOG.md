@@ -1,3 +1,12 @@
+# [5.10.0](https://github.com/onesoft-sudo/sudobot/compare/v5.9.0...v5.10.0) (2023-07-29)
+
+
+### Features
+
+* **logging:** log guild bans and unbans ([2f3c76c](https://github.com/onesoft-sudo/sudobot/commit/2f3c76c535feef51cec43977aee75bc82df7f69e))
+
+
+
 # [5.9.0](https://github.com/onesoft-sudo/sudobot/compare/v5.8.0...v5.9.0) (2023-07-29)
 
 
@@ -42,16 +51,6 @@
 ### Features
 
 * **welcomer:** delete welcome messages after certain period of time ([ba58fc9](https://github.com/onesoft-sudo/sudobot/commit/ba58fc949eb420aa2693a0103087968705d39e9e))
-
-
-
-## [5.5.2](https://github.com/onesoft-sudo/sudobot/compare/v5.5.1...v5.5.2) (2023-07-29)
-
-
-### Bug Fixes
-
-* config manager causing app crash ([9e27b7c](https://github.com/onesoft-sudo/sudobot/commit/9e27b7c9d727b1ef852fdd3a46f878b508c5b405))
-* invalid logs ([c0b3481](https://github.com/onesoft-sudo/sudobot/commit/c0b3481d8b1ef2dcaa436a0201489f7ee5fb4d02))
 
 
 
