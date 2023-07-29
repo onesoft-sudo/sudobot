@@ -1,3 +1,12 @@
+# [5.12.0](https://github.com/onesoft-sudo/sudobot/compare/v5.11.1...v5.12.0) (2023-07-29)
+
+
+### Features
+
+* allow infraction clear and list commands to be used in legacy mode ([e7bd648](https://github.com/onesoft-sudo/sudobot/commit/e7bd64862a0d495410a994066b247dba058e4d8e))
+
+
+
 ## [5.11.1](https://github.com/onesoft-sudo/sudobot/compare/v5.11.0...v5.11.1) (2023-07-29)
 
 
@@ -43,15 +52,6 @@
 ### Features
 
 * add the other logging methods ([287edf3](https://github.com/onesoft-sudo/sudobot/commit/287edf3f8e1a57ce34e9ec5f881e26744303f491))
-
-
-
-# [5.8.0](https://github.com/onesoft-sudo/sudobot/compare/v5.7.0...v5.8.0) (2023-07-29)
-
-
-### Features
-
-* add guild member add/remove logging support ([bb236f4](https://github.com/onesoft-sudo/sudobot/commit/bb236f416af6be2d62b1bd4b2aae27140a8d7342))
 
 
 
