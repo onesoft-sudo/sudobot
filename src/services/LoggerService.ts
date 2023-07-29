@@ -156,6 +156,52 @@ export default class LoggerService extends Service {
      * Logging methods.
      */
 
+    async logMemberTimeout(
+        member: GuildMember,
+        { reason, id, moderator }: Omit<CommonUserActionOptions, "guild" | "id"> & { reason?: string; id?: string | number }
+    ) {
+        await this.sendLogEmbed(member.guild, {
+            title: "Member timed-out",
+            color: Colors.Red,
+            user: member.user,
+            fields: [
+                {
+                    name: "Duration",
+                    value: formatDistanceToNowStrict(member.communicationDisabledUntil!)
+                },
+                {
+                    name: "User Information",
+                    value: `Username: ${member.user.username}\nMention: ${member.user.toString()}\nID: ${member.user.id}`
+                }
+            ],
+            footerText: "Timed-out",
+            reason,
+            id: id?.toString(),
+            moderator
+        });
+    }
+
+    async logMemberTimeoutRemove(
+        member: GuildMember,
+        { reason, id, moderator }: Omit<CommonUserActionOptions, "guild" | "id"> & { reason?: string; id?: string | number }
+    ) {
+        await this.sendLogEmbed(member.guild, {
+            title: "Member timeout removed",
+            color: Colors.Green,
+            user: member.user,
+            fields: [
+                {
+                    name: "User Information",
+                    value: `Username: ${member.user.username}\nMention: ${member.user.toString()}\nID: ${member.user.id}`
+                }
+            ],
+            footerText: "Timed-out removed",
+            reason,
+            id: id?.toString(),
+            moderator
+        });
+    }
+
     async logChannelCreate(channel: NonThreadGuildBasedChannel) {
         await this.sendLogEmbed(channel.guild, {
             title: "Channel Created",

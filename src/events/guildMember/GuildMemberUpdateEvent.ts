@@ -17,8 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ClientEvents, GuildMember } from "discord.js";
+import { InfractionType } from "@prisma/client";
+import { AuditLogEvent, ClientEvents, GuildMember } from "discord.js";
 import Event from "../../core/Event";
+import { logError } from "../../utils/logger";
 
 export default class GuildMemberUpdateEvent extends Event {
     public name: keyof ClientEvents = "guildMemberUpdate";
@@ -28,8 +30,74 @@ export default class GuildMemberUpdateEvent extends Event {
             await this.client.logger.logNicknameUpdate(oldMember, newMember);
         }
 
-        if (oldMember.roles.cache.difference(newMember.roles.cache).size > 0) {
+        if (!oldMember.roles.cache.equals(newMember.roles.cache)) {
             await this.client.logger.logMemberRoleUpdate(oldMember, newMember);
+        }
+
+        if (!oldMember.communicationDisabledUntil && newMember.communicationDisabledUntil) {
+            setTimeout(async () => {
+                try {
+                    const auditLog = (
+                        await newMember.guild.fetchAuditLogs({
+                            limit: 1,
+                            type: AuditLogEvent.MemberUpdate
+                        })
+                    ).entries.first();
+
+                    if (auditLog?.executor?.id && auditLog.executor.id !== this.client.user?.id) {
+                        const timeout = auditLog.changes.reverse().find(change => change.key === "communication_disabled_until");
+
+                        if (!timeout) return;
+
+                        const infraction = await this.client.prisma.infraction.create({
+                            data: {
+                                guildId: newMember.guild.id,
+                                moderatorId: auditLog.executor.id,
+                                type: InfractionType.TIMEOUT,
+                                userId: newMember.user.id,
+                                reason: auditLog.reason ?? undefined
+                            }
+                        });
+
+                        await this.client.logger.logMemberTimeout(newMember, {
+                            moderator: auditLog.executor,
+                            id: infraction.id.toString(),
+                            reason: auditLog.reason ?? undefined
+                        });
+                    }
+                } catch (e) {
+                    logError(e);
+                }
+            }, 3500);
+        } else if (oldMember.communicationDisabledUntil && !newMember.communicationDisabledUntil) {
+            setTimeout(async () => {
+                try {
+                    const auditLog = (
+                        await newMember.guild.fetchAuditLogs({
+                            limit: 1,
+                            type: AuditLogEvent.MemberUpdate
+                        })
+                    ).entries.first();
+
+                    if (auditLog?.executor?.id && auditLog.executor.id !== this.client.user?.id) {
+                        const infraction = await this.client.prisma.infraction.create({
+                            data: {
+                                guildId: newMember.guild.id,
+                                moderatorId: auditLog.executor.id,
+                                type: InfractionType.TIMEOUT_REMOVE,
+                                userId: newMember.user.id
+                            }
+                        });
+
+                        await this.client.logger.logMemberTimeoutRemove(newMember, {
+                            moderator: auditLog.executor,
+                            id: infraction.id.toString()
+                        });
+                    }
+                } catch (e) {
+                    logError(e);
+                }
+            }, 2000);
         }
     }
 }
