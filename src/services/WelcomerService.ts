@@ -31,6 +31,7 @@ export const name = "welcomer";
 
 export default class WelcomerService extends Service {
     welcomeMessages: string[] = [];
+    workingState = false;
 
     @GatewayEventListener("ready")
     async onReady() {
@@ -110,65 +111,88 @@ export default class WelcomerService extends Service {
 
         if (!interaction.guild?.id || !config.welcomer?.say_hi_button || !interaction.customId.startsWith(`welcomer_say_hi__`)) return;
 
+        if (this.workingState) {
+            await interaction[interaction.replied ? "followUp" : "reply"]({
+                content: `Whoa there! Please calm down! I had to ratelimit this request to prevent spam.`,
+                ephemeral: true
+            });
+
+            return;
+        }
+
+        this.workingState = true;
+
         const [, memberId, messageId] = interaction.customId.split("__");
         const saysHiToYou = ` says hi to you!`;
 
-        if (!messageId) {
-            const reply = await interaction.reply({
-                content: `${interaction.user.id === memberId ? "__You__" : interaction.user.toString()}${
-                    interaction.user.id === memberId ? " said hi to yourself!" : saysHiToYou
-                }`,
-                fetchReply: true
-            });
-
-            const newCustomId = `welcomer_say_hi__${memberId}__${reply.id}`;
-
-            const actionRow = this.generateActionRow(memberId, {
-                say_hi_emoji: config.welcomer?.say_hi_emoji!
-            });
-
-            actionRow.components[0].setCustomId(newCustomId);
-
-            await interaction.message.edit({
-                components: [actionRow]
-            });
-
-            if (config.welcomer.delete_messages) {
-                const time = interaction.message.createdAt.getTime() + config.welcomer.delete_messages - Date.now();
-
-                if (time > 1000) {
-                    setTimeout(() => {
-                        reply.delete().catch(logError);
-                    }, time);
-                }
-            }
-        } else {
-            try {
-                await interaction.deferUpdate();
-                const message = interaction.channel?.messages.cache.get(messageId) ?? (await interaction.channel?.messages.fetch(messageId));
-
-                if (!message) return;
-
-                if (
-                    (interaction.user.id === memberId && message.content.includes("__You__")) ||
-                    (interaction.user.id !== memberId && message.content.includes(`${interaction.user.toString()}`))
-                ) {
-                    await interaction.followUp({
-                        content: `You've already said hi to ${interaction.user.id === memberId ? "yourself!" : "the user!"}`,
-                        ephemeral: true
-                    });
-
-                    return;
-                }
-
-                await message.edit({
-                    content: `${message.content.replace(saysHiToYou, "").replace(" said hi to yourself!", "")}, ${
-                        interaction.user.id === memberId ? "__You__" : interaction.user.toString()
-                    }${saysHiToYou}`
+        try {
+            if (!messageId) {
+                const reply = await interaction.reply({
+                    content: `${interaction.user.id === memberId ? "__You__" : interaction.user.toString()}${
+                        interaction.user.id === memberId ? " said hi to yourself!" : saysHiToYou
+                    }`,
+                    fetchReply: true
                 });
-            } catch (e) {
-                logError(e);
+
+                const newCustomId = `welcomer_say_hi__${memberId}__${reply.id}`;
+
+                const actionRow = this.generateActionRow(memberId, {
+                    say_hi_emoji: config.welcomer?.say_hi_emoji!
+                });
+
+                actionRow.components[0].setCustomId(newCustomId);
+
+                await interaction.message.edit({
+                    components: [actionRow]
+                });
+
+                if (config.welcomer.delete_messages) {
+                    const time = interaction.message.createdAt.getTime() + config.welcomer.delete_messages - Date.now();
+
+                    if (time > 1000) {
+                        setTimeout(() => {
+                            reply.delete().catch(logError);
+                        }, time);
+                    }
+                }
+            } else {
+                try {
+                    await interaction.deferUpdate();
+                    const message = interaction.channel?.messages.cache.get(messageId) ?? (await interaction.channel?.messages.fetch(messageId));
+
+                    if (!message) {
+                        this.workingState = false;
+                        return;
+                    }
+
+                    if (
+                        (interaction.user.id === memberId && message.content.includes("__You__")) ||
+                        (interaction.user.id !== memberId && message.content.includes(`${interaction.user.toString()}`))
+                    ) {
+                        await interaction.followUp({
+                            content: `You've already said hi to ${interaction.user.id === memberId ? "yourself!" : "the user!"}`,
+                            ephemeral: true
+                        });
+
+                        this.workingState = false;
+                        return;
+                    }
+
+                    await message.edit({
+                        content: `${message.content.replace(saysHiToYou, "").replace(" said hi to yourself!", "")}, ${
+                            interaction.user.id === memberId ? "__You__" : interaction.user.toString()
+                        }${saysHiToYou}`
+                    });
+                } catch (e) {
+                    logError(e);
+                    this.workingState = false;
+                }
             }
+
+            this.workingState = false;
+        } catch (e) {
+            logError(e);
+            this.workingState = false;
         }
     }
 
