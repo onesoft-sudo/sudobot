@@ -53,7 +53,7 @@ export default class InfractionListCommand extends Command {
 
         const { count } = await this.client.prisma.infraction.deleteMany({
             where: {
-                id: parseInt(user.id),
+                userId: user.id,
                 guildId: message.guildId!,
                 type: type
                     ? {
