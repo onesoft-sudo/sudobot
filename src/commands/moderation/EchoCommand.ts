@@ -43,8 +43,8 @@ export default class EchoCommand extends Command {
 
     public readonly description = "Make the bot say something.";
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addChannelOption(option => option.setName("channel").setDescription("The channel where the message will be sent"))
-        .addStringOption(option => option.setName("content").setDescription("Message content"));
+        .addStringOption(option => option.setName("content").setDescription("Message content").setRequired(true))
+        .addChannelOption(option => option.setName("channel").setDescription("The channel where the message will be sent"));
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message, {
