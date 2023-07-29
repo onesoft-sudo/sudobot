@@ -1,3 +1,12 @@
+## [5.12.1](https://github.com/onesoft-sudo/sudobot/compare/v5.12.0...v5.12.1) (2023-07-29)
+
+
+### Bug Fixes
+
+* unexpected '(' in message logs ([7492548](https://github.com/onesoft-sudo/sudobot/commit/7492548cc88067c37c2212e6cd35c14df2ad1aab))
+
+
+
 # [5.12.0](https://github.com/onesoft-sudo/sudobot/compare/v5.11.1...v5.12.0) (2023-07-29)
 
 
@@ -38,20 +47,6 @@
 ### Features
 
 * **logging:** log guild bans and unbans ([2f3c76c](https://github.com/onesoft-sudo/sudobot/commit/2f3c76c535feef51cec43977aee75bc82df7f69e))
-
-
-
-# [5.9.0](https://github.com/onesoft-sudo/sudobot/compare/v5.8.0...v5.9.0) (2023-07-29)
-
-
-### Bug Fixes
-
-* fakebans should not send logs ([732deee](https://github.com/onesoft-sudo/sudobot/commit/732deeec3a84f0e10b21d02d4f0925cb4611aa1d))
-
-
-### Features
-
-* add the other logging methods ([287edf3](https://github.com/onesoft-sudo/sudobot/commit/287edf3f8e1a57ce34e9ec5f881e26744303f491))
 
 
 
