@@ -31,7 +31,7 @@ import {
     MessageEditOptions,
     MessageReplyOptions
 } from "discord.js";
-import * as uuid from 'uuid';
+import * as uuid from "uuid";
 import Client from "../core/Client";
 import { log } from "./logger";
 import { getEmoji } from "./utils";
@@ -71,11 +71,15 @@ export default class Pagination<T> {
         return this.options.embedBuilder({
             data: this.data ? data : this.currentData,
             currentPage: this.currentPage,
-            maxPages: Math.ceil((this.data?.length ?? this.maxPage) / this.options.limit),
+            maxPages: Math.ceil((this.data?.length ?? this.maxPage) / this.options.limit)
         });
     }
 
-    async getMessageOptions(page: number = 1, actionRowOptions: { first: boolean, last: boolean, next: boolean, back: boolean } | undefined = undefined, optionsToMerge: MessageOptions = {}) {
+    async getMessageOptions(
+        page: number = 1,
+        actionRowOptions: { first: boolean; last: boolean; next: boolean; back: boolean } | undefined = undefined,
+        optionsToMerge: MessageOptions = {}
+    ) {
         const options = { ...this.options.messageOptions, ...optionsToMerge };
         const actionRowOptionsDup = actionRowOptions ? { ...actionRowOptions } : { first: true, last: true, next: true, back: true };
 
@@ -94,7 +98,7 @@ export default class Pagination<T> {
         }
 
         if (actionRowOptionsDup && page >= Math.ceil((this.data?.length ?? this.maxPage) / this.options.limit)) {
-            actionRowOptionsDup.last = false
+            actionRowOptionsDup.last = false;
             actionRowOptionsDup.next = false;
         }
 
@@ -107,7 +111,14 @@ export default class Pagination<T> {
         return options;
     }
 
-    getActionRow({ first, last, next, back }: { first: boolean, last: boolean, next: boolean, back: boolean } = { first: true, last: true, next: true, back: true }) {
+    getActionRow(
+        { first, last, next, back }: { first: boolean; last: boolean; next: boolean; back: boolean } = {
+            first: true,
+            last: true,
+            next: true,
+            back: true
+        }
+    ) {
         if (this.options.actionRowBuilder) {
             return this.options.actionRowBuilder({ first, last, next, back }, this.id);
         }
@@ -119,22 +130,22 @@ export default class Pagination<T> {
                 .setCustomId(`pagination_first_${this.id}`)
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(!first)
-                .setEmoji(getEmoji(this.client, 'ArrowLeft')!),
+                .setEmoji(getEmoji(this.client, "ArrowLeft")!),
             new ButtonBuilder()
                 .setCustomId(`pagination_back_${this.id}`)
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(!back)
-                .setEmoji(getEmoji(this.client, 'ChevronLeft')!),
+                .setEmoji(getEmoji(this.client, "ChevronLeft")!),
             new ButtonBuilder()
                 .setCustomId(`pagination_next_${this.id}`)
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(!next)
-                .setEmoji(getEmoji(this.client, 'ChevronRight')!),
+                .setEmoji(getEmoji(this.client, "ChevronRight")!),
             new ButtonBuilder()
                 .setCustomId(`pagination_last_${this.id}`)
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(!last)
-                .setEmoji(getEmoji(this.client, 'ArrowRight')!)
+                .setEmoji(getEmoji(this.client, "ArrowRight")!)
         );
 
         return actionRow;
@@ -154,11 +165,11 @@ export default class Pagination<T> {
                 }
 
                 if (interaction.isRepliable()) {
-                    interaction.reply({ content: 'That\'s not under your control or the button controls are expired', ephemeral: true });
+                    interaction.reply({ content: "That's not under your control or the button controls are expired", ephemeral: true });
                 }
 
                 return false;
-            },
+            }
         });
 
         collector.on("collect", async (interaction: ButtonInteraction) => {
@@ -171,49 +182,63 @@ export default class Pagination<T> {
             const componentOptions = { first: true, last: true, next: true, back: true };
 
             if ([`pagination_next_${this.id}`, `pagination_back_${this.id}`].includes(interaction.customId)) {
-                console.log('here');
+                console.log("here");
 
                 if (this.currentPage >= maxPage && interaction.customId === `pagination_next_${this.id}`) {
-                    console.log('here');
+                    console.log("here");
                     await interaction.reply({ content: maxPage === 1 ? "This is the only page!" : "You've reached the last page!", ephemeral: true });
                     return;
                 }
 
                 if (this.currentPage <= 1 && interaction.customId === `pagination_back_${this.id}`) {
-                    console.log('here');
-                    await interaction.reply({ content: maxPage === 1 ? "This is the only page!" : "You're in the very first page!", ephemeral: true });
+                    console.log("here");
+                    await interaction.reply({
+                        content: maxPage === 1 ? "This is the only page!" : "You're in the very first page!",
+                        ephemeral: true
+                    });
                     return;
                 }
             }
 
-            if (interaction.customId === `pagination_first_${this.id}`)
-                this.currentPage = 1;
-            else if (interaction.customId === `pagination_last_${this.id}`)
-                this.currentPage = maxPage;
+            if (interaction.customId === `pagination_first_${this.id}`) this.currentPage = 1;
+            else if (interaction.customId === `pagination_last_${this.id}`) this.currentPage = maxPage;
 
-            await interaction.update(await this.getMessageOptions(
-                interaction.customId === `pagination_first_${this.id}` ? 1 :
-                    interaction.customId === `pagination_last_${this.id}` ? maxPage :
-                        (interaction.customId === `pagination_next_${this.id}` ? (this.currentPage >= maxPage ? this.currentPage : ++this.currentPage) : --this.currentPage),
-                componentOptions,
-                {
-                    embeds: [],
-                    ...(this.options.messageOptions ?? {})
-                }
-            ));
+            await interaction.update(
+                await this.getMessageOptions(
+                    interaction.customId === `pagination_first_${this.id}`
+                        ? 1
+                        : interaction.customId === `pagination_last_${this.id}`
+                        ? maxPage
+                        : interaction.customId === `pagination_next_${this.id}`
+                        ? this.currentPage >= maxPage
+                            ? this.currentPage
+                            : ++this.currentPage
+                        : --this.currentPage,
+                    componentOptions,
+                    {
+                        embeds: [],
+                        ...(this.options.messageOptions ?? {})
+                    }
+                )
+            );
         });
 
         collector.on("end", async () => {
-            const [component, ...components] = message.components!; // this.getActionRow({ first: false, last: false, next: false, back: false })
-
-            for (const i in component.components) {
-                (component.components[i] as any).disabled = true;
-            }
+            const [, ...components] = message.components!; // this.getActionRow({ first: false, last: false, next: false, back: false })
 
             try {
-                await message.edit({ components: [component, ...components] });
-            }
-            catch (e) {
+                await message.edit({
+                    components: [
+                        this.getActionRow({
+                            back: false,
+                            first: false,
+                            last: false,
+                            next: false
+                        }),
+                        ...components
+                    ]
+                });
+            } catch (e) {
                 console.log(e);
             }
         });
@@ -235,7 +260,7 @@ export interface FetchDataOption {
 export type MessageOptions = MessageReplyOptions & InteractionReplyOptions & MessageEditOptions;
 
 export interface PaginationOptions<T> {
-    client: Client,
+    client: Client;
     limit: number;
     guildId: string;
     channelId: string;
@@ -245,5 +270,5 @@ export interface PaginationOptions<T> {
     fetchData?: (options: FetchDataOption) => Promise<T[]>;
     messageOptions?: MessageOptions;
     embedBuilder: (options: EmbedBuilderOptions<T>) => EmbedBuilder;
-    actionRowBuilder?: (options: { first: boolean, last: boolean, next: boolean, back: boolean }, id: string) => ActionRowBuilder<ButtonBuilder>;
+    actionRowBuilder?: (options: { first: boolean; last: boolean; next: boolean; back: boolean }, id: string) => ActionRowBuilder<ButtonBuilder>;
 }
