@@ -286,7 +286,7 @@ export default class SnippetManager extends Service {
 
         const localSnippet = this.snippets[guildId].get(name)!;
         localSnippet.randomize = !snippet.randomize;
-        this.snippets[guildId].set(name, snippet);
+        this.snippets[guildId].set(name, localSnippet);
 
         return { randomization: !snippet.randomize };
     }
