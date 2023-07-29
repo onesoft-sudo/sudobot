@@ -42,8 +42,7 @@ import {
     TextChannel,
     User,
     escapeMarkdown,
-    roleMention,
-    time
+    roleMention
 } from "discord.js";
 import Service from "../core/Service";
 import { NotUndefined } from "../types/NotUndefined";
@@ -456,7 +455,7 @@ export default class LoggerService extends Service {
                     },
                     {
                         name: "Account Created At",
-                        value: `${member.user.createdAt.toLocaleString()} (${time(member.user.createdTimestamp)})`
+                        value: `${member.user.createdAt.toLocaleString()} (${formatDistanceToNowStrict(member.user.createdAt!, { addSuffix: true })})`
                     },
                     {
                         name: "User Information",
@@ -500,7 +499,7 @@ export default class LoggerService extends Service {
                     },
                     {
                         name: "Joined At",
-                        value: `${member.joinedAt!.toLocaleString()} (${time(member.joinedTimestamp!)})`
+                        value: `${member.joinedAt!.toLocaleString()} (${formatDistanceToNowStrict(member.joinedAt!, { addSuffix: true })})`
                     },
                     {
                         name: "User Information",
