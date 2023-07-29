@@ -25,6 +25,7 @@ import {
     BanOptions,
     ButtonBuilder,
     ButtonStyle,
+    ChannelType,
     ColorResolvable,
     Colors,
     EmbedBuilder,
@@ -36,6 +37,8 @@ import {
     MessageCreateOptions,
     MessagePayload,
     MessageType,
+    NonThreadGuildBasedChannel,
+    Role,
     TextChannel,
     User,
     escapeMarkdown,
@@ -153,11 +156,238 @@ export default class LoggerService extends Service {
      * Logging methods.
      */
 
+    async logChannelCreate(channel: NonThreadGuildBasedChannel) {
+        await this.sendLogEmbed(channel.guild, {
+            title: "Channel Created",
+            color: Colors.Green,
+            fields: [
+                {
+                    name: "Name",
+                    value: channel.name
+                },
+                {
+                    name: "ID",
+                    value: channel.id
+                },
+                {
+                    name: "Mention",
+                    value: channel.toString()
+                },
+                {
+                    name: "Type",
+                    value: ChannelType[channel.type]
+                }
+            ],
+            footerText: "Created"
+        });
+    }
+
+    async logChannelDelete(channel: NonThreadGuildBasedChannel) {
+        await this.sendLogEmbed(channel.guild, {
+            title: "Channel Deleted",
+            color: Colors.Red,
+            fields: [
+                {
+                    name: "Name",
+                    value: channel.name
+                },
+                {
+                    name: "ID",
+                    value: channel.id
+                },
+                {
+                    name: "Type",
+                    value: ChannelType[channel.type]
+                }
+            ],
+            footerText: "Deleted"
+        });
+    }
+
+    async logChannelUpdate(oldChannel: NonThreadGuildBasedChannel, newChannel: NonThreadGuildBasedChannel) {
+        await this.sendLogEmbed(newChannel.guild, {
+            title: "Channel Updated",
+            color: Colors.DarkButNotBlack,
+            fields: [
+                {
+                    name: "Old Name",
+                    value: oldChannel.name,
+                    inline: true
+                },
+                {
+                    name: "New Name",
+                    value: newChannel.name,
+                    inline: true
+                },
+                {
+                    name: "ID",
+                    value: newChannel.id
+                }
+            ],
+            footerText: "Updated"
+        });
+    }
+
+    async logRoleCreate(role: Role) {
+        const permissions = role.permissions.toArray();
+
+        await this.sendLogEmbed(role.guild, {
+            title: "Role Created",
+            color: Colors.Green,
+            fields: [
+                {
+                    name: "Name",
+                    value: role.name
+                },
+                {
+                    name: "ID",
+                    value: role.id
+                },
+                {
+                    name: "Mention",
+                    value: role.toString()
+                },
+                {
+                    name: "Icon",
+                    value: role.icon ? role.iconURL()! : "*None*"
+                },
+                {
+                    name: "Permissions",
+                    value: permissions.length === 0 ? "*Nothing*" : "`" + permissions.join("`, `") + "`"
+                }
+            ],
+            footerText: "Created"
+        });
+    }
+
+    async logRoleDelete(role: Role) {
+        const permissions = role.permissions.toArray();
+
+        await this.sendLogEmbed(role.guild, {
+            title: "Role Deleted",
+            color: Colors.Red,
+            fields: [
+                {
+                    name: "Name",
+                    value: role.name
+                },
+                {
+                    name: "ID",
+                    value: role.id
+                },
+                {
+                    name: "Mention",
+                    value: role.toString()
+                },
+                {
+                    name: "Icon",
+                    value: role.icon ? role.iconURL()! : "*None*"
+                },
+                {
+                    name: "Permissions",
+                    value: permissions.length === 0 ? "*Nothing*" : "`" + permissions.join("`, `") + "`"
+                }
+            ],
+            footerText: "Deleted"
+        });
+    }
+
+    async logRoleUpdate(oldRole: Role, newRole: Role) {
+        const permissions = newRole.permissions.toArray();
+
+        await this.sendLogEmbed(newRole.guild, {
+            title: "Role Updated",
+            color: Colors.Green,
+            fields: [
+                {
+                    name: "Name",
+                    value: `Old name: ${oldRole.name}\nNew name: ${newRole.name}`
+                },
+                {
+                    name: "ID",
+                    value: newRole.id
+                },
+                {
+                    name: "Mention",
+                    value: newRole.toString()
+                },
+                {
+                    name: "Icon",
+                    value: `Old icon: ${oldRole.icon ? oldRole.iconURL()! : "*None*"}\nNew icon: ${newRole.icon ? newRole.iconURL()! : "*None*"}`
+                },
+                {
+                    name: "New Permissions",
+                    value: permissions.length === 0 ? "*Nothing*" : "`" + permissions.join("`, `") + "`"
+                }
+            ],
+            footerText: "Updated"
+        });
+    }
+
+    async logNicknameUpdate(oldMember: GuildMember, newMember: GuildMember) {
+        await this.sendLogEmbed(newMember.guild, {
+            title: "Member nickname updated",
+            user: newMember.user,
+            color: 0x007bff,
+            fields: [
+                {
+                    name: "Old Nickname",
+                    value: oldMember.nickname ?? "*Nothing*",
+                    inline: true
+                },
+                {
+                    name: "New Nickname",
+                    value: newMember.nickname ?? "*Nothing*",
+                    inline: true
+                },
+                {
+                    name: "User Information",
+                    value: `Username: ${newMember.user.username}\nMention: ${newMember.user.toString()}\nID: ${newMember.user.id}`
+                }
+            ],
+            footerText: "Updated"
+        });
+    }
+
+    async logMemberRoleUpdate(oldMember: GuildMember, newMember: GuildMember) {
+        const added = newMember.roles.cache.filter(role => !oldMember.roles.cache.has(role.id));
+        const removed = oldMember.roles.cache.filter(role => !newMember.roles.cache.has(role.id));
+
+        await this.sendLogEmbed(
+            newMember.guild,
+            {
+                title: "Member roles updated",
+                user: newMember.user,
+                color: Colors.DarkButNotBlack,
+                fields: [
+                    {
+                        name: "Added",
+                        value: added.size === 0 ? "*Nothing added*" : added.reduce((acc, role) => `${acc} ${role.toString()}`, "")
+                    },
+                    {
+                        name: "Removed",
+                        value: removed.size === 0 ? "*Nothing removed*" : removed.reduce((acc, role) => `${acc} ${role.toString()}`, "")
+                    },
+                    {
+                        name: "User Information",
+                        value: `Username: ${newMember.user.username}\nMention: ${newMember.user.toString()}\nID: ${newMember.user.id}`
+                    }
+                ],
+                footerText: "Roles Updated"
+            },
+            {
+                allowedMentions: {
+                    roles: []
+                }
+            }
+        );
+    }
+
     async logGuildMemberAdd(member: GuildMember) {
         let members = 0,
             bots = 0;
 
-        for (const [, m] of member.guild.members.cache) {
+        for (const m of member.guild.members.cache.values()) {
             if (m.user.bot) bots++;
             else members++;
         }
@@ -193,7 +423,9 @@ export default class LoggerService extends Service {
                     },
                     {
                         name: "Positions",
-                        value: `Among all members: ${members + bots}th\nAmong the human members: ${members}th\nAmong the bots: ${bots}th`,
+                        value:
+                            `Among all members: ${members + bots}th\n` +
+                            (member.user.bot ? `Among the bots: ${bots}th` : `Among the human members: ${members}th`),
                         inline: true
                     }
                 ],
