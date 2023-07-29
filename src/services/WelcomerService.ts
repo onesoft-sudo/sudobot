@@ -50,7 +50,7 @@ export default class WelcomerService extends Service {
 
         if (!welcomer?.enabled) return;
 
-        const { channel: channelId, embed, say_hi_button, custom_message, randomize, mention, say_hi_expire_after } = welcomer;
+        const { channel: channelId, embed, say_hi_button, custom_message, randomize, mention, say_hi_expire_after, delete_messages } = welcomer;
 
         if (!custom_message && !randomize) return;
 
@@ -74,6 +74,12 @@ export default class WelcomerService extends Service {
                 embeds: embed ? [this.generatedEmbed(member, welcomer)] : undefined,
                 components: actionRow
             });
+
+            if (delete_messages) {
+                setTimeout(() => {
+                    reply.delete().catch(logError);
+                }, delete_messages);
+            }
 
             if (actionRow && say_hi_button && say_hi_expire_after) {
                 setTimeout(() => {
@@ -126,6 +132,16 @@ export default class WelcomerService extends Service {
             await interaction.message.edit({
                 components: [actionRow]
             });
+
+            if (config.welcomer.delete_messages) {
+                const time = interaction.message.createdAt.getTime() + config.welcomer.delete_messages - Date.now();
+
+                if (time > 1000) {
+                    setTimeout(() => {
+                        reply.delete().catch(logError);
+                    }, time);
+                }
+            }
         } else {
             try {
                 await interaction.deferUpdate();

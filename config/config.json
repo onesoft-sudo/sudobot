@@ -17,12 +17,8 @@
             "send_logs": true,
             "delete_message": true,
             "data": {
-                "blocked_tokens": [
-                    "testing"
-                ],
-                "blocked_words": [
-                    "hello"
-                ]
+                "blocked_tokens": ["testing"],
+                "blocked_words": ["hello"]
             }
         },
         "antispam": {
@@ -39,7 +35,8 @@
             "mention": true,
             "say_hi_button": true,
             "say_hi_emoji": "rakin",
-            "say_hi_expire_after": 10000
+            "say_hi_expire_after": null,
+            "delete_messages": 20000
         },
         "antiraid": {
             "enabled": true,
