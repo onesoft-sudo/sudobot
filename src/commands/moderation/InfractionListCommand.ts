@@ -47,7 +47,7 @@ export default class InfractionListCommand extends Command {
         const user: User = context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user", true);
 
         const infractions = await this.client.prisma.infraction.findMany({
-            where: { id: parseInt(user.id), guildId: message.guildId! }
+            where: { userId: user.id, guildId: message.guildId! }
         });
 
         if (infractions.length === 0) {
