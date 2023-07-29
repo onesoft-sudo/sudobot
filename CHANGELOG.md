@@ -1,3 +1,12 @@
+## [5.5.1](https://github.com/onesoft-sudo/sudobot/compare/v5.5.0...v5.5.1) (2023-07-28)
+
+
+### Bug Fixes
+
+* permission issue ([5e46e8a](https://github.com/onesoft-sudo/sudobot/commit/5e46e8a5bfecfd965702fd85d1b5e0150b8d6772))
+
+
+
 # [5.5.0](https://github.com/onesoft-sudo/sudobot/compare/v5.4.1...v5.5.0) (2023-07-28)
 
 
@@ -41,16 +50,6 @@
 ### Features
 
 * **infractionManager:** support muting without role -> timeout ([a3597d6](https://github.com/onesoft-sudo/sudobot/commit/a3597d69856872fe478ffed8e7d254b63d3d59e5))
-
-
-
-## [5.2.1](https://github.com/onesoft-sudo/sudobot/compare/v5.2.0...v5.2.1) (2023-07-28)
-
-
-### Bug Fixes
-
-* add command metadata ([8e80fdd](https://github.com/onesoft-sudo/sudobot/commit/8e80fddc509ba4f6c042739adff0175e77ef46b6))
-* deploy script not working with npm scripts ([33bfccf](https://github.com/onesoft-sudo/sudobot/commit/33bfccf351e9fc81e00dd2a3291d4b33a855b813))
 
 
 
