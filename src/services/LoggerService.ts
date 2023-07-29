@@ -207,7 +207,7 @@ export default class LoggerService extends Service {
     async logChannelUpdate(oldChannel: NonThreadGuildBasedChannel, newChannel: NonThreadGuildBasedChannel) {
         await this.sendLogEmbed(newChannel.guild, {
             title: "Channel Updated",
-            color: Colors.DarkButNotBlack,
+            color: Colors.Green,
             fields: [
                 {
                     name: "Old Name",
@@ -274,10 +274,6 @@ export default class LoggerService extends Service {
                 {
                     name: "ID",
                     value: role.id
-                },
-                {
-                    name: "Mention",
-                    value: role.toString()
                 },
                 {
                     name: "Icon",
@@ -358,7 +354,7 @@ export default class LoggerService extends Service {
             {
                 title: "Member roles updated",
                 user: newMember.user,
-                color: Colors.DarkButNotBlack,
+                color: Colors.Green,
                 fields: [
                     {
                         name: "Added",
@@ -666,7 +662,7 @@ export default class LoggerService extends Service {
         });
     }
 
-    async logUserBan({ moderator, user, deleteMessageSeconds, reason, guild, id, duration }: LogUserBanOptions) {
+    async logUserBan({ moderator, user, deleteMessageSeconds, reason, guild, id, duration, includeDeleteMessageSeconds = true }: LogUserBanOptions) {
         await this.sendLogEmbed(guild, {
             user,
             title: "A user was banned",
@@ -676,12 +672,16 @@ export default class LoggerService extends Service {
             id,
             color: Colors.Red,
             fields: [
-                {
-                    name: "Message Deletion Timeframe",
-                    value: deleteMessageSeconds
-                        ? formatDistanceToNowStrict(new Date(Date.now() - deleteMessageSeconds * 1000))
-                        : "*No timeframe provided*"
-                },
+                ...(includeDeleteMessageSeconds
+                    ? [
+                          {
+                              name: "Message Deletion Timeframe",
+                              value: deleteMessageSeconds
+                                  ? formatDistanceToNowStrict(new Date(Date.now() - deleteMessageSeconds * 1000))
+                                  : "*No timeframe provided*"
+                          }
+                      ]
+                    : []),
                 ...(duration
                     ? [
                           {
@@ -879,6 +879,7 @@ export default class LoggerService extends Service {
 interface LogUserBanOptions extends BanOptions, CommonUserActionOptions {
     user: User;
     duration?: number;
+    includeDeleteMessageSeconds?: boolean;
 }
 
 interface LogUserMassBanOptions extends BanOptions, Omit<CommonUserActionOptions, "id"> {
