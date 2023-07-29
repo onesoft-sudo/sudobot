@@ -1,3 +1,14 @@
+## [5.11.1](https://github.com/onesoft-sudo/sudobot/compare/v5.11.0...v5.11.1) (2023-07-29)
+
+
+### Bug Fixes
+
+* infraction list and clear commands not working ([b1ed25c](https://github.com/onesoft-sudo/sudobot/commit/b1ed25c411585958ad54accbf3a8524e1a1e6d81))
+* infraction list and clear commands not working ([ae22c33](https://github.com/onesoft-sudo/sudobot/commit/ae22c33d9914c1504afb8a1a13f4953d174c5797))
+* list and clear infraction command ([3f74866](https://github.com/onesoft-sudo/sudobot/commit/3f74866a1a3c14b8ecdde5b8f1609a4e6281d6a9))
+
+
+
 # [5.11.0](https://github.com/onesoft-sudo/sudobot/compare/v5.10.0...v5.11.0) (2023-07-29)
 
 
@@ -41,15 +52,6 @@
 ### Features
 
 * add guild member add/remove logging support ([bb236f4](https://github.com/onesoft-sudo/sudobot/commit/bb236f416af6be2d62b1bd4b2aae27140a8d7342))
-
-
-
-# [5.7.0](https://github.com/onesoft-sudo/sudobot/compare/v5.6.0...v5.7.0) (2023-07-29)
-
-
-### Features
-
-* add ratelimit to welcomer button to prevent spam ([4122f72](https://github.com/onesoft-sudo/sudobot/commit/4122f721c5af882372699ee709735023207e2ec7))
 
 
 
