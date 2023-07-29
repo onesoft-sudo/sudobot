@@ -1,3 +1,13 @@
+## [5.5.2](https://github.com/onesoft-sudo/sudobot/compare/v5.5.1...v5.5.2) (2023-07-29)
+
+
+### Bug Fixes
+
+* config manager causing app crash ([9e27b7c](https://github.com/onesoft-sudo/sudobot/commit/9e27b7c9d727b1ef852fdd3a46f878b508c5b405))
+* invalid logs ([c0b3481](https://github.com/onesoft-sudo/sudobot/commit/c0b3481d8b1ef2dcaa436a0201489f7ee5fb4d02))
+
+
+
 ## [5.5.1](https://github.com/onesoft-sudo/sudobot/compare/v5.5.0...v5.5.1) (2023-07-28)
 
 
@@ -41,15 +51,6 @@
 ### Features
 
 * add snippet file pushing support and randomization support ([3e8bd9f](https://github.com/onesoft-sudo/sudobot/commit/3e8bd9fdf1a48dec479e6c2dbd56083acd529360))
-
-
-
-# [5.3.0](https://github.com/onesoft-sudo/sudobot/compare/v5.2.1...v5.3.0) (2023-07-28)
-
-
-### Features
-
-* **infractionManager:** support muting without role -> timeout ([a3597d6](https://github.com/onesoft-sudo/sudobot/commit/a3597d69856872fe478ffed8e7d254b63d3d59e5))
 
 
 
