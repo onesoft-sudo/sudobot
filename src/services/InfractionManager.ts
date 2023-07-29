@@ -304,22 +304,8 @@ export default class InfractionManager extends Service {
         }
     }
 
-    async createUserFakeBan(
-        user: User,
-        { guild, moderator, reason, deleteMessageSeconds, notifyUser, duration, sendLog, autoRemoveQueue }: CreateUserBanOptions
-    ) {
+    async createUserFakeBan(user: User, { guild, reason, notifyUser, duration }: CreateUserBanOptions) {
         const id = Math.round(Math.random() * 1000);
-
-        if (sendLog)
-            this.client.logger.logUserBan({
-                moderator,
-                guild,
-                id: `${id}`,
-                user,
-                deleteMessageSeconds,
-                reason,
-                duration
-            });
 
         if (notifyUser) {
             await this.sendDM(user, guild, {
