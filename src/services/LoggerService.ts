@@ -549,11 +549,11 @@ export default class LoggerService extends Service {
                 fields: [
                     {
                         name: "User",
-                        value: `${newMessage.author.toString()}\nUsername: ${newMessage.author.username}\nID: ${newMessage.author.id})`
+                        value: `${newMessage.author.toString()}\nUsername: ${newMessage.author.username}\nID: ${newMessage.author.id}`
                     },
                     {
                         name: "Channel",
-                        value: `${newMessage.channel.toString()}\nName: ${(newMessage.channel as TextChannel).name}\nID: ${newMessage.channel.id})`
+                        value: `${newMessage.channel.toString()}\nName: ${(newMessage.channel as TextChannel).name}\nID: ${newMessage.channel.id}`
                     },
                     {
                         name: "Message",
@@ -599,11 +599,11 @@ export default class LoggerService extends Service {
                 fields: [
                     {
                         name: "User",
-                        value: `${message.author.toString()}\nUsername: ${message.author.username}\nID: ${message.author.id})`
+                        value: `${message.author.toString()}\nUsername: ${message.author.username}\nID: ${message.author.id}`
                     },
                     {
                         name: "Channel",
-                        value: `${message.channel.toString()}\nName: ${(message.channel as TextChannel).name}\nID: ${message.channel.id})`
+                        value: `${message.channel.toString()}\nName: ${(message.channel as TextChannel).name}\nID: ${message.channel.id}`
                     },
                     {
                         name: "Message",
