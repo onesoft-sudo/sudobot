@@ -1,3 +1,12 @@
+## [5.12.2](https://github.com/onesoft-sudo/sudobot/compare/v5.12.1...v5.12.2) (2023-07-29)
+
+
+### Bug Fixes
+
+* log messages contain invalid date mentions ([dd5523d](https://github.com/onesoft-sudo/sudobot/commit/dd5523d7412dedae435ab0b07b7699b5c7b20c63))
+
+
+
 ## [5.12.1](https://github.com/onesoft-sudo/sudobot/compare/v5.12.0...v5.12.1) (2023-07-29)
 
 
@@ -38,15 +47,6 @@
 ### Features
 
 * **logger:** add timeout logs ([9aecc8c](https://github.com/onesoft-sudo/sudobot/commit/9aecc8c14a1d517dea6547113000e363f9258b71))
-
-
-
-# [5.10.0](https://github.com/onesoft-sudo/sudobot/compare/v5.9.0...v5.10.0) (2023-07-29)
-
-
-### Features
-
-* **logging:** log guild bans and unbans ([2f3c76c](https://github.com/onesoft-sudo/sudobot/commit/2f3c76c535feef51cec43977aee75bc82df7f69e))
 
 
 
