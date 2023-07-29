@@ -1,3 +1,12 @@
+# [5.8.0](https://github.com/onesoft-sudo/sudobot/compare/v5.7.0...v5.8.0) (2023-07-29)
+
+
+### Features
+
+* add guild member add/remove logging support ([bb236f4](https://github.com/onesoft-sudo/sudobot/commit/bb236f416af6be2d62b1bd4b2aae27140a8d7342))
+
+
+
 # [5.7.0](https://github.com/onesoft-sudo/sudobot/compare/v5.6.0...v5.7.0) (2023-07-29)
 
 
@@ -38,20 +47,6 @@
 ### Bug Fixes
 
 * permission issue ([5e46e8a](https://github.com/onesoft-sudo/sudobot/commit/5e46e8a5bfecfd965702fd85d1b5e0150b8d6772))
-
-
-
-# [5.5.0](https://github.com/onesoft-sudo/sudobot/compare/v5.4.1...v5.5.0) (2023-07-28)
-
-
-### Bug Fixes
-
-* welcomer ([618539e](https://github.com/onesoft-sudo/sudobot/commit/618539ea25ec9e09a2aac0e6d03a8df8b8d52a24))
-
-
-### Features
-
-* message logging support ([41c5f8a](https://github.com/onesoft-sudo/sudobot/commit/41c5f8ac15151a0c5a7153b03235d319509dd07a))
 
 
 
