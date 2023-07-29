@@ -1,3 +1,12 @@
+# [5.7.0](https://github.com/onesoft-sudo/sudobot/compare/v5.6.0...v5.7.0) (2023-07-29)
+
+
+### Features
+
+* add ratelimit to welcomer button to prevent spam ([4122f72](https://github.com/onesoft-sudo/sudobot/commit/4122f721c5af882372699ee709735023207e2ec7))
+
+
+
 # [5.6.0](https://github.com/onesoft-sudo/sudobot/compare/v5.5.2...v5.6.0) (2023-07-29)
 
 
@@ -43,15 +52,6 @@
 ### Features
 
 * message logging support ([41c5f8a](https://github.com/onesoft-sudo/sudobot/commit/41c5f8ac15151a0c5a7153b03235d319509dd07a))
-
-
-
-## [5.4.1](https://github.com/onesoft-sudo/sudobot/compare/v5.4.0...v5.4.1) (2023-07-28)
-
-
-### Bug Fixes
-
-* welcomer config ([60a3aa8](https://github.com/onesoft-sudo/sudobot/commit/60a3aa890b1494c4bf375f4102b0304d96f05bdf))
 
 
 
