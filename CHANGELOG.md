@@ -1,3 +1,17 @@
+# [5.9.0](https://github.com/onesoft-sudo/sudobot/compare/v5.8.0...v5.9.0) (2023-07-29)
+
+
+### Bug Fixes
+
+* fakebans should not send logs ([732deee](https://github.com/onesoft-sudo/sudobot/commit/732deeec3a84f0e10b21d02d4f0925cb4611aa1d))
+
+
+### Features
+
+* add the other logging methods ([287edf3](https://github.com/onesoft-sudo/sudobot/commit/287edf3f8e1a57ce34e9ec5f881e26744303f491))
+
+
+
 # [5.8.0](https://github.com/onesoft-sudo/sudobot/compare/v5.7.0...v5.8.0) (2023-07-29)
 
 
@@ -38,15 +52,6 @@
 
 * config manager causing app crash ([9e27b7c](https://github.com/onesoft-sudo/sudobot/commit/9e27b7c9d727b1ef852fdd3a46f878b508c5b405))
 * invalid logs ([c0b3481](https://github.com/onesoft-sudo/sudobot/commit/c0b3481d8b1ef2dcaa436a0201489f7ee5fb4d02))
-
-
-
-## [5.5.1](https://github.com/onesoft-sudo/sudobot/compare/v5.5.0...v5.5.1) (2023-07-28)
-
-
-### Bug Fixes
-
-* permission issue ([5e46e8a](https://github.com/onesoft-sudo/sudobot/commit/5e46e8a5bfecfd965702fd85d1b5e0150b8d6772))
 
 
 
