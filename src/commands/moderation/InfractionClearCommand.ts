@@ -20,9 +20,10 @@
 import { InfractionType } from "@prisma/client";
 import { PermissionsBitField, User } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { log } from "../../utils/logger";
 
-export default class InfractionListCommand extends Command {
-    public readonly name = "infraction__list";
+export default class InfractionClearCommand extends Command {
+    public readonly name = "infraction__clear";
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.User],
@@ -50,6 +51,10 @@ export default class InfractionListCommand extends Command {
             await this.error(message, "Invalid infraction type provided");
             return;
         }
+
+        log(user);
+
+        if (!user) return;
 
         const { count } = await this.client.prisma.infraction.deleteMany({
             where: {

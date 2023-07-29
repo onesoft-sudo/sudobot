@@ -146,12 +146,7 @@ export default class InfractionCommand extends Command {
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         const subcommand = context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true);
 
-        if (subcommand === "list" && context.isLegacy) {
-            await message.reply(`${this.emoji("error")} Please use the command \`-l\` instead`);
-            return;
-        }
-
-        if ((subcommand === "edit" || subcommand === "create" || subcommand === "clear") && context.isLegacy) {
+        if ((subcommand === "edit" || subcommand === "create") && context.isLegacy) {
             await message.reply(`${this.emoji("error")} Please use the slash command \`/infraction ${subcommand}\` to perform this action.`);
             return;
         }
@@ -174,7 +169,7 @@ export default class InfractionCommand extends Command {
                     return;
                 }
 
-                const user = this.client.fetchUserSafe(userId);
+                const user = await this.client.fetchUserSafe(userId);
 
                 if (!user) {
                     await message.reply(`${this.emoji("error")} That user does not exist!`);
