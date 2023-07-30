@@ -334,7 +334,10 @@ export default class LoggerService extends Service {
     }
 
     async logRoleUpdate(oldRole: Role, newRole: Role) {
-        const permissions = newRole.permissions.toArray();
+        const newRolePermissions = newRole.permissions.toArray();
+        const oldRolePermissions = oldRole.permissions.toArray();
+        const addedPermissions = newRolePermissions.filter(permission => !oldRolePermissions.includes(permission));
+        const removedPermissions = oldRolePermissions.filter(permission => !newRolePermissions.includes(permission));
 
         await this.sendLogEmbed(newRole.guild, {
             title: "Role Updated",
@@ -357,8 +360,14 @@ export default class LoggerService extends Service {
                     value: `Old icon: ${oldRole.icon ? oldRole.iconURL()! : "*None*"}\nNew icon: ${newRole.icon ? newRole.iconURL()! : "*None*"}`
                 },
                 {
-                    name: "New Permissions",
-                    value: permissions.length === 0 ? "*Nothing*" : "`" + permissions.join("`, `") + "`"
+                    name: "Added Permissions",
+                    value: addedPermissions.length === 0 ? "*Nothing*" : "`" + addedPermissions.join("`, `") + "`",
+                    inline: true
+                },
+                {
+                    name: "Removed Permissions",
+                    value: removedPermissions.length === 0 ? "*Nothing*" : "`" + removedPermissions.join("`, `") + "`",
+                    inline: true
                 }
             ],
             footerText: "Updated"
