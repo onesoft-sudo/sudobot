@@ -39,6 +39,8 @@ export default class CrisisCommand extends Command implements HasEventListeners 
     public readonly permissions = [];
 
     public readonly description = "Show the emergency numbers for different countries.";
+    public readonly beta = true;
+    public readonly argumentSyntaxes = ["<country_code>"];
     public readonly slashCommandBuilder = new SlashCommandBuilder().addStringOption(option =>
         option.setName("country").setDescription("The country").setRequired(true).setAutocomplete(true)
     );
