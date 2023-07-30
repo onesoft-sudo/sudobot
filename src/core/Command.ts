@@ -30,10 +30,11 @@ import {
     MessageMentions,
     MessagePayload,
     PermissionResolvable,
+    PermissionsBitField,
     SlashCommandBuilder
 } from "discord.js";
 import { ChatInputCommandContext, LegacyCommandContext } from "../services/CommandManager";
-import { logError } from "../utils/logger";
+import { log, logError } from "../utils/logger";
 import { getEmoji, isSnowflake, stringToTimeInterval } from "../utils/utils";
 import Client from "./Client";
 
@@ -100,7 +101,7 @@ export default abstract class Command {
 
     public readonly subcommands: string[] = [];
 
-    constructor(protected client: Client) {}
+    constructor(protected client: Client) { }
 
     abstract execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn>;
 
@@ -170,12 +171,33 @@ export default abstract class Command {
             if (this.permissionMode === "and") {
                 for (const permission of permissions) {
                     if (!member.permissions.has(permission, true)) {
-                        await message.reply({
-                            content: `${this.emoji("error")} You don't have permission to run this command.`,
-                            ephemeral: true
-                        });
+                        if (!this.client.configManager.config[message.guildId!]?.permissions?.use_leveled_permissions) {
+                            await message.reply({
+                                content: `${this.emoji("error")} You don't have permission to run this command.`,
+                                ephemeral: true
+                            });
 
-                        return;
+                            log("Skip");
+
+                            return;
+                        }
+
+                        const memberBotPermissions = await this.client.permissionManager.getMemberPermissions(member);
+                        const memberRequiredPermissions = new PermissionsBitField(permissions).toArray();
+
+                        log("PERMS: ", [...memberBotPermissions.values()]);
+                        log("PERMS 2: ", memberRequiredPermissions);
+
+                        for (const memberRequiredPermission of memberRequiredPermissions) {
+                            if (!memberBotPermissions.has(memberRequiredPermission)) {
+                                await message.reply({
+                                    content: `${this.emoji("error")} You don't have permission to run this command.`,
+                                    ephemeral: true
+                                });
+
+                                return;
+                            }
+                        }
                     }
                 }
             } else
@@ -183,6 +205,17 @@ export default abstract class Command {
                     for (const permission of permissions) {
                         if (member.permissions.has(permission, true)) {
                             break orMode;
+                        }
+                    }
+
+                    if (this.client.configManager.config[message.guildId!]?.permissions?.use_leveled_permissions) {
+                        const memberBotPermissions = await this.client.permissionManager.getMemberPermissions(member);
+                        const memberRequiredPermissions = new PermissionsBitField(permissions).toArray();
+
+                        for (const memberRequiredPermission of memberRequiredPermissions) {
+                            if (memberBotPermissions.has(memberRequiredPermission)) {
+                                break orMode;
+                            }
                         }
                     }
 
@@ -203,7 +236,7 @@ export default abstract class Command {
 
                 if (arg === undefined) {
                     if (!rule.optional) {
-                        await message.reply(rule.requiredErrorMessage ?? `Argument #${index} is required`);
+                        await this.error(message, rule.requiredErrorMessage ?? `Argument #${index} is required`);
                         return;
                     }
 
@@ -234,7 +267,7 @@ export default abstract class Command {
                             ) {
                                 await message.reply(
                                     rule.minMaxErrorMessage ??
-                                        `Argument #${index} has a min/max numeric value range but the given value is out of range.`
+                                    `Argument #${index} has a min/max numeric value range but the given value is out of range.`
                                 );
                                 return;
                             }
@@ -307,7 +340,7 @@ export default abstract class Command {
                                 ) {
                                     await message.reply(
                                         `${this.emoji("error")} ` + rule.minMaxErrorMessage ??
-                                            `Argument #${index} has a min/max numeric time value range but the given value is out of range.`
+                                        `Argument #${index} has a min/max numeric time value range but the given value is out of range.`
                                     );
                                     return;
                                 }
@@ -365,8 +398,8 @@ export default abstract class Command {
                                             type === ArgumentType.Role
                                                 ? await message.guild!.roles.fetch(id)
                                                 : type === ArgumentType.Channel
-                                                ? await message.guild!.channels.fetch(id)
-                                                : await message.guild!.members.fetch(id);
+                                                    ? await message.guild!.channels.fetch(id)
+                                                    : await message.guild!.members.fetch(id);
                                     }
 
                                     if (!entity) {
@@ -445,9 +478,9 @@ export default abstract class Command {
             ...context,
             ...(context.isLegacy
                 ? {
-                      parsedArgs,
-                      parsedNamedArgs
-                  }
+                    parsedArgs,
+                    parsedNamedArgs
+                }
                 : {})
         });
     }
