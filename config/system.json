@@ -1,10 +1,6 @@
 {
     "$schema": "./schema/system.json",
-    "emojis": {
-        "check": "<:check:1034487044333895731>"
-    },
-    "system_admins": ["774553653394538506"],
-    "snippets": {
-        "save_attachments": true
-    }
+    "system_admins": [
+        "owner_id"
+    ]
 }
