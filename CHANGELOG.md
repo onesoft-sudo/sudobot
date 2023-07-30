@@ -1,3 +1,12 @@
+## [5.13.1](https://github.com/onesoft-sudo/sudobot/compare/v5.13.0...v5.13.1) (2023-07-30)
+
+
+### Bug Fixes
+
+* better permission info in role update log ([4b9af6f](https://github.com/onesoft-sudo/sudobot/commit/4b9af6fd03cc43721ded93fcdb480c03856f023f))
+
+
+
 # [5.13.0](https://github.com/onesoft-sudo/sudobot/compare/v5.12.3...v5.13.0) (2023-07-30)
 
 
@@ -37,15 +46,6 @@
 ### Bug Fixes
 
 * unexpected '(' in message logs ([7492548](https://github.com/onesoft-sudo/sudobot/commit/7492548cc88067c37c2212e6cd35c14df2ad1aab))
-
-
-
-# [5.12.0](https://github.com/onesoft-sudo/sudobot/compare/v5.11.1...v5.12.0) (2023-07-29)
-
-
-### Features
-
-* allow infraction clear and list commands to be used in legacy mode ([e7bd648](https://github.com/onesoft-sudo/sudobot/commit/e7bd64862a0d495410a994066b247dba058e4d8e))
 
 
 
