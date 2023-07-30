@@ -2,7 +2,7 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY .env.docker ./.env
+COPY .env.docke[r] ./.env
 COPY package.json .
 RUN npm install -D
 
