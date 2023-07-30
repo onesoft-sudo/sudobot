@@ -1,3 +1,18 @@
+# [5.13.0](https://github.com/onesoft-sudo/sudobot/compare/v5.12.3...v5.13.0) (2023-07-30)
+
+
+### Bug Fixes
+
+* crisis command ([76eb05e](https://github.com/onesoft-sudo/sudobot/commit/76eb05e1f0a6406d4a63c877e41788d0b5d885cc))
+
+
+### Features
+
+* add crisis command ([d018937](https://github.com/onesoft-sudo/sudobot/commit/d0189375084ae1518a6acbec45cbf50c3ebdfd58))
+* encourage command ([23d6593](https://github.com/onesoft-sudo/sudobot/commit/23d6593a8ea125a3f6b0fb8cffe1c1b61340126b))
+
+
+
 ## [5.12.3](https://github.com/onesoft-sudo/sudobot/compare/v5.12.2...v5.12.3) (2023-07-29)
 
 
@@ -31,17 +46,6 @@
 ### Features
 
 * allow infraction clear and list commands to be used in legacy mode ([e7bd648](https://github.com/onesoft-sudo/sudobot/commit/e7bd64862a0d495410a994066b247dba058e4d8e))
-
-
-
-## [5.11.1](https://github.com/onesoft-sudo/sudobot/compare/v5.11.0...v5.11.1) (2023-07-29)
-
-
-### Bug Fixes
-
-* infraction list and clear commands not working ([b1ed25c](https://github.com/onesoft-sudo/sudobot/commit/b1ed25c411585958ad54accbf3a8524e1a1e6d81))
-* infraction list and clear commands not working ([ae22c33](https://github.com/onesoft-sudo/sudobot/commit/ae22c33d9914c1504afb8a1a13f4953d174c5797))
-* list and clear infraction command ([3f74866](https://github.com/onesoft-sudo/sudobot/commit/3f74866a1a3c14b8ecdde5b8f1609a4e6281d6a9))
 
 
 
