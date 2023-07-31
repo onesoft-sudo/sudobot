@@ -18,7 +18,6 @@
  */
 
 import { ClientEvents, Interaction } from "discord.js";
-import type CrisisCommand from "../../commands/information/CrisisCommand";
 import Event from "../../core/Event";
 import { logError } from "../../utils/logger";
 
@@ -28,11 +27,6 @@ export default class InteractionCreateEvent extends Event {
     async execute(interaction: Interaction) {
         if (interaction.isChatInputCommand()) {
             this.client.commandManager.runCommandFromChatInputCommandInteraction(interaction).catch(logError);
-            return;
-        }
-
-        if (interaction.isAutocomplete() && interaction.commandName === "crisis") {
-            await (this.client.commands.get("crisis") as CrisisCommand | undefined)?.onAutoCompleteInteraction(interaction);
             return;
         }
     }

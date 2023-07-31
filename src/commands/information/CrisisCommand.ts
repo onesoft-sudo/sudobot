@@ -17,16 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import axios from "axios";
-import { AutocompleteInteraction, SlashCommandBuilder } from "discord.js";
-import { readFile } from "fs/promises";
-import path from "path";
+import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { GatewayEventListener } from "../../decorators/GatewayEventListener";
-import { HasEventListeners } from "../../types/HasEventListeners";
-import { logError } from "../../utils/logger";
 
-export default class CrisisCommand extends Command implements HasEventListeners {
+export default class CrisisCommand extends Command {
     public readonly name = "crisis";
     public readonly validationRules: ValidationRule[] = [
         {
@@ -41,86 +35,107 @@ export default class CrisisCommand extends Command implements HasEventListeners 
     public readonly description = "Show the emergency numbers for different countries.";
     public readonly beta = true;
     public readonly argumentSyntaxes = ["<country_code>"];
-    public readonly slashCommandBuilder = new SlashCommandBuilder().addStringOption(option =>
-        option.setName("country").setDescription("The country").setRequired(true).setAutocomplete(true)
-    );
+    public readonly slashCommandBuilder = new SlashCommandBuilder()
+        .addSubcommand(subcommand =>
+            subcommand.setName("uk").setDescription("Show the crisis numbers of United Kingdom")
+        )
+        .addSubcommand(subcommand =>
+            subcommand.setName("us").setDescription("Show the crisis numbers of United States")
+        )
+        .addSubcommand(subcommand =>
+            subcommand.setName("aus").setDescription("Show the crisis numbers of Australia")
+        )
+        .addSubcommand(subcommand =>
+            subcommand.setName("nz").setDescription("Show the crisis numbers of New Zealand")
+        );
 
-    protected countryInfo: Record<string, string> = {};
-    protected readonly url = "https://emergencynumberapi.com/api/country";
-
-    @GatewayEventListener("ready")
-    async onReady() {
-        this.countryInfo = JSON.parse(await readFile(path.resolve(__dirname, "../../../resources/countries.json"), { encoding: "utf-8" }));
-    }
-
-    async onAutoCompleteInteraction(interaction: AutocompleteInteraction) {
-        const query = interaction.options.getFocused(true).value.toLowerCase();
-        const results = [];
-
-        for (const countryCode in this.countryInfo) {
-            if (results.length >= 25) break;
-
-            if (countryCode.toLowerCase().includes(query) || this.countryInfo[countryCode].toLowerCase().includes(query)) {
-                results.push({
-                    name: this.countryInfo[countryCode],
-                    value: countryCode
-                });
-            }
-        }
-
-        await interaction.respond(results);
-    }
+    protected readonly countryInfo = {
+        "United Kingdom": [
+            "BEAT ED Helpline - 0808 801",
+            "Switchboard LGBTQI+ helpline - 0300 330 0630",
+            "Mind - 0300 123 3393",
+            "The mix (under 25s)- 0808 808 4994",
+            "Crisis text line - Text SHOUT to 85258",
+        ],
+        "United States": [
+            "Crisis support - 800-273-8255 (call only)",
+            "National ED helpline - 800-931-2237 (text or call)",
+            "LGBTQI+ hotline - 888-843-4564",
+            "MH and substance abuse - 800-662-4357",
+            "SH helpline S.A.F.E - 800-366-8288",
+            "Suicide and crisis lifeline - 998"
+        ],
+        "Australia": [
+            "Headspace MH service - 1800 650 890",
+            "Butterfly ED helpline - 1800 334 673",
+            "QLIFE LGBTQI+ support - 1800 184 527",
+            "Mensline aus: mens support for MH - 1300 78 99 78",
+            "Suicide call back service - 1300 659 467"
+        ],
+        "New Zealand": [
+            "Youth line - 0800 376 633/ text 234",
+            "OUTLINE nz - 0800 688 5463",
+            "Need to talk? -  1737 (call/text) to speak to a trained counsellor.",
+            "Lifetime 24/7 helpline - 0800 543 354"
+        ]
+    };
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
-        const country: string = (context.isLegacy ? context.parsedNamedArgs.country : context.options.getString("country", true)).toUpperCase();
-        const countryName = this.countryInfo[country];
+        const countryCode: string = context.isLegacy ? context.parsedNamedArgs.country : context.options.getSubcommand(true);
+        const embedBuilder = new EmbedBuilder({
+            color: 0x007bff,
+            footer: {
+                text: "Stay safe!"
+            }
+        })
+            .setTimestamp();
+        let country = '';
 
-        if (!countryName) {
-            await this.error(message, "Invalid country code provided. Please use slash commands to get auto completion.");
-            return;
-        }
+        switch (countryCode.toLowerCase()) {
+            case "uk":
+            case "united kingdom":
+            case "united_kingdom":
+            case "united-kingdom":
+            case "unitedkingdom":
+                country = 'United Kingdom';
+                break;
 
-        await this.deferIfInteraction(message);
+            case "us":
+            case "united states":
+            case "united_states":
+            case "united-states":
+            case "unitedstates":
+                country = 'United States';
+                break;
 
-        try {
-            const response = await axios.get(`${this.url}/${encodeURIComponent(country)}`);
+            case "nz":
+            case "new zealand":
+            case "new_zealand":
+            case "new-zealand":
+            case "newzealand":
+                country = 'New Zealand';
+                break;
+    
+            case "aus":
+            case "australia":
+                country = "Australia";
+                break;
 
-            if (response.data.error) {
-                await this.error(message, response.data.error);
+            default:
+                await this.error(message, "Invalid country code/name provided. Please specify one of these:\nUK - United Kingdom\nUS - United States\nAUS - Australia\nNZ - New Zealand");
                 return;
-            }
-
-            const { data } = response.data;
-            let description = "";
-
-            if (data.ambulence && (data.ambulence.all?.[0] || data.ambulence.gsm || data.ambulence.fixed)) {
-                description += `Ambulence: ${data.ambulence.all?.[0] ?? data.ambulence.gsm ?? data.ambulence.fixed}\n`;
-            }
-
-            if (data.fire && (data.fire.all?.[0] || data.fire.gsm || data.fire.fixed)) {
-                description += `Fire Brigade: ${data.fire.all?.[0] ?? data.fire.gsm ?? data.fire.fixed}\n`;
-            }
-
-            if (data.police && (data.police.all?.[0] || data.police.gsm || data.police.fixed)) {
-                description += `Police: ${data.police.all?.[0] ?? data.police.gsm ?? data.police.fixed}\n`;
-            }
-
-            if (data.dispatch && (data.dispatch.all?.[0] || data.dispatch.gsm || data.dispatch.fixed)) {
-                description += `Dispatch: ${data.dispatch.all?.[0] ?? data.dispatch.gsm ?? data.dispatch.fixed}\n`;
-            }
-
-            await this.deferredReply(message, {
-                embeds: [
-                    {
-                        title: `Showing emergency numbers of ${countryName}`,
-                        description,
-                        color: 0x007bff
-                    }
-                ]
-            });
-        } catch (e) {
-            logError(e);
-            await this.error(message, "The API did not return a valid status code. This is a possible error in the API or you got ratelimited.");
         }
+
+        return {
+            __reply: true,
+            embeds: [
+                embedBuilder
+                    .setAuthor({
+                        name: `Showing crisis numbers of ${country}`,
+                        iconURL: message.guild?.iconURL() ?? undefined
+                    })
+                    .setDescription(this.countryInfo[country as keyof typeof this.countryInfo].join('\n'))
+            ]
+        };
     }
 }
