@@ -1,3 +1,12 @@
+# [5.15.0](https://github.com/onesoft-sudo/sudobot/compare/v5.14.0...v5.15.0) (2023-07-31)
+
+
+### Features
+
+* **permissionManager:** rename table and model ([24d3cad](https://github.com/onesoft-sudo/sudobot/commit/24d3cadde5a754260f2361211c415067e6b020e8))
+
+
+
 # [5.14.0](https://github.com/onesoft-sudo/sudobot/compare/v5.13.1...v5.14.0) (2023-07-30)
 
 
@@ -42,15 +51,6 @@
 ### Bug Fixes
 
 * allow bot admins to take moderation actions ([908d1b2](https://github.com/onesoft-sudo/sudobot/commit/908d1b2286292ec2a1daaf4f1175c4f007b6be49))
-
-
-
-## [5.12.2](https://github.com/onesoft-sudo/sudobot/compare/v5.12.1...v5.12.2) (2023-07-29)
-
-
-### Bug Fixes
-
-* log messages contain invalid date mentions ([dd5523d](https://github.com/onesoft-sudo/sudobot/commit/dd5523d7412dedae435ab0b07b7699b5c7b20c63))
 
 
 
