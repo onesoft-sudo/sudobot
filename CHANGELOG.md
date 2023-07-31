@@ -1,3 +1,12 @@
+# [5.16.0](https://github.com/onesoft-sudo/sudobot/compare/v5.15.0...v5.16.0) (2023-07-31)
+
+
+### Features
+
+* **permissionManager:** level based permission system ([96387dc](https://github.com/onesoft-sudo/sudobot/commit/96387dc2aa985bc1c9a0980b55e9b17458553029))
+
+
+
 # [5.15.0](https://github.com/onesoft-sudo/sudobot/compare/v5.14.0...v5.15.0) (2023-07-31)
 
 
@@ -42,15 +51,6 @@
 
 * add crisis command ([d018937](https://github.com/onesoft-sudo/sudobot/commit/d0189375084ae1518a6acbec45cbf50c3ebdfd58))
 * encourage command ([23d6593](https://github.com/onesoft-sudo/sudobot/commit/23d6593a8ea125a3f6b0fb8cffe1c1b61340126b))
-
-
-
-## [5.12.3](https://github.com/onesoft-sudo/sudobot/compare/v5.12.2...v5.12.3) (2023-07-29)
-
-
-### Bug Fixes
-
-* allow bot admins to take moderation actions ([908d1b2](https://github.com/onesoft-sudo/sudobot/commit/908d1b2286292ec2a1daaf4f1175c4f007b6be49))
 
 
 
