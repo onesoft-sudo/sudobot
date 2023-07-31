@@ -102,6 +102,7 @@ model PermissionRole {
     roles              String[] @default([])
     users              String[] @default([])
     grantedPermissions String[] @default([])
+    level              Int?
     createdAt          DateTime @default(now())
     updatedAt          DateTime @default(now()) @updatedAt
 

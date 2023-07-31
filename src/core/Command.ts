@@ -171,7 +171,9 @@ export default abstract class Command {
             if (this.permissionMode === "and") {
                 for (const permission of permissions) {
                     if (!member.permissions.has(permission, true)) {
-                        if (!this.client.configManager.config[message.guildId!]?.permissions?.use_leveled_permissions) {
+                        const mode = this.client.configManager.config[message.guildId!]?.permissions?.mode;
+
+                        if (mode !== "advanced" && mode !== "levels") {
                             await message.reply({
                                 content: `${this.emoji("error")} You don't have permission to run this command.`,
                                 ephemeral: true
@@ -182,7 +184,7 @@ export default abstract class Command {
                             return;
                         }
 
-                        const memberBotPermissions = await this.client.permissionManager.getMemberPermissions(member);
+                        const memberBotPermissions = this.client.permissionManager.getMemberPermissions(member);
                         const memberRequiredPermissions = new PermissionsBitField(permissions).toArray();
 
                         log("PERMS: ", [...memberBotPermissions.values()]);
@@ -208,8 +210,10 @@ export default abstract class Command {
                         }
                     }
 
-                    if (this.client.configManager.config[message.guildId!]?.permissions?.use_leveled_permissions) {
-                        const memberBotPermissions = await this.client.permissionManager.getMemberPermissions(member);
+                    const mode = this.client.configManager.config[message.guildId!]?.permissions?.mode;
+
+                    if (mode === "advanced" || mode === "levels") {
+                        const memberBotPermissions = this.client.permissionManager.getMemberPermissions(member);
                         const memberRequiredPermissions = new PermissionsBitField(permissions).toArray();
 
                         for (const memberRequiredPermission of memberRequiredPermissions) {

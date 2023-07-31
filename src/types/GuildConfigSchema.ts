@@ -31,7 +31,11 @@ export const GuildConfigSchema = z.object({
             mod_role: zSnowflake.optional(),
             admin_role: zSnowflake.optional(),
             staff_role: zSnowflake.optional(),
-            use_leveled_permissions: z.boolean().default(false).optional()
+            mode: z.union([
+                z.literal("discord"),
+                z.literal("levels"),
+                z.literal("advanced"),
+            ]).default("discord").optional()
         })
         .optional()
         .default({}),
