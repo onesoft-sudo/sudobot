@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { PermissionLevel } from "@prisma/client";
+import { PermissionRole } from "@prisma/client";
 import { GuildMember, PermissionFlagsBits, PermissionResolvable, PermissionsString, Snowflake } from "discord.js";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
@@ -27,8 +27,8 @@ import { log, logWarn } from "../utils/logger";
 export const name = "permissionManager";
 
 export default class PermissionManager extends Service implements HasEventListeners {
-    public readonly users: Record<string, Record<string, Map<string, PermissionLevel> | undefined> | undefined> = {};
-    public readonly roles: Record<string, Record<string, Map<string, PermissionLevel> | undefined> | undefined> = {};
+    public readonly users: Record<string, Record<string, Map<string, PermissionRole> | undefined> | undefined> = {};
+    public readonly roles: Record<string, Record<string, Map<string, PermissionRole> | undefined> | undefined> = {};
 
     @GatewayEventListener("ready")
     async onReady() {
@@ -126,7 +126,7 @@ export default class PermissionManager extends Service implements HasEventListen
             this.roles[guildId] = {};
         }
 
-        const permissionLevels = await this.client.prisma.permissionLevel.findMany({
+        const permissionLevels = await this.client.prisma.permissionRole.findMany({
             where: {
                 guild_id: guildId
             }
@@ -150,10 +150,10 @@ export default class PermissionManager extends Service implements HasEventListen
     }
 
     async createPermissionLevel({ guildId, name, permissions, roles, users }: CreatePermissionLevelPayload) {
-        const existingPermissionLevel = await this.client.prisma.permissionLevel.findFirst({
+        const existingPermissionLevel = await this.client.prisma.permissionRole.findFirst({
             where: {
                 name,
-                guild_id: guildId,
+                guild_id: guildId
             }
         });
 
@@ -161,13 +161,13 @@ export default class PermissionManager extends Service implements HasEventListen
             return null;
         }
 
-        const permissionLevel = await this.client.prisma.permissionLevel.create({
+        const permissionLevel = await this.client.prisma.permissionRole.create({
             data: {
                 name,
                 guild_id: guildId,
                 grantedPermissions: permissions,
                 roles,
-                users,
+                users
             }
         });
 
@@ -186,18 +186,17 @@ export default class PermissionManager extends Service implements HasEventListen
         return permissionLevel;
     }
 
-    async deletePermissionLevel({ guildId, name }: Pick<CreatePermissionLevelPayload, 'guildId' | 'name'>) {
-        const permissionLevel = await this.client.prisma.permissionLevel.findFirst({
+    async deletePermissionLevel({ guildId, name }: Pick<CreatePermissionLevelPayload, "guildId" | "name">) {
+        const permissionLevel = await this.client.prisma.permissionRole.findFirst({
             where: {
                 name,
-                guild_id: guildId,
+                guild_id: guildId
             }
         });
 
-        if (!permissionLevel)
-            return null;
+        if (!permissionLevel) return null;
 
-        await this.client.prisma.permissionLevel.delete({
+        await this.client.prisma.permissionRole.delete({
             where: {
                 id: permissionLevel.id
             }
@@ -223,10 +222,10 @@ export default class PermissionManager extends Service implements HasEventListen
     }
 
     async updatePermissionLevel({ guildId, name, permissions, newName, roles, users }: CreatePermissionLevelPayload & { newName?: string }) {
-        const existingPermissionLevel = await this.client.prisma.permissionLevel.findFirst({
+        const existingPermissionLevel = await this.client.prisma.permissionRole.findFirst({
             where: {
                 name,
-                guild_id: guildId,
+                guild_id: guildId
             }
         });
 
@@ -235,7 +234,7 @@ export default class PermissionManager extends Service implements HasEventListen
         }
 
         if (newName !== name || roles || users || permissions) {
-            const permissionLevel = await this.client.prisma.permissionLevel.update({
+            const permissionLevel = await this.client.prisma.permissionRole.update({
                 where: {
                     id: existingPermissionLevel.id
                 },
@@ -251,8 +250,7 @@ export default class PermissionManager extends Service implements HasEventListen
                 this.roles[permissionLevel.guild_id] ??= {};
                 this.roles[permissionLevel.guild_id]![roleId] ??= new Map();
 
-                if (this.roles[permissionLevel.guild_id]![roleId]!.has(name))
-                    this.roles[permissionLevel.guild_id]![roleId]!.delete(name);
+                if (this.roles[permissionLevel.guild_id]![roleId]!.has(name)) this.roles[permissionLevel.guild_id]![roleId]!.delete(name);
 
                 this.roles[permissionLevel.guild_id]![roleId]!.set(permissionLevel.name, permissionLevel);
             }
@@ -261,8 +259,7 @@ export default class PermissionManager extends Service implements HasEventListen
                 this.users[permissionLevel.guild_id] ??= {};
                 this.users[permissionLevel.guild_id]![userId] ??= new Map();
 
-                if (this.users[permissionLevel.guild_id]![userId]!.has(name))
-                    this.users[permissionLevel.guild_id]![userId]!.delete(name);
+                if (this.users[permissionLevel.guild_id]![userId]!.has(name)) this.users[permissionLevel.guild_id]![userId]!.delete(name);
 
                 this.users[permissionLevel.guild_id]![userId]!.set(permissionLevel.name, permissionLevel);
             }
