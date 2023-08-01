@@ -38,12 +38,17 @@ export default class SnippetRandomizeCommand extends Command {
         PermissionsBitField.Flags.ModerateMembers,
         PermissionsBitField.Flags.ManageMessages
     ];
+    public readonly permissionMode = "or";
     public readonly aliases: string[] = ["randsnippet", "randtag", "dyntag", "dynamictag", "dynsnippet"];
     public readonly beta: boolean = true;
     public readonly supportsInteractions = false;
 
     async execute(message: Message, context: LegacyCommandContext): Promise<CommandReturn> {
         const name: string = context.parsedNamedArgs.name;
+
+        if (!this.client.snippetManager.checkPermissionInSnippetCommands(name, message, this)) {
+            return;
+        }
 
         const { error, randomization } = await this.client.snippetManager.toggleRandomization({
             name,

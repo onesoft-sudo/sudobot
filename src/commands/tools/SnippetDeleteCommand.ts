@@ -38,9 +38,14 @@ export default class SnippetDeleteCommand extends Command {
         PermissionsBitField.Flags.ManageMessages
     ];
     public readonly aliases: string[] = ["removetag", "rmtag", "deltag", "delsnippet", "rmsnippet"];
+    public readonly permissionMode = "or";
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         const name: string = context.isLegacy ? context.parsedNamedArgs.name : context.options.getString("name", true);
+
+        if (!this.client.snippetManager.checkPermissionInSnippetCommands(name, message, this)) {
+            return;
+        }
 
         const { error } = await this.client.snippetManager.deleteSnippet({
             name,

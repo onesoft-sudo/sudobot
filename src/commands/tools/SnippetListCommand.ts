@@ -17,9 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { EmbedBuilder, PermissionsBitField } from "discord.js";
-import Pagination, { EmbedBuilderOptions } from "../../utils/Pagination";
+import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Pagination from "../../utils/Pagination";
 import { log } from "../../utils/logger";
 
 export default class SnippetListCommand extends Command {
@@ -33,9 +33,10 @@ export default class SnippetListCommand extends Command {
         PermissionsBitField.Flags.ManageMessages
     ];
     public readonly aliases: string[] = ["listtags", "taglist", "listsnippets", "snippetlist"];
+    public readonly permissionMode = "or";
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
-        const snippets = [...this.client.snippetManager.snippets[message.guildId!].keys()];
+        const snippets = [...(this.client.snippetManager.snippets[message.guildId!] ?? []).keys()];
 
         if (snippets.length === 0) {
             await this.deferredReply(message, "This server does not have any snippets/tags yet.");

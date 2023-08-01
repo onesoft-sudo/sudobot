@@ -126,6 +126,15 @@ export default abstract class Command {
         );
     }
 
+    async success(message: CommandMessage, successMessage?: string) {
+        return await this.deferredReply(
+            message,
+            successMessage
+                ? `${this.emoji("check")} ${successMessage}`
+                : `Successfully completed the given task.`
+        );
+    }
+
     emoji(name: string) {
         return getEmoji(this.client, name);
     }

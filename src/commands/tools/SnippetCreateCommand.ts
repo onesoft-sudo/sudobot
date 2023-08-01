@@ -46,6 +46,7 @@ export default class SnippetCreateCommand extends Command {
         PermissionsBitField.Flags.ManageMessages
     ];
     public readonly aliases: string[] = ["tagcreate", "addtag", "maketag", "addsnippet"];
+    public readonly permissionMode = "or";
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         const name: string = context.isLegacy ? context.parsedNamedArgs.name : context.options.getString("name", true);
@@ -84,10 +85,9 @@ export default class SnippetCreateCommand extends Command {
 
         await this.deferredReply(
             message,
-            `${this.emoji("check")} Successfully created snippet \`${escapeInlineCode(escapeCodeBlock(name))}\`${
-                !this.client.configManager.systemConfig.snippets?.save_attachments && message instanceof Message && message.attachments.size > 0
-                    ? `\nYour message attachments were not saved. Please use links instead.`
-                    : ""
+            `${this.emoji("check")} Successfully created snippet \`${escapeInlineCode(escapeCodeBlock(name))}\`${!this.client.configManager.systemConfig.snippets?.save_attachments && message instanceof Message && message.attachments.size > 0
+                ? `\nYour message attachments were not saved. Please use links instead.`
+                : ""
             }`
         );
     }

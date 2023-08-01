@@ -43,10 +43,16 @@ export default class SnippetRenameCommand extends Command {
         PermissionsBitField.Flags.ModerateMembers,
         PermissionsBitField.Flags.ManageMessages
     ];
+    public readonly permissionMode = "or";
     public readonly aliases: string[] = ["renametag", "mvtag", "renamesnippet", "mvsnippet"];
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         const name: string = context.isLegacy ? context.parsedNamedArgs.name : context.options.getString("old_name", true);
+
+        if (!this.client.snippetManager.checkPermissionInSnippetCommands(name, message, this)) {
+            return;
+        }
+
         const newName: string = context.isLegacy ? context.parsedNamedArgs.new_name : context.options.getString("new_name", true);
 
         if (/\s/.test(name)) {

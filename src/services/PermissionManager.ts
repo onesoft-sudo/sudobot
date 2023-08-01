@@ -87,9 +87,9 @@ export default class PermissionManager extends Service implements HasEventListen
 
     getMemberPermissionFromLevel(member: GuildMember, mergeWithDiscordPermissions?: boolean) {
         const level = this.getMemberPermissionLevel(member);
-        
+
         return new Set<PermissionsString>([
-            ...(mergeWithDiscordPermissions ? member.permissions.toArray() : []), 
+            ...(mergeWithDiscordPermissions ? member.permissions.toArray() : []),
             ...this.levels[level]
         ]);
     }
@@ -108,9 +108,43 @@ export default class PermissionManager extends Service implements HasEventListen
         return level < 0 ? 0 : (level > 100 ? 100 : level);
     }
 
+    getPermissionsFromPermissionRole(permissionRole: PermissionRole, guildId: string) {
+        const guildUsesPermissionLevels = this.client.configManager.config[guildId]?.permissions.mode === "levels";
+
+        if (guildUsesPermissionLevels && permissionRole.level !== undefined && permissionRole.level !== null) {
+            return this.levels[permissionRole.level];
+        }
+
+        return permissionRole.grantedPermissions as readonly PermissionsString[];
+    }
+
+    getPermissionsFromPermissionRoles(permissionRoles: PermissionRole[], guildId: string) {
+        const guildUsesPermissionLevels = this.client.configManager.config[guildId]?.permissions.mode === "levels";
+        const permissionStrings = new Set<PermissionsString>();
+
+        for (const permissionRole of permissionRoles) {
+            if (guildUsesPermissionLevels && permissionRole.level !== undefined && permissionRole.level !== null) {
+                for (const permission of this.levels[permissionRole.level]) {
+                    permissionStrings.add(permission);
+                }
+            }
+            else {
+                for (const permission of permissionRole.grantedPermissions as readonly PermissionsString[]) {
+                    permissionStrings.add(permission);
+                }
+            }
+        }
+
+        return permissionStrings;
+    }
+
+    getPermissionsFromPermissionRoleSet(permissionRole: PermissionRole, guildId: string) {
+        return new Set(this.getPermissionsFromPermissionRole(permissionRole, guildId));
+    }
+
     getMemberPermissions(member: GuildMember, mergeWithDiscordPermissions?: boolean) {
         const guildUsesPermissionLevels = this.client.configManager.config[member.guild.id]?.permissions.mode === "levels";
-        
+
         if (guildUsesPermissionLevels) {
             return this.getMemberPermissionFromLevel(member, mergeWithDiscordPermissions);
         }
@@ -166,7 +200,7 @@ export default class PermissionManager extends Service implements HasEventListen
 
         for (const permissionRole of permissionRoles) {
             const guildUsesPermissionLevels = this.client.configManager.config[permissionRole.guild_id]?.permissions.mode === "levels";
-            
+
             for (const roleId of permissionRole.roles) {
                 if (guildUsesPermissionLevels && typeof permissionRole.level === 'number') {
                     this.guildPermissionLevels[`${permissionRole.guild_id}_r_${roleId}`] = permissionRole.level;

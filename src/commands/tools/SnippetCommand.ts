@@ -21,7 +21,7 @@ import { PermissionsBitField, SlashCommandBuilder, escapeCodeBlock, escapeInline
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class SnippetCommand extends Command {
-    public readonly subcommands = ["list", "create", "delete", "rename", "randomize", "pushfile", "pushfiles"];
+    public readonly subcommands = ["list", "create", "delete", "rename", "randomize", "pushfile", "pushfiles", "edit"];
     public readonly name = "snippet";
     public readonly validationRules: ValidationRule[] = [
         {
@@ -103,13 +103,13 @@ export default class SnippetCommand extends Command {
                 ...context,
                 ...(context.isLegacy
                     ? {
-                          parsedNamedArgs: {
-                              ...context.parsedNamedArgs,
-                              name: context.parsedNamedArgs.name,
-                              content: context.parsedNamedArgs.content,
-                              new_name: subcommand === "rename" ? context.parsedNamedArgs.content.split(/ +/)[0] : undefined
-                          }
-                      }
+                        parsedNamedArgs: {
+                            ...context.parsedNamedArgs,
+                            name: context.parsedNamedArgs.name,
+                            content: context.parsedNamedArgs.content,
+                            new_name: subcommand === "rename" ? context.parsedNamedArgs.content.split(/ +/)[0] : undefined
+                        }
+                    }
                     : {})
             });
         }

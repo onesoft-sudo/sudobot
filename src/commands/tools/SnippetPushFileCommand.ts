@@ -39,16 +39,21 @@ export default class SnippetPushFileCommand extends Command {
         PermissionsBitField.Flags.ManageMessages
     ];
     public readonly aliases: string[] = ["pushsnippet", "pushtag", "pushfiletag", "snippet__pushfiles"];
+    public readonly permissionMode = "or";
     public readonly beta: boolean = true;
     public readonly supportsInteractions = false;
 
     async execute(message: Message, context: LegacyCommandContext): Promise<CommandReturn> {
+        const name: string = context.parsedNamedArgs.name;
+
+        if (!this.client.snippetManager.checkPermissionInSnippetCommands(name, message, this)) {
+            return;
+        }
+
         if (message.attachments.size === 0) {
             await this.error(message, "Please specify at least one attachment to push!");
             return;
         }
-
-        const name: string = context.parsedNamedArgs.name;
 
         const { error } = await this.client.snippetManager.pushFile({
             name,
