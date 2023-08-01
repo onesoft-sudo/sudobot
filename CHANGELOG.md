@@ -1,3 +1,14 @@
+# [5.17.0](https://github.com/onesoft-sudo/sudobot/compare/v5.16.0...v5.17.0) (2023-08-01)
+
+
+### Features
+
+* **automod:** respect the permission levels or named permissions ([eb60991](https://github.com/onesoft-sudo/sudobot/commit/eb60991936b451847672d6f0bc9c93a3f3a9c35b))
+* **logger:** prefix log messages with type ([2044416](https://github.com/onesoft-sudo/sudobot/commit/204441623f616ca2e1b44e7d78e676b28f6c11f6))
+* **snippets:** hybrid permission system support ([7e1a4b6](https://github.com/onesoft-sudo/sudobot/commit/7e1a4b6fa5f4c1c8403c4c33defdc2444eaae696))
+
+
+
 # [5.16.0](https://github.com/onesoft-sudo/sudobot/compare/v5.15.0...v5.16.0) (2023-07-31)
 
 
@@ -36,21 +47,6 @@
 ### Bug Fixes
 
 * better permission info in role update log ([4b9af6f](https://github.com/onesoft-sudo/sudobot/commit/4b9af6fd03cc43721ded93fcdb480c03856f023f))
-
-
-
-# [5.13.0](https://github.com/onesoft-sudo/sudobot/compare/v5.12.3...v5.13.0) (2023-07-30)
-
-
-### Bug Fixes
-
-* crisis command ([76eb05e](https://github.com/onesoft-sudo/sudobot/commit/76eb05e1f0a6406d4a63c877e41788d0b5d885cc))
-
-
-### Features
-
-* add crisis command ([d018937](https://github.com/onesoft-sudo/sudobot/commit/d0189375084ae1518a6acbec45cbf50c3ebdfd58))
-* encourage command ([23d6593](https://github.com/onesoft-sudo/sudobot/commit/23d6593a8ea125a3f6b0fb8cffe1c1b61340126b))
 
 
 
