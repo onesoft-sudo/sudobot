@@ -1,3 +1,12 @@
+# [5.19.0](https://github.com/onesoft-sudo/sudobot/compare/v5.18.0...v5.19.0) (2023-08-01)
+
+
+### Features
+
+* **commands:** add shot command ([232bb08](https://github.com/onesoft-sudo/sudobot/commit/232bb0804f1c1be0b5e9905493eb852b14be1892))
+
+
+
 # [5.18.0](https://github.com/onesoft-sudo/sudobot/compare/v5.17.1...v5.18.0) (2023-08-01)
 
 
@@ -33,15 +42,6 @@
 ### Features
 
 * **permissionManager:** level based permission system ([96387dc](https://github.com/onesoft-sudo/sudobot/commit/96387dc2aa985bc1c9a0980b55e9b17458553029))
-
-
-
-# [5.15.0](https://github.com/onesoft-sudo/sudobot/compare/v5.14.0...v5.15.0) (2023-07-31)
-
-
-### Features
-
-* **permissionManager:** rename table and model ([24d3cad](https://github.com/onesoft-sudo/sudobot/commit/24d3cadde5a754260f2361211c415067e6b020e8))
 
 
 
