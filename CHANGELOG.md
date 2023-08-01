@@ -1,3 +1,12 @@
+# [5.18.0](https://github.com/onesoft-sudo/sudobot/compare/v5.17.1...v5.18.0) (2023-08-01)
+
+
+### Features
+
+* protect system admins ([b43a8b5](https://github.com/onesoft-sudo/sudobot/commit/b43a8b5c4d601f23ca3fe25c57dea09ad8e3b781))
+
+
+
 ## [5.17.1](https://github.com/onesoft-sudo/sudobot/compare/v5.17.0...v5.17.1) (2023-08-01)
 
 
@@ -33,20 +42,6 @@
 ### Features
 
 * **permissionManager:** rename table and model ([24d3cad](https://github.com/onesoft-sudo/sudobot/commit/24d3cadde5a754260f2361211c415067e6b020e8))
-
-
-
-# [5.14.0](https://github.com/onesoft-sudo/sudobot/compare/v5.13.1...v5.14.0) (2023-07-30)
-
-
-### Bug Fixes
-
-* role update event triggering when it's not supposed to ([388a3e3](https://github.com/onesoft-sudo/sudobot/commit/388a3e325a9901829b779fab031753d86560cf0a))
-
-
-### Features
-
-* advanced permission system ([c0b7622](https://github.com/onesoft-sudo/sudobot/commit/c0b7622ca4edb3bff134a502b412b0403ccd275e))
 
 
 
