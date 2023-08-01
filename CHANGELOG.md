@@ -1,3 +1,12 @@
+## [5.17.1](https://github.com/onesoft-sudo/sudobot/compare/v5.17.0...v5.17.1) (2023-08-01)
+
+
+### Bug Fixes
+
+* dependency issue ([8361253](https://github.com/onesoft-sudo/sudobot/commit/8361253c8a6d2b8a1fb2275427292416b023ffc8))
+
+
+
 # [5.17.0](https://github.com/onesoft-sudo/sudobot/compare/v5.16.0...v5.17.0) (2023-08-01)
 
 
@@ -38,15 +47,6 @@
 ### Features
 
 * advanced permission system ([c0b7622](https://github.com/onesoft-sudo/sudobot/commit/c0b7622ca4edb3bff134a502b412b0403ccd275e))
-
-
-
-## [5.13.1](https://github.com/onesoft-sudo/sudobot/compare/v5.13.0...v5.13.1) (2023-07-30)
-
-
-### Bug Fixes
-
-* better permission info in role update log ([4b9af6f](https://github.com/onesoft-sudo/sudobot/commit/4b9af6fd03cc43721ded93fcdb480c03856f023f))
 
 
 
