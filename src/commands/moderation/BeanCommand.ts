@@ -19,6 +19,7 @@
 
 import { PermissionsBitField, SlashCommandBuilder, User } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { protectSystemAdminsFromCommands } from "../../utils/troll";
 import { createModerationEmbed } from "../../utils/utils";
 
 export default class BeanCommand extends Command {
@@ -54,6 +55,11 @@ export default class BeanCommand extends Command {
         await this.deferIfInteraction(message);
 
         const user = context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user", true);
+
+        if (await protectSystemAdminsFromCommands(this.client, message, user.id)) {
+            return;
+        }
+
         const reason = context.isLegacy ? context.parsedNamedArgs.reason : context.options.getString("reason");
 
         const id = await this.client.infractionManager.createUserBean(user, {

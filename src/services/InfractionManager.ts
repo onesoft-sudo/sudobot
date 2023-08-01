@@ -126,7 +126,7 @@ export default class InfractionManager extends Service {
         }).setTimestamp();
     }
 
-    private async sendDM(user: User, guild: Guild, { fields, description, actionDoneName, id, reason, color }: SendDMOptions) {
+    private async sendDM(user: User, guild: Guild, { fields, description, actionDoneName, id, reason, color, title }: SendDMOptions) {
         const internalFields: EmbedField[] = [
             ...(this.client.configManager.config[guild.id]!.infractions?.send_ids_to_user
                 ? [
@@ -144,7 +144,7 @@ export default class InfractionManager extends Service {
                 embeds: [
                     new EmbedBuilder({
                         author: {
-                            name: `You have been ${actionDoneName} in ${guild.name}`,
+                            name: actionDoneName ? `You have been ${actionDoneName} in ${guild.name}` : title ?? "",
                             iconURL: guild.iconURL() ?? undefined
                         },
                         description,
@@ -326,7 +326,26 @@ export default class InfractionManager extends Service {
         return id;
     }
 
-    async createUserBean(user: User, { guild, moderator, reason }: Pick<CreateUserBanOptions, "guild" | "moderator" | "reason">) {
+    async createUserBean(user: User, { guild, reason, moderator }: Omit<CommonOptions, "notifyUser" | "sendLog">) {
+        const id = Math.round(Math.random() * 1000);
+
+        await this.sendDM(user, guild, {
+            title: `You have gotten a shot in ${guild.name}`,
+            id,
+            reason,
+            fields: [
+                {
+                    name: `💉 Doctor`,
+                    value: `${moderator.username}`
+                }
+            ],
+            color: 0x007bff
+        });
+
+        return id;
+    }
+
+    async createUserShot(user: User, { guild, moderator, reason }: Pick<CreateUserBanOptions, "guild" | "moderator" | "reason">) {
         const { id } = await this.client.prisma.infraction.create({
             data: {
                 type: InfractionType.BEAN,
@@ -948,8 +967,9 @@ export type ActionDoneName = "banned" | "muted" | "kicked" | "warned" | "unbanne
 export type SendDMOptions = {
     fields?: APIEmbedField[] | ((internalFields: APIEmbedField[]) => Promise<APIEmbedField[]> | APIEmbedField[]);
     description?: string;
-    actionDoneName: ActionDoneName;
+    actionDoneName?: ActionDoneName;
     id: string | number;
     reason?: string;
     color?: ColorResolvable;
+    title?: string;
 };

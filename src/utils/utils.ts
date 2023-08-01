@@ -84,7 +84,7 @@ export function stringToTimeInterval(input: string, { milliseconds = false } = {
 
 export interface CreateModerationEmbedOptions {
     user: User;
-    actionDoneName: ActionDoneName;
+    actionDoneName?: ActionDoneName;
     reason?: string;
     description?: string;
     fields?: APIEmbedField[] | ((fields: APIEmbedField[], id: string, reason?: string) => Promise<APIEmbedField[]> | APIEmbedField[]);
@@ -134,9 +134,11 @@ export async function createModerationEmbed({
                           value: `${id}`
                       }
                   ],
-        footer: {
-            text: actionDoneName[0].toUpperCase() + actionDoneName.substring(1)
-        }
+        footer: actionDoneName
+            ? {
+                  text: actionDoneName[0].toUpperCase() + actionDoneName.substring(1)
+              }
+            : undefined
     })
         .setTimestamp()
         .setColor(color);

@@ -20,6 +20,7 @@
 import { formatDistanceToNow } from "date-fns";
 import { ChatInputCommandInteraction, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { protectSystemAdminsFromCommands } from "../../utils/troll";
 import { createModerationEmbed, stringToTimeInterval } from "../../utils/utils";
 
 export default class FakeBanCommand extends Command {
@@ -70,6 +71,11 @@ export default class FakeBanCommand extends Command {
         if (message instanceof ChatInputCommandInteraction) await message.deferReply();
 
         const user: User = context.isLegacy ? context.parsedArgs[0] : context.options.getUser("user", true);
+
+        if (await protectSystemAdminsFromCommands(this.client, message, user.id)) {
+            return;
+        }
+
         let deleteMessageSeconds = !context.isLegacy ? undefined : typeof context.parsedArgs[1] === "number" ? context.parsedArgs[1] : undefined;
         const reason = !context.isLegacy
             ? context.options.getString("reason") ?? undefined
