@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import { developmentMode } from "./utils";
 
 export enum LogLevel {
@@ -13,16 +14,16 @@ export function logWithLevel(level: LogLevel = LogLevel.DEBUG, ...message: any[]
         if (!developmentMode())
             return;
 
-        console.debug(...message);
+        console.debug(`${chalk.gray("[system:debug]")}`, ...message);
     }
     else if (level === LogLevel.INFO)
-        console.info(...message);
+        console.info(`${chalk.cyan("[system:info]")}`, ...message);
     else if (level === LogLevel.WARN)
-        console.warn(...message);
+        console.warn(`${chalk.yellow("[system:warn]")}`, ...message);
     else if (level === LogLevel.ERROR)
-        console.error(...message);
+        console.error(`${chalk.red("[system:error]")}`, ...message);
     else if (level === LogLevel.CRITICAL) {
-        console.error(...message);
+        console.error(`${chalk.redBright("[system:critical]")}`, ...message);
         console.log("Critical error occurred. Exitting.");
         process.exit(-1);
     }
