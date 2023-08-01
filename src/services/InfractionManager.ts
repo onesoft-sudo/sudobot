@@ -326,7 +326,7 @@ export default class InfractionManager extends Service {
         return id;
     }
 
-    async createUserBean(user: User, { guild, reason, moderator }: Omit<CommonOptions, "notifyUser" | "sendLog">) {
+    async createUserShot(user: User, { guild, reason, moderator }: Omit<CommonOptions, "notifyUser" | "sendLog">) {
         const id = Math.round(Math.random() * 1000);
 
         await this.sendDM(user, guild, {
@@ -345,7 +345,7 @@ export default class InfractionManager extends Service {
         return id;
     }
 
-    async createUserShot(user: User, { guild, moderator, reason }: Pick<CreateUserBanOptions, "guild" | "moderator" | "reason">) {
+    async createUserBean(user: User, { guild, moderator, reason }: Pick<CreateUserBanOptions, "guild" | "moderator" | "reason">) {
         const { id } = await this.client.prisma.infraction.create({
             data: {
                 type: InfractionType.BEAN,
