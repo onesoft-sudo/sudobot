@@ -82,7 +82,20 @@ export default class PermissionManager extends Service implements HasEventListen
             return true;
         }
 
-        return member.permissions.has(PermissionFlagsBits.ManageGuild, true) || (permission && member.permissions.has(permission, true));
+        const hasDiscordPerms = member.permissions.has(PermissionFlagsBits.ManageGuild, true) || (permission && member.permissions.has(permission, true));
+
+        if (hasDiscordPerms) {
+            log("Member has discord permissions that are immune to automod");
+            return true;
+        }
+
+        const permissions = this.getMemberPermissions(member, false);
+        const hasPermissions = permissions.has("Administrator") || permissions.has("ManageGuild");
+
+        if (hasPermissions)
+            log("Member has permissions that are immune to automod");
+
+        return hasPermissions;
     }
 
     getMemberPermissionFromLevel(member: GuildMember, mergeWithDiscordPermissions?: boolean) {
