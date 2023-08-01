@@ -1,3 +1,13 @@
+## [5.19.1](https://github.com/onesoft-sudo/sudobot/compare/v5.19.0...v5.19.1) (2023-08-01)
+
+
+### Bug Fixes
+
+* bean and shot creation ([a356047](https://github.com/onesoft-sudo/sudobot/commit/a356047e69f345518619a9a21fb27b1c543efc41))
+* eval command showing backticks when there's no output ([13532ba](https://github.com/onesoft-sudo/sudobot/commit/13532ba48428c91d4eca16aa87a9c17f2d27171d))
+
+
+
 # [5.19.0](https://github.com/onesoft-sudo/sudobot/compare/v5.18.0...v5.19.0) (2023-08-01)
 
 
@@ -33,15 +43,6 @@
 * **automod:** respect the permission levels or named permissions ([eb60991](https://github.com/onesoft-sudo/sudobot/commit/eb60991936b451847672d6f0bc9c93a3f3a9c35b))
 * **logger:** prefix log messages with type ([2044416](https://github.com/onesoft-sudo/sudobot/commit/204441623f616ca2e1b44e7d78e676b28f6c11f6))
 * **snippets:** hybrid permission system support ([7e1a4b6](https://github.com/onesoft-sudo/sudobot/commit/7e1a4b6fa5f4c1c8403c4c33defdc2444eaae696))
-
-
-
-# [5.16.0](https://github.com/onesoft-sudo/sudobot/compare/v5.15.0...v5.16.0) (2023-07-31)
-
-
-### Features
-
-* **permissionManager:** level based permission system ([96387dc](https://github.com/onesoft-sudo/sudobot/commit/96387dc2aa985bc1c9a0980b55e9b17458553029))
 
 
 
