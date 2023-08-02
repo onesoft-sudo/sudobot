@@ -1,3 +1,14 @@
+## [5.20.2](https://github.com/onesoft-sudo/sudobot/compare/v5.20.1...v5.20.2) (2023-08-02)
+
+
+### Bug Fixes
+
+* add additional metadata ([2a9b3f1](https://github.com/onesoft-sudo/sudobot/commit/2a9b3f1146f56bd17a81d585f2639e857459edcc))
+* add better description for blocked word and token command ([66d88ec](https://github.com/onesoft-sudo/sudobot/commit/66d88ecc2949350a6e157b528b23266812a6ef3f))
+* remove unneeded newline ([a6b3e2a](https://github.com/onesoft-sudo/sudobot/commit/a6b3e2a4e7f37dd1b2d24f9e77116fd1af68e426))
+
+
+
 ## [5.20.1](https://github.com/onesoft-sudo/sudobot/compare/v5.20.0...v5.20.1) (2023-08-02)
 
 
@@ -36,16 +47,6 @@
 ### Bug Fixes
 
 * **commands:** added missing aliases to clear command ([741c4cc](https://github.com/onesoft-sudo/sudobot/commit/741c4cc4e6f28a567d12d3e5cb2eb126a3da77d3))
-
-
-
-## [5.19.1](https://github.com/onesoft-sudo/sudobot/compare/v5.19.0...v5.19.1) (2023-08-01)
-
-
-### Bug Fixes
-
-* bean and shot creation ([a356047](https://github.com/onesoft-sudo/sudobot/commit/a356047e69f345518619a9a21fb27b1c543efc41))
-* eval command showing backticks when there's no output ([13532ba](https://github.com/onesoft-sudo/sudobot/commit/13532ba48428c91d4eca16aa87a9c17f2d27171d))
 
 
 
