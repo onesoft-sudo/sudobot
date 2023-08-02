@@ -55,6 +55,7 @@ export default class ClearCommand extends Command {
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.ManageMessages];
+    public readonly aliases = ["purge", "bulkdel", "bulkdelete"];
 
     public readonly description = "Clear messages in bulk.";
     public readonly detailedDscription =
