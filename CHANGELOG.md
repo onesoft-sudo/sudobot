@@ -1,3 +1,12 @@
+# [5.25.0](https://github.com/onesoft-sudo/sudobot/compare/v5.24.0...v5.25.0) (2023-08-02)
+
+
+### Features
+
+* added quickmute system ([cf065b8](https://github.com/onesoft-sudo/sudobot/commit/cf065b893c07ab4e398a514c7fd57091ceec943e))
+
+
+
 # [5.24.0](https://github.com/onesoft-sudo/sudobot/compare/v5.23.0...v5.24.0) (2023-08-02)
 
 
@@ -43,20 +52,6 @@
 ### Bug Fixes
 
 * add metadata to remind command ([8c1537c](https://github.com/onesoft-sudo/sudobot/commit/8c1537c27cfe69e75b20eac61bc1a5940754d825))
-
-
-
-# [5.21.0](https://github.com/onesoft-sudo/sudobot/compare/v5.20.2...v5.21.0) (2023-08-02)
-
-
-### Bug Fixes
-
-* **queues:** allow null or undefined value as args ([333c506](https://github.com/onesoft-sudo/sudobot/commit/333c5067d5cab46b81dd77ebd6db726575e2111e))
-
-
-### Features
-
-* add remind command ([1740e03](https://github.com/onesoft-sudo/sudobot/commit/1740e03f2eb4b34161efeeb0e5693b7a6510e384))
 
 
 
