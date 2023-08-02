@@ -1,3 +1,13 @@
+# [5.22.0](https://github.com/onesoft-sudo/sudobot/compare/v5.21.1...v5.22.0) (2023-08-02)
+
+
+### Features
+
+* add dmhistory command ([c1b1c96](https://github.com/onesoft-sudo/sudobot/commit/c1b1c96525d024a59d60026499a264c7674c10aa))
+* **commands:** add spam reset command ([1a68e51](https://github.com/onesoft-sudo/sudobot/commit/1a68e5146750ee43534cda920d62a706bb151bed))
+
+
+
 ## [5.21.1](https://github.com/onesoft-sudo/sudobot/compare/v5.21.0...v5.21.1) (2023-08-02)
 
 
@@ -38,20 +48,6 @@
 ### Bug Fixes
 
 * type errors ([3ca67a7](https://github.com/onesoft-sudo/sudobot/commit/3ca67a7e9b2a07fe05dc5d9a29a655a019a80349))
-
-
-
-# [5.20.0](https://github.com/onesoft-sudo/sudobot/compare/v5.19.3...v5.20.0) (2023-08-02)
-
-
-### Bug Fixes
-
-* typo ([2d6afbd](https://github.com/onesoft-sudo/sudobot/commit/2d6afbd3436b255d5924a71059604873c8cb3bb4))
-
-
-### Features
-
-* **commands:** add blocked word and token management commands ([bea5e7c](https://github.com/onesoft-sudo/sudobot/commit/bea5e7cb35748e91822f9654794b1d9e4044dfec))
 
 
 
