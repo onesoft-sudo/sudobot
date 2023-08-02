@@ -31,11 +31,10 @@ export const GuildConfigSchema = z.object({
             mod_role: zSnowflake.optional(),
             admin_role: zSnowflake.optional(),
             staff_role: zSnowflake.optional(),
-            mode: z.union([
-                z.literal("discord"),
-                z.literal("levels"),
-                z.literal("advanced"),
-            ]).default("discord").optional()
+            mode: z
+                .union([z.literal("discord"), z.literal("levels"), z.literal("advanced")])
+                .default("discord")
+                .optional()
         })
         .optional()
         .default({}),
@@ -47,6 +46,19 @@ export const GuildConfigSchema = z.object({
     muting: z
         .object({
             role: zSnowflake.optional()
+        })
+        .optional(),
+    quickmute: z
+        .object({
+            enabled: z.boolean().optional().default(false),
+            emoji: z.string().optional(),
+            duration: z
+                .number()
+                .int()
+                .min(0)
+                .default(1000 * 60 * 60 * 2)
+                .optional(),
+            reason: z.string().optional()
         })
         .optional(),
     logging: z

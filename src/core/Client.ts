@@ -36,6 +36,7 @@ import type LoggerService from "../services/LoggerService";
 import type MetadataService from "../services/MetadataService";
 import type PermissionManager from "../services/PermissionManager";
 import type QueueManager from "../services/QueueManager";
+import type QuickMuteService from "../services/QuickMuteService";
 import type SnippetManager from "../services/SnippetManager";
 import type WelcomerService from "../services/WelcomerService";
 import { log, logError, logInfo } from "../utils/logger";
@@ -59,6 +60,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@services/ChannelLockManager",
         "@services/PermissionManager",
         "@services/MetadataService",
+        "@services/QuickMuteService",
 
         "@automod/MessageFilter",
         "@automod/Antispam",
@@ -87,6 +89,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     profileFilter: ProfileFilter = {} as ProfileFilter;
     permissionManager: PermissionManager = {} as PermissionManager;
     metadata: MetadataService = {} as MetadataService;
+    quickMute: QuickMuteService = {} as QuickMuteService;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",
