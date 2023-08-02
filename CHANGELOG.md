@@ -1,3 +1,12 @@
+## [5.21.1](https://github.com/onesoft-sudo/sudobot/compare/v5.21.0...v5.21.1) (2023-08-02)
+
+
+### Bug Fixes
+
+* add metadata to remind command ([8c1537c](https://github.com/onesoft-sudo/sudobot/commit/8c1537c27cfe69e75b20eac61bc1a5940754d825))
+
+
+
 # [5.21.0](https://github.com/onesoft-sudo/sudobot/compare/v5.20.2...v5.21.0) (2023-08-02)
 
 
@@ -43,15 +52,6 @@
 ### Features
 
 * **commands:** add blocked word and token management commands ([bea5e7c](https://github.com/onesoft-sudo/sudobot/commit/bea5e7cb35748e91822f9654794b1d9e4044dfec))
-
-
-
-## [5.19.3](https://github.com/onesoft-sudo/sudobot/compare/v5.19.2...v5.19.3) (2023-08-02)
-
-
-### Bug Fixes
-
-* **paginator:** use custom logger instead of console.log ([d6ae96a](https://github.com/onesoft-sudo/sudobot/commit/d6ae96a4c9a6638a6c06a56fc86d079770c8e25e))
 
 
 
