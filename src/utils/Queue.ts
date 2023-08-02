@@ -1,21 +1,21 @@
 /*
-* This file is part of SudoBot.
-*
-* Copyright (C) 2021-2023 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2023 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 import { Guild, TextChannel } from "discord.js";
 import Client from "../core/Client";
@@ -31,7 +31,7 @@ export interface QueueConstructorOptions {
     messageId?: string;
     userId: string;
     filePath: string;
-    args: string[];
+    args: (string | null | undefined)[];
     id?: number;
     name: string;
 }
@@ -45,7 +45,7 @@ export default abstract class Queue {
     public readonly messageId: string | undefined;
     public readonly userId: string;
     public readonly filePath: string;
-    public readonly args: string[] = [];
+    public readonly args: (string | null | undefined)[] = [];
 
     constructor({ client, createdAt, willRunAt, guild, channelId, messageId, userId, filePath, args }: QueueConstructorOptions) {
         this.client = client;
@@ -60,31 +60,26 @@ export default abstract class Queue {
     }
 
     async channel() {
-        if (!this.channelId)
-            return;
+        if (!this.channelId) return;
 
         try {
             return await (this.guild.channels.cache.get(this.channelId) ?? this.guild.channels.fetch(this.channelId));
-        }
-        catch (e) {
+        } catch (e) {
             logError(e);
             return null;
         }
     }
 
     async message(channel?: TextChannel) {
-        if (!this.messageId)
-            return null;
+        if (!this.messageId) return null;
 
         try {
-            const fetchedChannel = channel ?? await this.channel();
+            const fetchedChannel = channel ?? (await this.channel());
 
-            if (!fetchedChannel || !isTextableChannel(fetchedChannel))
-                return null;
+            if (!fetchedChannel || !isTextableChannel(fetchedChannel)) return null;
 
-            return fetchedChannel.messages.cache.get(this.messageId) ?? await fetchedChannel.messages.fetch(this.messageId);
-        }
-        catch (e) {
+            return fetchedChannel.messages.cache.get(this.messageId) ?? (await fetchedChannel.messages.fetch(this.messageId));
+        } catch (e) {
             logError(e);
             return null;
         }
