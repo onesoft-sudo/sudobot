@@ -82,7 +82,7 @@ export default class InfractionCommand extends Command {
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
     public readonly permissionMode = "or";
     public readonly description = "Manage infractions.";
-    public readonly detailedDscription = "Use this command to manage infractions.";
+    public readonly detailedDescription = "Use this command to manage infractions.";
     public readonly argumentSyntaxes = ["<subcommand> [...args]"];
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()

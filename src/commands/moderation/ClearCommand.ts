@@ -58,7 +58,7 @@ export default class ClearCommand extends Command {
     public readonly aliases = ["purge", "bulkdel", "bulkdelete"];
 
     public readonly description = "Clear messages in bulk.";
-    public readonly detailedDscription =
+    public readonly detailedDescription =
         "This command clears messages in bulk, by user or by count or both. This operation may take some time to complete.";
     public readonly argumentSyntaxes = ["<count>", "<UserID|UserMention> [count]"];
 

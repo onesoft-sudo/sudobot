@@ -35,7 +35,7 @@ export default class UnlockCommand extends Command {
     public readonly permissions = [PermissionsBitField.Flags.ManageChannels];
 
     public readonly description = "Unlocks a channel.";
-    public readonly detailedDscription = "This command unlocks down a channel. If no channel is given, the current channel will be unlocked.";
+    public readonly detailedDescription = "This command unlocks down a channel. If no channel is given, the current channel will be unlocked.";
     public readonly argumentSyntaxes = ["[ChannelID|ChannelMention]"];
 
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.ManageChannels];

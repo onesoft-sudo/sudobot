@@ -56,7 +56,7 @@ export default class FakeBanCommand extends Command {
     public readonly aliases = ["fban"];
 
     public readonly description = "Fakebans a user.";
-    public readonly detailedDscription = "This commands simulates a user ban.";
+    public readonly detailedDescription = "This commands simulates a user ban.";
     public readonly argumentSyntaxes = ["<UserID|UserMention> [Reason]", "<UserID|UserMention> [MessageDeletionTime] [Reason]"];
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()

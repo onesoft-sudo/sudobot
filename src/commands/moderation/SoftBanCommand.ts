@@ -57,7 +57,7 @@ export default class SoftBanCommand extends Command {
     public readonly permissions = [PermissionsBitField.Flags.BanMembers];
 
     public readonly description = "Softbans a user.";
-    public readonly detailedDscription =
+    public readonly detailedDescription =
         "This command bans a user, then unbans immediately. This is helpful if you want to remove the recent messages by a user.";
     public readonly argumentSyntaxes = ["<UserID|UserMention> [Reason]", "<UserID|UserMention> [MessageDeletionTime] [Reason]"];
 

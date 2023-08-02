@@ -27,7 +27,7 @@ export default class LockAllCommand extends Command {
     public readonly aliases = ["lockall", "lockserver"];
 
     public readonly description = "Locks all the channels.";
-    public readonly detailedDscription = "This command locks down the entire server. Private channels will be skipped.";
+    public readonly detailedDescription = "This command locks down the entire server. Private channels will be skipped.";
     public readonly argumentSyntaxes = [];
 
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.ManageChannels];

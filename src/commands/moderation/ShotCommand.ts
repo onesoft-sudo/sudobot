@@ -45,7 +45,7 @@ export default class ShotCommand extends Command {
     public readonly permissionMode = "or";
 
     public readonly description = "Gives shot to a user.";
-    public readonly detailedDscription =
+    public readonly detailedDescription =
         "This command doesn't do anything special except DMing the user and telling them that they've been given a shot.";
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()

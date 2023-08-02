@@ -44,7 +44,7 @@ export default class UnmuteCommand extends Command {
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers];
 
     public readonly description = "Unmutes a server member.";
-    public readonly detailedDscription = "This command unmutes a server member. The muted role needs to be configured for this command to work!";
+    public readonly detailedDescription = "This command unmutes a server member. The muted role needs to be configured for this command to work!";
     public readonly argumentSyntaxes = ["<UserID|UserMention> [reason]"];
 
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.ModerateMembers];

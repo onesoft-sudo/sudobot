@@ -45,7 +45,7 @@ export default class BeanCommand extends Command {
     public readonly permissionMode = "or";
 
     public readonly description = "Beans a user.";
-    public readonly detailedDscription = "This command doesn't do anything special except DMing the user and telling them that they've been beaned.";
+    public readonly detailedDescription = "This command doesn't do anything special except DMing the user and telling them that they've been beaned.";
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
         .addUserOption(option => option.setName("user").setDescription("The target user").setRequired(true))

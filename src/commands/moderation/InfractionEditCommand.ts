@@ -31,7 +31,7 @@ export default class InfractionEditCommand extends Command {
     public readonly supportsLegacy: boolean = false;
 
     public readonly description = "Edit infractions.";
-    public readonly detailedDscription = "Update an infraction with a new reason or duration or both.";
+    public readonly detailedDescription = "Update an infraction with a new reason or duration or both.";
     public readonly argumentSyntaxes = ["<infraction_id> [new_reason] [new_duration]"];
 
     async execute(interaction: ChatInputCommandInteraction, context: ChatInputCommandContext): Promise<CommandReturn> {

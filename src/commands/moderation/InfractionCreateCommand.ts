@@ -32,7 +32,7 @@ export default class InfractionCreateCommand extends Command {
     public readonly permissionMode = "or";
 
     public readonly description = "Create infractions.";
-    public readonly detailedDscription = "Create and assign an infraction to someone.";
+    public readonly detailedDescription = "Create and assign an infraction to someone.";
     public readonly argumentSyntaxes = ["<user> <type> [reason] [duration]"];
 
     async execute(interaction: ChatInputCommandInteraction, context: ChatInputCommandContext): Promise<CommandReturn> {

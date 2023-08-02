@@ -29,7 +29,7 @@ export default class MassKickCommand extends Command {
     public readonly aliases = ["mkick"];
 
     public readonly description = "Kick multiple users at the same time.";
-    public readonly detailedDscription = "This command can kick multiple users. This is helpful if you want to quickly kick server raiders.";
+    public readonly detailedDescription = "This command can kick multiple users. This is helpful if you want to quickly kick server raiders.";
     public readonly argumentSyntaxes = ["<...UserIDs|UserMentions> [Reason]"];
 
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.Administrator];

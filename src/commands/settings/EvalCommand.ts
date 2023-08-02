@@ -35,7 +35,7 @@ export default class EvalCommand extends Command {
     public errorOccurred: boolean = false;
 
     public readonly description = "Execute JavaScript code.";
-    public readonly detailedDscription = "This command executes arbitrary JavaScript code. Must be used with caution.";
+    public readonly detailedDescription = "This command executes arbitrary JavaScript code. Must be used with caution.";
     public readonly argumentSyntaxes = ["<...Code>"];
 
     public readonly botRequiredPermissions = [];

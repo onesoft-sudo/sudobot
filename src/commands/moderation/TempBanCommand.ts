@@ -64,7 +64,7 @@ export default class TempBanCommand extends Command {
     public readonly permissions = [PermissionsBitField.Flags.BanMembers];
 
     public readonly description = "Temporarily bans a user.";
-    public readonly detailedDscription = "This command temporarily bans a user. They'll be automatically unbanned after the specified duration.";
+    public readonly detailedDescription = "This command temporarily bans a user. They'll be automatically unbanned after the specified duration.";
     public readonly argumentSyntaxes = ["<UserID|UserMention> <duration> [reason]"];
 
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.BanMembers];

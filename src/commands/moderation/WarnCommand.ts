@@ -43,7 +43,7 @@ export default class WarnCommand extends Command {
     public readonly permissions = [PermissionsBitField.Flags.ManageMessages];
 
     public readonly description = "Warns a server member.";
-    public readonly detailedDscription = "This command warns a server member, by sending a DM to them.";
+    public readonly detailedDescription = "This command warns a server member, by sending a DM to them.";
     public readonly argumentSyntaxes = ["<UserID|UserMention> [reason]"];
 
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.ManageMessages];

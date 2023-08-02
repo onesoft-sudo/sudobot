@@ -34,7 +34,7 @@ export default class InfractionDeleteCommand extends Command {
     public readonly permissionMode = "or";
 
     public readonly description = "Delete infractions.";
-    public readonly detailedDscription = "Delete an infraction for an user.";
+    public readonly detailedDescription = "Delete an infraction for an user.";
     public readonly argumentSyntaxes = ["<infraction_id>"];
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {

@@ -52,7 +52,7 @@ export default class MuteCommand extends Command {
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers];
 
     public readonly description = "Mutes a server member.";
-    public readonly detailedDscription =
+    public readonly detailedDescription =
         "This command mutes a server member. You can specify a duration or make it indefinite. The muted role needs to be configured for this command to work!";
     public readonly argumentSyntaxes = ["<UserID|UserMention> [reason]", "<UserID|UserMention> [duration] [reason]"];
 

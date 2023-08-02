@@ -43,7 +43,7 @@ export default class KickCommand extends Command {
     public readonly permissions = [PermissionsBitField.Flags.KickMembers];
 
     public readonly description = "Kicks a server member.";
-    public readonly detailedDscription = "This command kicks a server member.";
+    public readonly detailedDescription = "This command kicks a server member.";
     public readonly argumentSyntaxes = ["<UserID|UserMention> [reason]"];
 
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.KickMembers];

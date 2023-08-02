@@ -54,7 +54,7 @@ export default class BanCommand extends Command {
     public readonly permissions = [PermissionsBitField.Flags.BanMembers];
 
     public readonly description = "Bans a user.";
-    public readonly detailedDscription =
+    public readonly detailedDescription =
         "This command can ban users in the server or outside of the server. If the user is not in the server, you must specify their ID to ban them.";
     public readonly argumentSyntaxes = ["<UserID|UserMention> [Reason]", "<UserID|UserMention> [MessageDeletionTime] [Reason]"];
 

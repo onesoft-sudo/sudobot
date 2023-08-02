@@ -44,7 +44,7 @@ export default class UnbanCommand extends Command {
     public readonly permissions = [PermissionsBitField.Flags.BanMembers];
 
     public readonly description = "Unbans a user.";
-    public readonly detailedDscription = "This command unbans the given user.";
+    public readonly detailedDescription = "This command unbans the given user.";
     public readonly argumentSyntaxes = ["<UserID|UserMention> [Reason]"];
 
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.BanMembers];

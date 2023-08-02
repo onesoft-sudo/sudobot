@@ -35,7 +35,7 @@ export default class LockCommand extends Command {
     public readonly permissions = [PermissionsBitField.Flags.ManageChannels];
 
     public readonly description = "Locks a channel.";
-    public readonly detailedDscription = "This command locks down a channel. If no channel is given, the current channel will be locked.";
+    public readonly detailedDescription = "This command locks down a channel. If no channel is given, the current channel will be locked.";
     public readonly argumentSyntaxes = ["[ChannelID|ChannelMention]"];
 
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.ManageChannels];

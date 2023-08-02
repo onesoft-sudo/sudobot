@@ -57,7 +57,7 @@ export default class HelpCommand extends Command {
     public readonly permissions = [];
 
     public readonly description = "Shows this help information.";
-    public readonly detailedDscription =
+    public readonly detailedDescription =
         "Shows documentation about the bot's commands. You can even get information about individual commands by running `help <command>` where `<command>` is the command name.";
 
     public readonly argumentSyntaxes = ["[command]"];
@@ -77,7 +77,7 @@ export default class HelpCommand extends Command {
                 aliases: command.aliases,
                 group: command.group,
                 description: command.description,
-                detailedDscription: command.detailedDscription,
+                detailedDscription: command.detailedDescription,
                 systemAdminOnly: command.systemAdminOnly,
                 beta: command.beta,
                 argumentSyntaxes: command.argumentSyntaxes,
@@ -185,7 +185,7 @@ export default class HelpCommand extends Command {
                                 : []),
                             {
                                 name: "Description",
-                                value: command.detailedDscription ?? command.description ?? "*No description available*"
+                                value: command.detailedDescription ?? command.description ?? "*No description available*"
                             },
                             {
                                 name: "Syntax",

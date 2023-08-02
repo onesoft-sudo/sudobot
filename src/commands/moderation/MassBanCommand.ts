@@ -29,7 +29,7 @@ export default class MassBanCommand extends Command {
     public readonly aliases = ["mban"];
 
     public readonly description = "Ban multiple users at the same time.";
-    public readonly detailedDscription =
+    public readonly detailedDescription =
         "This command can ban multiple users. This is helpful if you want to quickly ban server raiders. The message deletion timeframe is 7 days by default.";
     public readonly argumentSyntaxes = ["<...UserIDs|UserMentions> [Reason]"];
 

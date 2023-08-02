@@ -27,7 +27,7 @@ export default class UnlockAllCommand extends Command {
     public readonly aliases = ["unlockall", "unlockserver"];
 
     public readonly description = "Unlocks all the channels.";
-    public readonly detailedDscription = "This command unlocks the entire server. Private channels will be skipped.";
+    public readonly detailedDescription = "This command unlocks the entire server. Private channels will be skipped.";
     public readonly argumentSyntaxes = [];
 
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.ManageChannels];

@@ -33,7 +33,7 @@ export default class NoteCommand extends Command {
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
     public readonly permissionMode = "or";
     public readonly description = "Manage notes.";
-    public readonly detailedDscription = "Use this command to manage notes about users.";
+    public readonly detailedDescription = "Use this command to manage notes about users.";
     public readonly argumentSyntaxes = ["<subcommand> [...args]"];
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
