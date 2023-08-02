@@ -23,7 +23,7 @@ import Queue from "../utils/Queue";
 import { log, logError } from "../utils/logger";
 
 export default class ReminderQueue extends Queue {
-    async run(userId: string, message?: string) {
+    async run(userId: string, message: string) {
         try {
             log("Reminding user");
 
@@ -41,7 +41,7 @@ export default class ReminderQueue extends Queue {
                             name: "Reminder Notification",
                             icon_url: this.client.user?.displayAvatarURL()
                         },
-                        description: message ?? "*No message specified*",
+                        description: message?.trim() === "" ? "*No message specified*" : message,
                         footer: {
                             text: `You had set this reminder ${formatDistanceToNowStrict(this.createdAt, { addSuffix: true })}`
                         }

@@ -64,7 +64,7 @@ export default class RemindCommand extends Command {
 
         await this.client.queueManager.add(
             new QueueEntry({
-                args: [message.member!.user.id, reminderMessage],
+                args: [message.member!.user.id, reminderMessage ?? ""],
                 client: this.client,
                 createdAt: new Date(),
                 filePath: path.resolve(__dirname, "../../queues/ReminderQueue"),

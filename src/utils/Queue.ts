@@ -31,7 +31,7 @@ export interface QueueConstructorOptions {
     messageId?: string;
     userId: string;
     filePath: string;
-    args: (string | null | undefined)[];
+    args: string[];
     id?: number;
     name: string;
 }
@@ -45,7 +45,7 @@ export default abstract class Queue {
     public readonly messageId: string | undefined;
     public readonly userId: string;
     public readonly filePath: string;
-    public readonly args: (string | null | undefined)[] = [];
+    public readonly args: string[] = [];
 
     constructor({ client, createdAt, willRunAt, guild, channelId, messageId, userId, filePath, args }: QueueConstructorOptions) {
         this.client = client;
