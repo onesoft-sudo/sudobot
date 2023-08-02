@@ -101,7 +101,7 @@ postgresql://username:password@hostname:port/dbname
 * `port` is your database port (usually this is `5432`)
 * `dbname` is your database name (usually this is`postgres`)
 
-MySQL database URLs will be almsot similar, except the protocol will be `mysql://` instead of `postgresql://` and the port will be `3306` instead of `5432`.
+MySQL database URLs will be almost similar, except the protocol will be `mysql://` instead of `postgresql://` and the port will be `3306` instead of `5432`.
 
 After you have set the database URL inside `.env`, you can run the following command:
 
