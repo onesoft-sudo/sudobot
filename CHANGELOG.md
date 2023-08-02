@@ -1,3 +1,17 @@
+# [5.23.0](https://github.com/onesoft-sudo/sudobot/compare/v5.22.0...v5.23.0) (2023-08-02)
+
+
+### Bug Fixes
+
+* handle errors while dming user ([647ab9d](https://github.com/onesoft-sudo/sudobot/commit/647ab9d8687440b8eddad0ba83e3bf719c53e4b3))
+
+
+### Features
+
+* add send history command ([2bf6d2b](https://github.com/onesoft-sudo/sudobot/commit/2bf6d2b9ec2163c8d8ce261b652427fef95c2475))
+
+
+
 # [5.22.0](https://github.com/onesoft-sudo/sudobot/compare/v5.21.1...v5.22.0) (2023-08-02)
 
 
@@ -39,15 +53,6 @@
 * add additional metadata ([2a9b3f1](https://github.com/onesoft-sudo/sudobot/commit/2a9b3f1146f56bd17a81d585f2639e857459edcc))
 * add better description for blocked word and token command ([66d88ec](https://github.com/onesoft-sudo/sudobot/commit/66d88ecc2949350a6e157b528b23266812a6ef3f))
 * remove unneeded newline ([a6b3e2a](https://github.com/onesoft-sudo/sudobot/commit/a6b3e2a4e7f37dd1b2d24f9e77116fd1af68e426))
-
-
-
-## [5.20.1](https://github.com/onesoft-sudo/sudobot/compare/v5.20.0...v5.20.1) (2023-08-02)
-
-
-### Bug Fixes
-
-* type errors ([3ca67a7](https://github.com/onesoft-sudo/sudobot/commit/3ca67a7e9b2a07fe05dc5d9a29a655a019a80349))
 
 
 
