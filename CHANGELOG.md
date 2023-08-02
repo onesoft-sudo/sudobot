@@ -1,3 +1,18 @@
+# [5.24.0](https://github.com/onesoft-sudo/sudobot/compare/v5.23.0...v5.24.0) (2023-08-02)
+
+
+### Bug Fixes
+
+* issues with context menu commands ([454f571](https://github.com/onesoft-sudo/sudobot/commit/454f5718813c7b56dcd7cf3f74fce6f73fe1639d))
+
+
+### Features
+
+* **commands:** add send reply command ([42f99b4](https://github.com/onesoft-sudo/sudobot/commit/42f99b4c95965bcf6901b13b5d7445c74f341556))
+* **commands:** support context menu commands ([ec4e066](https://github.com/onesoft-sudo/sudobot/commit/ec4e066e9fa340b9cfa70ae8aac9f718829509bb))
+
+
+
 # [5.23.0](https://github.com/onesoft-sudo/sudobot/compare/v5.22.0...v5.23.0) (2023-08-02)
 
 
@@ -42,17 +57,6 @@
 ### Features
 
 * add remind command ([1740e03](https://github.com/onesoft-sudo/sudobot/commit/1740e03f2eb4b34161efeeb0e5693b7a6510e384))
-
-
-
-## [5.20.2](https://github.com/onesoft-sudo/sudobot/compare/v5.20.1...v5.20.2) (2023-08-02)
-
-
-### Bug Fixes
-
-* add additional metadata ([2a9b3f1](https://github.com/onesoft-sudo/sudobot/commit/2a9b3f1146f56bd17a81d585f2639e857459edcc))
-* add better description for blocked word and token command ([66d88ec](https://github.com/onesoft-sudo/sudobot/commit/66d88ecc2949350a6e157b528b23266812a6ef3f))
-* remove unneeded newline ([a6b3e2a](https://github.com/onesoft-sudo/sudobot/commit/a6b3e2a4e7f37dd1b2d24f9e77116fd1af68e426))
 
 
 
