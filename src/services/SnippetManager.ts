@@ -111,7 +111,7 @@ export default class SnippetManager extends Service {
                 roles,
                 users,
                 name,
-                randomize,
+                randomize
             },
             include: {
                 permission_roles: true
@@ -191,8 +191,7 @@ export default class SnippetManager extends Service {
     }
 
     checkPermissions(snippet: SnippetWithPermissions, member: GuildMember, guildId: string, channelId?: string) {
-        if (member.permissions.has(PermissionFlagsBits.Administrator, true))
-            return true;
+        if (member.permissions.has(PermissionFlagsBits.Administrator, true)) return true;
 
         if (
             (snippet.channels.length > 0 && channelId && !snippet.channels.includes(channelId)) ||
@@ -206,9 +205,10 @@ export default class SnippetManager extends Service {
         const guildUsesPermissionLevels = this.client.configManager.config[guildId]?.permissions.mode === "levels";
         const memberPermissions = this.client.permissionManager.getMemberPermissions(member, true);
 
-        const snippetPermissions = guildUsesPermissionLevels && typeof snippet.level === 'number'
-            ? this.client.permissionManager.levels[snippet.level] ?? ["Administrator"]
-            : this.client.permissionManager.getPermissionsFromPermissionRoles(snippet.permission_roles, guildId);
+        const snippetPermissions =
+            guildUsesPermissionLevels && typeof snippet.level === "number"
+                ? this.client.permissionManager.levels[snippet.level] ?? ["Administrator"]
+                : this.client.permissionManager.getPermissionsFromPermissionRoles(snippet.permission_roles, guildId);
 
         for (const permission of snippetPermissions) {
             if (!memberPermissions.has(permission)) {
@@ -298,12 +298,7 @@ export default class SnippetManager extends Service {
     async toggleRandomization({ guildId, name }: CommonSnippetActionOptions) {
         if (!this.snippets[guildId].has(name)) return { error: "Snippet does not exist" };
 
-        const snippet = await this.client.prisma.snippet.findFirst({
-            where: {
-                name,
-                guild_id: guildId
-            }
-        });
+        const snippet = this.snippets[guildId].get(name);
 
         if (!snippet) {
             return { error: "Snippet does not exist" };
@@ -396,7 +391,7 @@ export default class SnippetManager extends Service {
         users,
         permissionRoleName,
         level
-    }: Partial<Omit<CreateSnippetOptions, 'attachments' | 'userId'>> & CommonSnippetActionOptions & { permissionRoleName?: string, level?: number }) {
+    }: Partial<Omit<CreateSnippetOptions, "attachments" | "userId">> & CommonSnippetActionOptions & { permissionRoleName?: string; level?: number }) {
         if (!this.snippets[guildId].has(name)) {
             return { error: "No snippet found with that name" };
         }
@@ -428,11 +423,13 @@ export default class SnippetManager extends Service {
                 roles,
                 randomize,
                 users,
-                permission_roles: permissionRole ? {
-                    connect: {
-                        id: permissionRole.id
-                    }
-                } : undefined,
+                permission_roles: permissionRole
+                    ? {
+                          connect: {
+                              id: permissionRole.id
+                          }
+                      }
+                    : undefined,
                 level
             },
             include: {
