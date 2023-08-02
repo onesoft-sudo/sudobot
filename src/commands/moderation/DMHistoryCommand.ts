@@ -19,6 +19,7 @@
 
 import { User } from "discord.js";
 import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { logError } from "../../utils/logger";
 
 export default class DMHistoryCommand extends Command {
     public readonly name = "dmhistory";
@@ -31,25 +32,31 @@ export default class DMHistoryCommand extends Command {
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
-        const buffer = await this.client.infractionManager.createInfractionHistoryBuffer(message.member!.user, message.guild!);
+        const { buffer, count } = await this.client.infractionManager.createInfractionHistoryBuffer(message.member!.user, message.guild!);
 
         if (!buffer) {
             await this.deferredReply(message, "You don't have any infractions.");
             return;
         }
 
-        await (message.member!.user as User).send({
-            content: `We've generated your moderation history. The attached text file contains your moderation history.\nDownload the attached text file below to see your infractions.`,
-            files: [
-                {
-                    attachment: buffer,
-                    name: `history-${message.member!.user.username}.txt`
-                }
-            ]
-        });
+        try {
+            await (message.member!.user as User).send({
+                content: `We've generated your moderation history. The attached text file contains your moderation history.\nDownload the attached text file below to see your infractions.`,
+                files: [
+                    {
+                        attachment: buffer,
+                        name: `history-${message.member!.user.username}.txt`
+                    }
+                ]
+            });
+        } catch (e) {
+            logError(e);
+            await this.error(message, "The system could not deliver a DM to you. Maybe you're not accepting DMs from me or this server?");
+            return;
+        }
 
         await this.deferredReply(message, {
-            content: `${this.emoji("check")} The system has sent you a DM with your infraction history.`
+            content: `${this.emoji("check")} The system has sent you a DM. Sent ${count} records total.`
         });
     }
 }
