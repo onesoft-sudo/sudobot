@@ -1,3 +1,12 @@
+## [5.19.3](https://github.com/onesoft-sudo/sudobot/compare/v5.19.2...v5.19.3) (2023-08-02)
+
+
+### Bug Fixes
+
+* **paginator:** use custom logger instead of console.log ([d6ae96a](https://github.com/onesoft-sudo/sudobot/commit/d6ae96a4c9a6638a6c06a56fc86d079770c8e25e))
+
+
+
 ## [5.19.2](https://github.com/onesoft-sudo/sudobot/compare/v5.19.1...v5.19.2) (2023-08-02)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * protect system admins ([b43a8b5](https://github.com/onesoft-sudo/sudobot/commit/b43a8b5c4d601f23ca3fe25c57dea09ad8e3b781))
-
-
-
-## [5.17.1](https://github.com/onesoft-sudo/sudobot/compare/v5.17.0...v5.17.1) (2023-08-01)
-
-
-### Bug Fixes
-
-* dependency issue ([8361253](https://github.com/onesoft-sudo/sudobot/commit/8361253c8a6d2b8a1fb2275427292416b023ffc8))
 
 
 
