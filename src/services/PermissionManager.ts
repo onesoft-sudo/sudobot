@@ -28,8 +28,8 @@ import { log, logWarn } from "../utils/logger";
 export const name = "permissionManager";
 
 export default class PermissionManager extends Service implements HasEventListeners {
-    public readonly users: Record<string, Record<string, Map<string, PermissionRole> | undefined> | undefined> = {};
-    public readonly roles: Record<string, Record<string, Map<string, PermissionRole> | undefined> | undefined> = {};
+    public readonly users: Record<string, Map<string, PermissionRole> | undefined> = {};
+    public readonly roles: Record<string, Map<string, PermissionRole> | undefined> = {};
     public readonly levels: PermissionLevelsRecord = getPermissionLevels();
     public readonly guildPermissionLevels: Record<string, number | undefined> = {};
 
@@ -82,7 +82,8 @@ export default class PermissionManager extends Service implements HasEventListen
             return true;
         }
 
-        const hasDiscordPerms = member.permissions.has(PermissionFlagsBits.ManageGuild, true) || (permission && member.permissions.has(permission, true));
+        const hasDiscordPerms =
+            member.permissions.has(PermissionFlagsBits.ManageGuild, true) || (permission && member.permissions.has(permission, true));
 
         if (hasDiscordPerms) {
             log("Member has discord permissions that are immune to automod");
@@ -92,8 +93,7 @@ export default class PermissionManager extends Service implements HasEventListen
         const permissions = this.getMemberPermissions(member, false);
         const hasPermissions = permissions.has("Administrator") || permissions.has("ManageGuild");
 
-        if (hasPermissions)
-            log("Member has permissions that are immune to automod");
+        if (hasPermissions) log("Member has permissions that are immune to automod");
 
         return hasPermissions;
     }
@@ -101,10 +101,7 @@ export default class PermissionManager extends Service implements HasEventListen
     getMemberPermissionFromLevel(member: GuildMember, mergeWithDiscordPermissions?: boolean) {
         const level = this.getMemberPermissionLevel(member);
 
-        return new Set<PermissionsString>([
-            ...(mergeWithDiscordPermissions ? member.permissions.toArray() : []),
-            ...this.levels[level]
-        ]);
+        return new Set<PermissionsString>([...(mergeWithDiscordPermissions ? member.permissions.toArray() : []), ...this.levels[level]]);
     }
 
     getMemberPermissionLevel(member: GuildMember) {
@@ -118,7 +115,7 @@ export default class PermissionManager extends Service implements HasEventListen
             }
         }
 
-        return level < 0 ? 0 : (level > 100 ? 100 : level);
+        return level < 0 ? 0 : level > 100 ? 100 : level;
     }
 
     getPermissionsFromPermissionRole(permissionRole: PermissionRole, guildId: string) {
@@ -140,8 +137,7 @@ export default class PermissionManager extends Service implements HasEventListen
                 for (const permission of this.levels[permissionRole.level]) {
                     permissionStrings.add(permission);
                 }
-            }
-            else {
+            } else {
                 for (const permission of permissionRole.grantedPermissions as readonly PermissionsString[]) {
                     permissionStrings.add(permission);
                 }
@@ -163,10 +159,9 @@ export default class PermissionManager extends Service implements HasEventListen
         }
 
         const allPermissions = new Set<PermissionsString>(mergeWithDiscordPermissions ? member.permissions.toArray() : []);
-        this.users[member.guild.id] ??= {};
 
         if (this.users[member.guild.id]) {
-            const permissions = this.users[member.guild.id]?.[member.user.id];
+            const permissions = this.users[`${member.guild.id}_${member.user.id}`];
 
             if (permissions) {
                 for (const permission of permissions.values()) {
@@ -178,7 +173,7 @@ export default class PermissionManager extends Service implements HasEventListen
         }
 
         for (const [id] of member.roles.cache) {
-            const permissions = this.roles[member.guild.id]?.[id];
+            const permissions = this.roles[`${member.guild.id}_${id}`];
 
             if (!permissions) {
                 continue;
@@ -197,14 +192,6 @@ export default class PermissionManager extends Service implements HasEventListen
     async sync(guildId?: string) {
         log("Started syncing permission levels", guildId ? `for guild ${guildId}` : "");
 
-        if (guildId && !this.users[guildId]) {
-            this.users[guildId] = {};
-        }
-
-        if (guildId && !this.roles[guildId]) {
-            this.roles[guildId] = {};
-        }
-
         const permissionRoles = await this.client.prisma.permissionRole.findMany({
             where: {
                 guild_id: guildId
@@ -215,25 +202,23 @@ export default class PermissionManager extends Service implements HasEventListen
             const guildUsesPermissionLevels = this.client.configManager.config[permissionRole.guild_id]?.permissions.mode === "levels";
 
             for (const roleId of permissionRole.roles) {
-                if (guildUsesPermissionLevels && typeof permissionRole.level === 'number') {
+                if (guildUsesPermissionLevels && typeof permissionRole.level === "number") {
                     this.guildPermissionLevels[`${permissionRole.guild_id}_r_${roleId}`] = permissionRole.level;
                     continue;
                 }
 
-                this.roles[permissionRole.guild_id] ??= {};
-                this.roles[permissionRole.guild_id]![roleId] ??= new Map();
-                this.roles[permissionRole.guild_id]![roleId]!.set(permissionRole.name, permissionRole);
+                this.roles[`${permissionRole.guild_id}_${roleId}`] ??= new Map();
+                this.roles[`${permissionRole.guild_id}_${roleId}`]!.set(permissionRole.name, permissionRole);
             }
 
             for (const userId of permissionRole.users) {
-                if (guildUsesPermissionLevels && typeof permissionRole.level === 'number') {
+                if (guildUsesPermissionLevels && typeof permissionRole.level === "number") {
                     this.guildPermissionLevels[`${permissionRole.guild_id}_u_${userId}`] = permissionRole.level;
                     continue;
                 }
 
-                this.users[permissionRole.guild_id] ??= {};
-                this.users[permissionRole.guild_id]![userId] ??= new Map();
-                this.users[permissionRole.guild_id]![userId]!.set(permissionRole.name, permissionRole);
+                this.users[`${permissionRole.guild_id}_${userId}`] ??= new Map();
+                this.users[`${permissionRole.guild_id}_${userId}`]!.set(permissionRole.name, permissionRole);
             }
         }
 
@@ -263,15 +248,13 @@ export default class PermissionManager extends Service implements HasEventListen
         });
 
         for (const roleId of permissionLevel.roles) {
-            this.roles[permissionLevel.guild_id] ??= {};
-            this.roles[permissionLevel.guild_id]![roleId] ??= new Map();
-            this.roles[permissionLevel.guild_id]![roleId]!.set(permissionLevel.name, permissionLevel);
+            this.roles[`${permissionLevel.guild_id}_${roleId}`] ??= new Map();
+            this.roles[`${permissionLevel.guild_id}_${roleId}`]!.set(permissionLevel.name, permissionLevel);
         }
 
         for (const userId of permissionLevel.users) {
-            this.users[permissionLevel.guild_id] ??= {};
-            this.users[permissionLevel.guild_id]![userId] ??= new Map();
-            this.users[permissionLevel.guild_id]![userId]!.set(permissionLevel.name, permissionLevel);
+            this.users[`${permissionLevel.guild_id}_${userId}`] ??= new Map();
+            this.users[`${permissionLevel.guild_id}_${userId}`]!.set(permissionLevel.name, permissionLevel);
         }
 
         return permissionLevel;
@@ -294,18 +277,18 @@ export default class PermissionManager extends Service implements HasEventListen
         });
 
         for (const roleId of permissionLevel.roles) {
-            this.roles[permissionLevel.guild_id] ??= {};
+            this.roles[`${permissionLevel.guild_id}_${roleId}`] ??= new Map();
 
-            if (this.roles[permissionLevel.guild_id]![roleId]?.has(permissionLevel.name)) {
-                this.roles[permissionLevel.guild_id]![roleId]!.delete(permissionLevel.name);
+            if (this.roles[`${permissionLevel.guild_id}_${roleId}`]?.has(permissionLevel.name)) {
+                this.roles[`${permissionLevel.guild_id}_${roleId}`]!.delete(permissionLevel.name);
             }
         }
 
         for (const userId of permissionLevel.users) {
-            this.users[permissionLevel.guild_id] ??= {};
+            this.users[`${permissionLevel.guild_id}_${userId}`] ??= new Map();
 
-            if (this.users[permissionLevel.guild_id]![userId]?.has(permissionLevel.name)) {
-                this.users[permissionLevel.guild_id]![userId]!.delete(permissionLevel.name);
+            if (this.users[`${permissionLevel.guild_id}_${userId}`]?.has(permissionLevel.name)) {
+                this.users[`${permissionLevel.guild_id}_${userId}`]!.delete(permissionLevel.name);
             }
         }
 
@@ -338,21 +321,23 @@ export default class PermissionManager extends Service implements HasEventListen
             });
 
             for (const roleId of permissionLevel.roles) {
-                this.roles[permissionLevel.guild_id] ??= {};
-                this.roles[permissionLevel.guild_id]![roleId] ??= new Map();
+                this.roles[`${permissionLevel.guild_id}_${roleId}`] ??= new Map();
 
-                if (this.roles[permissionLevel.guild_id]![roleId]!.has(name)) this.roles[permissionLevel.guild_id]![roleId]!.delete(name);
+                if (this.roles[`${permissionLevel.guild_id}_${roleId}`]!.has(name)) {
+                    this.roles[`${permissionLevel.guild_id}_${roleId}`]!.delete(name);
+                }
 
-                this.roles[permissionLevel.guild_id]![roleId]!.set(permissionLevel.name, permissionLevel);
+                this.roles[`${permissionLevel.guild_id}_${roleId}`]!.set(permissionLevel.name, permissionLevel);
             }
 
             for (const userId of permissionLevel.users) {
-                this.users[permissionLevel.guild_id] ??= {};
-                this.users[permissionLevel.guild_id]![userId] ??= new Map();
+                this.users[`${permissionLevel.guild_id}_${userId}`] ??= new Map();
 
-                if (this.users[permissionLevel.guild_id]![userId]!.has(name)) this.users[permissionLevel.guild_id]![userId]!.delete(name);
+                if (this.users[`${permissionLevel.guild_id}_${userId}`]!.has(name)) {
+                    this.users[`${permissionLevel.guild_id}_${userId}`]!.delete(name);
+                }
 
-                this.users[permissionLevel.guild_id]![userId]!.set(permissionLevel.name, permissionLevel);
+                this.users[`${permissionLevel.guild_id}_${userId}`]!.set(permissionLevel.name, permissionLevel);
             }
 
             return permissionLevel;
