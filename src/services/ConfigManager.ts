@@ -63,7 +63,7 @@ export default class ConfigManager extends Service {
         logInfo("Successfully loaded the configuration files");
     }
 
-    async write({ guild = true, system = false }) {
+    async write({ guild = true, system = false } = {}) {
         if (guild) {
             log(`Writing guild configuration to file: ${this.configPath}`);
 

@@ -22,6 +22,7 @@ import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn
 import Pagination from "../../utils/Pagination";
 
 export default class BlockedTokenCommand extends Command {
+    public readonly subcommandsCustom = ["add", "remove", "has", "list"];
     public readonly name = "blockedtoken";
     public readonly validationRules: ValidationRule[] = [
         {
@@ -59,7 +60,6 @@ export default class BlockedTokenCommand extends Command {
                 .addStringOption(option => option.setName("token").setDescription("The token to check").setRequired(true))
         )
         .addSubcommand(subcommand => subcommand.setName("list").setDescription("Show the blocked token list"));
-    public readonly subcommandsCustom = ["add", "remove", "has", "list"];
     public readonly aliases = ["blockedtokens"];
 
     createConfigIfNotExists(guildId: Snowflake) {

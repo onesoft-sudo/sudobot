@@ -22,6 +22,7 @@ import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn
 import Pagination from "../../utils/Pagination";
 
 export default class BlockedWordCommand extends Command {
+    public readonly subcommandsCustom = ["add", "remove", "has", "list"];
     public readonly name = "blockedword";
     public readonly validationRules: ValidationRule[] = [
         {
@@ -57,7 +58,6 @@ export default class BlockedWordCommand extends Command {
                 .addStringOption(option => option.setName("word").setDescription("The word to check").setRequired(true))
         )
         .addSubcommand(subcommand => subcommand.setName("list").setDescription("Show the blocked word list"));
-    public readonly subcommandsCustom = ["add", "remove", "has", "list"];
     public readonly aliases = ["blockedwords"];
 
     createConfigIfNotExists(guildId: Snowflake) {
