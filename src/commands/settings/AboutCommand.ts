@@ -23,7 +23,7 @@ export default class AboutCommand extends Command {
     public readonly name = "about";
     public readonly validationRules: ValidationRule[] = [];
     public readonly permissions = [];
-    public readonly metadata = require("../../../package.json");
+    public readonly metadata = this.client.metadata.data;
 
     public readonly description = "Show information about the bot";
 
