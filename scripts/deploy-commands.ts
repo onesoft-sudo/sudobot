@@ -37,7 +37,7 @@ function makeSlashCommandBuilder(command: any) {
 }
 
 function makeContextMenuCommandBuilder(command: any) {
-    return new ContextMenuCommandBuilder().setName(command.name).setType(command.type).setDMPermission(false);
+    return new ContextMenuCommandBuilder().setName(command.name).setType(command.applicationCommandType).setDMPermission(false);
 }
 
 (async () => {
@@ -70,7 +70,9 @@ function makeContextMenuCommandBuilder(command: any) {
             if (!command.supportsInteractions) continue;
 
             commands.push(
-                command.type === ApplicationCommandType.ChatInput ? makeSlashCommandBuilder(command) : makeContextMenuCommandBuilder(command)
+                command.applicationCommandType === ApplicationCommandType.ChatInput
+                    ? makeSlashCommandBuilder(command)
+                    : makeContextMenuCommandBuilder(command)
             );
         }
     }

@@ -18,6 +18,7 @@
  */
 
 import { ChatInputCommandInteraction, ContextMenuCommandInteraction, Message } from "discord.js";
+import { CommandMessage } from "../core/Command";
 import Service from "../core/Service";
 import { log, logError, logWarn } from "../utils/logger";
 import { GuildConfig } from "./ConfigManager";
@@ -93,7 +94,7 @@ export default class CommandManager extends Service {
         return true;
     }
 
-    public async runCommandFromChatInputCommandInteraction(interaction: ChatInputCommandInteraction) {
+    public async runCommandFromCommandInteraction(interaction: Exclude<CommandMessage, Message>) {
         const config = this.client.configManager.config[interaction.guildId!];
 
         if (!config) {
@@ -113,7 +114,7 @@ export default class CommandManager extends Service {
                 isLegacy: false,
                 config,
                 options: interaction.options
-            })
+            } as ContextMenuCommandContext)
             .then(result => {
                 if (result && typeof result === "object" && "__reply" in result && result.__reply === true) {
                     interaction.reply(result as any).catch(console.error);
