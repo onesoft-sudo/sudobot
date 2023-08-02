@@ -18,7 +18,7 @@
  */
 
 import { EmbedBuilder, Message, PermissionFlagsBits, SlashCommandBuilder, Snowflake, escapeMarkdown } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import Pagination from "../../utils/Pagination";
 
 export default class BlockedTokenCommand extends Command {
@@ -85,7 +85,7 @@ export default class BlockedTokenCommand extends Command {
         this.client.configManager.config[guildId!]!.message_filter!.data!.blocked_tokens ??= [];
     }
 
-    getToken(message: CommandMessage, subcommand: string, context: AnyCommandContext) {
+    getToken(message: CommandMessage, subcommand: string, context: BasicCommandContext) {
         return context.isLegacy
             ? (message as Message).content
                   .slice(this.client.configManager.config[message.guildId!]?.prefix.length)
@@ -97,7 +97,7 @@ export default class BlockedTokenCommand extends Command {
             : context.options.getString("token", true);
     }
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const subcommand = (context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true))?.toString();
 
         if (!this.subcommandsCustom.includes(subcommand)) {

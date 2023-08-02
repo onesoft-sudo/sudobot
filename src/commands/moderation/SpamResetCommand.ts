@@ -18,7 +18,7 @@
  */
 
 import { PermissionsBitField, SlashCommandBuilder, escapeMarkdown } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class SpamResetCommand extends Command {
     public readonly name = "spamreset";
@@ -40,7 +40,7 @@ export default class SpamResetCommand extends Command {
         option.setName("user").setDescription("The target user").setRequired(true)
     );
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
         const user = context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user", true);

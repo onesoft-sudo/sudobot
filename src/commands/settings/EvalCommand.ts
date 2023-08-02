@@ -18,7 +18,7 @@
  */
 
 import { SlashCommandBuilder, escapeCodeBlock, escapeMarkdown } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { logError } from "../../utils/logger";
 
 export default class EvalCommand extends Command {
@@ -80,7 +80,7 @@ export default class EvalCommand extends Command {
         };
     }
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         this.errorOccurred = false;
 
         const code = context.isLegacy ? context.parsedNamedArgs.code : context.options.getString("code", true);

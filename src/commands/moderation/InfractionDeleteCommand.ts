@@ -18,7 +18,7 @@
  */
 
 import { PermissionsBitField } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class InfractionDeleteCommand extends Command {
     public readonly name = "infraction__delete";
@@ -37,7 +37,7 @@ export default class InfractionDeleteCommand extends Command {
     public readonly detailedDescription = "Delete an infraction for an user.";
     public readonly argumentSyntaxes = ["<infraction_id>"];
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const id = context.isLegacy ? context.parsedNamedArgs.id : context.options.getInteger("id", true);
 
         const infraction = await this.client.prisma.infraction.findFirst({

@@ -18,7 +18,7 @@
  */
 
 import { PermissionsBitField, SlashCommandBuilder } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class NoteCommand extends Command {
     public readonly name = "note";
@@ -76,7 +76,7 @@ export default class NoteCommand extends Command {
                 .addStringOption(option => option.setName("content").setDescription("The content of this note"))
         );
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const subcommand = context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true);
 
         await this.deferIfInteraction(message);

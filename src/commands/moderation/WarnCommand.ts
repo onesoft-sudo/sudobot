@@ -18,7 +18,7 @@
  */
 
 import { ChatInputCommandInteraction, GuildMember, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { createModerationEmbed } from "../../utils/utils";
 
 export default class WarnCommand extends Command {
@@ -52,7 +52,7 @@ export default class WarnCommand extends Command {
         .addUserOption(option => option.setName("member").setDescription("The member").setRequired(true))
         .addStringOption(option => option.setName("reason").setDescription("The reason for warning this user"));
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const member = context.isLegacy ? context.parsedNamedArgs.member : context.options.getMember("member");
 
         if (!member) {

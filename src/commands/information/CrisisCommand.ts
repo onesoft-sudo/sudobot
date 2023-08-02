@@ -18,7 +18,7 @@
  */
 
 import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class CrisisCommand extends Command {
     public readonly name = "crisis";
@@ -36,18 +36,10 @@ export default class CrisisCommand extends Command {
     public readonly beta = true;
     public readonly argumentSyntaxes = ["<country_code>"];
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addSubcommand(subcommand =>
-            subcommand.setName("uk").setDescription("Show the crisis numbers of United Kingdom")
-        )
-        .addSubcommand(subcommand =>
-            subcommand.setName("us").setDescription("Show the crisis numbers of United States")
-        )
-        .addSubcommand(subcommand =>
-            subcommand.setName("aus").setDescription("Show the crisis numbers of Australia")
-        )
-        .addSubcommand(subcommand =>
-            subcommand.setName("nz").setDescription("Show the crisis numbers of New Zealand")
-        );
+        .addSubcommand(subcommand => subcommand.setName("uk").setDescription("Show the crisis numbers of United Kingdom"))
+        .addSubcommand(subcommand => subcommand.setName("us").setDescription("Show the crisis numbers of United States"))
+        .addSubcommand(subcommand => subcommand.setName("aus").setDescription("Show the crisis numbers of Australia"))
+        .addSubcommand(subcommand => subcommand.setName("nz").setDescription("Show the crisis numbers of New Zealand"));
 
     protected readonly countryInfo = {
         "United Kingdom": [
@@ -55,7 +47,7 @@ export default class CrisisCommand extends Command {
             "Switchboard LGBTQI+ helpline - 0300 330 0630",
             "Mind - 0300 123 3393",
             "The mix (under 25s)- 0808 808 4994",
-            "Crisis text line - Text SHOUT to 85258",
+            "Crisis text line - Text SHOUT to 85258"
         ],
         "United States": [
             "Crisis support - 800-273-8255 (call only)",
@@ -65,7 +57,7 @@ export default class CrisisCommand extends Command {
             "SH helpline S.A.F.E - 800-366-8288",
             "Suicide and crisis lifeline - 998"
         ],
-        "Australia": [
+        Australia: [
             "Headspace MH service - 1800 650 890",
             "Butterfly ED helpline - 1800 334 673",
             "QLIFE LGBTQI+ support - 1800 184 527",
@@ -80,16 +72,15 @@ export default class CrisisCommand extends Command {
         ]
     };
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const countryCode: string = context.isLegacy ? context.parsedNamedArgs.country : context.options.getSubcommand(true);
         const embedBuilder = new EmbedBuilder({
             color: 0x007bff,
             footer: {
                 text: "Stay safe!"
             }
-        })
-            .setTimestamp();
-        let country = '';
+        }).setTimestamp();
+        let country = "";
 
         switch (countryCode.toLowerCase()) {
             case "uk":
@@ -97,7 +88,7 @@ export default class CrisisCommand extends Command {
             case "united_kingdom":
             case "united-kingdom":
             case "unitedkingdom":
-                country = 'United Kingdom';
+                country = "United Kingdom";
                 break;
 
             case "us":
@@ -105,7 +96,7 @@ export default class CrisisCommand extends Command {
             case "united_states":
             case "united-states":
             case "unitedstates":
-                country = 'United States';
+                country = "United States";
                 break;
 
             case "nz":
@@ -113,16 +104,19 @@ export default class CrisisCommand extends Command {
             case "new_zealand":
             case "new-zealand":
             case "newzealand":
-                country = 'New Zealand';
+                country = "New Zealand";
                 break;
-    
+
             case "aus":
             case "australia":
                 country = "Australia";
                 break;
 
             default:
-                await this.error(message, "Invalid country code/name provided. Please specify one of these:\nUK - United Kingdom\nUS - United States\nAUS - Australia\nNZ - New Zealand");
+                await this.error(
+                    message,
+                    "Invalid country code/name provided. Please specify one of these:\nUK - United Kingdom\nUS - United States\nAUS - Australia\nNZ - New Zealand"
+                );
                 return;
         }
 
@@ -134,7 +128,7 @@ export default class CrisisCommand extends Command {
                         name: `Showing crisis numbers of ${country}`,
                         iconURL: message.guild?.iconURL() ?? undefined
                     })
-                    .setDescription(this.countryInfo[country as keyof typeof this.countryInfo].join('\n'))
+                    .setDescription(this.countryInfo[country as keyof typeof this.countryInfo].join("\n"))
             ]
         };
     }

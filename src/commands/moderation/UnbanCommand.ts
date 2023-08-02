@@ -18,7 +18,7 @@
  */
 
 import { GuildMember, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { logError } from "../../utils/logger";
 import { createModerationEmbed } from "../../utils/utils";
 
@@ -53,7 +53,7 @@ export default class UnbanCommand extends Command {
         .addUserOption(option => option.setName("user").setDescription("The user").setRequired(true))
         .addStringOption(option => option.setName("reason").setDescription("The reason for unbanning this user"));
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
         const user: User = context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user", true);

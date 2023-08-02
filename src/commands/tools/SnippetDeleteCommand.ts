@@ -18,7 +18,7 @@
  */
 
 import { PermissionsBitField } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class SnippetDeleteCommand extends Command {
     public readonly name = "snippet__delete";
@@ -40,7 +40,7 @@ export default class SnippetDeleteCommand extends Command {
     public readonly aliases: string[] = ["removetag", "rmtag", "deltag", "delsnippet", "rmsnippet"];
     public readonly permissionMode = "or";
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const name: string = context.isLegacy ? context.parsedNamedArgs.name : context.options.getString("name", true);
 
         if (!this.client.snippetManager.checkPermissionInSnippetCommands(name, message, this)) {

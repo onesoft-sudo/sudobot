@@ -18,7 +18,7 @@
  */
 
 import { Channel, ChatInputCommandInteraction, GuildMember, Message, PermissionsBitField, SlashCommandBuilder, TextChannel, User } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { logError } from "../../utils/logger";
 import { isTextableChannel } from "../../utils/utils";
 
@@ -69,7 +69,7 @@ export default class ClearCommand extends Command {
         .addIntegerOption(option => option.setName("count").setDescription("The amount of messages to delete").setMaxValue(100).setMinValue(2))
         .addChannelOption(option => option.setName("channel").setDescription("The channel where the messages will be deleted"));
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const count: number | undefined = !context.isLegacy
             ? context.options.getInteger("count") ?? undefined
             : typeof context.parsedNamedArgs.countOrUser === "number"

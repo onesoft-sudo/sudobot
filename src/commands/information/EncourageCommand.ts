@@ -18,7 +18,7 @@
  */
 
 import axios from "axios";
-import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { logError } from "../../utils/logger";
 
 export default class EncourageCommand extends Command {
@@ -31,7 +31,7 @@ export default class EncourageCommand extends Command {
     public readonly beta = true;
     protected readonly url = "https://zenquotes.io/api/random";
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
         try {

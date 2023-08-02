@@ -19,7 +19,7 @@
 
 import { InfractionType } from "@prisma/client";
 import { MessageMentions, PermissionsBitField, SlashCommandBuilder } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { isSnowflake } from "../../utils/utils";
 
 const infractionTypes = [
@@ -143,7 +143,7 @@ export default class InfractionCommand extends Command {
                 .addStringOption(option => option.setName("duration").setDescription("The duration of this infraction (e.g. 45, 1h30m)"))
         );
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const subcommand = context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true);
 
         if ((subcommand === "edit" || subcommand === "create") && context.isLegacy) {

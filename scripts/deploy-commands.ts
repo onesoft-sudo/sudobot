@@ -22,7 +22,7 @@ import "reflect-metadata";
 
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
-import { SlashCommandBuilder } from "discord.js";
+import { ApplicationCommandType, ContextMenuCommandBuilder, SlashCommandBuilder } from "discord.js";
 import { config } from "dotenv";
 import { existsSync } from "fs";
 import path from "path";
@@ -33,7 +33,11 @@ function makeSlashCommandBuilder(command: any) {
     if (!builder.name) builder.setName(command.name);
     if (!builder.description && command.description) builder.setDescription(command.description);
 
-    return builder;
+    return builder.setDMPermission(false);
+}
+
+function makeContextMenuCommandBuilder(command: any) {
+    return new ContextMenuCommandBuilder().setName(command.name).setType(command.type).setDMPermission(false);
 }
 
 (async () => {
@@ -47,7 +51,7 @@ function makeSlashCommandBuilder(command: any) {
 
     const { CLIENT_ID, HOME_GUILD_ID, TOKEN } = process.env;
 
-    const commands: SlashCommandBuilder[] = [];
+    const commands: (SlashCommandBuilder | ContextMenuCommandBuilder)[] = [];
 
     if (!process.argv.includes("--clear")) {
         const clientPath = path.resolve(existsSync(path.join(__dirname, "../build")) ? "build" : "src", "core/Client");
@@ -65,15 +69,22 @@ function makeSlashCommandBuilder(command: any) {
             if (name.includes("__") || client.commands.get(name)?.name !== name) continue;
             if (!command.supportsInteractions) continue;
 
-            commands.push(makeSlashCommandBuilder(command));
+            commands.push(
+                command.type === ApplicationCommandType.ChatInput ? makeSlashCommandBuilder(command) : makeContextMenuCommandBuilder(command)
+            );
         }
     }
 
     console.table(
-        commands.map(c => ({
-            name: c.name,
-            description: c.description
-        }))
+        commands.map(c =>
+            c instanceof SlashCommandBuilder
+                ? {
+                      type: "ChatInputCommand",
+                      name: c.name,
+                      description: c.description
+                  }
+                : { type: "ContextMenuCommand", name: c.name, description: "None" }
+        )
     );
 
     const rest = new REST({ version: "10" }).setToken(TOKEN!);

@@ -19,7 +19,7 @@
 
 import { formatDistanceToNow } from "date-fns";
 import { ChatInputCommandInteraction, GuildMember, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { logError } from "../../utils/logger";
 import { createModerationEmbed, stringToTimeInterval } from "../../utils/utils";
 
@@ -68,7 +68,7 @@ export default class BanCommand extends Command {
             option.setName("silent").setDescription("Specify if the system should not notify the user about this action. Defaults to false")
         );
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (message instanceof ChatInputCommandInteraction) await message.deferReply();
 
         const user: User = context.isLegacy ? context.parsedArgs[0] : context.options.getUser("user", true);

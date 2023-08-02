@@ -18,7 +18,7 @@
  */
 
 import { GuildMember, PermissionsBitField, SlashCommandBuilder, escapeMarkdown } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { logError } from "../../utils/logger";
 import { createModerationEmbed } from "../../utils/utils";
 
@@ -56,7 +56,7 @@ export default class UnmuteCommand extends Command {
             option.setName("silent").setDescription("Specify if the system should not notify the user about this action. Defaults to false")
         );
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const member: GuildMember = context.isLegacy ? context.parsedNamedArgs.member : context.options.getMember("member");
 
         if (!member) {

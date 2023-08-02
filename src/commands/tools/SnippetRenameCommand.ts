@@ -18,7 +18,7 @@
  */
 
 import { PermissionsBitField, escapeCodeBlock, escapeInlineCode } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class SnippetRenameCommand extends Command {
     public readonly name = "snippet__rename";
@@ -46,7 +46,7 @@ export default class SnippetRenameCommand extends Command {
     public readonly permissionMode = "or";
     public readonly aliases: string[] = ["renametag", "mvtag", "renamesnippet", "mvsnippet"];
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const name: string = context.isLegacy ? context.parsedNamedArgs.name : context.options.getString("old_name", true);
 
         if (!this.client.snippetManager.checkPermissionInSnippetCommands(name, message, this)) {

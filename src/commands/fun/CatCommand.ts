@@ -18,7 +18,7 @@
  */
 
 import axios, { AxiosError } from "axios";
-import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { logError } from "../../utils/logger";
 
 export default class CatCommand extends Command {
@@ -28,7 +28,7 @@ export default class CatCommand extends Command {
 
     public readonly description = "Fetch a random kitty image";
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (!process.env.CAT_API_TOKEN) {
             await this.error(message, "Cat API token is not set. Please ask the system administrator to set the token.");
             return;

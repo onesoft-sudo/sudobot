@@ -19,7 +19,7 @@
 
 import { InfractionType } from "@prisma/client";
 import { PermissionsBitField, User } from "discord.js";
-import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { isSnowflake } from "../../utils/utils";
 
 export default class NoteClearCommand extends Command {
@@ -30,7 +30,7 @@ export default class NoteClearCommand extends Command {
     public readonly description = "Clear all the notes of a user";
     public readonly argumentSyntaxes = ["<UserID|UserMention>"];
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (context.isLegacy && context.args[0] === undefined) {
             await this.error(message, "Please specify a user to clear notes!");
             return;

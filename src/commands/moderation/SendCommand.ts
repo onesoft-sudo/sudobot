@@ -18,7 +18,7 @@
  */
 
 import { AttachmentPayload, Message, PermissionsBitField, SlashCommandBuilder } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { logError } from "../../utils/logger";
 
 export default class EchoCommand extends Command {
@@ -47,7 +47,7 @@ export default class EchoCommand extends Command {
         .addUserOption(option => option.setName("user").setDescription("The user to DM"))
         .addStringOption(option => option.setName("content").setDescription("Message content"));
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message, {
             ephemeral: true
         });

@@ -18,7 +18,7 @@
  */
 
 import { Collection, EmbedBuilder, PermissionResolvable, escapeCodeBlock, escapeInlineCode } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import Pagination from "../../utils/Pagination";
 import { log } from "../../utils/logger";
@@ -93,7 +93,7 @@ export default class HelpCommand extends Command {
         log("Successfully read metadata of " + this.commandInformation.size + " commands");
     }
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
         const commandName = context.isLegacy ? context.parsedNamedArgs.command : context.options.getString("command");
         const subcommand = context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getString("subcommand");

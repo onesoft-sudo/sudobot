@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ChatInputCommandInteraction, Message } from "discord.js";
+import { ChatInputCommandInteraction, ContextMenuCommandInteraction, Message } from "discord.js";
 import Service from "../core/Service";
 import { log, logError, logWarn } from "../utils/logger";
 import { GuildConfig } from "./ConfigManager";
@@ -41,6 +41,11 @@ export interface LegacyCommandContext extends CommandContext {
 export interface ChatInputCommandContext extends CommandContext {
     isLegacy: false;
     options: ChatInputCommandInteraction["options"];
+}
+
+export interface ContextMenuCommandContext extends CommandContext {
+    isLegacy: false;
+    options: ContextMenuCommandInteraction["options"];
 }
 
 export default class CommandManager extends Service {

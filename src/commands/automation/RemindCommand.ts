@@ -20,7 +20,7 @@
 import { formatDistanceToNowStrict } from "date-fns";
 import { SlashCommandBuilder } from "discord.js";
 import path from "path";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import QueueEntry from "../../utils/QueueEntry";
 import { stringToTimeInterval } from "../../utils/utils";
 
@@ -53,7 +53,7 @@ export default class RemindCommand extends Command {
         )
         .addStringOption(option => option.setName("message").setDescription("The reminder message"));
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         let timeInterval = context.isLegacy ? context.parsedNamedArgs.time_interval : context.options.getString("time_interval", true);
 
         if (!context.isLegacy) {

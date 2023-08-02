@@ -18,7 +18,7 @@
  */
 
 import { EmbedBuilder, Message, PermissionsBitField } from "discord.js";
-import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { logError } from "../../utils/logger";
 
 export default class EmbedBuildCommand extends Command {
@@ -26,7 +26,7 @@ export default class EmbedBuildCommand extends Command {
     public readonly validationRules: ValidationRule[] = [];
     public readonly permissions = [PermissionsBitField.Flags.EmbedLinks, PermissionsBitField.Flags.ManageMessages];
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (context.isLegacy && !context.parsedNamedArgs.schema) {
             await this.error(message, "Please provide an embed schema!");
             return;

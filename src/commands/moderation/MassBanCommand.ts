@@ -18,7 +18,7 @@
  */
 
 import { GuildMember, PermissionsBitField, SlashCommandBuilder, User } from "discord.js";
-import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { log, logError } from "../../utils/logger";
 import { isSnowflake, stringToTimeInterval } from "../../utils/utils";
 
@@ -40,7 +40,7 @@ export default class MassBanCommand extends Command {
         .addStringOption(option => option.setName("reason").setDescription("The reason for taking this action"))
         .addStringOption(option => option.setName("deletion_timeframe").setDescription("The message deletion timeframe (must be in range 0-604800)"));
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (context.isLegacy && context.args[0] === undefined) {
             return {
                 __reply: true,

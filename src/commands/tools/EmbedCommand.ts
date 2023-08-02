@@ -18,7 +18,7 @@
  */
 
 import { PermissionsBitField, SlashCommandBuilder, SlashCommandSubcommandBuilder, escapeCodeBlock, escapeInlineCode } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 const addOptions = (builder: SlashCommandSubcommandBuilder) => {
     return builder
@@ -72,7 +72,7 @@ export default class EmbedCommand extends Command {
                 .addStringOption(option => option.setName("json_schema").setDescription("The embed JSON schema"))
         );
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const subcommand: string = context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true);
 
         if (!this.subcommands.includes(subcommand.toLowerCase())) {

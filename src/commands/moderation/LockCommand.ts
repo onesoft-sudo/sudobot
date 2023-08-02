@@ -18,7 +18,7 @@
  */
 
 import { PermissionsBitField, SlashCommandBuilder, TextChannel, User } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { logError } from "../../utils/logger";
 import { isTextableChannel } from "../../utils/utils";
 
@@ -51,7 +51,7 @@ export default class LockCommand extends Command {
                 )
         );
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (!context.isLegacy && context.options.getSubcommand(true) === "server") {
             return await this.client.commands.get("lock__lockall")?.execute(message, context);
         }

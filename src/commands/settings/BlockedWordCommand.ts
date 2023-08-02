@@ -18,7 +18,7 @@
  */
 
 import { EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder, Snowflake, escapeMarkdown } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import Pagination from "../../utils/Pagination";
 
 export default class BlockedWordCommand extends Command {
@@ -85,7 +85,7 @@ export default class BlockedWordCommand extends Command {
         this.client.configManager.config[guildId!]!.message_filter!.data!.blocked_words ??= [];
     }
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const subcommand = (context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true))?.toString();
 
         if (!this.subcommandsCustom.includes(subcommand)) {

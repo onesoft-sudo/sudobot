@@ -18,7 +18,7 @@
  */
 
 import { AttachmentPayload, Channel, GuildChannel, Message, PermissionsBitField, SlashCommandBuilder } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { isTextableChannel } from "../../utils/utils";
 
 export default class EchoCommand extends Command {
@@ -46,7 +46,7 @@ export default class EchoCommand extends Command {
         .addStringOption(option => option.setName("content").setDescription("Message content").setRequired(true))
         .addChannelOption(option => option.setName("channel").setDescription("The channel where the message will be sent"));
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message, {
             ephemeral: true
         });

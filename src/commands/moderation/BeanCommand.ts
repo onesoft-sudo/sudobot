@@ -18,7 +18,7 @@
  */
 
 import { PermissionsBitField, SlashCommandBuilder, User } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { protectSystemAdminsFromCommands } from "../../utils/troll";
 import { createModerationEmbed } from "../../utils/utils";
 
@@ -51,7 +51,7 @@ export default class BeanCommand extends Command {
         .addUserOption(option => option.setName("user").setDescription("The target user").setRequired(true))
         .addStringOption(option => option.setName("reason").setDescription("Reason for beaning this user"));
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
         const user = context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user", true);

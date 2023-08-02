@@ -18,7 +18,7 @@
  */
 
 import { Message, PermissionsBitField, escapeCodeBlock, escapeInlineCode } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { log } from "../../utils/logger";
 
 export default class SnippetCreateCommand extends Command {
@@ -48,7 +48,7 @@ export default class SnippetCreateCommand extends Command {
     public readonly aliases: string[] = ["tagcreate", "addtag", "maketag", "addsnippet"];
     public readonly permissionMode = "or";
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const name: string = context.isLegacy ? context.parsedNamedArgs.name : context.options.getString("name", true);
 
         if (/\s/.test(name)) {
@@ -85,9 +85,10 @@ export default class SnippetCreateCommand extends Command {
 
         await this.deferredReply(
             message,
-            `${this.emoji("check")} Successfully created snippet \`${escapeInlineCode(escapeCodeBlock(name))}\`${!this.client.configManager.systemConfig.snippets?.save_attachments && message instanceof Message && message.attachments.size > 0
-                ? `\nYour message attachments were not saved. Please use links instead.`
-                : ""
+            `${this.emoji("check")} Successfully created snippet \`${escapeInlineCode(escapeCodeBlock(name))}\`${
+                !this.client.configManager.systemConfig.snippets?.save_attachments && message instanceof Message && message.attachments.size > 0
+                    ? `\nYour message attachments were not saved. Please use links instead.`
+                    : ""
             }`
         );
     }

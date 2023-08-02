@@ -18,7 +18,7 @@
  */
 
 import { PermissionsBitField, SlashCommandBuilder, escapeCodeBlock, escapeInlineCode } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class SnippetCommand extends Command {
     public readonly subcommands = ["list", "create", "delete", "rename", "randomize", "pushfile", "pushfiles", "edit"];
@@ -74,7 +74,7 @@ export default class SnippetCommand extends Command {
         )
         .addSubcommand(subcommand => subcommand.setName("list").setDescription("List all snippets in the server"));
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const subcommand: string = context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true);
 
         if (!this.subcommands.includes(subcommand.toLowerCase())) {
@@ -103,13 +103,13 @@ export default class SnippetCommand extends Command {
                 ...context,
                 ...(context.isLegacy
                     ? {
-                        parsedNamedArgs: {
-                            ...context.parsedNamedArgs,
-                            name: context.parsedNamedArgs.name,
-                            content: context.parsedNamedArgs.content,
-                            new_name: subcommand === "rename" ? context.parsedNamedArgs.content.split(/ +/)[0] : undefined
-                        }
-                    }
+                          parsedNamedArgs: {
+                              ...context.parsedNamedArgs,
+                              name: context.parsedNamedArgs.name,
+                              content: context.parsedNamedArgs.content,
+                              new_name: subcommand === "rename" ? context.parsedNamedArgs.content.split(/ +/)[0] : undefined
+                          }
+                      }
                     : {})
             });
         }

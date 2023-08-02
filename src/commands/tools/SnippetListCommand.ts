@@ -18,7 +18,7 @@
  */
 
 import { EmbedBuilder, PermissionsBitField } from "discord.js";
-import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import Pagination from "../../utils/Pagination";
 import { log } from "../../utils/logger";
 
@@ -35,7 +35,7 @@ export default class SnippetListCommand extends Command {
     public readonly aliases: string[] = ["listtags", "taglist", "listsnippets", "snippetlist"];
     public readonly permissionMode = "or";
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const snippets = [...(this.client.snippetManager.snippets[message.guildId!] ?? []).keys()];
 
         if (snippets.length === 0) {
@@ -50,7 +50,7 @@ export default class SnippetListCommand extends Command {
                         name: `Snippets/tags in ${message.guild?.name}`,
                         iconURL: message.guild?.iconURL() ?? undefined
                     },
-                    description: data.length === 0 ? "Nothing to show." : `\`${data.join('`, `')}\``,
+                    description: data.length === 0 ? "Nothing to show." : `\`${data.join("`, `")}\``,
                     footer: {
                         text: `Page ${currentPage} of ${maxPages}`
                     },

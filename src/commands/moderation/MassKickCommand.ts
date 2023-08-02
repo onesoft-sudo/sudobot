@@ -18,7 +18,7 @@
  */
 
 import { PermissionsBitField, SlashCommandBuilder, User } from "discord.js";
-import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { log, logError } from "../../utils/logger";
 import { isSnowflake } from "../../utils/utils";
 
@@ -38,7 +38,7 @@ export default class MassKickCommand extends Command {
         .addUserOption(option => option.setName("users").setDescription("The users to kick").setRequired(true))
         .addStringOption(option => option.setName("reason").setDescription("The reason for taking this action"));
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (context.isLegacy && context.args[0] === undefined) {
             return {
                 __reply: true,

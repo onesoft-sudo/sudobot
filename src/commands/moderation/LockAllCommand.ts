@@ -18,7 +18,7 @@
  */
 
 import { PermissionsBitField, User } from "discord.js";
-import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class LockAllCommand extends Command {
     public readonly name = "lock__lockall";
@@ -32,7 +32,7 @@ export default class LockAllCommand extends Command {
 
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.ManageChannels];
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
         await this.client.channelLockManager.lockGuild(message.guild!, {

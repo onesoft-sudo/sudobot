@@ -19,8 +19,10 @@
 
 import {
     APIMessage,
+    ApplicationCommandType,
     CacheType,
     ChatInputCommandInteraction,
+    ContextMenuCommandInteraction,
     GuildMember,
     InteractionDeferReplyOptions,
     InteractionEditReplyOptions,
@@ -33,13 +35,14 @@ import {
     PermissionsBitField,
     SlashCommandBuilder
 } from "discord.js";
-import { ChatInputCommandContext, LegacyCommandContext } from "../services/CommandManager";
+import { ChatInputCommandContext, ContextMenuCommandContext, LegacyCommandContext } from "../services/CommandManager";
 import { log, logError } from "../utils/logger";
 import { getEmoji, isSnowflake, stringToTimeInterval } from "../utils/utils";
 import Client from "./Client";
 
-export type CommandMessage = Message<boolean> | ChatInputCommandInteraction<CacheType>;
-export type AnyCommandContext = LegacyCommandContext | ChatInputCommandContext;
+export type CommandMessage = Message<boolean> | ChatInputCommandInteraction<CacheType> | ContextMenuCommandInteraction;
+export type BasicCommandContext = LegacyCommandContext | ChatInputCommandContext;
+export type AnyCommandContext = BasicCommandContext | ContextMenuCommandContext;
 export type CommandReturn = ((MessageCreateOptions | APIMessage | InteractionReplyOptions) & { __reply?: boolean }) | undefined | null | void;
 
 export enum ArgumentType {
@@ -98,6 +101,8 @@ export default abstract class Command {
     public readonly slashCommandBuilder?:
         | Partial<Pick<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">>
         | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
+
+    public readonly applicationCommandType: ApplicationCommandType = ApplicationCommandType.ChatInput;
 
     public readonly subcommands: string[] = [];
 

@@ -19,7 +19,7 @@
 
 import { InfractionType } from "@prisma/client";
 import { EmbedBuilder, PermissionsBitField, User, escapeCodeBlock } from "discord.js";
-import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import Pagination from "../../utils/Pagination";
 import { isSnowflake } from "../../utils/utils";
 
@@ -31,7 +31,7 @@ export default class NoteListCommand extends Command {
     public readonly description = "List notes of a user";
     public readonly argumentSyntaxes = ["<UserID|UserMention>"];
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (context.isLegacy && context.args[0] === undefined) {
             await this.error(message, "Please specify a user to list notes!");
             return;

@@ -19,7 +19,7 @@
 
 import { InfractionType } from "@prisma/client";
 import { Message, PermissionsBitField } from "discord.js";
-import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class NoteEditCommand extends Command {
     public readonly name = "note__edit";
@@ -29,7 +29,7 @@ export default class NoteEditCommand extends Command {
     public readonly description = "Edit a note";
     public readonly argumentSyntaxes = ["<id> <new_content>"];
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (context.isLegacy && context.args[0] === undefined) {
             await this.error(message, "Please specify the ID of the note to delete!");
             return;
