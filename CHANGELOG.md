@@ -1,3 +1,17 @@
+# [5.20.0](https://github.com/onesoft-sudo/sudobot/compare/v5.19.3...v5.20.0) (2023-08-02)
+
+
+### Bug Fixes
+
+* typo ([2d6afbd](https://github.com/onesoft-sudo/sudobot/commit/2d6afbd3436b255d5924a71059604873c8cb3bb4))
+
+
+### Features
+
+* **commands:** add blocked word and token management commands ([bea5e7c](https://github.com/onesoft-sudo/sudobot/commit/bea5e7cb35748e91822f9654794b1d9e4044dfec))
+
+
+
 ## [5.19.3](https://github.com/onesoft-sudo/sudobot/compare/v5.19.2...v5.19.3) (2023-08-02)
 
 
@@ -32,15 +46,6 @@
 ### Features
 
 * **commands:** add shot command ([232bb08](https://github.com/onesoft-sudo/sudobot/commit/232bb0804f1c1be0b5e9905493eb852b14be1892))
-
-
-
-# [5.18.0](https://github.com/onesoft-sudo/sudobot/compare/v5.17.1...v5.18.0) (2023-08-01)
-
-
-### Features
-
-* protect system admins ([b43a8b5](https://github.com/onesoft-sudo/sudobot/commit/b43a8b5c4d601f23ca3fe25c57dea09ad8e3b781))
 
 
 
