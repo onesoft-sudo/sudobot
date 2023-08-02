@@ -46,6 +46,8 @@ export default class BlockedTokenCommand extends Command {
         "* `list` - List all the blocked tokens"
     ].join("\n");
 
+    public readonly argumentSyntaxes = ["<subcommand> [...args]"];
+
     public readonly slashCommandBuilder = new SlashCommandBuilder()
         .addSubcommand(subcommand =>
             subcommand
