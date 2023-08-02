@@ -1,3 +1,12 @@
+## [5.19.2](https://github.com/onesoft-sudo/sudobot/compare/v5.19.1...v5.19.2) (2023-08-02)
+
+
+### Bug Fixes
+
+* **commands:** added missing aliases to clear command ([741c4cc](https://github.com/onesoft-sudo/sudobot/commit/741c4cc4e6f28a567d12d3e5cb2eb126a3da77d3))
+
+
+
 ## [5.19.1](https://github.com/onesoft-sudo/sudobot/compare/v5.19.0...v5.19.1) (2023-08-01)
 
 
@@ -32,17 +41,6 @@
 ### Bug Fixes
 
 * dependency issue ([8361253](https://github.com/onesoft-sudo/sudobot/commit/8361253c8a6d2b8a1fb2275427292416b023ffc8))
-
-
-
-# [5.17.0](https://github.com/onesoft-sudo/sudobot/compare/v5.16.0...v5.17.0) (2023-08-01)
-
-
-### Features
-
-* **automod:** respect the permission levels or named permissions ([eb60991](https://github.com/onesoft-sudo/sudobot/commit/eb60991936b451847672d6f0bc9c93a3f3a9c35b))
-* **logger:** prefix log messages with type ([2044416](https://github.com/onesoft-sudo/sudobot/commit/204441623f616ca2e1b44e7d78e676b28f6c11f6))
-* **snippets:** hybrid permission system support ([7e1a4b6](https://github.com/onesoft-sudo/sudobot/commit/7e1a4b6fa5f4c1c8403c4c33defdc2444eaae696))
 
 
 
