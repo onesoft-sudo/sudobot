@@ -1,3 +1,12 @@
+## [5.20.1](https://github.com/onesoft-sudo/sudobot/compare/v5.20.0...v5.20.1) (2023-08-02)
+
+
+### Bug Fixes
+
+* type errors ([3ca67a7](https://github.com/onesoft-sudo/sudobot/commit/3ca67a7e9b2a07fe05dc5d9a29a655a019a80349))
+
+
+
 # [5.20.0](https://github.com/onesoft-sudo/sudobot/compare/v5.19.3...v5.20.0) (2023-08-02)
 
 
@@ -37,15 +46,6 @@
 
 * bean and shot creation ([a356047](https://github.com/onesoft-sudo/sudobot/commit/a356047e69f345518619a9a21fb27b1c543efc41))
 * eval command showing backticks when there's no output ([13532ba](https://github.com/onesoft-sudo/sudobot/commit/13532ba48428c91d4eca16aa87a9c17f2d27171d))
-
-
-
-# [5.19.0](https://github.com/onesoft-sudo/sudobot/compare/v5.18.0...v5.19.0) (2023-08-01)
-
-
-### Features
-
-* **commands:** add shot command ([232bb08](https://github.com/onesoft-sudo/sudobot/commit/232bb0804f1c1be0b5e9905493eb852b14be1892))
 
 
 
