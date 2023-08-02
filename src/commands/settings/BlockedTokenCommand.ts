@@ -37,8 +37,14 @@ export default class BlockedTokenCommand extends Command {
     public readonly permissionMode = "or";
 
     public readonly description = "Manage blocked tokens.";
-    public readonly detailedDescription =
-        "Add/remove/check/view the blocked tokens. All arguments, separated by spaces will also be treated as a single token.";
+    public readonly detailedDescription = [
+        "Add/remove/check/view the blocked tokens. All arguments, separated by spaces will also be treated as a single token.\n",
+        "**Subcommands**\n",
+        "* `add <token>` - Add a blocked token",
+        "* `remove <token>` - Remove a blocked token",
+        "* `has <token>` - Check if the given token is blocked",
+        "* `list` - List all the blocked tokens"
+    ].join("\n");
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
         .addSubcommand(subcommand =>

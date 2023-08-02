@@ -36,8 +36,16 @@ export default class BlockedWordCommand extends Command {
     public readonly permissionMode = "or";
 
     public readonly description = "Manage blocked words.";
-    public readonly detailedDescription =
-        "Add/remove/check/view the blocked words. All arguments, separated by spaces will be treated as different words.";
+
+    public readonly detailedDescription = [
+        "Add/remove/check/view the blocked words. All arguments, separated by spaces will be treated as different words.\n",
+        "**Subcommands**\n",
+        "* `add <word>` - Add blocked word(s)",
+        "* `remove <word>` - Remove blocked word(s)",
+        "* `has <word>` - Check if the given word is blocked",
+        "* `list` - List all the blocked words"
+    ].join("\n");
+
     public readonly slashCommandBuilder = new SlashCommandBuilder()
         .addSubcommand(subcommand =>
             subcommand
