@@ -1,0 +1,38 @@
+{
+    "type": "object",
+    "properties": {
+        "$schema": {
+            "type": "string"
+        },
+        "emojis": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string"
+            },
+            "default": {}
+        },
+        "sync_emojis": {
+            "type": "boolean",
+            "default": false
+        },
+        "system_admins": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "default": []
+        },
+        "snippets": {
+            "type": "object",
+            "properties": {
+                "save_attachments": {
+                    "type": "boolean",
+                    "default": false
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+}

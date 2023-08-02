@@ -1,0 +1,452 @@
+{
+    "type": "object",
+    "additionalProperties": {
+        "anyOf": [
+            {
+                "type": "object",
+                "properties": {
+                    "prefix": {
+                        "type": "string",
+                        "default": "-"
+                    },
+                    "permissions": {
+                        "type": "object",
+                        "properties": {
+                            "mod_role": {},
+                            "admin_role": {
+                                "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                            },
+                            "staff_role": {
+                                "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                            },
+                            "mode": {
+                                "type": "string",
+                                "enum": [
+                                    "discord",
+                                    "levels",
+                                    "advanced"
+                                ],
+                                "default": "discord"
+                            }
+                        },
+                        "additionalProperties": false,
+                        "default": {}
+                    },
+                    "infractions": {
+                        "type": "object",
+                        "properties": {
+                            "send_ids_to_user": {
+                                "type": "boolean",
+                                "default": true
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "muting": {
+                        "type": "object",
+                        "properties": {
+                            "role": {
+                                "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "quickmute": {
+                        "type": "object",
+                        "properties": {
+                            "enabled": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "emoji": {
+                                "type": "string"
+                            },
+                            "duration": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "default": 7200000
+                            },
+                            "reason": {
+                                "type": "string"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "logging": {
+                        "type": "object",
+                        "properties": {
+                            "enabled": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "primary_channel": {
+                                "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                            },
+                            "message_logging_channel": {
+                                "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                            },
+                            "join_leave_channel": {
+                                "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "message_filter": {
+                        "type": "object",
+                        "properties": {
+                            "enabled": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "send_logs": {
+                                "anyOf": [
+                                    {
+                                        "type": "boolean"
+                                    },
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "blocked_words": {
+                                                "type": "boolean",
+                                                "default": false
+                                            },
+                                            "blocked_tokens": {
+                                                "type": "boolean",
+                                                "default": false
+                                            }
+                                        },
+                                        "additionalProperties": false
+                                    }
+                                ],
+                                "default": false
+                            },
+                            "delete_message": {
+                                "anyOf": [
+                                    {
+                                        "type": "boolean"
+                                    },
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "blocked_words": {
+                                                "type": "boolean",
+                                                "default": false
+                                            },
+                                            "blocked_tokens": {
+                                                "type": "boolean",
+                                                "default": false
+                                            }
+                                        },
+                                        "additionalProperties": false
+                                    }
+                                ],
+                                "default": false
+                            },
+                            "data": {
+                                "type": "object",
+                                "properties": {
+                                    "blocked_words": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "default": []
+                                    },
+                                    "blocked_tokens": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "default": []
+                                    }
+                                },
+                                "additionalProperties": false
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "antispam": {
+                        "type": "object",
+                        "properties": {
+                            "enabled": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "limit": {
+                                "type": "integer",
+                                "default": -1
+                            },
+                            "timeframe": {
+                                "type": "integer",
+                                "default": -1
+                            },
+                            "mute_duration": {
+                                "type": "integer",
+                                "default": -1
+                            },
+                            "action": {
+                                "type": "string",
+                                "enum": [
+                                    "verbal_warn",
+                                    "warn",
+                                    "mute",
+                                    "mute_clear",
+                                    "auto"
+                                ]
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "antiraid": {
+                        "type": "object",
+                        "properties": {
+                            "enabled": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "max_joins": {
+                                "type": "integer",
+                                "default": -1
+                            },
+                            "timeframe": {
+                                "type": "integer",
+                                "default": -1
+                            },
+                            "action": {
+                                "type": "string",
+                                "enum": [
+                                    "auto",
+                                    "lock",
+                                    "antijoin",
+                                    "lock_and_antijoin",
+                                    "none"
+                                ]
+                            },
+                            "send_log": {
+                                "type": "boolean",
+                                "default": true
+                            },
+                            "channels": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                },
+                                "default": []
+                            },
+                            "channel_mode": {
+                                "type": "string",
+                                "enum": [
+                                    "exclude",
+                                    "include"
+                                ],
+                                "default": "exclude"
+                            },
+                            "ignore_private_channels": {
+                                "type": "boolean",
+                                "default": true
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "welcomer": {
+                        "type": "object",
+                        "properties": {
+                            "enabled": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "custom_message": {
+                                "type": "string"
+                            },
+                            "randomize": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "mention": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "say_hi_button": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "say_hi_emoji": {
+                                "type": "string",
+                                "default": "default"
+                            },
+                            "say_hi_expire_after": {
+                                "anyOf": [
+                                    {
+                                        "type": "integer",
+                                        "minimum": 5000,
+                                        "maximum": 600000,
+                                        "default": 300000
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ]
+                            },
+                            "delete_messages": {
+                                "anyOf": [
+                                    {
+                                        "type": "integer",
+                                        "minimum": 5000,
+                                        "maximum": 600000
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ],
+                                "default": null
+                            },
+                            "channel": {
+                                "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                            },
+                            "embed": {
+                                "type": "boolean",
+                                "default": true
+                            },
+                            "color": {
+                                "anyOf": [
+                                    {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 16777215,
+                                        "default": 31743
+                                    },
+                                    {
+                                        "type": "string",
+                                        "pattern": "^\\#"
+                                    }
+                                ]
+                            }
+                        },
+                        "required": [
+                            "channel"
+                        ],
+                        "additionalProperties": false
+                    },
+                    "profile_filter": {
+                        "type": "object",
+                        "properties": {
+                            "enabled": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "scan": {
+                                "type": "array",
+                                "items": {
+                                    "anyOf": [
+                                        {
+                                            "type": "string",
+                                            "enum": [
+                                                "status",
+                                                "nickname"
+                                            ]
+                                        },
+                                        {
+                                            "type": "string",
+                                            "const": "username"
+                                        }
+                                    ]
+                                },
+                                "default": []
+                            },
+                            "actions": {
+                                "type": "object",
+                                "properties": {
+                                    "status": {
+                                        "anyOf": [
+                                            {
+                                                "type": "string",
+                                                "enum": [
+                                                    "mute",
+                                                    "warn"
+                                                ]
+                                            },
+                                            {
+                                                "type": "string",
+                                                "const": "none"
+                                            }
+                                        ],
+                                        "default": "none"
+                                    },
+                                    "nickname": {
+                                        "anyOf": [
+                                            {
+                                                "type": "string",
+                                                "enum": [
+                                                    "mute",
+                                                    "warn"
+                                                ]
+                                            },
+                                            {
+                                                "type": "string",
+                                                "const": "none"
+                                            }
+                                        ],
+                                        "default": "none"
+                                    },
+                                    "username": {
+                                        "anyOf": [
+                                            {
+                                                "type": "string",
+                                                "enum": [
+                                                    "mute",
+                                                    "warn"
+                                                ]
+                                            },
+                                            {
+                                                "type": "string",
+                                                "const": "none"
+                                            }
+                                        ],
+                                        "default": "none"
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "default": {}
+                            },
+                            "inherit_from_message_filter": {
+                                "type": "object",
+                                "properties": {
+                                    "tokens": {
+                                        "type": "boolean",
+                                        "default": false
+                                    },
+                                    "words": {
+                                        "type": "boolean",
+                                        "default": false
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "default": {}
+                            },
+                            "tokens": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": []
+                            },
+                            "words": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": []
+                            }
+                        },
+                        "additionalProperties": false
+                    }
+                },
+                "additionalProperties": false
+            },
+            {
+                "type": "string"
+            }
+        ]
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#"
+}

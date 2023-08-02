@@ -1,4 +1,4 @@
 {
-    "$schema": "./schema/config.json",
+    "$schema": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/tree/main/config/schema/config.json",
     "guild_id": {}
 }
