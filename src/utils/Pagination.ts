@@ -53,7 +53,7 @@ export default class Pagination<T> {
     }
 
     async getPaginatedData(page: number = 1) {
-        console.log(page, this.getOffset(page));
+        log(page, this.getOffset(page));
 
         if (this.options.fetchData)
             this.currentData = await this.options.fetchData({
@@ -90,7 +90,7 @@ export default class Pagination<T> {
                 offset: this.getOffset(page)
             });
 
-        console.log("Max Page", this.maxPage);
+        log("Max Page", this.maxPage);
 
         if (actionRowOptionsDup && page <= 1) {
             actionRowOptionsDup.back = false;
@@ -182,16 +182,16 @@ export default class Pagination<T> {
             const componentOptions = { first: true, last: true, next: true, back: true };
 
             if ([`pagination_next_${this.id}`, `pagination_back_${this.id}`].includes(interaction.customId)) {
-                console.log("here");
+                log("here");
 
                 if (this.currentPage >= maxPage && interaction.customId === `pagination_next_${this.id}`) {
-                    console.log("here");
+                    log("here");
                     await interaction.reply({ content: maxPage === 1 ? "This is the only page!" : "You've reached the last page!", ephemeral: true });
                     return;
                 }
 
                 if (this.currentPage <= 1 && interaction.customId === `pagination_back_${this.id}`) {
-                    console.log("here");
+                    log("here");
                     await interaction.reply({
                         content: maxPage === 1 ? "This is the only page!" : "You're in the very first page!",
                         ephemeral: true
@@ -239,7 +239,7 @@ export default class Pagination<T> {
                     ]
                 });
             } catch (e) {
-                console.log(e);
+                log(e);
             }
         });
     }
