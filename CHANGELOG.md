@@ -1,3 +1,17 @@
+# [5.21.0](https://github.com/onesoft-sudo/sudobot/compare/v5.20.2...v5.21.0) (2023-08-02)
+
+
+### Bug Fixes
+
+* **queues:** allow null or undefined value as args ([333c506](https://github.com/onesoft-sudo/sudobot/commit/333c5067d5cab46b81dd77ebd6db726575e2111e))
+
+
+### Features
+
+* add remind command ([1740e03](https://github.com/onesoft-sudo/sudobot/commit/1740e03f2eb4b34161efeeb0e5693b7a6510e384))
+
+
+
 ## [5.20.2](https://github.com/onesoft-sudo/sudobot/compare/v5.20.1...v5.20.2) (2023-08-02)
 
 
@@ -38,15 +52,6 @@
 ### Bug Fixes
 
 * **paginator:** use custom logger instead of console.log ([d6ae96a](https://github.com/onesoft-sudo/sudobot/commit/d6ae96a4c9a6638a6c06a56fc86d079770c8e25e))
-
-
-
-## [5.19.2](https://github.com/onesoft-sudo/sudobot/compare/v5.19.1...v5.19.2) (2023-08-02)
-
-
-### Bug Fixes
-
-* **commands:** added missing aliases to clear command ([741c4cc](https://github.com/onesoft-sudo/sudobot/commit/741c4cc4e6f28a567d12d3e5cb2eb126a3da77d3))
 
 
 
