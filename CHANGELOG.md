@@ -1,3 +1,12 @@
+# [5.29.0](https://github.com/onesoft-sudo/sudobot/compare/v5.28.0...v5.29.0) (2023-08-03)
+
+
+### Features
+
+* config backups and error logging ([e66a713](https://github.com/onesoft-sudo/sudobot/commit/e66a713c71177cb47e96253a86785f463f5d7489))
+
+
+
 # [5.28.0](https://github.com/onesoft-sudo/sudobot/compare/v5.27.2...v5.28.0) (2023-08-03)
 
 
@@ -33,16 +42,6 @@
 * **commandManager:** support multiple application commands from a single command class ([92abe80](https://github.com/onesoft-sudo/sudobot/commit/92abe800ae986bce1939a3389b614f420b8b1485))
 * **commands:** add pixabay command ([c8bde2d](https://github.com/onesoft-sudo/sudobot/commit/c8bde2dcac1a04929245427106971f604204484c))
 * **commands:** add translate command ([ef86e6b](https://github.com/onesoft-sudo/sudobot/commit/ef86e6bbd681a17065472b084fcc53a366ffa0b6))
-
-
-
-# [5.26.0](https://github.com/onesoft-sudo/sudobot/compare/v5.25.0...v5.26.0) (2023-08-03)
-
-
-### Features
-
-* add incomplete translate command ([7e75659](https://github.com/onesoft-sudo/sudobot/commit/7e756590b024ff93dd04fd2ededb1afb586c0160))
-* **commands:** add joke command ([bb7aaa7](https://github.com/onesoft-sudo/sudobot/commit/bb7aaa79612934eff89f412e99527c902711fa92))
 
 
 
