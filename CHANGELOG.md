@@ -1,3 +1,13 @@
+# [5.26.0](https://github.com/onesoft-sudo/sudobot/compare/v5.25.0...v5.26.0) (2023-08-03)
+
+
+### Features
+
+* add incomplete translate command ([7e75659](https://github.com/onesoft-sudo/sudobot/commit/7e756590b024ff93dd04fd2ededb1afb586c0160))
+* **commands:** add joke command ([bb7aaa7](https://github.com/onesoft-sudo/sudobot/commit/bb7aaa79612934eff89f412e99527c902711fa92))
+
+
+
 # [5.25.0](https://github.com/onesoft-sudo/sudobot/compare/v5.24.0...v5.25.0) (2023-08-02)
 
 
@@ -43,15 +53,6 @@
 
 * add dmhistory command ([c1b1c96](https://github.com/onesoft-sudo/sudobot/commit/c1b1c96525d024a59d60026499a264c7674c10aa))
 * **commands:** add spam reset command ([1a68e51](https://github.com/onesoft-sudo/sudobot/commit/1a68e5146750ee43534cda920d62a706bb151bed))
-
-
-
-## [5.21.1](https://github.com/onesoft-sudo/sudobot/compare/v5.21.0...v5.21.1) (2023-08-02)
-
-
-### Bug Fixes
-
-* add metadata to remind command ([8c1537c](https://github.com/onesoft-sudo/sudobot/commit/8c1537c27cfe69e75b20eac61bc1a5940754d825))
 
 
 
