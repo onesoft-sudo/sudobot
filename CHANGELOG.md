@@ -1,3 +1,12 @@
+# [5.28.0](https://github.com/onesoft-sudo/sudobot/compare/v5.27.2...v5.28.0) (2023-08-03)
+
+
+### Features
+
+* **quickmute:** add mute-only mode ([162671c](https://github.com/onesoft-sudo/sudobot/commit/162671cb6a6478e172e79f25e7a2cbbb92dee087))
+
+
+
 ## [5.27.2](https://github.com/onesoft-sudo/sudobot/compare/v5.27.1...v5.27.2) (2023-08-03)
 
 
@@ -34,15 +43,6 @@
 
 * add incomplete translate command ([7e75659](https://github.com/onesoft-sudo/sudobot/commit/7e756590b024ff93dd04fd2ededb1afb586c0160))
 * **commands:** add joke command ([bb7aaa7](https://github.com/onesoft-sudo/sudobot/commit/bb7aaa79612934eff89f412e99527c902711fa92))
-
-
-
-# [5.25.0](https://github.com/onesoft-sudo/sudobot/compare/v5.24.0...v5.25.0) (2023-08-02)
-
-
-### Features
-
-* added quickmute system ([cf065b8](https://github.com/onesoft-sudo/sudobot/commit/cf065b893c07ab4e398a514c7fd57091ceec943e))
 
 
 
