@@ -39,7 +39,7 @@ export default class PermissionManager extends Service implements HasEventListen
     }
 
     shouldModerate(member: GuildMember, moderator: GuildMember) {
-        if (this.client.configManager.systemConfig.system_admins.includes(member.user.id)) return true;
+        if (this.client.configManager.systemConfig.system_admins.includes(moderator.user.id)) return true;
 
         const config = this.client.configManager.config[member.guild.id];
 
