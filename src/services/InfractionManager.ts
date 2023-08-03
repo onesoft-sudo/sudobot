@@ -655,18 +655,20 @@ export default class InfractionManager extends Service {
             });
         }
 
-        this.bulkDeleteMessages({
-            user: member.user,
-            guild,
-            moderator,
-            messagesToDelete,
-            messageChannel,
-            sendLog: true,
-            notifyUser: false,
-            reason:
-                bulkDeleteReason ??
-                `This user was muted with delete messages option specified. The mute reason was: ${reason ?? "*No reason provided*"}`
-        }).catch(logError);
+        if (messageChannel && !(messagesToDelete && messagesToDelete.length === 0)) {
+            this.bulkDeleteMessages({
+                user: member.user,
+                guild,
+                moderator,
+                messagesToDelete,
+                messageChannel,
+                sendLog: true,
+                notifyUser: false,
+                reason:
+                    bulkDeleteReason ??
+                    `This user was muted with delete messages option specified. The mute reason was: ${reason ?? "*No reason provided*"}`
+            }).catch(logError);
+        }
 
         let result = !notifyUser;
 

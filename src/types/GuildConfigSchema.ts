@@ -51,7 +51,8 @@ export const GuildConfigSchema = z.object({
     quickmute: z
         .object({
             enabled: z.boolean().optional().default(false),
-            emoji: z.string().optional(),
+            clear_emoji: z.string().optional(),
+            noclear_emoji: z.string().optional(),
             duration: z
                 .number()
                 .int()

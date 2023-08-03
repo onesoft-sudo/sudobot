@@ -46,23 +46,34 @@ export default class QuickMuteService extends Service implements HasEventListene
 
         log(config);
 
-        if (!config?.enabled || !config?.emoji) {
+        if (!config?.enabled || !config?.clear_emoji || !config?.noclear_emoji) {
             return;
         }
 
         log("Reaction 2");
 
-        if (reaction.emoji.id !== config.emoji && reaction.emoji.identifier !== config.emoji) {
+        if (
+            reaction.emoji.id !== config.clear_emoji &&
+            reaction.emoji.identifier !== config.clear_emoji &&
+            reaction.emoji.id !== config.noclear_emoji &&
+            reaction.emoji.identifier !== config.noclear_emoji
+        ) {
             return;
         }
 
         logInfo("Quickmute trigger reaction receieved.");
 
+        const clearMessages = reaction.emoji.id === config.clear_emoji || reaction.emoji.identifier === config.clear_emoji;
         const guild = this.client.guilds.cache.get(reaction.message.guildId!);
 
         if (!guild) {
             logWarn("Could not resolve guild");
             return;
+        }
+
+        if (reaction.message.author!.id === this.client.user!.id) {
+            log("Cannot mute the bot itself");
+            return false;
         }
 
         let moderator: GuildMember | undefined = undefined;
@@ -96,13 +107,17 @@ export default class QuickMuteService extends Service implements HasEventListene
             guild,
             moderator: user as User,
             autoRemoveQueue: true,
-            bulkDeleteReason: "Clearing recent messages from user, because the quickmute trigger was used.",
+            bulkDeleteReason: clearMessages ? "Clearing recent messages from user, because the quickmute trigger was used." : undefined,
             duration: config.duration ?? 1000 * 60 * 60 * 2,
-            messageChannel: reaction.message.channel! as TextChannel,
+            messageChannel: clearMessages ? (reaction.message.channel! as TextChannel) : undefined,
             notifyUser: true,
             sendLog: true,
             reason: config.reason ?? "You have violated the rules or guidelines of the server. Please take a break, and come back later."
         });
+
+        if (!clearMessages) {
+            await reaction.remove().catch(logError);
+        }
 
         return true;
     }
