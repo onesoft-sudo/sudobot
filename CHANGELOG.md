@@ -1,3 +1,12 @@
+## [5.27.1](https://github.com/onesoft-sudo/sudobot/compare/v5.27.0...v5.27.1) (2023-08-03)
+
+
+### Bug Fixes
+
+* use log() from the custom logger ([a01e4ec](https://github.com/onesoft-sudo/sudobot/commit/a01e4ec21ef481cb5e59166b0e0e05e96fabc3dc))
+
+
+
 # [5.27.0](https://github.com/onesoft-sudo/sudobot/compare/v5.26.0...v5.27.0) (2023-08-03)
 
 
@@ -40,20 +49,6 @@
 
 * **commands:** add send reply command ([42f99b4](https://github.com/onesoft-sudo/sudobot/commit/42f99b4c95965bcf6901b13b5d7445c74f341556))
 * **commands:** support context menu commands ([ec4e066](https://github.com/onesoft-sudo/sudobot/commit/ec4e066e9fa340b9cfa70ae8aac9f718829509bb))
-
-
-
-# [5.23.0](https://github.com/onesoft-sudo/sudobot/compare/v5.22.0...v5.23.0) (2023-08-02)
-
-
-### Bug Fixes
-
-* handle errors while dming user ([647ab9d](https://github.com/onesoft-sudo/sudobot/commit/647ab9d8687440b8eddad0ba83e3bf719c53e4b3))
-
-
-### Features
-
-* add send history command ([2bf6d2b](https://github.com/onesoft-sudo/sudobot/commit/2bf6d2b9ec2163c8d8ce261b652427fef95c2475))
 
 
 
