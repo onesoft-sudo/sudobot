@@ -33,8 +33,8 @@ export const GuildConfigContainerSchema = z.record(z.string(), GuildConfigSchema
 export type GuildConfigContainer = z.infer<typeof GuildConfigContainerSchema>;
 
 export default class ConfigManager extends Service {
-    protected configPath = sudoPrefix("config/config.json");
-    protected systemConfigPath = sudoPrefix("config/system.json");
+    public readonly configPath = sudoPrefix("config/config.json");
+    public readonly systemConfigPath = sudoPrefix("config/system.json");
     protected configSchemaPath = "";
 
     config: GuildConfigContainer = {} as GuildConfigContainer;

@@ -215,3 +215,24 @@ export function forceGetPermissionNames(permissions: PermissionResolvable[]) {
 export function getChannelPermissionOverride(permission: PermissionResolvable, permissionOverwrites: PermissionOverwrites) {
     return permissionOverwrites.allow.has(permission, true) ? true : permissionOverwrites.deny.has(permission, true) ? true : null;
 }
+
+export function chunkedString(str: string, chunkSize = 4000) {
+    let output = [];
+    let chunk = "";
+
+    for (let i = 0; i < str.length; i++) {
+        if (i !== 0 && i % chunkSize === 0) {
+            output.push(chunk);
+            chunk = str[i];
+            continue;
+        }
+
+        chunk += str[i];
+    }
+
+    if (chunk.length !== 0) {
+        output.push(chunk);
+    }
+
+    return output;
+}
