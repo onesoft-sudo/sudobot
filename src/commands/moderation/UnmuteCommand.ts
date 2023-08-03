@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { GuildMember, PermissionsBitField, SlashCommandBuilder, escapeMarkdown } from "discord.js";
+import { GuildMember, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { logError } from "../../utils/logger";
 import { createModerationEmbed } from "../../utils/utils";
@@ -78,7 +78,7 @@ export default class UnmuteCommand extends Command {
         const { id } = <any>await this.client.infractionManager
             .removeMemberMute(member, {
                 guild: message.guild!,
-                moderator: this.client.user!,
+                moderator: message.member!.user as User,
                 notifyUser: !context.isLegacy ? !context.options.getBoolean("silent") ?? true : true,
                 reason,
                 sendLog: true

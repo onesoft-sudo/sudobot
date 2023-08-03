@@ -689,7 +689,7 @@ export default class InfractionManager extends Service {
 
     async removeMemberMute(
         member: GuildMember,
-        { guild, moderator, reason, notifyUser }: CommonOptions
+        { guild, moderator, reason, notifyUser, sendLog, autoRemoveQueue = true }: CommonOptions & { autoRemoveQueue?: boolean }
     ): Promise<{ error?: string; result?: boolean; id?: number }> {
         const mutedRole = this.client.configManager.config[guild.id]?.muting?.role;
 
@@ -723,13 +723,15 @@ export default class InfractionManager extends Service {
             }
         });
 
-        this.client.logger.logMemberUnmute({
-            moderator,
-            member,
-            guild,
-            id: `${id}`,
-            reason
-        });
+        if (sendLog) {
+            this.client.logger.logMemberUnmute({
+                moderator,
+                member,
+                guild,
+                id: `${id}`,
+                reason
+            });
+        }
 
         let result = !notifyUser;
 
@@ -740,6 +742,17 @@ export default class InfractionManager extends Service {
                 reason,
                 color: "Green"
             });
+        }
+
+        if (autoRemoveQueue) {
+            log("Auto remove", this.client.queueManager.queues);
+
+            for (const queue of this.client.queueManager.queues.values()) {
+                if (queue.options.name === "UnmuteQueue" && queue.options.guild.id === member.guild.id && queue.options.args[0] === member.user.id) {
+                    log("Called");
+                    await this.client.queueManager.remove(queue);
+                }
+            }
         }
 
         return { id, result };
