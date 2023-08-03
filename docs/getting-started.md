@@ -101,7 +101,7 @@ postgresql://username:password@hostname:port/dbname
 * `port` is your database port (usually this is `5432`)
 * `dbname` is your database name (usually this is`postgres`)
 
-MySQL database URLs will be almsot similar, except the protocol will be `mysql://` instead of `postgresql://` and the port will be `3306` instead of `5432`.
+MySQL database URLs will be almost similar, except the protocol will be `mysql://` instead of `postgresql://` and the port will be `3306` instead of `5432`.
 
 After you have set the database URL inside `.env`, you can run the following command:
 
@@ -132,9 +132,9 @@ Manually set the settings inside of the file. If you're following along this doc
 
 Replace `guild_id` with your main guild ID, where you want to use the bot. If you want to use the bot in multiple servers, specify them here, as the keys of the root object.
 
-If you're using an IDE or editor like [VS Code](https://code.visualstudio.com/) or [WebStorm](https://www.jetbrains.com/webstorm/), you can hit Ctrl + C (or Cmd + C if you're on a Mac) to get auto completion and see available options. The IDE/editor will highlight errors inside of your config file if you have any.
+If you're using an IDE or editor like [VS Code](https://code.visualstudio.com/) or [WebStorm](https://www.jetbrains.com/webstorm/), you can hit Ctrl + Space (or Cmd + Space if you're on a Mac) to get auto completion and see available options. The IDE/editor will highlight errors inside of your config file if you have any.
 
-**Step 2.** Open up `config/system.json` file and similarly here you'll get autocompletion. But you don't need to delete everything here, just change the `system_admins` property to your User ID. System Admins are those who have full access to the bot and can control everything. They are able to run commands like `-eval`.
+**Step 2.** Open up `config/system.json` file and similarly here you'll get autocompletion. But you don't need to delete everything here, just change the `system_admins` property, which is an array of user IDs. Just add your User ID into the array. System Admins are those who have full access to the bot and can control everything. They are able to run commands like `-eval`.
 
 ## Registering Application Commands
 
