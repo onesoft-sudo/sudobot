@@ -1,3 +1,14 @@
+# [5.27.0](https://github.com/onesoft-sudo/sudobot/compare/v5.26.0...v5.27.0) (2023-08-03)
+
+
+### Features
+
+* **commandManager:** support multiple application commands from a single command class ([92abe80](https://github.com/onesoft-sudo/sudobot/commit/92abe800ae986bce1939a3389b614f420b8b1485))
+* **commands:** add pixabay command ([c8bde2d](https://github.com/onesoft-sudo/sudobot/commit/c8bde2dcac1a04929245427106971f604204484c))
+* **commands:** add translate command ([ef86e6b](https://github.com/onesoft-sudo/sudobot/commit/ef86e6bbd681a17065472b084fcc53a366ffa0b6))
+
+
+
 # [5.26.0](https://github.com/onesoft-sudo/sudobot/compare/v5.25.0...v5.26.0) (2023-08-03)
 
 
@@ -43,16 +54,6 @@
 ### Features
 
 * add send history command ([2bf6d2b](https://github.com/onesoft-sudo/sudobot/commit/2bf6d2b9ec2163c8d8ce261b652427fef95c2475))
-
-
-
-# [5.22.0](https://github.com/onesoft-sudo/sudobot/compare/v5.21.1...v5.22.0) (2023-08-02)
-
-
-### Features
-
-* add dmhistory command ([c1b1c96](https://github.com/onesoft-sudo/sudobot/commit/c1b1c96525d024a59d60026499a264c7674c10aa))
-* **commands:** add spam reset command ([1a68e51](https://github.com/onesoft-sudo/sudobot/commit/1a68e5146750ee43534cda920d62a706bb151bed))
 
 
 
