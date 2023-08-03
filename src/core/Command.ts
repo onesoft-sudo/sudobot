@@ -22,6 +22,7 @@ import {
     ApplicationCommandType,
     CacheType,
     ChatInputCommandInteraction,
+    ContextMenuCommandBuilder,
     ContextMenuCommandInteraction,
     GuildMember,
     InteractionDeferReplyOptions,
@@ -103,6 +104,7 @@ export default abstract class Command {
         | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
 
     public readonly applicationCommandType: ApplicationCommandType = ApplicationCommandType.ChatInput;
+    public readonly otherApplicationCommandBuilders: (ContextMenuCommandBuilder | SlashCommandBuilder)[] = [];
 
     public readonly subcommands: string[] = [];
 

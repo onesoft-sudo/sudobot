@@ -70,6 +70,7 @@ function makeContextMenuCommandBuilder(command: any) {
             if (!command.supportsInteractions) continue;
 
             commands.push(
+                ...(command.otherApplicationCommandBuilders ?? []),
                 command.applicationCommandType === ApplicationCommandType.ChatInput
                     ? makeSlashCommandBuilder(command)
                     : makeContextMenuCommandBuilder(command)

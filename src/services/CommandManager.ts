@@ -32,6 +32,7 @@ export interface CommandContext {
 
 export interface LegacyCommandContext extends CommandContext {
     isLegacy: true;
+    isContextMenu: false;
     argv: string[];
     args: string[];
     parsedArgs: any[];
@@ -41,11 +42,13 @@ export interface LegacyCommandContext extends CommandContext {
 
 export interface ChatInputCommandContext extends CommandContext {
     isLegacy: false;
+    isContextMenu: false;
     options: ChatInputCommandInteraction["options"];
 }
 
 export interface ContextMenuCommandContext extends CommandContext {
     isLegacy: false;
+    isContextMenu: true;
     options: ContextMenuCommandInteraction["options"];
 }
 
@@ -80,6 +83,7 @@ export default class CommandManager extends Service {
                 config,
                 parsedArgs: [],
                 parsedNamedArgs: {},
+                isContextMenu: false,
                 has(arg: string) {
                     return this.args.includes(arg);
                 }
@@ -113,8 +117,9 @@ export default class CommandManager extends Service {
             .run(interaction, {
                 isLegacy: false,
                 config,
-                options: interaction.options
-            } as ContextMenuCommandContext)
+                options: interaction.options,
+                isContextMenu: interaction.isContextMenuCommand()
+            } as ContextMenuCommandContext | ChatInputCommandContext)
             .then(result => {
                 if (result && typeof result === "object" && "__reply" in result && result.__reply === true) {
                     interaction.reply(result as any).catch(console.error);
