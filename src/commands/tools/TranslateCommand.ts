@@ -17,11 +17,22 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ApplicationCommandOptionChoiceData, CacheType, Interaction } from "discord.js";
+import {
+    ApplicationCommandOptionChoiceData,
+    ApplicationCommandType,
+    CacheType,
+    ContextMenuCommandBuilder,
+    EmbedBuilder,
+    Interaction,
+    MessageContextMenuCommandInteraction,
+    SlashCommandBuilder,
+    User
+} from "discord.js";
 import { readFileSync } from "fs";
 import path from "path";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
+import { ChatInputCommandContext } from "../../services/CommandManager";
 import { HasEventListeners } from "../../types/HasEventListeners";
 
 export default class TranslateCommand extends Command implements HasEventListeners {
@@ -35,9 +46,21 @@ export default class TranslateCommand extends Command implements HasEventListene
         }
     ];
     public readonly permissions = [];
+    public readonly aliases = ["Translate to English"];
     public readonly languages: Record<string, string> = JSON.parse(
         readFileSync(path.resolve(__dirname, "../../../resources/languages.json"), { encoding: "utf-8" })
     );
+
+    public readonly slashCommandBuilder = new SlashCommandBuilder()
+        .addStringOption(option => option.setName("text").setDescription("The text to translate").setRequired(true))
+        .addStringOption(option => option.setName("from").setDescription("The language of the input text").setAutocomplete(true))
+        .addStringOption(option => option.setName("to").setDescription("The language of the output text").setAutocomplete(true));
+
+    public readonly otherApplicationCommandBuilders = [
+        new ContextMenuCommandBuilder().setName("Translate to English").setType(ApplicationCommandType.Message).setDMPermission(false)
+    ];
+
+    public readonly description = "Translates the given text.";
 
     @GatewayEventListener("interactionCreate")
     onInteractionCreate(interaction: Interaction<CacheType>) {
@@ -49,7 +72,7 @@ export default class TranslateCommand extends Command implements HasEventListene
         const matches: ApplicationCommandOptionChoiceData[] = [];
 
         for (const code in this.languages) {
-            if (matches.length >= 24) {
+            if (matches.length >= 25) {
                 break;
             }
 
@@ -65,10 +88,22 @@ export default class TranslateCommand extends Command implements HasEventListene
         interaction.respond(matches).catch(console.error);
     }
 
-    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
-        const text = context.isLegacy ? context.parsedNamedArgs.text : context.options.getString("text", true);
-        const from = context.isLegacy ? "auto" : context.options.getString("from") ?? "auto";
-        const to = context.isLegacy ? "en" : context.options.getString("to") ?? "en";
+    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+        await this.deferIfInteraction(message);
+
+        const text = context.isLegacy
+            ? context.parsedNamedArgs.text
+            : message instanceof MessageContextMenuCommandInteraction && context.isContextMenu
+            ? message.targetMessage.content
+            : (context as ChatInputCommandContext).options.getString("text", true);
+
+        if (!text) {
+            await this.error(message, "Invalid text content provided.");
+            return;
+        }
+
+        const from = context.isLegacy ? "auto" : (context.isContextMenu ? "auto" : context.options.getString("from")) ?? "auto";
+        const to = context.isLegacy ? "en" : (context.isContextMenu ? "en" : context.options.getString("to")) ?? "en";
 
         if (from !== "auto" && !this.languages[from]) {
             await this.error(message, "Invalid language specified in the `from` option");
@@ -79,5 +114,46 @@ export default class TranslateCommand extends Command implements HasEventListene
             await this.error(message, "Invalid language specified in the `to` option");
             return;
         }
+
+        const { error, translation, response } = await this.client.translator.translate(text, from, to);
+
+        if (error) {
+            await this.deferredReply(message, {
+                embeds: [
+                    new EmbedBuilder({
+                        color: 0xf14a60,
+                        author: {
+                            name: "Translation Failed"
+                        },
+                        description: `${this.emoji("error")} Couldn't translate that due to an internal error.`,
+                        footer: {
+                            text: "Powered by Google Translate"
+                        }
+                    }).setTimestamp()
+                ]
+            });
+
+            return;
+        }
+
+        await this.deferredReply(message, {
+            embeds: [
+                new EmbedBuilder({
+                    color: 0x007bff,
+                    author: {
+                        name:
+                            message instanceof MessageContextMenuCommandInteraction ? (message.targetMessage.author as User).username : "Translation",
+                        iconURL:
+                            message instanceof MessageContextMenuCommandInteraction
+                                ? (message.targetMessage.author as User).displayAvatarURL()
+                                : undefined
+                    },
+                    description: translation,
+                    footer: {
+                        text: `Translated from ${this.languages[response!.data.src]} to ${this.languages[to]} • Powered by Google Translate`
+                    }
+                })
+            ]
+        });
     }
 }
