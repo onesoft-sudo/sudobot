@@ -17,12 +17,11 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { log } from "console";
 import { ChannelType, GuildMember, MessageReaction, PartialMessageReaction, PartialUser, TextChannel, User } from "discord.js";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { logError, logInfo, logWarn } from "../utils/logger";
+import { log, logError, logInfo, logWarn } from "../utils/logger";
 
 export const name = "quickmute";
 
