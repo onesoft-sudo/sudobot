@@ -1,3 +1,12 @@
+## [5.27.2](https://github.com/onesoft-sudo/sudobot/compare/v5.27.1...v5.27.2) (2023-08-03)
+
+
+### Bug Fixes
+
+* unmute command issue ([eb724fb](https://github.com/onesoft-sudo/sudobot/commit/eb724fb8993841d52437ea30327dc8b81da365a1))
+
+
+
 ## [5.27.1](https://github.com/onesoft-sudo/sudobot/compare/v5.27.0...v5.27.1) (2023-08-03)
 
 
@@ -34,21 +43,6 @@
 ### Features
 
 * added quickmute system ([cf065b8](https://github.com/onesoft-sudo/sudobot/commit/cf065b893c07ab4e398a514c7fd57091ceec943e))
-
-
-
-# [5.24.0](https://github.com/onesoft-sudo/sudobot/compare/v5.23.0...v5.24.0) (2023-08-02)
-
-
-### Bug Fixes
-
-* issues with context menu commands ([454f571](https://github.com/onesoft-sudo/sudobot/commit/454f5718813c7b56dcd7cf3f74fce6f73fe1639d))
-
-
-### Features
-
-* **commands:** add send reply command ([42f99b4](https://github.com/onesoft-sudo/sudobot/commit/42f99b4c95965bcf6901b13b5d7445c74f341556))
-* **commands:** support context menu commands ([ec4e066](https://github.com/onesoft-sudo/sudobot/commit/ec4e066e9fa340b9cfa70ae8aac9f718829509bb))
 
 
 
