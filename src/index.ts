@@ -29,7 +29,8 @@ const intents = [
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.GuildModeration,
-    GatewayIntentBits.GuildEmojisAndStickers
+    GatewayIntentBits.GuildEmojisAndStickers,
+    GatewayIntentBits.GuildPresences
 ];
 
 const partials = [Partials.Channel];
