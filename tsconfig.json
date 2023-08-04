@@ -100,9 +100,5 @@
         "skipLibCheck": true
         /* Skip type checking all .d.ts files. */
     },
-    "exclude": [
-        "./backup",
-        "./tmp",
-        "./scripts"
-    ]
+    "exclude": ["./backup", "./tmp", "./scripts", "./tests"]
 }

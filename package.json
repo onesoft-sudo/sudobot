@@ -64,6 +64,7 @@
     "lint:fix": "eslint src/ --ext .ts --fix",
     "build": "tsc",
     "start:prod": "node build/index.js",
-    "deploy": "npx ts-node scripts/deploy-commands.ts"
+    "deploy": "npx ts-node scripts/deploy-commands.ts",
+    "test": "node --test --require ts-node/register tests/**/*.test.ts"
   }
 }
