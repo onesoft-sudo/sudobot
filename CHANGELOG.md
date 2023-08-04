@@ -1,3 +1,12 @@
+## [5.29.2](https://github.com/onesoft-sudo/sudobot/compare/v5.29.1...v5.29.2) (2023-08-04)
+
+
+### Bug Fixes
+
+* cannot take action on users having admin permission ([ae14875](https://github.com/onesoft-sudo/sudobot/commit/ae148755fee45d48529aad1936cefbc34448a25a))
+
+
+
 ## [5.29.1](https://github.com/onesoft-sudo/sudobot/compare/v5.29.0...v5.29.1) (2023-08-03)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * unmute command issue ([eb724fb](https://github.com/onesoft-sudo/sudobot/commit/eb724fb8993841d52437ea30327dc8b81da365a1))
-
-
-
-## [5.27.1](https://github.com/onesoft-sudo/sudobot/compare/v5.27.0...v5.27.1) (2023-08-03)
-
-
-### Bug Fixes
-
-* use log() from the custom logger ([a01e4ec](https://github.com/onesoft-sudo/sudobot/commit/a01e4ec21ef481cb5e59166b0e0e05e96fabc3dc))
 
 
 
