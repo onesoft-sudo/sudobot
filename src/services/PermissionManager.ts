@@ -55,11 +55,6 @@ export default class PermissionManager extends Service implements HasEventListen
             return false;
         }
 
-        if (member.permissions.has(PermissionFlagsBits.Administrator)) {
-            log("Member has administrator permissions");
-            return false;
-        }
-
         if (member.roles.highest.position >= moderator.roles.highest.position) {
             log("Member has higher roles than moderator");
             return false;
