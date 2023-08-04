@@ -1,3 +1,13 @@
+# [5.30.0](https://github.com/onesoft-sudo/sudobot/compare/v5.29.2...v5.30.0) (2023-08-04)
+
+
+### Features
+
+* **commands:** add avatar command ([0b84428](https://github.com/onesoft-sudo/sudobot/commit/0b8442811c26e96ac95f5bbd405b70ae360ce06a))
+* **commands:** add profile command ([599f5e1](https://github.com/onesoft-sudo/sudobot/commit/599f5e12f59cc31487177aed1969adbc1a6891db))
+
+
+
 ## [5.29.2](https://github.com/onesoft-sudo/sudobot/compare/v5.29.1...v5.29.2) (2023-08-04)
 
 
@@ -31,15 +41,6 @@
 ### Features
 
 * **quickmute:** add mute-only mode ([162671c](https://github.com/onesoft-sudo/sudobot/commit/162671cb6a6478e172e79f25e7a2cbbb92dee087))
-
-
-
-## [5.27.2](https://github.com/onesoft-sudo/sudobot/compare/v5.27.1...v5.27.2) (2023-08-03)
-
-
-### Bug Fixes
-
-* unmute command issue ([eb724fb](https://github.com/onesoft-sudo/sudobot/commit/eb724fb8993841d52437ea30327dc8b81da365a1))
 
 
 
