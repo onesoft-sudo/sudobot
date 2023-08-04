@@ -18,7 +18,7 @@
  */
 
 import { PrismaClient } from "@prisma/client";
-import { Collection, Client as DiscordClient, GuildEmoji, UserResolvable } from "discord.js";
+import { ClientOptions, Collection, Client as DiscordClient, GuildEmoji, UserResolvable } from "discord.js";
 import fs from "fs/promises";
 import path, { basename, dirname } from "path";
 import Server from "../api/Server";
@@ -106,6 +106,14 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
 
     commands = new Collection<string, Command>();
     emojiMap = new Collection<string, GuildEmoji>();
+
+    constructor(options: ClientOptions, { services }: { services?: string[] } = {}) {
+        super(options);
+
+        if (services) {
+            this.services = services;
+        }
+    }
 
     async boot() {
         await this.serviceManager.loadServices();
