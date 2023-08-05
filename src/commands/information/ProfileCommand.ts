@@ -109,7 +109,7 @@ export default class ProfileCommand extends Command {
                     activities.push(`${a.emoji ? `${a.emoji.toString()} ` : ""}${a.state}`);
                 } else if (a.type === ActivityType.Listening) {
                     if (a.name === "Spotify") {
-                        const url = a.url ? `https://open.spotify.com/track/${a.url}` : null;
+                        const url = a.url ? `${a.url}` : null;
                         activities.push(
                             `:notes: Listening to **Spotify**: ${url ? "[" : "**"}${a.state?.replace(/\;/, ",")} - ${a.details}${
                                 url ? "](" + url + ")" : "**"
