@@ -1,3 +1,18 @@
+# [5.32.0](https://github.com/onesoft-sudo/sudobot/compare/v5.31.0...v5.32.0) (2023-08-05)
+
+
+### Bug Fixes
+
+* profile command ([f9db414](https://github.com/onesoft-sudo/sudobot/commit/f9db414d64a3c0c2e2ae3c7daff36d0b11efedf2))
+
+
+### Features
+
+* add emoji command ([184679d](https://github.com/onesoft-sudo/sudobot/commit/184679d2b0e43a34dbd8fe44f8a525f318de8720))
+* add snipe command ([ba2b9c5](https://github.com/onesoft-sudo/sudobot/commit/ba2b9c5c1ed554cd178e9a8f72e7d22d3a89c577))
+
+
+
 # [5.31.0](https://github.com/onesoft-sudo/sudobot/compare/v5.30.1...v5.31.0) (2023-08-05)
 
 
@@ -32,15 +47,6 @@
 ### Bug Fixes
 
 * cannot take action on users having admin permission ([ae14875](https://github.com/onesoft-sudo/sudobot/commit/ae148755fee45d48529aad1936cefbc34448a25a))
-
-
-
-## [5.29.1](https://github.com/onesoft-sudo/sudobot/compare/v5.29.0...v5.29.1) (2023-08-03)
-
-
-### Bug Fixes
-
-* permission issue with system admins ([4708a14](https://github.com/onesoft-sudo/sudobot/commit/4708a147d6953b04b097f502728d562844e5ce18))
 
 
 
