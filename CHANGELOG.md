@@ -1,3 +1,12 @@
+# [5.31.0](https://github.com/onesoft-sudo/sudobot/compare/v5.30.1...v5.31.0) (2023-08-05)
+
+
+### Features
+
+* userinfo command ([866c112](https://github.com/onesoft-sudo/sudobot/commit/866c1129d894375ddb4a38bab8192ab7d17cf9d6))
+
+
+
 ## [5.30.1](https://github.com/onesoft-sudo/sudobot/compare/v5.30.0...v5.30.1) (2023-08-04)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * permission issue with system admins ([4708a14](https://github.com/onesoft-sudo/sudobot/commit/4708a147d6953b04b097f502728d562844e5ce18))
-
-
-
-# [5.29.0](https://github.com/onesoft-sudo/sudobot/compare/v5.28.0...v5.29.0) (2023-08-03)
-
-
-### Features
-
-* config backups and error logging ([e66a713](https://github.com/onesoft-sudo/sudobot/commit/e66a713c71177cb47e96253a86785f463f5d7489))
 
 
 
