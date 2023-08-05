@@ -1,3 +1,12 @@
+## [5.30.1](https://github.com/onesoft-sudo/sudobot/compare/v5.30.0...v5.30.1) (2023-08-04)
+
+
+### Bug Fixes
+
+* decimal value in permission percentages ([ad6f0db](https://github.com/onesoft-sudo/sudobot/commit/ad6f0db4eff40f9afda9c394f88429deda56cda4))
+
+
+
 # [5.30.0](https://github.com/onesoft-sudo/sudobot/compare/v5.29.2...v5.30.0) (2023-08-04)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * config backups and error logging ([e66a713](https://github.com/onesoft-sudo/sudobot/commit/e66a713c71177cb47e96253a86785f463f5d7489))
-
-
-
-# [5.28.0](https://github.com/onesoft-sudo/sudobot/compare/v5.27.2...v5.28.0) (2023-08-03)
-
-
-### Features
-
-* **quickmute:** add mute-only mode ([162671c](https://github.com/onesoft-sudo/sudobot/commit/162671cb6a6478e172e79f25e7a2cbbb92dee087))
 
 
 

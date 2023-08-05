@@ -62,7 +62,7 @@ export function getPermissionLevel(
         return string ? "100" : 100;
     }
 
-    const percentage = (array.length / allBits) * 100;
+    const percentage = Math.round((array.length / allBits) * 100);
     return string ? percentage.toString() : percentage;
 }
 
