@@ -1,3 +1,19 @@
+# [5.34.0](https://github.com/onesoft-sudo/sudobot/compare/v5.33.0...v5.34.0) (2023-08-06)
+
+
+### Bug Fixes
+
+* GatewayEventListener() should except 'raw' event ([241b99b](https://github.com/onesoft-sudo/sudobot/commit/241b99b722ecaa925bb5e38d0821402b1fda5c9c))
+* rename auto role service property name ([9a49870](https://github.com/onesoft-sudo/sudobot/commit/9a49870a33706dc9d772cddce7ac492f76fccc1a))
+
+
+### Features
+
+* add create reaction role command ([0277189](https://github.com/onesoft-sudo/sudobot/commit/0277189d8de3d38d0088ecd26a135ecad8de0648))
+* add reaction roles service ([b2760cf](https://github.com/onesoft-sudo/sudobot/commit/b2760cf421d0e7f16ba16f68e4273ed18298fa01))
+
+
+
 # [5.33.0](https://github.com/onesoft-sudo/sudobot/compare/v5.32.1...v5.33.0) (2023-08-06)
 
 
@@ -37,15 +53,6 @@
 ### Features
 
 * userinfo command ([866c112](https://github.com/onesoft-sudo/sudobot/commit/866c1129d894375ddb4a38bab8192ab7d17cf9d6))
-
-
-
-## [5.30.1](https://github.com/onesoft-sudo/sudobot/compare/v5.30.0...v5.30.1) (2023-08-04)
-
-
-### Bug Fixes
-
-* decimal value in permission percentages ([ad6f0db](https://github.com/onesoft-sudo/sudobot/commit/ad6f0db4eff40f9afda9c394f88429deda56cda4))
 
 
 
