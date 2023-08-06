@@ -23,9 +23,7 @@ import {
     ChannelType,
     ColorResolvable,
     EmbedBuilder,
-    Guild,
     GuildMember,
-    GuildMemberResolvable,
     NewsChannel,
     PermissionOverwrites,
     PermissionResolvable,
@@ -39,7 +37,6 @@ import { mkdirSync } from "fs";
 import path from "path";
 import Client from "../core/Client";
 import { ActionDoneName } from "../services/InfractionManager";
-import { logError } from "./logger";
 
 export function isSnowflake(input: string) {
     return /^\d{16,22}$/.test(input);
@@ -252,13 +249,4 @@ export function chunkedString(str: string, chunkSize = 4000) {
     }
 
     return output;
-}
-
-export async function safeMemberFetch(guild: Guild, id: GuildMemberResolvable) {
-    try {
-        return await guild.members.fetch(id);
-    } catch (e) {
-        logError(e);
-        return null;
-    }
 }

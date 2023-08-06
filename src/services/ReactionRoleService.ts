@@ -22,8 +22,8 @@ import { Client, PermissionsString } from "discord.js";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
+import { safeMemberFetch } from "../utils/fetch";
 import { log, logError } from "../utils/logger";
-import { safeMemberFetch } from "../utils/utils";
 
 export const name = "reactionRoleService";
 
