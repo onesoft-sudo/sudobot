@@ -38,6 +38,7 @@ import type MetadataService from "../services/MetadataService";
 import type PermissionManager from "../services/PermissionManager";
 import type QueueManager from "../services/QueueManager";
 import type QuickMuteService from "../services/QuickMuteService";
+import type ReactionRoleService from "../services/ReactionRoleService";
 import type SnippetManager from "../services/SnippetManager";
 import type StartupManager from "../services/StartupManager";
 import type TranslationService from "../services/TranslationService";
@@ -67,6 +68,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@services/QuickMuteService",
         "@services/TranslationService",
         "@services/AutoRoleService",
+        "@services/ReactionRoleService",
 
         "@automod/MessageFilter",
         "@automod/Antispam",
@@ -98,7 +100,8 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     metadata: MetadataService = {} as MetadataService;
     quickMute: QuickMuteService = {} as QuickMuteService;
     translator: TranslationService = {} as TranslationService;
-    autorole: AutoRoleService = {} as AutoRoleService;
+    autoRoleService: AutoRoleService = {} as AutoRoleService;
+    reactionRoleService: ReactionRoleService = {} as ReactionRoleService;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",
