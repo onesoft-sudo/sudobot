@@ -23,7 +23,7 @@ import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { logError } from "../utils/logger";
 
-export const name = "autorole";
+export const name = "autoRoleService";
 
 export default class AutoRoleService extends Service implements HasEventListeners {
     @GatewayEventListener("guildMemberAdd")
