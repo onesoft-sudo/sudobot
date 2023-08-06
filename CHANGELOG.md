@@ -1,3 +1,12 @@
+## [5.32.1](https://github.com/onesoft-sudo/sudobot/compare/v5.32.0...v5.32.1) (2023-08-06)
+
+
+### Bug Fixes
+
+* joke command not working ([4b47199](https://github.com/onesoft-sudo/sudobot/commit/4b471996ed9c0b404553a4f2e474162f53c7f080))
+
+
+
 # [5.32.0](https://github.com/onesoft-sudo/sudobot/compare/v5.31.0...v5.32.0) (2023-08-05)
 
 
@@ -38,15 +47,6 @@
 
 * **commands:** add avatar command ([0b84428](https://github.com/onesoft-sudo/sudobot/commit/0b8442811c26e96ac95f5bbd405b70ae360ce06a))
 * **commands:** add profile command ([599f5e1](https://github.com/onesoft-sudo/sudobot/commit/599f5e12f59cc31487177aed1969adbc1a6891db))
-
-
-
-## [5.29.2](https://github.com/onesoft-sudo/sudobot/compare/v5.29.1...v5.29.2) (2023-08-04)
-
-
-### Bug Fixes
-
-* cannot take action on users having admin permission ([ae14875](https://github.com/onesoft-sudo/sudobot/commit/ae148755fee45d48529aad1936cefbc34448a25a))
 
 
 
