@@ -18,7 +18,7 @@
  */
 
 import { ReactionRole } from "@prisma/client";
-import { Client, PermissionsString } from "discord.js";
+import { Client, PermissionsString, Snowflake } from "discord.js";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
@@ -28,7 +28,8 @@ import { log, logError } from "../utils/logger";
 export const name = "reactionRoleService";
 
 export default class ReactionRoleService extends Service implements HasEventListeners {
-    reactionRoleEntries = new Map<string, ReactionRole | undefined>();
+    readonly reactionRoleEntries = new Map<string, ReactionRole | undefined>();
+    readonly usersInProgress = new Set<Snowflake>();
 
     @GatewayEventListener("ready")
     async onReady(client: Client<true>) {
@@ -59,10 +60,18 @@ export default class ReactionRoleService extends Service implements HasEventList
         }
 
         log(JSON.stringify(data, null, 2));
+
+        if (this.usersInProgress.has(data.d.user_id)) {
+            log("The user has hit a ratelimit.");
+            return;
+        }
+
+        this.usersInProgress.add(data.d.user_id);
         const { aborted, member, reactionRole } = await this.processRequest(data, data.t === "MESSAGE_REACTION_ADD");
 
         if (aborted) {
             log("Request aborted");
+            setTimeout(() => this.usersInProgress.delete(data.d.user_id), 1500);
             return;
         }
 
@@ -75,6 +84,8 @@ export default class ReactionRoleService extends Service implements HasEventList
         } catch (e) {
             logError(e);
         }
+
+        setTimeout(() => this.usersInProgress.delete(data.d.user_id), 1500);
     }
 
     async processRequest(data: any, permissionChecks = true) {
@@ -154,5 +165,37 @@ export default class ReactionRoleService extends Service implements HasEventList
         }
 
         return { aborted: false, member, reactionRole: entry };
+    }
+
+    async createReactionRole({
+        channelId,
+        messageId,
+        guildId,
+        emoji,
+        roles
+    }: {
+        channelId: Snowflake;
+        messageId: Snowflake;
+        guildId: Snowflake;
+        emoji: string;
+        roles: Snowflake[];
+    }) {
+        const reactionRole = await this.client.prisma.reactionRole.create({
+            data: {
+                channelId,
+                guildId,
+                messageId,
+                isBuiltInEmoji: /^\d+$/.test(emoji),
+                emoji,
+                roles
+            }
+        });
+
+        this.reactionRoleEntries.set(
+            `${reactionRole.guildId}_${reactionRole.channelId}_${reactionRole.messageId}_${reactionRole.emoji}`,
+            reactionRole
+        );
+
+        return reactionRole;
     }
 }
