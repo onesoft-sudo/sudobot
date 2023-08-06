@@ -58,7 +58,10 @@
                                 "type": "boolean",
                                 "default": false
                             },
-                            "emoji": {
+                            "clear_emoji": {
+                                "type": "string"
+                            },
+                            "noclear_emoji": {
                                 "type": "string"
                             },
                             "duration": {
@@ -436,6 +439,27 @@
                                     "type": "string"
                                 },
                                 "default": []
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "autorole": {
+                        "type": "object",
+                        "properties": {
+                            "enabled": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "roles": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                },
+                                "default": []
+                            },
+                            "ignore_bots": {
+                                "type": "boolean",
+                                "default": true
                             }
                         },
                         "additionalProperties": false
