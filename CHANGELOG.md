@@ -1,3 +1,12 @@
+# [5.35.0](https://github.com/onesoft-sudo/sudobot/compare/v5.34.0...v5.35.0) (2023-08-06)
+
+
+### Features
+
+* remove reaction when the member does not have enough permissions ([f8b31cf](https://github.com/onesoft-sudo/sudobot/commit/f8b31cfd94c04318f8b7098b26dc30021cedf630))
+
+
+
 # [5.34.0](https://github.com/onesoft-sudo/sudobot/compare/v5.33.0...v5.34.0) (2023-08-06)
 
 
@@ -44,15 +53,6 @@
 
 * add emoji command ([184679d](https://github.com/onesoft-sudo/sudobot/commit/184679d2b0e43a34dbd8fe44f8a525f318de8720))
 * add snipe command ([ba2b9c5](https://github.com/onesoft-sudo/sudobot/commit/ba2b9c5c1ed554cd178e9a8f72e7d22d3a89c577))
-
-
-
-# [5.31.0](https://github.com/onesoft-sudo/sudobot/compare/v5.30.1...v5.31.0) (2023-08-05)
-
-
-### Features
-
-* userinfo command ([866c112](https://github.com/onesoft-sudo/sudobot/commit/866c1129d894375ddb4a38bab8192ab7d17cf9d6))
 
 
 
