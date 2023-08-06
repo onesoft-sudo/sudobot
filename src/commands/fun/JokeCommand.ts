@@ -20,7 +20,7 @@
 import axios from "axios";
 import { EmbedBuilder } from "discord.js";
 import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { logError } from "../../utils/logger";
+import { log, logError } from "../../utils/logger";
 
 export default class JokeCommand extends Command {
     public readonly name = "joke";
@@ -40,13 +40,22 @@ export default class JokeCommand extends Command {
                 }
             });
 
+            log(response.data);
+
             await this.deferredReply(message, {
                 embeds: [
                     new EmbedBuilder()
                         .setColor("#007bff")
                         .setTitle("Joke")
-                        .setDescription(response.data.type === "twopart" ? response.data.setup + "\n\n" + response.data.delivery : response.data.joke)
-                        .addFields("Category", response.data.category)
+                        .setDescription(
+                            response.data.type === "twopart"
+                                ? response.data.setup + "\n\n" + response.data.delivery
+                                : response.data.joke
+                        )
+                        .addFields({
+                            name: "Category",
+                            value: response.data.category
+                        })
                         .setFooter({
                             text: `ID: ${response.data.id}`
                         })
