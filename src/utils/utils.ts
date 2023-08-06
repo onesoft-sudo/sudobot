@@ -23,7 +23,9 @@ import {
     ChannelType,
     ColorResolvable,
     EmbedBuilder,
+    Guild,
     GuildMember,
+    GuildMemberResolvable,
     NewsChannel,
     PermissionOverwrites,
     PermissionResolvable,
@@ -37,6 +39,7 @@ import { mkdirSync } from "fs";
 import path from "path";
 import Client from "../core/Client";
 import { ActionDoneName } from "../services/InfractionManager";
+import { logError } from "./logger";
 
 export function isSnowflake(input: string) {
     return /^\d{16,22}$/.test(input);
@@ -87,7 +90,9 @@ export interface CreateModerationEmbedOptions {
     actionDoneName?: ActionDoneName;
     reason?: string;
     description?: string;
-    fields?: APIEmbedField[] | ((fields: APIEmbedField[], id: string, reason?: string) => Promise<APIEmbedField[]> | APIEmbedField[]);
+    fields?:
+        | APIEmbedField[]
+        | ((fields: APIEmbedField[], id: string, reason?: string) => Promise<APIEmbedField[]> | APIEmbedField[]);
     id: string | number;
     color?: ColorResolvable;
 }
@@ -153,7 +158,10 @@ export function getEmoji(client: Client, name: string) {
     );
 }
 
-export function isTextableChannel(channel: Channel | ThreadChannel, DMs = false): channel is TextChannel | NewsChannel | ThreadChannel {
+export function isTextableChannel(
+    channel: Channel | ThreadChannel,
+    DMs = false
+): channel is TextChannel | NewsChannel | ThreadChannel {
     return [
         ...(DMs ? [ChannelType.DM, ChannelType.GroupDM] : []),
         ChannelType.GuildAnnouncement,
@@ -165,11 +173,16 @@ export function isTextableChannel(channel: Channel | ThreadChannel, DMs = false)
 
 export function developmentMode() {
     return (
-        ["dev", "development"].includes(process.env.NODE_ENV?.toLowerCase()!) || ["dev", "development"].includes(process.env.SUDO_ENV?.toLowerCase()!)
+        ["dev", "development"].includes(process.env.NODE_ENV?.toLowerCase()!) ||
+        ["dev", "development"].includes(process.env.SUDO_ENV?.toLowerCase()!)
     );
 }
 
-export function isImmuneToAutoMod(client: Client, member: GuildMember, permission?: PermissionResolvable[] | PermissionResolvable) {
+export function isImmuneToAutoMod(
+    client: Client,
+    member: GuildMember,
+    permission?: PermissionResolvable[] | PermissionResolvable
+) {
     return client.permissionManager.isImmuneToAutoMod(member, permission);
 }
 
@@ -213,7 +226,11 @@ export function forceGetPermissionNames(permissions: PermissionResolvable[]) {
 }
 
 export function getChannelPermissionOverride(permission: PermissionResolvable, permissionOverwrites: PermissionOverwrites) {
-    return permissionOverwrites.allow.has(permission, true) ? true : permissionOverwrites.deny.has(permission, true) ? true : null;
+    return permissionOverwrites.allow.has(permission, true)
+        ? true
+        : permissionOverwrites.deny.has(permission, true)
+        ? true
+        : null;
 }
 
 export function chunkedString(str: string, chunkSize = 4000) {
@@ -235,4 +252,13 @@ export function chunkedString(str: string, chunkSize = 4000) {
     }
 
     return output;
+}
+
+export async function safeMemberFetch(guild: Guild, id: GuildMemberResolvable) {
+    try {
+        return await guild.members.fetch(id);
+    } catch (e) {
+        logError(e);
+        return null;
+    }
 }

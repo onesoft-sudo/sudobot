@@ -112,3 +112,19 @@ model PermissionRole {
 
     @@map("permission_roles")
 }
+
+model ReactionRole {
+    id                  Int      @id @default(autoincrement())
+    emoji               String
+    isBuiltInEmoji      Boolean
+    guildId             String
+    channelId           String
+    messageId           String
+    roles               String[]
+    requiredRoles       String[] @default([])
+    blacklistedUsers    String[] @default([])
+    requiredPermissions String[] @default([])
+    level               Int?
+    createdAt           DateTime @default(now())
+    updatedAt           DateTime @default(now()) @updatedAt
+}

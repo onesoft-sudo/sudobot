@@ -193,6 +193,12 @@ export const GuildConfigSchema = z.object({
             roles: z.array(zSnowflake).default([]),
             ignore_bots: z.boolean().optional().default(true)
         })
+        .optional(),
+    reaction_roles: z
+        .object({
+            enabled: z.boolean().optional().default(false),
+            ignore_bots: z.boolean().optional().default(true)
+        })
         .optional()
 });
 
