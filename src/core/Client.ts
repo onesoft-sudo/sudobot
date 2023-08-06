@@ -28,6 +28,7 @@ import type Antispam from "../automod/Antispam";
 import type MessageFilter from "../automod/MessageFilter";
 import type ProfileFilter from "../automod/ProfileFilter";
 import { SuppressErrorsMetadata } from "../decorators/SuppressErrors";
+import type AutoRoleService from "../services/AutoRoleService";
 import type ChannelLockManager from "../services/ChannelLockManager";
 import type CommandManager from "../services/CommandManager";
 import type ConfigManager from "../services/ConfigManager";
@@ -65,6 +66,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@services/MetadataService",
         "@services/QuickMuteService",
         "@services/TranslationService",
+        "@services/AutoRoleService",
 
         "@automod/MessageFilter",
         "@automod/Antispam",
@@ -96,6 +98,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     metadata: MetadataService = {} as MetadataService;
     quickMute: QuickMuteService = {} as QuickMuteService;
     translator: TranslationService = {} as TranslationService;
+    autorole: AutoRoleService = {} as AutoRoleService;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",
@@ -202,7 +205,11 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         if (metadata) {
             for (const data of metadata) {
                 const callback = instance ? data.handler.bind(instance) : data.handler;
-                const suppressErrors: SuppressErrorsMetadata | undefined = Reflect.getMetadata("supress_errors", Class.prototype, data.methodName);
+                const suppressErrors: SuppressErrorsMetadata | undefined = Reflect.getMetadata(
+                    "supress_errors",
+                    Class.prototype,
+                    data.methodName
+                );
 
                 this.on(
                     data.event,
