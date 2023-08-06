@@ -18,7 +18,7 @@
  */
 
 import { ReactionRole } from "@prisma/client";
-import { Client, PermissionsString, Snowflake } from "discord.js";
+import { Client, GuildMember, PermissionsString, Routes, Snowflake } from "discord.js";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
@@ -88,7 +88,14 @@ export default class ReactionRoleService extends Service implements HasEventList
         setTimeout(() => this.usersInProgress.delete(data.d.user_id), 1500);
     }
 
-    async processRequest(data: any, permissionChecks = true) {
+    async processRequest(
+        data: any,
+        permissionChecks = true
+    ): Promise<{
+        aborted: boolean;
+        reactionRole?: ReactionRole;
+        member?: GuildMember;
+    }> {
         const emoji = data.d.emoji;
         const userId = data.d.user_id;
         const messageId = data.d.message_id;
@@ -141,17 +148,17 @@ export default class ReactionRoleService extends Service implements HasEventList
         if (permissionChecks) {
             if (!member.roles.cache.hasAll(...entry.requiredRoles)) {
                 log("Member does not have the required roles");
-                return { aborted: true };
+                return await this.removeReactionAndAbort(data);
             }
 
             if (!member.permissions.has("Administrator") && entry.blacklistedUsers.includes(member.user.id)) {
                 log("User is blacklisted");
-                return { aborted: true };
+                return await this.removeReactionAndAbort(data);
             }
 
             if (!member.permissions.has(entry.requiredPermissions as PermissionsString[], true)) {
                 log("Member does not have the required permissions");
-                return { aborted: true };
+                return await this.removeReactionAndAbort(data);
             }
 
             if (usesLevels && entry.level) {
@@ -159,12 +166,29 @@ export default class ReactionRoleService extends Service implements HasEventList
 
                 if (level < entry.level) {
                     log("Member does not have the required permission level");
-                    return { aborted: true };
+                    return await this.removeReactionAndAbort(data);
                 }
             }
         }
 
         return { aborted: false, member, reactionRole: entry };
+    }
+
+    async removeReactionAndAbort(data: any) {
+        await this.client.rest
+            .delete(
+                Routes.channelMessageUserReaction(
+                    data.d.channel_id,
+                    data.d.message_id,
+                    data.d.emoji.id && data.d.emoji.name
+                        ? `${data.d.emoji.name}:${data.d.emoji.id}`
+                        : encodeURIComponent(data.d.emoji.name),
+                    data.d.user_id
+                )
+            )
+            .catch(logError);
+
+        return { aborted: true };
     }
 
     async createReactionRole({
