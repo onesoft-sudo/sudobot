@@ -199,6 +199,11 @@ export const GuildConfigSchema = z.object({
             enabled: z.boolean().optional().default(false),
             ignore_bots: z.boolean().optional().default(true)
         })
+        .optional(),
+    create_boost_role: z
+        .object({
+            create_roles_after: zSnowflake.optional()
+        })
         .optional()
 });
 

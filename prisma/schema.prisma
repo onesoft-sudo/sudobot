@@ -144,3 +144,11 @@ model User {
 
     @@map("users")
 }
+
+model BoostRoleEntries {
+    id        Int      @id @default(autoincrement())
+    role_id   String
+    user_id   String
+    guild_id  String
+    createdAt DateTime @default(now())
+}

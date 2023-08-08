@@ -44,7 +44,5 @@ export const client = new Client({
     await client.boot();
     await client.loadEvents();
     await client.loadCommands();
-    await client.server.boot();
-    await client.server.start();
-    // await client.login(process.env.TOKEN);
+    await client.login(process.env.TOKEN);
 })();
