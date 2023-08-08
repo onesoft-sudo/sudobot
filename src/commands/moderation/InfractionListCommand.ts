@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { InfractionType } from "@prisma/client";
 import { formatDistanceToNowStrict } from "date-fns";
 import { EmbedBuilder, PermissionsBitField, User } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
@@ -67,14 +68,27 @@ export default class InfractionListCommand extends Command {
 
                 for (const infraction of data) {
                     description += `**ID**: \`${infraction.id}\`\n`;
-                    description += `Responsible Moderator: <@${infraction.moderatorId}>\n`;
-                    description += `Reason:\n${infraction.reason ? `\`\`\`\n${infraction.reason}\n\`\`\`` : "*No reason provided*"}\n`;
-                    description += `Created at: ${infraction.createdAt.toLocaleString()} (${formatDistanceToNowStrict(infraction.createdAt, {
-                        addSuffix: true
-                    })})\n`;
-                    description += `Updated at: ${infraction.updatedAt.toLocaleString()} (${formatDistanceToNowStrict(infraction.updatedAt, {
-                        addSuffix: true
-                    })})\n`;
+                    (description += `**Type**: ${
+                        infraction.type === InfractionType.BULK_DELETE_MESSAGE
+                            ? "Bulk message delete"
+                            : infraction.type[0] + infraction.type.substring(1).toLowerCase()
+                    }\n`),
+                        (description += `Responsible Moderator: <@${infraction.moderatorId}>\n`);
+                    description += `Reason:\n${
+                        infraction.reason ? `\`\`\`\n${infraction.reason}\n\`\`\`` : "*No reason provided*"
+                    }\n`;
+                    description += `Created at: ${infraction.createdAt.toLocaleString()} (${formatDistanceToNowStrict(
+                        infraction.createdAt,
+                        {
+                            addSuffix: true
+                        }
+                    )})\n`;
+                    description += `Updated at: ${infraction.updatedAt.toLocaleString()} (${formatDistanceToNowStrict(
+                        infraction.updatedAt,
+                        {
+                            addSuffix: true
+                        }
+                    )})\n`;
                     description += `\n`;
                 }
 
