@@ -1,3 +1,12 @@
+## [5.35.1](https://github.com/onesoft-sudo/sudobot/compare/v5.35.0...v5.35.1) (2023-08-08)
+
+
+### Bug Fixes
+
+* infraction list command not showing the type ([eb1b690](https://github.com/onesoft-sudo/sudobot/commit/eb1b690abcf94d75b95eba9ede9f2ed772a100fb))
+
+
+
 # [5.35.0](https://github.com/onesoft-sudo/sudobot/compare/v5.34.0...v5.35.0) (2023-08-06)
 
 
@@ -38,21 +47,6 @@
 ### Bug Fixes
 
 * joke command not working ([4b47199](https://github.com/onesoft-sudo/sudobot/commit/4b471996ed9c0b404553a4f2e474162f53c7f080))
-
-
-
-# [5.32.0](https://github.com/onesoft-sudo/sudobot/compare/v5.31.0...v5.32.0) (2023-08-05)
-
-
-### Bug Fixes
-
-* profile command ([f9db414](https://github.com/onesoft-sudo/sudobot/commit/f9db414d64a3c0c2e2ae3c7daff36d0b11efedf2))
-
-
-### Features
-
-* add emoji command ([184679d](https://github.com/onesoft-sudo/sudobot/commit/184679d2b0e43a34dbd8fe44f8a525f318de8720))
-* add snipe command ([ba2b9c5](https://github.com/onesoft-sudo/sudobot/commit/ba2b9c5c1ed554cd178e9a8f72e7d22d3a89c577))
 
 
 
