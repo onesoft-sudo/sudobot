@@ -17,7 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import express, { Request as ExpressRequest, Response as ExpressResponse } from "express";
+import cors from "cors";
+import express, { Request as ExpressRequest, Response as ExpressResponse, NextFunction } from "express";
 import rateLimit from "express-rate-limit";
 import fs from "fs/promises";
 import { join, resolve } from "path";
@@ -40,6 +41,8 @@ export default class Server {
     async boot() {
         const router = express.Router();
         await this.loadControllers(undefined, router);
+
+        this.expressApp.use(cors());
 
         const limiter = rateLimit({
             windowMs: 30 * 1000,
@@ -100,7 +103,10 @@ export default class Server {
 
                     (router[(method?.toLowerCase() ?? "get") as keyof typeof router] as Function)(
                         path,
-                        ...(middleware ?? []),
+                        ...(middleware?.map(
+                            fn => (req: ExpressRequest, res: ExpressResponse, next: NextFunction) =>
+                                fn(this.client, req, res, next)
+                        ) ?? []),
                         async (req: ExpressRequest, res: ExpressResponse) => {
                             const userResponse = await handler.bind(controller)(req);
 

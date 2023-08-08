@@ -127,4 +127,20 @@ model ReactionRole {
     level               Int?
     createdAt           DateTime @default(now())
     updatedAt           DateTime @default(now()) @updatedAt
+
+    @@map("reaction_roles")
+}
+
+model User {
+    id             Int       @id @default(autoincrement())
+    name           String?
+    username       String
+    discordId      String
+    password       String
+    token          String?
+    createdAt      DateTime  @default(now())
+    tokenExpiresAt DateTime?
+    updatedAt      DateTime  @default(now()) @updatedAt
+
+    @@map("users")
 }

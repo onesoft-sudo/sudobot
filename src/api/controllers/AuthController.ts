@@ -17,11 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { Action } from "../../decorators/Action";
 import { Validate } from "../../decorators/Validate";
 import Controller from "../Controller";
 import Request from "../Request";
+import Response from "../Response";
 
 export default class AuthController extends Controller {
     @Action("POST", "/auth/login")
@@ -32,7 +35,61 @@ export default class AuthController extends Controller {
         })
     )
     public async login(request: Request) {
-        console.log(request.parsedBody);
-        return {};
+        const { username, password } = request.parsedBody ?? {};
+
+        const user = await this.client.prisma.user.findFirst({
+            where: {
+                username
+            }
+        });
+
+        if (!user || !bcrypt.compareSync(password, user.password)) {
+            return new Response({
+                status: 403,
+                body: {
+                    error: "Invalid login credentials"
+                }
+            });
+        }
+
+        if (!user.token || (user.token && user.tokenExpiresAt && user.tokenExpiresAt.getTime() <= Date.now())) {
+            user.token = jwt.sign(
+                {
+                    userId: user.id,
+                    random: Math.round(Math.random() * 2000)
+                },
+                process.env.JWT_SECRET!,
+                {
+                    expiresIn: "2 days",
+                    issuer: process.env.JWT_ISSUER ?? "SudoBot",
+                    subject: "Temporary API token for authenticated user"
+                }
+            );
+
+            user.tokenExpiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 2);
+
+            await this.client.prisma.user.updateMany({
+                where: {
+                    id: user.id
+                },
+                data: {
+                    token: user.token,
+                    tokenExpiresAt: user.tokenExpiresAt
+                }
+            });
+        }
+
+        return {
+            message: "Login successful",
+            user: {
+                id: user.id,
+                username: user.username,
+                name: user.name,
+                discordId: user.discordId,
+                token: user.token,
+                tokenExpiresAt: user.tokenExpiresAt,
+                createdAt: user.createdAt
+            }
+        };
     }
 }
