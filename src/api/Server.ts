@@ -25,50 +25,6 @@ import { log, logError, logInfo, logWarn } from "../utils/logger";
 import Controller from "./Controller";
 import Response from "./Response";
 
-export type ControllerFunction = ((request: ExpressRequest) => any) & {
-    __controller_path?: string;
-    __controller_method?: string;
-    __controller_middleware?: Function[];
-};
-
-export function Path(uri: string) {
-    return (target: Controller, propertyKey: string, descriptor: PropertyDescriptor) => {
-        (target as any).handlerMethods ??= new Set();
-        (target as any).handlerMethods.add(propertyKey);
-
-        Object.defineProperty(target[propertyKey as keyof Controller], "__controller_path", {
-            writable: false,
-            value: uri
-        });
-
-        log("Found controller function: ", propertyKey);
-    };
-}
-
-export function Method(methodName: string) {
-    return (target: Controller, propertyKey: string, descriptor: PropertyDescriptor) => {
-        (target as any).handlerMethods ??= new Set();
-        (target as any).handlerMethods.add(propertyKey);
-
-        Object.defineProperty(target[propertyKey as keyof Controller], "__controller_method", {
-            writable: false,
-            value: methodName
-        });
-    };
-}
-
-export function Middleware(middleware: Function[]) {
-    return (target: Controller, propertyKey: string, descriptor: PropertyDescriptor) => {
-        (target as any).handlerMethods ??= new Set();
-        (target as any).handlerMethods.add(propertyKey);
-
-        Object.defineProperty(target[propertyKey as keyof Controller], "__controller_middleware", {
-            writable: false,
-            value: middleware
-        });
-    };
-}
-
 export default class Server {
     protected expressApp = express();
     protected port = process.env.PORT ?? 4000;
@@ -105,50 +61,103 @@ export default class Server {
             const { default: ControllerClass } = await import(filePath);
             const controller: Controller = new ControllerClass(this.client);
 
-            log((controller as any).handlerMethods);
+            const metadata:
+                | Record<string, { handler: Function; method?: string; middleware?: Function[] } | undefined>
+                | undefined = Reflect.getMetadata("action_methods", ControllerClass.prototype);
 
-            for (const methodName of ((controller as any).handlerMethods as Set<string>).values()) {
-                const controllerFunction = controller[methodName as keyof Controller] as unknown as ControllerFunction;
-
-                if (typeof controllerFunction !== "function") {
-                    logWarn(`[Server] Not a function (${methodName}), ignoring.`);
-                    continue;
-                }
-
-                const { __controller_path: path, __controller_method: method, __controller_middleware: middleware } = controllerFunction;
-
-                if (!path) {
-                    logError(`[Server] No path specified at function ${methodName} in controller ${file}. Skipping.`);
-                    continue;
-                }
-
-                if (method && !["get", "post", "head", "put", "patch", "delete"].includes(method)) {
-                    logError(`[Server] Invalid method '${method}' specified at function ${methodName} in controller ${file}. Skipping.`);
-                    continue;
-                }
-
-                log(`Added handler for ${method?.toUpperCase() ?? "GET"} ${path}`);
-
-                (router[(method ?? "get") as keyof typeof router] as Function)(
-                    path,
-                    ...(middleware ?? []),
-                    async (req: ExpressRequest, res: ExpressResponse) => {
-                        const userResponse = await controllerFunction.bind(controller)(req);
-
-                        if (userResponse instanceof Response) {
-                            userResponse.send(res);
-                        } else if (userResponse && typeof userResponse === "object") {
-                            res.json(userResponse);
-                        } else if (typeof userResponse === "string") {
-                            res.send(userResponse);
-                        } else if (typeof userResponse === "number") {
-                            res.send(userResponse.toString());
-                        } else {
-                            logWarn("Invalid value was returned from the controller. Not sending a response.");
-                        }
+            if (metadata) {
+                for (const path in metadata) {
+                    if (!metadata[path]) {
+                        continue;
                     }
-                );
+
+                    const { method, middleware, handler } = metadata[path]!;
+
+                    if (!path) {
+                        logError(`[Server] No path specified at function ${handler.name} in controller ${file}. Skipping.`);
+                        continue;
+                    }
+
+                    if (method && !["GET", "POST", "HEAD", "PUT", "PATCH", "DELETE"].includes(method)) {
+                        logError(
+                            `[Server] Invalid method '${method}' specified at function ${handler.name} in controller ${file}. Skipping.`
+                        );
+                        continue;
+                    }
+
+                    log(`Added handler for ${method?.toUpperCase() ?? "GET"} ${path}`);
+
+                    (router[(method?.toLowerCase() ?? "get") as keyof typeof router] as Function)(
+                        path,
+                        ...(middleware ?? []),
+                        async (req: ExpressRequest, res: ExpressResponse) => {
+                            const userResponse = await handler.bind(controller)(req);
+
+                            if (userResponse instanceof Response) {
+                                userResponse.send(res);
+                            } else if (userResponse && typeof userResponse === "object") {
+                                res.json(userResponse);
+                            } else if (typeof userResponse === "string") {
+                                res.send(userResponse);
+                            } else if (typeof userResponse === "number") {
+                                res.send(userResponse.toString());
+                            } else {
+                                logWarn("Invalid value was returned from the controller. Not sending a response.");
+                            }
+                        }
+                    );
+                }
             }
+
+            // for (const methodName of ((controller as any).handlerMethods as Set<string>).values()) {
+            //     const controllerFunction = controller[methodName as keyof Controller] as unknown as ControllerFunction;
+
+            //     if (typeof controllerFunction !== "function") {
+            //         logWarn(`[Server] Not a function (${methodName}), ignoring.`);
+            //         continue;
+            //     }
+
+            //     const {
+            //         __controller_path: path,
+            //         __controller_method: method,
+            //         __controller_middleware: middleware
+            //     } = controllerFunction;
+            //     // const path = Reflect.getMetadata()
+
+            //     if (!path) {
+            //         logError(`[Server] No path specified at function ${methodName} in controller ${file}. Skipping.`);
+            //         continue;
+            //     }
+
+            //     if (method && !["get", "post", "head", "put", "patch", "delete"].includes(method)) {
+            //         logError(
+            //             `[Server] Invalid method '${method}' specified at function ${methodName} in controller ${file}. Skipping.`
+            //         );
+            //         continue;
+            //     }
+
+            //     log(`Added handler for ${method?.toUpperCase() ?? "GET"} ${path}`);
+
+            //     (router[(method ?? "get") as keyof typeof router] as Function)(
+            //         path,
+            //         ...(middleware ?? []),
+            //         async (req: ExpressRequest, res: ExpressResponse) => {
+            //             const userResponse = await controllerFunction.bind(controller)(req);
+
+            //             if (userResponse instanceof Response) {
+            //                 userResponse.send(res);
+            //             } else if (userResponse && typeof userResponse === "object") {
+            //                 res.json(userResponse);
+            //             } else if (typeof userResponse === "string") {
+            //                 res.send(userResponse);
+            //             } else if (typeof userResponse === "number") {
+            //                 res.send(userResponse.toString());
+            //             } else {
+            //                 logWarn("Invalid value was returned from the controller. Not sending a response.");
+            //             }
+            //         }
+            //     );
+            // }
         }
     }
 
