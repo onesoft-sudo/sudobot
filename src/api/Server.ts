@@ -18,6 +18,7 @@
  */
 
 import express, { Request as ExpressRequest, Response as ExpressResponse } from "express";
+import rateLimit from "express-rate-limit";
 import fs from "fs/promises";
 import { join, resolve } from "path";
 import Client from "../core/Client";
@@ -39,6 +40,15 @@ export default class Server {
     async boot() {
         const router = express.Router();
         await this.loadControllers(undefined, router);
+
+        const limiter = rateLimit({
+            windowMs: 30 * 1000,
+            max: 28,
+            standardHeaders: true,
+            legacyHeaders: false
+        });
+
+        this.expressApp.use(limiter);
         this.expressApp.use(express.json());
         this.expressApp.use("/", router);
     }
