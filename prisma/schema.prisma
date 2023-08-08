@@ -151,4 +151,6 @@ model BoostRoleEntries {
     user_id   String
     guild_id  String
     createdAt DateTime @default(now())
+
+    @@map("boost_role_entries")
 }
