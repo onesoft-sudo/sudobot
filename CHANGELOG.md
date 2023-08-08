@@ -1,3 +1,12 @@
+## [5.38.1](https://github.com/onesoft-sudo/sudobot/compare/v5.38.0...v5.38.1) (2023-08-08)
+
+
+### Bug Fixes
+
+* **schemas:** table names ([8feb3fc](https://github.com/onesoft-sudo/sudobot/commit/8feb3fc1eaf17e2e4ff8982034d6845730fd9e0d))
+
+
+
 # [5.38.0](https://github.com/onesoft-sudo/sudobot/compare/v5.37.0...v5.38.0) (2023-08-08)
 
 
@@ -33,15 +42,6 @@
 ### Bug Fixes
 
 * infraction list command not showing the type ([eb1b690](https://github.com/onesoft-sudo/sudobot/commit/eb1b690abcf94d75b95eba9ede9f2ed772a100fb))
-
-
-
-# [5.35.0](https://github.com/onesoft-sudo/sudobot/compare/v5.34.0...v5.35.0) (2023-08-06)
-
-
-### Features
-
-* remove reaction when the member does not have enough permissions ([f8b31cf](https://github.com/onesoft-sudo/sudobot/commit/f8b31cfd94c04318f8b7098b26dc30021cedf630))
 
 
 
