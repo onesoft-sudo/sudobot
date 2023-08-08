@@ -62,16 +62,16 @@ export default class Server {
             const controller: Controller = new ControllerClass(this.client);
 
             const metadata:
-                | Record<string, { handler: Function; method?: string; middleware?: Function[] } | undefined>
+                | Record<string, { handler: Function; method?: string; middleware?: Function[]; path?: string } | undefined>
                 | undefined = Reflect.getMetadata("action_methods", ControllerClass.prototype);
 
             if (metadata) {
-                for (const path in metadata) {
-                    if (!metadata[path]) {
+                for (const methodName in metadata) {
+                    if (!metadata[methodName]) {
                         continue;
                     }
 
-                    const { method, middleware, handler } = metadata[path]!;
+                    const { method, middleware, handler, path } = metadata[methodName]!;
 
                     if (!path) {
                         logError(`[Server] No path specified at function ${handler.name} in controller ${file}. Skipping.`);
@@ -108,56 +108,6 @@ export default class Server {
                     );
                 }
             }
-
-            // for (const methodName of ((controller as any).handlerMethods as Set<string>).values()) {
-            //     const controllerFunction = controller[methodName as keyof Controller] as unknown as ControllerFunction;
-
-            //     if (typeof controllerFunction !== "function") {
-            //         logWarn(`[Server] Not a function (${methodName}), ignoring.`);
-            //         continue;
-            //     }
-
-            //     const {
-            //         __controller_path: path,
-            //         __controller_method: method,
-            //         __controller_middleware: middleware
-            //     } = controllerFunction;
-            //     // const path = Reflect.getMetadata()
-
-            //     if (!path) {
-            //         logError(`[Server] No path specified at function ${methodName} in controller ${file}. Skipping.`);
-            //         continue;
-            //     }
-
-            //     if (method && !["get", "post", "head", "put", "patch", "delete"].includes(method)) {
-            //         logError(
-            //             `[Server] Invalid method '${method}' specified at function ${methodName} in controller ${file}. Skipping.`
-            //         );
-            //         continue;
-            //     }
-
-            //     log(`Added handler for ${method?.toUpperCase() ?? "GET"} ${path}`);
-
-            //     (router[(method ?? "get") as keyof typeof router] as Function)(
-            //         path,
-            //         ...(middleware ?? []),
-            //         async (req: ExpressRequest, res: ExpressResponse) => {
-            //             const userResponse = await controllerFunction.bind(controller)(req);
-
-            //             if (userResponse instanceof Response) {
-            //                 userResponse.send(res);
-            //             } else if (userResponse && typeof userResponse === "object") {
-            //                 res.json(userResponse);
-            //             } else if (typeof userResponse === "string") {
-            //                 res.send(userResponse);
-            //             } else if (typeof userResponse === "number") {
-            //                 res.send(userResponse.toString());
-            //             } else {
-            //                 logWarn("Invalid value was returned from the controller. Not sending a response.");
-            //             }
-            //         }
-            //     );
-            // }
         }
     }
 
