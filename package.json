@@ -1,7 +1,7 @@
 {
   "name": "sudobot",
   "description": "A Discord bot for moderation purposes.",
-  "version": "5.36.0",
+  "version": "5.37.0",
   "main": "build/index.js",
   "license": "GPL-3.0-or-later",
   "keywords": [
