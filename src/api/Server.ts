@@ -39,6 +39,7 @@ export default class Server {
     async boot() {
         const router = express.Router();
         await this.loadControllers(undefined, router);
+        this.expressApp.use(express.json());
         this.expressApp.use("/", router);
     }
 
