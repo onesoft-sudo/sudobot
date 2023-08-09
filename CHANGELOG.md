@@ -1,3 +1,12 @@
+## [5.43.1](https://github.com/onesoft-sudo/sudobot/compare/v5.43.0...v5.43.1) (2023-08-09)
+
+
+### Bug Fixes
+
+* better command description ([cf92d6a](https://github.com/onesoft-sudo/sudobot/commit/cf92d6a06688e8a0db7052cf400b05835ed6e1cc))
+
+
+
 # [5.43.0](https://github.com/onesoft-sudo/sudobot/compare/v5.42.0...v5.43.0) (2023-08-09)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * interaction support was not turned off in warning command ([84f7b86](https://github.com/onesoft-sudo/sudobot/commit/84f7b8614a74339b2bc695af3e1b6d9cc95c3223))
-
-
-
-# [5.41.0](https://github.com/onesoft-sudo/sudobot/compare/v5.40.1...v5.41.0) (2023-08-09)
-
-
-### Features
-
-* add afk service ([7bae10d](https://github.com/onesoft-sudo/sudobot/commit/7bae10dcdd3c4ea1c34a48bf57f6260baeea4f0c))
 
 
 
