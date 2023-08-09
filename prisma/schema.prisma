@@ -154,3 +154,15 @@ model BoostRoleEntries {
 
     @@map("boost_role_entries")
 }
+
+model AfkEntry {
+    id        Int      @id @default(autoincrement())
+    reason    String?
+    userId    String
+    guildId   String
+    mentions  String[] @default([])
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    @@map("afk_entries")
+}

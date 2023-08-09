@@ -28,6 +28,7 @@ import type Antispam from "../automod/Antispam";
 import type MessageFilter from "../automod/MessageFilter";
 import type ProfileFilter from "../automod/ProfileFilter";
 import { SuppressErrorsMetadata } from "../decorators/SuppressErrors";
+import type AFKService from "../services/AFKService";
 import type AutoRoleService from "../services/AutoRoleService";
 import type ChannelLockManager from "../services/ChannelLockManager";
 import type CommandManager from "../services/CommandManager";
@@ -69,6 +70,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@services/TranslationService",
         "@services/AutoRoleService",
         "@services/ReactionRoleService",
+        "@services/AFKService",
 
         "@automod/MessageFilter",
         "@automod/Antispam",
@@ -102,6 +104,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     translator: TranslationService = {} as TranslationService;
     autoRoleService: AutoRoleService = {} as AutoRoleService;
     reactionRoleService: ReactionRoleService = {} as ReactionRoleService;
+    afkService: AFKService = {} as AFKService;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",
