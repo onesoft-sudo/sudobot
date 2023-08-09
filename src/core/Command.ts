@@ -83,6 +83,8 @@ export interface ValidationRule {
     timeMilliseconds?: boolean;
 }
 
+// TODO: Split the logic into separate methods
+
 export default abstract class Command {
     public readonly name: string = "";
     public group: string = "Default";
@@ -152,7 +154,9 @@ export default abstract class Command {
     }
 
     async run(message: CommandMessage, context: AnyCommandContext) {
-        if (this.systemAdminOnly && !this.client.configManager.systemConfig.system_admins.includes(message.member!.user.id)) {
+        const isSystemAdmin = this.client.configManager.systemConfig.system_admins.includes(message.member!.user.id);
+
+        if (this.systemAdminOnly && !isSystemAdmin) {
             message
                 .reply({
                     content: `${this.emoji("error")} You don't have permission to run this command.`,
@@ -163,11 +167,33 @@ export default abstract class Command {
             return;
         }
 
+        if (!isSystemAdmin) {
+            const commandName = this.client.commands.get(context.isLegacy ? context.argv[0] : context.commandName)?.name;
+            const { disabled_commands } = this.client.configManager.systemConfig;
+
+            if (disabled_commands.includes(commandName ?? "")) {
+                await this.error(message, "This command is disabled.");
+                return;
+            }
+
+            const { channels, guild } = this.client.configManager.config[message.guildId!]?.disabled_commands ?? {};
+
+            if (guild && guild.includes(commandName ?? "")) {
+                await this.error(message, "This command is disabled in this server.");
+                return;
+            }
+
+            if (channels && channels[message.channelId!] && channels[message.channelId!].includes(commandName ?? "")) {
+                await this.error(message, "This command is disabled in this channel.");
+                return;
+            }
+        }
+
         const { validationRules, permissions } = this;
         const parsedArgs = [];
         const parsedNamedArgs: Record<string, any> = {};
 
-        if (permissions.length > 0) {
+        if (permissions.length > 0 && !isSystemAdmin) {
             let member: GuildMember = <any>message.member!;
 
             if (!(member.permissions as any)?.has) {

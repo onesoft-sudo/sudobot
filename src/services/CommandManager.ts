@@ -44,12 +44,14 @@ export interface ChatInputCommandContext extends CommandContext {
     isLegacy: false;
     isContextMenu: false;
     options: ChatInputCommandInteraction["options"];
+    commandName: string;
 }
 
 export interface ContextMenuCommandContext extends CommandContext {
     isLegacy: false;
     isContextMenu: true;
     options: ContextMenuCommandInteraction["options"];
+    commandName: string;
 }
 
 export default class CommandManager extends Service {
@@ -118,7 +120,8 @@ export default class CommandManager extends Service {
                 isLegacy: false,
                 config,
                 options: interaction.options,
-                isContextMenu: interaction.isContextMenuCommand()
+                isContextMenu: interaction.isContextMenuCommand(),
+                commandName
             } as ContextMenuCommandContext | ChatInputCommandContext)
             .then(result => {
                 if (result && typeof result === "object" && "__reply" in result && result.__reply === true) {

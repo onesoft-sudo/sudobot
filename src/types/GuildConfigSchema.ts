@@ -204,6 +204,12 @@ export const GuildConfigSchema = z.object({
         .object({
             create_roles_after: zSnowflake.optional()
         })
+        .optional(),
+    disabled_commands: z
+        .object({
+            guild: z.array(z.string()).default([]),
+            channels: z.record(zSnowflake, z.array(z.string()).default([])).default({})
+        })
         .optional()
 });
 
