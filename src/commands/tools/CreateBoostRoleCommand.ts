@@ -31,7 +31,7 @@ export default class CreateBoostRoleCommand extends Command {
     public readonly supportsInteractions = true;
     public readonly supportsLegacy = false;
 
-    public readonly description = "Creates a custom role for boosters.";
+    public readonly description = "Creates a custom role and assigns it to you (only for boosters).";
     public readonly slashCommandBuilder = new SlashCommandBuilder()
         .addStringOption(option => option.setName("name").setDescription("The role name, defaults to your name"))
         .addStringOption(option => option.setName("color").setDescription("The role color, defaults to transparent"));
