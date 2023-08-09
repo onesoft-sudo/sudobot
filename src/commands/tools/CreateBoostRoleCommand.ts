@@ -17,29 +17,26 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ColorResolvable, Message, resolveColor } from "discord.js";
-import Command, { ArgumentType, CommandReturn, ValidationRule } from "../../core/Command";
-import { LegacyCommandContext } from "../../services/CommandManager";
+import { ChatInputCommandInteraction, ColorResolvable, GuildMember, SlashCommandBuilder, resolveColor } from "discord.js";
+import Command, { CommandReturn, ValidationRule } from "../../core/Command";
+import { ChatInputCommandContext } from "../../services/CommandManager";
 import { safeRoleFetch } from "../../utils/fetch";
 import { logError } from "../../utils/logger";
 
 export default class CreateBoostRoleCommand extends Command {
     public readonly name = "createboostrole";
-    public readonly validationRules: ValidationRule[] = [
-        {
-            types: [ArgumentType.String],
-            optional: true,
-            typeErrorMessage: "Please specify a valid color code!",
-            name: "colorCode"
-        }
-    ];
+    public readonly validationRules: ValidationRule[] = [];
     public readonly permissions = [];
     public readonly aliases = ["cbr", "boostrole", "boosterrole", "makeboostrole"];
-    public readonly supportsInteractions = false;
+    public readonly supportsInteractions = true;
+    public readonly supportsLegacy = false;
 
-    public readonly description = "Creates a custom role from boosters.";
+    public readonly description = "Creates a custom role for boosters.";
+    public readonly slashCommandBuilder = new SlashCommandBuilder()
+        .addStringOption(option => option.setName("name").setDescription("The role name, defaults to your name"))
+        .addStringOption(option => option.setName("color").setDescription("The role color, defaults to transparent"));
 
-    async execute(message: Message, context: LegacyCommandContext): Promise<CommandReturn> {
+    async execute(message: ChatInputCommandInteraction, context: ChatInputCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
         const createAfterRoleId = context.config.create_boost_role?.create_roles_after;
 
@@ -48,12 +45,15 @@ export default class CreateBoostRoleCommand extends Command {
             return;
         }
 
-        if (!message.member?.premiumSince && !message.member?.permissions.has("Administrator")) {
+        const member = message.member! as GuildMember;
+
+        if (!member.premiumSince && !member?.permissions.has("Administrator")) {
             await this.error(message, "You are not a booster!");
             return;
         }
 
-        let colorCode = context.parsedNamedArgs.colorCode;
+        let colorCode: any = context.options.getString("color");
+        const name: string = context.options.getString("name") ?? member!.displayName ?? message.user.username;
 
         if (colorCode && colorCode.startsWith("0x")) {
             colorCode = colorCode.replace(/^0x/i, "#");
@@ -80,7 +80,7 @@ export default class CreateBoostRoleCommand extends Command {
             }
         });
 
-        if (boostRoleEntry && message.member.roles.cache.has(boostRoleEntry.role_id)) {
+        if (boostRoleEntry && member?.roles?.cache.has(boostRoleEntry.role_id)) {
             await this.error(message, "You already have a custom role!");
             return;
         } else if (boostRoleEntry) {
@@ -98,11 +98,11 @@ export default class CreateBoostRoleCommand extends Command {
                 mentionable: false,
                 permissions: [],
                 position: createAfterRole.position + 1,
-                name: message.member!.displayName,
+                name,
                 reason: "Creating custom role for admin/booster"
             });
 
-            await message.member!.roles.add(role, "Adding the new role to the member");
+            await member.roles?.add(role, "Adding the new role to the member");
 
             await this.client.prisma.boostRoleEntries
                 .create({
