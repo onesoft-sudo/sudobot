@@ -1,3 +1,12 @@
+# [5.39.0](https://github.com/onesoft-sudo/sudobot/compare/v5.38.1...v5.39.0) (2023-08-09)
+
+
+### Features
+
+* **userinfo:** show other available flags ([cee7041](https://github.com/onesoft-sudo/sudobot/commit/cee704137b32026c85400234ec47d96849db222f))
+
+
+
 ## [5.38.1](https://github.com/onesoft-sudo/sudobot/compare/v5.38.0...v5.38.1) (2023-08-08)
 
 
@@ -33,15 +42,6 @@
 ### Features
 
 * add warning command as a placeholder ([573e545](https://github.com/onesoft-sudo/sudobot/commit/573e5455b1ec653816087fd87485389140bb5bb6))
-
-
-
-## [5.35.1](https://github.com/onesoft-sudo/sudobot/compare/v5.35.0...v5.35.1) (2023-08-08)
-
-
-### Bug Fixes
-
-* infraction list command not showing the type ([eb1b690](https://github.com/onesoft-sudo/sudobot/commit/eb1b690abcf94d75b95eba9ede9f2ed772a100fb))
 
 
 
