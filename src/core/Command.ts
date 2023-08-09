@@ -351,7 +351,7 @@ export default abstract class Command {
                                         await message
                                             .reply({
                                                 ephemeral: true,
-                                                content: error
+                                                content: `${this.emoji("error")} ${error}`
                                             })
                                             .catch(logError);
 
