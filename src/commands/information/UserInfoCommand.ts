@@ -18,25 +18,10 @@
  */
 
 import { formatDistanceStrict, formatDistanceToNowStrict } from "date-fns";
-import { EmbedBuilder, GuildMember, PermissionFlagsBits, SlashCommandBuilder, User, UserFlags, userMention } from "discord.js";
+import { EmbedBuilder, GuildMember, PermissionFlagsBits, SlashCommandBuilder, User, userMention } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { logError } from "../../utils/logger";
-
-const flagsToString = (flags: Exclude<User["flags"], null>) => {
-    const strings = [];
-
-    if (flags.has(UserFlags.Spammer)) {
-        strings.push("Possible spammer");
-    }
-    if (flags.has(UserFlags.HasUnreadUrgentMessages)) {
-        strings.push("Has unread urgent official messages from Discord");
-    }
-    if (flags.has(UserFlags.Quarantined)) {
-        strings.push("Qurantined due to suspicious activity");
-    }
-
-    return strings;
-};
+import { flagsToString } from "../../utils/userflags";
 
 export default class UserInfoCommand extends Command {
     public readonly name = "userinfo";
