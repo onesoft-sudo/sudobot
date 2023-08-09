@@ -19,7 +19,7 @@
 
 import { AfkEntry } from "@prisma/client";
 import { formatDistanceToNowStrict } from "date-fns";
-import { ChannelType, Message, Snowflake, escapeMarkdown, time } from "discord.js";
+import { ChannelType, GuildMember, Message, Snowflake, escapeMarkdown, time } from "discord.js";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
@@ -198,6 +198,13 @@ export default class AFKService extends Service implements HasEventListeners {
                 }
             })
             .catch(logError);
+    }
+
+    @GatewayEventListener("guildMemberRemove")
+    onGuildMemberRemove(member: GuildMember) {
+        if (this.isAFK(member.guild.id, member.user.id)) {
+            this.removeAFK(member.guild.id, member.user.id).catch(logError);
+        }
     }
 
     generateAFKEndMessage(entry: AfkEntry | null | undefined) {
