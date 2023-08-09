@@ -1,3 +1,12 @@
+# [5.41.0](https://github.com/onesoft-sudo/sudobot/compare/v5.40.1...v5.41.0) (2023-08-09)
+
+
+### Features
+
+* add afk service ([7bae10d](https://github.com/onesoft-sudo/sudobot/commit/7bae10dcdd3c4ea1c34a48bf57f6260baeea4f0c))
+
+
+
 ## [5.40.1](https://github.com/onesoft-sudo/sudobot/compare/v5.40.0...v5.40.1) (2023-08-09)
 
 
@@ -36,15 +45,6 @@
 ### Bug Fixes
 
 * **schemas:** table names ([8feb3fc](https://github.com/onesoft-sudo/sudobot/commit/8feb3fc1eaf17e2e4ff8982034d6845730fd9e0d))
-
-
-
-# [5.38.0](https://github.com/onesoft-sudo/sudobot/compare/v5.37.0...v5.38.0) (2023-08-08)
-
-
-### Features
-
-* add create boost role command ([2852809](https://github.com/onesoft-sudo/sudobot/commit/285280955881dd7facdaf7303ec3e9301cbc6ddc))
 
 
 
