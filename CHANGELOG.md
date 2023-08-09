@@ -1,3 +1,12 @@
+## [5.41.1](https://github.com/onesoft-sudo/sudobot/compare/v5.41.0...v5.41.1) (2023-08-09)
+
+
+### Bug Fixes
+
+* interaction support was not turned off in warning command ([84f7b86](https://github.com/onesoft-sudo/sudobot/commit/84f7b8614a74339b2bc695af3e1b6d9cc95c3223))
+
+
+
 # [5.41.0](https://github.com/onesoft-sudo/sudobot/compare/v5.40.1...v5.41.0) (2023-08-09)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * **userinfo:** show other available flags ([cee7041](https://github.com/onesoft-sudo/sudobot/commit/cee704137b32026c85400234ec47d96849db222f))
-
-
-
-## [5.38.1](https://github.com/onesoft-sudo/sudobot/compare/v5.38.0...v5.38.1) (2023-08-08)
-
-
-### Bug Fixes
-
-* **schemas:** table names ([8feb3fc](https://github.com/onesoft-sudo/sudobot/commit/8feb3fc1eaf17e2e4ff8982034d6845730fd9e0d))
 
 
 
