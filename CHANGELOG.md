@@ -1,3 +1,12 @@
+## [5.41.2](https://github.com/onesoft-sudo/sudobot/compare/v5.41.1...v5.41.2) (2023-08-09)
+
+
+### Bug Fixes
+
+* delete AFK records if a user leaves the server ([fc407aa](https://github.com/onesoft-sudo/sudobot/commit/fc407aaaadd369791ffcf502d17d514b64794e10))
+
+
+
 ## [5.41.1](https://github.com/onesoft-sudo/sudobot/compare/v5.41.0...v5.41.1) (2023-08-09)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * **timeparsing:** add support of other time units ([5ccbec2](https://github.com/onesoft-sudo/sudobot/commit/5ccbec20a78bebc0f471f1dc6b2635d2d866a212))
-
-
-
-# [5.39.0](https://github.com/onesoft-sudo/sudobot/compare/v5.38.1...v5.39.0) (2023-08-09)
-
-
-### Features
-
-* **userinfo:** show other available flags ([cee7041](https://github.com/onesoft-sudo/sudobot/commit/cee704137b32026c85400234ec47d96849db222f))
 
 
 
