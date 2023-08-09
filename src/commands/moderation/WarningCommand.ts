@@ -25,6 +25,7 @@ export default class WarningCommand extends Command {
     public readonly validationRules: ValidationRule[] = [];
     public readonly permissions = [PermissionsBitField.Flags.ManageMessages];
     public readonly aliases = ["warnings", "warns"];
+    public readonly supportsInteractions: boolean = false;
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         return {
