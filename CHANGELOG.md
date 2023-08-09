@@ -1,3 +1,12 @@
+# [5.43.0](https://github.com/onesoft-sudo/sudobot/compare/v5.42.0...v5.43.0) (2023-08-09)
+
+
+### Features
+
+* disabling commands ([5e93c90](https://github.com/onesoft-sudo/sudobot/commit/5e93c90652e9c4d7a5e67e6a75297e7fb67b2a91))
+
+
+
 # [5.42.0](https://github.com/onesoft-sudo/sudobot/compare/v5.41.2...v5.42.0) (2023-08-09)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * add afk service ([7bae10d](https://github.com/onesoft-sudo/sudobot/commit/7bae10dcdd3c4ea1c34a48bf57f6260baeea4f0c))
-
-
-
-## [5.40.1](https://github.com/onesoft-sudo/sudobot/compare/v5.40.0...v5.40.1) (2023-08-09)
-
-
-### Bug Fixes
-
-* better error messages ([b7a2e62](https://github.com/onesoft-sudo/sudobot/commit/b7a2e62d3aaaf7652e2a21c5a46faf7a73d75026))
 
 
 
