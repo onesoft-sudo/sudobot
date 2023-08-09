@@ -1,3 +1,13 @@
+# [5.42.0](https://github.com/onesoft-sudo/sudobot/compare/v5.41.2...v5.42.0) (2023-08-09)
+
+
+### Features
+
+* **api:** support multiple methods in a single action method ([5eb108c](https://github.com/onesoft-sudo/sudobot/commit/5eb108c7e3964300357fd72a526b48fdbe40b490))
+* server only mode ([bb62dc7](https://github.com/onesoft-sudo/sudobot/commit/bb62dc73e8ffb2b865949e4225f95d60903cd21d))
+
+
+
 ## [5.41.2](https://github.com/onesoft-sudo/sudobot/compare/v5.41.1...v5.41.2) (2023-08-09)
 
 
@@ -31,20 +41,6 @@
 ### Bug Fixes
 
 * better error messages ([b7a2e62](https://github.com/onesoft-sudo/sudobot/commit/b7a2e62d3aaaf7652e2a21c5a46faf7a73d75026))
-
-
-
-# [5.40.0](https://github.com/onesoft-sudo/sudobot/compare/v5.39.0...v5.40.0) (2023-08-09)
-
-
-### Bug Fixes
-
-* time interval validation issue ([906967a](https://github.com/onesoft-sudo/sudobot/commit/906967ac2fe497ce4ef029d0f9ba59c78cf67994))
-
-
-### Features
-
-* **timeparsing:** add support of other time units ([5ccbec2](https://github.com/onesoft-sudo/sudobot/commit/5ccbec20a78bebc0f471f1dc6b2635d2d866a212))
 
 
 
