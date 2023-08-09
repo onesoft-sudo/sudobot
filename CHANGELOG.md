@@ -1,3 +1,12 @@
+# [5.44.0](https://github.com/onesoft-sudo/sudobot/compare/v5.43.1...v5.44.0) (2023-08-09)
+
+
+### Features
+
+* finish config controller ([26a7926](https://github.com/onesoft-sudo/sudobot/commit/26a79260907119469b72b7f0bb1c1f37a1266b17))
+
+
+
 ## [5.43.1](https://github.com/onesoft-sudo/sudobot/compare/v5.43.0...v5.43.1) (2023-08-09)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * delete AFK records if a user leaves the server ([fc407aa](https://github.com/onesoft-sudo/sudobot/commit/fc407aaaadd369791ffcf502d17d514b64794e10))
-
-
-
-## [5.41.1](https://github.com/onesoft-sudo/sudobot/compare/v5.41.0...v5.41.1) (2023-08-09)
-
-
-### Bug Fixes
-
-* interaction support was not turned off in warning command ([84f7b86](https://github.com/onesoft-sudo/sudobot/commit/84f7b8614a74339b2bc695af3e1b6d9cc95c3223))
 
 
 
