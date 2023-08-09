@@ -62,7 +62,15 @@ export default class Server {
             legacyHeaders: false
         });
 
+        const configLimiter = rateLimit({
+            windowMs: 10 * 1000,
+            max: 7,
+            standardHeaders: true,
+            legacyHeaders: false
+        });
+
         this.expressApp.use(limiter);
+        this.expressApp.use("/config", configLimiter);
         this.expressApp.use(express.json());
         this.expressApp.use("/", router);
     }
