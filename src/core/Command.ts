@@ -44,7 +44,11 @@ import Client from "./Client";
 export type CommandMessage = Message<boolean> | ChatInputCommandInteraction<CacheType> | ContextMenuCommandInteraction;
 export type BasicCommandContext = LegacyCommandContext | ChatInputCommandContext;
 export type AnyCommandContext = BasicCommandContext | ContextMenuCommandContext;
-export type CommandReturn = ((MessageCreateOptions | APIMessage | InteractionReplyOptions) & { __reply?: boolean }) | undefined | null | void;
+export type CommandReturn =
+    | ((MessageCreateOptions | APIMessage | InteractionReplyOptions) & { __reply?: boolean })
+    | undefined
+    | null
+    | void;
 
 export enum ArgumentType {
     String = 1,
@@ -116,7 +120,10 @@ export default abstract class Command {
         if (message instanceof ChatInputCommandInteraction) await message.deferReply(options).catch(logError);
     }
 
-    async deferredReply(message: CommandMessage, options: MessageCreateOptions | MessagePayload | InteractionEditReplyOptions | string) {
+    async deferredReply(
+        message: CommandMessage,
+        options: MessageCreateOptions | MessagePayload | InteractionEditReplyOptions | string
+    ) {
         if (message instanceof ChatInputCommandInteraction) {
             return await message.editReply(options);
         }
@@ -281,7 +288,8 @@ export default abstract class Command {
 
                             if (
                                 !isNaN(float) &&
-                                ((rule.minValue !== undefined && rule.minValue > float) || (rule.maxValue !== undefined && rule.maxValue < float))
+                                ((rule.minValue !== undefined && rule.minValue > float) ||
+                                    (rule.maxValue !== undefined && rule.maxValue < float))
                             ) {
                                 await message.reply(
                                     rule.minMaxErrorMessage ??
@@ -346,6 +354,8 @@ export default abstract class Command {
                                                 content: error
                                             })
                                             .catch(logError);
+
+                                        return;
                                     }
 
                                     break;
@@ -430,7 +440,8 @@ export default abstract class Command {
 
                                     if (rule.entityNotNull) {
                                         await message.reply(
-                                            `${this.emoji("error")} ` + rule.entityNotNullErrorMessage ?? `Argument ${index} is invalid`
+                                            `${this.emoji("error")} ` + rule.entityNotNullErrorMessage ??
+                                                `Argument ${index} is invalid`
                                         );
                                         return;
                                     }
@@ -468,8 +479,14 @@ export default abstract class Command {
                                 break loop;
                         }
 
-                        if (rule.lengthMax !== undefined && typeof parsedArgs[index] === "string" && parsedArgs[index].length > rule.lengthMax) {
-                            await message.reply(`${this.emoji("error")} ` + rule.lengthMaxErrorMessage ?? `Argument #${index} is too long`);
+                        if (
+                            rule.lengthMax !== undefined &&
+                            typeof parsedArgs[index] === "string" &&
+                            parsedArgs[index].length > rule.lengthMax
+                        ) {
+                            await message.reply(
+                                `${this.emoji("error")} ` + rule.lengthMaxErrorMessage ?? `Argument #${index} is too long`
+                            );
                             return;
                         }
 
@@ -479,7 +496,9 @@ export default abstract class Command {
                     }
 
                     if (prevLengthOuter === parsedArgs.length) {
-                        await message.reply(`${this.emoji("error")} ` + rule.typeErrorMessage ?? `Argument #${index} is invalid, type mismatch`);
+                        await message.reply(
+                            `${this.emoji("error")} ` + rule.typeErrorMessage ?? `Argument #${index} is invalid, type mismatch`
+                        );
                         return;
                     }
                 }
