@@ -136,6 +136,7 @@ model User {
     name           String?
     username       String
     discordId      String
+    guilds         String[]  @default([])
     password       String
     token          String?
     createdAt      DateTime  @default(now())

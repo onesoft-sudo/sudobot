@@ -23,6 +23,7 @@ import rateLimit from "express-rate-limit";
 import fs from "fs/promises";
 import { join, resolve } from "path";
 import Client from "../core/Client";
+import { RouteMetadata } from "../types/RouteMetadata";
 import { log, logError, logInfo, logWarn } from "../utils/logger";
 import Controller from "./Controller";
 import Response from "./Response";
@@ -41,6 +42,16 @@ export default class Server {
     async boot() {
         const router = express.Router();
         await this.loadControllers(undefined, router);
+
+        this.expressApp.use((err: unknown, req: ExpressRequest, res: ExpressResponse, next: NextFunction) => {
+            if (err instanceof SyntaxError && "status" in err && err.status === 400 && "body" in err) {
+                res.status(400).json({
+                    error: "Invalid JSON payload"
+                });
+
+                return;
+            }
+        });
 
         this.expressApp.use(cors());
 
@@ -75,9 +86,13 @@ export default class Server {
             const { default: ControllerClass } = await import(filePath);
             const controller: Controller = new ControllerClass(this.client);
 
-            const metadata:
-                | Record<string, { handler: Function; method?: string; middleware?: Function[]; path?: string } | undefined>
-                | undefined = Reflect.getMetadata("action_methods", ControllerClass.prototype);
+            const metadata: Record<string, RouteMetadata> | undefined = Reflect.getMetadata(
+                "action_methods",
+                ControllerClass.prototype
+            );
+
+            const authMiddleware = Reflect.getMetadata("auth_middleware", ControllerClass.prototype) ?? {};
+            const validatonMiddleware = Reflect.getMetadata("validation_middleware", ControllerClass.prototype) ?? {};
 
             if (metadata) {
                 for (const methodName in metadata) {
@@ -85,44 +100,64 @@ export default class Server {
                         continue;
                     }
 
-                    const { method, middleware, handler, path } = metadata[methodName]!;
+                    for (const method in metadata[methodName]!) {
+                        const data = metadata[methodName][method as keyof RouteMetadata]!;
 
-                    if (!path) {
-                        logError(`[Server] No path specified at function ${handler.name} in controller ${file}. Skipping.`);
-                        continue;
-                    }
-
-                    if (method && !["GET", "POST", "HEAD", "PUT", "PATCH", "DELETE"].includes(method)) {
-                        logError(
-                            `[Server] Invalid method '${method}' specified at function ${handler.name} in controller ${file}. Skipping.`
-                        );
-                        continue;
-                    }
-
-                    log(`Added handler for ${method?.toUpperCase() ?? "GET"} ${path}`);
-
-                    (router[(method?.toLowerCase() ?? "get") as keyof typeof router] as Function)(
-                        path,
-                        ...(middleware?.map(
-                            fn => (req: ExpressRequest, res: ExpressResponse, next: NextFunction) =>
-                                fn(this.client, req, res, next)
-                        ) ?? []),
-                        async (req: ExpressRequest, res: ExpressResponse) => {
-                            const userResponse = await handler.bind(controller)(req);
-
-                            if (userResponse instanceof Response) {
-                                userResponse.send(res);
-                            } else if (userResponse && typeof userResponse === "object") {
-                                res.json(userResponse);
-                            } else if (typeof userResponse === "string") {
-                                res.send(userResponse);
-                            } else if (typeof userResponse === "number") {
-                                res.send(userResponse.toString());
-                            } else {
-                                logWarn("Invalid value was returned from the controller. Not sending a response.");
-                            }
+                        if (!data) {
+                            continue;
                         }
-                    );
+
+                        const { middleware, handler, path } = data;
+
+                        if (!handler) {
+                            continue;
+                        }
+
+                        if (!path) {
+                            logError(`[Server] No path specified at function ${handler.name} in controller ${file}. Skipping.`);
+                            continue;
+                        }
+
+                        if (method && !["GET", "POST", "HEAD", "PUT", "PATCH", "DELETE"].includes(method)) {
+                            logError(
+                                `[Server] Invalid method '${method}' specified at function ${handler.name} in controller ${file}. Skipping.`
+                            );
+                            continue;
+                        }
+
+                        log(`Added handler for ${method?.toUpperCase() ?? "GET"} ${path}`);
+
+                        const finalMiddlewareArray = [
+                            ...(authMiddleware[methodName] ? [authMiddleware[methodName]] : []),
+                            ...(validatonMiddleware[methodName] ? [validatonMiddleware[methodName]] : []),
+                            ...(middleware ?? [])
+                        ];
+
+                        (router[(method?.toLowerCase() ?? "get") as keyof typeof router] as Function)(
+                            path,
+                            ...(finalMiddlewareArray?.map(
+                                fn => (req: ExpressRequest, res: ExpressResponse, next: NextFunction) =>
+                                    fn(this.client, req, res, next)
+                            ) ?? []),
+                            async (req: ExpressRequest, res: ExpressResponse) => {
+                                const userResponse = await handler.bind(controller)(req, res);
+
+                                if (!res.headersSent) {
+                                    if (userResponse instanceof Response) {
+                                        userResponse.send(res);
+                                    } else if (userResponse && typeof userResponse === "object") {
+                                        res.json(userResponse);
+                                    } else if (typeof userResponse === "string") {
+                                        res.send(userResponse);
+                                    } else if (typeof userResponse === "number") {
+                                        res.send(userResponse.toString());
+                                    } else {
+                                        logWarn("Invalid value was returned from the controller. Not sending a response.");
+                                    }
+                                }
+                            }
+                        );
+                    }
                 }
             }
         }

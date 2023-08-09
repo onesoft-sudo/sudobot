@@ -5,17 +5,12 @@ import type Client from "../core/Client";
 
 export function RequireAuth(fetchUser = true) {
     return (target: Controller, propertyKey: string, descriptor: PropertyDescriptor) => {
-        const metadata: Record<
-            string,
-            { handler?: Function; method?: string; middleware?: Function[]; path?: string } | undefined
-        > = Reflect.getMetadata("action_methods", target) ?? {};
+        const metadata = Reflect.getMetadata("auth_middleware", target) ?? {};
+        const middleware = (client: Client, req: Request, res: Response, next: NextFunction) =>
+            RequireAuthMiddleware(client, fetchUser, req, res, next);
 
-        metadata[propertyKey] ??= {};
-        metadata[propertyKey]!.middleware ??= [];
-        metadata[propertyKey]!.middleware!.push((client: Client, req: Request, res: Response, next: NextFunction) =>
-            RequireAuthMiddleware(client, fetchUser, req, res, next)
-        );
+        metadata[propertyKey] ??= middleware;
 
-        Reflect.defineMetadata("action_methods", metadata, target);
+        Reflect.defineMetadata("auth_middleware", metadata, target);
     };
 }

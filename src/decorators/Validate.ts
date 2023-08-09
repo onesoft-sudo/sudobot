@@ -6,17 +6,13 @@ import type Client from "../core/Client";
 
 export function Validate(schema: ZodSchema) {
     return (target: Controller, propertyKey: string, descriptor: PropertyDescriptor) => {
-        const metadata: Record<
-            string,
-            { handler?: Function; method?: string; middleware?: Function[]; path?: string } | undefined
-        > = Reflect.getMetadata("action_methods", target) ?? {};
+        const metadata = Reflect.getMetadata("validation_middleware", target) ?? {};
 
-        metadata[propertyKey] ??= {};
-        metadata[propertyKey]!.middleware ??= [];
-        metadata[propertyKey]!.middleware!.push((client: Client, req: Request, res: Response, next: NextFunction) =>
-            ValidateMiddleware(schema, req, res, next)
-        );
+        const middleware = (client: Client, req: Request, res: Response, next: NextFunction) =>
+            ValidateMiddleware(schema, req, res, next);
 
-        Reflect.defineMetadata("action_methods", metadata, target);
+        metadata[propertyKey] ??= middleware;
+
+        Reflect.defineMetadata("validation_middleware", metadata, target);
     };
 }
