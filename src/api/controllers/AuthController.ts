@@ -79,6 +79,20 @@ export default class AuthController extends Controller {
             });
         }
 
+        const guilds = [];
+
+        for (const id of user.guilds) {
+            const guild = this.client.guilds.cache.get(id);
+
+            if (guild) {
+                guilds.push({
+                    id: guild.id,
+                    name: guild.name,
+                    iconURL: guild.iconURL() ?? undefined
+                });
+            }
+        }
+
         return {
             message: "Login successful",
             user: {
@@ -86,7 +100,7 @@ export default class AuthController extends Controller {
                 username: user.username,
                 name: user.name,
                 discordId: user.discordId,
-                guilds: user.guilds,
+                guilds,
                 token: user.token,
                 tokenExpiresAt: user.tokenExpiresAt,
                 createdAt: user.createdAt
