@@ -29,7 +29,8 @@ export const SystemConfigSchema = z.object({
             save_attachments: z.boolean().default(false).optional()
         })
         .optional(),
-    disabled_commands: z.array(z.string()).default([])
+    disabled_commands: z.array(z.string()).default([]),
+    restart_exit_code: z.number().int().default(1)
 });
 
 export type SystemConfig = z.infer<typeof SystemConfigSchema>;

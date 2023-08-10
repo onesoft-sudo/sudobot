@@ -18,12 +18,16 @@
  */
 
 import { formatDistanceToNowStrict } from "date-fns";
-import { APIEmbed, WebhookClient, escapeCodeBlock } from "discord.js";
+import { APIEmbed, Colors, WebhookClient, escapeCodeBlock } from "discord.js";
+import { existsSync, readFileSync } from "fs";
+import { rm } from "fs/promises";
+import path from "path";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
+import { safeChannelFetch, safeMessageFetch } from "../utils/fetch";
 import { log, logError, logInfo } from "../utils/logger";
-import { chunkedString } from "../utils/utils";
+import { chunkedString, getEmoji, sudoPrefix } from "../utils/utils";
 
 export const name = "startupManager";
 
@@ -33,7 +37,7 @@ export default class StartupManager extends Service implements HasEventListeners
     interval: NodeJS.Timer | undefined = undefined;
 
     @GatewayEventListener("ready")
-    onReady() {
+    async onReady() {
         if (BACKUP_CHANNEL_ID) {
             this.setBackupQueue();
         }
@@ -41,6 +45,51 @@ export default class StartupManager extends Service implements HasEventListeners
         if (ERROR_WEKHOOK_URL) {
             log("Error webhook URL found. Setting up error handlers...");
             this.setupErrorHandlers();
+        }
+
+        const restartJsonFile = path.join(sudoPrefix("tmp", true), "restart.json");
+
+        if (existsSync(restartJsonFile)) {
+            logInfo("Found restart.json file: ", restartJsonFile);
+
+            try {
+                const { guildId, messageId, channelId, time } = JSON.parse(readFileSync(restartJsonFile, { encoding: "utf-8" }));
+
+                const guild = this.client.guilds.cache.get(guildId);
+
+                if (!guild) {
+                    return;
+                }
+
+                const channel = await safeChannelFetch(guild, channelId);
+
+                if (!channel || !channel.isTextBased()) {
+                    return;
+                }
+
+                const message = await safeMessageFetch(channel, messageId);
+
+                if (!message) {
+                    return;
+                }
+
+                await message.edit({
+                    embeds: [
+                        {
+                            color: Colors.Green,
+                            title: "System Restart",
+                            description: `${getEmoji(this.client, "check")} Operation completed. (took ${(
+                                (Date.now() - time) /
+                                1000
+                            ).toFixed(2)}s)`
+                        }
+                    ]
+                });
+            } catch (e) {
+                logError(e);
+            }
+
+            rm(restartJsonFile).catch(logError);
         }
     }
 
@@ -98,9 +147,9 @@ export default class StartupManager extends Service implements HasEventListeners
         process.on("uncaughtException", async (error: Error) => {
             process.removeAllListeners("uncaughtException");
             logError(error);
-            this.sendErrorLog(error.stack ?? `Uncaught ${error.name.trim() === "" ? "Error" : error.name}: ${error.message}`).finally(() =>
-                process.exit(-1)
-            );
+            this.sendErrorLog(
+                error.stack ?? `Uncaught ${error.name.trim() === "" ? "Error" : error.name}: ${error.message}`
+            ).finally(() => process.exit(-1));
         });
     }
 
