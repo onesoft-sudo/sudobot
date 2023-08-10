@@ -39,11 +39,11 @@ export default class AuthController extends Controller {
 
         const user = await this.client.prisma.user.findFirst({
             where: {
-                username
+                username: username.trim()
             }
         });
 
-        if (!user || !bcrypt.compareSync(password, user.password)) {
+        if (!user || !bcrypt.compareSync(password.trim(), user.password)) {
             return new Response({
                 status: 403,
                 body: {
