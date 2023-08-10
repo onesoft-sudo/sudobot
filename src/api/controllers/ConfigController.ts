@@ -51,9 +51,11 @@ export default class ConfigController extends Controller {
         }
 
         const oldConfig = this.client.configManager.config[request.params.id];
+        console.log(request.parsedBody);
 
         if (request.parsedBody) {
-            this.client.configManager.config[request.params.id] = deepmerge(oldConfig as object, request.parsedBody);
+            this.client.configManager.config[request.params.id] = deepmerge(oldConfig as object, request.parsedBody.data ?? {});
+            console.log(oldConfig?.prefix, this.client.configManager.config[request.params.id]?.prefix);
         }
 
         await this.client.configManager.write();
