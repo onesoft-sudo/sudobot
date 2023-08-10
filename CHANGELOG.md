@@ -1,3 +1,13 @@
+## [5.46.1](https://github.com/onesoft-sudo/sudobot/compare/v5.46.0...v5.46.1) (2023-08-10)
+
+
+### Bug Fixes
+
+* put request to /config/:id adds gibberish to the config file ([250f390](https://github.com/onesoft-sudo/sudobot/commit/250f3909dad1ec0a025d4a22b495c06a3d9fba84))
+* trim input before using ([6f3563c](https://github.com/onesoft-sudo/sudobot/commit/6f3563c30bdd46be846bc56cc45a0ef973927ee5))
+
+
+
 # [5.46.0](https://github.com/onesoft-sudo/sudobot/compare/v5.45.0...v5.46.0) (2023-08-10)
 
 
@@ -32,15 +42,6 @@
 ### Features
 
 * finish config controller ([26a7926](https://github.com/onesoft-sudo/sudobot/commit/26a79260907119469b72b7f0bb1c1f37a1266b17))
-
-
-
-## [5.43.1](https://github.com/onesoft-sudo/sudobot/compare/v5.43.0...v5.43.1) (2023-08-09)
-
-
-### Bug Fixes
-
-* better command description ([cf92d6a](https://github.com/onesoft-sudo/sudobot/commit/cf92d6a06688e8a0db7052cf400b05835ed6e1cc))
 
 
 
