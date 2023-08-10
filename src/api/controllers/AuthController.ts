@@ -86,6 +86,7 @@ export default class AuthController extends Controller {
                 username: user.username,
                 name: user.name,
                 discordId: user.discordId,
+                guilds: user.guilds,
                 token: user.token,
                 tokenExpiresAt: user.tokenExpiresAt,
                 createdAt: user.createdAt
