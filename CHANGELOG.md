@@ -1,3 +1,12 @@
+## [5.47.1](https://github.com/onesoft-sudo/sudobot/compare/v5.47.0...v5.47.1) (2023-08-11)
+
+
+### Bug Fixes
+
+* message filter can be bypassed by editing the messages ([4debf94](https://github.com/onesoft-sudo/sudobot/commit/4debf9469ac707b6062ece317ac449932243c302))
+
+
+
 # [5.47.0](https://github.com/onesoft-sudo/sudobot/compare/v5.46.1...v5.47.0) (2023-08-11)
 
 
@@ -45,15 +54,6 @@
 ### Features
 
 * return guilds from auth controller ([59bb70e](https://github.com/onesoft-sudo/sudobot/commit/59bb70e69b7a05bd62292b4b032de9cce0487585))
-
-
-
-## [5.44.1](https://github.com/onesoft-sudo/sudobot/compare/v5.44.0...v5.44.1) (2023-08-10)
-
-
-### Bug Fixes
-
-* return guilds from the login method at auth controller ([ace7558](https://github.com/onesoft-sudo/sudobot/commit/ace7558fb09dcdd726dd9671e9bb3a88ddd5beba))
 
 
 
