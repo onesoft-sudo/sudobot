@@ -101,7 +101,10 @@ export default class HelpCommand extends Command {
         const config = this.client.configManager.config[message.guildId!];
 
         if (!config) {
-            await this.error(message, "This server isn't configured. Please ask a system administrator to configure this server.");
+            await this.error(
+                message,
+                "This server isn't configured. Please ask a system administrator to configure this server."
+            );
             return;
         }
 
@@ -167,7 +170,7 @@ export default class HelpCommand extends Command {
                         fields: [
                             {
                                 name: "Name",
-                                value: `\`${name}\``,
+                                value: `\`${subcommand ? name : command.name}\``,
                                 inline: true
                             },
                             {
@@ -246,8 +249,12 @@ export default class HelpCommand extends Command {
                             },
                             {
                                 name: "Other Information",
-                                value: `Available since \`${command.since}\`.\n${command.beta ? "This command is under beta testing.\n" : ""}${
-                                    command.systemAdminOnly ? "This command can only be used by the System Administrators of the bot.\n" : ""
+                                value: `Available since \`${command.since}\`.\n${
+                                    command.beta ? "This command is under beta testing.\n" : ""
+                                }${
+                                    command.systemAdminOnly
+                                        ? "This command can only be used by the System Administrators of the bot.\n"
+                                        : ""
                                 }`,
                                 inline: true
                             }
