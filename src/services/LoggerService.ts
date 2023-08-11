@@ -464,6 +464,8 @@ export default class LoggerService extends Service {
             else members++;
         }
 
+        const createdAt = Math.round(member.user.createdAt?.getTime() ?? Date.now() / 1000);
+
         await this.sendLogEmbed(
             member.guild,
             {
@@ -486,9 +488,7 @@ export default class LoggerService extends Service {
                     },
                     {
                         name: "Account Created At",
-                        value: `${member.user.createdAt.toLocaleString()} (${formatDistanceToNowStrict(member.user.createdAt!, {
-                            addSuffix: true
-                        })})`
+                        value: `<t:${createdAt}:f> (<t:${createdAt}:R>)`
                     },
                     {
                         name: "User Information",
@@ -519,6 +519,8 @@ export default class LoggerService extends Service {
             return;
         }
 
+        const joinedAt = Math.round(member.joinedAt?.getTime() ?? Date.now() / 1000);
+
         await this.sendLogEmbed(
             member.guild,
             {
@@ -538,9 +540,7 @@ export default class LoggerService extends Service {
                     },
                     {
                         name: "Joined At",
-                        value: `${member.joinedAt!.toLocaleString()} (${formatDistanceToNowStrict(member.joinedAt!, {
-                            addSuffix: true
-                        })})`
+                        value: `<t:${joinedAt}:f> (<t:${joinedAt}:R>)`
                     },
                     {
                         name: "User Information",
