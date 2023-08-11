@@ -64,7 +64,7 @@ export default class LoggerService extends Service {
         if (!enabled || !channelId) return null;
 
         try {
-            const channel = await guild.channels.fetch(channelId);
+            const channel = await guild.channels.fetch(channelId as string);
 
             if (!channel || !isTextableChannel(channel)) return null;
 
@@ -75,7 +75,18 @@ export default class LoggerService extends Service {
         }
     }
 
-    private createLogEmbed({ options, title, user, fields, footerText, timestamp, moderator, reason, id, color }: CreateLogEmbedOptions) {
+    private createLogEmbed({
+        options,
+        title,
+        user,
+        fields,
+        footerText,
+        timestamp,
+        moderator,
+        reason,
+        id,
+        color
+    }: CreateLogEmbedOptions) {
         const embed = new EmbedBuilder({
             title,
             author: user
@@ -357,7 +368,9 @@ export default class LoggerService extends Service {
                 },
                 {
                     name: "Icon",
-                    value: `Old icon: ${oldRole.icon ? oldRole.iconURL()! : "*None*"}\nNew icon: ${newRole.icon ? newRole.iconURL()! : "*None*"}`
+                    value: `Old icon: ${oldRole.icon ? oldRole.iconURL()! : "*None*"}\nNew icon: ${
+                        newRole.icon ? newRole.iconURL()! : "*None*"
+                    }`
                 },
                 {
                     name: "Added Permissions",
@@ -416,11 +429,16 @@ export default class LoggerService extends Service {
                     },
                     {
                         name: "Removed",
-                        value: removed.size === 0 ? "*Nothing removed*" : removed.reduce((acc, role) => `${acc} ${role.toString()}`, "")
+                        value:
+                            removed.size === 0
+                                ? "*Nothing removed*"
+                                : removed.reduce((acc, role) => `${acc} ${role.toString()}`, "")
                     },
                     {
                         name: "User Information",
-                        value: `Username: ${newMember.user.username}\nMention: ${newMember.user.toString()}\nID: ${newMember.user.id}`
+                        value: `Username: ${newMember.user.username}\nMention: ${newMember.user.toString()}\nID: ${
+                            newMember.user.id
+                        }`
                     }
                 ],
                 footerText: "Roles Updated"
@@ -434,6 +452,10 @@ export default class LoggerService extends Service {
     }
 
     async logGuildMemberAdd(member: GuildMember) {
+        if (!this.client.configManager.config[member.guild.id]?.logging?.events.member_join) {
+            return;
+        }
+
         let members = 0,
             bots = 0;
 
@@ -464,7 +486,9 @@ export default class LoggerService extends Service {
                     },
                     {
                         name: "Account Created At",
-                        value: `${member.user.createdAt.toLocaleString()} (${formatDistanceToNowStrict(member.user.createdAt!, { addSuffix: true })})`
+                        value: `${member.user.createdAt.toLocaleString()} (${formatDistanceToNowStrict(member.user.createdAt!, {
+                            addSuffix: true
+                        })})`
                     },
                     {
                         name: "User Information",
@@ -480,7 +504,9 @@ export default class LoggerService extends Service {
                     }
                 ],
                 footerText: `Joined • ${
-                    member.guild.members.cache.size >= member.guild.memberCount ? member.guild.members.cache.size : member.guild.memberCount
+                    member.guild.members.cache.size >= member.guild.memberCount
+                        ? member.guild.members.cache.size
+                        : member.guild.memberCount
                 } members total`
             },
             undefined,
@@ -489,6 +515,10 @@ export default class LoggerService extends Service {
     }
 
     async logGuildMemberRemove(member: GuildMember) {
+        if (!this.client.configManager.config[member.guild.id]?.logging?.events.member_leave) {
+            return;
+        }
+
         await this.sendLogEmbed(
             member.guild,
             {
@@ -508,7 +538,9 @@ export default class LoggerService extends Service {
                     },
                     {
                         name: "Joined At",
-                        value: `${member.joinedAt!.toLocaleString()} (${formatDistanceToNowStrict(member.joinedAt!, { addSuffix: true })})`
+                        value: `${member.joinedAt!.toLocaleString()} (${formatDistanceToNowStrict(member.joinedAt!, {
+                            addSuffix: true
+                        })})`
                     },
                     {
                         name: "User Information",
@@ -521,7 +553,9 @@ export default class LoggerService extends Service {
                     }
                 ],
                 footerText: `Left • ${
-                    member.guild.members.cache.size >= member.guild.memberCount ? member.guild.members.cache.size : member.guild.memberCount
+                    member.guild.members.cache.size >= member.guild.memberCount
+                        ? member.guild.members.cache.size
+                        : member.guild.memberCount
                 } members total`
             },
             undefined,
@@ -530,6 +564,10 @@ export default class LoggerService extends Service {
     }
 
     async logMessageEdit(oldMessage: Message, newMessage: Message) {
+        if (!this.client.configManager.config[newMessage.guildId!]?.logging?.events.message_edit) {
+            return;
+        }
+
         const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
             new ButtonBuilder()
                 .setStyle(ButtonStyle.Link)
@@ -542,7 +580,11 @@ export default class LoggerService extends Service {
                 new ButtonBuilder()
                     .setStyle(ButtonStyle.Link)
                     .setLabel("Go to referenced message")
-                    .setURL(`https://discord.com/channels/${newMessage.guildId!}/${newMessage.channelId!}/${newMessage.reference!.messageId}`)
+                    .setURL(
+                        `https://discord.com/channels/${newMessage.guildId!}/${newMessage.channelId!}/${
+                            newMessage.reference!.messageId
+                        }`
+                    )
             );
 
         await this.sendLogEmbed(
@@ -557,11 +599,15 @@ export default class LoggerService extends Service {
                 fields: [
                     {
                         name: "User",
-                        value: `${newMessage.author.toString()}\nUsername: ${newMessage.author.username}\nID: ${newMessage.author.id}`
+                        value: `${newMessage.author.toString()}\nUsername: ${newMessage.author.username}\nID: ${
+                            newMessage.author.id
+                        }`
                     },
                     {
                         name: "Channel",
-                        value: `${newMessage.channel.toString()}\nName: ${(newMessage.channel as TextChannel).name}\nID: ${newMessage.channel.id}`
+                        value: `${newMessage.channel.toString()}\nName: ${(newMessage.channel as TextChannel).name}\nID: ${
+                            newMessage.channel.id
+                        }`
                     },
                     {
                         name: "Message",
@@ -580,6 +626,10 @@ export default class LoggerService extends Service {
     }
 
     async logMessageDelete(message: Message) {
+        if (!this.client.configManager.config[message.guildId!]?.logging?.events.message_delete) {
+            return;
+        }
+
         const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
             new ButtonBuilder()
                 .setStyle(ButtonStyle.Link)
@@ -592,7 +642,9 @@ export default class LoggerService extends Service {
                 new ButtonBuilder()
                     .setStyle(ButtonStyle.Link)
                     .setLabel("Go to referenced message")
-                    .setURL(`https://discord.com/channels/${message.guildId!}/${message.channelId!}/${message.reference!.messageId}`)
+                    .setURL(
+                        `https://discord.com/channels/${message.guildId!}/${message.channelId!}/${message.reference!.messageId}`
+                    )
             );
 
         await this.sendLogEmbed(
@@ -611,13 +663,15 @@ export default class LoggerService extends Service {
                     },
                     {
                         name: "Channel",
-                        value: `${message.channel.toString()}\nName: ${(message.channel as TextChannel).name}\nID: ${message.channel.id}`
+                        value: `${message.channel.toString()}\nName: ${(message.channel as TextChannel).name}\nID: ${
+                            message.channel.id
+                        }`
                     },
                     {
                         name: "Message",
-                        value: `Link: [Click here](${`https://discord.com/channels/${message.guildId!}/${message.channelId!}/${message.id}`})\nID: ${
+                        value: `Link: [Click here](${`https://discord.com/channels/${message.guildId!}/${message.channelId!}/${
                             message.id
-                        }`
+                        }`})\nID: ${message.id}`
                     }
                 ],
                 footerText: "Deleted"
@@ -716,7 +770,16 @@ export default class LoggerService extends Service {
         });
     }
 
-    async logUserBan({ moderator, user, deleteMessageSeconds, reason, guild, id, duration, includeDeleteMessageSeconds = true }: LogUserBanOptions) {
+    async logUserBan({
+        moderator,
+        user,
+        deleteMessageSeconds,
+        reason,
+        guild,
+        id,
+        duration,
+        includeDeleteMessageSeconds = true
+    }: LogUserBanOptions) {
         await this.sendLogEmbed(guild, {
             user,
             title: "A user was banned",
@@ -780,7 +843,13 @@ export default class LoggerService extends Service {
         });
     }
 
-    async logMemberKick({ moderator, member, reason, guild, id }: CommonUserActionOptions & { member: GuildMember; reason?: string }) {
+    async logMemberKick({
+        moderator,
+        member,
+        reason,
+        guild,
+        id
+    }: CommonUserActionOptions & { member: GuildMember; reason?: string }) {
         this.sendLogEmbed(guild, {
             user: member.user,
             title: "A member was kicked",
@@ -817,7 +886,13 @@ export default class LoggerService extends Service {
         });
     }
 
-    async logMemberWarning({ moderator, member, reason, guild, id }: CommonUserActionOptions & { member: GuildMember; reason?: string }) {
+    async logMemberWarning({
+        moderator,
+        member,
+        reason,
+        guild,
+        id
+    }: CommonUserActionOptions & { member: GuildMember; reason?: string }) {
         this.sendLogEmbed(guild, {
             user: member.user,
             title: "A member was warned",
@@ -859,7 +934,13 @@ export default class LoggerService extends Service {
         });
     }
 
-    async logMemberUnmute({ moderator, member, reason, guild, id }: CommonUserActionOptions & { member: GuildMember; reason?: string }) {
+    async logMemberUnmute({
+        moderator,
+        member,
+        reason,
+        guild,
+        id
+    }: CommonUserActionOptions & { member: GuildMember; reason?: string }) {
         this.sendLogEmbed(guild, {
             user: member.user,
             title: "A member was unmuted",
