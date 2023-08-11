@@ -243,9 +243,9 @@ export default class HelpCommand extends Command {
                                 : []),
                             {
                                 name: "Mode",
-                                value: `${this.emoji(command.supportsLegacy ? "check" : "error")} Legacy Command\n${this.emoji(
+                                value: `${this.emoji(command.supportsLegacy ? "check" : "error")} Legacy\n${this.emoji(
                                     command.supportsInteractions ? "check" : "error"
-                                )} Interaction-based Command`
+                                )} Interaction-based`
                             },
                             {
                                 name: "Other Information",
