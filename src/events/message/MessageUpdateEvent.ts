@@ -19,13 +19,15 @@
 
 import { ClientEvents, Message } from "discord.js";
 import Event from "../../core/Event";
+import { logError } from "../../utils/logger";
 
 export default class MessageUpdateEvent extends Event {
-    public name: keyof ClientEvents = "messageUpdate";
+    public readonly name: keyof ClientEvents = "messageUpdate";
 
     async execute(oldMessage: Message, newMessage: Message) {
         if (newMessage.author.bot || oldMessage.content === newMessage.content) return;
 
         await this.client.logger.logMessageEdit(oldMessage, newMessage);
+        await this.client.messageFilter.scanMessage(newMessage).catch(logError);
     }
 }

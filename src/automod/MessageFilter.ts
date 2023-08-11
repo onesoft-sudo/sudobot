@@ -19,19 +19,24 @@
 
 import { Message, PermissionsBitField } from "discord.js";
 import Service from "../core/Service";
+import { HasEventListeners } from "../types/HasEventListeners";
 import { logError } from "../utils/logger";
 import { isImmuneToAutoMod } from "../utils/utils";
 
 export const name = "messageFilter";
 
-export default class MessageFilter extends Service {
+export default class MessageFilter extends Service implements HasEventListeners {
     protected readonly immunePermissions = [PermissionsBitField.Flags.ManageGuild, PermissionsBitField.Flags.ManageMessages];
 
     private config(guildId: string) {
         return this.client.configManager.config[guildId]?.message_filter;
     }
 
-    async onMessageCreate(message: Message) {
+    onMessageCreate(message: Message) {
+        return this.scanMessage(message);
+    }
+
+    async scanMessage(message: Message) {
         if (!message.content || message.content.trim() === "") return;
 
         const config = this.config(message.guildId!);
@@ -50,8 +55,10 @@ export default class MessageFilter extends Service {
 
         if (
             (!tokenSafe || !wordSafe) &&
-            ((!tokenSafe && (config.send_logs === true || (typeof config.send_logs === "object" && config.send_logs.blocked_tokens))) ||
-                (!wordSafe && (config.send_logs === true || (typeof config.send_logs === "object" && config.send_logs.blocked_words))))
+            ((!tokenSafe &&
+                (config.send_logs === true || (typeof config.send_logs === "object" && config.send_logs.blocked_tokens))) ||
+                (!wordSafe &&
+                    (config.send_logs === true || (typeof config.send_logs === "object" && config.send_logs.blocked_words))))
         ) {
             this.client.logger
                 .logBlockedWordOrToken({
@@ -67,12 +74,19 @@ export default class MessageFilter extends Service {
 
         if (!message.deletable) return false;
 
-        if (!tokenSafe && (config.delete_message === true || (typeof config.delete_message === "object" && config.delete_message.blocked_tokens))) {
+        if (
+            !tokenSafe &&
+            (config.delete_message === true ||
+                (typeof config.delete_message === "object" && config.delete_message.blocked_tokens))
+        ) {
             message.delete().catch(logError);
             return true;
         }
 
-        if (!wordSafe && (config.delete_message === true || (typeof config.delete_message === "object" && config.delete_message.blocked_words))) {
+        if (
+            !wordSafe &&
+            (config.delete_message === true || (typeof config.delete_message === "object" && config.delete_message.blocked_words))
+        ) {
             message.delete().catch(logError);
             return true;
         }
