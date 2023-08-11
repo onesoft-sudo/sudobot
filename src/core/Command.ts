@@ -119,7 +119,7 @@ export default abstract class Command {
     abstract execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn>;
 
     async deferIfInteraction(message: CommandMessage, options?: InteractionDeferReplyOptions) {
-        if (message instanceof ChatInputCommandInteraction) await message.deferReply(options).catch(logError);
+        if (message instanceof ChatInputCommandInteraction) return await message.deferReply(options).catch(logError);
     }
 
     async deferredReply(
@@ -153,7 +153,7 @@ export default abstract class Command {
         return getEmoji(this.client, name);
     }
 
-    async run(message: CommandMessage, context: AnyCommandContext) {
+    async run(message: CommandMessage, context: AnyCommandContext, checkOnly = false) {
         const isSystemAdmin = this.client.configManager.systemConfig.system_admins.includes(message.member!.user.id);
 
         if (this.systemAdminOnly && !isSystemAdmin) {
@@ -537,14 +537,16 @@ export default abstract class Command {
             }
         }
 
-        return await this.execute(message, {
-            ...context,
-            ...(context.isLegacy
-                ? {
-                      parsedArgs,
-                      parsedNamedArgs
-                  }
-                : {})
-        });
+        if (!checkOnly) {
+            return await this.execute(message, {
+                ...context,
+                ...(context.isLegacy
+                    ? {
+                          parsedArgs,
+                          parsedNamedArgs
+                      }
+                    : {})
+            });
+        }
     }
 }

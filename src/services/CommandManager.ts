@@ -55,7 +55,7 @@ export interface ContextMenuCommandContext extends CommandContext {
 }
 
 export default class CommandManager extends Service {
-    public async runCommandFromMessage(message: Message) {
+    public async runCommandFromMessage(message: Message, checkOnly = false) {
         if (!message.content) return;
 
         const config = this.client.configManager.config[message.guildId!];
@@ -78,18 +78,22 @@ export default class CommandManager extends Service {
         }
 
         command
-            .run(message, <LegacyCommandContext>{
-                isLegacy: true,
-                argv: [commandName, ...commandArguments],
-                args: commandArguments,
-                config,
-                parsedArgs: [],
-                parsedNamedArgs: {},
-                isContextMenu: false,
-                has(arg: string) {
-                    return this.args.includes(arg);
-                }
-            })
+            .run(
+                message,
+                <LegacyCommandContext>{
+                    isLegacy: true,
+                    argv: [commandName, ...commandArguments],
+                    args: commandArguments,
+                    config,
+                    parsedArgs: [],
+                    parsedNamedArgs: {},
+                    isContextMenu: false,
+                    has(arg: string) {
+                        return this.args.includes(arg);
+                    }
+                },
+                checkOnly
+            )
             .then(result => {
                 if (result && typeof result === "object" && "__reply" in result && result.__reply === true) {
                     message.reply(result as any).catch(console.error);
@@ -100,7 +104,7 @@ export default class CommandManager extends Service {
         return true;
     }
 
-    public async runCommandFromCommandInteraction(interaction: Exclude<CommandMessage, Message>) {
+    public async runCommandFromCommandInteraction(interaction: Exclude<CommandMessage, Message>, checkOnly = false) {
         const config = this.client.configManager.config[interaction.guildId!];
 
         if (!config) {
@@ -116,13 +120,17 @@ export default class CommandManager extends Service {
         }
 
         command
-            .run(interaction, {
-                isLegacy: false,
-                config,
-                options: interaction.options,
-                isContextMenu: interaction.isContextMenuCommand(),
-                commandName
-            } as ContextMenuCommandContext | ChatInputCommandContext)
+            .run(
+                interaction,
+                {
+                    isLegacy: false,
+                    config,
+                    options: interaction.options,
+                    isContextMenu: interaction.isContextMenuCommand(),
+                    commandName
+                } as ContextMenuCommandContext | ChatInputCommandContext,
+                checkOnly
+            )
             .then(result => {
                 if (result && typeof result === "object" && "__reply" in result && result.__reply === true) {
                     interaction.reply(result as any).catch(console.error);
