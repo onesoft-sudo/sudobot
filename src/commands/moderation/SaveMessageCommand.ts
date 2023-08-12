@@ -38,6 +38,14 @@ export default class SaveMessageCommand extends Command {
 
         await interaction.deferReply({ ephemeral: true });
 
+        if (!this.client.configManager.config[interaction.guildId!]?.logging?.enabled) {
+            await interaction.editReply({
+                content: "This server has logging turned off. Please turn it on to use this command."
+            });
+
+            return;
+        }
+
         const channelId =
             this.client.configManager.config[interaction.guildId!]?.logging?.saved_messages_channel ??
             this.client.configManager.config[interaction.guildId!]?.logging?.primary_channel;
