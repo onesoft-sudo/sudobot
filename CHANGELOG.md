@@ -1,3 +1,12 @@
+## [5.53.2](https://github.com/onesoft-sudo/sudobot/compare/v5.53.1...v5.53.2) (2023-08-12)
+
+
+### Bug Fixes
+
+* **inviteTracker:** vanity url not being showed ([1027d3c](https://github.com/onesoft-sudo/sudobot/commit/1027d3c244f79624d2e0865d3d431405aed81a84))
+
+
+
 ## [5.53.1](https://github.com/onesoft-sudo/sudobot/compare/v5.53.0...v5.53.1) (2023-08-12)
 
 
@@ -42,17 +51,6 @@
 
 * **commands:** add save message command ([ea48e59](https://github.com/onesoft-sudo/sudobot/commit/ea48e5905396d4370e21c3dcf4b247ec182d4eeb))
 * **utils:** helper functions for formatting information in command responses ([41f27ab](https://github.com/onesoft-sudo/sudobot/commit/41f27abe2324b69e43e94c27d15a013709708a9b))
-
-
-
-# [5.50.0](https://github.com/onesoft-sudo/sudobot/compare/v5.49.0...v5.50.0) (2023-08-12)
-
-
-### Features
-
-* **commands:** add expire command ([9880258](https://github.com/onesoft-sudo/sudobot/commit/98802587553166d9503600b163a4ce35a2fbb189))
-* **commands:** add expireandschedule command ([7bd96a4](https://github.com/onesoft-sudo/sudobot/commit/7bd96a4e74b60fc6b1410aa50ca7ec7a004d5f38))
-* **commands:** add schedule command ([b62297a](https://github.com/onesoft-sudo/sudobot/commit/b62297a5601a79f3822c80c3440f1f027e612c00))
 
 
 
