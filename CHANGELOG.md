@@ -1,3 +1,18 @@
+# [5.51.0](https://github.com/onesoft-sudo/sudobot/compare/v5.50.0...v5.51.0) (2023-08-12)
+
+
+### Bug Fixes
+
+* deferredReply() method does not work with context menu interaction ([d5221ed](https://github.com/onesoft-sudo/sudobot/commit/d5221ed90c732733182719ed56c6168396b37f96))
+
+
+### Features
+
+* **commands:** add save message command ([ea48e59](https://github.com/onesoft-sudo/sudobot/commit/ea48e5905396d4370e21c3dcf4b247ec182d4eeb))
+* **utils:** helper functions for formatting information in command responses ([41f27ab](https://github.com/onesoft-sudo/sudobot/commit/41f27abe2324b69e43e94c27d15a013709708a9b))
+
+
+
 # [5.50.0](https://github.com/onesoft-sudo/sudobot/compare/v5.49.0...v5.50.0) (2023-08-12)
 
 
@@ -33,27 +48,6 @@
 ### Bug Fixes
 
 * message filter can be bypassed by editing the messages ([4debf94](https://github.com/onesoft-sudo/sudobot/commit/4debf9469ac707b6062ece317ac449932243c302))
-
-
-
-# [5.47.0](https://github.com/onesoft-sudo/sudobot/compare/v5.46.1...v5.47.0) (2023-08-11)
-
-
-### Bug Fixes
-
-* **commands:** update the parent queue command ([100fa98](https://github.com/onesoft-sudo/sudobot/commit/100fa98bcb11c62085b5fac3c15b18e2ae34160f))
-* help command showing the alias of the given command as name ([be276f8](https://github.com/onesoft-sudo/sudobot/commit/be276f8b4f35552e64cb010b266f5f179433b077))
-* wordings in help command ([2b16ba9](https://github.com/onesoft-sudo/sudobot/commit/2b16ba9728ecdc5be7c1fd00787ea570fc605810))
-
-
-### Features
-
-* add command queue ([42ca986](https://github.com/onesoft-sudo/sudobot/commit/42ca986e25fac2ac2c24bfa975907dd7f6d52655))
-* add queue add command ([c997f52](https://github.com/onesoft-sudo/sudobot/commit/c997f52cc2f757300c0bc3da2c2a40f590df566a))
-* **commandManager:** check only mode ([b6b86e3](https://github.com/onesoft-sudo/sudobot/commit/b6b86e31a136c3c2d176813325b85508a765c546))
-* **commands:** queue cancel command ([6f361e0](https://github.com/onesoft-sudo/sudobot/commit/6f361e050c4a8f3fc44636cb34217e6ed2ed5a71))
-* **commands:** queue list command ([1234eed](https://github.com/onesoft-sudo/sudobot/commit/1234eedc45c79560ec7295b96db4551de714c458))
-* **commands:** queue show command ([e0f7b3f](https://github.com/onesoft-sudo/sudobot/commit/e0f7b3f017e7aad93ca72ba68ae5d03f9ebb283a))
 
 
 
