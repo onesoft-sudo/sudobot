@@ -1,3 +1,12 @@
+## [5.53.1](https://github.com/onesoft-sudo/sudobot/compare/v5.53.0...v5.53.1) (2023-08-12)
+
+
+### Bug Fixes
+
+* **server:** unexpected proxy error when the server starts ([02473ac](https://github.com/onesoft-sudo/sudobot/commit/02473ac83774fcea3615a84340415db9b5e7eb10))
+
+
+
 # [5.53.0](https://github.com/onesoft-sudo/sudobot/compare/v5.52.0...v5.53.0) (2023-08-12)
 
 
@@ -44,15 +53,6 @@
 * **commands:** add expire command ([9880258](https://github.com/onesoft-sudo/sudobot/commit/98802587553166d9503600b163a4ce35a2fbb189))
 * **commands:** add expireandschedule command ([7bd96a4](https://github.com/onesoft-sudo/sudobot/commit/7bd96a4e74b60fc6b1410aa50ca7ec7a004d5f38))
 * **commands:** add schedule command ([b62297a](https://github.com/onesoft-sudo/sudobot/commit/b62297a5601a79f3822c80c3440f1f027e612c00))
-
-
-
-# [5.49.0](https://github.com/onesoft-sudo/sudobot/compare/v5.48.0...v5.49.0) (2023-08-12)
-
-
-### Features
-
-* invite tracking system ([1429bf0](https://github.com/onesoft-sudo/sudobot/commit/1429bf0093b6bbbf3986f80ccb2d4015ec927509))
 
 
 
