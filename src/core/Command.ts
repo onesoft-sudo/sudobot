@@ -126,7 +126,7 @@ export default abstract class Command {
         message: CommandMessage,
         options: MessageCreateOptions | MessagePayload | InteractionEditReplyOptions | string
     ) {
-        if (message instanceof ChatInputCommandInteraction) {
+        if (message instanceof ChatInputCommandInteraction || message instanceof ContextMenuCommandInteraction) {
             return await message.editReply(options);
         }
 
