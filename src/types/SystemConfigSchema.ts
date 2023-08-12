@@ -30,7 +30,8 @@ export const SystemConfigSchema = z.object({
         })
         .optional(),
     disabled_commands: z.array(z.string()).default([]),
-    restart_exit_code: z.number().int().default(1)
+    restart_exit_code: z.number().int().default(1),
+    trust_proxies: z.number().int().optional()
 });
 
 export type SystemConfig = z.infer<typeof SystemConfigSchema>;

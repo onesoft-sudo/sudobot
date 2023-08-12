@@ -71,6 +71,11 @@ export default class Server {
             legacyHeaders: false
         });
 
+        if (this.client.configManager.systemConfig.trust_proxies !== undefined) {
+            logInfo("Set express trust proxy option value to ", this.client.configManager.systemConfig.trust_proxies);
+            this.expressApp.set("trust proxy", this.client.configManager.systemConfig.trust_proxies);
+        }
+
         this.expressApp.use(limiter);
         this.expressApp.use("/config", configLimiter);
         this.expressApp.use(express.json());
