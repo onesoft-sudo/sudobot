@@ -1,3 +1,14 @@
+# [5.50.0](https://github.com/onesoft-sudo/sudobot/compare/v5.49.0...v5.50.0) (2023-08-12)
+
+
+### Features
+
+* **commands:** add expire command ([9880258](https://github.com/onesoft-sudo/sudobot/commit/98802587553166d9503600b163a4ce35a2fbb189))
+* **commands:** add expireandschedule command ([7bd96a4](https://github.com/onesoft-sudo/sudobot/commit/7bd96a4e74b60fc6b1410aa50ca7ec7a004d5f38))
+* **commands:** add schedule command ([b62297a](https://github.com/onesoft-sudo/sudobot/commit/b62297a5601a79f3822c80c3440f1f027e612c00))
+
+
+
 # [5.49.0](https://github.com/onesoft-sudo/sudobot/compare/v5.48.0...v5.49.0) (2023-08-12)
 
 
@@ -43,16 +54,6 @@
 * **commands:** queue cancel command ([6f361e0](https://github.com/onesoft-sudo/sudobot/commit/6f361e050c4a8f3fc44636cb34217e6ed2ed5a71))
 * **commands:** queue list command ([1234eed](https://github.com/onesoft-sudo/sudobot/commit/1234eedc45c79560ec7295b96db4551de714c458))
 * **commands:** queue show command ([e0f7b3f](https://github.com/onesoft-sudo/sudobot/commit/e0f7b3f017e7aad93ca72ba68ae5d03f9ebb283a))
-
-
-
-## [5.46.1](https://github.com/onesoft-sudo/sudobot/compare/v5.46.0...v5.46.1) (2023-08-10)
-
-
-### Bug Fixes
-
-* put request to /config/:id adds gibberish to the config file ([250f390](https://github.com/onesoft-sudo/sudobot/commit/250f3909dad1ec0a025d4a22b495c06a3d9fba84))
-* trim input before using ([6f3563c](https://github.com/onesoft-sudo/sudobot/commit/6f3563c30bdd46be846bc56cc45a0ef973927ee5))
 
 
 
