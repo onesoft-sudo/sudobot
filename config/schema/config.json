@@ -90,6 +90,44 @@
                             },
                             "join_leave_channel": {
                                 "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                            },
+                            "events": {
+                                "type": "object",
+                                "properties": {
+                                    "message_edit": {
+                                        "type": "boolean",
+                                        "default": true
+                                    },
+                                    "message_delete": {
+                                        "type": "boolean",
+                                        "default": true
+                                    },
+                                    "member_join": {
+                                        "type": "boolean",
+                                        "default": true
+                                    },
+                                    "member_leave": {
+                                        "type": "boolean",
+                                        "default": true
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "default": {
+                                    "message_edit": true,
+                                    "member_leave": true,
+                                    "member_join": true,
+                                    "message_delete": true
+                                }
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "invite_tracking": {
+                        "type": "object",
+                        "properties": {
+                            "enabled": {
+                                "type": "boolean",
+                                "default": false
                             }
                         },
                         "additionalProperties": false
@@ -474,6 +512,39 @@
                             "ignore_bots": {
                                 "type": "boolean",
                                 "default": true
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "create_boost_role": {
+                        "type": "object",
+                        "properties": {
+                            "create_roles_after": {
+                                "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "disabled_commands": {
+                        "type": "object",
+                        "properties": {
+                            "guild": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": []
+                            },
+                            "channels": {
+                                "type": "object",
+                                "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "default": []
+                                },
+                                "default": {}
                             }
                         },
                         "additionalProperties": false

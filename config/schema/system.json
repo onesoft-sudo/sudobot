@@ -31,6 +31,17 @@
                 }
             },
             "additionalProperties": false
+        },
+        "disabled_commands": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "default": []
+        },
+        "restart_exit_code": {
+            "type": "integer",
+            "default": 1
         }
     },
     "additionalProperties": false,
