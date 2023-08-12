@@ -1,3 +1,17 @@
+# [5.52.0](https://github.com/onesoft-sudo/sudobot/compare/v5.51.0...v5.52.0) (2023-08-12)
+
+
+### Bug Fixes
+
+* make sure to check if logging is enabled for the server ([d9f9d80](https://github.com/onesoft-sudo/sudobot/commit/d9f9d808578a202f9df5b0971d07fc881ce62e4c))
+
+
+### Features
+
+* **commands:** add report message command ([fb47e02](https://github.com/onesoft-sudo/sudobot/commit/fb47e02f729128ee959f94ebe00c02561db4f810))
+
+
+
 # [5.51.0](https://github.com/onesoft-sudo/sudobot/compare/v5.50.0...v5.51.0) (2023-08-12)
 
 
@@ -39,15 +53,6 @@
 ### Features
 
 * customize logging options ([8ac1a1f](https://github.com/onesoft-sudo/sudobot/commit/8ac1a1f004163c4c1fa14002ee390f9ee985548b))
-
-
-
-## [5.47.1](https://github.com/onesoft-sudo/sudobot/compare/v5.47.0...v5.47.1) (2023-08-11)
-
-
-### Bug Fixes
-
-* message filter can be bypassed by editing the messages ([4debf94](https://github.com/onesoft-sudo/sudobot/commit/4debf9469ac707b6062ece317ac449932243c302))
 
 
 
