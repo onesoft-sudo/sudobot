@@ -1,3 +1,12 @@
+# [5.53.0](https://github.com/onesoft-sudo/sudobot/compare/v5.52.0...v5.53.0) (2023-08-12)
+
+
+### Features
+
+* store the http server when the server starts listening ([0170859](https://github.com/onesoft-sudo/sudobot/commit/017085979feaec7e9b221dbef5d47d91bd7a9a96))
+
+
+
 # [5.52.0](https://github.com/onesoft-sudo/sudobot/compare/v5.51.0...v5.52.0) (2023-08-12)
 
 
@@ -44,15 +53,6 @@
 ### Features
 
 * invite tracking system ([1429bf0](https://github.com/onesoft-sudo/sudobot/commit/1429bf0093b6bbbf3986f80ccb2d4015ec927509))
-
-
-
-# [5.48.0](https://github.com/onesoft-sudo/sudobot/compare/v5.47.1...v5.48.0) (2023-08-11)
-
-
-### Features
-
-* customize logging options ([8ac1a1f](https://github.com/onesoft-sudo/sudobot/commit/8ac1a1f004163c4c1fa14002ee390f9ee985548b))
 
 
 
