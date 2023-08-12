@@ -49,6 +49,8 @@ export default class InviteTrackerService extends Service implements HasEventLis
                 }
 
                 if (guild.premiumTier === GuildPremiumTier.Tier3) {
+                    log("Fetching vanity info for guild ", guild.id);
+
                     try {
                         const vanity = guild.vanityURLUses !== null ? guild.vanityURLUses : (await guild.fetchVanityData()).uses;
                         this.invites.set(`${guild.id}_VANITY`, vanity);
@@ -146,19 +148,15 @@ export default class InviteTrackerService extends Service implements HasEventLis
 
         if (member.guild.premiumTier === GuildPremiumTier.Tier3) {
             try {
-                const vanity =
-                    member.guild.vanityURLUses !== null && member.guild.vanityURLCode
-                        ? {
-                              uses: member.guild.vanityURLUses,
-                              code: member.guild.vanityURLCode
-                          }
-                        : await member.guild.fetchVanityData();
-
+                const vanity = await member.guild.fetchVanityData();
                 const oldVanityUses = this.invites.get(`${member.guild.id}_VANITY`);
 
                 if (oldVanityUses === undefined) {
+                    log("No vanity");
                     return;
                 }
+
+                log("Vanity", oldVanityUses, vanity.uses);
 
                 if (vanity.uses > oldVanityUses) {
                     this.invites.set(`${member.guild.id}_VANITY`, vanity.uses);
