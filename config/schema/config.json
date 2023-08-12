@@ -91,6 +91,9 @@
                             "join_leave_channel": {
                                 "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
                             },
+                            "saved_messages_channel": {
+                                "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                            },
                             "events": {
                                 "type": "object",
                                 "properties": {
