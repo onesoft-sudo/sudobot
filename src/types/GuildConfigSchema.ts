@@ -83,6 +83,11 @@ export const GuildConfigSchema = z.object({
                 })
         })
         .optional(),
+    invite_tracking: z
+        .object({
+            enabled: z.boolean().default(false)
+        })
+        .optional(),
     message_filter: z
         .object({
             enabled: z.boolean().default(false),

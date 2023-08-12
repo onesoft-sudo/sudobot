@@ -464,7 +464,10 @@ export default class LoggerService extends Service {
             else members++;
         }
 
-        const createdAt = Math.round(member.user.createdAt?.getTime() ?? Date.now() / 1000);
+        const createdAt = Math.round((member.user.createdAt?.getTime() ?? Date.now()) / 1000);
+        const inviteOrVanity = await this.client.inviteTracker.findNewMemberInviteLink(member);
+
+        console.log(createdAt);
 
         await this.sendLogEmbed(
             member.guild,
@@ -501,7 +504,39 @@ export default class LoggerService extends Service {
                             `Among all members: ${members + bots}th\n` +
                             (member.user.bot ? `Among the bots: ${bots}th` : `Among the human members: ${members}th`),
                         inline: true
-                    }
+                    },
+                    ...(inviteOrVanity
+                        ? [
+                              {
+                                  name: "Invite Information",
+                                  value:
+                                      `Invite Link: https://discord.gg/${
+                                          inviteOrVanity?.vanity?.code ?? inviteOrVanity?.invite?.code
+                                      }\nUses: ${inviteOrVanity?.vanity?.uses ?? inviteOrVanity?.invite?.uses}` +
+                                      (!inviteOrVanity.isVanity
+                                          ? `\nInvited By: ${
+                                                inviteOrVanity.invite.inviterId
+                                                    ? `<@${inviteOrVanity.invite.inviterId}> (${inviteOrVanity.invite.inviterId})`
+                                                    : "Unknown"
+                                            }` +
+                                            (inviteOrVanity.invite.createdAt
+                                                ? `\nCreated: <t:${Math.round(
+                                                      inviteOrVanity.invite.createdAt.getTime() / 1000
+                                                  )}:R>`
+                                                : "") +
+                                            (inviteOrVanity.invite.expiresAt
+                                                ? `\nExpires: <t:${Math.round(
+                                                      inviteOrVanity.invite.expiresAt.getTime() / 1000
+                                                  )}:R>`
+                                                : "") +
+                                            (inviteOrVanity.invite.channelId
+                                                ? `\nChannel: <#${inviteOrVanity.invite.channelId}> (${inviteOrVanity.invite.channelId})`
+                                                : "") +
+                                            (inviteOrVanity.invite.temporary ? `\n\n__This is a temporary invite.__` : "")
+                                          : "")
+                              }
+                          ]
+                        : [])
                 ],
                 footerText: `Joined • ${
                     member.guild.members.cache.size >= member.guild.memberCount
@@ -519,7 +554,7 @@ export default class LoggerService extends Service {
             return;
         }
 
-        const joinedAt = Math.round(member.joinedAt?.getTime() ?? Date.now() / 1000);
+        const joinedAt = Math.round((member.joinedAt?.getTime() ?? Date.now()) / 1000);
 
         await this.sendLogEmbed(
             member.guild,

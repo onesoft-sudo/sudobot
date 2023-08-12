@@ -34,6 +34,7 @@ import type ChannelLockManager from "../services/ChannelLockManager";
 import type CommandManager from "../services/CommandManager";
 import type ConfigManager from "../services/ConfigManager";
 import type InfractionManager from "../services/InfractionManager";
+import type InviteTrackerService from "../services/InviteTrackerService";
 import type LoggerService from "../services/LoggerService";
 import type MetadataService from "../services/MetadataService";
 import type PermissionManager from "../services/PermissionManager";
@@ -71,6 +72,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@services/AutoRoleService",
         "@services/ReactionRoleService",
         "@services/AFKService",
+        "@services/InviteTrackerService",
 
         "@automod/MessageFilter",
         "@automod/Antispam",
@@ -105,6 +107,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     autoRoleService: AutoRoleService = {} as AutoRoleService;
     reactionRoleService: ReactionRoleService = {} as ReactionRoleService;
     afkService: AFKService = {} as AFKService;
+    inviteTracker: InviteTrackerService = {} as InviteTrackerService;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",
