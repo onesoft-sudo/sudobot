@@ -21,6 +21,7 @@ import cors from "cors";
 import express, { Request as ExpressRequest, Response as ExpressResponse, NextFunction } from "express";
 import rateLimit from "express-rate-limit";
 import fs from "fs/promises";
+import { Server as HttpServer } from "http";
 import { join, resolve } from "path";
 import Client from "../core/Client";
 import { RouteMetadata } from "../types/RouteMetadata";
@@ -32,6 +33,7 @@ export default class Server {
     protected expressApp = express();
     protected port = process.env.PORT ?? 4000;
     protected controllersDirectory = resolve(__dirname, "controllers");
+    expressServer?: HttpServer;
 
     constructor(protected client: Client) {}
 
@@ -172,6 +174,6 @@ export default class Server {
     }
 
     async start() {
-        this.expressApp.listen(this.port, () => logInfo(`API server is listening at port ${this.port}`));
+        this.expressServer = this.expressApp.listen(this.port, () => logInfo(`API server is listening at port ${this.port}`));
     }
 }
