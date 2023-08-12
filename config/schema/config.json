@@ -125,6 +125,46 @@
                         },
                         "additionalProperties": false
                     },
+                    "message_reporting": {
+                        "type": "object",
+                        "properties": {
+                            "enabled": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "channel": {
+                                "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                            },
+                            "users": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                },
+                                "default": []
+                            },
+                            "roles": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                },
+                                "default": []
+                            },
+                            "permissions": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": []
+                            },
+                            "permissionLevel": {
+                                "type": "integer",
+                                "minimum": -1,
+                                "maximum": 100,
+                                "default": -1
+                            }
+                        },
+                        "additionalProperties": false
+                    },
                     "invite_tracking": {
                         "type": "object",
                         "properties": {
