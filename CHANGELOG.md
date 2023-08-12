@@ -1,3 +1,12 @@
+# [5.49.0](https://github.com/onesoft-sudo/sudobot/compare/v5.48.0...v5.49.0) (2023-08-12)
+
+
+### Features
+
+* invite tracking system ([1429bf0](https://github.com/onesoft-sudo/sudobot/commit/1429bf0093b6bbbf3986f80ccb2d4015ec927509))
+
+
+
 # [5.48.0](https://github.com/onesoft-sudo/sudobot/compare/v5.47.1...v5.48.0) (2023-08-11)
 
 
@@ -44,16 +53,6 @@
 
 * put request to /config/:id adds gibberish to the config file ([250f390](https://github.com/onesoft-sudo/sudobot/commit/250f3909dad1ec0a025d4a22b495c06a3d9fba84))
 * trim input before using ([6f3563c](https://github.com/onesoft-sudo/sudobot/commit/6f3563c30bdd46be846bc56cc45a0ef973927ee5))
-
-
-
-# [5.46.0](https://github.com/onesoft-sudo/sudobot/compare/v5.45.0...v5.46.0) (2023-08-10)
-
-
-### Features
-
-* add restart command ([c4c4eda](https://github.com/onesoft-sudo/sudobot/commit/c4c4edab2ceab070652077a7856bbf26caf2148c))
-* use pm2 process manager ([a39139b](https://github.com/onesoft-sudo/sudobot/commit/a39139bbf2ff44905c371bfdf896eff0ac15c903))
 
 
 
