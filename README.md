@@ -46,7 +46,8 @@ Thanks to all the contributors!
 - **Discord Servers**: [Silly Cats Server](https://discord.gg/sillycats), [OneSoftNet Server](https://discord.gg/892GWhTzgs)
 
 ### Extra 
-
-- **Download Emojis**: https://www.onesoftnet.eu.org/downloads/sudo/emojis/
+ 
+- **Download Emojis**: https://www.onesoftnet.eu.org/downloads/sudo/emojis/ <br />
+  Note that not all emojis are present there. You'll find the missing one's at [emoji.gg](https://emoji.gg).
 
 Copyright © 2022-2023 OSN and all the contributors of SudoBot.
