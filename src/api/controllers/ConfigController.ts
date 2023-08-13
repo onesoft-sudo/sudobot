@@ -31,8 +31,21 @@ export default class ConfigController extends Controller {
             return;
         }
 
+        let commands: string[] | undefined = undefined;
+
+        if (request.query?.commands?.toString()?.toLowerCase() === "true") {
+            commands = [];
+
+            for (const [, command] of this.client.commands) {
+                if (!commands.includes(command.name)) {
+                    commands.push(command.name);
+                }
+            }
+        }
+
         return {
-            config: this.client.configManager.config[request.params.id] ?? null
+            config: this.client.configManager.config[request.params.id] ?? null,
+            commands
         };
     }
 
@@ -54,7 +67,11 @@ export default class ConfigController extends Controller {
         console.log(request.parsedBody);
 
         if (request.parsedBody) {
-            this.client.configManager.config[request.params.id] = deepmerge(oldConfig as object, request.parsedBody.data ?? {});
+            this.client.configManager.config[request.params.id] = deepmerge(oldConfig as object, request.parsedBody.data ?? {}, {
+                arrayMerge: (target, source, options) => {
+                    return source;
+                }
+            });
             console.log(oldConfig?.prefix, this.client.configManager.config[request.params.id]?.prefix);
         }
 
