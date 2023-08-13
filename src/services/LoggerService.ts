@@ -85,7 +85,8 @@ export default class LoggerService extends Service {
         moderator,
         reason,
         id,
-        color
+        color,
+        showUserId = true
     }: CreateLogEmbedOptions) {
         const embed = new EmbedBuilder({
             title,
@@ -121,7 +122,7 @@ export default class LoggerService extends Service {
                           }
                       ]
                     : []),
-                ...(user
+                ...(user && showUserId
                     ? [
                           {
                               name: "User ID",
@@ -422,6 +423,7 @@ export default class LoggerService extends Service {
                 title: "Member roles updated",
                 user: newMember.user,
                 color: Colors.Green,
+                showUserId: false,
                 fields: [
                     {
                         name: "Added",
@@ -1087,4 +1089,5 @@ interface CreateLogEmbedOptions {
     reason?: string | null;
     timestamp?: Date | false | null;
     color?: ColorResolvable;
+    showUserId?: boolean;
 }
