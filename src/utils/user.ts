@@ -1,22 +1,36 @@
 import { User, UserFlags } from "discord.js";
+import Client from "../core/Client";
+import { getEmoji } from "./utils";
 
-export const getUserBadges = (user: User) => {
+const map: Record<string, [string, string]> = {
+    BugHunterLevel1: ["bughunter", "Bughunter Level 1"],
+    BugHunterLevel2: ["golden_bughunter", "Bughunter Level 2"],
+    CertifiedModerator: ["certified_mod", "Discord Certified Moderator"],
+    Staff: ["discord_staff", "Discord Staff"],
+    PremiumEarlySupporter: ["early_supporter", "Early Nitro Supporter"],
+    VerifiedDeveloper: ["verified_bot_developer", "Early Verified Bot Developer"],
+    HypeSquadOnlineHouse1: ["bravery", "HypeSquad Bravery"],
+    HypeSquadOnlineHouse2: ["brilliance", "HypeSquad Brilliance"],
+    HypeSquadOnlineHouse3: ["balance", "HypeSquad Balance"],
+    Hypesquad: ["hypesquad_events", "HypeSquad Events"],
+    Partner: ["partnered_server_owner", "Partnered Server Owner"],
+    VerifiedBot: ["verified_bot", "Verified Bot"],
+    BotHTTPInteractions: ["supports_interactions", "Supports Interactions"],
+    ActiveDeveloper: ["active_developer", "Active Developer"]
+};
+
+export const getUserBadges = (client: Client, user: User) => {
     const badges = [];
 
-    if (user.flags?.has(UserFlags.BugHunterLevel1)) badges.push("Bughunter Level 1");
-    if (user.flags?.has(UserFlags.BugHunterLevel2)) badges.push("Bughunter Level 2");
-    if (user.flags?.has(UserFlags.CertifiedModerator)) badges.push("Discord Certified Moderator");
-    if (user.flags?.has(UserFlags.Staff)) badges.push("Discord Staff");
-    if (user.flags?.has(UserFlags.PremiumEarlySupporter)) badges.push("Early Nitro Supporter");
-    if (user.flags?.has(UserFlags.VerifiedDeveloper)) badges.push("Early Verified Bot Developer");
-    if (user.flags?.has(UserFlags.HypeSquadOnlineHouse3)) badges.push("HypeSquad Balance");
-    if (user.flags?.has(UserFlags.HypeSquadOnlineHouse2)) badges.push("HypeSquad Brilliance");
-    if (user.flags?.has(UserFlags.HypeSquadOnlineHouse1)) badges.push("HypeSquad Bravery");
-    if (user.flags?.has(UserFlags.Hypesquad)) badges.push("HypeSquad Events");
-    if (user.flags?.has(UserFlags.Partner)) badges.push("Partnered Server Owner");
-    if (user.flags?.has(UserFlags.BotHTTPInteractions)) badges.push("Supports Interactions");
-    if (user.flags?.has(UserFlags.VerifiedBot)) badges.push("Verified Bot");
-    if (user.flags?.has(UserFlags.ActiveDeveloper)) badges.push("Active Developer");
+    for (const flagString in map) {
+        const [emojiName, badgeTitle] = map[flagString];
+        const flag = UserFlags[flagString as keyof typeof UserFlags];
 
-    return badges.map(b => `🔵 ${b}`);
+        if (flag && user.flags?.has(flag)) {
+            const emoji = getEmoji(client, emojiName);
+            badges.push(`${emoji.toString()} ${badgeTitle}`);
+        }
+    }
+
+    return badges;
 };

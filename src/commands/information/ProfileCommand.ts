@@ -22,15 +22,18 @@ import {
     APIEmbedField,
     ActivityType,
     EmbedBuilder,
+    Emoji,
     Guild,
     GuildMember,
     PermissionFlagsBits,
     SlashCommandBuilder,
     roleMention
 } from "discord.js";
+import Client from "../../core/Client";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { log, logError } from "../../utils/logger";
 import { getUserBadges } from "../../utils/user";
+import { getEmoji } from "../../utils/utils";
 
 const status = (s: "idle" | "online" | "dnd" | "invisible" | null | undefined): string => {
     if (s === "idle") return "Idle";
@@ -41,11 +44,35 @@ const status = (s: "idle" | "online" | "dnd" | "invisible" | null | undefined): 
     return s;
 };
 
-const getStatusText = (member: GuildMember) =>
+const statusEmoji = (client: Client, s: "idle" | "online" | "dnd" | "invisible" | null | undefined): string => {
+    if (s === "idle") return getEmoji(client, "idle");
+    else if (s === "dnd") return getEmoji(client, "dnd");
+    else if (s === "online") return getEmoji(client, "online");
+    else if (s === undefined || s === null || s === "invisible") return getEmoji(client, "invisible");
+
+    return s;
+};
+
+const getStatusText = (client: Client, member: GuildMember) =>
     "" +
-    ((member?.presence?.clientStatus?.desktop ? "Desktop (" + status(member?.presence?.clientStatus?.desktop) + ")\n" : "") +
-        (member?.presence?.clientStatus?.web ? "Web (" + status(member?.presence?.clientStatus?.web) + ")\n" : "") +
-        (member?.presence?.clientStatus?.mobile ? "Mobile (" + status(member?.presence?.clientStatus?.mobile) + ")" : ""));
+    ((member?.presence?.clientStatus?.desktop
+        ? statusEmoji(client, member?.presence?.clientStatus?.desktop) +
+          " Desktop (" +
+          status(member?.presence?.clientStatus?.desktop) +
+          ")\n"
+        : "") +
+        (member?.presence?.clientStatus?.web
+            ? statusEmoji(client, member?.presence?.clientStatus?.web) +
+              " Web (" +
+              status(member?.presence?.clientStatus?.web) +
+              ")\n"
+            : "") +
+        (member?.presence?.clientStatus?.mobile
+            ? statusEmoji(client, member?.presence?.clientStatus?.mobile) +
+              " Mobile (" +
+              status(member?.presence?.clientStatus?.mobile) +
+              ")"
+            : ""));
 
 export function getPermissionLevel(
     { permissions, guild, id }: { id: string; permissions: GuildMember["permissions"]; guild: Guild },
@@ -86,6 +113,18 @@ export default class ProfileCommand extends Command {
         option.setName("member").setDescription("The target member")
     );
 
+    private isAvailableEmoji({ id, identifier }: Emoji) {
+        for (const [, guild] of this.client.guilds.cache) {
+            const emoji = guild.emojis.cache.find(e => e.id === id || e.identifier === identifier);
+
+            if (emoji) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
@@ -106,14 +145,18 @@ export default class ProfileCommand extends Command {
                 log(a);
 
                 if (a.type === ActivityType.Custom) {
-                    activities.push(`${a.emoji ? `${a.emoji.toString()} ` : ""}${a.state}`);
+                    activities.push(
+                        `${a.emoji && this.isAvailableEmoji(a.emoji) ? `${a.emoji.toString()}` : ":small_blue_diamond:"} ${
+                            a.state
+                        }`
+                    );
                 } else if (a.type === ActivityType.Listening) {
                     if (a.name === "Spotify") {
                         const url = a.url ? `${a.url}` : null;
                         activities.push(
-                            `:notes: Listening to **Spotify**: ${url ? "[" : "**"}${a.state?.replace(/\;/, ",")} - ${a.details}${
-                                url ? "](" + url + ")" : "**"
-                            }`
+                            `${this.emoji("spotify")} Listening to **Spotify**: ${url ? "[" : "__"}${a.state?.split(/\;/)[0]} - ${
+                                a.details
+                            }${url ? "](" + url + ")" : "__"}`
                         );
                         continue;
                     }
@@ -140,7 +183,7 @@ export default class ProfileCommand extends Command {
         const roles = (allRoles.length > limit ? allRoles.slice(0, limit) : allRoles)
             .reduce((acc, value) => `${acc} ${roleMention(value.id)}`, "")!
             .trim()!;
-        const statusText = getStatusText(member!);
+        const statusText = getStatusText(this.client, member!);
 
         const fields: APIEmbedField[] = [
             {
@@ -164,7 +207,7 @@ export default class ProfileCommand extends Command {
             },
             {
                 name: "Active Devices",
-                value: `${statusText === "" ? "Offline/Invisible" : statusText}`
+                value: `${statusText === "" ? `${this.emoji("invisible")} Offline/Invisible` : statusText}`
             },
             {
                 name: "Status",
@@ -179,7 +222,7 @@ export default class ProfileCommand extends Command {
             }
         ];
 
-        const badges = getUserBadges(member!.user);
+        const badges = getUserBadges(this.client, member!.user);
 
         if (badges.length > 0) {
             fields.push({
