@@ -1,3 +1,17 @@
+# [5.54.0](https://github.com/onesoft-sudo/sudobot/compare/v5.53.2...v5.54.0) (2023-08-13)
+
+
+### Bug Fixes
+
+* remove unneeded ID field in the embed of member role update log ([dc9e193](https://github.com/onesoft-sudo/sudobot/commit/dc9e1935f9c3440eb1dcaaf52d17b676c266c2a5))
+
+
+### Features
+
+* **profiles:** added emojis to profile command embed ([866e3cf](https://github.com/onesoft-sudo/sudobot/commit/866e3cf0d9c3e757d1734eec807d8cd3b1af1d5d))
+
+
+
 ## [5.53.2](https://github.com/onesoft-sudo/sudobot/compare/v5.53.1...v5.53.2) (2023-08-12)
 
 
@@ -36,21 +50,6 @@
 ### Features
 
 * **commands:** add report message command ([fb47e02](https://github.com/onesoft-sudo/sudobot/commit/fb47e02f729128ee959f94ebe00c02561db4f810))
-
-
-
-# [5.51.0](https://github.com/onesoft-sudo/sudobot/compare/v5.50.0...v5.51.0) (2023-08-12)
-
-
-### Bug Fixes
-
-* deferredReply() method does not work with context menu interaction ([d5221ed](https://github.com/onesoft-sudo/sudobot/commit/d5221ed90c732733182719ed56c6168396b37f96))
-
-
-### Features
-
-* **commands:** add save message command ([ea48e59](https://github.com/onesoft-sudo/sudobot/commit/ea48e5905396d4370e21c3dcf4b247ec182d4eeb))
-* **utils:** helper functions for formatting information in command responses ([41f27ab](https://github.com/onesoft-sudo/sudobot/commit/41f27abe2324b69e43e94c27d15a013709708a9b))
 
 
 
