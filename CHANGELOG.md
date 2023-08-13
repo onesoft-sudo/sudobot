@@ -1,3 +1,12 @@
+# [5.55.0](https://github.com/onesoft-sudo/sudobot/compare/v5.54.0...v5.55.0) (2023-08-13)
+
+
+### Features
+
+* types for better autocompletion ([f56a4ed](https://github.com/onesoft-sudo/sudobot/commit/f56a4ed77f804ce320c52915c14ec02c6f7a1c00))
+
+
+
 # [5.54.0](https://github.com/onesoft-sudo/sudobot/compare/v5.53.2...v5.54.0) (2023-08-13)
 
 
@@ -36,20 +45,6 @@
 ### Features
 
 * store the http server when the server starts listening ([0170859](https://github.com/onesoft-sudo/sudobot/commit/017085979feaec7e9b221dbef5d47d91bd7a9a96))
-
-
-
-# [5.52.0](https://github.com/onesoft-sudo/sudobot/compare/v5.51.0...v5.52.0) (2023-08-12)
-
-
-### Bug Fixes
-
-* make sure to check if logging is enabled for the server ([d9f9d80](https://github.com/onesoft-sudo/sudobot/commit/d9f9d808578a202f9df5b0971d07fc881ce62e4c))
-
-
-### Features
-
-* **commands:** add report message command ([fb47e02](https://github.com/onesoft-sudo/sudobot/commit/fb47e02f729128ee959f94ebe00c02561db4f810))
 
 
 
