@@ -1,3 +1,12 @@
+# [5.56.0](https://github.com/onesoft-sudo/sudobot/compare/v5.55.0...v5.56.0) (2023-08-13)
+
+
+### Features
+
+* config endpoints now return commands as well ([a15448c](https://github.com/onesoft-sudo/sudobot/commit/a15448cd91af92e59c404855439fe2fb9459113b))
+
+
+
 # [5.55.0](https://github.com/onesoft-sudo/sudobot/compare/v5.54.0...v5.55.0) (2023-08-13)
 
 
@@ -36,15 +45,6 @@
 ### Bug Fixes
 
 * **server:** unexpected proxy error when the server starts ([02473ac](https://github.com/onesoft-sudo/sudobot/commit/02473ac83774fcea3615a84340415db9b5e7eb10))
-
-
-
-# [5.53.0](https://github.com/onesoft-sudo/sudobot/compare/v5.52.0...v5.53.0) (2023-08-12)
-
-
-### Features
-
-* store the http server when the server starts listening ([0170859](https://github.com/onesoft-sudo/sudobot/commit/017085979feaec7e9b221dbef5d47d91bd7a9a96))
 
 
 
