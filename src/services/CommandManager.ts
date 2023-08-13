@@ -18,7 +18,7 @@
  */
 
 import { ChatInputCommandInteraction, ContextMenuCommandInteraction, Message } from "discord.js";
-import { CommandMessage } from "../core/Command";
+import Command, { CommandMessage, ValidationRuleParsedArgs } from "../core/Command";
 import Service from "../core/Service";
 import { log, logError, logWarn } from "../utils/logger";
 import { GuildConfig } from "./ConfigManager";
@@ -38,6 +38,11 @@ export interface LegacyCommandContext extends CommandContext {
     parsedArgs: any[];
     parsedNamedArgs: Record<string, any>;
     has(arg: string): boolean;
+    getParsedArgs<C extends Command>(command: C): ValidationRuleParsedArgs<C["validationRules"]>;
+    getParsedArg<C extends Command, I extends keyof C["validationRules"]>(
+        command: C,
+        index: I
+    ): ValidationRuleParsedArgs<C["validationRules"]>[I];
 }
 
 export interface ChatInputCommandContext extends CommandContext {
@@ -90,6 +95,12 @@ export default class CommandManager extends Service {
                     isContextMenu: false,
                     has(arg: string) {
                         return this.args.includes(arg);
+                    },
+                    getParsedArg<C extends Command, I extends keyof C["validationRules"]>(command: C, index: I) {
+                        return this.parsedArgs[index as number] as ValidationRuleParsedArgs<C["validationRules"]>[I];
+                    },
+                    getParsedArgs<C extends Command>(command: C) {
+                        return this.parsedArgs as ValidationRuleParsedArgs<C["validationRules"]>;
                     }
                 },
                 checkOnly

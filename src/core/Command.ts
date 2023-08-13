@@ -24,6 +24,7 @@ import {
     ChatInputCommandInteraction,
     ContextMenuCommandBuilder,
     ContextMenuCommandInteraction,
+    GuildBasedChannel,
     GuildMember,
     InteractionDeferReplyOptions,
     InteractionEditReplyOptions,
@@ -34,7 +35,10 @@ import {
     MessagePayload,
     PermissionResolvable,
     PermissionsBitField,
-    SlashCommandBuilder
+    Role,
+    SlashCommandBuilder,
+    Snowflake,
+    User
 } from "discord.js";
 import { ChatInputCommandContext, ContextMenuCommandContext, LegacyCommandContext } from "../services/CommandManager";
 import { log, logError } from "../utils/logger";
@@ -67,7 +71,7 @@ export enum ArgumentType {
 }
 
 export interface ValidationRule {
-    types?: ArgumentType[];
+    types?: readonly ArgumentType[];
     optional?: boolean;
     default?: any;
     requiredErrorMessage?: string;
@@ -83,6 +87,36 @@ export interface ValidationRule {
     timeMilliseconds?: boolean;
 }
 
+type ValidationRuleAndOutputMap = {
+    [ArgumentType.Boolean]: boolean;
+    [ArgumentType.Channel]: GuildBasedChannel;
+    [ArgumentType.Float]: number;
+    [ArgumentType.Number]: number;
+    [ArgumentType.Integer]: number;
+    [ArgumentType.TimeInterval]: number;
+    [ArgumentType.Link]: string;
+    [ArgumentType.Role]: Role;
+    [ArgumentType.Snowflake]: Snowflake;
+    [ArgumentType.String]: string;
+    [ArgumentType.StringRest]: string;
+    [ArgumentType.User]: User;
+    [ArgumentType.GuildMember]: GuildMember;
+};
+
+type ValidationRuleParsedArg<T extends ValidationRule["types"]> = T extends ReadonlyArray<infer U>
+    ? U extends keyof ValidationRuleAndOutputMap
+        ? ValidationRuleAndOutputMap[U]
+        : never
+    : T extends Array<infer U>
+    ? U extends keyof ValidationRuleAndOutputMap
+        ? ValidationRuleAndOutputMap[U]
+        : never
+    : never;
+
+export type ValidationRuleParsedArgs<T extends readonly ValidationRule[]> = {
+    [K in keyof T]: ValidationRuleParsedArg<T[K]["types"]>;
+};
+
 // TODO: Split the logic into separate methods
 
 export default abstract class Command {
@@ -94,7 +128,7 @@ export default abstract class Command {
     public readonly supportsLegacy: boolean = true;
 
     public readonly permissions: PermissionResolvable[] = [];
-    public readonly validationRules: ValidationRule[] = [];
+    public readonly validationRules: readonly ValidationRule[] = [];
     public readonly permissionMode: "or" | "and" = "and";
     public readonly systemAdminOnly: boolean = false;
 
