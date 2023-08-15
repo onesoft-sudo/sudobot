@@ -17,7 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { ActivityType } from "discord.js";
 import { z } from "zod";
+
+type ApplicationActivityType = Exclude<keyof typeof ActivityType, "Custom">;
 
 export const SystemConfigSchema = z.object({
     $schema: z.string().optional(),
@@ -31,7 +34,20 @@ export const SystemConfigSchema = z.object({
         .optional(),
     disabled_commands: z.array(z.string()).default([]),
     restart_exit_code: z.number().int().default(1),
-    trust_proxies: z.number().int().optional()
+    trust_proxies: z.number().int().optional(),
+    presence: z
+        .object({
+            name: z.string().optional(),
+            status: z.enum(["online", "idle", "dnd", "invisible"]).optional(),
+            url: z.string().optional(),
+            type: z.enum(
+                Object.keys(ActivityType).filter(a => typeof a === "string" && a !== "Custom") as [
+                    ApplicationActivityType,
+                    ...ApplicationActivityType[]
+                ]
+            )
+        })
+        .optional()
 });
 
 export type SystemConfig = z.infer<typeof SystemConfigSchema>;

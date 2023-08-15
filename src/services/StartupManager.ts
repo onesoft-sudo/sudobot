@@ -18,7 +18,7 @@
  */
 
 import { formatDistanceToNowStrict } from "date-fns";
-import { APIEmbed, Colors, WebhookClient, escapeCodeBlock } from "discord.js";
+import { APIEmbed, ActivityType, Colors, WebhookClient, escapeCodeBlock } from "discord.js";
 import { existsSync, readFileSync } from "fs";
 import { rm } from "fs/promises";
 import path from "path";
@@ -91,6 +91,19 @@ export default class StartupManager extends Service implements HasEventListeners
 
             rm(restartJsonFile).catch(logError);
         }
+
+        const { presence } = this.client.configManager.systemConfig;
+
+        this.client.user?.setPresence({
+            activities: [
+                {
+                    name: presence?.name ?? "over the server",
+                    type: ActivityType[presence?.type ?? "Watching"],
+                    url: presence?.url
+                }
+            ],
+            status: presence?.status ?? "dnd"
+        });
     }
 
     async sendErrorLog(content: string) {
