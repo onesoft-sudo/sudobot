@@ -1,3 +1,12 @@
+# [5.59.0](https://github.com/onesoft-sudo/sudobot/compare/v5.58.0...v5.59.0) (2023-08-15)
+
+
+### Features
+
+* **api:** discord oauth2 login support ([9aef7ee](https://github.com/onesoft-sudo/sudobot/commit/9aef7eea682ce6c39a7c3c2dcc3d550e4262bbaf))
+
+
+
 # [5.58.0](https://github.com/onesoft-sudo/sudobot/compare/v5.57.0...v5.58.0) (2023-08-15)
 
 
@@ -31,20 +40,6 @@
 ### Features
 
 * types for better autocompletion ([f56a4ed](https://github.com/onesoft-sudo/sudobot/commit/f56a4ed77f804ce320c52915c14ec02c6f7a1c00))
-
-
-
-# [5.54.0](https://github.com/onesoft-sudo/sudobot/compare/v5.53.2...v5.54.0) (2023-08-13)
-
-
-### Bug Fixes
-
-* remove unneeded ID field in the embed of member role update log ([dc9e193](https://github.com/onesoft-sudo/sudobot/commit/dc9e1935f9c3440eb1dcaaf52d17b676c266c2a5))
-
-
-### Features
-
-* **profiles:** added emojis to profile command embed ([866e3cf](https://github.com/onesoft-sudo/sudobot/commit/866e3cf0d9c3e757d1734eec807d8cd3b1af1d5d))
 
 
 
