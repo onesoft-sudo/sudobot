@@ -1,3 +1,12 @@
+# [5.58.0](https://github.com/onesoft-sudo/sudobot/compare/v5.57.0...v5.58.0) (2023-08-15)
+
+
+### Features
+
+* **client:** custom status/presence ([8fbaf59](https://github.com/onesoft-sudo/sudobot/commit/8fbaf5940526abc403d1d3e8755004b48f312621))
+
+
+
 # [5.57.0](https://github.com/onesoft-sudo/sudobot/compare/v5.56.0...v5.57.0) (2023-08-15)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * **profiles:** added emojis to profile command embed ([866e3cf](https://github.com/onesoft-sudo/sudobot/commit/866e3cf0d9c3e757d1734eec807d8cd3b1af1d5d))
-
-
-
-## [5.53.2](https://github.com/onesoft-sudo/sudobot/compare/v5.53.1...v5.53.2) (2023-08-12)
-
-
-### Bug Fixes
-
-* **inviteTracker:** vanity url not being showed ([1027d3c](https://github.com/onesoft-sudo/sudobot/commit/1027d3c244f79624d2e0865d3d431405aed81a84))
 
 
 
