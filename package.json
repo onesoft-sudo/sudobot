@@ -1,82 +1,84 @@
 {
-  "name": "sudobot",
-  "description": "A Discord bot for moderation purposes.",
-  "version": "5.56.0",
-  "main": "build/index.js",
-  "license": "GPL-3.0-or-later",
-  "keywords": [
-    "bot",
-    "discord-bot",
-    "moderation",
-    "automoderation",
-    "discord-moderation",
-    "discord-moderation-bot",
-    "discord-automoderation",
-    "discord-automoderation-bot"
-  ],
-  "homepage": "https://github.com/onesoft-sudo/sudobot",
-  "icon": "https://res.cloudinary.com/rakinar2/image/upload/v1659628446/SudoBot-new_cvwphw.png",
-  "readme": "https://github.com/onesoft-sudo/sudobot#readme",
-  "author": {
-    "name": "Ar Rakin",
-    "email": "rakinar2@onesoftnet.eu.org",
-    "url": "https://virtual-designer.github.io"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/onesoft-sudo/sudobot"
-  },
-  "bugs": {
-    "url": "https://github.com/onesoft-sudo/sudobot/issues",
-    "email": "sudobot@onesoftnet.eu.org"
-  },
-  "dependencies": {
-    "@prisma/client": "^5.0.0",
-    "@types/uuid": "^9.0.2",
-    "ascii-table3": "^0.8.2",
-    "axios": "^1.4.0",
-    "bcrypt": "^5.1.0",
-    "chalk": "^4.1.2",
-    "cors": "^2.8.5",
-    "date-fns": "^2.30.0",
-    "deepmerge": "^4.3.1",
-    "discord.js": "^14.11.0",
-    "dot-object": "^2.1.4",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "express-rate-limit": "^6.9.0",
-    "jsonwebtoken": "^9.0.1",
-    "pm2": "^5.3.0",
-    "reflect-metadata": "^0.1.13",
-    "uuid": "^9.0.0",
-    "zod": "^3.21.4"
-  },
-  "devDependencies": {
-    "@commitlint/cli": "^17.6.6",
-    "@commitlint/config-conventional": "^17.6.6",
-    "@types/bcrypt": "^5.0.0",
-    "@types/cors": "^2.8.13",
-    "@types/dot-object": "^2.1.2",
-    "@types/express": "^4.17.17",
-    "@types/jsonwebtoken": "^9.0.2",
-    "@types/node": "^20.4.0",
-    "husky": "^8.0.3",
-    "prisma": "^5.0.0",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.1.6",
-    "zod-to-json-schema": "^3.21.4"
-  },
-  "scripts": {
-    "start": "node build/index.js",
-    "prepare": "husky install",
-    "dev": "ts-node src/index.ts",
-    "dev:watch": "nodemon src/index.ts",
-    "lint": "eslint src/ --ext .ts",
-    "lint:fix": "eslint src/ --ext .ts --fix",
-    "build": "tsc",
-    "start:prod": "pm2 start ./ecosystem.config.js",
-    "deploy": "npx ts-node scripts/deploy-commands.ts",
-    "gen:schema": "npx ts-node scripts/generate-config-schema.ts",
-    "test": "node --test --require ts-node/register tests/**/*.test.ts"
-  }
+    "name": "sudobot",
+    "description": "A Discord bot for moderation purposes.",
+    "version": "5.56.0",
+    "main": "build/index.js",
+    "license": "GPL-3.0-or-later",
+    "keywords": [
+        "bot",
+        "discord-bot",
+        "moderation",
+        "automoderation",
+        "discord-moderation",
+        "discord-moderation-bot",
+        "discord-automoderation",
+        "discord-automoderation-bot"
+    ],
+    "homepage": "https://github.com/onesoft-sudo/sudobot",
+    "icon": "https://res.cloudinary.com/rakinar2/image/upload/v1659628446/SudoBot-new_cvwphw.png",
+    "readme": "https://github.com/onesoft-sudo/sudobot#readme",
+    "author": {
+        "name": "Ar Rakin",
+        "email": "rakinar2@onesoftnet.eu.org",
+        "url": "https://virtual-designer.github.io"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/onesoft-sudo/sudobot"
+    },
+    "bugs": {
+        "url": "https://github.com/onesoft-sudo/sudobot/issues",
+        "email": "sudobot@onesoftnet.eu.org"
+    },
+    "dependencies": {
+        "@prisma/client": "^5.0.0",
+        "@types/uuid": "^9.0.2",
+        "ascii-table3": "^0.8.2",
+        "axios": "^1.4.0",
+        "bcrypt": "^5.1.0",
+        "chalk": "^4.1.2",
+        "cors": "^2.8.5",
+        "date-fns": "^2.30.0",
+        "deepmerge": "^4.3.1",
+        "discord.js": "^14.11.0",
+        "dot-object": "^2.1.4",
+        "dotenv": "^16.3.1",
+        "express": "^4.18.2",
+        "express-rate-limit": "^6.9.0",
+        "jsonwebtoken": "^9.0.1",
+        "pm2": "^5.3.0",
+        "reflect-metadata": "^0.1.13",
+        "tslib": "^2.6.1",
+        "uuid": "^9.0.0",
+        "zod": "^3.21.4"
+    },
+    "devDependencies": {
+        "@commitlint/cli": "^17.6.6",
+        "@commitlint/config-conventional": "^17.6.6",
+        "@types/bcrypt": "^5.0.0",
+        "@types/cors": "^2.8.13",
+        "@types/dot-object": "^2.1.2",
+        "@types/express": "^4.17.17",
+        "@types/jsonwebtoken": "^9.0.2",
+        "@types/module-alias": "^2.0.2",
+        "@types/node": "^20.4.0",
+        "husky": "^8.0.3",
+        "prisma": "^5.0.0",
+        "ts-node": "^10.9.1",
+        "typescript": "^5.1.6",
+        "zod-to-json-schema": "^3.21.4"
+    },
+    "scripts": {
+        "start": "node build/index.js",
+        "prepare": "husky install",
+        "dev": "ts-node src/index.ts",
+        "dev:watch": "nodemon src/index.ts",
+        "lint": "eslint src/ --ext .ts",
+        "lint:fix": "eslint src/ --ext .ts --fix",
+        "build": "tsc",
+        "start:prod": "pm2 start ./ecosystem.config.js",
+        "deploy": "npx ts-node scripts/deploy-commands.ts",
+        "gen:schema": "npx ts-node scripts/generate-config-schema.ts",
+        "test": "node --test --require ts-node/register tests/**/*.test.ts"
+    }
 }
