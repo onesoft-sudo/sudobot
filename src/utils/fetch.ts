@@ -1,9 +1,19 @@
 import { Guild, Snowflake, TextBasedChannel } from "discord.js";
+import Client from "../core/Client";
 import { logError } from "./logger";
 
 export async function safeMemberFetch(guild: Guild, id: Snowflake) {
     try {
         return guild.members.cache.get(id) ?? (await guild.members.fetch(id));
+    } catch (e) {
+        logError(e);
+        return null;
+    }
+}
+
+export async function safeUserFetch(client: Client, id: Snowflake) {
+    try {
+        return client.users.cache.get(id) ?? (await client.users.fetch(id));
     } catch (e) {
         logError(e);
         return null;

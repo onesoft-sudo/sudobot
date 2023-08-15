@@ -31,7 +31,7 @@ import Response from "./Response";
 
 export default class Server {
     protected expressApp = express();
-    protected port = process.env.PORT ?? 4000;
+    public readonly port = process.env.PORT ?? 4000;
     protected controllersDirectory = resolve(__dirname, "controllers");
     expressServer?: HttpServer;
 
