@@ -125,6 +125,7 @@ model ReactionRole {
     blacklistedUsers    String[] @default([])
     requiredPermissions String[] @default([])
     level               Int?
+    single              Boolean  @default(false)
     createdAt           DateTime @default(now())
     updatedAt           DateTime @default(now()) @updatedAt
 

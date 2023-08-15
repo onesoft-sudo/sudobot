@@ -95,12 +95,14 @@ export default class ReactionRoleService extends Service implements HasEventList
         aborted: boolean;
         reactionRole?: ReactionRole;
         member?: GuildMember;
+        removedPreviousRoles?: boolean;
     }> {
         const emoji = data.d.emoji;
         const userId = data.d.user_id;
         const messageId = data.d.message_id;
         const channelId = data.d.channel_id;
         const guildId = data.d.guild_id;
+        const isReactionAddEvent = data.t === "MESSAGE_REACTION_ADD";
 
         if (userId === this.client.user?.id) {
             return { aborted: true };
@@ -171,7 +173,56 @@ export default class ReactionRoleService extends Service implements HasEventList
             }
         }
 
-        return { aborted: false, member, reactionRole: entry };
+        let removedPreviousRoles = false;
+        const reactionsToRemove = [];
+
+        if (entry?.single && isReactionAddEvent) {
+            for (const value of this.reactionRoleEntries.values()) {
+                if (
+                    value?.guildId === guildId &&
+                    value?.channelId === channelId &&
+                    value?.messageId === messageId &&
+                    member.roles.cache.hasAny(...value!.roles)
+                ) {
+                    await member.roles.remove(value!.roles, "Taking out the previous roles").catch(logError);
+                    removedPreviousRoles = !removedPreviousRoles ? true : removedPreviousRoles;
+
+                    if (reactionsToRemove.length <= 4) {
+                        reactionsToRemove.push(`${value?.emoji}`);
+                    }
+                }
+            }
+        }
+
+        if (removedPreviousRoles && reactionsToRemove.length > 0 && reactionsToRemove.length <= 4) {
+            log(reactionsToRemove);
+
+            for (const reaction of reactionsToRemove) {
+                const isBuiltIn = !/^\d+$/.test(reaction);
+                const emoji = !isBuiltIn
+                    ? this.client.emojis.cache.find(e => e.id === reaction || e.identifier === reaction)
+                    : null;
+
+                if (!isBuiltIn && !emoji) {
+                    continue;
+                }
+
+                this.removeReactionAndAbort({
+                    ...data,
+                    d: {
+                        ...data.d,
+                        emoji: isBuiltIn
+                            ? reaction
+                            : {
+                                  id: emoji!.id,
+                                  name: emoji!.name
+                              }
+                    }
+                }).catch(logError);
+            }
+        }
+
+        return { aborted: false, member, reactionRole: entry, removedPreviousRoles };
     }
 
     async removeReactionAndAbort(data: any) {
@@ -196,22 +247,25 @@ export default class ReactionRoleService extends Service implements HasEventList
         messageId,
         guildId,
         emoji,
-        roles
+        roles,
+        mode = "MULTIPLE"
     }: {
         channelId: Snowflake;
         messageId: Snowflake;
         guildId: Snowflake;
         emoji: string;
         roles: Snowflake[];
+        mode?: "SINGLE" | "MULTIPLE";
     }) {
         const reactionRole = await this.client.prisma.reactionRole.create({
             data: {
                 channelId,
                 guildId,
                 messageId,
-                isBuiltInEmoji: /^\d+$/.test(emoji),
+                isBuiltInEmoji: !/^\d+$/.test(emoji),
                 emoji,
-                roles
+                roles,
+                single: mode === "SINGLE"
             }
         });
 

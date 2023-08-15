@@ -58,12 +58,25 @@ export default class CreateReactionRoleCommand extends Command {
                 .setName("roles")
                 .setDescription("The role(s) to assign, when a user reacts with the given emoji")
                 .setRequired(true)
+        )
+        .addStringOption(option =>
+            option.setName("mode").setDescription("The behaviour of the reaction role trigger").setChoices(
+                {
+                    name: "Single and unique role",
+                    value: "SINGLE"
+                },
+                {
+                    name: "Multiple (Default)",
+                    value: "MULTIPLE"
+                }
+            )
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
         const link: string = context.isLegacy ? context.parsedNamedArgs.link : context.options.getString("message_link", true);
+        const mode = (context.isLegacy ? null : (context.options.getString("mode") as "SINGLE" | "MULTIPLE")) ?? "MULTIPLE";
 
         if (!/^https?:\/\/(canary\.|ptb\.|beta\.|www\.|)discord\.com\/channels\/\d+\/\d+\/\d+$/i.test(link.trim())) {
             await this.error(message, this.validationRules[0].typeErrorMessage);
@@ -158,7 +171,8 @@ export default class CreateReactionRoleCommand extends Command {
             emoji: emojiIdOrName,
             guildId,
             messageId,
-            roles
+            roles,
+            mode
         });
 
         await this.success(
