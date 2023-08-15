@@ -1,3 +1,12 @@
+# [5.57.0](https://github.com/onesoft-sudo/sudobot/compare/v5.56.0...v5.57.0) (2023-08-15)
+
+
+### Features
+
+* **reactroles:** single-only reaction roles ([5f3a8f4](https://github.com/onesoft-sudo/sudobot/commit/5f3a8f4f5651048c3c1766bbe8831f4f22283f33))
+
+
+
 # [5.56.0](https://github.com/onesoft-sudo/sudobot/compare/v5.55.0...v5.56.0) (2023-08-13)
 
 
@@ -36,15 +45,6 @@
 ### Bug Fixes
 
 * **inviteTracker:** vanity url not being showed ([1027d3c](https://github.com/onesoft-sudo/sudobot/commit/1027d3c244f79624d2e0865d3d431405aed81a84))
-
-
-
-## [5.53.1](https://github.com/onesoft-sudo/sudobot/compare/v5.53.0...v5.53.1) (2023-08-12)
-
-
-### Bug Fixes
-
-* **server:** unexpected proxy error when the server starts ([02473ac](https://github.com/onesoft-sudo/sudobot/commit/02473ac83774fcea3615a84340415db9b5e7eb10))
 
 
 
