@@ -19,7 +19,7 @@
 
 import { PermissionRole, Snippet } from "@prisma/client";
 import { AxiosError } from "axios";
-import { Attachment, Collection, GuildMember, Message, MessageCreateOptions, PermissionFlagsBits } from "discord.js";
+import { Attachment, Collection, GuildMember, Message, MessageCreateOptions, PermissionFlagsBits, Snowflake } from "discord.js";
 import { existsSync } from "fs";
 import fs from "fs/promises";
 import { basename } from "path";
@@ -34,7 +34,7 @@ export const name = "snippetManager";
 type SnippetWithPermissions = Snippet & { permission_roles: PermissionRole[] };
 
 export default class SnippetManager extends Service {
-    public readonly snippets: Record<string, Collection<string, SnippetWithPermissions>> = {};
+    public readonly snippets = new Collection<`${Snowflake}_${string}`, SnippetWithPermissions>();
 
     async boot() {
         const snippets = await this.client.prisma.snippet.findMany({
@@ -43,14 +43,8 @@ export default class SnippetManager extends Service {
             }
         });
 
-        for (const guildId of this.client.guilds.cache.keys()) {
-            this.snippets[guildId] = new Collection<string, SnippetWithPermissions>();
-        }
-
         for (const snippet of snippets) {
-            if (!this.snippets[snippet.guild_id]) this.snippets[snippet.guild_id] = new Collection<string, SnippetWithPermissions>();
-
-            this.snippets[snippet.guild_id].set(snippet.name, snippet);
+            this.snippets.set(`${snippet.guild_id}_${snippet.name}`, snippet);
         }
     }
 
@@ -62,12 +56,22 @@ export default class SnippetManager extends Service {
         }
     }
 
-    async createSnippet({ name, content, attachments, guildId, userId, roles, channels, users, randomize }: CreateSnippetOptions) {
+    async createSnippet({
+        name,
+        content,
+        attachments,
+        guildId,
+        userId,
+        roles,
+        channels,
+        users,
+        randomize
+    }: CreateSnippetOptions) {
         if (!content && (!attachments || attachments.length === 0)) {
             return { error: "Content or attachment is required to create a snippet" };
         }
 
-        if (this.snippets[guildId].has(name)) {
+        if (this.snippets.has(`${guildId}_${name}`)) {
             return { error: "A snippet with the same name already exists" };
         }
 
@@ -118,7 +122,7 @@ export default class SnippetManager extends Service {
             }
         });
 
-        this.snippets[guildId].set(snippet.name, snippet);
+        this.snippets.set(`${guildId}_${snippet.name}`, snippet);
 
         return { snippet };
     }
@@ -146,7 +150,7 @@ export default class SnippetManager extends Service {
     }
 
     async deleteSnippet({ name, guildId }: CommonSnippetActionOptions) {
-        if (!this.snippets[guildId].has(name)) {
+        if (!this.snippets.has(`${guildId}_${name}`)) {
             return { error: "No snippet found with that name" };
         }
 
@@ -157,14 +161,14 @@ export default class SnippetManager extends Service {
             }
         });
 
-        await this.removeFiles(this.snippets[guildId].get(name)!.attachments, guildId);
-        this.snippets[guildId].delete(name);
+        await this.removeFiles(this.snippets.get(`${guildId}_${name}`)!.attachments, guildId);
+        this.snippets.delete(`${guildId}_${name}`);
 
         return { success: true };
     }
 
     async renameSnippet({ name, guildId, newName }: CommonSnippetActionOptions & { newName: string }) {
-        if (!this.snippets[guildId].has(name)) {
+        if (!this.snippets.has(`${guildId}_${name}`)) {
             return { error: "No snippet found with that name" };
         }
 
@@ -182,10 +186,10 @@ export default class SnippetManager extends Service {
             }
         });
 
-        const snippet = this.snippets[guildId].get(name)!;
+        const snippet = this.snippets.get(`${guildId}_${name}`)!;
         snippet.name = newName;
-        this.snippets[guildId].set(newName, snippet);
-        this.snippets[guildId].delete(name);
+        this.snippets.set(`${guildId}_${newName}`, snippet);
+        this.snippets.delete(`${guildId}_${name}`);
 
         return { success: true, snippet };
     }
@@ -229,11 +233,11 @@ export default class SnippetManager extends Service {
         channelId: string;
         member: GuildMember;
     }) {
-        if (!this.snippets[guildId]?.has(name)) {
+        if (!this.snippets?.has(`${guildId}_${name}`)) {
             return { error: "No snippet found with that name", found: false };
         }
 
-        const snippet = this.snippets[guildId].get(name)!;
+        const snippet = this.snippets.get(`${guildId}_${name}`)!;
 
         if (!snippet.content && snippet.attachments.length === 0)
             throw new Error("Corrupted database: snippet attachment and content both are unusable");
@@ -296,9 +300,9 @@ export default class SnippetManager extends Service {
     }
 
     async toggleRandomization({ guildId, name }: CommonSnippetActionOptions) {
-        if (!this.snippets[guildId].has(name)) return { error: "Snippet does not exist" };
+        if (!this.snippets.has(`${guildId}_${name}`)) return { error: "Snippet does not exist" };
 
-        const snippet = this.snippets[guildId].get(name);
+        const snippet = this.snippets.get(`${guildId}_${name}`);
 
         if (!snippet) {
             return { error: "Snippet does not exist" };
@@ -313,15 +317,15 @@ export default class SnippetManager extends Service {
             }
         });
 
-        const localSnippet = this.snippets[guildId].get(name)!;
+        const localSnippet = this.snippets.get(`${guildId}_${name}`)!;
         localSnippet.randomize = !snippet.randomize;
-        this.snippets[guildId].set(name, localSnippet);
+        this.snippets.set(`${guildId}_${name}`, localSnippet);
 
         return { randomization: !snippet.randomize };
     }
 
     async pushFile({ files, guildId, name }: CommonSnippetActionOptions & { files: string[] }) {
-        if (!this.snippets[guildId].has(name)) return { error: "Snippet does not exist" };
+        if (!this.snippets.has(`${guildId}_${name}`)) return { error: "Snippet does not exist" };
 
         const filesDownloaded = [];
 
@@ -358,15 +362,15 @@ export default class SnippetManager extends Service {
 
         if (count === 0) return { error: "Snippet does not exist" };
 
-        const snippet = this.snippets[guildId].get(name)!;
+        const snippet = this.snippets.get(`${guildId}_${name}`)!;
         snippet.attachments.push(...filesDownloaded);
-        this.snippets[guildId].set(name, snippet);
+        this.snippets.set(`${guildId}_${name}`, snippet);
 
         return { count };
     }
 
     async checkPermissionInSnippetCommands(name: string, message: CommandMessage, command: Command) {
-        const snippet = this.client.snippetManager.snippets[message.guildId!]?.get(name);
+        const snippet = this.snippets.get(`${message.guildId!}_${name}`);
 
         if (!snippet) {
             await command.error(message, "No snippet found with that name!");
@@ -391,12 +395,13 @@ export default class SnippetManager extends Service {
         users,
         permissionRoleName,
         level
-    }: Partial<Omit<CreateSnippetOptions, "attachments" | "userId">> & CommonSnippetActionOptions & { permissionRoleName?: string; level?: number }) {
-        if (!this.snippets[guildId].has(name)) {
+    }: Partial<Omit<CreateSnippetOptions, "attachments" | "userId">> &
+        CommonSnippetActionOptions & { permissionRoleName?: string; level?: number }) {
+        if (!this.snippets.has(`${guildId}_${name}`)) {
             return { error: "No snippet found with that name" };
         }
 
-        const snippet = this.snippets[guildId].get(name)!;
+        const snippet = this.snippets.get(`${guildId}_${name}`)!;
 
         let permissionRole: PermissionRole | null = null;
 
@@ -437,7 +442,7 @@ export default class SnippetManager extends Service {
             }
         });
 
-        this.snippets[guildId].set(name, updatedSnippet);
+        this.snippets.set(`${guildId}_${name}`, updatedSnippet);
 
         return {
             updatedSnippet
