@@ -1,3 +1,13 @@
+# [5.60.0](https://github.com/onesoft-sudo/sudobot/compare/v5.59.0...v5.60.0) (2023-08-17)
+
+
+### Features
+
+* **logging:** bulk delete logs will now send a messages.json file ([085a569](https://github.com/onesoft-sudo/sudobot/commit/085a5694385193f99ff7142ab0480a601d90910c))
+* **logging:** member kick logs ([145cf8e](https://github.com/onesoft-sudo/sudobot/commit/145cf8e23fbefe59438424bccd2681be04fcf76f))
+
+
+
 # [5.59.0](https://github.com/onesoft-sudo/sudobot/compare/v5.58.0...v5.59.0) (2023-08-15)
 
 
@@ -31,15 +41,6 @@
 ### Features
 
 * config endpoints now return commands as well ([a15448c](https://github.com/onesoft-sudo/sudobot/commit/a15448cd91af92e59c404855439fe2fb9459113b))
-
-
-
-# [5.55.0](https://github.com/onesoft-sudo/sudobot/compare/v5.54.0...v5.55.0) (2023-08-13)
-
-
-### Features
-
-* types for better autocompletion ([f56a4ed](https://github.com/onesoft-sudo/sudobot/commit/f56a4ed77f804ce320c52915c14ec02c6f7a1c00))
 
 
 
