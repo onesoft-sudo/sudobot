@@ -36,7 +36,14 @@ export default class SnippetListCommand extends Command {
     public readonly permissionMode = "or";
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
-        const snippets = [...(this.client.snippetManager.snippets[message.guildId!] ?? []).keys()];
+        const snippets = [];
+        const iterator = this.client.snippetManager.snippets.keys();
+
+        for (const snippet of iterator) {
+            if (snippet.startsWith(`${message.guildId}_`)) {
+                snippets.push(snippet.replace(`${message.guildId}_`, ""));
+            }
+        }
 
         if (snippets.length === 0) {
             await this.deferredReply(message, "This server does not have any snippets/tags yet.");
