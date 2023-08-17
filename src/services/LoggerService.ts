@@ -26,6 +26,7 @@ import {
     ButtonBuilder,
     ButtonStyle,
     ChannelType,
+    Collection,
     ColorResolvable,
     Colors,
     EmbedBuilder,
@@ -36,6 +37,7 @@ import {
     Message,
     MessageCreateOptions,
     MessagePayload,
+    MessageResolvable,
     MessageType,
     NonThreadGuildBasedChannel,
     Role,
@@ -941,34 +943,60 @@ export default class LoggerService extends Service {
         });
     }
 
-    async logBulkDeleteMessages({
-        moderator,
-        user,
-        reason,
-        guild,
-        id,
-        count,
-        channel
-    }: Omit<CommonUserActionOptions, "id"> & { user?: User; reason?: string; count: number; channel: TextChannel; id?: string }) {
-        this.sendLogEmbed(guild, {
-            user,
-            title: "Messages deleted in bulk",
-            footerText: "Deleted",
-            reason: reason ?? null,
-            moderator,
-            id,
-            color: Colors.DarkRed,
-            fields: [
-                {
-                    name: "Deleted Message Count",
-                    value: `${count}`
-                },
-                {
-                    name: "Channel",
-                    value: `${channel.toString()} (${channel.id})`
-                }
-            ]
-        });
+    async logBulkDeleteMessages({ messages, moderator, user, reason, guild, id, count, channel }: LogMessageBulkDelete) {
+        const sendJSON = this.client.configManager.config[guild.id]?.logging?.bulk_delete_send_json;
+
+        const message = await this.sendLogEmbed(
+            guild,
+            {
+                user,
+                title: "Messages deleted in bulk",
+                footerText: "Deleted",
+                reason: reason ?? null,
+                moderator,
+                id,
+                color: Colors.DarkRed,
+                fields: [
+                    {
+                        name: "Deleted Message Count",
+                        value: `${count}`
+                    },
+                    {
+                        name: "Channel",
+                        value: `${channel.toString()} (${channel.id})`
+                    }
+                ]
+            },
+            sendJSON
+                ? {
+                      files: [
+                          {
+                              attachment: this.generateBulkDeleteJSON(messages),
+                              name: "messages.json"
+                          }
+                      ]
+                  }
+                : undefined
+        );
+
+        message
+            ?.edit({
+                embeds: [
+                    {
+                        ...(message?.embeds[0]?.data ?? {}),
+                        fields: [
+                            ...(message?.embeds[0].data.fields ?? []),
+                            {
+                                name: "Messages",
+                                value: `[Click here to view the deleted messages](${
+                                    process.env.FRONTEND_URL
+                                }/view_deleted_messages?url=${encodeURIComponent(message.attachments.at(0)!.proxyURL)})`
+                            }
+                        ]
+                    }
+                ]
+            })
+            .catch(logError);
     }
 
     async logMemberUnmute({
@@ -1046,6 +1074,25 @@ export default class LoggerService extends Service {
             }
         });
     }
+
+    generateBulkDeleteJSON(messages: MessageResolvable[]) {
+        const mapped = ((messages instanceof Collection ? [...messages.values()] : messages) as Message[]).map(m => ({
+            ...m,
+            author: m.author,
+            member: m.member
+        }));
+
+        return Buffer.from(JSON.stringify(mapped, null, 4));
+    }
+}
+
+interface LogMessageBulkDelete extends Omit<CommonUserActionOptions, "id"> {
+    user?: User;
+    reason?: string;
+    count: number;
+    channel: TextChannel;
+    id?: string;
+    messages: MessageResolvable[];
 }
 
 interface LogUserBanOptions extends BanOptions, CommonUserActionOptions {

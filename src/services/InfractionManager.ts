@@ -128,7 +128,11 @@ export default class InfractionManager extends Service {
         }).setTimestamp();
     }
 
-    private async sendDM(user: User, guild: Guild, { fields, description, actionDoneName, id, reason, color, title }: SendDMOptions) {
+    private async sendDM(
+        user: User,
+        guild: Guild,
+        { fields, description, actionDoneName, id, reason, color, title }: SendDMOptions
+    ) {
         const internalFields: EmbedField[] = [
             ...(this.client.configManager.config[guild.id]!.infractions?.send_ids_to_user
                 ? [
@@ -173,7 +177,14 @@ export default class InfractionManager extends Service {
 
     async createUserSoftban(
         user: User,
-        { guild, moderator, reason, deleteMessageSeconds, notifyUser, sendLog }: CreateUserBanOptions & { deleteMessageSeconds: number }
+        {
+            guild,
+            moderator,
+            reason,
+            deleteMessageSeconds,
+            notifyUser,
+            sendLog
+        }: CreateUserBanOptions & { deleteMessageSeconds: number }
     ) {
         const { id } = await this.client.prisma.infraction.create({
             data: {
@@ -378,7 +389,10 @@ export default class InfractionManager extends Service {
         }
     }
 
-    async removeUserBan(user: User, { guild, moderator, reason, autoRemoveQueue = true, sendLog }: CommonOptions & { autoRemoveQueue?: boolean }) {
+    async removeUserBan(
+        user: User,
+        { guild, moderator, reason, autoRemoveQueue = true, sendLog }: CommonOptions & { autoRemoveQueue?: boolean }
+    ) {
         const { id } = await this.client.prisma.infraction.create({
             data: {
                 type: InfractionType.UNBAN,
@@ -487,12 +501,13 @@ export default class InfractionManager extends Service {
         moderator,
         reason,
         sendLog,
-        count: messageCount
+        count: messageCount,
+        logOnly = false
     }: BulkDeleteMessagesOptions) {
         if (messageChannel && !(messagesToDelete && messagesToDelete.length === 0)) {
             let messages: MessageResolvable[] | null = messagesToDelete ?? null;
 
-            if (messages === null) {
+            if (!logOnly && messages === null) {
                 log("The messagesToDelete was option not provided. Fetching messages manually.");
 
                 try {
@@ -506,7 +521,10 @@ export default class InfractionManager extends Service {
                             break;
                         }
 
-                        if ((user ? m.author.id === user.id : true) && Date.now() - m.createdAt.getTime() <= 1000 * 60 * 60 * 24 * 7 * 2) {
+                        if (
+                            (user ? m.author.id === user.id : true) &&
+                            Date.now() - m.createdAt.getTime() <= 1000 * 60 * 60 * 24 * 7 * 2
+                        ) {
                             messages.push(m);
                             i++;
                         }
@@ -543,16 +561,19 @@ export default class InfractionManager extends Service {
                         id: id === 0 ? undefined : `${id}`,
                         user,
                         moderator,
-                        reason
+                        reason,
+                        messages: messages ?? []
                     })
                     .catch(logError);
             }
 
-            if (messages && count > 0) {
+            if (!logOnly && messages && count > 0) {
                 try {
                     await messageChannel.bulkDelete(messages);
                     const reply = await messageChannel.send(
-                        `${getEmoji(this.client, "check")} Deleted ${count} messages${user ? ` from user **@${escapeMarkdown(user.username)}**` : ""}`
+                        `${getEmoji(this.client, "check")} Deleted ${count} messages${
+                            user ? ` from user **@${escapeMarkdown(user.username)}**` : ""
+                        }`
                     );
 
                     setTimeout(() => reply.delete().catch(logError), 5000);
@@ -585,7 +606,9 @@ export default class InfractionManager extends Service {
 
         if (!mutedRole) {
             if (!duration) {
-                return { error: "Muted role is not configured and duration wasn't provided, please set the muted role to perform this operation." };
+                return {
+                    error: "Muted role is not configured and duration wasn't provided, please set the muted role to perform this operation."
+                };
             }
 
             try {
@@ -599,7 +622,9 @@ export default class InfractionManager extends Service {
                 await member.roles.add(mutedRole);
             } catch (e) {
                 logError(e);
-                return { error: "Failed to assign the muted role to this user. Make sure that I have enough permissions to do it." };
+                return {
+                    error: "Failed to assign the muted role to this user. Make sure that I have enough permissions to do it."
+                };
             }
         }
 
@@ -607,7 +632,11 @@ export default class InfractionManager extends Service {
             log("Auto remove", this.client.queueManager.queues);
 
             for (const queue of this.client.queueManager.queues.values()) {
-                if (queue.options.name === "UnmuteQueue" && queue.options.guild.id === member.guild.id && queue.options.args[0] === member.user.id) {
+                if (
+                    queue.options.name === "UnmuteQueue" &&
+                    queue.options.guild.id === member.guild.id &&
+                    queue.options.args[0] === member.user.id
+                ) {
                     log("Called");
                     await this.client.queueManager.remove(queue);
                 }
@@ -666,7 +695,9 @@ export default class InfractionManager extends Service {
                 notifyUser: false,
                 reason:
                     bulkDeleteReason ??
-                    `This user was muted with delete messages option specified. The mute reason was: ${reason ?? "*No reason provided*"}`
+                    `This user was muted with delete messages option specified. The mute reason was: ${
+                        reason ?? "*No reason provided*"
+                    }`
             }).catch(logError);
         }
 
@@ -711,7 +742,9 @@ export default class InfractionManager extends Service {
                 await member.roles.remove(mutedRole);
             } catch (e) {
                 logError(e);
-                return { error: "Failed to remove the muted role to this user. Make sure that I have enough permissions to do it." };
+                return {
+                    error: "Failed to remove the muted role to this user. Make sure that I have enough permissions to do it."
+                };
             }
         }
 
@@ -750,7 +783,11 @@ export default class InfractionManager extends Service {
             log("Auto remove", this.client.queueManager.queues);
 
             for (const queue of this.client.queueManager.queues.values()) {
-                if (queue.options.name === "UnmuteQueue" && queue.options.guild.id === member.guild.id && queue.options.args[0] === member.user.id) {
+                if (
+                    queue.options.name === "UnmuteQueue" &&
+                    queue.options.guild.id === member.guild.id &&
+                    queue.options.args[0] === member.user.id
+                ) {
                     log("Called");
                     await this.client.queueManager.remove(queue);
                 }
@@ -760,7 +797,16 @@ export default class InfractionManager extends Service {
         return { id, result };
     }
 
-    async createUserMassBan({ users, sendLog, reason, deleteMessageSeconds, moderator, guild, callAfterEach, callback }: CreateUserMassBanOptions) {
+    async createUserMassBan({
+        users,
+        sendLog,
+        reason,
+        deleteMessageSeconds,
+        moderator,
+        guild,
+        callAfterEach,
+        callback
+    }: CreateUserMassBanOptions) {
         if (users.length > 20) {
             return { error: "Cannot perform this operation on more than 20 users" };
         }
@@ -965,7 +1011,9 @@ export default class InfractionManager extends Service {
                 const row: any[] = [
                     infraction.type,
                     infraction.reason ?? "*No reason provided*",
-                    `${infraction.createdAt.toUTCString()} (${formatDistanceToNowStrict(infraction.createdAt, { addSuffix: true })})    `,
+                    `${infraction.createdAt.toUTCString()} (${formatDistanceToNowStrict(infraction.createdAt, {
+                        addSuffix: true
+                    })})    `,
                     (infraction.metadata as any)?.duration
                         ? formatDistanceToNowStrict(new Date(Date.now() - (infraction.metadata as any)?.duration))
                         : "*None*"
@@ -1029,6 +1077,7 @@ export type BulkDeleteMessagesOptions = CommonOptions & {
     messagesToDelete?: MessageResolvable[];
     messageChannel?: TextChannel;
     count?: number;
+    logOnly?: boolean;
 };
 
 export type ActionDoneName = "banned" | "muted" | "kicked" | "warned" | "unbanned" | "unmuted" | "softbanned" | "beaned";

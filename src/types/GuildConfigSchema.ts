@@ -65,6 +65,7 @@ export const GuildConfigSchema = z.object({
     logging: z
         .object({
             enabled: z.boolean().default(false),
+            bulk_delete_send_json: z.boolean().default(true),
             primary_channel: zSnowflake.optional(),
             message_logging_channel: zSnowflake.optional(),
             join_leave_channel: zSnowflake.optional(),
