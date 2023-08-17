@@ -990,7 +990,7 @@ export default class LoggerService extends Service {
                                 name: "Messages",
                                 value: `[Click here to view the deleted messages](${
                                     process.env.FRONTEND_URL
-                                }/view_deleted_messages?url=${encodeURIComponent(message.attachments.at(0)!.proxyURL)})`
+                                }/view_deleted_messages?url=${encodeURIComponent(message.attachments.at(0)!.url)})`
                             }
                         ]
                     }
@@ -1076,13 +1076,37 @@ export default class LoggerService extends Service {
     }
 
     generateBulkDeleteJSON(messages: MessageResolvable[]) {
-        const mapped = ((messages instanceof Collection ? [...messages.values()] : messages) as Message[]).map(m => ({
+        const mappedMessages = ((messages instanceof Collection ? [...messages.values()] : messages) as Message[]).map(m => ({
             ...m,
             author: m.author,
-            member: m.member
+            member: m.member,
+            authorColor: m.member?.roles.highest.color,
+            authorRoleIcon: m.member?.roles.highest.iconURL() ?? undefined,
+            authorRoleName: m.member?.roles.highest.name ?? undefined,
+            authorAvatarURL: m.author.displayAvatarURL()
         }));
 
-        return Buffer.from(JSON.stringify(mapped, null, 4));
+        return Buffer.from(
+            JSON.stringify(
+                {
+                    messages: mappedMessages,
+                    generatedAt: new Date().toISOString(),
+                    channel: (messages.at(0) as Message)!.channel.toJSON({
+                        id: true,
+                        name: true,
+                        type: true
+                    }),
+                    guild: {
+                        id: (messages.at(0) as Message)!.guild!.id,
+                        name: (messages.at(0) as Message)!.guild!.name,
+                        iconURL: (messages.at(0) as Message)!.guild!.iconURL() ?? undefined
+                    },
+                    version: this.client.metadata.data.version
+                },
+                null,
+                4
+            )
+        );
     }
 }
 
