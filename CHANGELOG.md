@@ -1,3 +1,12 @@
+# [5.61.0](https://github.com/onesoft-sudo/sudobot/compare/v5.60.0...v5.61.0) (2023-08-17)
+
+
+### Features
+
+* return additional information to the bulk delete json log file ([4cd4875](https://github.com/onesoft-sudo/sudobot/commit/4cd48759a66c8a25dc7ef366fcf49f94a30aa9e8))
+
+
+
 # [5.60.0](https://github.com/onesoft-sudo/sudobot/compare/v5.59.0...v5.60.0) (2023-08-17)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * **reactroles:** single-only reaction roles ([5f3a8f4](https://github.com/onesoft-sudo/sudobot/commit/5f3a8f4f5651048c3c1766bbe8831f4f22283f33))
-
-
-
-# [5.56.0](https://github.com/onesoft-sudo/sudobot/compare/v5.55.0...v5.56.0) (2023-08-13)
-
-
-### Features
-
-* config endpoints now return commands as well ([a15448c](https://github.com/onesoft-sudo/sudobot/commit/a15448cd91af92e59c404855439fe2fb9459113b))
 
 
 
