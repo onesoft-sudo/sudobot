@@ -42,6 +42,60 @@
         "restart_exit_code": {
             "type": "integer",
             "default": 1
+        },
+        "trust_proxies": {
+            "type": "integer"
+        },
+        "presence": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "online",
+                        "idle",
+                        "dnd",
+                        "invisible"
+                    ]
+                },
+                "url": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "0",
+                        "1",
+                        "2",
+                        "3",
+                        "4",
+                        "5",
+                        "Playing",
+                        "Streaming",
+                        "Listening",
+                        "Watching",
+                        "Competing"
+                    ]
+                }
+            },
+            "required": [
+                "type"
+            ],
+            "additionalProperties": false
+        },
+        "commands": {
+            "type": "object",
+            "properties": {
+                "mention_prefix": {
+                    "type": "boolean",
+                    "default": true
+                }
+            },
+            "additionalProperties": false,
+            "default": {}
         }
     },
     "additionalProperties": false,

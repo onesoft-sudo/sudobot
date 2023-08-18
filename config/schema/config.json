@@ -9,6 +9,17 @@
                         "type": "string",
                         "default": "-"
                     },
+                    "commands": {
+                        "type": "object",
+                        "properties": {
+                            "mention_prefix": {
+                                "type": "boolean",
+                                "default": true
+                            }
+                        },
+                        "additionalProperties": false,
+                        "default": {}
+                    },
                     "permissions": {
                         "type": "object",
                         "properties": {
@@ -38,6 +49,22 @@
                             "send_ids_to_user": {
                                 "type": "boolean",
                                 "default": true
+                            },
+                            "dm_fallback": {
+                                "type": "string",
+                                "enum": [
+                                    "none",
+                                    "create_channel",
+                                    "create_thread"
+                                ],
+                                "default": "none"
+                            },
+                            "dm_fallback_parent_channel": {
+                                "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                            },
+                            "dm_fallback_channel_expires_in": {
+                                "type": "integer",
+                                "default": 604800000
                             }
                         },
                         "additionalProperties": false
@@ -81,6 +108,10 @@
                             "enabled": {
                                 "type": "boolean",
                                 "default": false
+                            },
+                            "bulk_delete_send_json": {
+                                "type": "boolean",
+                                "default": true
                             },
                             "primary_channel": {
                                 "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
