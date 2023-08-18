@@ -26,6 +26,11 @@ const zSnowflake = z.custom<string>(data => {
 
 export const GuildConfigSchema = z.object({
     prefix: z.string().default("-"),
+    commands: z
+        .object({
+            mention_prefix: z.boolean().default(true)
+        })
+        .default({}),
     permissions: z
         .object({
             mod_role: zSnowflake.optional(),

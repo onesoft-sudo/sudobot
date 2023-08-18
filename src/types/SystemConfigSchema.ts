@@ -47,7 +47,12 @@ export const SystemConfigSchema = z.object({
                 ]
             )
         })
-        .optional()
+        .optional(),
+    commands: z
+        .object({
+            mention_prefix: z.boolean().default(true)
+        })
+        .default({})
 });
 
 export type SystemConfig = z.infer<typeof SystemConfigSchema>;

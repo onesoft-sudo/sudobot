@@ -70,9 +70,25 @@ export default class CommandManager extends Service {
             return;
         }
 
-        if (!message.content.startsWith(config.prefix)) return;
+        const prefixes = [config.prefix];
+        let foundPrefix: string | undefined = undefined;
 
-        const commandText = message.content.substring(config.prefix.length);
+        if (this.client.configManager.systemConfig.commands.mention_prefix && config.commands.mention_prefix) {
+            prefixes.push(`<@${this.client.user!.id}>`, `<@!${this.client.user!.id}>`);
+        }
+
+        for (const prefix of prefixes) {
+            if (message.content.startsWith(prefix)) {
+                foundPrefix = prefix;
+                break;
+            }
+        }
+
+        if (!foundPrefix) {
+            return;
+        }
+
+        const commandText = message.content.substring(foundPrefix.length).trimStart();
         const [commandName, ...commandArguments] = commandText.split(/ +/);
 
         const command = this.client.commands.get(commandName);
