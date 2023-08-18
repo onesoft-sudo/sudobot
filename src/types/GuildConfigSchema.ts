@@ -47,7 +47,8 @@ export const GuildConfigSchema = z.object({
         .object({
             send_ids_to_user: z.boolean().default(true),
             dm_fallback: z.enum(["none", "create_channel", "create_thread"]).default("none"),
-            dm_fallback_parent_channel: zSnowflake.optional()
+            dm_fallback_parent_channel: zSnowflake.optional(),
+            dm_fallback_channel_expires_in: z.number().int().optional().default(604800000) // 1 week
         })
         .optional(),
     muting: z

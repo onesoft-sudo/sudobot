@@ -1131,6 +1131,9 @@ export default class InfractionManager extends Service {
         embed
     }: Omit<NotifyUserFallbackOptions, "guild"> & { parentChannel: TextChannel }) {
         try {
+            const expiresIn =
+                this.client.configManager.config[parentChannel.guild.id]?.infractions?.dm_fallback_channel_expires_in;
+
             const channel = await parentChannel.guild.channels.create({
                 name: `infraction-${infraction.id}`,
                 type: ChannelType.GuildText,
@@ -1146,6 +1149,21 @@ export default class InfractionManager extends Service {
             });
 
             await this.sendDMEmbedToChannel(channel, embed, actionDoneName, user);
+
+            if (expiresIn) {
+                await this.client.queueManager.add(
+                    new QueueEntry({
+                        args: [parentChannel.guild.id, channel.id],
+                        client: this.client,
+                        createdAt: new Date(),
+                        filePath: path.resolve(__dirname, "../queues/ChannelDeleteQueue"),
+                        guild: parentChannel.guild,
+                        name: "ChannelDeleteQueue",
+                        userId: this.client.user!.id,
+                        willRunAt: new Date(Date.now() + expiresIn)
+                    })
+                );
+            }
         } catch (e) {
             logError(e);
             return false;
