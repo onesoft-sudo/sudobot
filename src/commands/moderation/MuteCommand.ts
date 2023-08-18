@@ -18,7 +18,14 @@
  */
 
 import { formatDistanceToNowStrict } from "date-fns";
-import { ChatInputCommandInteraction, GuildMember, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
+import {
+    ChatInputCommandInteraction,
+    GuildMember,
+    PermissionsBitField,
+    SlashCommandBuilder,
+    User,
+    escapeMarkdown
+} from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { createModerationEmbed, stringToTimeInterval } from "../../utils/utils";
 
@@ -37,7 +44,8 @@ export default class MuteCommand extends Command {
             types: [ArgumentType.TimeInterval, ArgumentType.StringRest],
             optional: true,
             minMaxErrorMessage: "The mute duration must be a valid time interval.",
-            typeErrorMessage: "You have specified an invalid argument. The system expected you to provide a mute reason or the mute duration here.",
+            typeErrorMessage:
+                "You have specified an invalid argument. The system expected you to provide a mute reason or the mute duration here.",
             lengthMax: 3999,
             name: "durationOrReason"
         },
@@ -63,10 +71,14 @@ export default class MuteCommand extends Command {
         .addStringOption(option => option.setName("reason").setDescription("The reason for muting this user"))
         .addStringOption(option => option.setName("time").setDescription("Mute duration"))
         .addBooleanOption(option =>
-            option.setName("hardmute").setDescription("Specify if the system should take out all roles of the user during the mute")
+            option
+                .setName("hardmute")
+                .setDescription("Specify if the system should take out all roles of the user during the mute")
         )
         .addBooleanOption(option =>
-            option.setName("silent").setDescription("Specify if the system should not notify the user about this action. Defaults to false")
+            option
+                .setName("silent")
+                .setDescription("Specify if the system should not notify the user about this action. Defaults to false")
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
@@ -143,7 +155,11 @@ export default class MuteCommand extends Command {
                 await createModerationEmbed({
                     user: member.user,
                     description: `**${escapeMarkdown(member.user.tag)}** has been muted.${
-                        !result ? "\nFailed to deliver a DM to the user, they will not know about this mute." : ""
+                        result === false
+                            ? "\nFailed to deliver a DM to the user, and the fallback channel could not be created. The user will not know about this mute."
+                            : result === null
+                            ? "\nCould not deliver a DM since the user is not in the server. They will not know about this mute"
+                            : null
                     }`,
                     actionDoneName: "muted",
                     id,
@@ -151,7 +167,9 @@ export default class MuteCommand extends Command {
                     fields: [
                         {
                             name: "Duration",
-                            value: duration ? formatDistanceToNowStrict(new Date(Date.now() - duration * 1000)) : "*No duration set*"
+                            value: duration
+                                ? formatDistanceToNowStrict(new Date(Date.now() - duration * 1000))
+                                : "*No duration set*"
                         }
                     ]
                 })

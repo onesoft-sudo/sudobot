@@ -17,7 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ChatInputCommandInteraction, GuildMember, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
+import {
+    ChatInputCommandInteraction,
+    GuildMember,
+    PermissionsBitField,
+    SlashCommandBuilder,
+    User,
+    escapeMarkdown
+} from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { createModerationEmbed } from "../../utils/utils";
 
@@ -88,7 +95,11 @@ export default class WarnCommand extends Command {
                 await createModerationEmbed({
                     user: member.user,
                     description: `**${escapeMarkdown(member.user.tag)}** has been warned.${
-                        !result ? "\nFailed to deliver a DM to the user, they will not know about this warning." : ""
+                        result === false
+                            ? "\nFailed to deliver a DM to the user, and the fallback channel could not be created. The user will not know about this warning."
+                            : result === null
+                            ? "\nCould not deliver a DM since the user is not in the server. They will not know about this warning"
+                            : null
                     }`,
                     actionDoneName: "warned",
                     id,
