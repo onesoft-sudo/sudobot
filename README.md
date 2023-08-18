@@ -35,9 +35,10 @@ Please look at [this page](https://docs.sudobot.onesoftnet.eu.org/getting-starte
 
 ### Contributors
 
-Thanks to all the contributors!
+Thanks to all the active and indirect contributors!
 
 * [Ar Rakin](https://github.com/virtual-designer)
+* Hana (A Discord User)
 * [killerclaws12](https://github.com/killerclaws12)
 
 ### Support
