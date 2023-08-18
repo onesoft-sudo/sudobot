@@ -1,3 +1,12 @@
+# [5.63.0](https://github.com/onesoft-sudo/sudobot/compare/v5.62.1...v5.63.0) (2023-08-18)
+
+
+### Features
+
+* **infraction_channels:** expiry time ([a35af35](https://github.com/onesoft-sudo/sudobot/commit/a35af355fe51c849e2ff2d96a1efa0e7f4fc0871))
+
+
+
 ## [5.62.1](https://github.com/onesoft-sudo/sudobot/compare/v5.62.0...v5.62.1) (2023-08-18)
 
 
@@ -38,15 +47,6 @@
 
 * **logging:** bulk delete logs will now send a messages.json file ([085a569](https://github.com/onesoft-sudo/sudobot/commit/085a5694385193f99ff7142ab0480a601d90910c))
 * **logging:** member kick logs ([145cf8e](https://github.com/onesoft-sudo/sudobot/commit/145cf8e23fbefe59438424bccd2681be04fcf76f))
-
-
-
-# [5.59.0](https://github.com/onesoft-sudo/sudobot/compare/v5.58.0...v5.59.0) (2023-08-15)
-
-
-### Features
-
-* **api:** discord oauth2 login support ([9aef7ee](https://github.com/onesoft-sudo/sudobot/commit/9aef7eea682ce6c39a7c3c2dcc3d550e4262bbaf))
 
 
 
