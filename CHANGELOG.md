@@ -1,3 +1,18 @@
+# [5.62.0](https://github.com/onesoft-sudo/sudobot/compare/v5.61.0...v5.62.0) (2023-08-18)
+
+
+### Bug Fixes
+
+* **commands:** show correct errors when failing to create channel or send DM ([80ec48b](https://github.com/onesoft-sudo/sudobot/commit/80ec48b9f03812b18930f951f8bc9294d244fc44))
+
+
+### Features
+
+* **commands:** tagging the bot can be used as prefix now ([81be604](https://github.com/onesoft-sudo/sudobot/commit/81be6047e218d653a65a283244b5eadc630065e5))
+* **infractions:** create a fallback channel/thread on DM failure ([e504ff2](https://github.com/onesoft-sudo/sudobot/commit/e504ff272bd6779ff54d870304a9b16ccfda51dc))
+
+
+
 # [5.61.0](https://github.com/onesoft-sudo/sudobot/compare/v5.60.0...v5.61.0) (2023-08-17)
 
 
@@ -32,15 +47,6 @@
 ### Features
 
 * **client:** custom status/presence ([8fbaf59](https://github.com/onesoft-sudo/sudobot/commit/8fbaf5940526abc403d1d3e8755004b48f312621))
-
-
-
-# [5.57.0](https://github.com/onesoft-sudo/sudobot/compare/v5.56.0...v5.57.0) (2023-08-15)
-
-
-### Features
-
-* **reactroles:** single-only reaction roles ([5f3a8f4](https://github.com/onesoft-sudo/sudobot/commit/5f3a8f4f5651048c3c1766bbe8831f4f22283f33))
 
 
 
