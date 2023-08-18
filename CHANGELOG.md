@@ -1,3 +1,12 @@
+## [5.62.1](https://github.com/onesoft-sudo/sudobot/compare/v5.62.0...v5.62.1) (2023-08-18)
+
+
+### Bug Fixes
+
+* remove null outputs ([919a679](https://github.com/onesoft-sudo/sudobot/commit/919a67946c289456ff60dc65caeb0be5fb238a7a))
+
+
+
 # [5.62.0](https://github.com/onesoft-sudo/sudobot/compare/v5.61.0...v5.62.0) (2023-08-18)
 
 
@@ -38,15 +47,6 @@
 ### Features
 
 * **api:** discord oauth2 login support ([9aef7ee](https://github.com/onesoft-sudo/sudobot/commit/9aef7eea682ce6c39a7c3c2dcc3d550e4262bbaf))
-
-
-
-# [5.58.0](https://github.com/onesoft-sudo/sudobot/compare/v5.57.0...v5.58.0) (2023-08-15)
-
-
-### Features
-
-* **client:** custom status/presence ([8fbaf59](https://github.com/onesoft-sudo/sudobot/commit/8fbaf5940526abc403d1d3e8755004b48f312621))
 
 
 
