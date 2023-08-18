@@ -1,3 +1,12 @@
+## [5.63.1](https://github.com/onesoft-sudo/sudobot/compare/v5.63.0...v5.63.1) (2023-08-18)
+
+
+### Bug Fixes
+
+* invalid queue args ([545a6ac](https://github.com/onesoft-sudo/sudobot/commit/545a6acfa568975d0fb598d1a37524b7d9072f26))
+
+
+
 # [5.63.0](https://github.com/onesoft-sudo/sudobot/compare/v5.62.1...v5.63.0) (2023-08-18)
 
 
@@ -37,16 +46,6 @@
 ### Features
 
 * return additional information to the bulk delete json log file ([4cd4875](https://github.com/onesoft-sudo/sudobot/commit/4cd48759a66c8a25dc7ef366fcf49f94a30aa9e8))
-
-
-
-# [5.60.0](https://github.com/onesoft-sudo/sudobot/compare/v5.59.0...v5.60.0) (2023-08-17)
-
-
-### Features
-
-* **logging:** bulk delete logs will now send a messages.json file ([085a569](https://github.com/onesoft-sudo/sudobot/commit/085a5694385193f99ff7142ab0480a601d90910c))
-* **logging:** member kick logs ([145cf8e](https://github.com/onesoft-sudo/sudobot/commit/145cf8e23fbefe59438424bccd2681be04fcf76f))
 
 
 
