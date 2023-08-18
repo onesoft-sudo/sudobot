@@ -35,7 +35,6 @@ Please look at [this page](https://docs.sudobot.onesoftnet.eu.org/getting-starte
 
 ### Contributors
 
-com
 Thanks to all the active and indirect contributors!
 
 
