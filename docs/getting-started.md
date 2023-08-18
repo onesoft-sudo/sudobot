@@ -119,7 +119,7 @@ Now it's time to configure the bot. Now, SudoBot comes with the config files bun
 
 Remove everything inside of the file, and just put an empty object `{}` inside of that file and save it if you don't want to configure anything and just want the default settings. Or,
 
-Manually set the settings inside of the file. If you're following along this documentation and have ran the script `generate-config-schema.ts` (previously specified [here](getting-started.md#cloning-the-project-and-setting-up)), then when you edit the file, you can remove everything inside of the file, and put the following JSON object inside of that file:
+Manually set the settings inside of the file. If you're following along this documentation and have run the script `generate-config-schema.ts` (previously specified [here](getting-started.md#cloning-the-project-and-setting-up)), then when you edit the file, you can remove everything inside of the file, and put the following JSON object inside of that file:
 
 ```
 {
