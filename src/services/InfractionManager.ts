@@ -1153,7 +1153,7 @@ export default class InfractionManager extends Service {
             if (expiresIn) {
                 await this.client.queueManager.add(
                     new QueueEntry({
-                        args: [parentChannel.guild.id, channel.id],
+                        args: [channel.id],
                         client: this.client,
                         createdAt: new Date(),
                         filePath: path.resolve(__dirname, "../queues/ChannelDeleteQueue"),
