@@ -514,10 +514,8 @@ export default abstract class Command {
                             case ArgumentType.StringRest:
                                 if (arg.trim() === "") break;
 
-                                const config = this.client.configManager.config[message.guildId!];
-
                                 let str = ((message as Message).content ?? "")
-                                    .slice(config?.prefix.length)
+                                    .slice(context.prefix.length)
                                     .trimStart()
                                     .slice(context.argv[0].length)
                                     .trimStart();

@@ -37,6 +37,7 @@ export interface LegacyCommandContext extends CommandContext {
     args: string[];
     parsedArgs: any[];
     parsedNamedArgs: Record<string, any>;
+    prefix: string;
     has(arg: string): boolean;
     getParsedArgs<C extends Command>(command: C): ValidationRuleParsedArgs<C["validationRules"]>;
     getParsedArg<C extends Command, I extends keyof C["validationRules"]>(
@@ -101,7 +102,7 @@ export default class CommandManager extends Service {
         command
             .run(
                 message,
-                <LegacyCommandContext>{
+                {
                     isLegacy: true,
                     argv: [commandName, ...commandArguments],
                     args: commandArguments,
@@ -109,6 +110,7 @@ export default class CommandManager extends Service {
                     parsedArgs: [],
                     parsedNamedArgs: {},
                     isContextMenu: false,
+                    prefix: foundPrefix,
                     has(arg: string) {
                         return this.args.includes(arg);
                     },
@@ -118,7 +120,7 @@ export default class CommandManager extends Service {
                     getParsedArgs<C extends Command>(command: C) {
                         return this.parsedArgs as ValidationRuleParsedArgs<C["validationRules"]>;
                     }
-                },
+                } satisfies LegacyCommandContext,
                 checkOnly
             )
             .then(result => {
