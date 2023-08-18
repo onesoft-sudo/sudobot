@@ -21,15 +21,22 @@ import { Infraction, InfractionType } from "@prisma/client";
 import { AlignmentEnum, AsciiTable3 } from "ascii-table3";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
+    APIEmbed,
     APIEmbedField,
     APIUser,
+    ChannelType,
     ColorResolvable,
     EmbedBuilder,
     EmbedField,
     Guild,
     GuildMember,
     MessageResolvable,
+    OverwriteData,
+    PermissionFlagsBits,
+    PrivateThreadChannel,
+    TextBasedChannel,
     TextChannel,
+    ThreadAutoArchiveDuration,
     User,
     escapeCodeBlock,
     escapeMarkdown,
@@ -38,6 +45,7 @@ import {
 import path from "path";
 import Service from "../core/Service";
 import QueueEntry from "../utils/QueueEntry";
+import { safeChannelFetch } from "../utils/fetch";
 import { log, logError } from "../utils/logger";
 import { getEmoji, wait } from "../utils/utils";
 
@@ -128,11 +136,9 @@ export default class InfractionManager extends Service {
         }).setTimestamp();
     }
 
-    private async sendDM(
-        user: User,
-        guild: Guild,
-        { fields, description, actionDoneName, id, reason, color, title }: SendDMOptions
-    ) {
+    private async sendDMBuildEmbed(guild: Guild, options: SendDMOptions) {
+        const { fields, description, actionDoneName, id, reason, color, title } = options;
+
         const internalFields: EmbedField[] = [
             ...(this.client.configManager.config[guild.id]!.infractions?.send_ids_to_user
                 ? [
@@ -145,33 +151,48 @@ export default class InfractionManager extends Service {
                 : [])
         ];
 
+        return new EmbedBuilder({
+            author: {
+                name: actionDoneName ? `You have been ${actionDoneName} in ${guild.name}` : title ?? "",
+                iconURL: guild.iconURL() ?? undefined
+            },
+            description,
+            fields: [
+                {
+                    name: "Reason",
+                    value: reason ?? "*No reason provided*"
+                },
+                ...(fields ? (typeof fields === "function" ? await fields(internalFields) : fields) : []),
+                ...(typeof fields === "function" ? [] : internalFields ?? [])
+            ]
+        })
+            .setTimestamp()
+            .setColor(color ?? 0x0f14a60);
+    }
+
+    private async sendDM(user: User, guild: Guild, options: SendDMOptions) {
+        const embed = await this.sendDMBuildEmbed(guild, options);
+        const { fallback = false, infraction } = options;
+
         try {
             await user.send({
-                embeds: [
-                    new EmbedBuilder({
-                        author: {
-                            name: actionDoneName ? `You have been ${actionDoneName} in ${guild.name}` : title ?? "",
-                            iconURL: guild.iconURL() ?? undefined
-                        },
-                        description,
-                        fields: [
-                            {
-                                name: "Reason",
-                                value: reason ?? "*No reason provided*"
-                            },
-                            ...(fields ? (typeof fields === "function" ? await fields(internalFields) : fields) : []),
-                            ...(typeof fields === "function" ? [] : internalFields ?? [])
-                        ]
-                    })
-                        .setTimestamp()
-                        .setColor(color ?? 0x0f14a60)
-                ]
+                embeds: [embed]
             });
 
             return true;
         } catch (e) {
             logError(e);
-            return false;
+
+            if (!fallback || !infraction) {
+                return false;
+            }
+
+            try {
+                return await this.notifyUserFallback({ infraction, user, guild, sendDMOptions: options, embed });
+            } catch (e) {
+                logError(e);
+                return false;
+            }
         }
     }
 
@@ -462,7 +483,7 @@ export default class InfractionManager extends Service {
     }
 
     async createMemberWarn(member: GuildMember, { guild, moderator, reason, notifyUser }: CommonOptions) {
-        const { id } = await this.client.prisma.infraction.create({
+        const infraction = await this.client.prisma.infraction.create({
             data: {
                 type: InfractionType.WARNING,
                 userId: member.user.id,
@@ -471,6 +492,7 @@ export default class InfractionManager extends Service {
                 moderatorId: moderator.id
             }
         });
+        const { id } = infraction;
 
         this.client.logger.logMemberWarning({
             moderator,
@@ -480,13 +502,15 @@ export default class InfractionManager extends Service {
             reason
         });
 
-        let result = false;
+        let result: boolean | null = false;
 
         if (notifyUser) {
             result = await this.sendDM(member.user, guild, {
                 id,
                 actionDoneName: "warned",
-                reason
+                reason,
+                fallback: true,
+                infraction
             });
         }
 
@@ -660,7 +684,7 @@ export default class InfractionManager extends Service {
             );
         }
 
-        const { id } = await this.client.prisma.infraction.create({
+        const infraction = await this.client.prisma.infraction.create({
             data: {
                 type: InfractionType.MUTE,
                 userId: member.user.id,
@@ -672,6 +696,8 @@ export default class InfractionManager extends Service {
                 metadata: duration ? { duration } : undefined
             }
         });
+
+        const { id } = infraction;
 
         if (sendLog) {
             this.client.logger.logMemberMute({
@@ -701,7 +727,7 @@ export default class InfractionManager extends Service {
             }).catch(logError);
         }
 
-        let result = !notifyUser;
+        let result: boolean | null = !notifyUser;
 
         if (notifyUser) {
             result = await this.sendDM(member.user, guild, {
@@ -713,7 +739,9 @@ export default class InfractionManager extends Service {
                         name: "Duration",
                         value: `${duration ? formatDistanceToNowStrict(new Date(Date.now() - duration)) : "*No duration set*"}`
                     }
-                ]
+                ],
+                fallback: true,
+                infraction
             });
         }
 
@@ -723,7 +751,7 @@ export default class InfractionManager extends Service {
     async removeMemberMute(
         member: GuildMember,
         { guild, moderator, reason, notifyUser, sendLog, autoRemoveQueue = true }: CommonOptions & { autoRemoveQueue?: boolean }
-    ): Promise<{ error?: string; result?: boolean; id?: number }> {
+    ): Promise<{ error?: string; result?: boolean | null; id?: number }> {
         const mutedRole = this.client.configManager.config[guild.id]?.muting?.role;
 
         if (!mutedRole) {
@@ -768,7 +796,7 @@ export default class InfractionManager extends Service {
             });
         }
 
-        let result = !notifyUser;
+        let result: boolean | null = !notifyUser;
 
         if (notifyUser) {
             result = await this.sendDM(member.user, guild, {
@@ -1033,6 +1061,132 @@ export default class InfractionManager extends Service {
 
         return { buffer: Buffer.from(fileContents), count: infractions.length };
     }
+
+    private async notifyUserFallback({ infraction, user, guild, sendDMOptions, embed }: NotifyUserFallbackOptions) {
+        const channelId = this.client.configManager.config[guild.id]?.infractions?.dm_fallback_parent_channel;
+        const fallbackMode = this.client.configManager.config[guild.id]?.infractions?.dm_fallback ?? "none";
+
+        if (!channelId || fallbackMode === "none") {
+            return false;
+        }
+
+        const channel = await safeChannelFetch(guild, channelId);
+
+        if (
+            !channel ||
+            (fallbackMode === "create_channel" && channel.type !== ChannelType.GuildCategory) ||
+            (fallbackMode === "create_thread" && (!channel.isTextBased() || channel.isThread()))
+        ) {
+            return false;
+        }
+
+        if (fallbackMode === "create_channel") {
+            return this.notifyUserInPrivateChannel({
+                infraction,
+                user,
+                parentChannel: channel as TextChannel,
+                sendDMOptions,
+                embed
+            });
+        } else if (fallbackMode === "create_thread") {
+            return this.notifyUserInPrivateThread({
+                infraction,
+                user,
+                channel: channel as TextChannel,
+                sendDMOptions,
+                embed
+            });
+        }
+
+        return true;
+    }
+
+    private async sendDMEmbedToChannel(
+        channel: TextBasedChannel | PrivateThreadChannel,
+        embed: EmbedBuilder,
+        actionDoneName: ActionDoneName | undefined,
+        user: User
+    ) {
+        const apiEmbed = embed.toJSON();
+
+        const finalEmbed = {
+            ...apiEmbed,
+            author: {
+                ...apiEmbed.author,
+                name: `You have been ${actionDoneName ?? "given an infraction"}`
+            }
+        } satisfies APIEmbed;
+
+        return await channel.send({
+            content: user.toString(),
+            embeds: [finalEmbed]
+        });
+    }
+
+    private async notifyUserInPrivateChannel({
+        infraction,
+        parentChannel,
+        user,
+        sendDMOptions: { actionDoneName },
+        embed
+    }: Omit<NotifyUserFallbackOptions, "guild"> & { parentChannel: TextChannel }) {
+        try {
+            const channel = await parentChannel.guild.channels.create({
+                name: `infraction-${infraction.id}`,
+                type: ChannelType.GuildText,
+                parent: parentChannel.id,
+                reason: "Creating fallback channel to notify the user about their infraction",
+                permissionOverwrites: [
+                    ...parentChannel.permissionOverwrites.cache.values(),
+                    {
+                        id: user.id,
+                        allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ReadMessageHistory]
+                    }
+                ] satisfies OverwriteData[]
+            });
+
+            await this.sendDMEmbedToChannel(channel, embed, actionDoneName, user);
+        } catch (e) {
+            logError(e);
+            return false;
+        }
+
+        return true;
+    }
+
+    private async notifyUserInPrivateThread({
+        infraction,
+        channel,
+        user,
+        sendDMOptions: { actionDoneName },
+        embed
+    }: Omit<NotifyUserFallbackOptions, "guild"> & { channel: TextChannel }) {
+        try {
+            const thread = (await channel.threads.create({
+                name: `Infraction #${infraction.id}`,
+                autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
+                type: ChannelType.PrivateThread,
+                reason: "Creating fallback thread to notify the user about their infraction"
+            })) as PrivateThreadChannel;
+
+            await thread.members.add(user, "Adding the target user");
+
+            await this.sendDMEmbedToChannel(thread, embed, actionDoneName, user);
+        } catch (e) {
+            logError(e);
+            return false;
+        }
+
+        return true;
+    }
+}
+
+interface NotifyUserFallbackOptions {
+    infraction: Infraction;
+    user: User;
+    guild: Guild;
+    sendDMOptions: SendDMOptions;
+    embed: EmbedBuilder;
 }
 
 export type CreateUserMassBanOptions = Omit<
@@ -1090,4 +1244,6 @@ export type SendDMOptions = {
     reason?: string;
     color?: ColorResolvable;
     title?: string;
+    fallback?: boolean;
+    infraction?: Infraction;
 };
