@@ -159,7 +159,7 @@ export default class MuteCommand extends Command {
                             ? "\nFailed to deliver a DM to the user, and the fallback channel could not be created. The user will not know about this mute."
                             : result === null
                             ? "\nCould not deliver a DM since the user is not in the server. They will not know about this mute"
-                            : null
+                            : ""
                     }`,
                     actionDoneName: "muted",
                     id,
