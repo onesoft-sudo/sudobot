@@ -1,3 +1,12 @@
+## [5.63.2](https://github.com/onesoft-sudo/sudobot/compare/v5.63.1...v5.63.2) (2023-08-18)
+
+
+### Bug Fixes
+
+* **mention_prefix:** some commands misbehave ([b765009](https://github.com/onesoft-sudo/sudobot/commit/b765009c9653295bf263f6970c49e75c97dbb767))
+
+
+
 ## [5.63.1](https://github.com/onesoft-sudo/sudobot/compare/v5.63.0...v5.63.1) (2023-08-18)
 
 
@@ -37,15 +46,6 @@
 
 * **commands:** tagging the bot can be used as prefix now ([81be604](https://github.com/onesoft-sudo/sudobot/commit/81be6047e218d653a65a283244b5eadc630065e5))
 * **infractions:** create a fallback channel/thread on DM failure ([e504ff2](https://github.com/onesoft-sudo/sudobot/commit/e504ff272bd6779ff54d870304a9b16ccfda51dc))
-
-
-
-# [5.61.0](https://github.com/onesoft-sudo/sudobot/compare/v5.60.0...v5.61.0) (2023-08-17)
-
-
-### Features
-
-* return additional information to the bulk delete json log file ([4cd4875](https://github.com/onesoft-sudo/sudobot/commit/4cd48759a66c8a25dc7ef366fcf49f94a30aa9e8))
 
 
 
