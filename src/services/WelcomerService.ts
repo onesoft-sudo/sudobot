@@ -18,8 +18,18 @@
  */
 
 import { formatDistanceToNowStrict } from "date-fns";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ColorResolvable, EmbedBuilder, GuildMember, Interaction, time } from "discord.js";
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ColorResolvable,
+    EmbedBuilder,
+    GuildMember,
+    Interaction,
+    time
+} from "discord.js";
 import { readFile } from "fs/promises";
+import JSON5 from "json5";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { NotUndefined } from "../types/NotUndefined";
@@ -36,7 +46,7 @@ export default class WelcomerService extends Service {
     @GatewayEventListener("ready")
     async onReady() {
         log("Loading welcome messages...");
-        this.welcomeMessages = JSON.parse(await readFile(sudoPrefix(`resources/welcome_messages.json`), { encoding: "utf-8" }));
+        this.welcomeMessages = JSON5.parse(await readFile(sudoPrefix(`resources/welcome_messages.json`), { encoding: "utf-8" }));
     }
 
     @GatewayEventListener("guildMemberAdd")
@@ -51,7 +61,16 @@ export default class WelcomerService extends Service {
 
         if (!welcomer?.enabled) return;
 
-        const { channel: channelId, embed, say_hi_button, custom_message, randomize, mention, say_hi_expire_after, delete_messages } = welcomer;
+        const {
+            channel: channelId,
+            embed,
+            say_hi_button,
+            custom_message,
+            randomize,
+            mention,
+            say_hi_expire_after,
+            delete_messages
+        } = welcomer;
 
         if (!custom_message && !randomize) return;
 
@@ -109,7 +128,8 @@ export default class WelcomerService extends Service {
 
         if (!config) return;
 
-        if (!interaction.guild?.id || !config.welcomer?.say_hi_button || !interaction.customId.startsWith(`welcomer_say_hi__`)) return;
+        if (!interaction.guild?.id || !config.welcomer?.say_hi_button || !interaction.customId.startsWith(`welcomer_say_hi__`))
+            return;
 
         if (this.workingState) {
             await interaction[interaction.replied ? "followUp" : "reply"]({
@@ -158,7 +178,9 @@ export default class WelcomerService extends Service {
             } else {
                 try {
                     await interaction.deferUpdate();
-                    const message = interaction.channel?.messages.cache.get(messageId) ?? (await interaction.channel?.messages.fetch(messageId));
+                    const message =
+                        interaction.channel?.messages.cache.get(messageId) ??
+                        (await interaction.channel?.messages.fetch(messageId));
 
                     if (!message) {
                         this.workingState = false;
@@ -201,7 +223,10 @@ export default class WelcomerService extends Service {
             !say_hi_emoji || say_hi_emoji === "default"
                 ? "👋"
                 : this.client.emojis.cache.find(e => e.name === say_hi_emoji || e.identifier === say_hi_emoji);
-        const button = new ButtonBuilder().setCustomId(`welcomer_say_hi__${memberId}`).setLabel("Say Hi!").setStyle(ButtonStyle.Secondary);
+        const button = new ButtonBuilder()
+            .setCustomId(`welcomer_say_hi__${memberId}`)
+            .setLabel("Say Hi!")
+            .setStyle(ButtonStyle.Secondary);
 
         if (emoji) button.setEmoji(emoji.toString());
 
