@@ -1,3 +1,12 @@
+# [5.69.0](https://github.com/onesoft-sudo/sudobot/compare/v5.68.0...v5.69.0) (2023-08-19)
+
+
+### Features
+
+* **richpresence:** support custom statuses ([04fb0ce](https://github.com/onesoft-sudo/sudobot/commit/04fb0ce44c4a597d14252d139ea656f8496892a5))
+
+
+
 # [5.68.0](https://github.com/onesoft-sudo/sudobot/compare/v5.67.0...v5.68.0) (2023-08-19)
 
 
@@ -34,15 +43,6 @@
 ### Features
 
 * **config:** use JSON5 to load the config files ([2c3c02d](https://github.com/onesoft-sudo/sudobot/commit/2c3c02d895c51cc72cc99aa707c8990e993744c9))
-
-
-
-# [5.64.0](https://github.com/onesoft-sudo/sudobot/compare/v5.63.2...v5.64.0) (2023-08-19)
-
-
-### Features
-
-* **commandManager:** command permission overwrites ([15da449](https://github.com/onesoft-sudo/sudobot/commit/15da449c3d9bd6f2fa8d9315ccaefe86e6cacba1))
 
 
 
