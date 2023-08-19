@@ -18,6 +18,7 @@
  */
 
 import { ChatInputCommandInteraction, PermissionsBitField } from "discord.js";
+import JSON5 from "json5";
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 import { ChatInputCommandContext } from "../../services/CommandManager";
 import { generateEmbed } from "../../utils/embed";
@@ -36,7 +37,7 @@ export default class EmbedSchemaCommand extends Command {
             return;
         }
 
-        const json = JSON.stringify(embed, null, 4);
+        const json = JSON5.stringify(embed, null, 4);
 
         return {
             __reply: true,
