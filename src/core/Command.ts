@@ -249,6 +249,10 @@ export default abstract class Command {
                 }
             }
 
+            const memberBotPermissions = this.client.permissionManager.getMemberPermissions(member);
+            const memberRequiredPermissions = new PermissionsBitField(permissions).toArray();
+            const mode = this.client.configManager.config[message.guildId!]?.permissions?.mode;
+
             if (this.permissionMode === "and") {
                 for (const permission of permissions) {
                     if (!member.permissions.has(permission, true)) {
@@ -291,12 +295,7 @@ export default abstract class Command {
                         }
                     }
 
-                    const mode = this.client.configManager.config[message.guildId!]?.permissions?.mode;
-
                     if (mode === "advanced" || mode === "levels") {
-                        const memberBotPermissions = this.client.permissionManager.getMemberPermissions(member);
-                        const memberRequiredPermissions = new PermissionsBitField(permissions).toArray();
-
                         for (const memberRequiredPermission of memberRequiredPermissions) {
                             if (memberBotPermissions.has(memberRequiredPermission)) {
                                 break orMode;
@@ -311,6 +310,80 @@ export default abstract class Command {
 
                     return;
                 }
+
+            const permissionOverwrite = this.client.commandManager.permissionOverwrites.get(
+                `${message.guildId!}____${this.name}`
+            );
+
+            errorRootBlock: if (permissionOverwrite) {
+                permissionOverwriteIfBlock: {
+                    if (
+                        permissionOverwrite.requiredUsers.length > 0 &&
+                        !permissionOverwrite.requiredUsers.includes(member.user.id)
+                    ) {
+                        break permissionOverwriteIfBlock;
+                    }
+
+                    if (mode === "levels" && permissionOverwrite.requiredLevel !== null) {
+                        const level = this.client.permissionManager.getMemberPermissionLevel(member);
+
+                        if (level < permissionOverwrite.requiredLevel) {
+                            break permissionOverwriteIfBlock;
+                        }
+                    }
+
+                    if (permissionOverwrite.requiredPermissions.length > 0) {
+                        const requiredPermissions = permissionOverwrite.requiredPermissions as PermissionResolvable[];
+
+                        if (permissionOverwrite.requiredPermissionMode === "OR") {
+                            let found = false;
+
+                            for (const permission of requiredPermissions) {
+                                if (member.permissions.has(permission, true)) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+
+                            if (!found) {
+                                break permissionOverwriteIfBlock;
+                            }
+                        } else {
+                            if (!member.permissions.has(requiredPermissions, true)) {
+                                break permissionOverwriteIfBlock;
+                            }
+                        }
+                    }
+
+                    if (
+                        permissionOverwrite.requiredRoles.length > 0 &&
+                        !member.roles.cache.hasAll(...permissionOverwrite.requiredRoles)
+                    ) {
+                        break permissionOverwriteIfBlock;
+                    }
+
+                    if (
+                        permissionOverwrite.requiredChannels.length > 0 &&
+                        !permissionOverwrite.requiredChannels.includes(message.channelId!)
+                    ) {
+                        await message.reply({
+                            content: `${this.emoji("error")} This command is disabled in this channel.`,
+                            ephemeral: true
+                        });
+
+                        return;
+                    }
+
+                    break errorRootBlock;
+                }
+
+                await message.reply({
+                    content: `${this.emoji("error")} You don't have enough permissions to run this command.`,
+                    ephemeral: true
+                });
+
+                return;
+            }
         }
 
         if (context.isLegacy) {

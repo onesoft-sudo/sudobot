@@ -17,9 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ChatInputCommandInteraction, ContextMenuCommandInteraction, Message } from "discord.js";
+import { CommandPermissionOverwrites } from "@prisma/client";
+import { ChatInputCommandInteraction, ContextMenuCommandInteraction, Message, Snowflake } from "discord.js";
 import Command, { CommandMessage, ValidationRuleParsedArgs } from "../core/Command";
 import Service from "../core/Service";
+import { GatewayEventListener } from "../decorators/GatewayEventListener";
+import { HasEventListeners } from "../types/HasEventListeners";
 import { log, logError, logWarn } from "../utils/logger";
 import { GuildConfig } from "./ConfigManager";
 
@@ -60,7 +63,24 @@ export interface ContextMenuCommandContext extends CommandContext {
     commandName: string;
 }
 
-export default class CommandManager extends Service {
+export default class CommandManager extends Service implements HasEventListeners {
+    readonly permissionOverwrites = new Map<`${Snowflake}____${string}`, CommandPermissionOverwrites>();
+
+    @GatewayEventListener("ready")
+    async onReady() {
+        log("Syncing command permission overwrites...");
+
+        const permissionOverwrites = await this.client.prisma.commandPermissionOverwrites.findMany();
+
+        for (const permissionOverwrite of permissionOverwrites) {
+            for (const command of permissionOverwrite.commands) {
+                this.permissionOverwrites.set(`${permissionOverwrite.guildId}____${command}`, permissionOverwrite);
+            }
+        }
+
+        log("Successfully synced command permission overwrites");
+    }
+
     public async runCommandFromMessage(message: Message, checkOnly = false) {
         if (!message.content) return;
 
