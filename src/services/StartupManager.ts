@@ -97,8 +97,8 @@ export default class StartupManager extends Service implements HasEventListeners
         this.client.user?.setPresence({
             activities: [
                 {
-                    name: presence?.name ?? "over the server",
-                    type: ActivityType[presence?.type ?? "Watching"],
+                    name: presence?.name ?? "Moderating the server",
+                    type: ActivityType[presence?.type ?? "Custom"],
                     url: presence?.url
                 }
             ],
