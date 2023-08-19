@@ -1,3 +1,12 @@
+# [5.67.0](https://github.com/onesoft-sudo/sudobot/compare/v5.66.0...v5.67.0) (2023-08-19)
+
+
+### Features
+
+* update bulk delete message JSON file data style ([9c2a269](https://github.com/onesoft-sudo/sudobot/commit/9c2a269f49b074a6f0cf0d7356751c1a1d07c285))
+
+
+
 # [5.66.0](https://github.com/onesoft-sudo/sudobot/compare/v5.65.0...v5.66.0) (2023-08-19)
 
 
@@ -34,15 +43,6 @@
 ### Bug Fixes
 
 * **mention_prefix:** some commands misbehave ([b765009](https://github.com/onesoft-sudo/sudobot/commit/b765009c9653295bf263f6970c49e75c97dbb767))
-
-
-
-## [5.63.1](https://github.com/onesoft-sudo/sudobot/compare/v5.63.0...v5.63.1) (2023-08-18)
-
-
-### Bug Fixes
-
-* invalid queue args ([545a6ac](https://github.com/onesoft-sudo/sudobot/commit/545a6acfa568975d0fb598d1a37524b7d9072f26))
 
 
 
