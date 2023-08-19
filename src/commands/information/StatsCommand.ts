@@ -20,9 +20,9 @@
 import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class StatsCommand extends Command {
-    public readonly name = "stats";
+    public readonly name = "statistics";
     public readonly validationRules: ValidationRule[] = [];
-    public readonly permissions = [];
+    public readonly aliases = ["stats"];
 
     public readonly description = "Show server statistics.";
 
