@@ -12,7 +12,7 @@ These are the requirements to host SudoBot:
 
 * A Discord API Application token (Go to [Discord Developer Portal](https://discord.com/developers/applications) to obtain a token)
 * [Node.js](https://nodejs.org) version 18 or higher
-* A MySQL or PostgreSQL database (If you're looking for a free PostgresSQL hosting service, check out [Supabase](https://supabase.com))
+* A MySQL or PostgreSQL database (If you're looking for a free PostgreSQL hosting service, check out [Supabase](https://supabase.com))
 
 Additionally, you can also set these up if you want to use them:
 
@@ -89,7 +89,7 @@ As we've said [before](getting-started.md#configuration-and-the-environment-vari
 If you want a free PostgreSQL hosting service, check out [Supabase](https://supabase.com/). It's easy to set up, and completely free of cost.
 {% endhint %}
 
-Your database URL should look like this if you're using PostgresSQL:
+Your database URL should look like this if you're using PostgreSQL:
 
 ```
 postgresql://username:password@hostname:port/dbname
@@ -119,7 +119,7 @@ Now it's time to configure the bot. Now, SudoBot comes with the config files bun
 
 Remove everything inside of the file, and just put an empty object `{}` inside of that file and save it if you don't want to configure anything and just want the default settings. Or,
 
-Manually set the settings inside of the file. If you're following along this documentation and have ran the script `generate-config-schema.ts` (previously specified [here](getting-started.md#cloning-the-project-and-setting-up)), then when you edit the file, you can remove everything inside of the file, and put the following JSON object inside of that file:
+Manually set the settings inside of the file. If you're following along this documentation and have run the script `generate-config-schema.ts` (previously specified [here](getting-started.md#cloning-the-project-and-setting-up)), then when you edit the file, you can remove everything inside of the file, and put the following JSON object inside of that file:
 
 ```
 {

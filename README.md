@@ -35,9 +35,12 @@ Please look at [this page](https://docs.sudobot.onesoftnet.eu.org/getting-starte
 
 ### Contributors
 
-Thanks to all the contributors!
+Thanks to all the active and indirect contributors!
+
 
 * [Ar Rakin](https://github.com/virtual-designer)
+* Hana (A Discord User)
+* [Kars](https://github.com/kars1996) (Contributed by giving away a domain to us)
 * [killerclaws12](https://github.com/killerclaws12)
 
 ### Support
@@ -49,5 +52,7 @@ Thanks to all the contributors!
  
 - **Download Emojis**: https://www.onesoftnet.eu.org/downloads/sudo/emojis/ <br />
   Note that not all emojis are present there. You'll find the missing one's at [emoji.gg](https://emoji.gg).
+- **Dashboard**: https://github.com/onesoft-sudo/sudobot <br />
+  The dashboard of SudoBot. Note that the dashboard is not complete yet.
 
 Copyright © 2022-2023 OSN and all the contributors of SudoBot.
