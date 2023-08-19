@@ -18,6 +18,7 @@
  */
 
 import fs, { writeFile } from "fs/promises";
+import JSON5 from "json5";
 import { z } from "zod";
 import Service from "../core/Service";
 import { GuildConfigSchema } from "../types/GuildConfigSchema";
@@ -51,7 +52,7 @@ export default class ConfigManager extends Service {
         log(`Loading guild configuration from file: ${this.configPath}`);
         const configFileContents = await fs.readFile(this.configPath, { encoding: "utf-8" });
 
-        const configJSON = JSON.parse(configFileContents);
+        const configJSON = JSON5.parse(configFileContents);
 
         if ("$schema" in configJSON) {
             this.configSchemaPath = configJSON.$schema;
@@ -59,7 +60,7 @@ export default class ConfigManager extends Service {
         }
 
         this.config = GuildConfigContainerSchema.parse(configJSON);
-        this.systemConfig = SystemConfigSchema.parse(JSON.parse(systemConfigFileContents));
+        this.systemConfig = SystemConfigSchema.parse(JSON5.parse(systemConfigFileContents));
         logInfo("Successfully loaded the configuration files");
     }
 
@@ -67,7 +68,7 @@ export default class ConfigManager extends Service {
         if (guild) {
             log(`Writing guild configuration to file: ${this.configPath}`);
 
-            const json = JSON.stringify(
+            const json = JSON5.stringify(
                 {
                     $schema: this.configSchemaPath,
                     ...this.config
@@ -82,7 +83,7 @@ export default class ConfigManager extends Service {
         if (system) {
             log(`Writing system configuration to file: ${this.systemConfigPath}`);
 
-            const json = JSON.stringify(this.systemConfig, null, 4);
+            const json = JSON5.stringify(this.systemConfig, null, 4);
             await writeFile(this.systemConfigPath, json, { encoding: "utf-8" });
         }
 
