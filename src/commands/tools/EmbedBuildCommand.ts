@@ -18,6 +18,7 @@
  */
 
 import { EmbedBuilder, Message, PermissionsBitField } from "discord.js";
+import JSON5 from "json5";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { logError } from "../../utils/logger";
 
@@ -36,7 +37,7 @@ export default class EmbedBuildCommand extends Command {
         let json: EmbedBuilder | undefined = undefined;
 
         try {
-            json = JSON.parse(schema);
+            json = JSON5.parse(schema);
         } catch (e) {
             logError(e);
             await this.error(message, "Invalid JSON schema provided!");
