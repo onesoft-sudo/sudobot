@@ -1,3 +1,12 @@
+# [5.65.0](https://github.com/onesoft-sudo/sudobot/compare/v5.64.0...v5.65.0) (2023-08-19)
+
+
+### Features
+
+* **config:** use JSON5 to load the config files ([2c3c02d](https://github.com/onesoft-sudo/sudobot/commit/2c3c02d895c51cc72cc99aa707c8990e993744c9))
+
+
+
 # [5.64.0](https://github.com/onesoft-sudo/sudobot/compare/v5.63.2...v5.64.0) (2023-08-19)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **infraction_channels:** expiry time ([a35af35](https://github.com/onesoft-sudo/sudobot/commit/a35af355fe51c849e2ff2d96a1efa0e7f4fc0871))
-
-
-
-## [5.62.1](https://github.com/onesoft-sudo/sudobot/compare/v5.62.0...v5.62.1) (2023-08-18)
-
-
-### Bug Fixes
-
-* remove null outputs ([919a679](https://github.com/onesoft-sudo/sudobot/commit/919a67946c289456ff60dc65caeb0be5fb238a7a))
 
 
 
