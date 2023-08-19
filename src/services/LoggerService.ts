@@ -1083,7 +1083,21 @@ export default class LoggerService extends Service {
             authorColor: m.member?.roles.highest.color,
             authorRoleIcon: m.member?.roles.highest.iconURL() ?? undefined,
             authorRoleName: m.member?.roles.highest.name ?? undefined,
-            authorAvatarURL: m.author.displayAvatarURL()
+            authorAvatarURL: m.author.displayAvatarURL(),
+            mentions: {
+                everyone: m.mentions.everyone,
+                users: m.mentions.users.map(({ id, username }) => ({
+                    id,
+                    username
+                })),
+                members:
+                    m.mentions.members?.map(({ nickname, user }) => ({
+                        nickname: nickname ?? user.username,
+                        id: user.id
+                    })) ?? [],
+                channels: (m.mentions.channels as Collection<string, GuildChannel>).map(({ id, name }) => ({ id, name })),
+                roles: m.mentions.roles.map(({ id, name }) => ({ id, name }))
+            }
         }));
 
         return Buffer.from(
