@@ -1,3 +1,15 @@
+# [5.66.0](https://github.com/onesoft-sudo/sudobot/compare/v5.65.0...v5.66.0) (2023-08-19)
+
+
+### Features
+
+* **commands:** use JSON5 to parse JSON strings in EmbedBuildCommand ([04dc22f](https://github.com/onesoft-sudo/sudobot/commit/04dc22fc85a0b59d90890f8662f704f42cc1bb06))
+* **commands:** use JSON5 to parse JSON strings in EmbedSchemaCommand ([034a3e4](https://github.com/onesoft-sudo/sudobot/commit/034a3e4c1ed7bb97a8f1f17634d9ff00427b7417))
+* **commands:** use JSON5 to parse JSON strings in TranslateCommand ([78e3e1e](https://github.com/onesoft-sudo/sudobot/commit/78e3e1e1cbd273a873f688e13d2fcfb7c0d842f0))
+* **welcomer:** use JSON5 to parse JSON strings ([fa993d0](https://github.com/onesoft-sudo/sudobot/commit/fa993d02781df3b683b1879af417f3714885da49))
+
+
+
 # [5.65.0](https://github.com/onesoft-sudo/sudobot/compare/v5.64.0...v5.65.0) (2023-08-19)
 
 
@@ -31,15 +43,6 @@
 ### Bug Fixes
 
 * invalid queue args ([545a6ac](https://github.com/onesoft-sudo/sudobot/commit/545a6acfa568975d0fb598d1a37524b7d9072f26))
-
-
-
-# [5.63.0](https://github.com/onesoft-sudo/sudobot/compare/v5.62.1...v5.63.0) (2023-08-18)
-
-
-### Features
-
-* **infraction_channels:** expiry time ([a35af35](https://github.com/onesoft-sudo/sudobot/commit/a35af355fe51c849e2ff2d96a1efa0e7f4fc0871))
 
 
 
