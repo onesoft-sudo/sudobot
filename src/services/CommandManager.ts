@@ -119,6 +119,11 @@ export default class CommandManager extends Service implements HasEventListeners
             return await this.client.snippetManager.onMessageCreate(message, commandName);
         }
 
+        if (!command.supportsLegacy) {
+            log("This command does not support legacy mode");
+            return;
+        }
+
         command
             .run(
                 message,
@@ -166,6 +171,11 @@ export default class CommandManager extends Service implements HasEventListeners
 
         if (!command) {
             return false;
+        }
+
+        if (!command.supportsInteractions) {
+            log("This command does not support application command mode");
+            return;
         }
 
         command
