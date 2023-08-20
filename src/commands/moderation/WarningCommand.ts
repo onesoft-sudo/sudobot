@@ -26,6 +26,7 @@ export default class WarningCommand extends Command {
     public readonly permissions = [PermissionsBitField.Flags.ManageMessages];
     public readonly aliases = ["warnings", "warns"];
     public readonly supportsInteractions: boolean = false;
+    public readonly description = "Deprecated. Please use `infraction` command instead.";
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         return {
