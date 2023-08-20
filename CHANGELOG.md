@@ -1,3 +1,12 @@
+## [5.69.1](https://github.com/onesoft-sudo/sudobot/compare/v5.69.0...v5.69.1) (2023-08-20)
+
+
+### Bug Fixes
+
+* **commands:** legacy and application command mode ([afb706c](https://github.com/onesoft-sudo/sudobot/commit/afb706cf8da65d33375906efeb707c83b0218899))
+
+
+
 # [5.69.0](https://github.com/onesoft-sudo/sudobot/compare/v5.68.0...v5.69.0) (2023-08-19)
 
 
@@ -34,15 +43,6 @@
 * **commands:** use JSON5 to parse JSON strings in EmbedSchemaCommand ([034a3e4](https://github.com/onesoft-sudo/sudobot/commit/034a3e4c1ed7bb97a8f1f17634d9ff00427b7417))
 * **commands:** use JSON5 to parse JSON strings in TranslateCommand ([78e3e1e](https://github.com/onesoft-sudo/sudobot/commit/78e3e1e1cbd273a873f688e13d2fcfb7c0d842f0))
 * **welcomer:** use JSON5 to parse JSON strings ([fa993d0](https://github.com/onesoft-sudo/sudobot/commit/fa993d02781df3b683b1879af417f3714885da49))
-
-
-
-# [5.65.0](https://github.com/onesoft-sudo/sudobot/compare/v5.64.0...v5.65.0) (2023-08-19)
-
-
-### Features
-
-* **config:** use JSON5 to load the config files ([2c3c02d](https://github.com/onesoft-sudo/sudobot/commit/2c3c02d895c51cc72cc99aa707c8990e993744c9))
 
 
 
