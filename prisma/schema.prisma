@@ -189,3 +189,19 @@ model CommandPermissionOverwrites {
 
     @@map("command_permission_overwrites")
 }
+
+model Ballot {
+    id        Int      @id @default(autoincrement())
+    guildId   String
+    channelId String
+    messageId String
+    userId    String
+    content   String
+    files     String[] @default([])
+    upvotes   Int      @default(0)
+    downvotes Int      @default(0)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    @@map("ballots")
+}
