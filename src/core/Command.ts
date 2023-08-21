@@ -41,8 +41,9 @@ import {
     User
 } from "discord.js";
 import { ChatInputCommandContext, ContextMenuCommandContext, LegacyCommandContext } from "../services/CommandManager";
+import { stringToTimeInterval } from "../utils/datetime";
 import { log, logError } from "../utils/logger";
-import { getEmoji, isSnowflake, stringToTimeInterval } from "../utils/utils";
+import { getEmoji, isSnowflake } from "../utils/utils";
 import Client from "./Client";
 
 export type CommandMessage = Message<boolean> | ChatInputCommandInteraction<CacheType> | ContextMenuCommandInteraction;

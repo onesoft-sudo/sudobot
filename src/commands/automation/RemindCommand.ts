@@ -22,7 +22,7 @@ import { SlashCommandBuilder } from "discord.js";
 import path from "path";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import QueueEntry from "../../utils/QueueEntry";
-import { stringToTimeInterval } from "../../utils/utils";
+import { stringToTimeInterval } from "../../utils/datetime";
 
 export default class RemindCommand extends Command {
     public readonly name = "remind";
@@ -54,7 +54,9 @@ export default class RemindCommand extends Command {
         .addStringOption(option => option.setName("message").setDescription("The reminder message"));
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
-        let timeInterval = context.isLegacy ? context.parsedNamedArgs.time_interval : context.options.getString("time_interval", true);
+        let timeInterval = context.isLegacy
+            ? context.parsedNamedArgs.time_interval
+            : context.options.getString("time_interval", true);
 
         if (!context.isLegacy) {
             const { error, result } = stringToTimeInterval(timeInterval, {
@@ -69,7 +71,9 @@ export default class RemindCommand extends Command {
             timeInterval = result;
         }
 
-        const reminderMessage: string | undefined = context.isLegacy ? context.parsedNamedArgs.message : context.options.getString("message");
+        const reminderMessage: string | undefined = context.isLegacy
+            ? context.parsedNamedArgs.message
+            : context.options.getString("message");
 
         await this.client.queueManager.add(
             new QueueEntry({
@@ -84,6 +88,9 @@ export default class RemindCommand extends Command {
             })
         );
 
-        await this.success(message, `The system will remind you in ${formatDistanceToNowStrict(new Date(Date.now() - timeInterval))}.`);
+        await this.success(
+            message,
+            `The system will remind you in ${formatDistanceToNowStrict(new Date(Date.now() - timeInterval))}.`
+        );
     }
 }

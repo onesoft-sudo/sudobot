@@ -20,8 +20,9 @@
 import { formatDistanceToNow } from "date-fns";
 import { GuildMember, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { stringToTimeInterval } from "../../utils/datetime";
 import { logError } from "../../utils/logger";
-import { createModerationEmbed, stringToTimeInterval } from "../../utils/utils";
+import { createModerationEmbed } from "../../utils/utils";
 
 export default class SoftBanCommand extends Command {
     public readonly name = "softban";
@@ -67,10 +68,14 @@ export default class SoftBanCommand extends Command {
         .addUserOption(option => option.setName("user").setDescription("The user").setRequired(true))
         .addStringOption(option => option.setName("reason").setDescription("The reason for softbanning this user"))
         .addStringOption(option =>
-            option.setName("deletion_timeframe").setDescription("The message deletion timeframe, defaults to 7 days (must be in range 0-7 days)")
+            option
+                .setName("deletion_timeframe")
+                .setDescription("The message deletion timeframe, defaults to 7 days (must be in range 0-7 days)")
         )
         .addBooleanOption(option =>
-            option.setName("silent").setDescription("Specify if the system should not notify the user about this action. Defaults to false")
+            option
+                .setName("silent")
+                .setDescription("Specify if the system should not notify the user about this action. Defaults to false")
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
@@ -107,7 +112,9 @@ export default class SoftBanCommand extends Command {
             if (result < 0 || result > 604800) {
                 await this.deferredReply(
                     message,
-                    `${this.emoji("error")} The message deletion range must be a time interval from 0 second to 604800 seconds (7 days).`
+                    `${this.emoji(
+                        "error"
+                    )} The message deletion range must be a time interval from 0 second to 604800 seconds (7 days).`
                 );
                 return;
             }

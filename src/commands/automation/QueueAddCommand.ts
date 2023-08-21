@@ -22,7 +22,7 @@ import { ChatInputCommandInteraction, EmbedBuilder, Message, PermissionsBitField
 import path from "path";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import QueueEntry from "../../utils/QueueEntry";
-import { stringToTimeInterval } from "../../utils/utils";
+import { stringToTimeInterval } from "../../utils/datetime";
 
 export default class QueueAddCommand extends Command {
     public readonly name = "queue__add";

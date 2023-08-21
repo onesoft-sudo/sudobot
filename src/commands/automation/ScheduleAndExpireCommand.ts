@@ -21,8 +21,8 @@ import { Message, PermissionsBitField, SlashCommandBuilder, TextBasedChannel } f
 import path from "path";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import QueueEntry from "../../utils/QueueEntry";
+import { stringToTimeInterval } from "../../utils/datetime";
 import { logError } from "../../utils/logger";
-import { stringToTimeInterval } from "../../utils/utils";
 
 export default class ScheduleAndExpireCommand extends Command {
     public readonly name = "scheduleandexpire";

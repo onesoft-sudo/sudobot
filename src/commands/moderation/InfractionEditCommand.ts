@@ -21,7 +21,7 @@ import { formatDistanceToNowStrict } from "date-fns";
 import { ChatInputCommandInteraction, EmbedBuilder, PermissionsBitField } from "discord.js";
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 import { ChatInputCommandContext } from "../../services/CommandManager";
-import { stringToTimeInterval } from "../../utils/utils";
+import { stringToTimeInterval } from "../../utils/datetime";
 
 export default class InfractionEditCommand extends Command {
     public readonly name = "infraction__edit";
@@ -50,7 +50,9 @@ export default class InfractionEditCommand extends Command {
         const silent = interaction.options.getBoolean("silent") ?? true;
 
         if (newDurationSeconds && newDurationSeconds.error) {
-            await interaction.editReply(`${this.emoji("error")} ${newDurationSeconds.error} provided in the \`new_duration\` field`);
+            await interaction.editReply(
+                `${this.emoji("error")} ${newDurationSeconds.error} provided in the \`new_duration\` field`
+            );
             return;
         }
 
@@ -136,7 +138,9 @@ export default class InfractionEditCommand extends Command {
         await this.client.prisma.infraction.update({
             data: {
                 reason: newReason ?? undefined,
-                expiresAt: newDurationSeconds ? new Date(infraction.createdAt.getTime() + newDurationSeconds.result * 1000) : undefined
+                expiresAt: newDurationSeconds
+                    ? new Date(infraction.createdAt.getTime() + newDurationSeconds.result * 1000)
+                    : undefined
             },
             where: { id }
         });
@@ -160,7 +164,9 @@ export default class InfractionEditCommand extends Command {
                             ? [
                                   {
                                       name: "New Duration",
-                                      value: formatDistanceToNowStrict(new Date(infraction.createdAt.getTime() + newDurationSeconds.result * 1000))
+                                      value: formatDistanceToNowStrict(
+                                          new Date(infraction.createdAt.getTime() + newDurationSeconds.result * 1000)
+                                      )
                                   }
                               ]
                             : []),

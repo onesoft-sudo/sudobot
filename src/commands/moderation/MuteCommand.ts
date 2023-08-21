@@ -27,7 +27,8 @@ import {
     escapeMarkdown
 } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { createModerationEmbed, stringToTimeInterval } from "../../utils/utils";
+import { stringToTimeInterval } from "../../utils/datetime";
+import { createModerationEmbed } from "../../utils/utils";
 
 export default class MuteCommand extends Command {
     public readonly name = "mute";

@@ -20,8 +20,9 @@
 import { formatDistanceToNow } from "date-fns";
 import { ChatInputCommandInteraction, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { stringToTimeInterval } from "../../utils/datetime";
 import { protectSystemAdminsFromCommands } from "../../utils/troll";
-import { createModerationEmbed, stringToTimeInterval } from "../../utils/utils";
+import { createModerationEmbed } from "../../utils/utils";
 
 export default class FakeBanCommand extends Command {
     public readonly name = "fakeban";
@@ -62,9 +63,13 @@ export default class FakeBanCommand extends Command {
     public readonly slashCommandBuilder = new SlashCommandBuilder()
         .addUserOption(option => option.setName("user").setDescription("The user").setRequired(true))
         .addStringOption(option => option.setName("reason").setDescription("The reason for banning this user"))
-        .addStringOption(option => option.setName("deletion_timeframe").setDescription("The message deletion timeframe (must be in range 0-604800s)"))
+        .addStringOption(option =>
+            option.setName("deletion_timeframe").setDescription("The message deletion timeframe (must be in range 0-604800s)")
+        )
         .addBooleanOption(option =>
-            option.setName("silent").setDescription("Specify if the system should not notify the user about this action. Defaults to false")
+            option
+                .setName("silent")
+                .setDescription("Specify if the system should not notify the user about this action. Defaults to false")
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
@@ -76,7 +81,11 @@ export default class FakeBanCommand extends Command {
             return;
         }
 
-        let deleteMessageSeconds = !context.isLegacy ? undefined : typeof context.parsedArgs[1] === "number" ? context.parsedArgs[1] : undefined;
+        let deleteMessageSeconds = !context.isLegacy
+            ? undefined
+            : typeof context.parsedArgs[1] === "number"
+            ? context.parsedArgs[1]
+            : undefined;
         const reason = !context.isLegacy
             ? context.options.getString("reason") ?? undefined
             : typeof context.parsedArgs[1] === "string"
@@ -102,7 +111,9 @@ export default class FakeBanCommand extends Command {
             if (result < 0 || result > 604800) {
                 await this.deferredReply(
                     message,
-                    `${this.emoji("error")} The message deletion range must be a time interval from 0 second to 604800 seconds (7 days).`
+                    `${this.emoji(
+                        "error"
+                    )} The message deletion range must be a time interval from 0 second to 604800 seconds (7 days).`
                 );
                 return;
             }

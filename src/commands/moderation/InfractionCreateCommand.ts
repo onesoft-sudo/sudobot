@@ -21,8 +21,8 @@ import { InfractionType } from "@prisma/client";
 import { ChatInputCommandInteraction, GuildMember, PermissionsBitField } from "discord.js";
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 import { ChatInputCommandContext } from "../../services/CommandManager";
+import { stringToTimeInterval } from "../../utils/datetime";
 import { logError } from "../../utils/logger";
-import { stringToTimeInterval } from "../../utils/utils";
 
 export default class InfractionCreateCommand extends Command {
     public readonly name = "infraction__create";
@@ -82,7 +82,9 @@ export default class InfractionCreateCommand extends Command {
         });
 
         await interaction.editReply({
-            embeds: [this.client.infractionManager.generateInfractionDetailsEmbed(user, infraction).setTitle("Infraction Created")]
+            embeds: [
+                this.client.infractionManager.generateInfractionDetailsEmbed(user, infraction).setTitle("Infraction Created")
+            ]
         });
     }
 }

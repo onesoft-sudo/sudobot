@@ -19,8 +19,9 @@
 
 import { GuildMember, PermissionsBitField, SlashCommandBuilder, User } from "discord.js";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { stringToTimeInterval } from "../../utils/datetime";
 import { log, logError } from "../../utils/logger";
-import { isSnowflake, stringToTimeInterval } from "../../utils/utils";
+import { isSnowflake } from "../../utils/utils";
 
 export default class MassBanCommand extends Command {
     public readonly name = "massban";
@@ -38,7 +39,9 @@ export default class MassBanCommand extends Command {
     public readonly slashCommandBuilder = new SlashCommandBuilder()
         .addUserOption(option => option.setName("users").setDescription("The users to ban").setRequired(true))
         .addStringOption(option => option.setName("reason").setDescription("The reason for taking this action"))
-        .addStringOption(option => option.setName("deletion_timeframe").setDescription("The message deletion timeframe (must be in range 0-604800)"));
+        .addStringOption(option =>
+            option.setName("deletion_timeframe").setDescription("The message deletion timeframe (must be in range 0-604800)")
+        );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (context.isLegacy && context.args[0] === undefined) {
@@ -105,7 +108,9 @@ export default class MassBanCommand extends Command {
             if (result < 0 || result > 604800) {
                 await this.deferredReply(
                     message,
-                    `${this.emoji("error")} The message deletion range must be a time interval from 0 second to 604800 seconds (7 days).`
+                    `${this.emoji(
+                        "error"
+                    )} The message deletion range must be a time interval from 0 second to 604800 seconds (7 days).`
                 );
                 return;
             }
@@ -161,9 +166,11 @@ export default class MassBanCommand extends Command {
 
                 await reply
                     .edit({
-                        content: `${this.emoji(completedUsers.length === users.length && completedIn ? "check" : "loading")} Banned ${
-                            completedUsers.length
-                        } out of ${users.length} users (${completedIn ? `Completed in ${completedIn}s, ` : ""}${skippedUsers.length} failures)`
+                        content: `${this.emoji(
+                            completedUsers.length === users.length && completedIn ? "check" : "loading"
+                        )} Banned ${completedUsers.length} out of ${users.length} users (${
+                            completedIn ? `Completed in ${completedIn}s, ` : ""
+                        }${skippedUsers.length} failures)`
                     })
                     .catch(logError);
             }

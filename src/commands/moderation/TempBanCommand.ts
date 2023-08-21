@@ -20,8 +20,9 @@
 import { formatDistanceToNow, formatDistanceToNowStrict } from "date-fns";
 import { GuildMember, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { stringToTimeInterval } from "../../utils/datetime";
 import { log, logError } from "../../utils/logger";
-import { createModerationEmbed, stringToTimeInterval } from "../../utils/utils";
+import { createModerationEmbed } from "../../utils/utils";
 
 export default class TempBanCommand extends Command {
     public readonly name = "tempban";
@@ -64,7 +65,8 @@ export default class TempBanCommand extends Command {
     public readonly permissions = [PermissionsBitField.Flags.BanMembers];
 
     public readonly description = "Temporarily bans a user.";
-    public readonly detailedDescription = "This command temporarily bans a user. They'll be automatically unbanned after the specified duration.";
+    public readonly detailedDescription =
+        "This command temporarily bans a user. They'll be automatically unbanned after the specified duration.";
     public readonly argumentSyntaxes = ["<UserID|UserMention> <duration> [reason]"];
 
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.BanMembers];
@@ -73,9 +75,13 @@ export default class TempBanCommand extends Command {
         .addUserOption(option => option.setName("user").setDescription("The user").setRequired(true))
         .addStringOption(option => option.setName("reason").setDescription("The reason for banning this user"))
         .addStringOption(option => option.setName("duration").setDescription("Ban duration"))
-        .addStringOption(option => option.setName("deletion_timeframe").setDescription("The message deletion timeframe (must be in range 0-604800)"))
+        .addStringOption(option =>
+            option.setName("deletion_timeframe").setDescription("The message deletion timeframe (must be in range 0-604800)")
+        )
         .addBooleanOption(option =>
-            option.setName("silent").setDescription("Specify if the system should not notify the user about this action. Defaults to false")
+            option
+                .setName("silent")
+                .setDescription("Specify if the system should not notify the user about this action. Defaults to false")
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
@@ -131,7 +137,9 @@ export default class TempBanCommand extends Command {
             if (result < 0 || result > 604800) {
                 await this.deferredReply(
                     message,
-                    `${this.emoji("error")} The message deletion range must be a time interval from 0 second to 604800 seconds (7 days).`
+                    `${this.emoji(
+                        "error"
+                    )} The message deletion range must be a time interval from 0 second to 604800 seconds (7 days).`
                 );
                 return;
             }
