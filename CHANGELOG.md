@@ -1,3 +1,13 @@
+## [5.72.1](https://github.com/onesoft-sudo/sudobot/compare/v5.72.0...v5.72.1) (2023-08-21)
+
+
+### Bug Fixes
+
+* ballot create command does not store attachments ([7161cd2](https://github.com/onesoft-sudo/sudobot/commit/7161cd243884255370b642099f6ff1b9a74cf06b))
+* store ballot attribute anonymous in db ([8263b5d](https://github.com/onesoft-sudo/sudobot/commit/8263b5d2ed377b4f1af36719353841e09f1ecb1a))
+
+
+
 # [5.72.0](https://github.com/onesoft-sudo/sudobot/compare/v5.71.0...v5.72.0) (2023-08-21)
 
 
@@ -39,15 +49,6 @@
 ### Bug Fixes
 
 * **commands:** legacy and application command mode ([afb706c](https://github.com/onesoft-sudo/sudobot/commit/afb706cf8da65d33375906efeb707c83b0218899))
-
-
-
-# [5.69.0](https://github.com/onesoft-sudo/sudobot/compare/v5.68.0...v5.69.0) (2023-08-19)
-
-
-### Features
-
-* **richpresence:** support custom statuses ([04fb0ce](https://github.com/onesoft-sudo/sudobot/commit/04fb0ce44c4a597d14252d139ea656f8496892a5))
 
 
 
