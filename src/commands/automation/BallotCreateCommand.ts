@@ -71,7 +71,14 @@ export default class BallotCreateCommand extends Command {
                             text: `0 Votes • React to vote!`
                         }
                     }
-                ]
+                ],
+                files:
+                    message instanceof Message
+                        ? message.attachments.map(({ name, proxyURL }) => ({
+                              name,
+                              attachment: proxyURL
+                          }))
+                        : undefined
             });
 
             ballotMessage.react(this.emoji("ArrowTop")).catch(logError);
@@ -84,7 +91,8 @@ export default class BallotCreateCommand extends Command {
                     userId: message.member!.user.id,
                     channelId: channel.id,
                     messageId: ballotMessage.id,
-                    anonymous
+                    anonymous,
+                    files: message instanceof Message ? [...message.attachments.map(a => a.proxyURL).values()] : []
                 });
 
                 await this.success(message, `The ballot/poll has been created successfully.\nID: \`${ballot.id}\``);
