@@ -37,3 +37,11 @@ export function stringToTimeInterval(input: string, { milliseconds = false } = {
 
     return { error: undefined, result: seconds * (milliseconds ? 1000 : 1) };
 }
+
+export function displayDate(date: Date) {
+    return displayTime(date.getTime());
+}
+
+export function displayTime(time: number) {
+    return `<t:${time}:f> (<t:${time}:R>)`;
+}
