@@ -1,3 +1,12 @@
+# [5.76.0](https://github.com/onesoft-sudo/sudobot/compare/v5.75.1...v5.76.0) (2023-08-21)
+
+
+### Features
+
+* **automod:** add file hash filter ([5d5f680](https://github.com/onesoft-sudo/sudobot/commit/5d5f680b874915f8232a536c161e0063e5855209))
+
+
+
 ## [5.75.1](https://github.com/onesoft-sudo/sudobot/compare/v5.75.0...v5.75.1) (2023-08-21)
 
 
@@ -31,21 +40,6 @@
 ### Features
 
 * **commands:** add ballot view command ([0b3e2ce](https://github.com/onesoft-sudo/sudobot/commit/0b3e2ced5022d21a7dba575230dd67ef3b32071c))
-
-
-
-# [5.73.0](https://github.com/onesoft-sudo/sudobot/compare/v5.72.1...v5.73.0) (2023-08-21)
-
-
-### Bug Fixes
-
-* show better response to the user ([a46d053](https://github.com/onesoft-sudo/sudobot/commit/a46d05319db1cbf6431489a2e4d2dbc18b1bb429))
-* **utils:** displayDate function not working ([f03f24d](https://github.com/onesoft-sudo/sudobot/commit/f03f24d1006238e475ecc934edc97d93f3feab65))
-
-
-### Features
-
-* **utils:** add display date functions ([3a6c914](https://github.com/onesoft-sudo/sudobot/commit/3a6c914ac561be6264fa211da0ed81afc2f1a689))
 
 
 
