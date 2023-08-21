@@ -17,26 +17,35 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ChannelType, User } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { ChannelType, Message, User } from "discord.js";
+import Command, { BasicCommandContext, CommandMessage, CommandReturn } from "../../core/Command";
 import { logError } from "../../utils/logger";
 
 export default class BallotCreateCommand extends Command {
     public readonly name = "ballot__create";
-    public readonly validationRules: ValidationRule[] = [
-        {
-            types: [ArgumentType.StringRest],
-            name: "content",
-            requiredErrorMessage: "Please provide the content to put inside the ballot/poll!",
-            typeErrorMessage: "Invalid content provided"
-        }
-    ];
     public readonly permissions = [];
     public readonly description = "Sends a poll/ballot embed.";
+    public readonly supportsInteractions: boolean = false;
+    public readonly supportsLegacy: boolean = false;
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
+        if (context.isLegacy && context.args[0] === undefined) {
+            await this.error(message, "Please provide the content to put inside the ballot/poll!");
+            return;
+        }
+
         await this.deferIfInteraction(message, { ephemeral: true });
-        const content = context.isLegacy ? context.parsedNamedArgs.content : context.options.getString("content", true);
+
+        const content = context.isLegacy
+            ? (message as Message).content
+                  .substring(this.client.configManager.config[message.guildId!]?.prefix?.length ?? 1)
+                  .trimStart()
+                  .substring(context.argv[0] === "ballot" ? "ballot".length : 0)
+                  .trimStart()
+                  .substring(context.argv[0] === "ballot" ? this.name.replace("ballot__", "").length : context.argv[0].length)
+                  .trim()
+            : context.options.getString("content", true);
+
         const anonymous = (context.isLegacy ? null : context.options.getBoolean("anonymous")) ?? false;
         const channel =
             (context.isLegacy ? null : context.options.getChannel<ChannelType.GuildText>("channel")) ?? message.channel!;

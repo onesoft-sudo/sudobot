@@ -1,0 +1,64 @@
+/**
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2023 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+import { SlashCommandBuilder } from "discord.js";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+
+export default class BallotCommand extends Command {
+    public readonly name = "ballot";
+    public readonly subcommands = ["create", "delete", "edit"];
+    public readonly validationRules: ValidationRule[] = [
+        {
+            types: [ArgumentType.String],
+            requiredErrorMessage: `Please provide a subcommand! The valid commands are: \`${this.subcommands.join("`, `")}\``,
+            typeErrorMessage: "Please provide a valid subcommand!",
+            name: "subcommand"
+        }
+    ];
+    public readonly permissions = [];
+    public readonly aliases = ["poll"];
+    public readonly description = "Create and manage ballots/polls.";
+    public readonly slashCommandBuilder = new SlashCommandBuilder().addSubcommand(subcommand =>
+        subcommand
+            .setName("create")
+            .setDescription("Sends a poll/ballot embed.")
+            .addStringOption(option => option.setName("content").setDescription("The ballot/poll content").setRequired(true))
+            .addBooleanOption(option =>
+                option.setName("anonymous").setDescription("Anonymous mode won't show your name in the ballot. Default is true")
+            )
+            .addChannelOption(option =>
+                option
+                    .setName("channel")
+                    .setDescription("The channel where the message will be sent, defaults to the current channel")
+            )
+    );
+
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
+        const subcommand = context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true);
+        const command = this.client.commands.get(`ballot__${subcommand}`);
+
+        if (!command) {
+            return;
+        }
+
+        if (context.isLegacy) context.args.shift();
+
+        return await command.execute(message, context);
+    }
+}
