@@ -39,9 +39,9 @@ export function stringToTimeInterval(input: string, { milliseconds = false } = {
 }
 
 export function displayDate(date: Date) {
-    return displayTime(date.getTime());
+    return displayTimeSeconds(Math.round(date.getTime() / 1000));
 }
 
-export function displayTime(time: number) {
-    return `<t:${time}:f> (<t:${time}:R>)`;
+export function displayTimeSeconds(seconds: number) {
+    return `<t:${seconds}:f> (<t:${seconds}:R>)`;
 }
