@@ -18,13 +18,159 @@
  */
 
 import { Ballot } from "@prisma/client";
-import { Snowflake } from "discord.js";
+import { CacheType, EmbedBuilder, Interaction, Snowflake } from "discord.js";
 import Service from "../core/Service";
+import { GatewayEventListener } from "../decorators/GatewayEventListener";
+import { HasEventListeners } from "../types/HasEventListeners";
+import { log, logError } from "../utils/logger";
+import { getEmoji } from "../utils/utils";
 
 export const name = "ballotManager";
 
-export default class BallotManager extends Service {
-    protected readonly changedBallots: Ballot[] = [];
+export default class BallotManager extends Service implements HasEventListeners {
+    protected readonly changedBallots = new Map<`${Snowflake}_${Snowflake}_${Snowflake}`, Ballot>();
+    protected readonly recentUsers = new Map<Snowflake, number>();
+    protected readonly cooldown = 3000;
+    protected readonly updateInterval = 10_000;
+    protected timeout: NodeJS.Timeout | null = null;
+    protected updateTimeout: NodeJS.Timeout | null = null;
+
+    @GatewayEventListener("interactionCreate")
+    async onInteractionCreate(interaction: Interaction<CacheType>) {
+        if (!interaction.isButton() || !interaction.customId.startsWith("ballot__")) {
+            return;
+        }
+
+        const [, mode] = interaction.customId.split("__");
+
+        if (mode !== "upvote" && mode !== "downvote") {
+            return;
+        }
+
+        const lastRequest = this.recentUsers.get(interaction.user.id);
+
+        if (lastRequest !== undefined && lastRequest <= this.cooldown) {
+            await interaction.reply({
+                ephemeral: true,
+                content: `${getEmoji(this.client, "error")} Whoa there! Please wait for ${Math.ceil(
+                    (this.cooldown - lastRequest) / 1000
+                )} seconds before trying to upvote/downvote again!`
+            });
+
+            return;
+        }
+
+        this.timeout ??= setTimeout(() => {
+            for (const [userId, lastRequest] of this.recentUsers) {
+                if (lastRequest >= this.cooldown) {
+                    this.recentUsers.delete(userId);
+                }
+            }
+
+            this.timeout = null;
+        }, this.cooldown);
+
+        this.recentUsers.set(interaction.user.id, Date.now());
+
+        await interaction.deferReply({
+            ephemeral: true
+        });
+
+        const key = `${interaction.guildId!}_${interaction.channelId!}_${interaction.message.id}` as const;
+        const ballot =
+            this.changedBallots.get(key) ??
+            (await this.client.prisma.ballot.findFirst({
+                where: {
+                    guildId: interaction.guildId!,
+                    channelId: interaction.channelId!,
+                    messageId: interaction.message.id
+                }
+            }));
+
+        if (!ballot) {
+            return;
+        }
+
+        log("Before", ballot.upvotes, ballot.downvotes);
+        const previousTotalVotes = ballot.upvotes.length - ballot.downvotes.length;
+
+        const added = this.modifyBallotVotes(ballot, interaction.user.id, mode);
+
+        log("After", ballot.upvotes, ballot.downvotes);
+
+        this.changedBallots.set(key, ballot);
+
+        this.updateTimeout ??= setTimeout(() => {
+            for (const [, ballot] of this.changedBallots) {
+                log("Updating ballot: ", ballot.id);
+                this.client.prisma.ballot
+                    .updateMany({
+                        where: {
+                            id: ballot.id,
+                            guildId: interaction.guildId!
+                        },
+                        data: {
+                            upvotes: {
+                                set: ballot.upvotes
+                            },
+                            downvotes: {
+                                set: ballot.downvotes
+                            }
+                        }
+                    })
+                    .catch(logError);
+            }
+
+            this.changedBallots.clear();
+        }, this.updateInterval);
+
+        const newTotalVotes = ballot.upvotes.length - ballot.downvotes.length;
+
+        if (newTotalVotes !== previousTotalVotes) {
+            await interaction.message.edit({
+                embeds: [
+                    new EmbedBuilder(interaction.message.embeds[0].data).setFooter({
+                        text: `${newTotalVotes} Vote${newTotalVotes === 1 ? "" : "s"} • React to vote!`
+                    })
+                ]
+            });
+        }
+
+        await interaction.editReply({
+            content: `Successfully ${
+                added === null ? "changed" : added ? "added" : "removed"
+            } your vote! If you want to remove your vote, press the same button again.`
+        });
+    }
+
+    private modifyBallotVotes(ballot: Ballot, userId: Snowflake, mode: "upvote" | "downvote") {
+        const upvoteIndex = ballot.upvotes.indexOf(userId);
+        const downvoteIndex = ballot.downvotes.indexOf(userId);
+
+        if (upvoteIndex !== -1 && downvoteIndex !== -1) {
+            mode === "upvote" ? ballot.downvotes.splice(downvoteIndex, 1) : ballot.upvotes.splice(upvoteIndex, 1);
+            return false;
+        } else if (upvoteIndex === -1 && downvoteIndex === -1) {
+            mode === "upvote" ? ballot.upvotes.push(userId) : ballot.downvotes.push(userId);
+            return true;
+        } else {
+            if (mode === "upvote") {
+                upvoteIndex === -1 ? ballot.upvotes.push(userId) : ballot.upvotes.splice(upvoteIndex, 1);
+                downvoteIndex === -1 ? null : ballot.downvotes.splice(downvoteIndex, 1);
+            } else {
+                downvoteIndex === -1 ? ballot.downvotes.push(userId) : ballot.downvotes.splice(downvoteIndex, 1);
+                upvoteIndex === -1 ? null : ballot.upvotes.splice(upvoteIndex, 1);
+            }
+
+            return mode === "upvote"
+                ? downvoteIndex !== -1
+                    ? null
+                    : upvoteIndex === -1
+                : upvoteIndex !== -1
+                ? null
+                : downvoteIndex === -1;
+        }
+    }
 
     create({
         content,
