@@ -228,7 +228,7 @@ export default abstract class Command {
         const parsedArgs = [];
         const parsedNamedArgs: Record<string, any> = {};
 
-        if (permissions.length > 0 && !isSystemAdmin) {
+        if (!isSystemAdmin) {
             let member: GuildMember = <any>message.member!;
 
             if (!(member.permissions as any)?.has) {
@@ -250,71 +250,76 @@ export default abstract class Command {
                 }
             }
 
-            const memberBotPermissions = this.client.permissionManager.getMemberPermissions(member);
-            const memberRequiredPermissions = new PermissionsBitField(permissions).toArray();
             const mode = this.client.configManager.config[message.guildId!]?.permissions?.mode;
 
-            if (this.permissionMode === "and") {
-                for (const permission of permissions) {
-                    if (!member.permissions.has(permission, true)) {
-                        const mode = this.client.configManager.config[message.guildId!]?.permissions?.mode;
+            if (permissions.length > 0) {
+                const memberBotPermissions = this.client.permissionManager.getMemberPermissions(member);
+                const memberRequiredPermissions = new PermissionsBitField(permissions).toArray();
 
-                        if (mode !== "advanced" && mode !== "levels") {
-                            await message.reply({
-                                content: `${this.emoji("error")} You don't have permission to run this command.`,
-                                ephemeral: true
-                            });
+                if (this.permissionMode === "and") {
+                    for (const permission of permissions) {
+                        if (!member.permissions.has(permission, true)) {
+                            const mode = this.client.configManager.config[message.guildId!]?.permissions?.mode;
 
-                            log("Skip");
-
-                            return;
-                        }
-
-                        const memberBotPermissions = this.client.permissionManager.getMemberPermissions(member);
-                        const memberRequiredPermissions = new PermissionsBitField(permissions).toArray();
-
-                        log("PERMS: ", [...memberBotPermissions.values()]);
-                        log("PERMS 2: ", memberRequiredPermissions);
-
-                        for (const memberRequiredPermission of memberRequiredPermissions) {
-                            if (!memberBotPermissions.has(memberRequiredPermission)) {
+                            if (mode !== "advanced" && mode !== "levels") {
                                 await message.reply({
                                     content: `${this.emoji("error")} You don't have permission to run this command.`,
                                     ephemeral: true
                                 });
 
+                                log("Skip");
+
                                 return;
+                            }
+
+                            const memberBotPermissions = this.client.permissionManager.getMemberPermissions(member);
+                            const memberRequiredPermissions = new PermissionsBitField(permissions).toArray();
+
+                            log("PERMS: ", [...memberBotPermissions.values()]);
+                            log("PERMS 2: ", memberRequiredPermissions);
+
+                            for (const memberRequiredPermission of memberRequiredPermissions) {
+                                if (!memberBotPermissions.has(memberRequiredPermission)) {
+                                    await message.reply({
+                                        content: `${this.emoji("error")} You don't have permission to run this command.`,
+                                        ephemeral: true
+                                    });
+
+                                    return;
+                                }
                             }
                         }
                     }
-                }
-            } else
-                orMode: {
-                    for (const permission of permissions) {
-                        if (member.permissions.has(permission, true)) {
-                            break orMode;
-                        }
-                    }
-
-                    if (mode === "advanced" || mode === "levels") {
-                        for (const memberRequiredPermission of memberRequiredPermissions) {
-                            if (memberBotPermissions.has(memberRequiredPermission)) {
+                } else
+                    orMode: {
+                        for (const permission of permissions) {
+                            if (member.permissions.has(permission, true)) {
                                 break orMode;
                             }
                         }
+
+                        if (mode === "advanced" || mode === "levels") {
+                            for (const memberRequiredPermission of memberRequiredPermissions) {
+                                if (memberBotPermissions.has(memberRequiredPermission)) {
+                                    break orMode;
+                                }
+                            }
+                        }
+
+                        await message.reply({
+                            content: `${this.emoji("error")} You don't have enough permissions to run this command.`,
+                            ephemeral: true
+                        });
+
+                        return;
                     }
-
-                    await message.reply({
-                        content: `${this.emoji("error")} You don't have enough permissions to run this command.`,
-                        ephemeral: true
-                    });
-
-                    return;
-                }
+            }
 
             const permissionOverwrite = this.client.commandManager.permissionOverwrites.get(
                 `${message.guildId!}____${this.name}`
             );
+
+            log([...this.client.commandManager.permissionOverwrites.keys()]);
 
             errorRootBlock: if (permissionOverwrite) {
                 permissionOverwriteIfBlock: {
@@ -350,7 +355,9 @@ export default abstract class Command {
                                 break permissionOverwriteIfBlock;
                             }
                         } else {
+                            log(requiredPermissions);
                             if (!member.permissions.has(requiredPermissions, true)) {
+                                log("Fail");
                                 break permissionOverwriteIfBlock;
                             }
                         }
