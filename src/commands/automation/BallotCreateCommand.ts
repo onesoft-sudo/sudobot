@@ -95,7 +95,14 @@ export default class BallotCreateCommand extends Command {
                     files: message instanceof Message ? [...message.attachments.map(a => a.proxyURL).values()] : []
                 });
 
-                await this.success(message, `The ballot/poll has been created successfully.\nID: \`${ballot.id}\``);
+                await this.success(
+                    message,
+                    `The ballot/poll has been created successfully.\nID: \`${ballot.id}\`\n${
+                        message instanceof Message && message.attachments.size > 0
+                            ? "Please do not delete your message, otherwise the attachments will be lost."
+                            : ""
+                    }`
+                );
             } catch (e) {
                 logError(e);
                 return;
