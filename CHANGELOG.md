@@ -1,3 +1,12 @@
+# [5.75.0](https://github.com/onesoft-sudo/sudobot/compare/v5.74.1...v5.75.0) (2023-08-21)
+
+
+### Features
+
+* **ballots:** automatic upvotes and downvotes ([9edc877](https://github.com/onesoft-sudo/sudobot/commit/9edc877958842c235c90364112f4c8fc541b23c8))
+
+
+
 ## [5.74.1](https://github.com/onesoft-sudo/sudobot/compare/v5.74.0...v5.74.1) (2023-08-21)
 
 
@@ -38,15 +47,6 @@
 
 * ballot create command does not store attachments ([7161cd2](https://github.com/onesoft-sudo/sudobot/commit/7161cd243884255370b642099f6ff1b9a74cf06b))
 * store ballot attribute anonymous in db ([8263b5d](https://github.com/onesoft-sudo/sudobot/commit/8263b5d2ed377b4f1af36719353841e09f1ecb1a))
-
-
-
-# [5.72.0](https://github.com/onesoft-sudo/sudobot/compare/v5.71.0...v5.72.0) (2023-08-21)
-
-
-### Features
-
-* add ballot delete command ([ffa8f07](https://github.com/onesoft-sudo/sudobot/commit/ffa8f0794a19a7f379d2f5bb73b8c6dfbbcc522f))
 
 
 
