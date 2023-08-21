@@ -1,3 +1,12 @@
+## [5.74.1](https://github.com/onesoft-sudo/sudobot/compare/v5.74.0...v5.74.1) (2023-08-21)
+
+
+### Bug Fixes
+
+* **types:** add missing onRaw() method ([b03ba95](https://github.com/onesoft-sudo/sudobot/commit/b03ba9513138a1f4370884b302ecd9611263541d))
+
+
+
 # [5.74.0](https://github.com/onesoft-sudo/sudobot/compare/v5.73.0...v5.74.0) (2023-08-21)
 
 
@@ -38,15 +47,6 @@
 ### Features
 
 * add ballot delete command ([ffa8f07](https://github.com/onesoft-sudo/sudobot/commit/ffa8f0794a19a7f379d2f5bb73b8c6dfbbcc522f))
-
-
-
-# [5.71.0](https://github.com/onesoft-sudo/sudobot/compare/v5.70.0...v5.71.0) (2023-08-21)
-
-
-### Features
-
-* add ballot command group ([959ef37](https://github.com/onesoft-sudo/sudobot/commit/959ef378059a664232abac9408626263a35ca100))
 
 
 
