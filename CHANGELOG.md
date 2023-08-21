@@ -1,3 +1,12 @@
+# [5.72.0](https://github.com/onesoft-sudo/sudobot/compare/v5.71.0...v5.72.0) (2023-08-21)
+
+
+### Features
+
+* add ballot delete command ([ffa8f07](https://github.com/onesoft-sudo/sudobot/commit/ffa8f0794a19a7f379d2f5bb73b8c6dfbbcc522f))
+
+
+
 # [5.71.0](https://github.com/onesoft-sudo/sudobot/compare/v5.70.0...v5.71.0) (2023-08-21)
 
 
@@ -39,15 +48,6 @@
 ### Features
 
 * **richpresence:** support custom statuses ([04fb0ce](https://github.com/onesoft-sudo/sudobot/commit/04fb0ce44c4a597d14252d139ea656f8496892a5))
-
-
-
-# [5.68.0](https://github.com/onesoft-sudo/sudobot/compare/v5.67.0...v5.68.0) (2023-08-19)
-
-
-### Features
-
-* **commands:** add stats command ([325156d](https://github.com/onesoft-sudo/sudobot/commit/325156d348c3b76d55df0188b0fcac2c6cbbcc3a))
 
 
 
