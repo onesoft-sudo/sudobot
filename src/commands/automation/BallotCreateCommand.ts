@@ -83,7 +83,8 @@ export default class BallotCreateCommand extends Command {
                     guildId: message.guildId!,
                     userId: message.member!.user.id,
                     channelId: channel.id,
-                    messageId: ballotMessage.id
+                    messageId: ballotMessage.id,
+                    anonymous
                 });
 
                 await this.success(message, `The ballot/poll has been created successfully.\nID: \`${ballot.id}\``);

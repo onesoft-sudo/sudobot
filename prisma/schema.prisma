@@ -197,6 +197,7 @@ model Ballot {
     messageId String
     userId    String
     content   String
+    anonymous Boolean  @default(false)
     files     String[] @default([])
     upvotes   Int      @default(0)
     downvotes Int      @default(0)

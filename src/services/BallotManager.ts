@@ -29,7 +29,8 @@ export default class BallotManager extends Service {
         userId,
         files,
         channelId,
-        messageId
+        messageId,
+        anonymous
     }: {
         content: string;
         guildId: Snowflake;
@@ -37,6 +38,7 @@ export default class BallotManager extends Service {
         messageId: Snowflake;
         userId: Snowflake;
         files?: string[];
+        anonymous?: boolean;
     }) {
         return this.client.prisma.ballot.create({
             data: {
@@ -45,7 +47,8 @@ export default class BallotManager extends Service {
                 userId,
                 files,
                 channelId,
-                messageId
+                messageId,
+                anonymous
             }
         });
     }
