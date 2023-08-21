@@ -1,3 +1,20 @@
+# [5.70.0](https://github.com/onesoft-sudo/sudobot/compare/v5.69.1...v5.70.0) (2023-08-20)
+
+
+### Bug Fixes
+
+* add description to warning command ([cdb2147](https://github.com/onesoft-sudo/sudobot/commit/cdb2147755c04a87df30cc2c83720085c6751a9d))
+
+
+### Features
+
+* add ballot model ([52c105c](https://github.com/onesoft-sudo/sudobot/commit/52c105c6340cc053a41f526c194c205bfe1164c1))
+* **commands:** add ballot command ([4916d1d](https://github.com/onesoft-sudo/sudobot/commit/4916d1d018a62c87ff3808de7ddf1bd5f1fbffda))
+* load ballot manager into client ([aedb30c](https://github.com/onesoft-sudo/sudobot/commit/aedb30c061d8beaddc97b0e5a7fc5382db96d52e))
+* **services:** add ballot manager service ([59939c4](https://github.com/onesoft-sudo/sudobot/commit/59939c43ca6e006273890e43882496f8165b31c1))
+
+
+
 ## [5.69.1](https://github.com/onesoft-sudo/sudobot/compare/v5.69.0...v5.69.1) (2023-08-20)
 
 
@@ -31,18 +48,6 @@
 ### Features
 
 * update bulk delete message JSON file data style ([9c2a269](https://github.com/onesoft-sudo/sudobot/commit/9c2a269f49b074a6f0cf0d7356751c1a1d07c285))
-
-
-
-# [5.66.0](https://github.com/onesoft-sudo/sudobot/compare/v5.65.0...v5.66.0) (2023-08-19)
-
-
-### Features
-
-* **commands:** use JSON5 to parse JSON strings in EmbedBuildCommand ([04dc22f](https://github.com/onesoft-sudo/sudobot/commit/04dc22fc85a0b59d90890f8662f704f42cc1bb06))
-* **commands:** use JSON5 to parse JSON strings in EmbedSchemaCommand ([034a3e4](https://github.com/onesoft-sudo/sudobot/commit/034a3e4c1ed7bb97a8f1f17634d9ff00427b7417))
-* **commands:** use JSON5 to parse JSON strings in TranslateCommand ([78e3e1e](https://github.com/onesoft-sudo/sudobot/commit/78e3e1e1cbd273a873f688e13d2fcfb7c0d842f0))
-* **welcomer:** use JSON5 to parse JSON strings ([fa993d0](https://github.com/onesoft-sudo/sudobot/commit/fa993d02781df3b683b1879af417f3714885da49))
 
 
 
