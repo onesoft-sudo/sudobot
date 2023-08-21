@@ -1,3 +1,12 @@
+# [5.71.0](https://github.com/onesoft-sudo/sudobot/compare/v5.70.0...v5.71.0) (2023-08-21)
+
+
+### Features
+
+* add ballot command group ([959ef37](https://github.com/onesoft-sudo/sudobot/commit/959ef378059a664232abac9408626263a35ca100))
+
+
+
 # [5.70.0](https://github.com/onesoft-sudo/sudobot/compare/v5.69.1...v5.70.0) (2023-08-20)
 
 
@@ -39,15 +48,6 @@
 ### Features
 
 * **commands:** add stats command ([325156d](https://github.com/onesoft-sudo/sudobot/commit/325156d348c3b76d55df0188b0fcac2c6cbbcc3a))
-
-
-
-# [5.67.0](https://github.com/onesoft-sudo/sudobot/compare/v5.66.0...v5.67.0) (2023-08-19)
-
-
-### Features
-
-* update bulk delete message JSON file data style ([9c2a269](https://github.com/onesoft-sudo/sudobot/commit/9c2a269f49b074a6f0cf0d7356751c1a1d07c285))
 
 
 
