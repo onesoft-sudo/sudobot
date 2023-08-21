@@ -53,6 +53,12 @@ export default class BallotCommand extends Command {
         )
         .addSubcommand(subcommand =>
             subcommand
+                .setName("view")
+                .setDescription("Shows a poll/ballot")
+                .addIntegerOption(option => option.setName("id").setDescription("The ballot ID").setRequired(true))
+        )
+        .addSubcommand(subcommand =>
+            subcommand
                 .setName("delete")
                 .setDescription("Deletes a poll/ballot")
                 .addIntegerOption(option => option.setName("id").setDescription("The ballot ID").setRequired(true))
