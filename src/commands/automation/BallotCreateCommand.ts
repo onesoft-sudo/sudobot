@@ -17,12 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ChannelType, SlashCommandBuilder, User } from "discord.js";
+import { ChannelType, User } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { logError } from "../../utils/logger";
 
-export default class BallotCommand extends Command {
-    public readonly name = "ballot";
+export default class BallotCreateCommand extends Command {
+    public readonly name = "ballot__create";
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.StringRest],
@@ -33,16 +33,6 @@ export default class BallotCommand extends Command {
     ];
     public readonly permissions = [];
     public readonly description = "Sends a poll/ballot embed.";
-    public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addStringOption(option => option.setName("content").setDescription("The ballot/poll content").setRequired(true))
-        .addBooleanOption(option =>
-            option.setName("anonymous").setDescription("Anonymous mode won't show your name in the ballot. Default is true")
-        )
-        .addChannelOption(option =>
-            option
-                .setName("channel")
-                .setDescription("The channel where the message will be sent, defaults to the current channel")
-        );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message, { ephemeral: true });
