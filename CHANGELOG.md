@@ -1,3 +1,12 @@
+## [5.75.1](https://github.com/onesoft-sudo/sudobot/compare/v5.75.0...v5.75.1) (2023-08-21)
+
+
+### Bug Fixes
+
+* **commands:** permission overwrites don't work on some commands ([49201ea](https://github.com/onesoft-sudo/sudobot/commit/49201ea312f9b8bc22ee82b41a28ff0e6e233962))
+
+
+
 # [5.75.0](https://github.com/onesoft-sudo/sudobot/compare/v5.74.1...v5.75.0) (2023-08-21)
 
 
@@ -37,16 +46,6 @@
 ### Features
 
 * **utils:** add display date functions ([3a6c914](https://github.com/onesoft-sudo/sudobot/commit/3a6c914ac561be6264fa211da0ed81afc2f1a689))
-
-
-
-## [5.72.1](https://github.com/onesoft-sudo/sudobot/compare/v5.72.0...v5.72.1) (2023-08-21)
-
-
-### Bug Fixes
-
-* ballot create command does not store attachments ([7161cd2](https://github.com/onesoft-sudo/sudobot/commit/7161cd243884255370b642099f6ff1b9a74cf06b))
-* store ballot attribute anonymous in db ([8263b5d](https://github.com/onesoft-sudo/sudobot/commit/8263b5d2ed377b4f1af36719353841e09f1ecb1a))
 
 
 
