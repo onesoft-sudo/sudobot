@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ChannelType, Message, User } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, Message, User } from "discord.js";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn } from "../../core/Command";
 import { logError } from "../../utils/logger";
 
@@ -78,11 +78,20 @@ export default class BallotCreateCommand extends Command {
                               name,
                               attachment: proxyURL
                           }))
-                        : undefined
+                        : undefined,
+                components: [
+                    new ActionRowBuilder<ButtonBuilder>().addComponents(
+                        new ButtonBuilder()
+                            .setCustomId("ballot__upvote")
+                            .setEmoji(this.emoji("ArrowTop"))
+                            .setStyle(ButtonStyle.Secondary),
+                        new ButtonBuilder()
+                            .setCustomId("ballot__downvote")
+                            .setEmoji(this.emoji("ArrowDown"))
+                            .setStyle(ButtonStyle.Secondary)
+                    )
+                ]
             });
-
-            ballotMessage.react(this.emoji("ArrowTop")).catch(logError);
-            ballotMessage.react(this.emoji("ArrowDown")).catch(logError);
 
             try {
                 const ballot = await this.client.ballotManager.create({

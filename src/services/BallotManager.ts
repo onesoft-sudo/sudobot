@@ -17,12 +17,15 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { Ballot } from "@prisma/client";
 import { Snowflake } from "discord.js";
 import Service from "../core/Service";
 
 export const name = "ballotManager";
 
 export default class BallotManager extends Service {
+    protected readonly changedBallots: Ballot[] = [];
+
     create({
         content,
         guildId,
@@ -62,7 +65,7 @@ export default class BallotManager extends Service {
         });
     }
 
-    upvote({ id, guildId }: { id: number; guildId: Snowflake }) {
+    upvote({ id, guildId, userId }: { id: number; guildId: Snowflake; userId: Snowflake }) {
         return this.client.prisma.ballot.updateMany({
             where: {
                 id,
@@ -70,13 +73,13 @@ export default class BallotManager extends Service {
             },
             data: {
                 upvotes: {
-                    increment: 1
+                    push: userId
                 }
             }
         });
     }
 
-    downvote({ id, guildId }: { id: number; guildId: Snowflake }) {
+    downvote({ id, guildId, userId }: { id: number; guildId: Snowflake; userId: Snowflake }) {
         return this.client.prisma.ballot.updateMany({
             where: {
                 id,
@@ -84,13 +87,19 @@ export default class BallotManager extends Service {
             },
             data: {
                 downvotes: {
-                    increment: 1
+                    push: userId
                 }
             }
         });
     }
 
-    upvoteRemove({ id, guildId }: { id: number; guildId: Snowflake }) {
+    async upvoteRemove({ id, guildId, userId }: { id: number; guildId: Snowflake; userId: Snowflake }) {
+        const ballot = await this.get({ id, guildId });
+
+        if (!ballot || ballot.upvotes.length === 0) {
+            return { count: 0 };
+        }
+
         return this.client.prisma.ballot.updateMany({
             where: {
                 id,
@@ -98,13 +107,19 @@ export default class BallotManager extends Service {
             },
             data: {
                 upvotes: {
-                    decrement: 1
+                    set: ballot.upvotes.filter(id => id !== userId)
                 }
             }
         });
     }
 
-    downvoteRemove({ id, guildId }: { id: number; guildId: Snowflake }) {
+    async downvoteRemove({ id, guildId, userId }: { id: number; guildId: Snowflake; userId: Snowflake }) {
+        const ballot = await this.get({ id, guildId });
+
+        if (!ballot || ballot.downvotes.length === 0) {
+            return { count: 0 };
+        }
+
         return this.client.prisma.ballot.updateMany({
             where: {
                 id,
@@ -112,7 +127,7 @@ export default class BallotManager extends Service {
             },
             data: {
                 downvotes: {
-                    decrement: 1
+                    set: ballot.downvotes.filter(id => id !== userId)
                 }
             }
         });

@@ -74,17 +74,17 @@ export default class BallotViewCommand extends Command {
                     fields: [
                         {
                             name: "Total Votes",
-                            value: `⚪ **${ballot.upvotes - ballot.downvotes}**`,
+                            value: `⚪ **${ballot.upvotes.length - ballot.downvotes.length}**`,
                             inline: true
                         },
                         {
                             name: "Upvotes",
-                            value: `${this.emoji("ArrowTop")} ${ballot.upvotes}`,
+                            value: `${this.emoji("ArrowTop")} ${ballot.upvotes.length}`,
                             inline: true
                         },
                         {
                             name: "Downvotes",
-                            value: `${this.emoji("ArrowDown")} ${ballot.downvotes}`,
+                            value: `${this.emoji("ArrowDown")} ${ballot.downvotes.length}`,
                             inline: true
                         },
                         {

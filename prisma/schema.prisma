@@ -199,8 +199,8 @@ model Ballot {
     content   String
     anonymous Boolean  @default(false)
     files     String[] @default([])
-    upvotes   Int      @default(0)
-    downvotes Int      @default(0)
+    upvotes   String[] @default([])
+    downvotes String[] @default([])
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
 
