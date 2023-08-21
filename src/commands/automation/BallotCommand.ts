@@ -34,20 +34,29 @@ export default class BallotCommand extends Command {
     public readonly permissions = [];
     public readonly aliases = ["poll"];
     public readonly description = "Create and manage ballots/polls.";
-    public readonly slashCommandBuilder = new SlashCommandBuilder().addSubcommand(subcommand =>
-        subcommand
-            .setName("create")
-            .setDescription("Sends a poll/ballot embed.")
-            .addStringOption(option => option.setName("content").setDescription("The ballot/poll content").setRequired(true))
-            .addBooleanOption(option =>
-                option.setName("anonymous").setDescription("Anonymous mode won't show your name in the ballot. Default is true")
-            )
-            .addChannelOption(option =>
-                option
-                    .setName("channel")
-                    .setDescription("The channel where the message will be sent, defaults to the current channel")
-            )
-    );
+    public readonly slashCommandBuilder = new SlashCommandBuilder()
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("create")
+                .setDescription("Sends a poll/ballot embed")
+                .addStringOption(option => option.setName("content").setDescription("The ballot/poll content").setRequired(true))
+                .addBooleanOption(option =>
+                    option
+                        .setName("anonymous")
+                        .setDescription("Anonymous mode won't show your name in the ballot. Default is true")
+                )
+                .addChannelOption(option =>
+                    option
+                        .setName("channel")
+                        .setDescription("The channel where the message will be sent, defaults to the current channel")
+                )
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("delete")
+                .setDescription("Deletes a poll/ballot")
+                .addIntegerOption(option => option.setName("id").setDescription("The ballot ID").setRequired(true))
+        );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const subcommand = context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true);
