@@ -20,7 +20,7 @@
 import { ChannelType, ClientEvents, GuildMember, Message, MessageType } from "discord.js";
 import Client from "../../core/Client";
 import Event from "../../core/Event";
-import { logError, log } from "../../utils/logger";
+import { log, logError } from "../../utils/logger";
 
 export default class MessageCreateEvent extends Event {
     public name: keyof ClientEvents = "messageCreate";
@@ -54,7 +54,11 @@ export default class MessageCreateEvent extends Event {
             }
         }
 
-        const deleted = await this.client.messageFilter.onMessageCreate(message).catch(logError);
+        let deleted = await this.client.messageFilter.onMessageCreate(message).catch(logError);
+
+        if (deleted) return;
+
+        deleted = await this.client.fileFilter.onMessageCreate(message).catch(logError);
 
         if (deleted) return;
 

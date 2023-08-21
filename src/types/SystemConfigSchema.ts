@@ -52,7 +52,8 @@ export const SystemConfigSchema = z.object({
         .object({
             mention_prefix: z.boolean().default(true)
         })
-        .default({})
+        .default({}),
+    enable_file_filter: z.boolean().default(false)
 });
 
 export type SystemConfig = z.infer<typeof SystemConfigSchema>;

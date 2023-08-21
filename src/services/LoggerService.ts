@@ -169,6 +169,27 @@ export default class LoggerService extends Service {
      * Logging methods.
      */
 
+    async logFileFilterDeletedMessage(
+        message: Message,
+        { contentType, hash, url }: { hash: string; url: string; name?: string; contentType?: string | null }
+    ) {
+        await this.sendLogEmbed(message.guild!, {
+            title: "Blocked file detected",
+            color: Colors.Red,
+            user: message.author,
+            fields: [
+                {
+                    name: "File",
+                    value:
+                        `${name ? `[${escapeMarkdown(name)}](${url})` : `[Unnamed](${url})`}: \`${hash}\`` +
+                        (contentType ? ` (\`${contentType}\`)` : "")
+                }
+            ],
+            footerText: "Deleted",
+            moderator: this.client.user!
+        });
+    }
+
     async logMemberTimeout(
         member: GuildMember,
         { reason, id, moderator }: Omit<CommonUserActionOptions, "guild" | "id"> & { reason?: string; id?: string | number }

@@ -25,6 +25,7 @@ import Server from "../api/Server";
 import type Antijoin from "../automod/Antijoin";
 import type Antiraid from "../automod/Antiraid";
 import type Antispam from "../automod/Antispam";
+import type FileFilterService from "../automod/FileFilterService";
 import type MessageFilter from "../automod/MessageFilter";
 import type ProfileFilter from "../automod/ProfileFilter";
 import { SuppressErrorsMetadata } from "../decorators/SuppressErrors";
@@ -80,7 +81,8 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@automod/Antispam",
         "@automod/Antiraid",
         "@automod/Antijoin",
-        "@automod/ProfileFilter"
+        "@automod/ProfileFilter",
+        "@automod/FileFilterService"
     ];
 
     commandsDirectory = path.resolve(__dirname, "../commands");
@@ -111,6 +113,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     afkService: AFKService = {} as AFKService;
     inviteTracker: InviteTrackerService = {} as InviteTrackerService;
     ballotManager: BallotManager = {} as BallotManager;
+    fileFilter: FileFilterService = {} as FileFilterService;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",

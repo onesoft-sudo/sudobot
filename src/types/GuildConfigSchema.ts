@@ -248,6 +248,13 @@ export const GuildConfigSchema = z.object({
             guild: z.array(z.string()).default([]),
             channels: z.record(zSnowflake, z.array(z.string()).default([])).default({})
         })
+        .optional(),
+    file_filter: z
+        .object({
+            enabled: z.boolean().optional().default(false),
+            disabled_channels: z.array(zSnowflake).default([]),
+            blocked_hashes: z.record(z.string(), z.string().nullable()).default({})
+        })
         .optional()
 });
 
