@@ -58,6 +58,10 @@ export default class MessageCreateEvent extends Event {
 
         if (deleted) return;
 
+        deleted = await this.client.messageRuleService.onMessageCreate(message).catch(logError);
+
+        if (deleted) return;
+
         deleted = await this.client.fileFilter.onMessageCreate(message).catch(logError);
 
         if (deleted) return;
