@@ -17,7 +17,15 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Message, PermissionFlagsBits, Snowflake, TextChannel, escapeMarkdown } from "discord.js";
+import {
+    Message,
+    PermissionFlagsBits,
+    Snowflake,
+    TextChannel,
+    escapeCodeBlock,
+    escapeInlineCode,
+    escapeMarkdown
+} from "discord.js";
 import Service from "../core/Service";
 import { CreateLogEmbedOptions } from "../services/LoggerService";
 import { HasEventListeners } from "../types/HasEventListeners";
@@ -30,7 +38,10 @@ export const name = "messageRuleService";
 const handlers: Record<MessageRuleType["type"], Extract<keyof MessageRuleService, `rule${string}`>> = {
     blocked_domain: "ruleBlockedDomain",
     blocked_file_extension: "ruleBlockedFileExtension",
-    blocked_mime_type: "ruleBlockedMimeType"
+    blocked_mime_type: "ruleBlockedMimeType",
+    anti_invite: "ruleAntiInvite",
+    regex_filter: "ruleRegexFilter",
+    block_repeated_text: "ruleRepeatedText"
 };
 
 type MessageRuleAction = MessageRuleType["actions"][number];
@@ -50,8 +61,7 @@ export default class MessageRuleService extends Service implements HasEventListe
         if (
             !config?.enabled ||
             config?.global_disabled_channels?.includes(message.channelId!) ||
-            this.client.permissionManager.isImmuneToAutoMod(message.member!, PermissionFlagsBits.ManageGuild) ||
-            message.content.trim() === ""
+            this.client.permissionManager.isImmuneToAutoMod(message.member!, PermissionFlagsBits.ManageGuild)
         ) {
             return false;
         }
@@ -62,15 +72,32 @@ export default class MessageRuleService extends Service implements HasEventListe
     private async processMessageRules(message: Message, rules: Array<MessageRuleType>) {
         for (const rule of rules) {
             if (rule.actions.length === 0) {
+                log("No action found in this rule! Considering it as disabled.");
                 continue;
             }
 
             if (rule.actions.length === 1 && rule.actions.includes("delete") && !message.deletable) {
+                log("Missing permissions to delete messages, but the rule actions include `delete`. Skipping.");
                 continue;
             }
 
             if (rule.actions.includes("mute") && rule.actions.includes("warn")) {
-                logWarn("You cannot include mute and warn together as message rule actions! Ignoring.");
+                logWarn("You cannot include mute and warn together as message rule actions! Skipping.");
+                continue;
+            }
+
+            if (rule.disabled_channels.includes(message.channelId!)) {
+                logWarn("This rule is disabled in this channel.");
+                continue;
+            }
+
+            if (rule.immune_users.includes(message.author.id)) {
+                logWarn("This user is immune to this rule.");
+                continue;
+            }
+
+            if (message.member?.roles.cache.hasAny(...rule.immune_roles)) {
+                logWarn("This user is immune to this rule, due to having some whitelisted roles.");
                 continue;
             }
 
@@ -195,7 +222,11 @@ export default class MessageRuleService extends Service implements HasEventListe
     }
 
     async ruleBlockedDomain(message: Message, rule: Extract<MessageRuleType, { type: "blocked_domain" }>) {
-        const { data, actions, scan_links_only } = rule;
+        if (message.content.trim() === "") {
+            return null;
+        }
+
+        const { data, scan_links_only } = rule;
         let regex = `(https?://)${scan_links_only ? "" : "?"}(`;
         let index = 0;
 
@@ -231,11 +262,134 @@ export default class MessageRuleService extends Service implements HasEventListe
         } satisfies CreateLogEmbedOptions;
     }
 
-    async ruleBlockedFileExtension() {
-        // TODO
+    async ruleBlockedFileExtension(message: Message, rule: Extract<MessageRuleType, { type: "blocked_file_extension" }>) {
+        for (const attachment of message.attachments.values()) {
+            for (const extension of rule.data) {
+                if (attachment.proxyURL.endsWith(`.${extension}`)) {
+                    return {
+                        title: "File(s) with blocked extensions found",
+                        fields: [
+                            {
+                                name: "File",
+                                value: `[${attachment.name}](${attachment.url}): \`.${escapeMarkdown(extension)}\``
+                            }
+                        ]
+                    };
+                }
+            }
+        }
+
+        return null;
     }
 
-    async ruleBlockedMimeType() {
-        // TODO
+    async ruleBlockedMimeType(message: Message, rule: Extract<MessageRuleType, { type: "blocked_mime_type" }>) {
+        for (const attachment of message.attachments.values()) {
+            if (rule.data.includes(attachment.contentType ?? "unknown")) {
+                return {
+                    title: "File(s) with blocked MIME-type found",
+                    fields: [
+                        {
+                            name: "File",
+                            value: `[${attachment.name}](${attachment.url}): \`${attachment.contentType}\``
+                        }
+                    ]
+                };
+            }
+        }
+
+        return null;
+    }
+
+    async ruleAntiInvite(message: Message, rule: Extract<MessageRuleType, { type: "anti_invite" }>) {
+        if (message.content.trim() === "") {
+            return null;
+        }
+
+        const allowedInviteCodes = rule.allowed_invite_codes;
+        const regex = /(https?:\/\/)?discord.(gg|com\/invite)\/([A-Za-z0-9_]+)/gi;
+        const matches = message.content.matchAll(regex);
+
+        for (const match of matches) {
+            if (match[3] && !allowedInviteCodes.includes(match[3])) {
+                if (rule.allow_internal_invites && this.client.inviteTracker.invites.has(`${message.guildId!}_${match[3]}`)) {
+                    continue;
+                }
+
+                return {
+                    title: "Posted Invite(s)",
+                    fields: [
+                        {
+                            name: "Invite URL",
+                            value: `\`https://discord.gg/${match[3]}\``
+                        }
+                    ]
+                };
+            }
+        }
+
+        return null;
+    }
+
+    async ruleRegexFilter(message: Message, rule: Extract<MessageRuleType, { type: "regex_filter" }>) {
+        if (message.content.trim() === "") {
+            return null;
+        }
+
+        const { patterns } = rule;
+
+        for (const pattern of patterns) {
+            const regex = new RegExp(
+                typeof pattern === "string" ? pattern : pattern[0],
+                typeof pattern === "string" ? "gi" : pattern[1]
+            );
+
+            if (regex.test(message.content)) {
+                return {
+                    title: "Message matched with a blocked regex pattern",
+                    fields: [
+                        {
+                            name: "Pattern Info",
+                            value: `Pattern: \`${escapeInlineCode(
+                                escapeCodeBlock(typeof pattern === "string" ? pattern : pattern[0])
+                            )}\`\nFlags: \`${escapeInlineCode(
+                                escapeCodeBlock(typeof pattern === "string" ? "gi" : pattern[1])
+                            )}\``
+                        }
+                    ]
+                };
+            }
+        }
+
+        return null;
+    }
+
+    async ruleRepeatedText(message: Message, rule: Extract<MessageRuleType, { type: "block_repeated_text" }>) {
+        if (message.content.trim() === "") {
+            return null;
+        }
+
+        if (new RegExp("(.+)\\1{" + rule.max_repeated_chars + ",}", "gm").test(message.content)) {
+            return {
+                title: "Repeated text detected",
+                fields: [
+                    {
+                        name: "Description",
+                        value: `Too many repetitive characters were found`
+                    }
+                ]
+            };
+        } else if (new RegExp("^(.+)(?: +\\1){" + rule.max_repeated_words + "}", "gm").test(message.content)) {
+            return {
+                title: "Repeated text detected",
+                fields: [
+                    {
+                        name: "Description",
+                        value: `Too many repetitive words were found`
+                    }
+                ]
+            };
+        }
+
+        return null;
     }
 }

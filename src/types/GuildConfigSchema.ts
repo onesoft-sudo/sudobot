@@ -21,7 +21,7 @@ import { z } from "zod";
 import { isSnowflake } from "../utils/utils";
 import { MessageRuleSchema } from "./MessageRuleSchema";
 
-const zSnowflake = z.custom<string>(data => {
+export const zSnowflake = z.custom<string>(data => {
     return typeof data === "string" && isSnowflake(data);
 });
 
