@@ -19,6 +19,7 @@
 
 import { z } from "zod";
 import { isSnowflake } from "../utils/utils";
+import { MessageRuleSchema } from "./MessageRuleSchema";
 
 const zSnowflake = z.custom<string>(data => {
     return typeof data === "string" && isSnowflake(data);
@@ -254,6 +255,13 @@ export const GuildConfigSchema = z.object({
             enabled: z.boolean().optional().default(false),
             disabled_channels: z.array(zSnowflake).default([]),
             blocked_hashes: z.record(z.string(), z.string().nullable()).default({})
+        })
+        .optional(),
+    message_rules: z
+        .object({
+            enabled: z.boolean().default(false),
+            rules: z.array(MessageRuleSchema).default([]),
+            global_disabled_channels: z.array(zSnowflake).default([])
         })
         .optional()
 });
