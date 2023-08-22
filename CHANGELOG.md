@@ -1,3 +1,16 @@
+# [5.77.0](https://github.com/onesoft-sudo/sudobot/compare/v5.76.0...v5.77.0) (2023-08-22)
+
+
+### Features
+
+* add message rule types ([b6be033](https://github.com/onesoft-sudo/sudobot/commit/b6be033387d5bd164e88a26a800ff1f076104240))
+* **automod:** add message rule service ([261f8d4](https://github.com/onesoft-sudo/sudobot/commit/261f8d4c69cbef1614f5458062c222aeb648bdfa))
+* **automod:** load the message rule service ([2fc3c5a](https://github.com/onesoft-sudo/sudobot/commit/2fc3c5a9073441871aafdebb3214fa0dfc4cb033))
+* **logger:** log message rule actions ([4963231](https://github.com/onesoft-sudo/sudobot/commit/496323145888d93f8f818ab1e170fa0af619b454))
+* **utils:** add escapeRegex() function ([348b338](https://github.com/onesoft-sudo/sudobot/commit/348b33851e0c4e1b15a79c40ad98c519ccef84e7))
+
+
+
 # [5.76.0](https://github.com/onesoft-sudo/sudobot/compare/v5.75.1...v5.76.0) (2023-08-21)
 
 
@@ -31,15 +44,6 @@
 ### Bug Fixes
 
 * **types:** add missing onRaw() method ([b03ba95](https://github.com/onesoft-sudo/sudobot/commit/b03ba9513138a1f4370884b302ecd9611263541d))
-
-
-
-# [5.74.0](https://github.com/onesoft-sudo/sudobot/compare/v5.73.0...v5.74.0) (2023-08-21)
-
-
-### Features
-
-* **commands:** add ballot view command ([0b3e2ce](https://github.com/onesoft-sudo/sudobot/commit/0b3e2ced5022d21a7dba575230dd67ef3b32071c))
 
 
 
