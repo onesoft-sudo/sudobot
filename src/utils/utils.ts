@@ -210,3 +210,7 @@ export function chunkedString(str: string, chunkSize = 4000) {
 
     return output;
 }
+
+export function escapeRegex(string: string) {
+    return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
+}
