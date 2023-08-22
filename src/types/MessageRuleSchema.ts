@@ -64,13 +64,23 @@ export const BlockRepeatedTextRule = z
     })
     .extend(Common);
 
+export const BlockMassMentionRule = z
+    .object({
+        type: z.literal("block_mass_mention"),
+        max_mentions: z.number().int().default(15),
+        max_user_mentions: z.number().int().default(-1),
+        max_role_mentions: z.number().int().default(-1)
+    })
+    .extend(Common);
+
 export const MessageRuleSchema = z.union([
     BlockedDomainRule,
     BlockedMimeTypeRule,
     BlockedFileExtensionRule,
     AntiInviteRule,
     RegexFilterRule,
-    BlockRepeatedTextRule
+    BlockRepeatedTextRule,
+    BlockMassMentionRule
 ]);
 
 export type MessageRuleType = z.infer<typeof MessageRuleSchema>;

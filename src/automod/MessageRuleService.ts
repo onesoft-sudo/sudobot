@@ -41,7 +41,8 @@ const handlers: Record<MessageRuleType["type"], Extract<keyof MessageRuleService
     blocked_mime_type: "ruleBlockedMimeType",
     anti_invite: "ruleAntiInvite",
     regex_filter: "ruleRegexFilter",
-    block_repeated_text: "ruleRepeatedText"
+    block_repeated_text: "ruleRepeatedText",
+    block_mass_mention: "ruleBlockMassMention"
 };
 
 type MessageRuleAction = MessageRuleType["actions"][number];
@@ -385,6 +386,44 @@ export default class MessageRuleService extends Service implements HasEventListe
                     {
                         name: "Description",
                         value: `Too many repetitive words were found`
+                    }
+                ]
+            };
+        }
+
+        return null;
+    }
+
+    async ruleBlockMassMention(message: Message, rule: Extract<MessageRuleType, { type: "block_mass_mention" }>) {
+        if (message.content.trim() === "") {
+            return null;
+        }
+
+        let data = [...message.content.matchAll(new RegExp(`\<\@[0-9]+\>`, "gm"))];
+
+        console.log("users", data);
+
+        if (data.length >= rule.max_mentions || (rule.max_user_mentions > 0 && data.length >= rule.max_user_mentions)) {
+            return {
+                title: "Mass mentions detected",
+                fields: [
+                    {
+                        name: "Description",
+                        value: `Too many users were mentioned`
+                    }
+                ]
+            };
+        }
+
+        data = [...message.content.matchAll(new RegExp(`\<\@\&[0-9]+\>`, "gm"))];
+
+        if (data.length >= rule.max_mentions || (rule.max_role_mentions > 0 && data.length >= rule.max_role_mentions)) {
+            return {
+                title: "Repeated text detected",
+                fields: [
+                    {
+                        name: "Description",
+                        value: `Too many roles were mentioned`
                     }
                 ]
             };
