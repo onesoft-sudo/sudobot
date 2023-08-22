@@ -47,8 +47,9 @@ import {
     roleMention
 } from "discord.js";
 import Service from "../core/Service";
+import { MessageRuleType } from "../types/MessageRuleSchema";
 import { NotUndefined } from "../types/NotUndefined";
-import { logError } from "../utils/logger";
+import { log, logError } from "../utils/logger";
 import { isTextableChannel } from "../utils/utils";
 import { GuildConfig } from "./ConfigManager";
 
@@ -168,6 +169,45 @@ export default class LoggerService extends Service {
     /*
      * Logging methods.
      */
+
+    async logMessageRuleAction({
+        message,
+        embedOptions = {},
+        rule,
+        actions
+    }: {
+        message: Message;
+        actions: MessageRuleType["actions"];
+        embedOptions?: CreateLogEmbedOptions;
+        rule: MessageRuleType["type"];
+    }) {
+        log("Actions", actions);
+
+        await this.sendLogEmbed(message.guild!, {
+            color: Colors.Red,
+            user: message.author,
+            footerText: "AutoMod",
+            moderator: this.client.user!,
+            ...embedOptions,
+            fields: [
+                ...(embedOptions.fields ?? []),
+                {
+                    name: "Rule",
+                    value: `\`${rule}\``,
+                    inline: true
+                },
+                {
+                    name: "Actions taken",
+                    value: `\`${actions.length === 0 ? "none" : actions.join("`, `")}\``,
+                    inline: true
+                },
+                {
+                    name: "Message",
+                    value: `${message.url}`
+                }
+            ]
+        });
+    }
 
     async logFileFilterDeletedMessage(
         message: Message,
@@ -1184,7 +1224,7 @@ interface BlockedTokenOrWordOptions {
     content: string;
 }
 
-interface CreateLogEmbedOptions {
+export interface CreateLogEmbedOptions {
     id?: string;
     title?: string;
     options?: EmbedData;
