@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { zSnowflake } from "./GuildConfigSchema";
+import { zSnowflake } from "./SnowflakeSchema";
 
 export const MessageRuleAction = z.enum(["delete", "verbal_warn", "warn", "mute", "clear"]);
 
@@ -19,59 +19,52 @@ const Common = {
     mute_duration: z.number().int().default(-1)
 };
 
-export const BlockedDomainRule = z
-    .object({
-        type: z.literal("blocked_domain"),
-        scan_links_only: z.boolean().default(false)
-    })
-    .extend(Common)
-    .extend(hasStringArrayData);
+export const BlockedDomainRule = z.object({
+    ...Common,
+    ...hasStringArrayData,
+    type: z.literal("blocked_domain"),
+    scan_links_only: z.boolean().default(false)
+});
 
-export const BlockedMimeTypeRule = z
-    .object({
-        type: z.literal("blocked_mime_type")
-    })
-    .extend(Common)
-    .extend(hasStringArrayData);
+export const BlockedMimeTypeRule = z.object({
+    ...Common,
+    ...hasStringArrayData,
+    type: z.literal("blocked_mime_type")
+});
 
-export const BlockedFileExtensionRule = z
-    .object({
-        type: z.literal("blocked_file_extension")
-    })
-    .extend(Common)
-    .extend(hasStringArrayData);
+export const BlockedFileExtensionRule = z.object({
+    ...Common,
+    ...hasStringArrayData,
+    type: z.literal("blocked_file_extension")
+});
 
-export const AntiInviteRule = z
-    .object({
-        type: z.literal("anti_invite"),
-        allowed_invite_codes: z.array(z.string()).default([]),
-        allow_internal_invites: z.boolean().default(true)
-    })
-    .extend(Common);
+export const AntiInviteRule = z.object({
+    ...Common,
+    type: z.literal("anti_invite"),
+    allowed_invite_codes: z.array(z.string()).default([]),
+    allow_internal_invites: z.boolean().default(true)
+});
 
-export const RegexFilterRule = z
-    .object({
-        type: z.literal("regex_filter"),
-        patterns: z.array(z.string().or(z.tuple([z.string(), z.string()]))).default([])
-    })
-    .extend(Common);
+export const RegexFilterRule = z.object({
+    ...Common,
+    type: z.literal("regex_filter"),
+    patterns: z.array(z.string().or(z.tuple([z.string(), z.string()]))).default([])
+});
 
-export const BlockRepeatedTextRule = z
-    .object({
-        type: z.literal("block_repeated_text"),
-        max_repeated_chars: z.number().int().default(20),
-        max_repeated_words: z.number().int().default(15)
-    })
-    .extend(Common);
+export const BlockRepeatedTextRule = z.object({
+    ...Common,
+    type: z.literal("block_repeated_text"),
+    max_repeated_chars: z.number().int().default(20),
+    max_repeated_words: z.number().int().default(15)
+});
 
-export const BlockMassMentionRule = z
-    .object({
-        type: z.literal("block_mass_mention"),
-        max_mentions: z.number().int().default(15),
-        max_user_mentions: z.number().int().default(-1),
-        max_role_mentions: z.number().int().default(-1)
-    })
-    .extend(Common);
+export const BlockMassMentionRule = z.object({
+    ...Common,
+    type: z.literal("block_mass_mention"),
+    max_mentions: z.number().int().default(15),
+    max_user_mentions: z.number().int().default(-1),
+    max_role_mentions: z.number().int().default(-1)
+});
 
 export const MessageRuleSchema = z.union([
     BlockedDomainRule,

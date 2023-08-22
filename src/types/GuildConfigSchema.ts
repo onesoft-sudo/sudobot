@@ -18,12 +18,8 @@
  */
 
 import { z } from "zod";
-import { isSnowflake } from "../utils/utils";
 import { MessageRuleSchema } from "./MessageRuleSchema";
-
-export const zSnowflake = z.custom<string>(data => {
-    return typeof data === "string" && isSnowflake(data);
-});
+import { zSnowflake } from "./SnowflakeSchema";
 
 export const GuildConfigSchema = z.object({
     prefix: z.string().default("-"),
