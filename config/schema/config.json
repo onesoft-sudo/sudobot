@@ -664,13 +664,26 @@
                                         {
                                             "type": "object",
                                             "properties": {
-                                                "type": {
-                                                    "type": "string",
-                                                    "const": "blocked_domain"
+                                                "disabled_channels": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                                    },
+                                                    "default": []
                                                 },
-                                                "scan_links_only": {
-                                                    "type": "boolean",
-                                                    "default": false
+                                                "immune_roles": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                                    },
+                                                    "default": []
+                                                },
+                                                "immune_users": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                                    },
+                                                    "default": []
                                                 },
                                                 "actions": {
                                                     "type": "array",
@@ -708,6 +721,14 @@
                                                         "type": "string"
                                                     },
                                                     "default": []
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "const": "blocked_domain"
+                                                },
+                                                "scan_links_only": {
+                                                    "type": "boolean",
+                                                    "default": false
                                                 }
                                             },
                                             "required": [
@@ -718,30 +739,39 @@
                                         {
                                             "type": "object",
                                             "properties": {
+                                                "disabled_channels": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/disabled_channels"
+                                                },
+                                                "immune_roles": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/immune_roles"
+                                                },
+                                                "immune_users": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/immune_users"
+                                                },
+                                                "actions": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/actions"
+                                                },
+                                                "verbal_warning_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/verbal_warning_reason"
+                                                },
+                                                "warning_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/warning_reason"
+                                                },
+                                                "mute_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_reason"
+                                                },
+                                                "common_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/common_reason"
+                                                },
+                                                "mute_duration": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_duration"
+                                                },
+                                                "data": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/data"
+                                                },
                                                 "type": {
                                                     "type": "string",
                                                     "const": "blocked_mime_type"
-                                                },
-                                                "actions": {
-                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/actions"
-                                                },
-                                                "verbal_warning_reason": {
-                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/verbal_warning_reason"
-                                                },
-                                                "warning_reason": {
-                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/warning_reason"
-                                                },
-                                                "mute_reason": {
-                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_reason"
-                                                },
-                                                "common_reason": {
-                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/common_reason"
-                                                },
-                                                "mute_duration": {
-                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_duration"
-                                                },
-                                                "data": {
-                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/data"
                                                 }
                                             },
                                             "required": [
@@ -752,9 +782,14 @@
                                         {
                                             "type": "object",
                                             "properties": {
-                                                "type": {
-                                                    "type": "string",
-                                                    "const": "blocked_file_extension"
+                                                "disabled_channels": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/disabled_channels"
+                                                },
+                                                "immune_roles": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/immune_roles"
+                                                },
+                                                "immune_users": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/immune_users"
                                                 },
                                                 "actions": {
                                                     "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/actions"
@@ -776,6 +811,225 @@
                                                 },
                                                 "data": {
                                                     "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/data"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "const": "blocked_file_extension"
+                                                }
+                                            },
+                                            "required": [
+                                                "type"
+                                            ],
+                                            "additionalProperties": false
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "disabled_channels": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/disabled_channels"
+                                                },
+                                                "immune_roles": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/immune_roles"
+                                                },
+                                                "immune_users": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/immune_users"
+                                                },
+                                                "actions": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/actions"
+                                                },
+                                                "verbal_warning_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/verbal_warning_reason"
+                                                },
+                                                "warning_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/warning_reason"
+                                                },
+                                                "mute_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_reason"
+                                                },
+                                                "common_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/common_reason"
+                                                },
+                                                "mute_duration": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_duration"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "const": "anti_invite"
+                                                },
+                                                "allowed_invite_codes": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "default": []
+                                                },
+                                                "allow_internal_invites": {
+                                                    "type": "boolean",
+                                                    "default": true
+                                                }
+                                            },
+                                            "required": [
+                                                "type"
+                                            ],
+                                            "additionalProperties": false
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "disabled_channels": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/disabled_channels"
+                                                },
+                                                "immune_roles": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/immune_roles"
+                                                },
+                                                "immune_users": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/immune_users"
+                                                },
+                                                "actions": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/actions"
+                                                },
+                                                "verbal_warning_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/verbal_warning_reason"
+                                                },
+                                                "warning_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/warning_reason"
+                                                },
+                                                "mute_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_reason"
+                                                },
+                                                "common_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/common_reason"
+                                                },
+                                                "mute_duration": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_duration"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "const": "regex_filter"
+                                                },
+                                                "patterns": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "anyOf": [
+                                                            {
+                                                                "type": "string"
+                                                            },
+                                                            {
+                                                                "type": "array",
+                                                                "minItems": 2,
+                                                                "maxItems": 2,
+                                                                "items": [
+                                                                    {
+                                                                        "type": "string"
+                                                                    },
+                                                                    {
+                                                                        "type": "string"
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    "default": []
+                                                }
+                                            },
+                                            "required": [
+                                                "type"
+                                            ],
+                                            "additionalProperties": false
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "disabled_channels": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/disabled_channels"
+                                                },
+                                                "immune_roles": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/immune_roles"
+                                                },
+                                                "immune_users": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/immune_users"
+                                                },
+                                                "actions": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/actions"
+                                                },
+                                                "verbal_warning_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/verbal_warning_reason"
+                                                },
+                                                "warning_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/warning_reason"
+                                                },
+                                                "mute_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_reason"
+                                                },
+                                                "common_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/common_reason"
+                                                },
+                                                "mute_duration": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_duration"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "const": "block_repeated_text"
+                                                },
+                                                "max_repeated_chars": {
+                                                    "type": "integer",
+                                                    "default": 20
+                                                },
+                                                "max_repeated_words": {
+                                                    "type": "integer",
+                                                    "default": 15
+                                                }
+                                            },
+                                            "required": [
+                                                "type"
+                                            ],
+                                            "additionalProperties": false
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "disabled_channels": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/disabled_channels"
+                                                },
+                                                "immune_roles": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/immune_roles"
+                                                },
+                                                "immune_users": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/immune_users"
+                                                },
+                                                "actions": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/actions"
+                                                },
+                                                "verbal_warning_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/verbal_warning_reason"
+                                                },
+                                                "warning_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/warning_reason"
+                                                },
+                                                "mute_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_reason"
+                                                },
+                                                "common_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/common_reason"
+                                                },
+                                                "mute_duration": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_duration"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "const": "block_mass_mention"
+                                                },
+                                                "max_mentions": {
+                                                    "type": "integer",
+                                                    "default": 15
+                                                },
+                                                "max_user_mentions": {
+                                                    "type": "integer",
+                                                    "default": -1
+                                                },
+                                                "max_role_mentions": {
+                                                    "type": "integer",
+                                                    "default": -1
                                                 }
                                             },
                                             "required": [
