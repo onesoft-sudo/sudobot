@@ -1,3 +1,18 @@
+# [5.78.0](https://github.com/onesoft-sudo/sudobot/compare/v5.77.0...v5.78.0) (2023-08-22)
+
+
+### Bug Fixes
+
+* **types:** stricter typing ([63e76ae](https://github.com/onesoft-sudo/sudobot/commit/63e76ae6828cd8dd25d1406121f8c655a6fd881b))
+
+
+### Features
+
+* **automod:** add basic message rules ([ab29ca0](https://github.com/onesoft-sudo/sudobot/commit/ab29ca0c5b000ea8f788078893d9c6152a1d563b))
+* **automod:** finish adding all message rule types from v4 ([61b01d6](https://github.com/onesoft-sudo/sudobot/commit/61b01d65e5d0a35068ab255c72f23192058ae0ae))
+
+
+
 # [5.77.0](https://github.com/onesoft-sudo/sudobot/compare/v5.76.0...v5.77.0) (2023-08-22)
 
 
@@ -35,15 +50,6 @@
 ### Features
 
 * **ballots:** automatic upvotes and downvotes ([9edc877](https://github.com/onesoft-sudo/sudobot/commit/9edc877958842c235c90364112f4c8fc541b23c8))
-
-
-
-## [5.74.1](https://github.com/onesoft-sudo/sudobot/compare/v5.74.0...v5.74.1) (2023-08-21)
-
-
-### Bug Fixes
-
-* **types:** add missing onRaw() method ([b03ba95](https://github.com/onesoft-sudo/sudobot/commit/b03ba9513138a1f4370884b302ecd9611263541d))
 
 
 
