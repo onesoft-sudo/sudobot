@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Collection, Guild, GuildMember, GuildPremiumTier, Invite, Vanity } from "discord.js";
+import { Collection, Guild, GuildMember, GuildPremiumTier, Invite, Snowflake, Vanity } from "discord.js";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
@@ -27,7 +27,7 @@ import { wait } from "../utils/utils";
 export const name = "inviteTracker";
 
 export default class InviteTrackerService extends Service implements HasEventListeners {
-    public readonly invites = new Collection<string, number>();
+    public readonly invites = new Collection<`${Snowflake}_${string}`, number>();
 
     @GatewayEventListener("ready")
     async onReady() {
