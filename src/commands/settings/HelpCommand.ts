@@ -63,7 +63,7 @@ export default class HelpCommand extends Command {
     public readonly argumentSyntaxes = ["[command]"];
 
     public readonly commandInformation = new Collection<string, CommandInfo>();
-    public readobly slashCommandBuilder = new SlashCommandBuilder()
+    public readonly slashCommandBuilder = new SlashCommandBuilder()
         .addStringOption(option => option.setName("command").setDescription("Shows help for this command"))
         .addStringOption(option => option.setName("subcommand").setDescription("Shows help for this subcommand"));
     
