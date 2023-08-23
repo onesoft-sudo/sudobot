@@ -1,3 +1,12 @@
+## [5.78.1](https://github.com/onesoft-sudo/sudobot/compare/v5.78.0...v5.78.1) (2023-08-23)
+
+
+### Bug Fixes
+
+* help command crash when using slash command interaction ([05608eb](https://github.com/onesoft-sudo/sudobot/commit/05608eb7280dc724846cb2dc246d90513cecaec9))
+
+
+
 # [5.78.0](https://github.com/onesoft-sudo/sudobot/compare/v5.77.0...v5.78.0) (2023-08-22)
 
 
@@ -41,15 +50,6 @@
 ### Bug Fixes
 
 * **commands:** permission overwrites don't work on some commands ([49201ea](https://github.com/onesoft-sudo/sudobot/commit/49201ea312f9b8bc22ee82b41a28ff0e6e233962))
-
-
-
-# [5.75.0](https://github.com/onesoft-sudo/sudobot/compare/v5.74.1...v5.75.0) (2023-08-21)
-
-
-### Features
-
-* **ballots:** automatic upvotes and downvotes ([9edc877](https://github.com/onesoft-sudo/sudobot/commit/9edc877958842c235c90364112f4c8fc541b23c8))
 
 
 
