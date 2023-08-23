@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Collection, EmbedBuilder, PermissionResolvable, escapeCodeBlock, escapeInlineCode } from "discord.js";
+import { Collection, EmbedBuilder, PermissionResolvable, SlashCommandBuilder, escapeCodeBlock, escapeInlineCode } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import Pagination from "../../utils/Pagination";
@@ -63,7 +63,10 @@ export default class HelpCommand extends Command {
     public readonly argumentSyntaxes = ["[command]"];
 
     public readonly commandInformation = new Collection<string, CommandInfo>();
-
+    public readobly slashCommandBuilder = new SlashCommandBuilder()
+        .addStringOption(option => option.setName("command").setDescription("Shows help for this command"))
+        .addStringOption(option => option.setName("subcommand").setDescription("Shows help for this subcommand"));
+    
     @GatewayEventListener("ready")
     async onReady() {
         log("Attempting to read and extract meta info from all the loaded commands...");
