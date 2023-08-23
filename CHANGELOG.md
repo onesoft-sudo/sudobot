@@ -1,3 +1,12 @@
+## [5.78.2](https://github.com/onesoft-sudo/sudobot/compare/v5.78.1...v5.78.2) (2023-08-23)
+
+
+### Bug Fixes
+
+* syntax error ([b341826](https://github.com/onesoft-sudo/sudobot/commit/b341826633a3160329e8c424c6e45934da53a014))
+
+
+
 ## [5.78.1](https://github.com/onesoft-sudo/sudobot/compare/v5.78.0...v5.78.1) (2023-08-23)
 
 
@@ -41,15 +50,6 @@
 ### Features
 
 * **automod:** add file hash filter ([5d5f680](https://github.com/onesoft-sudo/sudobot/commit/5d5f680b874915f8232a536c161e0063e5855209))
-
-
-
-## [5.75.1](https://github.com/onesoft-sudo/sudobot/compare/v5.75.0...v5.75.1) (2023-08-21)
-
-
-### Bug Fixes
-
-* **commands:** permission overwrites don't work on some commands ([49201ea](https://github.com/onesoft-sudo/sudobot/commit/49201ea312f9b8bc22ee82b41a28ff0e6e233962))
 
 
 
