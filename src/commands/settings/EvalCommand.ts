@@ -52,7 +52,9 @@ export default class EvalCommand extends Command {
             this.deferredReply(message, {
                 embeds: [
                     {
-                        description: `${this.emoji("error")} **Exception occurred**\n\n\`\`\`\n${escapeMarkdown(e.message + "\n" + e.stack)}\n\`\`\``,
+                        description: `${this.emoji("error")} **Exception occurred**\n\n\`\`\`\n${escapeMarkdown(
+                            e.message + "\n" + e.stack
+                        )}\n\`\`\``,
                         color: 0xf14a60
                     }
                 ]
@@ -84,7 +86,7 @@ export default class EvalCommand extends Command {
         this.errorOccurred = false;
 
         const code = context.isLegacy ? context.parsedNamedArgs.code : context.options.getString("code", true);
-        this.deferIfInteraction(message);
+        await this.deferIfInteraction(message);
 
         const exceptionHandler = this.createUncaughtExecptionHandler(message);
         const rejectionHandler = this.createUnhandledRejection(message);
@@ -101,7 +103,7 @@ export default class EvalCommand extends Command {
             }`;
 
             if (!this.errorOccurred) {
-                this.deferredReply(message, {
+                await this.deferredReply(message, {
                     embeds: [
                         {
                             description: `${this.emoji("check")} **Execution succeeded**\n\n${
