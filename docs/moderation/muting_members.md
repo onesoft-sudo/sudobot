@@ -1,5 +1,9 @@
 # Muting members
 
+{% hint style="warning" %}
+This page is partially outdated, and therefore not everything described in this page may work with the latest versions of the bot. Please give us some time and we'll update these pages.
+{% endhint %}
+
 Use the `-mute` command to mute members. This will assign a muted role to the member and each channel is expected to have a permission override for this role which denies the `SEND_MESSAGES` permission.
 
 **Legacy Command**

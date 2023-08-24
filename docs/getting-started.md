@@ -162,8 +162,15 @@ Now it's time to start the bot. Run the following command to start the bot:
 npm start
 ```
 
-And if everything was configured correctly, the bot will log in successfully to Discord.
-Congratulations, you've set up your own instance of SudoBot!
+And if everything was configured correctly, the bot will log in successfully to Discord. Congratulations, you've set up your own instance of SudoBot!
+
+## Emojis
+
+The bot uses some custom emojis and it will try to find those emojis in the Home Guild (The main server, which is configured in `HOME_GUILD_ID` environment variable).&#x20;
+
+The emojs are freely available for download at the [download site](https://www.onesoftnet.eu.org/downloads/sudo/emojis/). The bot uses some other emojis as well, if you want you can download them from [emoji.gg](https://emoji.gg).&#x20;
+
+If you don't add these emojis, the bot may send messages that look weird or too simple.
 
 ## Help & Support
 

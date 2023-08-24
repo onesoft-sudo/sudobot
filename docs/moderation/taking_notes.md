@@ -1,5 +1,9 @@
 # Taking notes for a user
 
+{% hint style="warning" %}
+This page is partially outdated, and therefore not everything described in this page may work with the latest versions of the bot. Please give us some time and we'll update these pages.
+{% endhint %}
+
 **Legacy Command**
 
 ```

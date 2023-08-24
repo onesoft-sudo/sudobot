@@ -1,5 +1,9 @@
 # Banning Users
 
+{% hint style="warning" %}
+This page is partially outdated, and therefore not everything described in this page may work with the latest versions of the bot. Please give us some time and we'll update these pages.
+{% endhint %}
+
 ## Normal Ban
 
 Use the `-ban` command to ban a user, regardless if they are in the server or not.

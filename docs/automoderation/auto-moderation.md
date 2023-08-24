@@ -1,6 +1,12 @@
 # Auto Moderation
 
-## Introduction to SudoBot's Auto Moderation
+{% hint style="warning" %}
+This page is partially outdated, and therefore not everything described in this page may work with the latest versions of the bot. Please give us some time and we'll update these pages.
+{% endhint %}
+
+{% hint style="info" %}
+However, the Auto Moderation features listed below are available as before. There might be a little configuration changes, though. But that's not a big deal.
+{% endhint %}
 
 SudoBot can also auto moderate your server(s). You need to configure it according to your needs, which can be done at the dashboard or if you're an advanced user, you can use the `/config` slash command with appropriate options.
 
