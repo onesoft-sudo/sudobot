@@ -1,4 +1,4 @@
-import "../utils/setup";
+import "../setup";
 
 import assert from "assert";
 import {
@@ -15,7 +15,7 @@ import fs from "fs";
 import fsPromises from "fs/promises";
 import { after, before, beforeEach, describe, it, test } from "node:test";
 import Client from "../../src/core/Client";
-import { randomSnowflake } from "../utils/utils";
+import { randomSnowflake } from "../utils";
 
 const GUILD_ID = randomSnowflake();
 
