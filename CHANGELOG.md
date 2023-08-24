@@ -1,3 +1,13 @@
+## [5.78.3](https://github.com/onesoft-sudo/sudobot/compare/v5.78.2...v5.78.3) (2023-08-24)
+
+
+### Bug Fixes
+
+* eval command not working when invoked in interaction mode ([e815685](https://github.com/onesoft-sudo/sudobot/commit/e815685b94f166dcf341cb61a327b56976035c90))
+* **paginator:** crashing due to not having emojis added ([00b7dc0](https://github.com/onesoft-sudo/sudobot/commit/00b7dc093c97bc7aca73bb97f87a93c9c0c7ced9))
+
+
+
 ## [5.78.2](https://github.com/onesoft-sudo/sudobot/compare/v5.78.1...v5.78.2) (2023-08-23)
 
 
@@ -41,15 +51,6 @@
 * **automod:** load the message rule service ([2fc3c5a](https://github.com/onesoft-sudo/sudobot/commit/2fc3c5a9073441871aafdebb3214fa0dfc4cb033))
 * **logger:** log message rule actions ([4963231](https://github.com/onesoft-sudo/sudobot/commit/496323145888d93f8f818ab1e170fa0af619b454))
 * **utils:** add escapeRegex() function ([348b338](https://github.com/onesoft-sudo/sudobot/commit/348b33851e0c4e1b15a79c40ad98c519ccef84e7))
-
-
-
-# [5.76.0](https://github.com/onesoft-sudo/sudobot/compare/v5.75.1...v5.76.0) (2023-08-21)
-
-
-### Features
-
-* **automod:** add file hash filter ([5d5f680](https://github.com/onesoft-sudo/sudobot/commit/5d5f680b874915f8232a536c161e0063e5855209))
 
 
 
