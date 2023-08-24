@@ -11,29 +11,10 @@ import {
     PermissionsString
 } from "discord.js";
 import { RawGuildMemberData } from "discord.js/typings/rawDataTypes";
-import fs from "fs";
-import fsPromises from "fs/promises";
 import { after, before, beforeEach, describe, it, test } from "node:test";
 import Client from "../../src/core/Client";
+import { GUILD_ID, registerFileHandler, unregisterFileHandler } from "../clientsetup";
 import { randomSnowflake } from "../utils";
-
-const GUILD_ID = randomSnowflake();
-
-function fileHandler(path: any) {
-    if (path === configPath) {
-        return `
-            {
-                "${GUILD_ID}": {}
-            }
-        `;
-    } else if (path === systemConfigPath) {
-        return `
-            {
-                "system_admins": ["${randomSnowflake()}"]
-            }
-        `;
-    }
-}
 
 const client = new Client(
     {
@@ -44,9 +25,6 @@ const client = new Client(
     }
 );
 
-const readFileSync = fs.readFileSync;
-const readFile = fsPromises.readFile;
-
 describe("Permission Manager", () => {
     let owner_id: string, user_id: string, mod_role: string, admin_role: string;
     let roles: APIRole[];
@@ -54,17 +32,12 @@ describe("Permission Manager", () => {
     let normalMember: GuildMember, moderatorMember: GuildMember, adminMember: GuildMember, adminOnlyMember: GuildMember;
 
     before(() => {
-        (fs as any).readFileSync = (path: string, ...args: [any]) =>
-            path === configPath || path === systemConfigPath ? fileHandler(path) : readFileSync(path, ...args);
-        (fsPromises as any).readFile = (path: string, ...args: [any]) =>
-            path === configPath || path === systemConfigPath ? fileHandler(path) : readFile(path, ...args);
-
+        registerFileHandler();
         return client.boot();
     });
 
     after(() => {
-        (fs as any).readFileSync = readFileSync;
-        (fsPromises as any).readFile = readFile;
+        unregisterFileHandler();
     });
 
     test("Initialization", () => {
