@@ -1,11 +1,17 @@
 # Warning members
 
-##### Legacy Command
+{% hint style="warning" %}
+This page is partially outdated, and therefore not everything described in this page may work with the latest versions of the bot. Please give us some time and we'll update these pages.
+{% endhint %}
+
+**Legacy Command**
+
 ```
 -warn <UserID|UserMention|UserTag> [Reason]
 ```
 
-##### Slash Command
+**Slash Command**
+
 ```
 /warn <User> [Reason]
 ```
@@ -19,12 +25,14 @@
 
 ## Deleting warnings
 
-##### Legacy Command
+**Legacy Command**
+
 ```
 -warning remove <ID>
 ```
 
-##### Slash Command
+**Slash Command**
+
 ```
 /warning remove <ID>
 ```
@@ -37,12 +45,14 @@
 
 ## Deleting all warnings for a user
 
-##### Legacy Command
+**Legacy Command**
+
 ```
 -warning clear <UserID|UserTag|UserMention>
 ```
 
-##### Slash Command
+**Slash Command**
+
 ```
 /warning clear <User>
 ```
@@ -55,12 +65,14 @@
 
 ## Viewing warnings
 
-##### Legacy Command
+**Legacy Command**
+
 ```
 -warning view <ID>
 ```
 
-##### Slash Command
+**Slash Command**
+
 ```
 /warning view <ID>
 ```

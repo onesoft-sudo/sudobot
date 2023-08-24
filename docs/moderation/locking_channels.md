@@ -1,5 +1,9 @@
 # Locking Channels
 
+{% hint style="warning" %}
+This page is partially outdated, and therefore not everything described in this page may work with the latest versions of the bot. Please give us some time and we'll update these pages.
+{% endhint %}
+
 You can lock channels using `-lock` command. This sets a permission override to the target channel that denies `SEND_MESSAGES` permission for `@everyone` role.
 
 {% hint style="warning" %}
