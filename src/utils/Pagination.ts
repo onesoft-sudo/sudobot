@@ -81,7 +81,9 @@ export default class Pagination<T> {
         optionsToMerge: MessageOptions = {}
     ) {
         const options = { ...this.options.messageOptions, ...optionsToMerge };
-        const actionRowOptionsDup = actionRowOptions ? { ...actionRowOptions } : { first: true, last: true, next: true, back: true };
+        const actionRowOptionsDup = actionRowOptions
+            ? { ...actionRowOptions }
+            : { first: true, last: true, next: true, back: true };
 
         if (this.options.maxData && this.maxPage === 0)
             this.maxPage = await this.options.maxData({
@@ -130,22 +132,22 @@ export default class Pagination<T> {
                 .setCustomId(`pagination_first_${this.id}`)
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(!first)
-                .setEmoji(getEmoji(this.client, "ArrowLeft")!),
+                .setEmoji(getEmoji(this.client, "ArrowLeft") ?? "⏮️"),
             new ButtonBuilder()
                 .setCustomId(`pagination_back_${this.id}`)
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(!back)
-                .setEmoji(getEmoji(this.client, "ChevronLeft")!),
+                .setEmoji(getEmoji(this.client, "ChevronLeft") ?? "◀️"),
             new ButtonBuilder()
                 .setCustomId(`pagination_next_${this.id}`)
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(!next)
-                .setEmoji(getEmoji(this.client, "ChevronRight")!),
+                .setEmoji(getEmoji(this.client, "ChevronRight") ?? "▶️"),
             new ButtonBuilder()
                 .setCustomId(`pagination_last_${this.id}`)
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(!last)
-                .setEmoji(getEmoji(this.client, "ArrowRight")!)
+                .setEmoji(getEmoji(this.client, "ArrowRight") ?? "⏭️")
         );
 
         return actionRow;
@@ -165,7 +167,10 @@ export default class Pagination<T> {
                 }
 
                 if (interaction.isRepliable()) {
-                    interaction.reply({ content: "That's not under your control or the button controls are expired", ephemeral: true });
+                    interaction.reply({
+                        content: "That's not under your control or the button controls are expired",
+                        ephemeral: true
+                    });
                 }
 
                 return false;
@@ -186,7 +191,10 @@ export default class Pagination<T> {
 
                 if (this.currentPage >= maxPage && interaction.customId === `pagination_next_${this.id}`) {
                     log("here");
-                    await interaction.reply({ content: maxPage === 1 ? "This is the only page!" : "You've reached the last page!", ephemeral: true });
+                    await interaction.reply({
+                        content: maxPage === 1 ? "This is the only page!" : "You've reached the last page!",
+                        ephemeral: true
+                    });
                     return;
                 }
 
@@ -270,5 +278,8 @@ export interface PaginationOptions<T> {
     fetchData?: (options: FetchDataOption) => Promise<T[]>;
     messageOptions?: MessageOptions;
     embedBuilder: (options: EmbedBuilderOptions<T>) => EmbedBuilder;
-    actionRowBuilder?: (options: { first: boolean; last: boolean; next: boolean; back: boolean }, id: string) => ActionRowBuilder<ButtonBuilder>;
+    actionRowBuilder?: (
+        options: { first: boolean; last: boolean; next: boolean; back: boolean },
+        id: string
+    ) => ActionRowBuilder<ButtonBuilder>;
 }
