@@ -54,18 +54,20 @@ export default class AFKService extends Service implements HasEventListeners {
         return this.startAFK(guildId, userId, reason);
     }
 
-    async removeAFK(guildId: string, userId: string) {
+    async removeAFK(guildId: string, userId: string, shouldAwait: boolean = true) {
         const entry = this.entries.get(`${guildId}_${userId}`)!;
 
         if (!entry) {
             return null;
         }
 
-        await this.client.prisma.afkEntry.deleteMany({
+        const promise = this.client.prisma.afkEntry.deleteMany({
             where: {
                 id: entry.id
             }
         });
+
+        shouldAwait ? await promise : null;
 
         this.entries.delete(`${guildId}_${userId}`);
         return entry;
@@ -128,7 +130,7 @@ export default class AFKService extends Service implements HasEventListeners {
         }
 
         if (this.isAFK(message.guildId!, message.author.id)) {
-            const entry = await this.removeAFK(message.guildId!, message.author.id);
+            const entry = await this.removeAFK(message.guildId!, message.author.id, false);
 
             await message.reply({
                 embeds: [
