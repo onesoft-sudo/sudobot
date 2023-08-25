@@ -1,3 +1,12 @@
+## [5.78.4](https://github.com/onesoft-sudo/sudobot/compare/v5.78.3...v5.78.4) (2023-08-25)
+
+
+### Bug Fixes
+
+* **afkservice:** afk remove message gets sent twice ([ef9efe3](https://github.com/onesoft-sudo/sudobot/commit/ef9efe3147746a0d217f8d6ace254035f84626bf))
+
+
+
 ## [5.78.3](https://github.com/onesoft-sudo/sudobot/compare/v5.78.2...v5.78.3) (2023-08-24)
 
 
@@ -38,19 +47,6 @@
 
 * **automod:** add basic message rules ([ab29ca0](https://github.com/onesoft-sudo/sudobot/commit/ab29ca0c5b000ea8f788078893d9c6152a1d563b))
 * **automod:** finish adding all message rule types from v4 ([61b01d6](https://github.com/onesoft-sudo/sudobot/commit/61b01d65e5d0a35068ab255c72f23192058ae0ae))
-
-
-
-# [5.77.0](https://github.com/onesoft-sudo/sudobot/compare/v5.76.0...v5.77.0) (2023-08-22)
-
-
-### Features
-
-* add message rule types ([b6be033](https://github.com/onesoft-sudo/sudobot/commit/b6be033387d5bd164e88a26a800ff1f076104240))
-* **automod:** add message rule service ([261f8d4](https://github.com/onesoft-sudo/sudobot/commit/261f8d4c69cbef1614f5458062c222aeb648bdfa))
-* **automod:** load the message rule service ([2fc3c5a](https://github.com/onesoft-sudo/sudobot/commit/2fc3c5a9073441871aafdebb3214fa0dfc4cb033))
-* **logger:** log message rule actions ([4963231](https://github.com/onesoft-sudo/sudobot/commit/496323145888d93f8f818ab1e170fa0af619b454))
-* **utils:** add escapeRegex() function ([348b338](https://github.com/onesoft-sudo/sudobot/commit/348b33851e0c4e1b15a79c40ad98c519ccef84e7))
 
 
 
