@@ -80,7 +80,8 @@ export const GuildConfigSchema = z.object({
                     message_edit: z.boolean().default(true),
                     message_delete: z.boolean().default(true),
                     member_join: z.boolean().default(true),
-                    member_leave: z.boolean().default(true)
+                    member_leave: z.boolean().default(true),
+                    message_bulk_delete: z.boolean().default(true)
                 })
                 .default({
                     message_edit: true,

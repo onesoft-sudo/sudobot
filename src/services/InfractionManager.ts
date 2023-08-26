@@ -576,7 +576,11 @@ export default class InfractionManager extends Service {
                   })
                 : { id: 0 };
 
-            if (sendLog) {
+            if (
+                sendLog &&
+                this.client.configManager.config[messageChannel.guildId!]?.logging?.enabled &&
+                this.client.configManager.config[messageChannel.guildId!]?.logging?.events.message_bulk_delete
+            ) {
                 this.client.logger
                     .logBulkDeleteMessages({
                         channel: messageChannel,
