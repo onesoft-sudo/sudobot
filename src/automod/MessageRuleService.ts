@@ -42,7 +42,8 @@ const handlers: Record<MessageRuleType["type"], Extract<keyof MessageRuleService
     anti_invite: "ruleAntiInvite",
     regex_filter: "ruleRegexFilter",
     block_repeated_text: "ruleRepeatedText",
-    block_mass_mention: "ruleBlockMassMention"
+    block_mass_mention: "ruleBlockMassMention",
+    regex_must_match: "ruleRegexMustMatch"
 };
 
 type MessageRuleAction = MessageRuleType["actions"][number];
@@ -329,6 +330,29 @@ export default class MessageRuleService extends Service implements HasEventListe
         }
 
         return null;
+    }
+
+    async ruleRegexMustMatch(message: Message, rule: Extract<MessageRuleType, { type: "regex_must_match" }>) {
+        if (message.content.trim() === "") {
+            return null;
+        }
+
+        const { patterns } = rule;
+
+        for (const pattern of patterns) {
+            const regex = new RegExp(
+                typeof pattern === "string" ? pattern : pattern[0],
+                typeof pattern === "string" ? "gi" : pattern[1]
+            );
+
+            if (regex.test(message.content)) {
+                return null;
+            }
+        }
+
+        return {
+            title: "Message did not match with the specified regex patterns"
+        };
     }
 
     async ruleRegexFilter(message: Message, rule: Extract<MessageRuleType, { type: "regex_filter" }>) {

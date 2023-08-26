@@ -51,6 +51,12 @@ export const RegexFilterRule = z.object({
     patterns: z.array(z.string().or(z.tuple([z.string(), z.string()]))).default([])
 });
 
+export const RegexMustMatchRule = z.object({
+    ...Common,
+    type: z.literal("regex_must_match"),
+    patterns: z.array(z.string().or(z.tuple([z.string(), z.string()]))).default([])
+});
+
 export const BlockRepeatedTextRule = z.object({
     ...Common,
     type: z.literal("block_repeated_text"),
@@ -73,7 +79,8 @@ export const MessageRuleSchema = z.union([
     AntiInviteRule,
     RegexFilterRule,
     BlockRepeatedTextRule,
-    BlockMassMentionRule
+    BlockMassMentionRule,
+    RegexMustMatchRule
 ]);
 
 export type MessageRuleType = z.infer<typeof MessageRuleSchema>;
