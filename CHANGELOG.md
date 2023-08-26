@@ -1,3 +1,12 @@
+# [5.80.0](https://github.com/onesoft-sudo/sudobot/compare/v5.79.0...v5.80.0) (2023-08-26)
+
+
+### Features
+
+* **message_rules:** add strict regex rule ([e9a3387](https://github.com/onesoft-sudo/sudobot/commit/e9a3387ac81bdc4d0d5fe1bac01a9f336f003cd4))
+
+
+
 # [5.79.0](https://github.com/onesoft-sudo/sudobot/compare/v5.78.4...v5.79.0) (2023-08-26)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * syntax error ([b341826](https://github.com/onesoft-sudo/sudobot/commit/b341826633a3160329e8c424c6e45934da53a014))
-
-
-
-## [5.78.1](https://github.com/onesoft-sudo/sudobot/compare/v5.78.0...v5.78.1) (2023-08-23)
-
-
-### Bug Fixes
-
-* help command crash when using slash command interaction ([05608eb](https://github.com/onesoft-sudo/sudobot/commit/05608eb7280dc724846cb2dc246d90513cecaec9))
 
 
 
