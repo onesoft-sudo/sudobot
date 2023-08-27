@@ -104,7 +104,6 @@ model PermissionRole {
     roles              String[] @default([])
     users              String[] @default([])
     grantedPermissions String[] @default([])
-    level              Int?
     createdAt          DateTime @default(now())
     updatedAt          DateTime @default(now()) @updatedAt
     snippet            Snippet? @relation(fields: [snippetId], references: [id])
@@ -206,4 +205,17 @@ model Ballot {
     updatedAt DateTime @default(now()) @updatedAt
 
     @@map("ballots")
+}
+
+model PermissionLevel {
+    id                 Int      @id @default(autoincrement())
+    guildId            String
+    level              Int
+    grantedPermissions String[] @default([])
+    roles              String[] @default([])
+    users              String[] @default([])
+    createdAt          DateTime @default(now())
+    updatedAt          DateTime @default(now()) @updatedAt
+
+    @@map("permission_levels")
 }
