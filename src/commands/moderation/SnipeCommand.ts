@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { EmbedBuilder, Message, PartialMessage, PermissionsBitField } from "discord.js";
+import { ChannelType, EmbedBuilder, Message, PartialMessage, PermissionsBitField } from "discord.js";
 import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import { HasEventListeners } from "../../types/HasEventListeners";
@@ -26,21 +26,21 @@ export default class SnipeCommand extends Command implements HasEventListeners {
     public readonly name = "snipe";
     public readonly validationRules: ValidationRule[] = [];
     public readonly permissions = [PermissionsBitField.Flags.ManageMessages];
-    protected lastDeletedMessage: Message<boolean> | PartialMessage | undefined;
+    protected lastDeletedMessages = new Map<Snowflake, Message<boolean> | PartialMessage | undefined>();
 
     public readonly description = "Reposts the last deleted message.";
 
     @GatewayEventListener("messageDelete")
     onMessageDelete(message: Message<boolean> | PartialMessage) {
-        if (this.lastDeletedMessage && !this.lastDeletedMessage.content) {
+        if (!message.content || message.channel.type === ChannelType.DM) {
             return;
         }
 
-        this.lastDeletedMessage = message;
+        this.lastDeletedMessages.set(message.guildId!, message);
     }
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
-        const { lastDeletedMessage } = this;
+        const lastDeletedMessage = this.lastDeletedMessages.get(message.guildId!);
 
         if (!lastDeletedMessage) {
             await this.error(message, `No deleted message was recorded yet.`);
