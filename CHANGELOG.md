@@ -1,3 +1,12 @@
+## [5.82.1](https://github.com/onesoft-sudo/sudobot/compare/v5.82.0...v5.82.1) (2023-08-27)
+
+
+### Bug Fixes
+
+* remove `data` property from `DomainRule` since it uses `domains` property instead ([2b291d6](https://github.com/onesoft-sudo/sudobot/commit/2b291d6a8c7fddee3d61abcb145c8315d1707baa))
+
+
+
 # [5.82.0](https://github.com/onesoft-sudo/sudobot/compare/v5.81.0...v5.82.0) (2023-08-27)
 
 
@@ -37,15 +46,6 @@
 ### Bug Fixes
 
 * interaction not deferred issue when running a disabled command using slash command mode ([8e94284](https://github.com/onesoft-sudo/sudobot/commit/8e942845989c0f9f034a88a7c91242a3af85b8a5))
-
-
-
-## [5.80.1](https://github.com/onesoft-sudo/sudobot/compare/v5.80.0...v5.80.1) (2023-08-27)
-
-
-### Bug Fixes
-
-* infraction create command returns interaction already deferred error ([c237463](https://github.com/onesoft-sudo/sudobot/commit/c237463cd40a1a8db2b758f21c59d9ce6b8b2373))
 
 
 
