@@ -1,3 +1,17 @@
+# [5.82.0](https://github.com/onesoft-sudo/sudobot/compare/v5.81.0...v5.82.0) (2023-08-27)
+
+
+### Bug Fixes
+
+* const issues ([28349a2](https://github.com/onesoft-sudo/sudobot/commit/28349a2212072cba1324c8fe4ae3f54e94b88abd))
+
+
+### Features
+
+* **message_rules:** changed blockDomain rule into domain rule for allowing & disallowing ([c366ca5](https://github.com/onesoft-sudo/sudobot/commit/c366ca518623d7a572bdb94fe4551a2f6b220733))
+
+
+
 # [5.81.0](https://github.com/onesoft-sudo/sudobot/compare/v5.80.3...v5.81.0) (2023-08-27)
 
 
@@ -32,15 +46,6 @@
 ### Bug Fixes
 
 * infraction create command returns interaction already deferred error ([c237463](https://github.com/onesoft-sudo/sudobot/commit/c237463cd40a1a8db2b758f21c59d9ce6b8b2373))
-
-
-
-# [5.80.0](https://github.com/onesoft-sudo/sudobot/compare/v5.79.0...v5.80.0) (2023-08-26)
-
-
-### Features
-
-* **message_rules:** add strict regex rule ([e9a3387](https://github.com/onesoft-sudo/sudobot/commit/e9a3387ac81bdc4d0d5fe1bac01a9f336f003cd4))
 
 
 
