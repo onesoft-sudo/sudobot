@@ -19,10 +19,12 @@ const Common = {
     mute_duration: z.number().int().default(-1)
 };
 
-export const BlockedDomainRule = z.object({
+export const DomainRule = z.object({
     ...Common,
     ...hasStringArrayData,
-    type: z.literal("blocked_domain"),
+    type: z.literal("domain"),
+    mode: z.enum(["allow", "disallow"]).default("disallow"),
+    domains: z.array(z.string()).default([]),
     scan_links_only: z.boolean().default(false)
 });
 
@@ -73,7 +75,7 @@ export const BlockMassMentionRule = z.object({
 });
 
 export const MessageRuleSchema = z.union([
-    BlockedDomainRule,
+    DomainRule,
     BlockedMimeTypeRule,
     BlockedFileExtensionRule,
     AntiInviteRule,
