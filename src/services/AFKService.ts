@@ -23,7 +23,7 @@ import { ChannelType, GuildMember, Message, Snowflake, escapeMarkdown, time } fr
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { logError } from "../utils/logger";
+import { log, logError } from "../utils/logger";
 
 export const name = "afkService";
 
@@ -67,7 +67,7 @@ export default class AFKService extends Service implements HasEventListeners {
             }
         });
 
-        shouldAwait ? await promise : null;
+        shouldAwait ? await promise : promise.then(log);
 
         this.entries.delete(`${guildId}_${userId}`);
         return entry;
