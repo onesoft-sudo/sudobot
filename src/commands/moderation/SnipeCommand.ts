@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ChannelType, EmbedBuilder, Message, PartialMessage, PermissionsBitField } from "discord.js";
+import { Snowflake, ChannelType, EmbedBuilder, Message, PartialMessage, PermissionsBitField } from "discord.js";
 import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import { HasEventListeners } from "../../types/HasEventListeners";
