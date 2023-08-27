@@ -1,3 +1,12 @@
+## [6.0.1](https://github.com/onesoft-sudo/sudobot/compare/v6.0.0...v6.0.1) (2023-08-27)
+
+
+### Bug Fixes
+
+* snipe command not working correctly in multiple servers at the same time ([b17186a](https://github.com/onesoft-sudo/sudobot/commit/b17186a13d6e1bad65807ffecd931ede20ee31df))
+
+
+
 # [6.0.0](https://github.com/onesoft-sudo/sudobot/compare/v5.82.1...v6.0.0) (2023-08-27)
 
 
@@ -41,15 +50,6 @@ and the new schema is a bit different, so you may need to re-organize the permis
 
 * **commandPermissionOverwrites:** add OR mode ([fd4c0e1](https://github.com/onesoft-sudo/sudobot/commit/fd4c0e156d3cee24a0cf86f699e6a86465c7902d))
 * **permissionOverwrites:** add support of OR mode for every permission check ([c51ebe3](https://github.com/onesoft-sudo/sudobot/commit/c51ebe3f3dc5a166e12da798fed86ee56b7dae1a))
-
-
-
-## [5.80.3](https://github.com/onesoft-sudo/sudobot/compare/v5.80.2...v5.80.3) (2023-08-27)
-
-
-### Bug Fixes
-
-* afk entries not being removed ([682b243](https://github.com/onesoft-sudo/sudobot/commit/682b2430c42a576b377bd693966d9f9494119742))
 
 
 
