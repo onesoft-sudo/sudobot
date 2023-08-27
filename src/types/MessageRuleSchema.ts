@@ -21,7 +21,6 @@ const Common = {
 
 export const DomainRule = z.object({
     ...Common,
-    ...hasStringArrayData,
     type: z.literal("domain"),
     mode: z.enum(["allow", "disallow"]).default("disallow"),
     domains: z.array(z.string()).default([]),
