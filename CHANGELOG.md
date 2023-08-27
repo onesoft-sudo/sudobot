@@ -1,3 +1,16 @@
+# [6.0.0](https://github.com/onesoft-sudo/sudobot/compare/v5.82.1...v6.0.0) (2023-08-27)
+
+
+* feat(permissions)!: add possibility to customize permissions of each level ([fc7e237](https://github.com/onesoft-sudo/sudobot/commit/fc7e237faf0e6fd03d352c4594f28b1ff43f7f42))
+
+
+### BREAKING CHANGES
+
+* You must run `npx prisma db push` to update the database schema,
+and the new schema is a bit different, so you may need to re-organize the permission levels.
+
+
+
 ## [5.82.1](https://github.com/onesoft-sudo/sudobot/compare/v5.82.0...v5.82.1) (2023-08-27)
 
 
@@ -37,15 +50,6 @@
 ### Bug Fixes
 
 * afk entries not being removed ([682b243](https://github.com/onesoft-sudo/sudobot/commit/682b2430c42a576b377bd693966d9f9494119742))
-
-
-
-## [5.80.2](https://github.com/onesoft-sudo/sudobot/compare/v5.80.1...v5.80.2) (2023-08-27)
-
-
-### Bug Fixes
-
-* interaction not deferred issue when running a disabled command using slash command mode ([8e94284](https://github.com/onesoft-sudo/sudobot/commit/8e942845989c0f9f034a88a7c91242a3af85b8a5))
 
 
 
