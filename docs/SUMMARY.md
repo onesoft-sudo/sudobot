@@ -14,6 +14,7 @@
   * [Other moderation commands](moderation/other\_moderation\_commands.md)
   * [Taking notes for a user](moderation/taking\_notes.md)
   * [Warning members](moderation/warning\_members.md)
+* [Permission System](permission-system.md)
 * [Auto Moderation](automoderation/README.md)
   * [Auto Moderation](automoderation/auto-moderation.md)
 * [Legal](legal/README.md)
