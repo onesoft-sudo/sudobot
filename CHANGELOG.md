@@ -1,3 +1,13 @@
+# [5.81.0](https://github.com/onesoft-sudo/sudobot/compare/v5.80.3...v5.81.0) (2023-08-27)
+
+
+### Features
+
+* **commandPermissionOverwrites:** add OR mode ([fd4c0e1](https://github.com/onesoft-sudo/sudobot/commit/fd4c0e156d3cee24a0cf86f699e6a86465c7902d))
+* **permissionOverwrites:** add support of OR mode for every permission check ([c51ebe3](https://github.com/onesoft-sudo/sudobot/commit/c51ebe3f3dc5a166e12da798fed86ee56b7dae1a))
+
+
+
 ## [5.80.3](https://github.com/onesoft-sudo/sudobot/compare/v5.80.2...v5.80.3) (2023-08-27)
 
 
@@ -31,15 +41,6 @@
 ### Features
 
 * **message_rules:** add strict regex rule ([e9a3387](https://github.com/onesoft-sudo/sudobot/commit/e9a3387ac81bdc4d0d5fe1bac01a9f336f003cd4))
-
-
-
-# [5.79.0](https://github.com/onesoft-sudo/sudobot/compare/v5.78.4...v5.79.0) (2023-08-26)
-
-
-### Features
-
-* add possibility to turn off bulk delete message logging ([07e38af](https://github.com/onesoft-sudo/sudobot/commit/07e38af01d93de7a781e7e77dd4c4af3287c6953))
 
 
 
