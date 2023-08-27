@@ -43,8 +43,6 @@ export default class InfractionListCommand extends Command {
     public readonly argumentSyntaxes = ["<UserID|UserMention>"];
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
-        await this.deferIfInteraction(message);
-
         const user: User = context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user", true);
 
         const infractions = await this.client.prisma.infraction.findMany({

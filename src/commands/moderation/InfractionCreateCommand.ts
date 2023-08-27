@@ -43,16 +43,14 @@ export default class InfractionCreateCommand extends Command {
         const parsedDuration = duration ? stringToTimeInterval(duration) : null;
 
         if (parsedDuration && parsedDuration.error) {
-            await interaction.reply(`${this.emoji("error")} ${parsedDuration.error} provided in the \`duration\` field`);
+            await interaction.editReply(`${this.emoji("error")} ${parsedDuration.error} provided in the \`duration\` field`);
             return;
         }
 
         if (!(type in InfractionType)) {
-            await interaction.reply(`${this.emoji("error")} Invalid infraction type provided in the \`type\` field`);
+            await interaction.editReply(`${this.emoji("error")} Invalid infraction type provided in the \`type\` field`);
             return;
         }
-
-        await interaction.deferReply();
 
         try {
             const member = interaction.guild!.members.cache.get(user.id) ?? (await interaction.guild!.members.fetch(user.id));
