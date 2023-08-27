@@ -719,16 +719,24 @@
                                                     "type": "integer",
                                                     "default": -1
                                                 },
-                                                "data": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "const": "domain"
+                                                },
+                                                "mode": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "allow",
+                                                        "disallow"
+                                                    ],
+                                                    "default": "disallow"
+                                                },
+                                                "domains": {
                                                     "type": "array",
                                                     "items": {
                                                         "type": "string"
                                                     },
                                                     "default": []
-                                                },
-                                                "type": {
-                                                    "type": "string",
-                                                    "const": "blocked_domain"
                                                 },
                                                 "scan_links_only": {
                                                     "type": "boolean",
@@ -771,7 +779,11 @@
                                                     "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_duration"
                                                 },
                                                 "data": {
-                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/data"
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "default": []
                                                 },
                                                 "type": {
                                                     "type": "string",
@@ -814,7 +826,7 @@
                                                     "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_duration"
                                                 },
                                                 "data": {
-                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/data"
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/1/properties/data"
                                                 },
                                                 "type": {
                                                     "type": "string",
