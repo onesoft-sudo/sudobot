@@ -211,8 +211,8 @@ export default class SnippetManager extends Service {
 
         const snippetPermissions =
             guildUsesPermissionLevels && typeof snippet.level === "number"
-                ? this.client.permissionManager.levels[snippet.level] ?? ["Administrator"]
-                : this.client.permissionManager.getPermissionsFromPermissionRoles(snippet.permission_roles, guildId);
+                ? this.client.permissionManager.getPermissionsFromLevel(guildId, snippet.level) ?? ["Administrator"]
+                : this.client.permissionManager.getPermissionsFromEntries(snippet.permission_roles);
 
         for (const permission of snippetPermissions) {
             if (!memberPermissions.has(permission)) {

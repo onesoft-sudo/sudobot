@@ -245,7 +245,7 @@ export default class ProfileCommand extends Command {
         let permissionPercentage = 0;
 
         if (this.client.configManager.config[message.guildId!]?.permissions.mode === "levels") {
-            permissionPercentage = this.client.permissionManager.getMemberPermissionLevel(member);
+            permissionPercentage = this.client.permissionManager.getMemberPermissionLevel(member).level;
         } else {
             permissionPercentage = getPermissionLevel(member, false) as number;
         }

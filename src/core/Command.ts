@@ -342,7 +342,7 @@ export default abstract class Command {
                     }
 
                     if (mode === "levels" && permissionOverwrite.requiredLevel !== null) {
-                        const level = this.client.permissionManager.getMemberPermissionLevel(member);
+                        const { level } = this.client.permissionManager.getMemberPermissionLevel(member);
                         levelCheckPassed = level >= permissionOverwrite.requiredLevel;
 
                         log("level", level, "<", permissionOverwrite.requiredLevel);

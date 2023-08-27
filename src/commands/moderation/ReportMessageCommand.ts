@@ -57,7 +57,7 @@ export default class ReportMessageCommand extends Command {
             config?.permissionLevel !== undefined &&
             config?.permissionLevel >= 0 &&
             this.client.configManager.config[interaction.guildId!]?.permissions.mode === "levels" &&
-            this.client.permissionManager.getMemberPermissionLevel(member) >= config?.permissionLevel
+            this.client.permissionManager.getMemberPermissionLevel(member).level >= config?.permissionLevel
         ) {
             return true;
         }

@@ -164,7 +164,7 @@ export default class ReactionRoleService extends Service implements HasEventList
             }
 
             if (usesLevels && entry.level) {
-                const level = this.client.permissionManager.getMemberPermissionLevel(member);
+                const { level } = this.client.permissionManager.getMemberPermissionLevel(member);
 
                 if (level < entry.level) {
                     log("Member does not have the required permission level");
