@@ -1,3 +1,12 @@
+## [6.0.2](https://github.com/onesoft-sudo/sudobot/compare/v6.0.1...v6.0.2) (2023-08-27)
+
+
+### Bug Fixes
+
+* add missing imports ([513e6cc](https://github.com/onesoft-sudo/sudobot/commit/513e6ccfecebe14aeeb611525539313bef264ca3))
+
+
+
 ## [6.0.1](https://github.com/onesoft-sudo/sudobot/compare/v6.0.0...v6.0.1) (2023-08-27)
 
 
@@ -40,16 +49,6 @@ and the new schema is a bit different, so you may need to re-organize the permis
 ### Features
 
 * **message_rules:** changed blockDomain rule into domain rule for allowing & disallowing ([c366ca5](https://github.com/onesoft-sudo/sudobot/commit/c366ca518623d7a572bdb94fe4551a2f6b220733))
-
-
-
-# [5.81.0](https://github.com/onesoft-sudo/sudobot/compare/v5.80.3...v5.81.0) (2023-08-27)
-
-
-### Features
-
-* **commandPermissionOverwrites:** add OR mode ([fd4c0e1](https://github.com/onesoft-sudo/sudobot/commit/fd4c0e156d3cee24a0cf86f699e6a86465c7902d))
-* **permissionOverwrites:** add support of OR mode for every permission check ([c51ebe3](https://github.com/onesoft-sudo/sudobot/commit/c51ebe3f3dc5a166e12da798fed86ee56b7dae1a))
 
 
 
