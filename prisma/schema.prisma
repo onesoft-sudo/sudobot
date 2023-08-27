@@ -169,23 +169,24 @@ model AfkEntry {
     @@map("afk_entries")
 }
 
-enum RequiredPermissionLogicMode {
+enum PermissionLogicMode {
     OR
     AND
 }
 
 model CommandPermissionOverwrites {
-    id                     Int                         @id @default(autoincrement())
+    id                     Int                 @id @default(autoincrement())
     guildId                String
     commands               String[]
-    requiredPermissions    String[]                    @default([])
-    requiredPermissionMode RequiredPermissionLogicMode @default(AND)
-    requiredRoles          String[]                    @default([])
-    requiredUsers          String[]                    @default([])
-    requiredChannels       String[]                    @default([])
+    requiredPermissions    String[]            @default([])
+    requiredPermissionMode PermissionLogicMode @default(AND)
+    mode                   PermissionLogicMode @default(AND)
+    requiredRoles          String[]            @default([])
+    requiredUsers          String[]            @default([])
+    requiredChannels       String[]            @default([])
     requiredLevel          Int?
-    createdAt              DateTime                    @default(now())
-    updatedAt              DateTime                    @default(now()) @updatedAt
+    createdAt              DateTime            @default(now())
+    updatedAt              DateTime            @default(now()) @updatedAt
 
     @@map("command_permission_overwrites")
 }

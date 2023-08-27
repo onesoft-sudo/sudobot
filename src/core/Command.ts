@@ -335,6 +335,8 @@ export default abstract class Command {
 
                         if (level < permissionOverwrite.requiredLevel) {
                             break permissionOverwriteIfBlock;
+                        } else if (level >= permissionOverwrite.requiredLevel && permissionOverwrite.mode === "OR") {
+                            break errorRootBlock;
                         }
                     }
 
@@ -353,13 +355,13 @@ export default abstract class Command {
 
                             if (!found) {
                                 break permissionOverwriteIfBlock;
-                            }
+                            } else if (permissionOverwrite.mode === "OR") break errorRootBlock;
                         } else {
                             log(requiredPermissions);
                             if (!member.permissions.has(requiredPermissions, true)) {
                                 log("Fail");
                                 break permissionOverwriteIfBlock;
-                            }
+                            } else if (permissionOverwrite.mode === "OR") break errorRootBlock;
                         }
                     }
 
@@ -368,6 +370,8 @@ export default abstract class Command {
                         !member.roles.cache.hasAll(...permissionOverwrite.requiredRoles)
                     ) {
                         break permissionOverwriteIfBlock;
+                    } else if (permissionOverwrite.requiredRoles.length > 0 && permissionOverwrite.mode === "OR") {
+                        break errorRootBlock;
                     }
 
                     if (
