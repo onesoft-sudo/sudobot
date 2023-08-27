@@ -1,3 +1,12 @@
+## [5.80.1](https://github.com/onesoft-sudo/sudobot/compare/v5.80.0...v5.80.1) (2023-08-27)
+
+
+### Bug Fixes
+
+* infraction create command returns interaction already deferred error ([c237463](https://github.com/onesoft-sudo/sudobot/commit/c237463cd40a1a8db2b758f21c59d9ce6b8b2373))
+
+
+
 # [5.80.0](https://github.com/onesoft-sudo/sudobot/compare/v5.79.0...v5.80.0) (2023-08-26)
 
 
@@ -32,15 +41,6 @@
 
 * eval command not working when invoked in interaction mode ([e815685](https://github.com/onesoft-sudo/sudobot/commit/e815685b94f166dcf341cb61a327b56976035c90))
 * **paginator:** crashing due to not having emojis added ([00b7dc0](https://github.com/onesoft-sudo/sudobot/commit/00b7dc093c97bc7aca73bb97f87a93c9c0c7ced9))
-
-
-
-## [5.78.2](https://github.com/onesoft-sudo/sudobot/compare/v5.78.1...v5.78.2) (2023-08-23)
-
-
-### Bug Fixes
-
-* syntax error ([b341826](https://github.com/onesoft-sudo/sudobot/commit/b341826633a3160329e8c424c6e45934da53a014))
 
 
 
