@@ -230,9 +230,9 @@ export default class MessageRuleService extends Service implements HasEventListe
     
         const { domains, mode, scan_links_only } = rule;
     
-        let prefix = scan_links_only ? `(https?://)` : `(https?://)?`;
+        const prefix = scan_links_only ? `(https?://)` : `(https?://)?`;
         let specificRegex = `${prefix}(`;
-        let genericRegex = `${prefix}([a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})`;
+        const genericRegex = `${prefix}([a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})`;
     
         let index = 0;
         for (const domain of domains) {
