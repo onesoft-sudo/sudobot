@@ -148,7 +148,7 @@ Pass the `--guild` option to register guild commands instead of global commands,
 
 ## Building the bot
 
-Now that we have configured the bot and specified every setting, we can go ahead an invoke the TypeScript compiler (`tsc`) to build the bot and generate compiled JavaScript files that the NodeJS interpreter can run. To compile the bot, simply run:
+Now that we have configured the bot and specified every setting, we can go ahead and invoke the TypeScript compiler (`tsc`) to build the bot and generate compiled JavaScript files that the NodeJS interpreter can run. To compile the bot, simply run:
 
 ```
 npm run build
