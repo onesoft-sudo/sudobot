@@ -1,6 +1,3 @@
-# Todo
+# Todo 
 
-* Create an API using express to provide a way to change settings outside of Di
-* Performance optimizations (https://shitcorp.github.io/Discord-Bots-At-Scale/)
-* Use single-depth objects with concatinated and separated keys instead of nested objects in PermissionManager
-* Write unit tests
+* Write documentation for the configuration options (See [GuildConfigSchema.ts](https://github.com/onesoft-sudo/sudobot/blob/main/src/types/GuildConfigSchema.ts) and [SystemConfigSchema.ts](https://github.com/onesoft-sudo/sudobot/blob/main/src/types/SystemConfigSchema.ts) to learn more about the configuration options)
