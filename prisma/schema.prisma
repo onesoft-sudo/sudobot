@@ -207,14 +207,3 @@ model Ballot {
 
     @@map("ballots")
 }
-
-model PermissionLevel {
-    id                 Int      @id @default(autoincrement())
-    guildId            String
-    level              Int
-    grantedPermissions String[] @default([])
-    createdAt          DateTime @default(now())
-    updatedAt          DateTime @default(now()) @updatedAt
-
-    @@map("permission_levels")
-}
