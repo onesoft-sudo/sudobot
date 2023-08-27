@@ -17,6 +17,10 @@
 A free and open source Discord bot for moderation purposes. <a href="https://docs.sudobot.org/features/screenshots/">Click here</a> to see the screenshots.
 </p>
 
+## Contributors!!!
+
+This project needs more contributors. Please look at the [Todos](https://github.com/onesoft-sudo/sudobot/blob/main/TODO.md) to see what you can do to help us. Of course you can add new features and/or fix/improve something that isn't listed in the todos! We'll be really thankful if you contribute.
+
 ### Features
 
 - Strong auto moderation system with tools like anti-spam and anti-raid ([Click here](https://docs.sudobot.org/automoderation/#what-can-the-bot-do) to see the full list)
