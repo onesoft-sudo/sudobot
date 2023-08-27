@@ -1,3 +1,12 @@
+## [5.80.3](https://github.com/onesoft-sudo/sudobot/compare/v5.80.2...v5.80.3) (2023-08-27)
+
+
+### Bug Fixes
+
+* afk entries not being removed ([682b243](https://github.com/onesoft-sudo/sudobot/commit/682b2430c42a576b377bd693966d9f9494119742))
+
+
+
 ## [5.80.2](https://github.com/onesoft-sudo/sudobot/compare/v5.80.1...v5.80.2) (2023-08-27)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * add possibility to turn off bulk delete message logging ([07e38af](https://github.com/onesoft-sudo/sudobot/commit/07e38af01d93de7a781e7e77dd4c4af3287c6953))
-
-
-
-## [5.78.4](https://github.com/onesoft-sudo/sudobot/compare/v5.78.3...v5.78.4) (2023-08-25)
-
-
-### Bug Fixes
-
-* **afkservice:** afk remove message gets sent twice ([ef9efe3](https://github.com/onesoft-sudo/sudobot/commit/ef9efe3147746a0d217f8d6ace254035f84626bf))
 
 
 
