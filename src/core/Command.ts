@@ -162,7 +162,7 @@ export default abstract class Command {
         options: MessageCreateOptions | MessagePayload | InteractionEditReplyOptions | string
     ) {
         if (message instanceof ChatInputCommandInteraction || message instanceof ContextMenuCommandInteraction) {
-            return await message.editReply(options);
+            return message.deferred ? await message.editReply(options) : await message.reply(options as any);
         }
 
         return message.reply(options as any);
