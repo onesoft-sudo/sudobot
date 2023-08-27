@@ -36,7 +36,7 @@ import { escapeRegex } from "../utils/utils";
 export const name = "messageRuleService";
 
 const handlers: Record<MessageRuleType["type"], Extract<keyof MessageRuleService, `rule${string}`>> = {
-    blocked_domain: "ruleBlockedDomain",
+    domain: "ruleDomain",
     blocked_file_extension: "ruleBlockedFileExtension",
     blocked_mime_type: "ruleBlockedMimeType",
     anti_invite: "ruleAntiInvite",
@@ -223,47 +223,69 @@ export default class MessageRuleService extends Service implements HasEventListe
         }
     }
 
-    async ruleBlockedDomain(message: Message, rule: Extract<MessageRuleType, { type: "blocked_domain" }>) {
+    async ruleDomain(message: Message, rule: Extract<MessageRuleType, { type: "domain" }>) {
         if (message.content.trim() === "") {
             return null;
         }
-
-        const { data, scan_links_only } = rule;
-        let regex = `(https?://)${scan_links_only ? "" : "?"}(`;
+    
+        const { domains, mode, scan_links_only } = rule;
+    
+        let prefix = scan_links_only ? `(https?://)` : `(https?://)?`;
+        let specificRegex = `${prefix}(`;
+        let genericRegex = `${prefix}([a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})`;
+    
         let index = 0;
-
-        for (const domain of data) {
+        for (const domain of domains) {
             const escapedDomain = escapeRegex(domain).replace(/\\\*/g, "[A-Za-z0-9-]+");
-            regex += `${escapedDomain}`;
-
-            if (index < data.length - 1) {
-                regex += "|";
+            specificRegex += `${escapedDomain}`;
+    
+            if (index < domains.length - 1) {
+                specificRegex += "|";
             }
-
+    
             index++;
         }
-
-        regex += ")S*";
-        log(regex);
-
-        const matches = [...(new RegExp(regex).exec(message.content) ?? [])];
-        log(matches);
-
-        if (matches.length === 0) {
-            return false;
+    
+        specificRegex += ")\\S*";
+        log(specificRegex);
+    
+        const specificMatches = [...(new RegExp(specificRegex, "i").exec(message.content) ?? [])];
+        log(specificMatches);
+    
+        const genericMatches = [...(new RegExp(genericRegex, "i").exec(message.content) ?? [])];
+        log(genericMatches);
+    
+        if (specificMatches.length > 0) {
+            const cleanedDomain = (specificMatches[2] ?? specificMatches[1] ?? specificMatches[0]).replace(/https?:\/\//, '');
+            if (mode === "disallow") {
+                return {
+                    title: "Blocked domain(s) detected",
+                    fields: [
+                        {
+                            name: "Domain",
+                            value: `\`${escapeMarkdown(cleanedDomain)}\``
+                        }
+                    ]
+                 } satisfies CreateLogEmbedOptions;
+            } else if (mode === "allow") {
+                return false;
+            }
+        } else if (genericMatches.length > 0 && mode === "allow" && !scan_links_only) {
+            const cleanedDomain = (genericMatches[2] ?? genericMatches[1] ?? genericMatches[0]).replace(/https?:\/\//, '');
+            return {
+                title: "Blocked domain(s) detected",
+                fields: [
+                    {
+                        name: "Domain",
+                        value: `\`${escapeMarkdown(cleanedDomain)}\``
+                    }
+                ]
+            } satisfies CreateLogEmbedOptions;
         }
-
-        return {
-            title: "Blocked domain(s) detected",
-            fields: [
-                {
-                    name: "Domain",
-                    value: `\`${escapeMarkdown(matches[2] ?? matches[1] ?? matches[0])}\``
-                }
-            ]
-        } satisfies CreateLogEmbedOptions;
+    
+        return false;
     }
-
+            
     async ruleBlockedFileExtension(message: Message, rule: Extract<MessageRuleType, { type: "blocked_file_extension" }>) {
         for (const attachment of message.attachments.values()) {
             for (const extension of rule.data) {
