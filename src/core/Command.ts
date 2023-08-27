@@ -322,20 +322,35 @@ export default abstract class Command {
             log([...this.client.commandManager.permissionOverwrites.keys()]);
 
             errorRootBlock: if (permissionOverwrite) {
+                let userCheckPassed = false;
+                let levelCheckPassed = false;
+                let roleCheckPassed = false;
+                let permissonCheckPassed = false;
+
                 permissionOverwriteIfBlock: {
-                    if (
-                        permissionOverwrite.requiredUsers.length > 0 &&
-                        !permissionOverwrite.requiredUsers.includes(member.user.id)
-                    ) {
-                        break permissionOverwriteIfBlock;
+                    if (permissionOverwrite.requiredUsers.length > 0) {
+                        userCheckPassed = permissionOverwrite.requiredUsers.includes(member.user.id);
+
+                        if (permissionOverwrite.mode === "AND" && !userCheckPassed) {
+                            break permissionOverwriteIfBlock;
+                        }
+
+                        if (permissionOverwrite.mode === "OR" && userCheckPassed) {
+                            log("User check passed [OR]");
+                            break errorRootBlock;
+                        }
                     }
 
                     if (mode === "levels" && permissionOverwrite.requiredLevel !== null) {
                         const level = this.client.permissionManager.getMemberPermissionLevel(member);
+                        levelCheckPassed = level >= permissionOverwrite.requiredLevel;
 
-                        if (level < permissionOverwrite.requiredLevel) {
+                        log("level", level, "<", permissionOverwrite.requiredLevel);
+
+                        if (!levelCheckPassed && permissionOverwrite.mode === "AND") {
                             break permissionOverwriteIfBlock;
-                        } else if (level >= permissionOverwrite.requiredLevel && permissionOverwrite.mode === "OR") {
+                        } else if (levelCheckPassed && permissionOverwrite.mode === "OR") {
+                            log("Level check passed [OR]");
                             break errorRootBlock;
                         }
                     }
@@ -353,25 +368,45 @@ export default abstract class Command {
                                 }
                             }
 
-                            if (!found) {
+                            permissonCheckPassed = found;
+
+                            if (!found && permissionOverwrite.mode === "AND") {
                                 break permissionOverwriteIfBlock;
-                            } else if (permissionOverwrite.mode === "OR") break errorRootBlock;
+                            } else if (found && permissionOverwrite.mode === "OR") {
+                                log("Permission check passed [OR_OR]");
+                                break errorRootBlock;
+                            }
                         } else {
                             log(requiredPermissions);
-                            if (!member.permissions.has(requiredPermissions, true)) {
+                            permissonCheckPassed = member.permissions.has(requiredPermissions, true);
+
+                            if (!permissonCheckPassed && permissionOverwrite.mode === "AND") {
                                 log("Fail");
                                 break permissionOverwriteIfBlock;
-                            } else if (permissionOverwrite.mode === "OR") break errorRootBlock;
+                            } else if (permissonCheckPassed && permissionOverwrite.mode === "OR") {
+                                log("Permission check passed [AND_OR]");
+                                break errorRootBlock;
+                            }
                         }
                     }
 
-                    if (
-                        permissionOverwrite.requiredRoles.length > 0 &&
-                        !member.roles.cache.hasAll(...permissionOverwrite.requiredRoles)
-                    ) {
+                    if (permissionOverwrite.requiredRoles.length > 0) {
+                        roleCheckPassed = member.roles.cache.hasAll(...permissionOverwrite.requiredRoles);
+
+                        if (!roleCheckPassed && permissionOverwrite.mode === "AND") {
+                            break permissionOverwriteIfBlock;
+                        } else if (roleCheckPassed && permissionOverwrite.mode === "OR") {
+                            break errorRootBlock;
+                        }
+                    }
+
+                    log("userCheckPassed", userCheckPassed);
+                    log("levelCheckPassed", levelCheckPassed);
+                    log("permissonCheckPassed", permissonCheckPassed);
+                    log("roleCheckPassed", roleCheckPassed);
+
+                    if (permissionOverwrite.mode === "OR") {
                         break permissionOverwriteIfBlock;
-                    } else if (permissionOverwrite.requiredRoles.length > 0 && permissionOverwrite.mode === "OR") {
-                        break errorRootBlock;
                     }
 
                     if (
