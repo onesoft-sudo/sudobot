@@ -1,3 +1,12 @@
+## [5.80.2](https://github.com/onesoft-sudo/sudobot/compare/v5.80.1...v5.80.2) (2023-08-27)
+
+
+### Bug Fixes
+
+* interaction not deferred issue when running a disabled command using slash command mode ([8e94284](https://github.com/onesoft-sudo/sudobot/commit/8e942845989c0f9f034a88a7c91242a3af85b8a5))
+
+
+
 ## [5.80.1](https://github.com/onesoft-sudo/sudobot/compare/v5.80.0...v5.80.1) (2023-08-27)
 
 
@@ -31,16 +40,6 @@
 ### Bug Fixes
 
 * **afkservice:** afk remove message gets sent twice ([ef9efe3](https://github.com/onesoft-sudo/sudobot/commit/ef9efe3147746a0d217f8d6ace254035f84626bf))
-
-
-
-## [5.78.3](https://github.com/onesoft-sudo/sudobot/compare/v5.78.2...v5.78.3) (2023-08-24)
-
-
-### Bug Fixes
-
-* eval command not working when invoked in interaction mode ([e815685](https://github.com/onesoft-sudo/sudobot/commit/e815685b94f166dcf341cb61a327b56976035c90))
-* **paginator:** crashing due to not having emojis added ([00b7dc0](https://github.com/onesoft-sudo/sudobot/commit/00b7dc093c97bc7aca73bb97f87a93c9c0c7ced9))
 
 
 
