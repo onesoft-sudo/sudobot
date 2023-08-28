@@ -101,6 +101,10 @@
         "enable_file_filter": {
             "type": "boolean",
             "default": false
+        },
+        "ignore_default_permissions": {
+            "type": "boolean",
+            "default": false
         }
     },
     "additionalProperties": false,
