@@ -1,3 +1,12 @@
+# [6.1.0](https://github.com/onesoft-sudo/sudobot/compare/v6.0.3...v6.1.0) (2023-08-28)
+
+
+### Features
+
+* `ignore_default_permissions` system config option ([b347de8](https://github.com/onesoft-sudo/sudobot/commit/b347de8ca30c19d781c2fa51ef2919e2333f5731))
+
+
+
 ## [6.0.3](https://github.com/onesoft-sudo/sudobot/compare/v6.0.2...v6.0.3) (2023-08-28)
 
 
@@ -35,15 +44,6 @@
 
 * You must run `npx prisma db push` to update the database schema,
 and the new schema is a bit different, so you may need to re-organize the permission levels.
-
-
-
-## [5.82.1](https://github.com/onesoft-sudo/sudobot/compare/v5.82.0...v5.82.1) (2023-08-27)
-
-
-### Bug Fixes
-
-* remove `data` property from `DomainRule` since it uses `domains` property instead ([2b291d6](https://github.com/onesoft-sudo/sudobot/commit/2b291d6a8c7fddee3d61abcb145c8315d1707baa))
 
 
 
