@@ -252,7 +252,7 @@ export default abstract class Command {
 
             const mode = this.client.configManager.config[message.guildId!]?.permissions?.mode;
 
-            if (permissions.length > 0) {
+            if (permissions.length > 0 && !this.client.configManager.systemConfig.ignore_default_permissions) {
                 const memberBotPermissions = this.client.permissionManager.getMemberPermissions(member);
                 const memberRequiredPermissions = new PermissionsBitField(permissions).toArray();
 
