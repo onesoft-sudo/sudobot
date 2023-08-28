@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Snowflake, ChannelType, EmbedBuilder, Message, PartialMessage, PermissionsBitField } from "discord.js";
+import { ChannelType, EmbedBuilder, Message, PartialMessage, PermissionsBitField, Snowflake } from "discord.js";
 import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import { HasEventListeners } from "../../types/HasEventListeners";
@@ -32,7 +32,12 @@ export default class SnipeCommand extends Command implements HasEventListeners {
 
     @GatewayEventListener("messageDelete")
     onMessageDelete(message: Message<boolean> | PartialMessage) {
-        if (!message.content || message.channel.type === ChannelType.DM) {
+        if (
+            message.author?.bot ||
+            !message.content ||
+            !message.channel.isTextBased() ||
+            message.channel.type === ChannelType.DM
+        ) {
             return;
         }
 
