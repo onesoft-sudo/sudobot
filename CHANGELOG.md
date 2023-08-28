@@ -1,3 +1,12 @@
+## [6.0.3](https://github.com/onesoft-sudo/sudobot/compare/v6.0.2...v6.0.3) (2023-08-28)
+
+
+### Bug Fixes
+
+* ignore bots in snipe command ([6cfd103](https://github.com/onesoft-sudo/sudobot/commit/6cfd10336172ebb1e61c1289e98e13a4cc185a81))
+
+
+
 ## [6.0.2](https://github.com/onesoft-sudo/sudobot/compare/v6.0.1...v6.0.2) (2023-08-27)
 
 
@@ -35,20 +44,6 @@ and the new schema is a bit different, so you may need to re-organize the permis
 ### Bug Fixes
 
 * remove `data` property from `DomainRule` since it uses `domains` property instead ([2b291d6](https://github.com/onesoft-sudo/sudobot/commit/2b291d6a8c7fddee3d61abcb145c8315d1707baa))
-
-
-
-# [5.82.0](https://github.com/onesoft-sudo/sudobot/compare/v5.81.0...v5.82.0) (2023-08-27)
-
-
-### Bug Fixes
-
-* const issues ([28349a2](https://github.com/onesoft-sudo/sudobot/commit/28349a2212072cba1324c8fe4ae3f54e94b88abd))
-
-
-### Features
-
-* **message_rules:** changed blockDomain rule into domain rule for allowing & disallowing ([c366ca5](https://github.com/onesoft-sudo/sudobot/commit/c366ca518623d7a572bdb94fe4551a2f6b220733))
 
 
 
