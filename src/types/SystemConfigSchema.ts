@@ -54,7 +54,7 @@ export const SystemConfigSchema = z.object({
         })
         .default({}),
     enable_file_filter: z.boolean().default(false),
-    ignore_default_permissions: z.boolean().default(false)
+    default_permissions_mode: z.enum(["ignore", "overwrite", "check"]).default("check")
 });
 
 export type SystemConfig = z.infer<typeof SystemConfigSchema>;

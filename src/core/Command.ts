@@ -251,8 +251,15 @@ export default abstract class Command {
             }
 
             const mode = this.client.configManager.config[message.guildId!]?.permissions?.mode;
+            const permissionOverwrite = this.client.commandManager.permissionOverwrites.get(
+                `${message.guildId!}____${this.name}`
+            );
 
-            if (permissions.length > 0 && !this.client.configManager.systemConfig.ignore_default_permissions) {
+            if (
+                permissions.length > 0 &&
+                (this.client.configManager.systemConfig.default_permissions_mode === "check" ||
+                    (!permissionOverwrite && this.client.configManager.systemConfig.default_permissions_mode === "overwrite"))
+            ) {
                 const memberBotPermissions = this.client.permissionManager.getMemberPermissions(member);
                 const memberRequiredPermissions = new PermissionsBitField(permissions).toArray();
 
@@ -314,10 +321,6 @@ export default abstract class Command {
                         return;
                     }
             }
-
-            const permissionOverwrite = this.client.commandManager.permissionOverwrites.get(
-                `${message.guildId!}____${this.name}`
-            );
 
             log([...this.client.commandManager.permissionOverwrites.keys()]);
 
