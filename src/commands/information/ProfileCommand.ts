@@ -105,7 +105,7 @@ export default class ProfileCommand extends Command {
             entityNotNullErrorMessage: "That member could not be found!"
         }
     ];
-    public readonly aliases = ["userprofile"];
+    public readonly aliases = ["userprofile", "userinfo"];
     public readonly permissions = [];
 
     public readonly description = "Shows your or someone else's profile.";
