@@ -23,8 +23,8 @@ import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandRetu
 import { logError } from "../../utils/logger";
 import { flagsToString } from "../../utils/userflags";
 
-export default class UserInfoCommand extends Command {
-    public readonly name = "userinfo";
+export default class UserLookupCommand extends Command {
+    public readonly name = "userlookup";
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.User],
