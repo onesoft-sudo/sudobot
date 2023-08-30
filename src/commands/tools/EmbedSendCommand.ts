@@ -41,10 +41,10 @@ export default class EmbedSendCommand extends Command {
                 embeds: [embed!]
             });
 
-            await interaction.reply({ content: "Message sent.", ephemeral: true });
+            await interaction.editReply({ content: "Message sent." });
         } catch (e) {
             console.log(e);
-            interaction.reply({ content: "Invalid options given.", ephemeral: true });
+            interaction.editReply({ content: "Invalid options given." });
         }
     }
 }

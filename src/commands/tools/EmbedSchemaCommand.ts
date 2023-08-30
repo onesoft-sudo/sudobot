@@ -39,9 +39,8 @@ export default class EmbedSchemaCommand extends Command {
 
         const json = JSON5.stringify(embed, null, 4);
 
-        return {
-            __reply: true,
+        await this.deferredReply(interaction, {
             content: `Successfully generated embed schema:\n\n\`\`\`\n${json}\n\`\`\`\nYou can now reuse this schema as many times as you want to send embeds.`
-        };
+        });
     }
 }

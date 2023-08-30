@@ -33,7 +33,7 @@ export default class EmbedBuildCommand extends Command {
             return;
         }
 
-        const schema = context.isLegacy ? context.parsedNamedArgs.schema : context.options.getString("schema", true);
+        const schema = context.isLegacy ? context.parsedNamedArgs.schema : context.options.getString("json_schema", true);
         let json: EmbedBuilder | undefined = undefined;
 
         try {
@@ -51,11 +51,9 @@ export default class EmbedBuildCommand extends Command {
 
             if (message instanceof Message) await message.react(this.emoji("check")).catch(logError);
             else
-                return {
-                    __reply: true,
-                    content: "Successfully built and sent embed",
-                    ephemeral: true
-                };
+                await this.deferredReply(message, {
+                    content: "Successfully built and sent embed"
+                });
         } catch (e) {
             await this.error(message, "Failed to send embed. Maybe I don't have enough permissions?");
             return;

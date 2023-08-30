@@ -17,7 +17,13 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { PermissionsBitField, SlashCommandBuilder, SlashCommandSubcommandBuilder, escapeCodeBlock, escapeInlineCode } from "discord.js";
+import {
+    PermissionsBitField,
+    SlashCommandBuilder,
+    SlashCommandSubcommandBuilder,
+    escapeCodeBlock,
+    escapeInlineCode
+} from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 const addOptions = (builder: SlashCommandSubcommandBuilder) => {
@@ -31,7 +37,9 @@ const addOptions = (builder: SlashCommandSubcommandBuilder) => {
         .addStringOption(option => option.setName("video").setDescription("The embed video attachment URL"))
         .addStringOption(option => option.setName("footer_text").setDescription("The embed footer text"))
         .addStringOption(option => option.setName("footer_iconurl").setDescription("The embed footer icon URL"))
-        .addStringOption(option => option.setName("timestamp").setDescription("The embed timestamp, use 'current' to set current date"))
+        .addStringOption(option =>
+            option.setName("timestamp").setDescription("The embed timestamp, use 'current' to set current date")
+        )
         .addStringOption(option => option.setName("color").setDescription("The embed color (default is #007bff)"))
         .addStringOption(option => option.setName("url").setDescription("The embed URL"))
         .addStringOption(option =>
@@ -47,7 +55,9 @@ export default class EmbedCommand extends Command {
         {
             types: [ArgumentType.String],
             name: "subcommand",
-            requiredErrorMessage: `Please provide a subcommand! The available subcommands are: \`${this.subcommands.join("`, `")}\``
+            requiredErrorMessage: `Please provide a subcommand! The available subcommands are: \`${this.subcommands.join(
+                "`, `"
+            )}\``
         },
         {
             types: [ArgumentType.StringRest],
@@ -64,7 +74,9 @@ export default class EmbedCommand extends Command {
         .setName("embed")
         .setDescription("Make an embed")
         .addSubcommand(subcmd => addOptions(subcmd.setName("send").setDescription("Make and send an embed")))
-        .addSubcommand(subcmd => addOptions(subcmd.setName("schema").setDescription("Make and send an embed schema representation")))
+        .addSubcommand(subcmd =>
+            addOptions(subcmd.setName("schema").setDescription("Make and send an embed schema representation"))
+        )
         .addSubcommand(subcmd =>
             subcmd
                 .setName("build")
@@ -84,7 +96,9 @@ export default class EmbedCommand extends Command {
             };
         }
 
-        await this.deferIfInteraction(message);
+        await this.deferIfInteraction(message, {
+            ephemeral: true
+        });
 
         const command = this.client.commands.get(`embed__${subcommand}`);
 
