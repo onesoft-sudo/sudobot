@@ -102,9 +102,14 @@
             "type": "boolean",
             "default": false
         },
-        "ignore_default_permissions": {
-            "type": "boolean",
-            "default": false
+        "default_permissions_mode": {
+            "type": "string",
+            "enum": [
+                "ignore",
+                "overwrite",
+                "check"
+            ],
+            "default": "check"
         }
     },
     "additionalProperties": false,
