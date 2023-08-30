@@ -35,10 +35,14 @@ export function generateEmbed(options: ChatInputCommandContext["options"]) {
         iconURL: getString("footer_iconurl")
     };
 
-    if (
-        getString("color") &&
-        (!resolveColor(getString("color") as ColorResolvable) || isNaN(resolveColor(getString("color") as ColorResolvable)))
-    ) {
+    try {
+        if (
+            getString("color") &&
+            (!resolveColor(getString("color") as ColorResolvable) || isNaN(resolveColor(getString("color") as ColorResolvable)))
+        ) {
+            throw new Error();
+        }
+    } catch (e) {
         return { error: "Invalid color given." };
     }
 
