@@ -107,6 +107,7 @@ export default class Server {
             );
 
             const authMiddleware = Reflect.getMetadata("auth_middleware", ControllerClass.prototype) ?? {};
+            const gacMiddleware = Reflect.getMetadata("gac_middleware", ControllerClass.prototype) ?? {};
             const validatonMiddleware = Reflect.getMetadata("validation_middleware", ControllerClass.prototype) ?? {};
 
             if (metadata) {
@@ -144,6 +145,7 @@ export default class Server {
 
                         const finalMiddlewareArray = [
                             ...(authMiddleware[methodName] ? [authMiddleware[methodName]] : []),
+                            ...(gacMiddleware[methodName] ? [gacMiddleware[methodName]] : []),
                             ...(validatonMiddleware[methodName] ? [validatonMiddleware[methodName]] : []),
                             ...(middleware ?? [])
                         ];
