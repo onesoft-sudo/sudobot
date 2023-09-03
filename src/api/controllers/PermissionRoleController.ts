@@ -17,8 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { PermissionFlagsBits } from "discord.js";
+import { PermissionFlagsBits, PermissionsString } from "discord.js";
+import { Response as ExpressResponse, NextFunction } from "express";
 import { z } from "zod";
+import Client from "../../core/Client";
 import { Action } from "../../decorators/Action";
 import { EnableGuildAccessControl } from "../../decorators/EnableGuildAccessControl";
 import { RequireAuth } from "../../decorators/RequireAuth";
@@ -28,8 +30,20 @@ import Controller from "../Controller";
 import Request from "../Request";
 import Response from "../Response";
 
+async function middleware(client: Client, request: Request, response: ExpressResponse, next: NextFunction) {
+    if (client.configManager.config[request.params.guild]?.permissions.mode !== "advanced") {
+        response.status(400).json({
+            error: "Cannot use advanced permission system features when it's not enabled"
+        });
+
+        return;
+    }
+
+    next();
+}
+
 export default class PermissionRoleController extends Controller {
-    @Action("GET", "/permission_roles/:guild")
+    @Action("GET", "/permission_roles/:guild", [middleware])
     @RequireAuth()
     @EnableGuildAccessControl()
     public async index(request: Request) {
@@ -60,7 +74,7 @@ export default class PermissionRoleController extends Controller {
         });
     }
 
-    @Action("PATCH", "/permission_roles/:guild/:id")
+    @Action("PATCH", "/permission_roles/:guild/:id", [middleware])
     @RequireAuth()
     @EnableGuildAccessControl()
     @Validate(
@@ -82,35 +96,61 @@ export default class PermissionRoleController extends Controller {
             return new Response({ status: 422, body: { error: "Invalid permission role ID." } });
         }
 
-        const permissionRole = await this.client.prisma.permissionRole.findFirst({
-            where: {
-                guild_id: request.params.guild,
-                id
-            }
-        });
-
-        if (!permissionRole) {
-            return new Response({ status: 404, body: { error: "The permission role could not be found." } });
-        }
-
-        const updates = {
-            name: request.parsedBody.name,
-            grantedPermissions: request.parsedBody.permissions,
+        const updated = await this.client.permissionManager.updatePermissionRole({
+            guildId: request.params.guild!,
+            id,
+            newName: request.parsedBody.name ?? undefined,
+            permissions: request.parsedBody.permissions,
             users: request.parsedBody.users,
             roles: request.parsedBody.roles
-        };
-
-        await this.client.prisma.permissionRole.updateMany({
-            where: {
-                guild_id: request.params.guild,
-                id
-            },
-            data: updates
         });
 
         return {
             success: true,
-            permission_role: { ...permissionRole, ...updates }
+            permission_role: !updated ? null : updated
         };
+    }
+
+    @Action("POST", "/permission_roles/:guild", [middleware])
+    @RequireAuth()
+    @EnableGuildAccessControl()
+    @Validate(
+        z.object({
+            name: z.string(),
+            permissions: z.array(z.union(Object.keys(PermissionFlagsBits).map(p => z.literal(p)) as any)).default([]),
+            users: z.array(zSnowflake).default([]),
+            roles: z.array(zSnowflake).default([])
+        })
+    )
+    public create(request: Request) {
+        return this.client.permissionManager.createPermissionRole({
+            guildId: request.params.guild!,
+            name: request.parsedBody!.name,
+            permissions: request.parsedBody!.permissions as PermissionsString[],
+            roles: request.parsedBody!.roles,
+            users: request.parsedBody!.users
+        });
+    }
+
+    @Action("DELETE", "/permission_roles/:guild/:id", [middleware])
+    @RequireAuth()
+    @EnableGuildAccessControl()
+    public async delete(request: Request) {
+        const id = parseInt(request.params.id);
+
+        if (!id || isNaN(id)) {
+            return new Response({ status: 422, body: { error: "Invalid permission role ID." } });
+        }
+
+        const permissionRole = await this.client.permissionManager.deletePermissionRole({
+            guildId: request.params.guild!,
+            id
+        });
+
+        if (!permissionRole) {
+            return new Response({ status: 404, body: { error: "Permission role not found." } });
+        }
+
+        return { success: true, message: "Successfully deleted the named permission role." };
     }
 }
