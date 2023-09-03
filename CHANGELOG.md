@@ -1,3 +1,12 @@
+# [6.3.0](https://github.com/onesoft-sudo/sudobot/compare/v6.2.0...v6.3.0) (2023-09-03)
+
+
+### Features
+
+* **api:** add create and delete endpoints to `PermissionRoleController` ([7654a42](https://github.com/onesoft-sudo/sudobot/commit/7654a4215108332ae7e1ed78b30e204c3f2c51bf))
+
+
+
 # [6.2.0](https://github.com/onesoft-sudo/sudobot/compare/v6.1.2...v6.2.0) (2023-08-31)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * `ignore_default_permissions` system config option ([b347de8](https://github.com/onesoft-sudo/sudobot/commit/b347de8ca30c19d781c2fa51ef2919e2333f5731))
-
-
-
-## [6.0.3](https://github.com/onesoft-sudo/sudobot/compare/v6.0.2...v6.0.3) (2023-08-28)
-
-
-### Bug Fixes
-
-* ignore bots in snipe command ([6cfd103](https://github.com/onesoft-sudo/sudobot/commit/6cfd10336172ebb1e61c1289e98e13a4cc185a81))
 
 
 
