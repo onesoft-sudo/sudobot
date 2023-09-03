@@ -1,6 +1,6 @@
 # Terms of Service
 
-Last updated: 10 November 2022
+Last updated: 3 September 2023
 
 Please read these terms of service (“terms”, “terms of service”) carefully before using the Discord Bot, SudoBot (the “service”) operated by OSN Inc (“us”, ‘we”, “our”).
 
@@ -28,9 +28,7 @@ Before you continue using our website we advise you to read our [Privacy Policy]
 
 ### Copyright
 
-Content published on this website (digital downloads, images, texts, logos) is the property of OSN Inc and/or its content creators and protected by international copyright laws. Almost the entire compilation of the content found on this website is the exclusive property of OSN Inc, with copyright authorship for this compilation by OSN Inc.
-
-The icons used here are exclusive property of Google. The site was generated using MkDocs.
+Content published on this website (digital downloads, images, texts, logos) is the property of OSN Inc and/or its content creators and protected by international copyright laws. Almost the entire compilation of the content found on this website is the exclusive property of OSN Inc, with copyright authorship for this compilation by OSN Inc. This documentation is hosted on GitBook. GitBook's logos/icons are their properties.
 
 ### Communications
 
