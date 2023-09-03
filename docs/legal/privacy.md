@@ -1,6 +1,6 @@
 # Privacy Policy
 
-Last updated: 13 October 2022
+Last updated: 3 September 2023
 
 OSN Inc. operates the Discord Bot "SudoBot" (ID: 957258945863499867, Tag: SudoBot#8476), which provides Discord Server Moderation tools.
 
@@ -60,7 +60,7 @@ We may update our Privacy Policy from time to time. Thus, we advise you to revie
 
 ## Contact Us
 
-If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us. You can contact us in the following method(s): ‌\\
+If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us. You can contact us in the following method(s): ‌
 
-Email: [rakinar2@onesoftnet.eu.org](mailto:rakinar2@onesoftnet.eu.org)\
+Email: [rakinar2@onesoftnet.eu.org](mailto:rakinar2@onesoftnet.eu.org)
 Discord Server Invite: [https://discord.gg/x69VqCVd5n](https://discord.gg/x69VqCVd5n)
