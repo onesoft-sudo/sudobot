@@ -46,8 +46,6 @@ export default class NoteEditCommand extends Command {
             }
         }
 
-        await this.deferIfInteraction(message);
-
         const content = context.isLegacy
             ? (message as Message).content
                   .substring(this.client.configManager.config[message.guildId!]?.prefix?.length ?? 1)

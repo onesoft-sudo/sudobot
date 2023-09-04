@@ -45,8 +45,6 @@ export default class NoteDeleteCommand extends Command {
             }
         }
 
-        await this.deferIfInteraction(message);
-
         const { count } = await this.client.prisma.infraction.deleteMany({
             where: {
                 id,

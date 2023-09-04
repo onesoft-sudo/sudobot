@@ -36,8 +36,6 @@ export default class NoteClearCommand extends Command {
             return;
         }
 
-        await this.deferIfInteraction(message);
-
         let user: User | null | undefined = context.isLegacy ? undefined : context.options.getUser("user", true);
 
         if (context.isLegacy) {

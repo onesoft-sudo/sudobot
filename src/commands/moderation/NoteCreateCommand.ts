@@ -41,8 +41,6 @@ export default class NoteCreateCommand extends Command {
             return;
         }
 
-        await this.deferIfInteraction(message);
-
         let user: User | null | undefined = context.isLegacy ? undefined : context.options.getUser("user", true);
 
         if (context.isLegacy) {
@@ -80,6 +78,9 @@ export default class NoteCreateCommand extends Command {
             }
         });
 
-        await this.deferredReply(message, `${this.emoji("check")} Successfully created note for user **${user.tag}**. The note ID is \`${id}\`.`);
+        await this.deferredReply(
+            message,
+            `${this.emoji("check")} Successfully created note for user **${user.tag}**. The note ID is \`${id}\`.`
+        );
     }
 }
