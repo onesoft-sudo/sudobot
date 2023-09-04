@@ -58,7 +58,7 @@ Thanks to all the active and indirect contributors!
 
 - **Download Emojis**: https://www.onesoftnet.eu.org/downloads/sudo/emojis/ <br />
   Note that not all emojis are present there. You'll find the missing one's at [emoji.gg](https://emoji.gg).
-- **Dashboard**: https://github.com/onesoft-sudo/sudobot <br />
+- **Dashboard**: https://github.com/onesoft-sudo/sudobot-dashboard <br />
   The dashboard of SudoBot. Note that the dashboard is not complete yet.
 
 Copyright © 2022-2023 OSN and all the contributors of SudoBot.
