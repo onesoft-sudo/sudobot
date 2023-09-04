@@ -81,7 +81,7 @@ export default class BlockedTokenCommand extends Command {
             enabled: true,
             delete_message: true,
             send_logs: true
-        };
+        } as any;
 
         this.client.configManager.config[guildId!]!.message_filter!.data ??= {
             blocked_tokens: [],

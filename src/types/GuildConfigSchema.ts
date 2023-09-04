@@ -135,7 +135,7 @@ export const GuildConfigSchema = z.object({
                     blocked_words: z.array(z.string()).optional().default([]),
                     blocked_tokens: z.array(z.string()).optional().default([])
                 })
-                .optional()
+                .default({})
         })
         .optional(),
     antispam: z
