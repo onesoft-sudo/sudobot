@@ -828,6 +828,10 @@ export default class LoggerService extends Service {
         countSuccess: number;
         reason?: string;
     }) {
+        const results = `${countInvalidChannel === 0 ? "" : `InvalidChannel: ${countInvalidChannel}\n`}${
+            countSkipped === 0 ? "" : `Skipped: ${countSkipped}\n`
+        }${countSuccess === 0 ? "" : `Success: ${countSuccess}\n`}${countFailed === 0 ? "" : `Failed: ${countFailed}\n`}`;
+
         await this.sendLogEmbed(guild, {
             title: `Server ${action.toLowerCase()}`,
             reason: reason ?? "The user ran a command to perform this action",
@@ -835,9 +839,7 @@ export default class LoggerService extends Service {
             color: 0x007bff,
             footerText: action,
             options: {
-                description: `Results:\n\n${countInvalidChannel === 0 ? "" : `InvalidChannel: ${countInvalidChannel}\n`}${
-                    countSkipped === 0 ? "" : `Skipped: ${countSkipped}\n`
-                }${countSuccess === 0 ? "" : `Success: ${countSuccess}\n`}${countFailed === 0 ? "" : `Failed: ${countFailed}\n`}`
+                description: `Results:\n\n${results.trim() === "" ? "*Nothing changed*" : results}`
             }
         });
     }

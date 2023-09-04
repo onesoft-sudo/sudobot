@@ -26,7 +26,7 @@ export default class LockCommand extends Command {
     public readonly name = "lock";
     public readonly validationRules: ValidationRule[] = [
         {
-            types: [ArgumentType.Channel],
+            types: [ArgumentType.Channel, ArgumentType.String],
             optional: true,
             name: "channel",
             typeErrorMessage: "Please provide a valid channel to lock!"
@@ -35,7 +35,8 @@ export default class LockCommand extends Command {
     public readonly permissions = [PermissionsBitField.Flags.ManageChannels];
 
     public readonly description = "Locks a channel.";
-    public readonly detailedDescription = "This command locks down a channel. If no channel is given, the current channel will be locked.";
+    public readonly detailedDescription =
+        "This command locks down a channel. If no channel is given, the current channel will be locked.";
     public readonly argumentSyntaxes = ["[ChannelID|ChannelMention]"];
 
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.ManageChannels];
@@ -52,11 +53,20 @@ export default class LockCommand extends Command {
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
-        if (!context.isLegacy && context.options.getSubcommand(true) === "server") {
+        if (
+            (!context.isLegacy && context.options.getSubcommand(true) === "server") ||
+            (context.isLegacy && context.parsedNamedArgs.channel === "server")
+        ) {
             return await this.client.commands.get("lock__lockall")?.execute(message, context);
         }
 
-        const channel: TextChannel = (context.isLegacy ? context.parsedNamedArgs.channel : context.options.getChannel("channel")) ?? message.channel!;
+        if (context.isLegacy && typeof context.parsedNamedArgs.channel === "string") {
+            await this.error(message, "Please provide a text channel to lock, or specify `server` to lock the entire server!");
+            return;
+        }
+
+        const channel: TextChannel =
+            (context.isLegacy ? context.parsedNamedArgs.channel : context.options.getChannel("channel")) ?? message.channel!;
 
         if (!isTextableChannel(channel)) {
             await this.error(message, "Please provide a valid text channel to lock!");
