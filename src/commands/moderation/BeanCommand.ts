@@ -45,7 +45,8 @@ export default class BeanCommand extends Command {
     public readonly permissionMode = "or";
 
     public readonly description = "Beans a user.";
-    public readonly detailedDescription = "This command doesn't do anything special except DMing the user and telling them that they've been beaned.";
+    public readonly detailedDescription =
+        "This command doesn't do anything special except DMing the user and telling them that they've been beaned.";
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
         .addUserOption(option => option.setName("user").setDescription("The target user").setRequired(true))
@@ -56,7 +57,7 @@ export default class BeanCommand extends Command {
 
         const user = context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user", true);
 
-        if (await protectSystemAdminsFromCommands(this.client, message, user.id)) {
+        if (await protectSystemAdminsFromCommands(this.client, message, user.id, "bean_safe")) {
             return;
         }
 

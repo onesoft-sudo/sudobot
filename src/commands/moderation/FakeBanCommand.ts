@@ -77,7 +77,7 @@ export default class FakeBanCommand extends Command {
 
         const user: User = context.isLegacy ? context.parsedArgs[0] : context.options.getUser("user", true);
 
-        if (await protectSystemAdminsFromCommands(this.client, message, user.id)) {
+        if (await protectSystemAdminsFromCommands(this.client, message, user.id, "fakeban_safe")) {
             return;
         }
 

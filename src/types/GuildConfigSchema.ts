@@ -25,7 +25,10 @@ export const GuildConfigSchema = z.object({
     prefix: z.string().default("-"),
     commands: z
         .object({
-            mention_prefix: z.boolean().default(true)
+            mention_prefix: z.boolean().default(true),
+            bean_safe: z.array(zSnowflake).default([]),
+            shot_safe: z.array(zSnowflake).default([]),
+            fakeban_safe: z.array(zSnowflake).default([])
         })
         .default({}),
     permissions: z

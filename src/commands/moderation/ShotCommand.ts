@@ -57,7 +57,7 @@ export default class ShotCommand extends Command {
 
         const user = context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user", true);
 
-        if (await protectSystemAdminsFromCommands(this.client, message, user.id)) {
+        if (await protectSystemAdminsFromCommands(this.client, message, user.id, "shot_safe")) {
             return;
         }
 

@@ -25,11 +25,23 @@ import type Client from "../core/Client";
 import { CommandMessage } from "../core/Command";
 import { logError } from "./logger";
 
-export async function protectSystemAdminsFromCommands(client: Client, message: CommandMessage, userId: Snowflake) {
-    if (userId === client.user!.id || client.configManager.systemConfig.system_admins.includes(userId)) {
-        const content = ["https://tenor.com/view/no-gif-25913746", "https://tenor.com/view/no-heck-no-no-way-never-shake-head-gif-17734098"][
-            Math.floor(Math.random() * 2)
-        ];
+export async function protectSystemAdminsFromCommands(
+    client: Client,
+    message: CommandMessage,
+    userId: Snowflake,
+    commandKey: "bean_safe" | "shot_safe" | "fakeban_safe"
+) {
+    const config = client.configManager.config[message.guildId!]?.commands?.[commandKey];
+
+    if (
+        userId === client.user!.id ||
+        client.configManager.systemConfig.system_admins.includes(userId) ||
+        (!client.configManager.systemConfig.system_admins.includes(message.member!.user.id) && config && config.includes(userId))
+    ) {
+        const content = [
+            "https://tenor.com/view/no-gif-25913746",
+            "https://tenor.com/view/no-heck-no-no-way-never-shake-head-gif-17734098"
+        ][Math.floor(Math.random() * 2)];
 
         if (message instanceof Message) {
             await message.reply(content).catch(logError);
