@@ -1,3 +1,13 @@
+## [6.4.2](https://github.com/onesoft-sudo/sudobot/compare/v6.4.1...v6.4.2) (2023-09-04)
+
+
+### Bug Fixes
+
+* note subcommands showing interaction deferring error ([e7ad97d](https://github.com/onesoft-sudo/sudobot/commit/e7ad97d525311c7daf6c8de258f4fc1ef189363a))
+* note view command showing interaction deferring error ([297e7ab](https://github.com/onesoft-sudo/sudobot/commit/297e7abda552f0dd66b7c50012bee06766bce1c5))
+
+
+
 ## [6.4.1](https://github.com/onesoft-sudo/sudobot/compare/v6.4.0...v6.4.1) (2023-09-04)
 
 
@@ -35,15 +45,6 @@
 ### Features
 
 * **api:** add endpoints for viewing and updating named permission roles ([f986cee](https://github.com/onesoft-sudo/sudobot/commit/f986cee8786c63e301e73e14df9e8892520d90e1))
-
-
-
-## [6.1.2](https://github.com/onesoft-sudo/sudobot/compare/v6.1.1...v6.1.2) (2023-08-30)
-
-
-### Bug Fixes
-
-* catch errors when resolving embed color ([ffd1a36](https://github.com/onesoft-sudo/sudobot/commit/ffd1a36541533a1c8ecbe01668ceb5e150dffd66))
 
 
 
