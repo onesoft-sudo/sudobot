@@ -1,3 +1,12 @@
+# [6.4.0](https://github.com/onesoft-sudo/sudobot/compare/v6.3.0...v6.4.0) (2023-09-04)
+
+
+### Features
+
+* **trolling:** ability to add bean/shot/fakeban-immune users ([180aa4c](https://github.com/onesoft-sudo/sudobot/commit/180aa4cb628f3b9e44f4e2ab94e5c57849bbd27c))
+
+
+
 # [6.3.0](https://github.com/onesoft-sudo/sudobot/compare/v6.2.0...v6.3.0) (2023-09-03)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * embed command crash ([26b4c74](https://github.com/onesoft-sudo/sudobot/commit/26b4c74a69710c5d0f4039c8f9d7f9df0cef3bc2))
-
-
-
-# [6.1.0](https://github.com/onesoft-sudo/sudobot/compare/v6.0.3...v6.1.0) (2023-08-28)
-
-
-### Features
-
-* `ignore_default_permissions` system config option ([b347de8](https://github.com/onesoft-sudo/sudobot/commit/b347de8ca30c19d781c2fa51ef2919e2333f5731))
 
 
 
