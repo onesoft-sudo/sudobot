@@ -41,6 +41,7 @@ export default class BlockedFileCommand extends Command {
             .setDescription("Adds a file hash to the blocklist")
             .addAttachmentOption(option => option.setName("file").setDescription("The target file to block").setRequired(true))
     );
+    // TODO
     // .addSubcommand(subcommand =>
     //     subcommand
     //         .setName("view")
