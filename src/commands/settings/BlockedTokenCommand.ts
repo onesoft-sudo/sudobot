@@ -27,8 +27,12 @@ export default class BlockedTokenCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.String],
-            requiredErrorMessage: `Please provide a subcommand! The valid subcommands are: \`${this.subcommandsCustom.join("`, `")}\`.`,
-            typeErrorMessage: `Please provide a __valid__ subcommand! The valid subcommands are: \`${this.subcommandsCustom.join("`, `")}\`.`,
+            requiredErrorMessage: `Please provide a subcommand! The valid subcommands are: \`${this.subcommandsCustom.join(
+                "`, `"
+            )}\`.`,
+            typeErrorMessage: `Please provide a __valid__ subcommand! The valid subcommands are: \`${this.subcommandsCustom.join(
+                "`, `"
+            )}\`.`,
             name: "subcommand"
         }
     ];
@@ -59,7 +63,9 @@ export default class BlockedTokenCommand extends Command {
             subcommand
                 .setName("remove")
                 .setDescription("Remove blocked token")
-                .addStringOption(option => option.setName("token").setDescription("The token to remove from blocklist").setRequired(true))
+                .addStringOption(option =>
+                    option.setName("token").setDescription("The token to remove from blocklist").setRequired(true)
+                )
         )
         .addSubcommand(subcommand =>
             subcommand
@@ -98,17 +104,24 @@ export default class BlockedTokenCommand extends Command {
     }
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
-        const subcommand = (context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true))?.toString();
+        const subcommand = (
+            context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true)
+        )?.toString();
 
         if (!this.subcommandsCustom.includes(subcommand)) {
-            await this.error(message, `Invalid subcommand provided. The valid subcommands are: \`${this.subcommandsCustom.join("`, `")}\`.`);
+            await this.error(
+                message,
+                `Invalid subcommand provided. The valid subcommands are: \`${this.subcommandsCustom.join("`, `")}\`.`
+            );
             return;
         }
 
         if (context.isLegacy && context.args[1] === undefined && subcommand !== "list") {
             await this.error(
                 message,
-                `You must specify a token ${subcommand === "add" ? "to block" : subcommand === "remove" ? "to remove" : "to check"}!`
+                `You must specify a token ${
+                    subcommand === "add" ? "to block" : subcommand === "remove" ? "to remove" : "to check"
+                }!`
             );
             return;
         }
@@ -130,7 +143,9 @@ export default class BlockedTokenCommand extends Command {
                 {
                     const token = this.getToken(message, subcommand, context);
 
-                    if (!this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_tokens.includes(token)) {
+                    if (
+                        !this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_tokens.includes(token)
+                    ) {
                         this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_tokens.push(token);
                         await this.client.configManager.write();
                     }
@@ -153,7 +168,8 @@ export default class BlockedTokenCommand extends Command {
 
             case "remove":
                 const token = this.getToken(message, subcommand, context);
-                const index = this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_tokens.indexOf(token);
+                const index =
+                    this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_tokens.indexOf(token);
 
                 if (index && index !== -1) {
                     this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_tokens.splice(index, 1);
@@ -165,7 +181,8 @@ export default class BlockedTokenCommand extends Command {
 
             case "list":
                 {
-                    const token: string[] = this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_tokens ?? [];
+                    const token: string[] =
+                        this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_tokens ?? [];
                     const safeTokens: string[][] = [];
                     let length = 0;
 
@@ -200,7 +217,7 @@ export default class BlockedTokenCommand extends Command {
                                     iconURL: message.guild!.iconURL() ?? undefined
                                 },
                                 color: 0x007bff,
-                                description: "`" + data[0].join("`\n`") + "`",
+                                description: !data?.[0]?.length ? "*No blocked tokens.*" : "`" + data[0].join("`\n`") + "`",
                                 footer: {
                                     text: `Page ${currentPage} of ${maxPages}`
                                 }

@@ -27,8 +27,12 @@ export default class BlockedWordCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.String],
-            requiredErrorMessage: `Please provide a subcommand! The valid subcommands are: \`${this.subcommandsCustom.join("`, `")}\`.`,
-            typeErrorMessage: `Please provide a __valid__ subcommand! The valid subcommands are: \`${this.subcommandsCustom.join("`, `")}\`.`,
+            requiredErrorMessage: `Please provide a subcommand! The valid subcommands are: \`${this.subcommandsCustom.join(
+                "`, `"
+            )}\`.`,
+            typeErrorMessage: `Please provide a __valid__ subcommand! The valid subcommands are: \`${this.subcommandsCustom.join(
+                "`, `"
+            )}\`.`,
             name: "subcommand"
         }
     ];
@@ -59,7 +63,9 @@ export default class BlockedWordCommand extends Command {
             subcommand
                 .setName("remove")
                 .setDescription("Remove blocked words")
-                .addStringOption(option => option.setName("words").setDescription("The words to remove from blocklist").setRequired(true))
+                .addStringOption(option =>
+                    option.setName("words").setDescription("The words to remove from blocklist").setRequired(true)
+                )
         )
         .addSubcommand(subcommand =>
             subcommand
@@ -86,17 +92,24 @@ export default class BlockedWordCommand extends Command {
     }
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
-        const subcommand = (context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true))?.toString();
+        const subcommand = (
+            context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true)
+        )?.toString();
 
         if (!this.subcommandsCustom.includes(subcommand)) {
-            await this.error(message, `Invalid subcommand provided. The valid subcommands are: \`${this.subcommandsCustom.join("`, `")}\`.`);
+            await this.error(
+                message,
+                `Invalid subcommand provided. The valid subcommands are: \`${this.subcommandsCustom.join("`, `")}\`.`
+            );
             return;
         }
 
         if (context.isLegacy && context.args[1] === undefined && subcommand !== "list") {
             await this.error(
                 message,
-                `You must specify a word ${subcommand === "add" ? "to block" : subcommand === "remove" ? "to remove" : "to check"}!`
+                `You must specify a word ${
+                    subcommand === "add" ? "to block" : subcommand === "remove" ? "to remove" : "to check"
+                }!`
             );
             return;
         }
@@ -144,7 +157,8 @@ export default class BlockedWordCommand extends Command {
                 const wordsToRemove = context.isLegacy ? context.args : context.options.getString("words", true).split(/ +/);
 
                 for await (const word of wordsToRemove) {
-                    const index = this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_words.indexOf(word);
+                    const index =
+                        this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_words.indexOf(word);
 
                     if (!index || index === -1) {
                         continue;
@@ -159,7 +173,8 @@ export default class BlockedWordCommand extends Command {
 
             case "list":
                 {
-                    const words: string[] = this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_words ?? [];
+                    const words: string[] =
+                        this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_words ?? [];
                     const safeWords: string[][] = [];
                     let length = 0;
 
@@ -194,7 +209,7 @@ export default class BlockedWordCommand extends Command {
                                     iconURL: message.guild!.iconURL() ?? undefined
                                 },
                                 color: 0x007bff,
-                                description: "`" + data[0].join("`, `") + "`",
+                                description: !data?.[0]?.length ? "*No blocked words.*" : "`" + data?.[0]?.join("`, `") + "`",
                                 footer: {
                                     text: `Page ${currentPage} of ${maxPages}`
                                 }
