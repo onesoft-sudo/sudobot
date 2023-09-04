@@ -46,8 +46,6 @@ export default class NoteViewCommand extends Command {
             }
         }
 
-        await this.deferIfInteraction(message);
-
         const note = await this.client.prisma.infraction.findFirst({
             where: {
                 id,
