@@ -17,7 +17,16 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Channel, ChatInputCommandInteraction, GuildMember, Message, PermissionsBitField, SlashCommandBuilder, TextChannel, User } from "discord.js";
+import {
+    Channel,
+    ChatInputCommandInteraction,
+    GuildMember,
+    Message,
+    PermissionsBitField,
+    SlashCommandBuilder,
+    TextChannel,
+    User
+} from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { logError } from "../../utils/logger";
 import { isTextableChannel } from "../../utils/utils";
@@ -66,7 +75,9 @@ export default class ClearCommand extends Command {
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
         .addUserOption(option => option.setName("user").setDescription("The user"))
-        .addIntegerOption(option => option.setName("count").setDescription("The amount of messages to delete").setMaxValue(100).setMinValue(2))
+        .addIntegerOption(option =>
+            option.setName("count").setDescription("The amount of messages to delete").setMaxValue(100).setMinValue(2)
+        )
         .addChannelOption(option => option.setName("channel").setDescription("The channel where the messages will be deleted"));
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
@@ -119,7 +130,9 @@ export default class ClearCommand extends Command {
             await message.delete().catch(logError);
         }
 
-        await this.deferIfInteraction(message);
+        await this.deferIfInteraction(message, {
+            ephemeral: true
+        });
 
         await this.client.infractionManager.bulkDeleteMessages({
             user,
@@ -132,6 +145,7 @@ export default class ClearCommand extends Command {
             count
         });
 
-        if (message instanceof ChatInputCommandInteraction) await message.editReply(`${this.emoji("check")} Operation completed.`);
+        if (message instanceof ChatInputCommandInteraction)
+            await message.editReply(`${this.emoji("check")} Operation completed.`);
     }
 }
