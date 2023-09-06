@@ -15,6 +15,25 @@
                             "mention_prefix": {
                                 "type": "boolean",
                                 "default": true
+                            },
+                            "bean_safe": {
+                                "type": "array",
+                                "items": {},
+                                "default": []
+                            },
+                            "shot_safe": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
+                                },
+                                "default": []
+                            },
+                            "fakeban_safe": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
+                                },
+                                "default": []
                             }
                         },
                         "additionalProperties": false,
@@ -23,12 +42,14 @@
                     "permissions": {
                         "type": "object",
                         "properties": {
-                            "mod_role": {},
+                            "mod_role": {
+                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
+                            },
                             "admin_role": {
-                                "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                             },
                             "staff_role": {
-                                "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                             },
                             "mode": {
                                 "type": "string",
@@ -60,7 +81,7 @@
                                 "default": "none"
                             },
                             "dm_fallback_parent_channel": {
-                                "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                             },
                             "dm_fallback_channel_expires_in": {
                                 "type": "integer",
@@ -73,7 +94,7 @@
                         "type": "object",
                         "properties": {
                             "role": {
-                                "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                             }
                         },
                         "additionalProperties": false
@@ -114,16 +135,16 @@
                                 "default": true
                             },
                             "primary_channel": {
-                                "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                             },
                             "message_logging_channel": {
-                                "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                             },
                             "join_leave_channel": {
-                                "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                             },
                             "saved_messages_channel": {
-                                "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                             },
                             "events": {
                                 "type": "object",
@@ -168,19 +189,19 @@
                                 "default": false
                             },
                             "channel": {
-                                "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                             },
                             "users": {
                                 "type": "array",
                                 "items": {
-                                    "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                    "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                                 },
                                 "default": []
                             },
                             "roles": {
                                 "type": "array",
                                 "items": {
-                                    "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                    "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                                 },
                                 "default": []
                             },
@@ -279,7 +300,8 @@
                                         "default": []
                                     }
                                 },
-                                "additionalProperties": false
+                                "additionalProperties": false,
+                                "default": {}
                             }
                         },
                         "additionalProperties": false
@@ -348,7 +370,7 @@
                             "channels": {
                                 "type": "array",
                                 "items": {
-                                    "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                    "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                                 },
                                 "default": []
                             },
@@ -420,7 +442,7 @@
                                 "default": null
                             },
                             "channel": {
-                                "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                             },
                             "embed": {
                                 "type": "boolean",
@@ -569,7 +591,7 @@
                             "roles": {
                                 "type": "array",
                                 "items": {
-                                    "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                    "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                                 },
                                 "default": []
                             },
@@ -598,7 +620,7 @@
                         "type": "object",
                         "properties": {
                             "create_roles_after": {
-                                "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                             }
                         },
                         "additionalProperties": false
@@ -637,7 +659,7 @@
                             "disabled_channels": {
                                 "type": "array",
                                 "items": {
-                                    "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                    "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                                 },
                                 "default": []
                             },
@@ -671,21 +693,21 @@
                                                 "disabled_channels": {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                                        "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                                                     },
                                                     "default": []
                                                 },
                                                 "immune_roles": {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                                        "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                                                     },
                                                     "default": []
                                                 },
                                                 "immune_users": {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                                        "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                                                     },
                                                     "default": []
                                                 },
@@ -1124,7 +1146,96 @@
                             "global_disabled_channels": {
                                 "type": "array",
                                 "items": {
-                                    "$ref": "#/additionalProperties/anyOf/0/properties/permissions/properties/mod_role"
+                                    "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
+                                },
+                                "default": []
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "auto_triggers": {
+                        "type": "object",
+                        "properties": {
+                            "enabled": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "triggers": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "enabled_channels": {
+                                            "anyOf": [
+                                                {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
+                                                    },
+                                                    "default": []
+                                                },
+                                                {
+                                                    "type": "string",
+                                                    "const": "all"
+                                                }
+                                            ]
+                                        },
+                                        "ignore_roles": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
+                                            },
+                                            "default": []
+                                        },
+                                        "ignore_users": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
+                                            },
+                                            "default": []
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "const": "sticky_message"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "buttons": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "label": {
+                                                        "type": "string"
+                                                    },
+                                                    "url": {
+                                                        "type": "string",
+                                                        "format": "uri"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "label",
+                                                    "url"
+                                                ],
+                                                "additionalProperties": false
+                                            },
+                                            "maxItems": 3,
+                                            "default": []
+                                        }
+                                    },
+                                    "required": [
+                                        "type",
+                                        "message"
+                                    ],
+                                    "additionalProperties": false
+                                },
+                                "default": []
+                            },
+                            "global_disabled_channels": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                                 },
                                 "default": []
                             }
