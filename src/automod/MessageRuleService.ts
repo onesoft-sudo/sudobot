@@ -17,6 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+// TODO: Add an allow/disallow mode to all roles
+
 import {
     Message,
     PermissionFlagsBits,
