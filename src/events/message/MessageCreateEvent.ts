@@ -67,6 +67,7 @@ export default class MessageCreateEvent extends Event {
         if (deleted) return;
 
         await this.client.antispam.onMessageCreate(message).catch(logError);
+        this.client.triggerService.onMessageCreate(message);
 
         const value = await this.client.commandManager.runCommandFromMessage(message).catch(logError);
 

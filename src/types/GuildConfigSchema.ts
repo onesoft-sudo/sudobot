@@ -20,6 +20,7 @@
 import { z } from "zod";
 import { MessageRuleSchema } from "./MessageRuleSchema";
 import { zSnowflake } from "./SnowflakeSchema";
+import { TriggerSchema } from "./TriggerSchema";
 
 export const GuildConfigSchema = z.object({
     prefix: z.string().default("-"),
@@ -261,6 +262,13 @@ export const GuildConfigSchema = z.object({
         .object({
             enabled: z.boolean().default(false),
             rules: z.array(MessageRuleSchema).default([]),
+            global_disabled_channels: z.array(zSnowflake).default([])
+        })
+        .optional(),
+    auto_triggers: z
+        .object({
+            enabled: z.boolean().default(false),
+            triggers: z.array(TriggerSchema).default([]),
             global_disabled_channels: z.array(zSnowflake).default([])
         })
         .optional()

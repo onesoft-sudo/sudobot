@@ -47,6 +47,7 @@ import type ReactionRoleService from "../services/ReactionRoleService";
 import type SnippetManager from "../services/SnippetManager";
 import type StartupManager from "../services/StartupManager";
 import type TranslationService from "../services/TranslationService";
+import TriggerService from "../services/TriggerService";
 import type WelcomerService from "../services/WelcomerService";
 import { log, logError, logInfo } from "../utils/logger";
 import type Command from "./Command";
@@ -77,6 +78,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@services/AFKService",
         "@services/InviteTrackerService",
         "@services/BallotManager",
+        "@services/TriggerService",
 
         "@automod/MessageFilter",
         "@automod/Antispam",
@@ -117,6 +119,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     ballotManager: BallotManager = {} as BallotManager;
     fileFilter: FileFilterService = {} as FileFilterService;
     messageRuleService: MessageRuleService = {} as MessageRuleService;
+    triggerService: TriggerService = {} as TriggerService;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",
