@@ -28,6 +28,11 @@ export default class MessageUpdateEvent extends Event {
         if (newMessage.author.bot || oldMessage.content === newMessage.content) return;
 
         await this.client.logger.logMessageEdit(oldMessage, newMessage);
-        await this.client.messageFilter.scanMessage(newMessage).catch(logError);
+        const deleted = await this.client.messageFilter.scanMessage(newMessage).catch(logError);
+
+        if (deleted) 
+            return;
+
+        await this.client.messageRuleService.onMessageCreate(newMessage).catch(logError);
     }
 }
