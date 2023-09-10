@@ -1,3 +1,12 @@
+# [6.6.0](https://github.com/onesoft-sudo/sudobot/compare/v6.5.1...v6.6.0) (2023-09-10)
+
+
+### Features
+
+* api server config options and status endpoint ([94c02f4](https://github.com/onesoft-sudo/sudobot/commit/94c02f481210bbe005623587345483bc8bad5910))
+
+
+
 ## [6.5.1](https://github.com/onesoft-sudo/sudobot/compare/v6.5.0...v6.5.1) (2023-09-07)
 
 
@@ -36,15 +45,6 @@
 * channel locking ([87b2b81](https://github.com/onesoft-sudo/sudobot/commit/87b2b8160872530328bbb6c76adb1e3a11ab367b))
 * clear slash command does not return a response ([e996d40](https://github.com/onesoft-sudo/sudobot/commit/e996d40eae9ecd54b46cbd555b5ad1cbf1c52abc))
 * improved lock/unlocking system ([0668792](https://github.com/onesoft-sudo/sudobot/commit/0668792c9e147e7fcd08ce7c3533b66b04ba03ce))
-
-
-
-# [6.4.0](https://github.com/onesoft-sudo/sudobot/compare/v6.3.0...v6.4.0) (2023-09-04)
-
-
-### Features
-
-* **trolling:** ability to add bean/shot/fakeban-immune users ([180aa4c](https://github.com/onesoft-sudo/sudobot/commit/180aa4cb628f3b9e44f4e2ab94e5c57849bbd27c))
 
 
 
