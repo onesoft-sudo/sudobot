@@ -178,6 +178,6 @@ In case if you're facing issues, feel free to open an issue at [GitHub](https://
 
 * Email: [rakinar2@onesoftnet.eu.org](mailto:rakinar2@onesoftnet.eu.org)
 * Discord: [@rakinar2](https://discord.com/users/774553653394538506)
-* Discord Servers: [Silly Cats](https://discord.gg/sillycats), [OSN's server](https://discord.gg/JJDy9SHzGv)
+* Discord Servers: [OSN's server](https://discord.gg/JJDy9SHzGv)
 
 Give the repository a star to show your support! We'll be really thankful if you do.
