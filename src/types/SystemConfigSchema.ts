@@ -54,7 +54,18 @@ export const SystemConfigSchema = z.object({
         })
         .default({}),
     enable_file_filter: z.boolean().default(false),
-    default_permissions_mode: z.enum(["ignore", "overwrite", "check"]).default("check")
+    default_permissions_mode: z.enum(["ignore", "overwrite", "check"]).default("check"),
+    api: z
+        .object({
+            enabled: z.boolean().default(true),
+            server_status: z
+                .enum(["operational", "degraded", "partial_outage", "major_outage", "maintenence", "error"])
+                .default("operational"),
+            server_status_description: z.string().optional(),
+            server_status_started_at: z.string().pipe(z.coerce.date()).or(z.date()).default(new Date())
+        })
+        .default({})
 });
 
 export type SystemConfig = z.infer<typeof SystemConfigSchema>;
+export type APIStatus = SystemConfig["api"]["server_status"];

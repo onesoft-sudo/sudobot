@@ -27,4 +27,15 @@ export default class MainController extends Controller {
             message: "API server is up."
         };
     }
+
+    @Action("GET", "/status")
+    public async status() {
+        const { server_status, server_status_description, server_status_started_at } = this.client.configManager.systemConfig.api;
+
+        return {
+            status: server_status,
+            description: server_status_description,
+            started: server_status_started_at
+        };
+    }
 }

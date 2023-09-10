@@ -38,7 +38,9 @@ export default class Server {
     constructor(protected client: Client) {}
 
     async onReady() {
-        await this.boot();
+        if (this.client.configManager.systemConfig.api.enabled) {
+            await this.boot();
+        }
     }
 
     async boot() {
