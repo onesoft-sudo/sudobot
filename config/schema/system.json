@@ -110,6 +110,52 @@
                 "check"
             ],
             "default": "check"
+        },
+        "api": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "server_status": {
+                    "type": "string",
+                    "enum": [
+                        "operational",
+                        "degraded",
+                        "partial_outage",
+                        "major_outage",
+                        "maintenence",
+                        "error"
+                    ],
+                    "default": "operational"
+                },
+                "server_status_description": {
+                    "type": "string"
+                },
+                "server_status_started_at": {
+                    "anyOf": [
+                        {
+                            "allOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "string",
+                                    "format": "date-time"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    ],
+                    "default": "2023-09-11T12:15:13.798Z"
+                }
+            },
+            "additionalProperties": false,
+            "default": {}
         }
     },
     "additionalProperties": false,
