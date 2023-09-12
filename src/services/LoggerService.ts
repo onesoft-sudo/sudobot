@@ -1108,7 +1108,7 @@ export default class LoggerService extends Service {
             color: Colors.Yellow,
             fields: [
                 {
-                    name: blockType.toUpperCase(),
+                    name: blockType[0].toUpperCase() + blockType.substring(1),
                     value,
                 }
             ],
