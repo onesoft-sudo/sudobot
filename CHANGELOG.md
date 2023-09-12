@@ -1,3 +1,12 @@
+## [6.7.1](https://github.com/onesoft-sudo/sudobot/compare/v6.7.0...v6.7.1) (2023-09-12)
+
+
+### Bug Fixes
+
+* block type field is uppercased ([fa299fc](https://github.com/onesoft-sudo/sudobot/commit/fa299fc71486e1dd781ce9bd0ceae7697f4bcd05))
+
+
+
 # [6.7.0](https://github.com/onesoft-sudo/sudobot/compare/v6.6.0...v6.7.0) (2023-09-12)
 
 
@@ -31,16 +40,6 @@
 ### Features
 
 * add message auto triggers ([5e136d4](https://github.com/onesoft-sudo/sudobot/commit/5e136d49f1b430b11636ab9e1c12941f9c1adc92))
-
-
-
-## [6.4.2](https://github.com/onesoft-sudo/sudobot/compare/v6.4.1...v6.4.2) (2023-09-04)
-
-
-### Bug Fixes
-
-* note subcommands showing interaction deferring error ([e7ad97d](https://github.com/onesoft-sudo/sudobot/commit/e7ad97d525311c7daf6c8de258f4fc1ef189363a))
-* note view command showing interaction deferring error ([297e7ab](https://github.com/onesoft-sudo/sudobot/commit/297e7abda552f0dd66b7c50012bee06766bce1c5))
 
 
 
