@@ -85,7 +85,8 @@ export default class BlockedWordCommand extends Command {
 
         this.client.configManager.config[guildId!]!.message_filter!.data ??= {
             blocked_tokens: [],
-            blocked_words: []
+            blocked_words: [],
+            blocked_messages: []
         };
 
         this.client.configManager.config[guildId!]!.message_filter!.data!.blocked_words ??= [];

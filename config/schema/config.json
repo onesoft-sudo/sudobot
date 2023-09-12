@@ -253,6 +253,10 @@
                                             "blocked_tokens": {
                                                 "type": "boolean",
                                                 "default": false
+                                            },
+                                            "blocked_messages": {
+                                                "type": "boolean",
+                                                "default": false
                                             }
                                         },
                                         "additionalProperties": false
@@ -275,6 +279,10 @@
                                             "blocked_tokens": {
                                                 "type": "boolean",
                                                 "default": false
+                                            },
+                                            "blocked_messages": {
+                                                "type": "boolean",
+                                                "default": false
                                             }
                                         },
                                         "additionalProperties": false
@@ -293,6 +301,13 @@
                                         "default": []
                                     },
                                     "blocked_tokens": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "default": []
+                                    },
+                                    "blocked_messages": {
                                         "type": "array",
                                         "items": {
                                             "type": "string"
