@@ -118,7 +118,8 @@ export const GuildConfigSchema = z.object({
                 .or(
                     z.object({
                         blocked_words: z.boolean().default(false),
-                        blocked_tokens: z.boolean().default(false)
+                        blocked_tokens: z.boolean().default(false),
+                        blocked_messages: z.boolean().default(false),
                     })
                 )
                 .default(false),
@@ -127,16 +128,18 @@ export const GuildConfigSchema = z.object({
                 .or(
                     z.object({
                         blocked_words: z.boolean().default(false),
-                        blocked_tokens: z.boolean().default(false)
+                        blocked_tokens: z.boolean().default(false),
+                        blocked_messages: z.boolean().default(false),
                     })
                 )
                 .default(false),
             data: z
                 .object({
                     blocked_words: z.array(z.string()).optional().default([]),
-                    blocked_tokens: z.array(z.string()).optional().default([])
-                })
-                .default({})
+                    blocked_tokens: z.array(z.string()).optional().default([]),
+                    blocked_messages: z.array(z.string()).optional().default([]),
+            })
+            .default({})
         })
         .optional(),
     antispam: z

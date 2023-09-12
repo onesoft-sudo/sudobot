@@ -1080,16 +1080,36 @@ export default class LoggerService extends Service {
         });
     }
 
-    async logBlockedWordOrToken({ guild, user, isToken, token, word, content }: BlockedTokenOrWordOptions) {
+    async logBlockedWordOrToken({ guild, user, blockType, token, word, message, content }: BlockedTokenOrWordOptions) {
+        let value: string;
+        let title: string;
+    
+        switch (blockType) {
+            case 'token':
+                value = `||${escapeMarkdown(token!)}||`;
+                title = 'Posted blocked token(s)';
+                break;
+            case 'word':
+                value = `||${escapeMarkdown(word!)}||`;
+                title = 'Posted blocked word(s)';
+                break;
+            case 'message':
+                value = `||${escapeMarkdown(message!)}||`;
+                title = 'Posted blocked message(s)';
+                break;
+            default:
+                return;
+        }
+    
         this.sendLogEmbed(guild, {
             user,
-            title: `Posted blocked ${isToken ? "token" : "word"}(s)`,
+            title,
             footerText: "AutoMod",
             color: Colors.Yellow,
             fields: [
                 {
-                    name: isToken ? "Token" : "Word",
-                    value: `||${escapeMarkdown((isToken ? token : word)!)}||`
+                    name: blockType.toUpperCase(),
+                    value,
                 }
             ],
             options: {
@@ -1218,9 +1238,10 @@ interface CommonUserActionOptions {
 }
 
 interface BlockedTokenOrWordOptions {
-    isToken: boolean;
+    blockType: "token" | "word" | "message";
     token?: string;
     word?: string;
+    message?: string;
     guild: Guild;
     user: User;
     content: string;
