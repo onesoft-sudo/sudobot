@@ -1,3 +1,12 @@
+# [6.7.0](https://github.com/onesoft-sudo/sudobot/compare/v6.6.0...v6.7.0) (2023-09-12)
+
+
+### Features
+
+* added blocked messages to message filters ([347c13c](https://github.com/onesoft-sudo/sudobot/commit/347c13c1444b3757c70b141c3e62d6a66abb7107))
+
+
+
 # [6.6.0](https://github.com/onesoft-sudo/sudobot/compare/v6.5.1...v6.6.0) (2023-09-10)
 
 
@@ -32,19 +41,6 @@
 
 * note subcommands showing interaction deferring error ([e7ad97d](https://github.com/onesoft-sudo/sudobot/commit/e7ad97d525311c7daf6c8de258f4fc1ef189363a))
 * note view command showing interaction deferring error ([297e7ab](https://github.com/onesoft-sudo/sudobot/commit/297e7abda552f0dd66b7c50012bee06766bce1c5))
-
-
-
-## [6.4.1](https://github.com/onesoft-sudo/sudobot/compare/v6.4.0...v6.4.1) (2023-09-04)
-
-
-### Bug Fixes
-
-* better message filter config schema ([be856a2](https://github.com/onesoft-sudo/sudobot/commit/be856a2287d975e7748b55303a9b0b592c7742d1))
-* blocked token and blocked word commands ([3bf6d7e](https://github.com/onesoft-sudo/sudobot/commit/3bf6d7e02b09e025dd756cb550b2846fe1ed4483))
-* channel locking ([87b2b81](https://github.com/onesoft-sudo/sudobot/commit/87b2b8160872530328bbb6c76adb1e3a11ab367b))
-* clear slash command does not return a response ([e996d40](https://github.com/onesoft-sudo/sudobot/commit/e996d40eae9ecd54b46cbd555b5ad1cbf1c52abc))
-* improved lock/unlocking system ([0668792](https://github.com/onesoft-sudo/sudobot/commit/0668792c9e147e7fcd08ce7c3533b66b04ba03ce))
 
 
 
