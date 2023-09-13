@@ -1,3 +1,12 @@
+# [6.8.0](https://github.com/onesoft-sudo/sudobot/compare/v6.7.1...v6.8.0) (2023-09-13)
+
+
+### Features
+
+* **api:** add `GuildController` ([eb5f4d3](https://github.com/onesoft-sudo/sudobot/commit/eb5f4d3468c496f00ab11255f518b1ed4a42eab7))
+
+
+
 ## [6.7.1](https://github.com/onesoft-sudo/sudobot/compare/v6.7.0...v6.7.1) (2023-09-12)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * message rules don't fire on message update ([d4211f1](https://github.com/onesoft-sudo/sudobot/commit/d4211f1512fc1b1f596db0e08360eb50c61d5117))
-
-
-
-# [6.5.0](https://github.com/onesoft-sudo/sudobot/compare/v6.4.2...v6.5.0) (2023-09-06)
-
-
-### Features
-
-* add message auto triggers ([5e136d4](https://github.com/onesoft-sudo/sudobot/commit/5e136d49f1b430b11636ab9e1c12941f9c1adc92))
 
 
 
