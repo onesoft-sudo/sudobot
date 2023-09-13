@@ -23,6 +23,7 @@ import jwt from "jsonwebtoken";
 import { request as undiciRequest } from "undici";
 import { z } from "zod";
 import { Action } from "../../decorators/Action";
+import { RequireAuth } from "../../decorators/RequireAuth";
 import { Validate } from "../../decorators/Validate";
 import { safeUserFetch } from "../../utils/fetch";
 import Controller from "../Controller";
@@ -211,5 +212,11 @@ export default class AuthController extends Controller {
             console.error(error);
             return new Response({ status: 400, body: "Invalid oauth2 grant code" });
         }
+    }
+
+    @Action("GET", "/auth/me")
+    @RequireAuth()
+    async me(request: Request) {
+        return request.user;
     }
 }
