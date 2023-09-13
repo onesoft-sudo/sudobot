@@ -1,3 +1,12 @@
+# [6.9.0](https://github.com/onesoft-sudo/sudobot/compare/v6.8.0...v6.9.0) (2023-09-13)
+
+
+### Features
+
+* **api:** add `/auth/me` endpoint ([9bbba9e](https://github.com/onesoft-sudo/sudobot/commit/9bbba9eeb2054e32d93257f03bf67d1e042b4ac5))
+
+
+
 # [6.8.0](https://github.com/onesoft-sudo/sudobot/compare/v6.7.1...v6.8.0) (2023-09-13)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * api server config options and status endpoint ([94c02f4](https://github.com/onesoft-sudo/sudobot/commit/94c02f481210bbe005623587345483bc8bad5910))
-
-
-
-## [6.5.1](https://github.com/onesoft-sudo/sudobot/compare/v6.5.0...v6.5.1) (2023-09-07)
-
-
-### Bug Fixes
-
-* message rules don't fire on message update ([d4211f1](https://github.com/onesoft-sudo/sudobot/commit/d4211f1512fc1b1f596db0e08360eb50c61d5117))
 
 
 
