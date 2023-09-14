@@ -1,3 +1,12 @@
+# [6.11.0](https://github.com/onesoft-sudo/sudobot/compare/v6.10.0...v6.11.0) (2023-09-14)
+
+
+### Features
+
+* password reset via random numeric codes ([9d2842d](https://github.com/onesoft-sudo/sudobot/commit/9d2842deedaf6afd13de48f84e72ea4e7d374cc9))
+
+
+
 # [6.10.0](https://github.com/onesoft-sudo/sudobot/compare/v6.9.1...v6.10.0) (2023-09-14)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **api:** add `GuildController` ([eb5f4d3](https://github.com/onesoft-sudo/sudobot/commit/eb5f4d3468c496f00ab11255f518b1ed4a42eab7))
-
-
-
-## [6.7.1](https://github.com/onesoft-sudo/sudobot/compare/v6.7.0...v6.7.1) (2023-09-12)
-
-
-### Bug Fixes
-
-* block type field is uppercased ([fa299fc](https://github.com/onesoft-sudo/sudobot/commit/fa299fc71486e1dd781ce9bd0ceae7697f4bcd05))
 
 
 
