@@ -132,16 +132,19 @@ model ReactionRole {
 }
 
 model User {
-    id             Int       @id @default(autoincrement())
-    name           String?
-    username       String
-    discordId      String
-    guilds         String[]  @default([])
-    password       String
-    token          String?
-    createdAt      DateTime  @default(now())
-    tokenExpiresAt DateTime?
-    updatedAt      DateTime  @default(now()) @updatedAt
+    id                     Int       @id @default(autoincrement())
+    name                   String?
+    username               String
+    discordId              String
+    guilds                 String[]  @default([])
+    password               String
+    token                  String?
+    recoveryToken          String?
+    recoveryAttempts       Int       @default(0)
+    recoveryTokenExpiresAt DateTime?
+    createdAt              DateTime  @default(now())
+    tokenExpiresAt         DateTime?
+    updatedAt              DateTime  @default(now()) @updatedAt
 
     @@map("users")
 }

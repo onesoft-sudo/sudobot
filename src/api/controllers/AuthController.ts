@@ -19,6 +19,8 @@
 
 import { User } from "@prisma/client";
 import bcrypt from "bcrypt";
+import { add } from "date-fns";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, escapeMarkdown } from "discord.js";
 import jwt from "jsonwebtoken";
 import { request as undiciRequest } from "undici";
 import { z } from "zod";
@@ -26,6 +28,7 @@ import { Action } from "../../decorators/Action";
 import { RequireAuth } from "../../decorators/RequireAuth";
 import { Validate } from "../../decorators/Validate";
 import { safeUserFetch } from "../../utils/fetch";
+import { logError } from "../../utils/logger";
 import Controller from "../Controller";
 import Request from "../Request";
 import Response from "../Response";
@@ -58,6 +61,217 @@ export default class AuthController extends Controller {
                 }
             });
         }
+    }
+
+    @Action("POST", "/auth/reset")
+    @Validate(
+        z.object({
+            username: z.string(),
+            token: z.string(),
+            new_password: z.string()
+        })
+    )
+    public async reset(request: Request) {
+        const { username, token, new_password } = request.parsedBody ?? {};
+
+        const user = await this.client.prisma.user.findFirst({
+            where: {
+                username: username.trim(),
+                recoveryToken: token.trim()
+            }
+        });
+
+        if (!user) {
+            return new Response({
+                status: 403,
+                body: {
+                    error: "Invalid username or token provided"
+                }
+            });
+        }
+
+        try {
+            jwt.verify(user.recoveryToken!, process.env.JWT_SECRET!, {
+                issuer: process.env.JWT_ISSUER ?? "SudoBot",
+                subject: "Temporary recovery token",
+                complete: true
+            });
+        } catch (e) {
+            logError(e);
+
+            return new Response({
+                status: 403,
+                body: {
+                    error: "Invalid username or token provided"
+                }
+            });
+        }
+
+        if ((user.recoveryTokenExpiresAt?.getTime() ?? Date.now()) <= Date.now()) {
+            return new Response({
+                status: 400,
+                body: {
+                    error: "This account recovery request has expired"
+                }
+            });
+        }
+
+        await this.client.prisma.user.updateMany({
+            where: {
+                id: user.id
+            },
+            data: {
+                recoveryAttempts: 0,
+                recoveryToken: null,
+                recoveryTokenExpiresAt: null,
+                password: bcrypt.hashSync(new_password, bcrypt.genSaltSync(10)),
+                token: null,
+                tokenExpiresAt: null
+            }
+        });
+
+        const discordUser = await safeUserFetch(this.client, user.discordId);
+
+        await discordUser
+            ?.send({
+                embeds: [
+                    new EmbedBuilder({
+                        author: {
+                            name: "Account Successfully Recovered",
+                            icon_url: this.client.user?.displayAvatarURL()
+                        },
+                        color: 0x007bff,
+                        description: `Hey ${escapeMarkdown(
+                            discordUser.username
+                        )},\n\nYour SudoBot Account was recovered and the password was reset. You've been automatically logged out everywhere you were logged in before.\n\nCheers,\nSudoBot Developers`,
+                        footer: {
+                            text: "Recovery succeeded"
+                        }
+                    }).setTimestamp()
+                ],
+                components: [
+                    new ActionRowBuilder<ButtonBuilder>().addComponents(
+                        new ButtonBuilder()
+                            .setStyle(ButtonStyle.Link)
+                            .setLabel("Log into your account")
+                            .setURL(`${process.env.FRONTEND_URL}/login`)
+                    )
+                ]
+            })
+            .catch(logError);
+
+        return {
+            success: true,
+            message: "Successfully completed account recovery"
+        };
+    }
+
+    @Action("POST", "/auth/recovery")
+    @Validate(
+        z.object({
+            username: z.string()
+        })
+    )
+    public async recovery(request: Request) {
+        const { username } = request.parsedBody ?? {};
+
+        const user = await this.client.prisma.user.findFirst({
+            where: {
+                username: username.trim()
+            }
+        });
+
+        if (!user) {
+            return new Response({
+                status: 403,
+                body: {
+                    error: "Invalid username provided"
+                }
+            });
+        }
+
+        if (
+            user.recoveryToken &&
+            user.recoveryTokenExpiresAt &&
+            user.recoveryTokenExpiresAt.getTime() > Date.now() &&
+            user.recoveryAttempts >= 2
+        ) {
+            return new Response({
+                status: 429,
+                body: {
+                    error: "This account is already awaiting for recovery"
+                }
+            });
+        }
+
+        const recoveryToken = jwt.sign(
+            {
+                type: "pwdreset",
+                userId: user.id
+            },
+            process.env.JWT_SECRET!,
+            {
+                expiresIn: "2 days",
+                issuer: process.env.JWT_ISSUER ?? "SudoBot",
+                subject: "Temporary recovery token"
+            }
+        );
+
+        const recoveryTokenExpiresAt = add(new Date(), {
+            days: 2
+        });
+
+        await this.client.prisma.user.updateMany({
+            where: {
+                id: user.id
+            },
+            data: {
+                recoveryAttempts: {
+                    increment: 1
+                },
+                recoveryToken,
+                recoveryTokenExpiresAt
+            }
+        });
+
+        const discordUser = await safeUserFetch(this.client, user.discordId);
+
+        await discordUser
+            ?.send({
+                embeds: [
+                    new EmbedBuilder({
+                        author: {
+                            name: "Account Recovery Request",
+                            icon_url: this.client.user?.displayAvatarURL()
+                        },
+                        color: 0x007bff,
+                        description: `Hey ${escapeMarkdown(
+                            discordUser.username
+                        )},\n\nWe've received a recovery request for your SudoBot Account. Click the button at the bottom to reset your account's password.\nIf you haven't requested this, feel free to ignore this DM.\n\nCheers,\nSudoBot Developers`,
+                        footer: {
+                            text: "This account recovery request will be valid for the next 48 hours"
+                        }
+                    }).setTimestamp()
+                ],
+                components: [
+                    new ActionRowBuilder<ButtonBuilder>().addComponents(
+                        new ButtonBuilder()
+                            .setStyle(ButtonStyle.Link)
+                            .setLabel("Reset your password")
+                            .setURL(
+                                `${process.env.FRONTEND_URL}/account/reset?u=${encodeURIComponent(
+                                    user.username
+                                )}&t=${encodeURIComponent(recoveryToken)}`
+                            )
+                    )
+                ]
+            })
+            .catch(logError);
+
+        return {
+            success: true,
+            message: "Successfully initiated account recovery"
+        };
     }
 
     @Action("POST", "/auth/login")
