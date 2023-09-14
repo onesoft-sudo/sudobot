@@ -1,3 +1,12 @@
+# [6.10.0](https://github.com/onesoft-sudo/sudobot/compare/v6.9.1...v6.10.0) (2023-09-14)
+
+
+### Features
+
+* **api:** account recovery ([a7b382b](https://github.com/onesoft-sudo/sudobot/commit/a7b382b3cdb414c579326efeae8b6d75c30c27e5))
+
+
+
 ## [6.9.1](https://github.com/onesoft-sudo/sudobot/compare/v6.9.0...v6.9.1) (2023-09-14)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * block type field is uppercased ([fa299fc](https://github.com/onesoft-sudo/sudobot/commit/fa299fc71486e1dd781ce9bd0ceae7697f4bcd05))
-
-
-
-# [6.7.0](https://github.com/onesoft-sudo/sudobot/compare/v6.6.0...v6.7.0) (2023-09-12)
-
-
-### Features
-
-* added blocked messages to message filters ([347c13c](https://github.com/onesoft-sudo/sudobot/commit/347c13c1444b3757c70b141c3e62d6a66abb7107))
 
 
 
