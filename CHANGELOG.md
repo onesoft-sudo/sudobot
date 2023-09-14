@@ -1,3 +1,12 @@
+## [6.9.1](https://github.com/onesoft-sudo/sudobot/compare/v6.9.0...v6.9.1) (2023-09-14)
+
+
+### Bug Fixes
+
+* **afkservice:** potential mention spam can be done using the AFK statuses ([b0b3884](https://github.com/onesoft-sudo/sudobot/commit/b0b3884a0848d0d07b85628566d0fa52ebcfc805))
+
+
+
 # [6.9.0](https://github.com/onesoft-sudo/sudobot/compare/v6.8.0...v6.9.0) (2023-09-13)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * added blocked messages to message filters ([347c13c](https://github.com/onesoft-sudo/sudobot/commit/347c13c1444b3757c70b141c3e62d6a66abb7107))
-
-
-
-# [6.6.0](https://github.com/onesoft-sudo/sudobot/compare/v6.5.1...v6.6.0) (2023-09-10)
-
-
-### Features
-
-* api server config options and status endpoint ([94c02f4](https://github.com/onesoft-sudo/sudobot/commit/94c02f481210bbe005623587345483bc8bad5910))
 
 
 
