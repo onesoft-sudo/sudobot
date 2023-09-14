@@ -140,6 +140,7 @@ model User {
     password               String
     token                  String?
     recoveryToken          String?
+    recoveryCode           String?
     recoveryAttempts       Int       @default(0)
     recoveryTokenExpiresAt DateTime?
     createdAt              DateTime  @default(now())

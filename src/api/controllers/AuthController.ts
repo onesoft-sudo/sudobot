@@ -22,10 +22,10 @@ import bcrypt from "bcrypt";
 import { add } from "date-fns";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, escapeMarkdown } from "discord.js";
 import jwt from "jsonwebtoken";
+import { randomInt } from "node:crypto";
 import { request as undiciRequest } from "undici";
 import { z } from "zod";
 import { Action } from "../../decorators/Action";
-import { RequireAuth } from "../../decorators/RequireAuth";
 import { Validate } from "../../decorators/Validate";
 import { safeUserFetch } from "../../utils/fetch";
 import { logError } from "../../utils/logger";
@@ -61,6 +61,70 @@ export default class AuthController extends Controller {
                 }
             });
         }
+    }
+
+    @Action("POST", "/auth/recovery_token")
+    @Validate(
+        z.object({
+            username: z.string(),
+            code: z.number()
+        })
+    )
+    public async recoveryToken(request: Request) {
+        const { username, code } = request.parsedBody ?? {};
+
+        const user = await this.client.prisma.user.findFirst({
+            where: {
+                username: username.trim(),
+                recoveryCode: code.toString().trim()
+            }
+        });
+
+        if (!user) {
+            return new Response({
+                status: 403,
+                body: {
+                    error: "Invalid username or code provided"
+                }
+            });
+        }
+
+        try {
+            jwt.verify(user.recoveryToken!, process.env.JWT_SECRET!, {
+                issuer: process.env.JWT_ISSUER ?? "SudoBot",
+                subject: "Temporary recovery token",
+                complete: true
+            });
+        } catch (e) {
+            logError(e);
+
+            return new Response({
+                status: 403,
+                body: {
+                    error: "Invalid username or code provided"
+                }
+            });
+        }
+
+        if ((user.recoveryTokenExpiresAt?.getTime() ?? Date.now()) <= Date.now()) {
+            return new Response({
+                status: 400,
+                body: {
+                    error: "This account recovery request has expired"
+                }
+            });
+        }
+
+        await this.client.prisma.user.updateMany({
+            where: {
+                id: user.id
+            },
+            data: {
+                recoveryCode: null
+            }
+        });
+
+        return { success: true, token: user.recoveryToken };
     }
 
     @Action("POST", "/auth/reset")
@@ -126,7 +190,8 @@ export default class AuthController extends Controller {
                 recoveryTokenExpiresAt: null,
                 password: bcrypt.hashSync(new_password, bcrypt.genSaltSync(10)),
                 token: null,
-                tokenExpiresAt: null
+                tokenExpiresAt: null,
+                recoveryCode: null
             }
         });
 
@@ -221,6 +286,8 @@ export default class AuthController extends Controller {
             days: 2
         });
 
+        const recoveryCode = randomInt(10000, 99999).toString();
+
         await this.client.prisma.user.updateMany({
             where: {
                 id: user.id
@@ -230,7 +297,8 @@ export default class AuthController extends Controller {
                     increment: 1
                 },
                 recoveryToken,
-                recoveryTokenExpiresAt
+                recoveryTokenExpiresAt,
+                recoveryCode
             }
         });
 
@@ -247,7 +315,7 @@ export default class AuthController extends Controller {
                         color: 0x007bff,
                         description: `Hey ${escapeMarkdown(
                             discordUser.username
-                        )},\n\nWe've received a recovery request for your SudoBot Account. Click the button at the bottom to reset your account's password.\nIf you haven't requested this, feel free to ignore this DM.\n\nCheers,\nSudoBot Developers`,
+                        )},\n\nWe've received a recovery request for your SudoBot Account. Your recovery code is:\n\n# ${recoveryCode}\n\nAlternatively, click the button at the bottom to reset your account's password.\nIf you haven't requested this, feel free to ignore this DM.\n\nCheers,\nSudoBot Developers`,
                         footer: {
                             text: "This account recovery request will be valid for the next 48 hours"
                         }
@@ -426,11 +494,5 @@ export default class AuthController extends Controller {
             console.error(error);
             return new Response({ status: 400, body: "Invalid oauth2 grant code" });
         }
-    }
-
-    @Action("GET", "/auth/me")
-    @RequireAuth()
-    async me(request: Request) {
-        return request.user;
     }
 }
