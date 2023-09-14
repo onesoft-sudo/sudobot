@@ -43,7 +43,7 @@ Please look at [this page](https://docs.sudobot.org/getting-started) of the docu
 Thanks to all the active and indirect contributors!
 
 
-* [Ar Rakin](https://github.com/virtual-designer)
+* [Ar Rakin](https://github.com/virtual-designer) (Maintainer)
 * Hana (A Discord User)
 * [Kars](https://github.com/kars1996) (Contributed by giving away a domain to us)
 * [killerclaws12](https://github.com/killerclaws12)
