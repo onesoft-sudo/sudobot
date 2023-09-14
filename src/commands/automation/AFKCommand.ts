@@ -17,7 +17,15 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { SlashCommandBuilder, escapeMarkdown } from "discord.js";
+import {
+    ChatInputCommandInteraction,
+    GuildMember,
+    Message,
+    SlashCommandBuilder,
+    User,
+    escapeMarkdown,
+    messageLink
+} from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class AFKCommand extends Command {
@@ -37,12 +45,50 @@ export default class AFKCommand extends Command {
     );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
-        const reason = (context.isLegacy ? context.parsedNamedArgs.reason : context.options.getString("reason")) ?? undefined;
+        const { id } = (await this.deferIfInteraction(message, { fetchReply: true })) ?? {};
 
-        await this.deferIfInteraction(message);
+        const reason: string | undefined =
+            (context.isLegacy ? context.parsedNamedArgs.reason : context.options.getString("reason")) ?? undefined;
+
+        if (message instanceof ChatInputCommandInteraction && reason) {
+            const newMessage = {
+                ...message,
+                id,
+                author: message.member!.user as User,
+                member: message.member! as GuildMember,
+                guild: message.guild!,
+                deletable: true,
+                url: messageLink(message.channelId!, id ?? "123", message.guildId!),
+                delete: async () => {
+                    console.log("Done");
+                    await this.error(message, "Your AFK status is blocked by the message rules configured in the server.");
+                },
+                content: reason
+            } as unknown as Message;
+
+            let deleted: boolean | undefined = await this.client.messageRuleService.onMessageCreate(newMessage);
+
+            console.log("Rules", deleted);
+
+            if (deleted) {
+                return;
+            }
+
+            deleted = await this.client.messageFilter.onMessageCreate(newMessage);
+            console.log("Message Filter", deleted);
+
+            if (deleted) {
+                return;
+            }
+        }
+
         const isAFK = this.client.afkService.isAFK(message.guildId!, message.member!.user.id);
 
         if (isAFK) {
+            if (message instanceof ChatInputCommandInteraction) {
+                await this.success(message, "Successfully removed your AFK status.");
+            }
+
             return;
         }
 
@@ -54,7 +100,12 @@ export default class AFKCommand extends Command {
                     color: 0x007bff,
                     description: `You're AFK now${reason ? `, for reason: **${escapeMarkdown(reason)}**` : ""}.`
                 }
-            ]
+            ],
+            allowedMentions: {
+                users: [],
+                repliedUser: true,
+                roles: []
+            }
         });
     }
 }

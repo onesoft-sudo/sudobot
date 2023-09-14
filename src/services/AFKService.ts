@@ -140,7 +140,9 @@ export default class AFKService extends Service implements HasEventListeners {
                     }
                 ],
                 allowedMentions: {
-                    users: []
+                    users: [],
+                    repliedUser: false,
+                    roles: []
                 }
             });
         }
@@ -196,7 +198,9 @@ export default class AFKService extends Service implements HasEventListeners {
                     }
                 ],
                 allowedMentions: {
-                    users: []
+                    users: [],
+                    repliedUser: false,
+                    roles: []
                 }
             })
             .catch(logError);
