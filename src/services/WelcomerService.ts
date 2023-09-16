@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { Mutex } from "async-mutex";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
     ActionRowBuilder,
@@ -26,6 +27,7 @@ import {
     EmbedBuilder,
     GuildMember,
     Interaction,
+    Snowflake,
     time
 } from "discord.js";
 import { readFile } from "fs/promises";
@@ -41,7 +43,7 @@ export const name = "welcomer";
 
 export default class WelcomerService extends Service {
     welcomeMessages: string[] = [];
-    workingState = false;
+    mutexes: Record<Snowflake, Mutex | undefined> = {};
 
     @GatewayEventListener("ready")
     async onReady() {
@@ -131,23 +133,34 @@ export default class WelcomerService extends Service {
         if (!interaction.guild?.id || !config.welcomer?.say_hi_button || !interaction.customId.startsWith(`welcomer_say_hi__`))
             return;
 
-        if (this.workingState) {
+        this.mutexes[interaction.guildId!] ??= new Mutex();
+        const wasLocked = this.mutexes[interaction.guildId!]!.isLocked();
+
+        if (wasLocked) {
             await interaction[interaction.replied ? "followUp" : "reply"]({
-                content: `Whoa there! Please calm down! I had to ratelimit this request to prevent spam.`,
+                content: `Queued.`,
                 ephemeral: true
             });
-
-            return;
         }
 
-        this.workingState = true;
+        const release = await this.mutexes[interaction.guildId!]!.acquire();
+        const saysHiToYou = ` says hi to you!`;
+
+        if (wasLocked) {
+            try {
+                interaction.customId = (await interaction.message.fetch(true)).components[0].components[0].customId!;
+                log("Refetched custom ID: ", interaction.customId);
+            } catch (e) {
+                release();
+                return;
+            }
+        }
 
         const [, memberId, messageId] = interaction.customId.split("__");
-        const saysHiToYou = ` says hi to you!`;
 
         try {
             if (!messageId) {
-                const reply = await interaction.reply({
+                const reply = await interaction[interaction.replied ? "followUp" : "reply"]({
                     content: `${interaction.user.id === memberId ? "__You__" : interaction.user.toString()}${
                         interaction.user.id === memberId ? " said hi to yourself!" : saysHiToYou
                     }`,
@@ -177,13 +190,16 @@ export default class WelcomerService extends Service {
                 }
             } else {
                 try {
-                    await interaction.deferUpdate();
+                    if (!interaction.replied) {
+                        await interaction.deferUpdate();
+                    }
+
                     const message =
                         interaction.channel?.messages.cache.get(messageId) ??
                         (await interaction.channel?.messages.fetch(messageId));
 
                     if (!message) {
-                        this.workingState = false;
+                        release();
                         return;
                     }
 
@@ -196,7 +212,7 @@ export default class WelcomerService extends Service {
                             ephemeral: true
                         });
 
-                        this.workingState = false;
+                        release();
                         return;
                     }
 
@@ -207,15 +223,13 @@ export default class WelcomerService extends Service {
                     });
                 } catch (e) {
                     logError(e);
-                    this.workingState = false;
                 }
             }
-
-            this.workingState = false;
         } catch (e) {
             logError(e);
-            this.workingState = false;
         }
+
+        release();
     }
 
     generateActionRow(memberId: string, { say_hi_emoji }: Pick<NotUndefined<GuildConfig["welcomer"]>, "say_hi_emoji">) {
