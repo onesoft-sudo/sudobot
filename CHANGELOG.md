@@ -1,3 +1,12 @@
+# [6.12.0](https://github.com/onesoft-sudo/sudobot/compare/v6.11.0...v6.12.0) (2023-09-16)
+
+
+### Features
+
+* **commands:** `rmafk` command ([7225e18](https://github.com/onesoft-sudo/sudobot/commit/7225e18323d4489c1362e34daec613dc001536d5))
+
+
+
 # [6.11.0](https://github.com/onesoft-sudo/sudobot/compare/v6.10.0...v6.11.0) (2023-09-14)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **api:** add `/auth/me` endpoint ([9bbba9e](https://github.com/onesoft-sudo/sudobot/commit/9bbba9eeb2054e32d93257f03bf67d1e042b4ac5))
-
-
-
-# [6.8.0](https://github.com/onesoft-sudo/sudobot/compare/v6.7.1...v6.8.0) (2023-09-13)
-
-
-### Features
-
-* **api:** add `GuildController` ([eb5f4d3](https://github.com/onesoft-sudo/sudobot/commit/eb5f4d3468c496f00ab11255f518b1ed4a42eab7))
 
 
 
