@@ -1,3 +1,12 @@
+## [6.12.1](https://github.com/onesoft-sudo/sudobot/compare/v6.12.0...v6.12.1) (2023-09-16)
+
+
+### Bug Fixes
+
+* **welcomer:** race condition when pressing say hi button quickly ([a0c171e](https://github.com/onesoft-sudo/sudobot/commit/a0c171ed1afd30b7b93f0af36cf7da750625d5f3))
+
+
+
 # [6.12.0](https://github.com/onesoft-sudo/sudobot/compare/v6.11.0...v6.12.0) (2023-09-16)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **afkservice:** potential mention spam can be done using the AFK statuses ([b0b3884](https://github.com/onesoft-sudo/sudobot/commit/b0b3884a0848d0d07b85628566d0fa52ebcfc805))
-
-
-
-# [6.9.0](https://github.com/onesoft-sudo/sudobot/compare/v6.8.0...v6.9.0) (2023-09-13)
-
-
-### Features
-
-* **api:** add `/auth/me` endpoint ([9bbba9e](https://github.com/onesoft-sudo/sudobot/commit/9bbba9eeb2054e32d93257f03bf67d1e042b4ac5))
 
 
 
