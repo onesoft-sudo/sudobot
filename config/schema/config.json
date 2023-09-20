@@ -756,17 +756,17 @@
                                                     "type": "integer",
                                                     "default": -1
                                                 },
-                                                "type": {
-                                                    "type": "string",
-                                                    "const": "domain"
-                                                },
                                                 "mode": {
                                                     "type": "string",
                                                     "enum": [
-                                                        "allow",
-                                                        "disallow"
+                                                        "normal",
+                                                        "inverse"
                                                     ],
-                                                    "default": "disallow"
+                                                    "default": "normal"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "const": "domain"
                                                 },
                                                 "domains": {
                                                     "type": "array",
@@ -815,6 +815,9 @@
                                                 "mute_duration": {
                                                     "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_duration"
                                                 },
+                                                "mode": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mode"
+                                                },
                                                 "data": {
                                                     "type": "array",
                                                     "items": {
@@ -862,6 +865,9 @@
                                                 "mute_duration": {
                                                     "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_duration"
                                                 },
+                                                "mode": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mode"
+                                                },
                                                 "data": {
                                                     "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/1/properties/data"
                                                 },
@@ -904,6 +910,9 @@
                                                 },
                                                 "mute_duration": {
                                                     "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_duration"
+                                                },
+                                                "mode": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mode"
                                                 },
                                                 "type": {
                                                     "type": "string",
@@ -955,6 +964,9 @@
                                                 },
                                                 "mute_duration": {
                                                     "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_duration"
+                                                },
+                                                "mode": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mode"
                                                 },
                                                 "type": {
                                                     "type": "string",
@@ -1020,6 +1032,9 @@
                                                 "mute_duration": {
                                                     "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_duration"
                                                 },
+                                                "mode": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mode"
+                                                },
                                                 "type": {
                                                     "type": "string",
                                                     "const": "block_repeated_text"
@@ -1067,6 +1082,9 @@
                                                 },
                                                 "mute_duration": {
                                                     "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_duration"
+                                                },
+                                                "mode": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mode"
                                                 },
                                                 "type": {
                                                     "type": "string",
@@ -1119,6 +1137,9 @@
                                                 },
                                                 "mute_duration": {
                                                     "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_duration"
+                                                },
+                                                "mode": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mode"
                                                 },
                                                 "type": {
                                                     "type": "string",
