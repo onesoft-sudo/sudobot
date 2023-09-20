@@ -1,3 +1,12 @@
+# [6.13.0](https://github.com/onesoft-sudo/sudobot/compare/v6.12.2...v6.13.0) (2023-09-20)
+
+
+### Features
+
+* **sniping:** snipe multiple messages ([d7ae206](https://github.com/onesoft-sudo/sudobot/commit/d7ae20665b9240b765de9511063cd7e214ed8de6))
+
+
+
 ## [6.12.2](https://github.com/onesoft-sudo/sudobot/compare/v6.12.1...v6.12.2) (2023-09-20)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * password reset via random numeric codes ([9d2842d](https://github.com/onesoft-sudo/sudobot/commit/9d2842deedaf6afd13de48f84e72ea4e7d374cc9))
-
-
-
-# [6.10.0](https://github.com/onesoft-sudo/sudobot/compare/v6.9.1...v6.10.0) (2023-09-14)
-
-
-### Features
-
-* **api:** account recovery ([a7b382b](https://github.com/onesoft-sudo/sudobot/commit/a7b382b3cdb414c579326efeae8b6d75c30c27e5))
 
 
 
