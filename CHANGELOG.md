@@ -1,3 +1,13 @@
+## [6.12.2](https://github.com/onesoft-sudo/sudobot/compare/v6.12.1...v6.12.2) (2023-09-20)
+
+
+### Bug Fixes
+
+* **resources:** add missing languages ([d3d1a36](https://github.com/onesoft-sudo/sudobot/commit/d3d1a362f3672cc9d6f6276264d945088c5681bb))
+* **translationService:** use `Intl` to work with language codes ([c4a2bcb](https://github.com/onesoft-sudo/sudobot/commit/c4a2bcb490beeceaa65e071aae14bde9bf856693))
+
+
+
 ## [6.12.1](https://github.com/onesoft-sudo/sudobot/compare/v6.12.0...v6.12.1) (2023-09-16)
 
 
@@ -31,15 +41,6 @@
 ### Features
 
 * **api:** account recovery ([a7b382b](https://github.com/onesoft-sudo/sudobot/commit/a7b382b3cdb414c579326efeae8b6d75c30c27e5))
-
-
-
-## [6.9.1](https://github.com/onesoft-sudo/sudobot/compare/v6.9.0...v6.9.1) (2023-09-14)
-
-
-### Bug Fixes
-
-* **afkservice:** potential mention spam can be done using the AFK statuses ([b0b3884](https://github.com/onesoft-sudo/sudobot/commit/b0b3884a0848d0d07b85628566d0fa52ebcfc805))
 
 
 
