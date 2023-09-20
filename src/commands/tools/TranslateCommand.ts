@@ -66,6 +66,12 @@ export default class TranslateCommand extends Command implements HasEventListene
 
     public readonly description = "Translates the given text.";
 
+    protected readonly displayNames = new Intl.DisplayNames(["en"], {
+        type: "language"
+    });
+
+    protected readonly supportedLocales = Intl.DisplayNames.supportedLocalesOf();
+
     @GatewayEventListener("interactionCreate")
     onInteractionCreate(interaction: Interaction<CacheType>) {
         if (!interaction.isAutocomplete()) {
@@ -85,6 +91,31 @@ export default class TranslateCommand extends Command implements HasEventListene
                     name: this.languages[code],
                     value: code
                 });
+            }
+        }
+
+        if (matches.length < 25) {
+            for (const locale of this.supportedLocales) {
+                if (matches.length >= 25) {
+                    break;
+                }
+
+                if (this.languages[locale]) {
+                    continue;
+                }
+
+                const displayName = this.displayNames.of(locale);
+
+                if (!displayName) {
+                    continue;
+                }
+
+                if (locale === focused || displayName.includes(focused)) {
+                    matches.push({
+                        name: displayName,
+                        value: locale
+                    });
+                }
             }
         }
 
@@ -109,12 +140,14 @@ export default class TranslateCommand extends Command implements HasEventListene
         const from = context.isLegacy ? "auto" : (context.isContextMenu ? "auto" : context.options.getString("from")) ?? "auto";
         const to = context.isLegacy ? "en" : (context.isContextMenu ? "en" : context.options.getString("to")) ?? "en";
 
-        if (from !== "auto" && !this.languages[from]) {
+        const toString = this.displayNames.of(to);
+
+        if (from !== "auto" && !this.languages[from] && !this.displayNames.of(from)) {
             await this.error(message, "Invalid language specified in the `from` option");
             return;
         }
 
-        if (to !== "auto" && !this.languages[to]) {
+        if (to !== "auto" && !this.languages[to] && !this.displayNames.of(to)) {
             await this.error(message, "Invalid language specified in the `to` option");
             return;
         }
@@ -140,6 +173,8 @@ export default class TranslateCommand extends Command implements HasEventListene
             return;
         }
 
+        const fromString = this.displayNames.of(response!.data.src);
+
         await this.deferredReply(message, {
             embeds: [
                 new EmbedBuilder({
@@ -156,8 +191,8 @@ export default class TranslateCommand extends Command implements HasEventListene
                     },
                     description: translation,
                     footer: {
-                        text: `Translated from ${this.languages[response!.data.src]} to ${
-                            this.languages[to]
+                        text: `Translated from ${fromString ?? this.languages[response!.data.src] ?? response!.data.src} to ${
+                            toString ?? this.languages[to] ?? to
                         } • Powered by Google Translate`
                     }
                 })
