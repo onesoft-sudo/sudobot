@@ -1,3 +1,12 @@
+# [6.14.0](https://github.com/onesoft-sudo/sudobot/compare/v6.13.0...v6.14.0) (2023-09-20)
+
+
+### Features
+
+* **rules:** inversed mode ([d0f6f62](https://github.com/onesoft-sudo/sudobot/commit/d0f6f6222df3fcf9b8dc1ea281f4a47d9c69eaac))
+
+
+
 # [6.13.0](https://github.com/onesoft-sudo/sudobot/compare/v6.12.2...v6.13.0) (2023-09-20)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * **commands:** `rmafk` command ([7225e18](https://github.com/onesoft-sudo/sudobot/commit/7225e18323d4489c1362e34daec613dc001536d5))
-
-
-
-# [6.11.0](https://github.com/onesoft-sudo/sudobot/compare/v6.10.0...v6.11.0) (2023-09-14)
-
-
-### Features
-
-* password reset via random numeric codes ([9d2842d](https://github.com/onesoft-sudo/sudobot/commit/9d2842deedaf6afd13de48f84e72ea4e7d374cc9))
 
 
 
