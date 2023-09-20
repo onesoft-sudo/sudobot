@@ -1083,24 +1083,24 @@ export default class LoggerService extends Service {
     async logBlockedWordOrToken({ guild, user, blockType, token, word, message, content }: BlockedTokenOrWordOptions) {
         let value: string;
         let title: string;
-    
+
         switch (blockType) {
-            case 'token':
+            case "token":
                 value = `||${escapeMarkdown(token!)}||`;
-                title = 'Posted blocked token(s)';
+                title = "Posted blocked token(s)";
                 break;
-            case 'word':
+            case "word":
                 value = `||${escapeMarkdown(word!)}||`;
-                title = 'Posted blocked word(s)';
+                title = "Posted blocked word(s)";
                 break;
-            case 'message':
+            case "message":
                 value = `||${escapeMarkdown(message!)}||`;
-                title = 'Posted blocked message(s)';
+                title = "Posted blocked message(s)";
                 break;
             default:
                 return;
         }
-    
+
         this.sendLogEmbed(guild, {
             user,
             title,
@@ -1109,7 +1109,7 @@ export default class LoggerService extends Service {
             fields: [
                 {
                     name: blockType[0].toUpperCase() + blockType.substring(1),
-                    value,
+                    value
                 }
             ],
             options: {

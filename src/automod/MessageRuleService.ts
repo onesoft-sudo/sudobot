@@ -33,12 +33,24 @@ import { CreateLogEmbedOptions } from "../services/LoggerService";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { MessageRuleType } from "../types/MessageRuleSchema";
 import { log, logError, logWarn } from "../utils/logger";
-import { escapeRegex } from "../utils/utils";
+import { escapeRegex, getEmoji } from "../utils/utils";
 
 export const name = "messageRuleService";
 
-const handlers: Record<MessageRuleType["type"], Extract<keyof MessageRuleService, `rule${string}`>> = {
-    domain: "ruleDomain",
+type RuleHandlerMethod = Extract<keyof MessageRuleService, `rule${string}`>;
+
+type RuleInfo =
+    | RuleHandlerMethod
+    | {
+          method: RuleHandlerMethod;
+          autoHandleModes?: boolean;
+      };
+
+const handlers: Record<MessageRuleType["type"], RuleInfo> = {
+    domain: {
+        method: "ruleDomain",
+        autoHandleModes: false
+    },
     blocked_file_extension: "ruleBlockedFileExtension",
     blocked_mime_type: "ruleBlockedMimeType",
     anti_invite: "ruleAntiInvite",
@@ -105,9 +117,15 @@ export default class MessageRuleService extends Service implements HasEventListe
                 continue;
             }
 
-            const handlerFunctionName = handlers[rule.type];
+            const handlerFunctionInfo = handlers[rule.type];
+            const handlerFunctionName: RuleHandlerMethod | undefined =
+                typeof handlerFunctionInfo === "string" ? handlerFunctionInfo : handlerFunctionInfo?.method;
+            const handlerFunctionMetaInfo = (typeof handlerFunctionInfo === "string" ? null : handlerFunctionInfo) ?? {
+                method: handlerFunctionName,
+                autoHandleModes: true
+            };
 
-            if (!handlerFunctionName || !handlerFunctionName.startsWith("rule")) {
+            if (!handlerFunctionInfo || !handlerFunctionName?.startsWith("rule")) {
                 continue;
             }
 
@@ -121,20 +139,37 @@ export default class MessageRuleService extends Service implements HasEventListe
 
             try {
                 const result = await handler.call(this, message, rule);
+                const inverse = rule.mode === "inverse";
+                const { autoHandleModes } = handlerFunctionMetaInfo;
 
-                if (result) {
+                if ((result && !inverse) || (inverse && ((autoHandleModes && !result) || (!autoHandleModes && result)))) {
                     try {
                         for (const action of rule.actions) {
                             log("Taking action: ", action);
                             await this.takeAction(message, rule, action);
                         }
 
+                        const embedOptions =
+                            result && typeof result === "object" && !inverse
+                                ? result
+                                : inverse
+                                ? {
+                                      options: {
+                                          description: `${getEmoji(this.client, "info")} This rule was __inversed__.`,
+                                          ...(result && typeof result === "object" && "options" in result ? result.options : {})
+                                      },
+                                      ...(result && typeof result === "object" ? result : {})
+                                  }
+                                : undefined;
+
+                        log(embedOptions);
+
                         await this.client.logger
                             .logMessageRuleAction({
                                 message,
                                 actions: rule.actions,
                                 rule: rule.type,
-                                embedOptions: typeof result === "object" ? result : undefined
+                                embedOptions
                             })
                             .catch(logError);
                     } catch (e) {
@@ -229,37 +264,37 @@ export default class MessageRuleService extends Service implements HasEventListe
         if (message.content.trim() === "") {
             return null;
         }
-    
-        const { domains, mode, scan_links_only } = rule;
-    
+
+        const { domains, scan_links_only, mode } = rule;
+
         const prefix = scan_links_only ? `(https?://)` : `(https?://)?`;
         let specificRegex = `${prefix}(`;
         const genericRegex = `${prefix}([a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})`;
-    
+
         let index = 0;
         for (const domain of domains) {
             const escapedDomain = escapeRegex(domain).replace(/\\\*/g, "[A-Za-z0-9-]+");
             specificRegex += `${escapedDomain}`;
-    
+
             if (index < domains.length - 1) {
                 specificRegex += "|";
             }
-    
+
             index++;
         }
-    
+
         specificRegex += ")\\S*";
         log(specificRegex);
-    
+
         const specificMatches = [...(new RegExp(specificRegex, "i").exec(message.content) ?? [])];
         log(specificMatches);
-    
+
         const genericMatches = [...(new RegExp(genericRegex, "i").exec(message.content) ?? [])];
         log(genericMatches);
-    
+
         if (specificMatches.length > 0) {
-            const cleanedDomain = (specificMatches[2] ?? specificMatches[1] ?? specificMatches[0]).replace(/https?:\/\//, '');
-            if (mode === "disallow") {
+            const cleanedDomain = (specificMatches[2] ?? specificMatches[1] ?? specificMatches[0]).replace(/https?:\/\//, "");
+            if (mode === "normal") {
                 return {
                     title: "Blocked domain(s) detected",
                     fields: [
@@ -268,12 +303,12 @@ export default class MessageRuleService extends Service implements HasEventListe
                             value: `\`${escapeMarkdown(cleanedDomain)}\``
                         }
                     ]
-                 } satisfies CreateLogEmbedOptions;
-            } else if (mode === "allow") {
+                } satisfies CreateLogEmbedOptions;
+            } else if (mode === "inverse") {
                 return false;
             }
-        } else if (genericMatches.length > 0 && mode === "allow" && !scan_links_only) {
-            const cleanedDomain = (genericMatches[2] ?? genericMatches[1] ?? genericMatches[0]).replace(/https?:\/\//, '');
+        } else if (genericMatches.length > 0 && mode === "inverse" && !scan_links_only) {
+            const cleanedDomain = (genericMatches[2] ?? genericMatches[1] ?? genericMatches[0]).replace(/https?:\/\//, "");
             return {
                 title: "Blocked domain(s) detected",
                 fields: [
@@ -284,10 +319,10 @@ export default class MessageRuleService extends Service implements HasEventListe
                 ]
             } satisfies CreateLogEmbedOptions;
         }
-    
+
         return false;
     }
-            
+
     async ruleBlockedFileExtension(message: Message, rule: Extract<MessageRuleType, { type: "blocked_file_extension" }>) {
         for (const attachment of message.attachments.values()) {
             for (const extension of rule.data) {

@@ -16,13 +16,13 @@ const Common = {
     warning_reason: z.string().optional(),
     mute_reason: z.string().optional(),
     common_reason: z.string().optional(),
-    mute_duration: z.number().int().default(-1)
+    mute_duration: z.number().int().default(-1),
+    mode: z.enum(["normal", "inverse"]).default("normal")
 };
 
 export const DomainRule = z.object({
     ...Common,
     type: z.literal("domain"),
-    mode: z.enum(["allow", "disallow"]).default("disallow"),
     domains: z.array(z.string()).default([]),
     scan_links_only: z.boolean().default(false)
 });
