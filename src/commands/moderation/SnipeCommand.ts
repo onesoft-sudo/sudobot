@@ -86,7 +86,7 @@ export default class SnipeCommand extends Command implements HasEventListeners {
         }
 
         if (context.isLegacy && context.argv[0] !== "s" && context.argv[0] !== "snipe") {
-            const hasValue = context.parsedNamedArgs.index !== null;
+            const hasValue = context.args[0] !== undefined;
 
             if (!hasValue) {
                 lastDeletedMessages.splice(0, lastDeletedMessages.length);
