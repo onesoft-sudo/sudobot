@@ -1,3 +1,12 @@
+## [6.15.1](https://github.com/onesoft-sudo/sudobot/compare/v6.15.0...v6.15.1) (2023-09-23)
+
+
+### Bug Fixes
+
+* `snipe` command ([3f30c68](https://github.com/onesoft-sudo/sudobot/commit/3f30c68b8cfb0e4bcccc5e6532eced6fba3e26d0))
+
+
+
 # [6.15.0](https://github.com/onesoft-sudo/sudobot/compare/v6.14.0...v6.15.0) (2023-09-23)
 
 
@@ -32,15 +41,6 @@
 
 * **resources:** add missing languages ([d3d1a36](https://github.com/onesoft-sudo/sudobot/commit/d3d1a362f3672cc9d6f6276264d945088c5681bb))
 * **translationService:** use `Intl` to work with language codes ([c4a2bcb](https://github.com/onesoft-sudo/sudobot/commit/c4a2bcb490beeceaa65e071aae14bde9bf856693))
-
-
-
-## [6.12.1](https://github.com/onesoft-sudo/sudobot/compare/v6.12.0...v6.12.1) (2023-09-16)
-
-
-### Bug Fixes
-
-* **welcomer:** race condition when pressing say hi button quickly ([a0c171e](https://github.com/onesoft-sudo/sudobot/commit/a0c171ed1afd30b7b93f0af36cf7da750625d5f3))
 
 
 
