@@ -1199,72 +1199,127 @@
                             "triggers": {
                                 "type": "array",
                                 "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "enabled_channels": {
-                                            "anyOf": [
-                                                {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "enabled_channels": {
+                                                    "anyOf": [
+                                                        {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
+                                                            },
+                                                            "default": []
+                                                        },
+                                                        {
+                                                            "type": "string",
+                                                            "const": "all"
+                                                        }
+                                                    ]
+                                                },
+                                                "ignore_roles": {
                                                     "type": "array",
                                                     "items": {
                                                         "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                                                     },
                                                     "default": []
                                                 },
-                                                {
+                                                "ignore_users": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
+                                                    },
+                                                    "default": []
+                                                },
+                                                "type": {
                                                     "type": "string",
-                                                    "const": "all"
+                                                    "const": "sticky_message"
+                                                },
+                                                "message": {
+                                                    "type": "string"
+                                                },
+                                                "buttons": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "url": {
+                                                                "type": "string",
+                                                                "format": "uri"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "label",
+                                                            "url"
+                                                        ],
+                                                        "additionalProperties": false
+                                                    },
+                                                    "maxItems": 3,
+                                                    "default": []
                                                 }
-                                            ]
-                                        },
-                                        "ignore_roles": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                                             },
-                                            "default": []
+                                            "required": [
+                                                "type",
+                                                "message"
+                                            ],
+                                            "additionalProperties": false
                                         },
-                                        "ignore_users": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
-                                            },
-                                            "default": []
-                                        },
-                                        "type": {
-                                            "type": "string",
-                                            "const": "sticky_message"
-                                        },
-                                        "message": {
-                                            "type": "string"
-                                        },
-                                        "buttons": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "label": {
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "enabled_channels": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/auto_triggers/properties/triggers/items/anyOf/0/properties/enabled_channels"
+                                                },
+                                                "ignore_roles": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/auto_triggers/properties/triggers/items/anyOf/0/properties/ignore_roles"
+                                                },
+                                                "ignore_users": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/auto_triggers/properties/triggers/items/anyOf/0/properties/ignore_users"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "const": "member_status_update"
+                                                },
+                                                "must_contain": {
+                                                    "type": "array",
+                                                    "items": {
                                                         "type": "string"
                                                     },
-                                                    "url": {
-                                                        "type": "string",
-                                                        "format": "uri"
-                                                    }
+                                                    "default": []
                                                 },
-                                                "required": [
-                                                    "label",
-                                                    "url"
-                                                ],
-                                                "additionalProperties": false
+                                                "must_not_contain": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "default": []
+                                                },
+                                                "action": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "assign_role",
+                                                        "take_away_role"
+                                                    ]
+                                                },
+                                                "roles": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
+                                                    },
+                                                    "default": []
+                                                }
                                             },
-                                            "maxItems": 3,
-                                            "default": []
+                                            "required": [
+                                                "type",
+                                                "action"
+                                            ],
+                                            "additionalProperties": false
                                         }
-                                    },
-                                    "required": [
-                                        "type",
-                                        "message"
-                                    ],
-                                    "additionalProperties": false
+                                    ]
                                 },
                                 "default": []
                             },
