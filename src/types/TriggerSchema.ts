@@ -22,6 +22,14 @@ export const StickyMessageTrigger = z.object({
         .default([])
 });
 
-export const TriggerSchema = StickyMessageTrigger;
+export const MemberStatusUpdateTrigger = z.object({
+    ...Common,
+    type: z.literal("member_status_update"),
+    must_contain: z.array(z.string()).default([]),
+    must_not_contain: z.array(z.string()).default([]),
+    action: z.enum(["assign_role", "take_away_role"]),
+    roles: z.array(zSnowflake).default([])
+});
 
+export const TriggerSchema = z.union([StickyMessageTrigger, MemberStatusUpdateTrigger]);
 export type TriggerType = z.infer<typeof TriggerSchema>;

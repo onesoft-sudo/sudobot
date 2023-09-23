@@ -17,34 +17,75 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Message, Snowflake } from "discord.js";
+import {
+    ActionRowBuilder,
+    ActivityType,
+    ButtonBuilder,
+    ButtonStyle,
+    ClientEvents,
+    GuildMember,
+    Message,
+    Presence,
+    Snowflake
+} from "discord.js";
 import Service from "../core/Service";
+import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { TriggerType } from "../types/TriggerSchema";
-import { logError } from "../utils/logger";
+import { log, logError } from "../utils/logger";
 
 export const name = "triggerService";
 
 const handlers = {
-    sticky_message: "triggerMessageSticky"
+    sticky_message: "triggerMessageSticky",
+    member_status_update: "triggerMemberStatusUpdate"
 } satisfies Record<TriggerType["type"], Extract<keyof TriggerService, `trigger${string}`>>;
+
+const events = {
+    sticky_message: ["messageCreate"],
+    member_status_update: ["presenceUpdate"]
+} satisfies Record<TriggerType["type"], (keyof ClientEvents)[]>;
 
 type TriggerHandlerContext<M extends boolean = false> = {
     message: M extends false ? Message | undefined : M extends true ? Message : never;
+    member?: GuildMember;
+    newPresence?: Presence;
+    oldPresence?: Presence | null;
 };
 
-type HandlerMethods = typeof handlers extends Record<TriggerType["type"], infer V> ? V : never;
-
-type HasMessageTriggerHandlers = {
-    [F in HandlerMethods]: (trigger: TriggerType, context: TriggerHandlerContext<boolean>) => Promise<any>;
-};
-
-export default class TriggerService extends Service implements HasEventListeners, HasMessageTriggerHandlers {
+export default class TriggerService extends Service implements HasEventListeners {
     private readonly lastStickyMessages: Record<`${Snowflake}_${Snowflake}`, Message | undefined> = {};
     private readonly lastStickyMessageQueues: Record<`${Snowflake}_${Snowflake}`, boolean> = {};
 
     private config(guildId: Snowflake) {
         return this.client.configManager.config[guildId]?.auto_triggers;
+    }
+
+    @GatewayEventListener("presenceUpdate")
+    onPresenceUpdate(oldPresence: Presence | null, newPresence: Presence) {
+        if (newPresence?.user?.bot) {
+            return false;
+        }
+
+        const config = this.config(newPresence?.guild?.id ?? "");
+
+        if (!config?.enabled) {
+            return false;
+        }
+
+        this.processTriggers(
+            config.triggers,
+            {
+                roles: [...(newPresence?.member?.roles.cache.keys() ?? [])],
+                userId: newPresence.user?.id,
+                context: {
+                    message: undefined,
+                    oldPresence,
+                    newPresence
+                }
+            },
+            ["presenceUpdate"]
+        );
     }
 
     onMessageCreate(message: Message<boolean>) {
@@ -58,12 +99,34 @@ export default class TriggerService extends Service implements HasEventListeners
             return false;
         }
 
-        this.processTriggers(message, config.triggers);
+        this.processMessageTriggers(message, config.triggers);
         return true;
     }
 
-    processTriggers(message: Message, triggers: TriggerType[]) {
+    processTriggers(
+        triggers: TriggerType[],
+        data: Parameters<typeof this.processTrigger<false>>[1],
+        triggerEvents: (keyof ClientEvents)[] | undefined = undefined
+    ) {
+        loop: for (const trigger of triggers) {
+            if (triggerEvents !== undefined) {
+                for (const triggerEvent of triggerEvents) {
+                    if (!(events[trigger.type] as any).includes(triggerEvent)) {
+                        continue loop;
+                    }
+                }
+            }
+
+            this.processTrigger<boolean>(trigger, data).catch(logError);
+        }
+    }
+
+    processMessageTriggers(message: Message, triggers: TriggerType[]) {
         for (const trigger of triggers) {
+            if (!(events[trigger.type] as any).includes("messageCreate")) {
+                continue;
+            }
+
             this.processTrigger(trigger, {
                 channelId: message.channelId!,
                 roles: message.member!.roles.cache.keys(),
@@ -113,12 +176,69 @@ export default class TriggerService extends Service implements HasEventListeners
                     "Attempting to call a message trigger without specifying a message object inside the context. This is an internal error."
                 );
             }
+        }
 
-            await callback(trigger, context as TriggerHandlerContext<true>);
+        if (handlers[trigger.type].startsWith("trigger")) {
+            await callback(trigger as any, context as any);
         }
     }
 
-    async triggerMessageSticky(trigger: TriggerType, { message }: TriggerHandlerContext<true>) {
+    async triggerMemberStatusUpdate(
+        trigger: Extract<TriggerType, { type: "member_status_update" }>,
+        { newPresence, oldPresence }: TriggerHandlerContext<false>
+    ) {
+        if (!newPresence || !oldPresence || (!trigger.must_contain && !trigger.must_not_contain)) {
+            return;
+        }
+
+        const oldStatus = oldPresence?.activities.find(a => a.type === ActivityType.Custom)?.state ?? "";
+        const newStatus = newPresence?.activities.find(a => a.type === ActivityType.Custom)?.state ?? "";
+
+        console.log(newPresence.status, newStatus);
+
+        if (newPresence.status === "offline" || newPresence.status === "invisible") {
+            log("Member went offline");
+            return;
+        }
+
+        if (oldStatus === newStatus) {
+            log("No changes found");
+            return;
+        }
+
+        if (trigger.must_contain) {
+            for (const string of trigger.must_contain) {
+                if (!newStatus.includes(string)) {
+                    log("Status does not meet requirements");
+                    return;
+                }
+            }
+        }
+
+        if (trigger.must_not_contain) {
+            for (const string of trigger.must_not_contain) {
+                if (newStatus.includes(string)) {
+                    log("Status does not meet requirements (1)");
+                    return;
+                }
+            }
+        }
+
+        try {
+            if (trigger.action === "assign_role") {
+                await newPresence.member?.roles.add(trigger.roles);
+            } else if (trigger.action === "take_away_role") {
+                await newPresence.member?.roles.remove(trigger.roles);
+            }
+        } catch (e) {
+            logError(e);
+        }
+    }
+
+    async triggerMessageSticky(
+        trigger: Extract<TriggerType, { type: "sticky_message" }>,
+        { message }: TriggerHandlerContext<true>
+    ) {
         if (!this.lastStickyMessageQueues[`${message.guildId!}_${message.channelId!}`]) {
             this.lastStickyMessageQueues[`${message.guildId!}_${message.channelId!}`] = true;
 
