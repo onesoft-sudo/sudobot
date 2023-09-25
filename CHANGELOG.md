@@ -1,3 +1,12 @@
+# [6.16.0](https://github.com/onesoft-sudo/sudobot/compare/v6.15.1...v6.16.0) (2023-09-25)
+
+
+### Features
+
+* **automod:** moderation based on AI ([995e661](https://github.com/onesoft-sudo/sudobot/commit/995e661ac05c6e6ec562adcac9cf49b9b1a01425))
+
+
+
 ## [6.15.1](https://github.com/onesoft-sudo/sudobot/compare/v6.15.0...v6.15.1) (2023-09-23)
 
 
@@ -31,16 +40,6 @@
 ### Features
 
 * **sniping:** snipe multiple messages ([d7ae206](https://github.com/onesoft-sudo/sudobot/commit/d7ae20665b9240b765de9511063cd7e214ed8de6))
-
-
-
-## [6.12.2](https://github.com/onesoft-sudo/sudobot/compare/v6.12.1...v6.12.2) (2023-09-20)
-
-
-### Bug Fixes
-
-* **resources:** add missing languages ([d3d1a36](https://github.com/onesoft-sudo/sudobot/commit/d3d1a362f3672cc9d6f6276264d945088c5681bb))
-* **translationService:** use `Intl` to work with language codes ([c4a2bcb](https://github.com/onesoft-sudo/sudobot/commit/c4a2bcb490beeceaa65e071aae14bde9bf856693))
 
 
 
