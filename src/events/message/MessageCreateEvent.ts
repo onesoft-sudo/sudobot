@@ -66,6 +66,10 @@ export default class MessageCreateEvent extends Event {
 
         if (deleted) return;
 
+        deleted = await this.client.aiAutoMod.onMessageCreate(message).catch(logError);
+
+        if (deleted) return;
+
         await this.client.antispam.onMessageCreate(message).catch(logError);
         this.client.triggerService.onMessageCreate(message);
 

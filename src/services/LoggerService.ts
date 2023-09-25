@@ -170,6 +170,56 @@ export default class LoggerService extends Service {
      * Logging methods.
      */
 
+    async logAIAutoModMessageDelete({
+        message,
+        toxicityScore,
+        severeToxicityScore,
+        threatScore,
+        isToxic,
+        isThreat,
+        isSeverelyToxic
+    }: {
+        message: Message;
+        toxicityScore: number;
+        severeToxicityScore: number;
+        threatScore: number;
+        isToxic?: boolean;
+        isThreat?: boolean;
+        isSeverelyToxic?: boolean;
+    }) {
+        const { max_severe_toxicity, max_threat, max_toxicity } = this.client.configManager.config[message.guildId!]?.ai_automod
+            ?.parameters ?? {
+            max_severe_toxicity: 100,
+            max_threat: 100,
+            max_toxicity: 100
+        };
+
+        const threat = isThreat === undefined ? threatScore >= max_threat : isThreat;
+        const toxic = isToxic === undefined ? toxicityScore >= max_toxicity : isToxic;
+        const severeToxic = isSeverelyToxic === undefined ? severeToxicityScore >= max_severe_toxicity : isSeverelyToxic;
+        const messageType = threat ? "threatening" : toxic ? "toxic" : severeToxic ? "severly toxic" : undefined;
+
+        await this.sendLogEmbed(message.guild!, {
+            title: "AI AutoMod has flagged this message",
+            color: Colors.Red,
+            user: message.author,
+            fields: [
+                {
+                    name: "Score",
+                    value: `Toxicity: ${toxicityScore.toFixed(2)}%\nThreat: ${threatScore.toFixed(
+                        2
+                    )}%\nSevere Toxicity: ${severeToxicityScore.toFixed(2)}%`
+                },
+                {
+                    name: "Reason",
+                    value: messageType ? `This message seems to be ${messageType}.` : "Unknown"
+                }
+            ],
+            footerText: "Flagged",
+            moderator: this.client.user!
+        });
+    }
+
     async logMessageRuleAction({
         message,
         embedOptions = {},

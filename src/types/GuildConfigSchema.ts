@@ -119,7 +119,7 @@ export const GuildConfigSchema = z.object({
                     z.object({
                         blocked_words: z.boolean().default(false),
                         blocked_tokens: z.boolean().default(false),
-                        blocked_messages: z.boolean().default(false),
+                        blocked_messages: z.boolean().default(false)
                     })
                 )
                 .default(false),
@@ -129,7 +129,7 @@ export const GuildConfigSchema = z.object({
                     z.object({
                         blocked_words: z.boolean().default(false),
                         blocked_tokens: z.boolean().default(false),
-                        blocked_messages: z.boolean().default(false),
+                        blocked_messages: z.boolean().default(false)
                     })
                 )
                 .default(false),
@@ -137,9 +137,9 @@ export const GuildConfigSchema = z.object({
                 .object({
                     blocked_words: z.array(z.string()).optional().default([]),
                     blocked_tokens: z.array(z.string()).optional().default([]),
-                    blocked_messages: z.array(z.string()).optional().default([]),
-            })
-            .default({})
+                    blocked_messages: z.array(z.string()).optional().default([])
+                })
+                .default({})
         })
         .optional(),
     antispam: z
@@ -273,6 +273,19 @@ export const GuildConfigSchema = z.object({
             enabled: z.boolean().default(false),
             triggers: z.array(TriggerSchema).default([]),
             global_disabled_channels: z.array(zSnowflake).default([])
+        })
+        .optional(),
+    ai_automod: z
+        .object({
+            enabled: z.boolean().default(false),
+            disabled_channels: z.array(zSnowflake).default([]),
+            parameters: z
+                .object({
+                    max_toxicity: z.number().int().min(0).max(101).default(101),
+                    max_severe_toxicity: z.number().int().min(0).max(101).default(101),
+                    max_threat: z.number().int().min(0).max(101).default(101)
+                })
+                .default({})
         })
         .optional()
 });
