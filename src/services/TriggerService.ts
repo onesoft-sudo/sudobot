@@ -32,7 +32,7 @@ import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { TriggerType } from "../types/TriggerSchema";
-import { log, logError } from "../utils/logger";
+import { logError } from "../utils/logger";
 
 export const name = "triggerService";
 
@@ -197,19 +197,16 @@ export default class TriggerService extends Service implements HasEventListeners
         console.log(newPresence.status, newStatus);
 
         if (newPresence.status === "offline" || newPresence.status === "invisible") {
-            log("Member went offline");
             return;
         }
 
         if (oldStatus === newStatus) {
-            log("No changes found");
             return;
         }
 
         if (trigger.must_contain) {
             for (const string of trigger.must_contain) {
                 if (!newStatus.includes(string)) {
-                    log("Status does not meet requirements");
                     return;
                 }
             }
@@ -218,7 +215,6 @@ export default class TriggerService extends Service implements HasEventListeners
         if (trigger.must_not_contain) {
             for (const string of trigger.must_not_contain) {
                 if (newStatus.includes(string)) {
-                    log("Status does not meet requirements (1)");
                     return;
                 }
             }
