@@ -1,3 +1,12 @@
+## [6.16.1](https://github.com/onesoft-sudo/sudobot/compare/v6.16.0...v6.16.1) (2023-09-25)
+
+
+### Bug Fixes
+
+* remove uneeded debug logging ([91fbd4a](https://github.com/onesoft-sudo/sudobot/commit/91fbd4a796eb9b145ccf5943bd718c398a3d6746))
+
+
+
 # [6.16.0](https://github.com/onesoft-sudo/sudobot/compare/v6.15.1...v6.16.0) (2023-09-25)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **rules:** inversed mode ([d0f6f62](https://github.com/onesoft-sudo/sudobot/commit/d0f6f6222df3fcf9b8dc1ea281f4a47d9c69eaac))
-
-
-
-# [6.13.0](https://github.com/onesoft-sudo/sudobot/compare/v6.12.2...v6.13.0) (2023-09-20)
-
-
-### Features
-
-* **sniping:** snipe multiple messages ([d7ae206](https://github.com/onesoft-sudo/sudobot/commit/d7ae20665b9240b765de9511063cd7e214ed8de6))
 
 
 
