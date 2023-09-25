@@ -1332,6 +1332,48 @@
                             }
                         },
                         "additionalProperties": false
+                    },
+                    "ai_automod": {
+                        "type": "object",
+                        "properties": {
+                            "enabled": {
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "disabled_channels": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
+                                },
+                                "default": []
+                            },
+                            "parameters": {
+                                "type": "object",
+                                "properties": {
+                                    "max_toxicity": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 101,
+                                        "default": 101
+                                    },
+                                    "max_severe_toxicity": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 101,
+                                        "default": 101
+                                    },
+                                    "max_threat": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 101,
+                                        "default": 101
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "default": {}
+                            }
+                        },
+                        "additionalProperties": false
                     }
                 },
                 "additionalProperties": false
