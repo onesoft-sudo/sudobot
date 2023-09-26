@@ -1,3 +1,13 @@
+# [6.17.0](https://github.com/onesoft-sudo/sudobot/compare/v6.16.1...v6.17.0) (2023-09-26)
+
+
+### Features
+
+* **core:** extension system ([80528b4](https://github.com/onesoft-sudo/sudobot/commit/80528b4632f1da8bcc06be0043f300e9b9eb9022))
+* **scripts:** add extension cache management script ([ca27336](https://github.com/onesoft-sudo/sudobot/commit/ca27336ed22e801407f2020c38cf224b45b8fb4b))
+
+
+
 ## [6.16.1](https://github.com/onesoft-sudo/sudobot/compare/v6.16.0...v6.16.1) (2023-09-25)
 
 
@@ -31,15 +41,6 @@
 ### Features
 
 * **triggers:** member status update trigger ([97bcb95](https://github.com/onesoft-sudo/sudobot/commit/97bcb95ad7d03bfd8cb146fb07e2eaba0a9d0831))
-
-
-
-# [6.14.0](https://github.com/onesoft-sudo/sudobot/compare/v6.13.0...v6.14.0) (2023-09-20)
-
-
-### Features
-
-* **rules:** inversed mode ([d0f6f62](https://github.com/onesoft-sudo/sudobot/commit/d0f6f6222df3fcf9b8dc1ea281f4a47d9c69eaac))
 
 
 
