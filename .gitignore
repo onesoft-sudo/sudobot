@@ -17,3 +17,4 @@ setup.sh
 /.env.docker
 /.idea
 /storage
+/extensions
