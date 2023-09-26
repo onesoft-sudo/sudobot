@@ -41,8 +41,6 @@ export default class InviteTrackerService extends Service implements HasEventLis
             try {
                 const invites = await guild.invites.fetch();
 
-                log("List", invites);
-
                 for (const [, invite] of invites) {
                     log("Adding invite", invite.code);
                     this.invites.set(`${guild.id}_${invite.code}`, invite.uses ?? 0);

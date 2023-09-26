@@ -1,4 +1,3 @@
-import { log } from "console";
 import type Controller from "../api/Controller";
 import { RouteMetadata } from "../types/RouteMetadata";
 
@@ -35,6 +34,5 @@ export function Action(method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE", uri:
         }
 
         Reflect.defineMetadata("action_methods", metadata, target);
-        log("Found controller function: ", propertyKey);
     };
 }

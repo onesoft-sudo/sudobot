@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
+import "module-alias/register";
 import "reflect-metadata";
 
 import { GatewayIntentBits, Partials } from "discord.js";

@@ -37,6 +37,7 @@ import type BallotManager from "../services/BallotManager";
 import type ChannelLockManager from "../services/ChannelLockManager";
 import type CommandManager from "../services/CommandManager";
 import type ConfigManager from "../services/ConfigManager";
+import type ExtensionService from "../services/ExtensionService";
 import type InfractionManager from "../services/InfractionManager";
 import type InviteTrackerService from "../services/InviteTrackerService";
 import type LoggerService from "../services/LoggerService";
@@ -80,6 +81,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@services/InviteTrackerService",
         "@services/BallotManager",
         "@services/TriggerService",
+        "@services/ExtensionService",
 
         "@automod/MessageFilter",
         "@automod/Antispam",
@@ -123,6 +125,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     messageRuleService: MessageRuleService = {} as MessageRuleService;
     triggerService: TriggerService = {} as TriggerService;
     aiAutoMod: AIAutoModService = {} as AIAutoModService;
+    extensionService: ExtensionService = {} as ExtensionService;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",
@@ -144,6 +147,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
 
     async boot() {
         await this.serviceManager.loadServices();
+        await this.extensionService.boot();
     }
 
     async fetchUserSafe(user: UserResolvable) {
@@ -168,7 +172,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
                 continue;
             }
 
-            if (!file.endsWith(".ts") && !file.endsWith(".js")) {
+            if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
                 continue;
             }
 
@@ -176,18 +180,22 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
                 continue;
             }
 
-            const { default: CommandClass }: { default: new (client: Client) => Command } = await import(filePath);
-            const command = new CommandClass(this);
-            command.group = basename(dirname(filePath));
-            this.commands.set(command.name, command);
-
-            for (const alias of command.aliases) {
-                this.commands.set(alias, command);
-            }
-
-            this.loadEventListenersFromMetadata(CommandClass, command);
-            logInfo("Loaded command: ", command.name);
+            await this.loadCommand(filePath);
         }
+    }
+
+    async loadCommand(filePath: string) {
+        const { default: CommandClass }: { default: new (client: Client) => Command } = await import(filePath);
+        const command = new CommandClass(this);
+        command.group = basename(dirname(filePath));
+        this.commands.set(command.name, command);
+
+        for (const alias of command.aliases) {
+            this.commands.set(alias, command);
+        }
+
+        this.loadEventListenersFromMetadata(CommandClass, command);
+        logInfo("Loaded command: ", command.name);
     }
 
     async loadEvents(directory = this.eventsDirectory) {
@@ -202,14 +210,18 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
                 continue;
             }
 
-            if (!file.endsWith(".ts") && !file.endsWith(".js")) {
+            if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
                 continue;
             }
 
-            const { default: Event } = await import(filePath);
-            const event = new Event(this);
-            this.on(event.name, event.execute.bind(event));
+            await this.loadEvent(filePath);
         }
+    }
+
+    async loadEvent(filePath: string) {
+        const { default: Event } = await import(filePath);
+        const event = new Event(this);
+        this.on(event.name, event.execute.bind(event));
     }
 
     private supressErrorMessagesHandler(suppressErrors: SuppressErrorsMetadata, e: unknown) {

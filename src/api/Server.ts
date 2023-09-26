@@ -96,7 +96,7 @@ export default class Server {
                 continue;
             }
 
-            if (!file.endsWith(".ts") && !file.endsWith(".js")) {
+            if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
                 continue;
             }
 
