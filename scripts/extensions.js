@@ -1,6 +1,8 @@
 require("module-alias/register");
+const { spawnSync } = require("child_process");
 const { existsSync, lstatSync, readdirSync, readFileSync, writeFileSync, rmSync } = require("fs");
 const path = require("path");
+const { chdir, cwd } = require("process");
 
 const extensionsPath = path.resolve(__dirname, "../extensions");
 
@@ -36,6 +38,17 @@ function getRecuriveJavaScriptFiles(dir) {
     return flat;
 }
 
+function readMeta(extensionName, extensionDirectory) {
+    const metadataFile = path.join(extensionDirectory, "extension.json");
+
+    if (!existsSync(metadataFile)) {
+        error(`Extension ${extensionName} does not have a "extension.json" file!`);
+    }
+
+    const metadata = JSON.parse(readFileSync(metadataFile, { encoding: "utf-8" }));
+    return metadata;
+}
+
 async function writeCacheIndex() {
     const extensionsOutputArray = [];
     const meta = [];
@@ -50,20 +63,30 @@ async function writeCacheIndex() {
         }
 
         console.log("Found extension: ", extensionName);
-        const metadataFile = path.join(extensionDirectory, "extension.json");
 
-        if (!existsSync(metadataFile)) {
-            error(`Extension ${extensionName} does not have a "extension.json" file!`);
-        }
+        // const metadataFile = path.join(extensionDirectory, "extension.json");
 
-        const metadata = JSON.parse(readFileSync(metadataFile, { encoding: "utf-8" }));
+        // if (!existsSync(metadataFile)) {
+        //     error(`Extension ${extensionName} does not have a "extension.json" file!`);
+        // }
+
+        // const metadata = JSON.parse(readFileSync(metadataFile, { encoding: "utf-8" }));
+        // const {
+        //     main_directory = "./build",
+        //     commands = `./${main_directory}/commands`,
+        //     events = `./${main_directory}/events`,
+        //     main = `./${main_directory}/index.js`,
+        //     language = "typescript"
+        // } = metadata;
+
         const {
             main_directory = "./build",
             commands = `./${main_directory}/commands`,
             events = `./${main_directory}/events`,
             main = `./${main_directory}/index.js`,
             language = "typescript"
-        } = metadata;
+        } = readMeta(extensionName, extensionDirectory);
+
         const extensionPath = path.join(extensionDirectory, main);
 
         const imported = await require(extensionPath);
@@ -130,7 +153,41 @@ async function writeCacheIndex() {
     );
 }
 
-if (process.argv.includes("--clear") || process.argv.includes("--clean") || process.argv.includes("--remove")) {
+async function buildExtensions() {
+    const extensions = readdirSync(extensionsPath);
+    const workingDirectory = cwd();
+
+    for await (const extensionName of extensions) {
+        const extensionDirectory = path.resolve(extensionsPath, extensionName);
+        const isDirectory = lstatSync(extensionDirectory).isDirectory();
+
+        if (!isDirectory) {
+            continue;
+        }
+
+        console.log("Building: ", extensionName);
+        chdir(path.join(extensionsPath, extensionName));
+        const { build_command } = readMeta(extensionName, extensionDirectory);
+
+        if (!build_command) {
+            console.log("This extension doesn't require building.");
+            continue;
+        }
+
+        console.log("Running build command: ", build_command);
+        const { status } = spawnSync(build_command, {
+            encoding: "utf-8",
+            shell: true,
+            stdio: "inherit"
+        });
+
+        if (status !== 0) process.exit(status);
+    }
+
+    chdir(workingDirectory);
+}
+
+if (process.argv.includes("--clear-cache") || process.argv.includes("--clean") || process.argv.includes("--delcache")) {
     const indexFile = path.join(__dirname, "../extensions/index.json");
 
     if (!existsSync(indexFile)) {
@@ -139,7 +196,7 @@ if (process.argv.includes("--clear") || process.argv.includes("--clean") || proc
 
     rmSync(indexFile);
     console.log("Removed cached index file: ", indexFile);
-} else {
+} else if (process.argv.includes("--cache") || process.argv.includes("--index")) {
     console.time("Finished in");
     console.log("Creating cache index for all the installed extensions");
     writeCacheIndex()
@@ -148,4 +205,21 @@ if (process.argv.includes("--clear") || process.argv.includes("--clean") || proc
             console.log(e);
             console.timeEnd("Finished in");
         });
+} else if (process.argv.includes("--build")) {
+    console.time("Finished in");
+    console.log("Building installed extensions");
+    buildExtensions()
+        .then(() => console.timeEnd("Finished in"))
+        .catch(e => {
+            console.log(e);
+            console.timeEnd("Finished in");
+        });
+} else {
+    console.log("Usage:");
+    console.log("  node extensions.js <options>\n");
+    console.log("Options:");
+    console.log("  --build  |  Builds all the installed extensions, if needed.");
+    console.log("  --cache  |  Creates cache indexes for installed extensions, to improve the startup time.");
+    console.log("  --clean  |  Clears all installed extension cache.");
+    process.exit(-1);
 }
