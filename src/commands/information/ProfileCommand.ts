@@ -102,7 +102,7 @@ export default class ProfileCommand extends Command {
             types: [ArgumentType.GuildMember, ArgumentType.User],
             name: "member",
             optional: true,
-            typeErrorMessage: "Invalid user given",
+            typeErrorMessage: "Invalid user given!",
             entityNotNull: true,
             entityNotNullErrorMessage: "That user could not be found!"
         }
@@ -200,10 +200,14 @@ export default class ProfileCommand extends Command {
                 ? [
                       {
                           name: "Nickname",
-                          value: `${member!.nickname?.replace(/\*\<\>\@\_\~\|/g, "") ?? "*Nickname not set*"}`
+                          value: `${member!.nickname?.replace(/\*\<\>\@\_\~\|/g, "") ?? "*Nickname is not set*"}`
                       }
                   ]
                 : []),
+            {
+                name: "Display Name",
+                value: `${user!.displayName?.replace(/\*\<\>\@\_\~\|/g, "") ?? "*Display name is not set*"}`
+            },
             {
                 name: "Account Created",
                 value: `${user.createdAt.toLocaleDateString("en-US")} (${formatDistanceToNowStrict(user.createdTimestamp, {
@@ -253,16 +257,14 @@ export default class ProfileCommand extends Command {
 
         let banner: string | undefined;
 
-        if (isMember) {
-            try {
-                await member?.user.fetch(true);
-                banner = member!.user!.bannerURL({ size: 4096, forceStatic: false }) ?? undefined;
-            } catch (e) {
-                logError(e);
-            }
-
-            log("Banner", banner, member!.user!.banner);
+        try {
+            await user.fetch(true);
+            banner = user!.bannerURL({ size: 4096, forceStatic: false }) ?? undefined;
+        } catch (e) {
+            logError(e);
         }
+
+        log("Banner", banner, user!.banner);
 
         let permissionPercentage = 0;
 
@@ -270,7 +272,10 @@ export default class ProfileCommand extends Command {
             if (this.client.configManager.config[message.guildId!]?.permissions.mode === "levels") {
                 permissionPercentage = this.client.permissionManager.getMemberPermissionLevel(member).level;
             } else {
-                permissionPercentage = getPermissionLevel(member, false) as number;
+                permissionPercentage =
+                    message.guild!.ownerId === user.id || (isMember && member.permissions.has("Administrator"))
+                        ? 100
+                        : (getPermissionLevel(member, false) as number);
             }
         }
 

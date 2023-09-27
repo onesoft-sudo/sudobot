@@ -437,7 +437,8 @@ export default abstract class Command {
         }
 
         if (context.isLegacy) {
-            let index = 0;
+            let index = 0,
+                ruleIndex = 0;
 
             loop: for await (const rule of validationRules) {
                 const arg = context.args[index];
@@ -621,15 +622,21 @@ export default abstract class Command {
                                 } catch (e) {
                                     logError(e);
 
-                                    if (rule.entityNotNull) {
-                                        await message.reply(
-                                            `${this.emoji("error")} ` + rule.entityNotNullErrorMessage ??
-                                                `Argument ${index} is invalid`
-                                        );
-                                        return;
-                                    }
+                                    if (ruleIndex >= rule.types.length - 1) {
+                                        log(ruleIndex, rule.types.length);
 
-                                    parsedArgs[index] = null;
+                                        if (rule.entityNotNull) {
+                                            await message.reply(
+                                                `${this.emoji("error")} ` + rule.entityNotNullErrorMessage ??
+                                                    `Argument ${index} is invalid`
+                                            );
+                                            return;
+                                        }
+
+                                        parsedArgs[index] = null;
+                                    } else if (rule.entityNotNull) {
+                                        break;
+                                    }
                                 }
 
                                 break;
@@ -689,6 +696,7 @@ export default abstract class Command {
                 }
 
                 index++;
+                ruleIndex++;
             }
         }
 
