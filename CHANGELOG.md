@@ -1,3 +1,18 @@
+# [6.18.0](https://github.com/onesoft-sudo/sudobot/compare/v6.17.0...v6.18.0) (2023-09-27)
+
+
+### Bug Fixes
+
+* add missing module aliases ([b5fd12f](https://github.com/onesoft-sudo/sudobot/commit/b5fd12f12c0adebf0c5d2875f2e71818103a7371))
+
+
+### Features
+
+* profile command now works with users ([89dba86](https://github.com/onesoft-sudo/sudobot/commit/89dba86f930cdfd6542fb3934f4e1356a3547595))
+* **profiles:** improved profiles for users ([c478971](https://github.com/onesoft-sudo/sudobot/commit/c478971ab4c079bb811498a827ac9ed3b8d6b3fe))
+
+
+
 # [6.17.0](https://github.com/onesoft-sudo/sudobot/compare/v6.16.1...v6.17.0) (2023-09-26)
 
 
@@ -32,15 +47,6 @@
 ### Bug Fixes
 
 * `snipe` command ([3f30c68](https://github.com/onesoft-sudo/sudobot/commit/3f30c68b8cfb0e4bcccc5e6532eced6fba3e26d0))
-
-
-
-# [6.15.0](https://github.com/onesoft-sudo/sudobot/compare/v6.14.0...v6.15.0) (2023-09-23)
-
-
-### Features
-
-* **triggers:** member status update trigger ([97bcb95](https://github.com/onesoft-sudo/sudobot/commit/97bcb95ad7d03bfd8cb146fb07e2eaba0a9d0831))
 
 
 
