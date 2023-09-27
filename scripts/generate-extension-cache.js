@@ -38,6 +38,7 @@ function getRecuriveJavaScriptFiles(dir) {
 
 async function writeCacheIndex() {
     const extensionsOutputArray = [];
+    const meta = [];
     const extensions = readdirSync(extensionsPath);
 
     for await (const extensionName of extensions) {
@@ -60,11 +61,13 @@ async function writeCacheIndex() {
             main_directory = "./build",
             commands = `./${main_directory}/commands`,
             events = `./${main_directory}/events`,
-            main = `./${main_directory}/index.js`
+            main = `./${main_directory}/index.js`,
+            language = "typescript"
         } = metadata;
         const extensionPath = path.join(extensionDirectory, main);
 
-        const { default: ExtensionClass } = require(extensionPath);
+        const imported = await require(extensionPath);
+        const { default: ExtensionClass } = imported.__esModule ? imported : { default: imported };
         const extension = new ExtensionClass(this.client);
         let commandPaths = await extension.commands();
         let eventPaths = await extension.events();
@@ -91,15 +94,20 @@ async function writeCacheIndex() {
             commands: commandPaths ?? [],
             events: eventPaths ?? []
         });
+
+        meta.push({
+            language
+        });
     }
 
     console.log("Overview of the extensions: ");
     console.table(
-        extensionsOutputArray.map(e => ({
+        extensionsOutputArray.map((e, i) => ({
             name: e.name,
             entry: e.entry.replace(path.resolve(__dirname, "../extensions"), "{ROOT}"),
             commands: e.commands.length,
-            events: e.events.length
+            events: e.events.length,
+            language: meta[i].language
         }))
     );
 
