@@ -1,3 +1,12 @@
+## [6.18.1](https://github.com/onesoft-sudo/sudobot/compare/v6.18.0...v6.18.1) (2023-09-27)
+
+
+### Bug Fixes
+
+* **scripts:** extension cache builder script ([a6a20c6](https://github.com/onesoft-sudo/sudobot/commit/a6a20c6e95fd28a455ea946a89b4b5f12af19cc5))
+
+
+
 # [6.18.0](https://github.com/onesoft-sudo/sudobot/compare/v6.17.0...v6.18.0) (2023-09-27)
 
 
@@ -38,15 +47,6 @@
 ### Features
 
 * **automod:** moderation based on AI ([995e661](https://github.com/onesoft-sudo/sudobot/commit/995e661ac05c6e6ec562adcac9cf49b9b1a01425))
-
-
-
-## [6.15.1](https://github.com/onesoft-sudo/sudobot/compare/v6.15.0...v6.15.1) (2023-09-23)
-
-
-### Bug Fixes
-
-* `snipe` command ([3f30c68](https://github.com/onesoft-sudo/sudobot/commit/3f30c68b8cfb0e4bcccc5e6532eced6fba3e26d0))
 
 
 
