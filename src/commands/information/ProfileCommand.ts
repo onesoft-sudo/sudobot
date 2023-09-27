@@ -26,7 +26,9 @@ import {
     Guild,
     GuildMember,
     PermissionFlagsBits,
+    Role,
     SlashCommandBuilder,
+    User,
     roleMention
 } from "discord.js";
 import Client from "../../core/Client";
@@ -97,12 +99,12 @@ export default class ProfileCommand extends Command {
     public readonly name = "profile";
     public readonly validationRules: ValidationRule[] = [
         {
-            types: [ArgumentType.GuildMember],
+            types: [ArgumentType.GuildMember, ArgumentType.User],
             name: "member",
             optional: true,
-            typeErrorMessage: "Invalid member given",
+            typeErrorMessage: "Invalid user given",
             entityNotNull: true,
-            entityNotNullErrorMessage: "That member could not be found!"
+            entityNotNullErrorMessage: "That user could not be found!"
         }
     ];
     public readonly aliases = ["userprofile", "userinfo"];
@@ -110,7 +112,7 @@ export default class ProfileCommand extends Command {
 
     public readonly description = "Shows your or someone else's profile.";
     public readonly slashCommandBuilder = new SlashCommandBuilder().addUserOption(option =>
-        option.setName("member").setDescription("The target member")
+        option.setName("member").setDescription("The target member or user")
     );
 
     private isAvailableEmoji({ id, identifier }: Emoji) {
@@ -125,22 +127,28 @@ export default class ProfileCommand extends Command {
         return false;
     }
 
+    private isGuildMember(member: GuildMember | User | null): member is GuildMember {
+        return member instanceof GuildMember;
+    }
+
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
-        const member: GuildMember | null =
-            (context.isLegacy ? context.parsedNamedArgs.member : context.options.getMember("member")) ?? message.member;
+        const member: GuildMember | User | null =
+            (context.isLegacy
+                ? context.parsedNamedArgs.member
+                : context.options.getMember("member") ?? context.options.getUser("member", true)) ?? message.member;
 
         if (!member) {
             await this.error(message, "Could not resolve that member!");
             return;
         }
 
+        const isMember = this.isGuildMember(member);
+        const user = isMember ? (member.user! as User) : member;
         const activities: string[] = [];
 
-        log(member.presence);
-
-        if (member?.presence) {
+        if (isMember && member?.presence) {
             for (const a of member?.presence?.activities.values()!) {
                 log(a);
 
@@ -174,55 +182,67 @@ export default class ProfileCommand extends Command {
             }
         }
 
-        const allRoles = [...member!.roles.cache.values()]
-            .filter(role => role.id !== message.guildId!)
-            .sort((role1, role2) => {
-                return role2.position - role1.position;
-            });
+        const allRoles = isMember
+            ? [...member!.roles.cache.values()]
+                  .filter(role => role.id !== message.guildId!)
+                  .sort((role1, role2) => {
+                      return role2.position - role1.position;
+                  })
+            : null;
         const limit = 10;
-        const roles = (allRoles.length > limit ? allRoles.slice(0, limit) : allRoles)
+        const roles = (isMember ? (allRoles!.length > limit ? allRoles!.slice(0, limit) : allRoles) : ([] as Role[]))!
             .reduce((acc, value) => `${acc} ${roleMention(value.id)}`, "")!
             .trim()!;
-        const statusText = getStatusText(this.client, member!);
+        const statusText = isMember ? getStatusText(this.client, member!) : null;
 
         const fields: APIEmbedField[] = [
-            {
-                name: "Nickname",
-                value: `${member!.nickname?.replace(/\*\<\>\@\_\~\|/g, "") ?? "*Nickname not set*"}`
-            },
+            ...(isMember
+                ? [
+                      {
+                          name: "Nickname",
+                          value: `${member!.nickname?.replace(/\*\<\>\@\_\~\|/g, "") ?? "*Nickname not set*"}`
+                      }
+                  ]
+                : []),
             {
                 name: "Account Created",
-                value: `${member!.user.createdAt.toLocaleDateString("en-US")} (${formatDistanceToNowStrict(
-                    member!.user.createdTimestamp,
-                    { addSuffix: true }
-                )})`,
-                inline: true
-            },
-            {
-                name: "Joined at",
-                value: `${member!.joinedAt!.toLocaleDateString("en-US")} (${formatDistanceToNowStrict(member!.joinedTimestamp!, {
+                value: `${user.createdAt.toLocaleDateString("en-US")} (${formatDistanceToNowStrict(user.createdTimestamp, {
                     addSuffix: true
                 })})`,
                 inline: true
             },
-            {
-                name: "Active Devices",
-                value: `${statusText === "" ? `${this.emoji("invisible")} Offline/Invisible` : statusText}`
-            },
-            {
-                name: "Status",
-                value: `${activities.length === 0 ? "*No status set*" : activities.join("\n")}`
-            },
-            {
-                name: "Roles",
-                value:
-                    roles === ""
-                        ? "*No roles assigned*"
-                        : `${roles} ${allRoles.length > limit ? `**+ ${allRoles.length - limit} More**` : ""}`
-            }
+            ...(isMember
+                ? [
+                      {
+                          name: "Joined at",
+                          value: `${member!.joinedAt!.toLocaleDateString("en-US")} (${formatDistanceToNowStrict(
+                              member!.joinedTimestamp!,
+                              {
+                                  addSuffix: true
+                              }
+                          )})`,
+                          inline: true
+                      },
+                      {
+                          name: "Active Devices",
+                          value: `${statusText === "" ? `${this.emoji("invisible")} Offline/Invisible` : statusText}`
+                      },
+                      {
+                          name: "Status",
+                          value: `${activities.length === 0 ? "*No status set*" : activities.join("\n")}`
+                      },
+                      {
+                          name: "Roles",
+                          value:
+                              roles === ""
+                                  ? "*No roles assigned*"
+                                  : `${roles} ${allRoles!.length > limit ? `**+ ${allRoles!.length - limit} More**` : ""}`
+                      }
+                  ]
+                : [])
         ];
 
-        const badges = getUserBadges(this.client, member!.user);
+        const badges = getUserBadges(this.client, user);
 
         if (badges.length > 0) {
             fields.push({
@@ -233,21 +253,25 @@ export default class ProfileCommand extends Command {
 
         let banner: string | undefined;
 
-        try {
-            await member?.user.fetch(true);
-            banner = member!.user!.bannerURL({ size: 4096, forceStatic: false }) ?? undefined;
-        } catch (e) {
-            logError(e);
-        }
+        if (isMember) {
+            try {
+                await member?.user.fetch(true);
+                banner = member!.user!.bannerURL({ size: 4096, forceStatic: false }) ?? undefined;
+            } catch (e) {
+                logError(e);
+            }
 
-        log("Banner", banner, member!.user!.banner);
+            log("Banner", banner, member!.user!.banner);
+        }
 
         let permissionPercentage = 0;
 
-        if (this.client.configManager.config[message.guildId!]?.permissions.mode === "levels") {
-            permissionPercentage = this.client.permissionManager.getMemberPermissionLevel(member).level;
-        } else {
-            permissionPercentage = getPermissionLevel(member, false) as number;
+        if (isMember) {
+            if (this.client.configManager.config[message.guildId!]?.permissions.mode === "levels") {
+                permissionPercentage = this.client.permissionManager.getMemberPermissionLevel(member).level;
+            } else {
+                permissionPercentage = getPermissionLevel(member, false) as number;
+            }
         }
 
         await this.deferredReply(message, {
@@ -259,20 +283,22 @@ export default class ProfileCommand extends Command {
                           }
                         : undefined
                 })
-                    .setColor(member!.user!.hexAccentColor ? member!.user!.hexAccentColor! : "#007bff")
+                    .setColor(user!.hexAccentColor ? user!.hexAccentColor! : "#007bff")
                     .setAuthor({
-                        name: member?.user.tag!,
-                        iconURL: member!.user.displayAvatarURL()
+                        name: user.tag!,
+                        iconURL: user.displayAvatarURL()
                     })
                     .setThumbnail(
-                        member!.displayAvatarURL({
+                        (isMember ? member : user).displayAvatarURL({
                             size: 4096,
                             forceStatic: false
                         })
                     )
                     .setFields(fields)
                     .setFooter({
-                        text: `${member?.user.bot ? "Bot" : "User"} • ${member!.id} • Has ${permissionPercentage}% permissions`
+                        text:
+                            `${user.bot ? "Bot" : "User"} • ${member!.id}` +
+                            (isMember ? ` • Has ${permissionPercentage}% permissions` : "")
                     })
             ]
         });
