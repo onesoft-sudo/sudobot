@@ -1,3 +1,12 @@
+## [6.19.2](https://github.com/onesoft-sudo/sudobot/compare/v6.19.1...v6.19.2) (2023-09-29)
+
+
+### Bug Fixes
+
+* echo command mention modes ([275c37a](https://github.com/onesoft-sudo/sudobot/commit/275c37a22965d29dfd23c43c198a66ba0ec768e9))
+
+
+
 ## [6.19.1](https://github.com/onesoft-sudo/sudobot/compare/v6.19.0...v6.19.1) (2023-09-28)
 
 
@@ -37,16 +46,6 @@
 
 * profile command now works with users ([89dba86](https://github.com/onesoft-sudo/sudobot/commit/89dba86f930cdfd6542fb3934f4e1356a3547595))
 * **profiles:** improved profiles for users ([c478971](https://github.com/onesoft-sudo/sudobot/commit/c478971ab4c079bb811498a827ac9ed3b8d6b3fe))
-
-
-
-# [6.17.0](https://github.com/onesoft-sudo/sudobot/compare/v6.16.1...v6.17.0) (2023-09-26)
-
-
-### Features
-
-* **core:** extension system ([80528b4](https://github.com/onesoft-sudo/sudobot/commit/80528b4632f1da8bcc06be0043f300e9b9eb9022))
-* **scripts:** add extension cache management script ([ca27336](https://github.com/onesoft-sudo/sudobot/commit/ca27336ed22e801407f2020c38cf224b45b8fb4b))
 
 
 
