@@ -17,7 +17,15 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { AttachmentPayload, Channel, GuildChannel, Message, PermissionsBitField, SlashCommandBuilder } from "discord.js";
+import {
+    AttachmentPayload,
+    Channel,
+    GuildChannel,
+    Message,
+    PermissionsBitField,
+    SlashCommandBuilder,
+    TextChannel
+} from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { isTextableChannel } from "../../utils/utils";
 
@@ -51,7 +59,9 @@ export default class EchoCommand extends Command {
             ephemeral: true
         });
 
-        const channel =
+        const { roles, users } = this.client.configManager.config[message.guildId!]?.commands?.echo_mentions ?? {};
+
+        const channel: TextChannel =
             (!context.isLegacy
                 ? context.options.getChannel("channel")
                 : context.parsedNamedArgs.channelOrContent && typeof context.parsedNamedArgs.channelOrContent === "object"
@@ -87,6 +97,13 @@ export default class EchoCommand extends Command {
                                   description: a.description
                               } as AttachmentPayload)
                       )
+                    : undefined,
+            allowedMentions:
+                !roles || !users
+                    ? {
+                          roles: !roles ? [] : undefined,
+                          users: !users ? [] : undefined
+                      }
                     : undefined
         });
 

@@ -29,7 +29,13 @@ export const GuildConfigSchema = z.object({
             mention_prefix: z.boolean().default(true),
             bean_safe: z.array(zSnowflake).default([]),
             shot_safe: z.array(zSnowflake).default([]),
-            fakeban_safe: z.array(zSnowflake).default([])
+            fakeban_safe: z.array(zSnowflake).default([]),
+            echo_mentions: z
+                .object({
+                    roles: z.boolean().default(false),
+                    users: z.boolean().default(true)
+                })
+                .default({})
         })
         .default({}),
     permissions: z
