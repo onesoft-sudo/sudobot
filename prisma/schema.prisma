@@ -223,3 +223,18 @@ model PermissionLevel {
 
     @@map("permission_levels")
 }
+
+model Review {
+    id            Int      @id @default(autoincrement())
+    reviewer      String?
+    content       String
+    rating        Int
+    discordId     String?
+    email         String?
+    aboutReviewer String?
+    approved      Boolean  @default(false)
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @default(now()) @updatedAt
+
+    @@map("reviews")
+}
