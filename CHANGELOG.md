@@ -1,3 +1,12 @@
+## [6.20.1](https://github.com/onesoft-sudo/sudobot/compare/v6.20.0...v6.20.1) (2023-09-29)
+
+
+### Bug Fixes
+
+* **deps:** add missing deps ([4549430](https://github.com/onesoft-sudo/sudobot/commit/4549430c00dba2ecd1e3c9bc1579b3e7f7511b0d))
+
+
+
 # [6.20.0](https://github.com/onesoft-sudo/sudobot/compare/v6.19.2...v6.20.0) (2023-09-29)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * auto build extensions ([98acfea](https://github.com/onesoft-sudo/sudobot/commit/98acfeaab1374211291acd41557e8336da096522))
-
-
-
-## [6.18.1](https://github.com/onesoft-sudo/sudobot/compare/v6.18.0...v6.18.1) (2023-09-27)
-
-
-### Bug Fixes
-
-* **scripts:** extension cache builder script ([a6a20c6](https://github.com/onesoft-sudo/sudobot/commit/a6a20c6e95fd28a455ea946a89b4b5f12af19cc5))
 
 
 
