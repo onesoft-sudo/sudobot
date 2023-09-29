@@ -1,3 +1,21 @@
+## [6.19.1](https://github.com/onesoft-sudo/sudobot/compare/v6.19.0...v6.19.1) (2023-09-28)
+
+
+### Bug Fixes
+
+* **SnowflakeSchema:** do not depend on utils.ts ([1688191](https://github.com/onesoft-sudo/sudobot/commit/1688191f0870c4b366638f39364dc51efadfe44e))
+
+
+
+# [6.19.0](https://github.com/onesoft-sudo/sudobot/compare/v6.18.1...v6.19.0) (2023-09-27)
+
+
+### Features
+
+* auto build extensions ([98acfea](https://github.com/onesoft-sudo/sudobot/commit/98acfeaab1374211291acd41557e8336da096522))
+
+
+
 ## [6.18.1](https://github.com/onesoft-sudo/sudobot/compare/v6.18.0...v6.18.1) (2023-09-27)
 
 
@@ -29,24 +47,6 @@
 
 * **core:** extension system ([80528b4](https://github.com/onesoft-sudo/sudobot/commit/80528b4632f1da8bcc06be0043f300e9b9eb9022))
 * **scripts:** add extension cache management script ([ca27336](https://github.com/onesoft-sudo/sudobot/commit/ca27336ed22e801407f2020c38cf224b45b8fb4b))
-
-
-
-## [6.16.1](https://github.com/onesoft-sudo/sudobot/compare/v6.16.0...v6.16.1) (2023-09-25)
-
-
-### Bug Fixes
-
-* remove uneeded debug logging ([91fbd4a](https://github.com/onesoft-sudo/sudobot/commit/91fbd4a796eb9b145ccf5943bd718c398a3d6746))
-
-
-
-# [6.16.0](https://github.com/onesoft-sudo/sudobot/compare/v6.15.1...v6.16.0) (2023-09-25)
-
-
-### Features
-
-* **automod:** moderation based on AI ([995e661](https://github.com/onesoft-sudo/sudobot/commit/995e661ac05c6e6ec562adcac9cf49b9b1a01425))
 
 
 

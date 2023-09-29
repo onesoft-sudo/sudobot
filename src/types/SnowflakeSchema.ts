@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { isSnowflake } from "../utils/utils";
 
 export const zSnowflake = z.custom<string>(data => {
-    return typeof data === "string" && isSnowflake(data);
+    return typeof data === "string" && /^\d{16,22}$/.test(data);
 });

@@ -21,3 +21,5 @@
   * [Privacy Policy](legal/privacy.md)
   * [Terms of Service](legal/terms.md)
   * [Why did the bot in my server get terminated?](legal/why\_did\_my\_server\_get\_terminated.md)
+* [Extensions](extensions/README.md)
+  * [Extending SudoBot with Extensions](extensions/extending-sudobot-with-extensions.md)
