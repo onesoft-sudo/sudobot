@@ -1,6 +1,6 @@
 
 <p align="center">
-<img src="https://res.cloudinary.com/rakinar2/image/upload/v1691001714/SudoBot-01_inkggw.png" height="200px" width="200px">
+<img src="https://res.cloudinary.com/rakinar2/image/upload/f_auto,q_auto/em8aewnsfwj7mlfhqxtf" height="114px" width="348px">
 </p> 
 
 <h1 align="center"><a href="https://www.sudobot.org" title="Official Website of SudoBot" target="_blank">SudoBot</a></h1>
