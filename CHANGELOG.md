@@ -1,3 +1,12 @@
+## [6.20.3](https://github.com/onesoft-sudo/sudobot/compare/v6.20.2...v6.20.3) (2023-09-30)
+
+
+### Bug Fixes
+
+* **pagination:** validation error if emojis are not found ([37cbe41](https://github.com/onesoft-sudo/sudobot/commit/37cbe411330550b65aae4170c7d1f38f33bb1ec0))
+
+
+
 ## [6.20.2](https://github.com/onesoft-sudo/sudobot/compare/v6.20.1...v6.20.2) (2023-09-30)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * echo command mention modes ([275c37a](https://github.com/onesoft-sudo/sudobot/commit/275c37a22965d29dfd23c43c198a66ba0ec768e9))
-
-
-
-## [6.19.1](https://github.com/onesoft-sudo/sudobot/compare/v6.19.0...v6.19.1) (2023-09-28)
-
-
-### Bug Fixes
-
-* **SnowflakeSchema:** do not depend on utils.ts ([1688191](https://github.com/onesoft-sudo/sudobot/commit/1688191f0870c4b366638f39364dc51efadfe44e))
 
 
 
