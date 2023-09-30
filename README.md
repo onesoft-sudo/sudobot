@@ -1,9 +1,7 @@
 
-<p align="center">
+<a href="https://www.sudobot.org" title="Official Website of SudoBot" target="_blank" align="center">
 <img src="https://res.cloudinary.com/rakinar2/image/upload/f_auto,q_auto/em8aewnsfwj7mlfhqxtf" height="114px" width="348px">
-</p> 
-
-<h1 align="center"><a href="https://www.sudobot.org" title="Official Website of SudoBot" target="_blank">SudoBot</a></h1>
+</a> 
 
 <p align="center">
 <a href="https://github.com/onesoft-sudo/sudobot/actions/workflows/build.yml"><img src="https://github.com/onesoft-sudo/sudobot/actions/workflows/build.yml/badge.svg" alt="Build"></a>
