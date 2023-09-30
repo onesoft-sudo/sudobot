@@ -1,3 +1,12 @@
+## [6.20.2](https://github.com/onesoft-sudo/sudobot/compare/v6.20.1...v6.20.2) (2023-09-30)
+
+
+### Bug Fixes
+
+* **getEmoji:** add an option to return null instead of empty string ([bf22355](https://github.com/onesoft-sudo/sudobot/commit/bf223551cb0ed2f6480f8e7d0583d1078657f739))
+
+
+
 ## [6.20.1](https://github.com/onesoft-sudo/sudobot/compare/v6.20.0...v6.20.1) (2023-09-29)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **SnowflakeSchema:** do not depend on utils.ts ([1688191](https://github.com/onesoft-sudo/sudobot/commit/1688191f0870c4b366638f39364dc51efadfe44e))
-
-
-
-# [6.19.0](https://github.com/onesoft-sudo/sudobot/compare/v6.18.1...v6.19.0) (2023-09-27)
-
-
-### Features
-
-* auto build extensions ([98acfea](https://github.com/onesoft-sudo/sudobot/commit/98acfeaab1374211291acd41557e8336da096522))
 
 
 
