@@ -52,6 +52,7 @@ Thanks to all the active and indirect contributors!
 ### Support
 
 - **Email**: rakinar2@onesoftnet.eu.org
+- **Website**: https://www.sudobot.org
 - **Discord Servers**: [OneSoftNet Server](https://discord.gg/892GWhTzgs)
 
 ### Extra 
