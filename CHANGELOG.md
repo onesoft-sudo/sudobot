@@ -1,3 +1,12 @@
+## [6.20.4](https://github.com/onesoft-sudo/sudobot/compare/v6.20.3...v6.20.4) (2023-10-01)
+
+
+### Bug Fixes
+
+* echo command now checks for mention everyone permission ([d03ac20](https://github.com/onesoft-sudo/sudobot/commit/d03ac201a68b9b84b92653ac8404b997969e8c76))
+
+
+
 ## [6.20.3](https://github.com/onesoft-sudo/sudobot/compare/v6.20.2...v6.20.3) (2023-09-30)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **api:** review system ([6fc7159](https://github.com/onesoft-sudo/sudobot/commit/6fc71595bda02c0a4bf634854e214cf49cecd3dc))
-
-
-
-## [6.19.2](https://github.com/onesoft-sudo/sudobot/compare/v6.19.1...v6.19.2) (2023-09-29)
-
-
-### Bug Fixes
-
-* echo command mention modes ([275c37a](https://github.com/onesoft-sudo/sudobot/commit/275c37a22965d29dfd23c43c198a66ba0ec768e9))
 
 
 
