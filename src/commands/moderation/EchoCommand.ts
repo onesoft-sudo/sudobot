@@ -59,7 +59,7 @@ export default class EchoCommand extends Command {
             ephemeral: true
         });
 
-        const { roles, users } = this.client.configManager.config[message.guildId!]?.commands?.echo_mentions ?? {};
+        const echoMentions = this.client.configManager.config[message.guildId!]?.commands?.echo_mentions ?? false;
 
         const channel: TextChannel =
             (!context.isLegacy
@@ -98,13 +98,14 @@ export default class EchoCommand extends Command {
                               } as AttachmentPayload)
                       )
                     : undefined,
-            allowedMentions:
-                !roles || !users
-                    ? {
-                          roles: !roles ? [] : undefined,
-                          users: !users ? [] : undefined
-                      }
-                    : undefined
+            allowedMentions: (message.member?.permissions as Readonly<PermissionsBitField>)?.has("MentionEveryone", true)
+                ? undefined
+                : echoMentions
+                ? undefined
+                : {
+                      roles: [],
+                      users: []
+                  }
         });
 
         if (message instanceof Message) {
