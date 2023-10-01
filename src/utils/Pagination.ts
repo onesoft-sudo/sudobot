@@ -132,22 +132,22 @@ export default class Pagination<T> {
                 .setCustomId(`pagination_first_${this.id}`)
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(!first)
-                .setEmoji(getEmoji(this.client, "ArrowLeft") ?? "⏮️"),
+                .setEmoji(getEmoji(this.client, "ArrowLeft", true) ?? "⏮️"),
             new ButtonBuilder()
                 .setCustomId(`pagination_back_${this.id}`)
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(!back)
-                .setEmoji(getEmoji(this.client, "ChevronLeft") ?? "◀️"),
+                .setEmoji(getEmoji(this.client, "ChevronLeft", true) ?? "◀️"),
             new ButtonBuilder()
                 .setCustomId(`pagination_next_${this.id}`)
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(!next)
-                .setEmoji(getEmoji(this.client, "ChevronRight") ?? "▶️"),
+                .setEmoji(getEmoji(this.client, "ChevronRight", true) ?? "▶️"),
             new ButtonBuilder()
                 .setCustomId(`pagination_last_${this.id}`)
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(!last)
-                .setEmoji(getEmoji(this.client, "ArrowRight") ?? "⏭️")
+                .setEmoji(getEmoji(this.client, "ArrowRight", true) ?? "⏭️")
         );
 
         return actionRow;

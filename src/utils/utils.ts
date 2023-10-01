@@ -106,12 +106,12 @@ export async function createModerationEmbed({
         .setColor(color);
 }
 
-export function getEmoji(client: Client, name: string) {
+export function getEmoji(client: Client, name: string, returnNull = false) {
     return (
         client.configManager.systemConfig.emojis?.[name] ??
         client.emojiMap.get(name)?.toString() ??
         client.emojis.cache.find(e => e.name === name)?.toString() ??
-        ""
+        (returnNull ? null : "")
     );
 }
 
