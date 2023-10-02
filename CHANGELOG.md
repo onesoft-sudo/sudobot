@@ -1,3 +1,12 @@
+# [6.21.0](https://github.com/onesoft-sudo/sudobot/compare/v6.20.4...v6.21.0) (2023-10-02)
+
+
+### Features
+
+* **extensions:** better event handling ([cad2b05](https://github.com/onesoft-sudo/sudobot/commit/cad2b0578d372c0bec6349863e3ba43175ed8158))
+
+
+
 ## [6.20.4](https://github.com/onesoft-sudo/sudobot/compare/v6.20.3...v6.20.4) (2023-10-01)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **deps:** add missing deps ([4549430](https://github.com/onesoft-sudo/sudobot/commit/4549430c00dba2ecd1e3c9bc1579b3e7f7511b0d))
-
-
-
-# [6.20.0](https://github.com/onesoft-sudo/sudobot/compare/v6.19.2...v6.20.0) (2023-09-29)
-
-
-### Features
-
-* **api:** review system ([6fc7159](https://github.com/onesoft-sudo/sudobot/commit/6fc71595bda02c0a4bf634854e214cf49cecd3dc))
 
 
 
