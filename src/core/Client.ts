@@ -149,7 +149,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
 
     async boot() {
         await this.serviceManager.loadServices();
-        await this.extensionService.boot();
+        await this.extensionService.bootUp();
     }
 
     async fetchUserSafe(user: UserResolvable) {
@@ -259,14 +259,8 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
                     data.methodName
                 );
 
-                const handlers = this.eventMap.get(data.event) ?? [];
-
-                if (!this.eventMap.has(data.event)) {
-                    this.on(data.event, (...args: any[]) => this.fireEvent(data.event, ...args));
-                    log("Registered parent handler for event: ", data.event);
-                }
-
-                handlers.push(
+                this.addEventListener(
+                    data.event,
                     suppressErrors
                         ? (...args: any[]) => {
                               try {
@@ -281,11 +275,22 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
                           }
                         : callback
                 );
-
-                this.eventMap.set(data.event, handlers);
-                log("Added event listener for event: ", data.event);
             }
         }
+    }
+
+    addEventListener<K extends keyof ClientEvents>(event: K, callback: (...args: ClientEvents[K]) => any) {
+        const handlers = this.eventMap.get(event) ?? [];
+
+        if (!this.eventMap.has(event)) {
+            this.on(event, (...args: any[]) => this.fireEvent(event, ...args));
+            log("Registered parent handler for event: ", event);
+        }
+
+        handlers.push(callback);
+        this.eventMap.set(event, handlers);
+
+        log("Added event listener for event: ", event);
     }
 
     async getHomeGuild() {

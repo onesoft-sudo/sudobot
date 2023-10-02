@@ -207,10 +207,9 @@ function getGuildIdResolversMap() {
 
 export default class ExtensionService extends Service {
     protected readonly extensionsPath = path.join(__dirname, "../../extensions");
-    protected readonly eventHandlers = new Map<`${string}_${keyof ClientEvents}`, Function>();
     protected readonly guildIdResolvers = getGuildIdResolversMap();
 
-    async boot() {
+    async bootUp() {
         if (!existsSync(this.extensionsPath)) {
             log("No extensions found");
             return;
@@ -306,6 +305,7 @@ export default class ExtensionService extends Service {
         const commandPaths = await extension.commands();
         const eventPaths = await extension.events();
 
+        // FIXME: Make sure to load the command metadata
         if (commandPaths === null) {
             if (commandsDirectory) {
                 if (existsSync(commandsDirectory)) {
@@ -362,27 +362,11 @@ export default class ExtensionService extends Service {
     async loadEvent(extensionName: string, filePath: string) {
         const { default: Event }: { default: new (client: Client) => Event } = await import(filePath);
         const event = new Event(this.client);
-        this.eventHandlers.set(`${extensionName}_${event.name}`, event.execute.bind(event));
+        this.client.addEventListener(event.name, this.wrapHandler(extensionName, event.name, event.execute.bind(event)));
     }
 
-    async autoLoad() {
-        for (const [key, handler] of this.eventHandlers) {
-            const registeredEventNames = this.client.registeredEvents;
-            const [extensionName, eventName] = key.split("_") as [string, keyof ClientEvents];
-
-            if (registeredEventNames.includes(eventName)) {
-                log("Event already registered: ", eventName);
-                continue;
-            }
-
-            log("Event not registered: ", eventName);
-            const wrapped = this.wrapHandler(extensionName, eventName, handler);
-            this.client.on(eventName, wrapped);
-        }
-    }
-
-    wrapHandler<K extends keyof ClientEvents>(extensionName: string, eventName: K, handler: Function) {
-        return (...args: ClientEvents[K]) => {
+    wrapHandler<K extends keyof ClientEvents>(extensionName: string, eventName: K, handler: Function, bail?: boolean) {
+        return async (...args: ClientEvents[K]) => {
             const guildId: Snowflake | null | undefined = this.guildIdResolvers.get(eventName)?.(args);
 
             if (guildId === undefined) {
@@ -395,39 +379,25 @@ export default class ExtensionService extends Service {
                 return;
             }
 
-            return handler(...args);
+            logInfo("Running: " + eventName + " [" + extensionName + "]");
+
+            try {
+                return await handler(...args);
+            } catch (e) {
+                logError(`Extension error: the extension '${extensionName}' seems to cause this exception`);
+                logError(e);
+
+                if (bail) {
+                    return;
+                }
+            }
         };
     }
 
     isEnabled(extensionName: string, guildId: Snowflake) {
-        const { disabled_extensions, enabled, installed_extensions } =
-            this.client.configManager.config[guildId]?.extensions ?? {};
-        return enabled && !disabled_extensions?.includes(extensionName) && installed_extensions?.includes(extensionName);
-    }
-
-    async fireClientEvent(eventName: keyof ClientEvents, bail: boolean = false, ...args: any[]) {
-        let count = 0;
-
-        for (const [key, handler] of this.eventHandlers) {
-            if (!key.endsWith(`_${eventName}`)) {
-                continue;
-            }
-
-            try {
-                await handler(...args);
-            } catch (e) {
-                logError(`Extension error: the extension '${key.split("_")[0]}' seems to cause this exception`);
-                logError(e);
-
-                if (bail) {
-                    return false;
-                }
-            }
-
-            count++;
-        }
-
-        log(`${count} extensions have responded to this event: ${eventName}`);
-        return true;
+        const { disabled_extensions, enabled } = this.client.configManager.config[guildId]?.extensions ?? {};
+        const { default_mode } = this.client.configManager.systemConfig.extensions ?? {};
+        log(default_mode, enabled);
+        return (enabled === undefined ? default_mode === "enable_all" : enabled) && !disabled_extensions?.includes(extensionName);
     }
 }

@@ -18,7 +18,6 @@
  */
 
 import { ClientEvents } from "discord.js";
-import { logError } from "../utils/logger";
 import Client from "./Client";
 
 export default abstract class Event<K extends keyof ClientEvents = keyof ClientEvents> {
@@ -26,7 +25,5 @@ export default abstract class Event<K extends keyof ClientEvents = keyof ClientE
 
     constructor(protected client: Client) {}
 
-    async execute(...args: ClientEvents[K]): Promise<any> {
-        await this.client.extensionService.fireClientEvent(this.name, false, ...args).catch(logError);
-    }
+    async execute(...args: ClientEvents[K]): Promise<any> {}
 }

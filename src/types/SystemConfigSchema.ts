@@ -64,6 +64,11 @@ export const SystemConfigSchema = z.object({
             server_status_description: z.string().optional(),
             server_status_started_at: z.string().pipe(z.coerce.date()).or(z.date()).default(new Date())
         })
+        .default({}),
+    extensions: z
+        .object({
+            default_mode: z.enum(["enable_all", "disable_all"]).default("enable_all")
+        })
         .default({})
 });
 
