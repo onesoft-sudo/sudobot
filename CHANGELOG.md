@@ -1,3 +1,12 @@
+# [6.22.0](https://github.com/onesoft-sudo/sudobot/compare/v6.21.1...v6.22.0) (2023-10-02)
+
+
+### Features
+
+* **extensions:** enable/disable extensions per-guild ([4460838](https://github.com/onesoft-sudo/sudobot/commit/44608380670c15b616b6647773793f5ee5db002e))
+
+
+
 ## [6.21.1](https://github.com/onesoft-sudo/sudobot/compare/v6.21.0...v6.21.1) (2023-10-02)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **pagination:** validation error if emojis are not found ([37cbe41](https://github.com/onesoft-sudo/sudobot/commit/37cbe411330550b65aae4170c7d1f38f33bb1ec0))
-
-
-
-## [6.20.2](https://github.com/onesoft-sudo/sudobot/compare/v6.20.1...v6.20.2) (2023-09-30)
-
-
-### Bug Fixes
-
-* **getEmoji:** add an option to return null instead of empty string ([bf22355](https://github.com/onesoft-sudo/sudobot/commit/bf223551cb0ed2f6480f8e7d0583d1078657f739))
 
 
 
