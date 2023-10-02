@@ -1,3 +1,12 @@
+# [6.23.0](https://github.com/onesoft-sudo/sudobot/compare/v6.22.0...v6.23.0) (2023-10-02)
+
+
+### Features
+
+* add ai command ([0eedfd7](https://github.com/onesoft-sudo/sudobot/commit/0eedfd7ef64c896170df35eeb53f2e90af5abff2))
+
+
+
 # [6.22.0](https://github.com/onesoft-sudo/sudobot/compare/v6.21.1...v6.22.0) (2023-10-02)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * echo command now checks for mention everyone permission ([d03ac20](https://github.com/onesoft-sudo/sudobot/commit/d03ac201a68b9b84b92653ac8404b997969e8c76))
-
-
-
-## [6.20.3](https://github.com/onesoft-sudo/sudobot/compare/v6.20.2...v6.20.3) (2023-09-30)
-
-
-### Bug Fixes
-
-* **pagination:** validation error if emojis are not found ([37cbe41](https://github.com/onesoft-sudo/sudobot/commit/37cbe411330550b65aae4170c7d1f38f33bb1ec0))
 
 
 
