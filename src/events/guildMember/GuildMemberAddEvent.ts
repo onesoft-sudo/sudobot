@@ -25,6 +25,7 @@ export default class GuildMemberAddEvent extends Event {
     public name: keyof ClientEvents = "guildMemberAdd";
 
     async execute(member: GuildMember) {
+        super.execute(member);
         await this.client.logger.logGuildMemberAdd(member);
 
         if (this.client.antijoin.map.get(member.guild.id)) {

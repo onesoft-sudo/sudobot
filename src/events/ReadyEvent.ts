@@ -48,5 +48,7 @@ export default class ReadyEvent extends Event {
                 logWarn("Failed to fetch some of the emojis. The bot may not show some of the emojis in it's responses.");
             }
         }
+
+        super.execute();
     }
 }

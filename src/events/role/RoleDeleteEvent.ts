@@ -24,6 +24,7 @@ export default class RoleDeleteEvent extends Event {
     public name: keyof ClientEvents = "roleDelete";
 
     async execute(role: Role) {
+        super.execute(role);
         await this.client.logger.logRoleDelete(role);
     }
 }

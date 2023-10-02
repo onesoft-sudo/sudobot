@@ -26,6 +26,8 @@ export default class GuildMemberUpdateEvent extends Event {
     public name: keyof ClientEvents = "guildMemberUpdate";
 
     async execute(oldMember: GuildMember, newMember: GuildMember) {
+        super.execute(oldMember, newMember);
+
         if (oldMember.nickname !== newMember.nickname) {
             await this.client.logger.logNicknameUpdate(oldMember, newMember);
         }

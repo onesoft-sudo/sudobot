@@ -24,6 +24,8 @@ export default class ChannelUpdateEvent extends Event {
     public name: keyof ClientEvents = "channelUpdate";
 
     async execute(oldChannel: NonThreadGuildBasedChannel, newChannel: NonThreadGuildBasedChannel) {
+        super.execute(oldChannel, newChannel);
+
         if (oldChannel.name === newChannel.name) return;
 
         await this.client.logger.logChannelUpdate(oldChannel, newChannel);

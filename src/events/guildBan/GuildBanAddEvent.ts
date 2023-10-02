@@ -26,6 +26,8 @@ export default class GuildBanAddEvent extends Event {
     public name: keyof ClientEvents = "guildBanAdd";
 
     async execute(ban: GuildBan) {
+        super.execute(ban);
+
         setTimeout(async () => {
             try {
                 const auditLog = (

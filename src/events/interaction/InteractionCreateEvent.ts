@@ -25,6 +25,8 @@ export default class InteractionCreateEvent extends Event {
     public name: keyof ClientEvents = "interactionCreate";
 
     async execute(interaction: Interaction) {
+        super.execute(interaction);
+
         if (interaction.isCommand()) {
             this.client.commandManager.runCommandFromCommandInteraction(interaction).catch(logError);
             return;

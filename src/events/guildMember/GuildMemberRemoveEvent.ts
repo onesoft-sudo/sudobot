@@ -26,6 +26,7 @@ export default class GuildMemberRemoveEvent extends Event {
     public name: keyof ClientEvents = "guildMemberRemove";
 
     async execute(member: GuildMember) {
+        super.execute(member);
         await this.client.logger.logGuildMemberRemove(member);
 
         setTimeout(async () => {

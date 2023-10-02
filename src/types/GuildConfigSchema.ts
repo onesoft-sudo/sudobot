@@ -288,7 +288,12 @@ export const GuildConfigSchema = z.object({
                 })
                 .default({})
         })
-        .optional()
+        .optional(),
+    extensions: z.object({
+        enabled: z.boolean().default(false),
+        installed_extensions: z.array(z.string()).default([]),
+        disabled_extensions: z.array(z.string()).default([])
+    }).optional()
 });
 
 export type GuildConfig = z.infer<typeof GuildConfigSchema>;

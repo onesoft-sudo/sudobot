@@ -25,5 +25,6 @@ export default class ChannelCreateEvent extends Event {
 
     async execute(channel: NonThreadGuildBasedChannel) {
         await this.client.logger.logChannelCreate(channel);
+        super.execute(channel);
     }
 }
