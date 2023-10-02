@@ -32,7 +32,12 @@ export default class MessageCreateEvent extends Event {
     }
 
     async execute(message: Message) {
+        /**
+         * For performance reasons, ignore bots completely.
+         */
         if (message.author.bot) return;
+
+        super.execute(message);
 
         if (!this.types.includes(message.type)) return;
 

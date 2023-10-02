@@ -24,6 +24,8 @@ export default class RoleUpdateEvent extends Event {
     public name: keyof ClientEvents = "roleUpdate";
 
     async execute(oldRole: Role, newRole: Role) {
+        super.execute(oldRole, newRole);
+
         if (oldRole.name === newRole.name && oldRole.icon === newRole.icon && oldRole.permissions.equals(newRole.permissions))
             return;
 

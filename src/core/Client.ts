@@ -136,6 +136,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
 
     commands = new Collection<string, Command>();
     emojiMap = new Collection<string, GuildEmoji>();
+    registeredEvents: string[] = [];
 
     constructor(options: ClientOptions, { services }: { services?: string[] } = {}) {
         super(options);
@@ -159,7 +160,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         }
     }
 
-    async loadCommands(directory = this.commandsDirectory) {
+    async loadCommands(directory = this.commandsDirectory, metadataLoader?: Function) {
         const files = await fs.readdir(directory);
         const includeOnly = process.env.COMMANDS?.split(",");
 
@@ -180,11 +181,11 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
                 continue;
             }
 
-            await this.loadCommand(filePath);
+            await this.loadCommand(filePath, metadataLoader);
         }
     }
 
-    async loadCommand(filePath: string) {
+    async loadCommand(filePath: string, metadataLoader?: Function) {
         const { default: CommandClass }: { default: new (client: Client) => Command } = await import(filePath);
         const command = new CommandClass(this);
         command.group = basename(dirname(filePath));
@@ -194,7 +195,13 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
             this.commands.set(alias, command);
         }
 
-        this.loadEventListenersFromMetadata(CommandClass, command);
+        if (!metadataLoader) {
+            this.loadEventListenersFromMetadata(CommandClass, command);
+        } else {
+            metadataLoader(CommandClass, command);
+            log("Custom metadata loader found");
+        }
+
         logInfo("Loaded command: ", command.name);
     }
 
@@ -214,14 +221,18 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
                 continue;
             }
 
-            await this.loadEvent(filePath);
+            await this.loadEvent(filePath, true);
         }
     }
 
-    async loadEvent(filePath: string) {
+    async loadEvent(filePath: string, addToList = false) {
         const { default: Event } = await import(filePath);
         const event = new Event(this);
         this.on(event.name, event.execute.bind(event));
+
+        if (addToList) {
+            this.registeredEvents.push(event.name);
+        }
     }
 
     private supressErrorMessagesHandler(suppressErrors: SuppressErrorsMetadata, e: unknown) {

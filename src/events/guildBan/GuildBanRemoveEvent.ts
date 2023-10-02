@@ -26,6 +26,8 @@ export default class GuildBanRemoveEvent extends Event {
     public name: keyof ClientEvents = "guildBanRemove";
 
     async execute(ban: GuildBan) {
+        super.execute(ban);
+
         setTimeout(async () => {
             try {
                 const auditLog = (

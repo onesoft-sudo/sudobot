@@ -15,6 +15,8 @@ export default class MessageDeleteBulkEvent extends Event {
     public readonly name: keyof ClientEvents = "messageDeleteBulk";
 
     async execute(messages: Collection<Snowflake, Message | PartialMessage>, channel: GuildTextBasedChannel) {
+        super.execute(messages, channel);
+
         setTimeout(async () => {
             try {
                 const auditLog = (

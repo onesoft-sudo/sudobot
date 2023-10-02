@@ -24,6 +24,7 @@ export default class RoleCreateEvent extends Event {
     public name: keyof ClientEvents = "roleCreate";
 
     async execute(role: Role) {
+        super.execute(role);
         await this.client.logger.logRoleCreate(role);
     }
 }

@@ -25,13 +25,18 @@ export default class MessageUpdateEvent extends Event {
     public readonly name: keyof ClientEvents = "messageUpdate";
 
     async execute(oldMessage: Message, newMessage: Message) {
-        if (newMessage.author.bot || oldMessage.content === newMessage.content) return;
+        if (newMessage.author.bot) {
+            return;
+        }
+
+        super.execute(oldMessage, newMessage);
+
+        if (oldMessage.content === newMessage.content) return;
 
         await this.client.logger.logMessageEdit(oldMessage, newMessage);
         const deleted = await this.client.messageFilter.scanMessage(newMessage).catch(logError);
 
-        if (deleted) 
-            return;
+        if (deleted) return;
 
         await this.client.messageRuleService.onMessageCreate(newMessage).catch(logError);
     }
