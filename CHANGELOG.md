@@ -1,3 +1,12 @@
+## [6.21.1](https://github.com/onesoft-sudo/sudobot/compare/v6.21.0...v6.21.1) (2023-10-02)
+
+
+### Bug Fixes
+
+* node warning about memory leak ([8d483a3](https://github.com/onesoft-sudo/sudobot/commit/8d483a3eebbd5f823063a0d91b46b563f176bf50))
+
+
+
 # [6.21.0](https://github.com/onesoft-sudo/sudobot/compare/v6.20.4...v6.21.0) (2023-10-02)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **getEmoji:** add an option to return null instead of empty string ([bf22355](https://github.com/onesoft-sudo/sudobot/commit/bf223551cb0ed2f6480f8e7d0583d1078657f739))
-
-
-
-## [6.20.1](https://github.com/onesoft-sudo/sudobot/compare/v6.20.0...v6.20.1) (2023-09-29)
-
-
-### Bug Fixes
-
-* **deps:** add missing deps ([4549430](https://github.com/onesoft-sudo/sudobot/commit/4549430c00dba2ecd1e3c9bc1579b3e7f7511b0d))
 
 
 
