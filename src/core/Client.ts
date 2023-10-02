@@ -18,7 +18,7 @@
  */
 
 import { PrismaClient } from "@prisma/client";
-import { ClientOptions, Collection, Client as DiscordClient, GuildEmoji, UserResolvable } from "discord.js";
+import { ClientEvents, ClientOptions, Collection, Client as DiscordClient, GuildEmoji, UserResolvable } from "discord.js";
 import fs from "fs/promises";
 import path, { basename, dirname } from "path";
 import Server from "../api/Server";
@@ -137,6 +137,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     commands = new Collection<string, Command>();
     emojiMap = new Collection<string, GuildEmoji>();
     registeredEvents: string[] = [];
+    eventMap = new Map<keyof ClientEvents, Function[]>();
 
     constructor(options: ClientOptions, { services }: { services?: string[] } = {}) {
         super(options);
@@ -244,7 +245,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     }
 
     loadEventListenersFromMetadata<I extends Object = Object>(Class: I["constructor"], instance?: I) {
-        const metadata: { event: string; handler: Function; methodName: string }[] | undefined = Reflect.getMetadata(
+        const metadata: { event: keyof ClientEvents; handler: Function; methodName: string }[] | undefined = Reflect.getMetadata(
             "event_listeners",
             Class.prototype
         );
@@ -258,8 +259,14 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
                     data.methodName
                 );
 
-                this.on(
-                    data.event,
+                const handlers = this.eventMap.get(data.event) ?? [];
+
+                if (!this.eventMap.has(data.event)) {
+                    this.on(data.event, (...args: any[]) => this.fireEvent(data.event, ...args));
+                    log("Registered parent handler for event: ", data.event);
+                }
+
+                handlers.push(
                     suppressErrors
                         ? (...args: any[]) => {
                               try {
@@ -275,6 +282,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
                         : callback
                 );
 
+                this.eventMap.set(data.event, handlers);
                 log("Added event listener for event: ", data.event);
             }
         }
@@ -297,5 +305,17 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
             logError("Error fetching home guild: make sure the ID inside `HOME_GUILD_ID` environment variable is correct.");
             process.exit(-1);
         }
+    }
+
+    fireEvent(name: keyof ClientEvents, ...args: any[]) {
+        const handlers = this.eventMap.get(name);
+
+        if (handlers) {
+            for (const handler of handlers) {
+                handler(...args);
+            }
+        }
+
+        log("Fired event: ", name);
     }
 }
