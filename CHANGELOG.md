@@ -1,3 +1,12 @@
+## [6.25.1](https://github.com/onesoft-sudo/sudobot/compare/v6.25.0...v6.25.1) (2023-10-03)
+
+
+### Bug Fixes
+
+* help command showing repeated command names ([8fac595](https://github.com/onesoft-sudo/sudobot/commit/8fac595ccfeb4ac0195ad00729a43301e7fe39e3))
+
+
+
 # [6.25.0](https://github.com/onesoft-sudo/sudobot/compare/v6.24.0...v6.25.0) (2023-10-03)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **extensions:** enable/disable extensions per-guild ([4460838](https://github.com/onesoft-sudo/sudobot/commit/44608380670c15b616b6647773793f5ee5db002e))
-
-
-
-## [6.21.1](https://github.com/onesoft-sudo/sudobot/compare/v6.21.0...v6.21.1) (2023-10-02)
-
-
-### Bug Fixes
-
-* node warning about memory leak ([8d483a3](https://github.com/onesoft-sudo/sudobot/commit/8d483a3eebbd5f823063a0d91b46b563f176bf50))
 
 
 
