@@ -1,4 +1,5 @@
 require("module-alias/register");
+const chalk = require("chalk");
 const { spawnSync } = require("child_process");
 const { existsSync, lstatSync, readdirSync, readFileSync, writeFileSync, rmSync } = require("fs");
 const path = require("path");
@@ -153,7 +154,23 @@ async function writeCacheIndex() {
     );
 }
 
+const MAX_CHARS = 7;
+
+function actionLog(action, description) {
+    console.log(
+        chalk.green.bold(`${action}${action.length >= MAX_CHARS ? "" : " ".repeat(MAX_CHARS - action.length)} `),
+        description
+    );
+}
+
+function spawnSyncCatchExit(...args) {
+    actionLog("RUN", args[0]);
+    const { status } = spawnSync(...args);
+    if (status !== 0) process.exit(status);
+}
+
 async function buildExtensions() {
+    const startTime = Date.now();
     const extensions = readdirSync(extensionsPath);
     const workingDirectory = cwd();
 
@@ -165,25 +182,38 @@ async function buildExtensions() {
             continue;
         }
 
-        console.log("Building: ", extensionName);
         chdir(path.join(extensionsPath, extensionName));
-        const { build_command } = readMeta(extensionName, extensionDirectory);
 
-        if (!build_command) {
-            console.log("This extension doesn't require building.");
-            continue;
-        }
-
-        console.log("Running build command: ", build_command);
-        const { status } = spawnSync(build_command, {
+        actionLog("DEPS", extensionName);
+        spawnSyncCatchExit("npm install -D", {
             encoding: "utf-8",
             shell: true,
             stdio: "inherit"
         });
 
-        if (status !== 0) process.exit(status);
+        actionLog("RELINK", extensionName);
+        spawnSyncCatchExit(`npm link --save ${path.relative(cwd(), path.resolve(__dirname, ".."))}`, {
+            encoding: "utf-8",
+            shell: true,
+            stdio: "inherit"
+        });
+
+        actionLog("BUILD", extensionName);
+        const { build_command } = readMeta(extensionName, extensionDirectory);
+
+        if (!build_command) {
+            console.log(chalk.cyan.bold("INFO "), "This extension doesn't require building.");
+            continue;
+        }
+
+        spawnSyncCatchExit(build_command, {
+            encoding: "utf-8",
+            shell: true,
+            stdio: "inherit"
+        });
     }
 
+    actionLog("SUCCESS", `in ${((Date.now() - startTime) / 1000).toFixed(2)}s, built ${extensions.length} extensions`);
     chdir(workingDirectory);
 }
 
@@ -206,14 +236,11 @@ if (process.argv.includes("--clear-cache") || process.argv.includes("--clean") |
             console.timeEnd("Finished in");
         });
 } else if (process.argv.includes("--build")) {
-    console.time("Finished in");
     console.log("Building installed extensions");
-    buildExtensions()
-        .then(() => console.timeEnd("Finished in"))
-        .catch(e => {
-            console.log(e);
-            console.timeEnd("Finished in");
-        });
+    buildExtensions().catch(e => {
+        console.log(e);
+        process.exit(-1);
+    });
 } else {
     console.log("Usage:");
     console.log("  node extensions.js <options>\n");
