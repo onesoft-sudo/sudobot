@@ -17,7 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Collection, EmbedBuilder, PermissionResolvable, SlashCommandBuilder, escapeCodeBlock, escapeInlineCode } from "discord.js";
+import {
+    Collection,
+    EmbedBuilder,
+    PermissionResolvable,
+    SlashCommandBuilder,
+    escapeCodeBlock,
+    escapeInlineCode
+} from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import Pagination from "../../utils/Pagination";
@@ -62,37 +69,26 @@ export default class HelpCommand extends Command {
 
     public readonly argumentSyntaxes = ["[command]"];
 
-    public readonly commandInformation = new Collection<string, CommandInfo>();
+    public readonly commandInformation = new Collection<string, string[]>();
     public readonly slashCommandBuilder = new SlashCommandBuilder()
         .addStringOption(option => option.setName("command").setDescription("Shows help for this command"))
         .addStringOption(option => option.setName("subcommand").setDescription("Shows help for this subcommand"));
-    
+
     @GatewayEventListener("ready")
     async onReady() {
         log("Attempting to read and extract meta info from all the loaded commands...");
 
         for await (const command of this.client.commands.values()) {
             if (command.name.includes("__")) continue;
-            if (this.commandInformation.has(command.name)) continue;
-
-            this.commandInformation.set(command.name, {
-                name: command.name,
-                aliases: command.aliases,
-                group: command.group,
-                description: command.description,
-                detailedDscription: command.detailedDescription,
-                systemAdminOnly: command.systemAdminOnly,
-                beta: command.beta,
-                argumentSyntaxes: command.argumentSyntaxes,
-                botRequiredPermissions: command.botRequiredPermissions,
-                availableOptions: command.availableOptions,
-                since: command.since,
-                supportsInteractions: command.supportsInteractions,
-                supportsLegacy: command.supportsLegacy
-            });
+            const commands = this.commandInformation.get(command.group) ?? [];
+            commands.push(command.name);
+            this.commandInformation.set(command.group, commands);
         }
 
-        this.commandInformation.sort((a, b) => a.name.localeCompare(b.name, ["en-US"]));
+        for (const group of this.commandInformation.keys()) {
+            this.commandInformation.get(group)?.sort((a, b) => a.localeCompare(b, ["en-US"]));
+        }
+
         log("Successfully read metadata of " + this.commandInformation.size + " commands");
     }
 
@@ -112,26 +108,16 @@ export default class HelpCommand extends Command {
         }
 
         if (!commandName) {
-            const pagination = new Pagination([...this.commandInformation.values()], {
+            const pagination = new Pagination([...this.commandInformation.entries()], {
                 channelId: message.channelId!,
                 client: this.client,
                 guildId: message.guildId!,
-                limit: 20,
+                limit: 1,
                 timeout: 200_000,
                 userId: message.member!.user.id,
-                embedBuilder({ currentPage, maxPages, data }) {
+                embedBuilder: ({ currentPage, maxPages, data: [[group, commandNames]] }) => {
                     let description: string = `Run \`${config.prefix}help <commandName>\` to get help about a specific command.\n\`<...>\` means required argument, \`[...]\` means optional argument.\n\n`;
-
-                    for (const commandInfo of data) {
-                        description += `**${commandInfo.name}**\n`;
-                        description += `${commandInfo.description ?? "*No description is available for this command.*"}\n`;
-
-                        if (commandInfo.systemAdminOnly) {
-                            description += ":warning: This command can only be used by bot system administrators.\n";
-                        }
-
-                        description += "\n";
-                    }
+                    description += `**${group}**\n\`${commandNames.join("`, `")}\`\n\n`;
 
                     return new EmbedBuilder({
                         author: {
