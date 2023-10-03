@@ -1,3 +1,12 @@
+# [6.24.0](https://github.com/onesoft-sudo/sudobot/compare/v6.23.0...v6.24.0) (2023-10-03)
+
+
+### Features
+
+* improved help command ([8391479](https://github.com/onesoft-sudo/sudobot/commit/8391479d43eb4a6d3873c5d1218b0883d3fde29a))
+
+
+
 # [6.23.0](https://github.com/onesoft-sudo/sudobot/compare/v6.22.0...v6.23.0) (2023-10-02)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **extensions:** better event handling ([cad2b05](https://github.com/onesoft-sudo/sudobot/commit/cad2b0578d372c0bec6349863e3ba43175ed8158))
-
-
-
-## [6.20.4](https://github.com/onesoft-sudo/sudobot/compare/v6.20.3...v6.20.4) (2023-10-01)
-
-
-### Bug Fixes
-
-* echo command now checks for mention everyone permission ([d03ac20](https://github.com/onesoft-sudo/sudobot/commit/d03ac201a68b9b84b92653ac8404b997969e8c76))
 
 
 
