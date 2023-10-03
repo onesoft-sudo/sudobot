@@ -18,7 +18,7 @@
  */
 
 import { EmbedBuilder, GuildMember, SlashCommandBuilder, User } from "discord.js";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { logError } from "../../utils/logger";
 
 export default class AvatarCommand extends Command {
@@ -34,26 +34,32 @@ export default class AvatarCommand extends Command {
         }
     ];
     public readonly permissions = [];
-    public readonly aliases = ["avt", "av", "pfp"];
+    public readonly aliases = ["avt", "av", "pfp", "gav", "gavatar", "gavt", "gpfp"];
 
     public readonly description = "Shows your or someone else's avatar.";
-    public readonly slashCommandBuilder = new SlashCommandBuilder().addUserOption(option =>
-        option.setName("user").setDescription("The target user")
-    );
+    public readonly slashCommandBuilder = new SlashCommandBuilder()
+        .addUserOption(option => option.setName("user").setDescription("The target user"))
+        .addBooleanOption(option =>
+            option
+                .setName("global")
+                .setDescription("Specify whether the system should fetch the global user avatar instead of guild-only avatar")
+        );
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
         const user: User =
             (context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user")) ?? message.member!.user;
         let member: GuildMember | undefined;
 
-        try {
-            member = user
-                ? message.guild!.members.cache.get(user.id) ?? (await message.guild!.members.fetch(user.id))
-                : (message.member! as GuildMember);
-        } catch (e) {
-            logError(e);
+        if (!(context.isLegacy ? context.argv[0].startsWith("g") : context.options.getBoolean("global") ?? false)) {
+            try {
+                member = user
+                    ? message.guild!.members.cache.get(user.id) ?? (await message.guild!.members.fetch(user.id))
+                    : (message.member! as GuildMember);
+            } catch (e) {
+                logError(e);
+            }
         }
 
         await this.deferredReply(message, {
