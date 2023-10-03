@@ -1,3 +1,12 @@
+# [6.25.0](https://github.com/onesoft-sudo/sudobot/compare/v6.24.0...v6.25.0) (2023-10-03)
+
+
+### Features
+
+* added support for global avatar commands (`gavatar`) ([4524342](https://github.com/onesoft-sudo/sudobot/commit/452434240b70fa85f45c7b66da7c9073e57ebabb))
+
+
+
 # [6.24.0](https://github.com/onesoft-sudo/sudobot/compare/v6.23.0...v6.24.0) (2023-10-03)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * node warning about memory leak ([8d483a3](https://github.com/onesoft-sudo/sudobot/commit/8d483a3eebbd5f823063a0d91b46b563f176bf50))
-
-
-
-# [6.21.0](https://github.com/onesoft-sudo/sudobot/compare/v6.20.4...v6.21.0) (2023-10-02)
-
-
-### Features
-
-* **extensions:** better event handling ([cad2b05](https://github.com/onesoft-sudo/sudobot/commit/cad2b0578d372c0bec6349863e3ba43175ed8158))
 
 
 
