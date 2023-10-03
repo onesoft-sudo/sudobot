@@ -81,6 +81,11 @@ export default class HelpCommand extends Command {
         for await (const command of this.client.commands.values()) {
             if (command.name.includes("__")) continue;
             const commands = this.commandInformation.get(command.group) ?? [];
+
+            if (commands.includes(command.name)) {
+                continue;
+            }
+
             commands.push(command.name);
             this.commandInformation.set(command.group, commands);
         }
