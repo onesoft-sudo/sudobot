@@ -1,3 +1,12 @@
+## [6.25.2](https://github.com/onesoft-sudo/sudobot/compare/v6.25.1...v6.25.2) (2023-10-04)
+
+
+### Bug Fixes
+
+* expired JWT tokens are not being disallowed in some cases ([06c060b](https://github.com/onesoft-sudo/sudobot/commit/06c060b1b621b5595b6a2819c37265f900034a54))
+
+
+
 ## [6.25.1](https://github.com/onesoft-sudo/sudobot/compare/v6.25.0...v6.25.1) (2023-10-03)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * add ai command ([0eedfd7](https://github.com/onesoft-sudo/sudobot/commit/0eedfd7ef64c896170df35eeb53f2e90af5abff2))
-
-
-
-# [6.22.0](https://github.com/onesoft-sudo/sudobot/compare/v6.21.1...v6.22.0) (2023-10-02)
-
-
-### Features
-
-* **extensions:** enable/disable extensions per-guild ([4460838](https://github.com/onesoft-sudo/sudobot/commit/44608380670c15b616b6647773793f5ee5db002e))
 
 
 
