@@ -59,7 +59,7 @@ export default async function RequireAuthMiddleware(
             }
         });
 
-        if (!user) {
+        if (!user || Date.now() > (user?.tokenExpiresAt?.getTime() ?? 0)) {
             throw new Error();
         }
 
