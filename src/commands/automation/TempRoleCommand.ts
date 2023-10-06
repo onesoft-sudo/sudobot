@@ -69,6 +69,8 @@ export default class TempRoleCommand extends Command {
         .addStringOption(option =>
             option.setName("start_after").setDescription("The offset duration after the system should assign the role")
         );
+    public readonly description = "Temporarily give a role to a member";
+    public readonly since = "6.25.2";
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
