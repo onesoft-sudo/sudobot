@@ -1,3 +1,12 @@
+# [6.28.0](https://github.com/onesoft-sudo/sudobot/compare/v6.27.0...v6.28.0) (2023-10-07)
+
+
+### Features
+
+* **extensions:** introduce `onCommand` event ([7757ab9](https://github.com/onesoft-sudo/sudobot/commit/7757ab99d4f120c84d2cb45babdf2eb05b5f120b))
+
+
+
 # [6.27.0](https://github.com/onesoft-sudo/sudobot/compare/v6.26.0...v6.27.0) (2023-10-07)
 
 
@@ -36,15 +45,6 @@
 ### Bug Fixes
 
 * help command showing repeated command names ([8fac595](https://github.com/onesoft-sudo/sudobot/commit/8fac595ccfeb4ac0195ad00729a43301e7fe39e3))
-
-
-
-# [6.25.0](https://github.com/onesoft-sudo/sudobot/compare/v6.24.0...v6.25.0) (2023-10-03)
-
-
-### Features
-
-* added support for global avatar commands (`gavatar`) ([4524342](https://github.com/onesoft-sudo/sudobot/commit/452434240b70fa85f45c7b66da7c9073e57ebabb))
 
 
 
