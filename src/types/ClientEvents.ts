@@ -2,10 +2,13 @@ import type { ClientEvents as DiscordClientEvents } from "discord.js";
 import type Command from "../core/Command";
 import type { CommandMessage } from "../core/Command";
 import type { CommandContext } from "../services/CommandManager";
+import { CommandEventHandle } from "./CommandEventHandle";
 
 export type ClientEvents = DiscordClientEvents & {
-    command: [name: string, command: Command, message: CommandMessage, context: CommandContext];
+    command: [name: string, handle: CommandEventHandle, command: Command, message: CommandMessage, context: CommandContext];
 };
+
+export const CustomEvents: ReadonlyArray<keyof ClientEvents> = ["command"];
 
 export enum Events {
     ApplicationCommandPermissionsUpdate = "applicationCommandPermissionsUpdate",

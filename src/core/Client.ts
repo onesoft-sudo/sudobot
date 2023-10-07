@@ -18,7 +18,7 @@
  */
 
 import { PrismaClient } from "@prisma/client";
-import { ClientEvents, ClientOptions, Collection, Client as DiscordClient, GuildEmoji, UserResolvable } from "discord.js";
+import { ClientOptions, Collection, Client as DiscordClient, GuildEmoji, UserResolvable } from "discord.js";
 import fs from "fs/promises";
 import path, { basename, dirname } from "path";
 import Server from "../api/Server";
@@ -51,6 +51,7 @@ import type StartupManager from "../services/StartupManager";
 import type TranslationService from "../services/TranslationService";
 import TriggerService from "../services/TriggerService";
 import type WelcomerService from "../services/WelcomerService";
+import { CustomEvents, type ClientEvents } from "../types/ClientEvents";
 import { log, logError, logInfo } from "../utils/logger";
 import type Command from "./Command";
 import ServiceManager from "./ServiceManager";
@@ -282,8 +283,8 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     addEventListener<K extends keyof ClientEvents>(event: K, callback: (...args: ClientEvents[K]) => any) {
         const handlers = this.eventMap.get(event) ?? [];
 
-        if (!this.eventMap.has(event)) {
-            this.on(event, (...args: any[]) => this.fireEvent(event, ...args));
+        if (!this.eventMap.has(event) && !CustomEvents.includes(event)) {
+            this.on(event as any, (...args: any[]) => this.fireEvent(event, ...args));
             log("Registered parent handler for event: ", event);
         }
 
@@ -291,6 +292,16 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         this.eventMap.set(event, handlers);
 
         log("Added event listener for event: ", event);
+    }
+
+    async emitWait<K extends keyof ClientEvents>(eventName: K, ...args: ClientEvents[K]) {
+        const handlers = this.eventMap.get(eventName);
+
+        if (handlers) {
+            for (const handler of handlers) {
+                await handler(...args);
+            }
+        }
     }
 
     async getHomeGuild() {

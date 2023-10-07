@@ -124,30 +124,42 @@ export default class CommandManager extends Service implements HasEventListeners
             return;
         }
 
+        const context = {
+            isLegacy: true,
+            argv: [commandName, ...commandArguments],
+            args: commandArguments,
+            config,
+            parsedArgs: [],
+            parsedNamedArgs: {},
+            isContextMenu: false,
+            prefix: foundPrefix,
+            has(arg: string) {
+                return this.args.includes(arg);
+            },
+            getParsedArg<C extends Command, I extends keyof C["validationRules"]>(command: C, index: I) {
+                return this.parsedArgs[index as number] as ValidationRuleParsedArgs<C["validationRules"]>[I];
+            },
+            getParsedArgs<C extends Command>(command: C) {
+                return this.parsedArgs as ValidationRuleParsedArgs<C["validationRules"]>;
+            }
+        } satisfies LegacyCommandContext;
+
+        const handlerObject = {
+            _stopped: false,
+            stopCommandExecution() {
+                this._stopped = true;
+            }
+        };
+
+        await this.client.emitWait("command", command.name, handlerObject, command, message, context);
+        await Promise.resolve();
+
+        if (handlerObject._stopped) {
+            return;
+        }
+
         command
-            .run(
-                message,
-                {
-                    isLegacy: true,
-                    argv: [commandName, ...commandArguments],
-                    args: commandArguments,
-                    config,
-                    parsedArgs: [],
-                    parsedNamedArgs: {},
-                    isContextMenu: false,
-                    prefix: foundPrefix,
-                    has(arg: string) {
-                        return this.args.includes(arg);
-                    },
-                    getParsedArg<C extends Command, I extends keyof C["validationRules"]>(command: C, index: I) {
-                        return this.parsedArgs[index as number] as ValidationRuleParsedArgs<C["validationRules"]>[I];
-                    },
-                    getParsedArgs<C extends Command>(command: C) {
-                        return this.parsedArgs as ValidationRuleParsedArgs<C["validationRules"]>;
-                    }
-                } satisfies LegacyCommandContext,
-                checkOnly
-            )
+            .run(message, context, checkOnly)
             .then(result => {
                 if (result && typeof result === "object" && "__reply" in result && result.__reply === true) {
                     message.reply(result as any).catch(console.error);
@@ -178,18 +190,30 @@ export default class CommandManager extends Service implements HasEventListeners
             return;
         }
 
+        const context = {
+            isLegacy: false,
+            config,
+            options: interaction.options,
+            isContextMenu: interaction.isContextMenuCommand(),
+            commandName
+        } as ContextMenuCommandContext | ChatInputCommandContext;
+
+        const handlerObject = {
+            _stopped: false,
+            stopCommandExecution() {
+                this._stopped = true;
+            }
+        };
+
+        await this.client.emitWait("command", command.name, handlerObject, command, interaction, context);
+        await Promise.resolve();
+
+        if (handlerObject._stopped) {
+            return;
+        }
+
         command
-            .run(
-                interaction,
-                {
-                    isLegacy: false,
-                    config,
-                    options: interaction.options,
-                    isContextMenu: interaction.isContextMenuCommand(),
-                    commandName
-                } as ContextMenuCommandContext | ChatInputCommandContext,
-                checkOnly
-            )
+            .run(interaction, context, checkOnly)
             .then(result => {
                 if (result && typeof result === "object" && "__reply" in result && result.__reply === true) {
                     interaction.reply(result as any).catch(console.error);
