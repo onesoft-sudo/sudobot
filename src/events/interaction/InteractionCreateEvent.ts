@@ -18,10 +18,10 @@
  */
 
 import { ClientEvents, Interaction } from "discord.js";
-import Event from "../../core/Event";
+import EventListener from "../../core/EventListener";
 import { logError } from "../../utils/logger";
 
-export default class InteractionCreateEvent extends Event {
+export default class InteractionCreateEvent extends EventListener {
     public name: keyof ClientEvents = "interactionCreate";
 
     async execute(interaction: Interaction) {

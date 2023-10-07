@@ -8,10 +8,10 @@ import {
     Snowflake,
     TextChannel
 } from "discord.js";
-import Event from "../../core/Event";
+import EventListener from "../../core/EventListener";
 import { logError } from "../../utils/logger";
 
-export default class MessageDeleteBulkEvent extends Event {
+export default class MessageDeleteBulkEvent extends EventListener {
     public readonly name: keyof ClientEvents = "messageDeleteBulk";
 
     async execute(messages: Collection<Snowflake, Message | PartialMessage>, channel: GuildTextBasedChannel) {

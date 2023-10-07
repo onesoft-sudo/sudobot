@@ -18,9 +18,9 @@
  */
 
 import { ClientEvents, Role } from "discord.js";
-import Event from "../../core/Event";
+import EventListener from "../../core/EventListener";
 
-export default class RoleCreateEvent extends Event {
+export default class RoleCreateEvent extends EventListener {
     public name: keyof ClientEvents = "roleCreate";
 
     async execute(role: Role) {

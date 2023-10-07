@@ -19,10 +19,10 @@
 
 import { ChannelType, ClientEvents, GuildMember, Message, MessageType } from "discord.js";
 import Client from "../../core/Client";
-import Event from "../../core/Event";
+import EventListener from "../../core/EventListener";
 import { log, logError } from "../../utils/logger";
 
-export default class MessageCreateEvent extends Event {
+export default class MessageCreateEvent extends EventListener {
     public name: keyof ClientEvents = "messageCreate";
 
     public types = [MessageType.Default, MessageType.Reply];

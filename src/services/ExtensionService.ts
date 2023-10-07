@@ -22,7 +22,7 @@ import { existsSync } from "fs";
 import fs from "fs/promises";
 import path from "path";
 import Client from "../core/Client";
-import Event from "../core/Event";
+import EventListener from "../core/EventListener";
 import { Extension } from "../core/Extension";
 import Service from "../core/Service";
 import { log, logError, logInfo, logWarn } from "../utils/logger";
@@ -360,7 +360,7 @@ export default class ExtensionService extends Service {
     }
 
     async loadEvent(extensionName: string, filePath: string) {
-        const { default: Event }: { default: new (client: Client) => Event } = await import(filePath);
+        const { default: Event }: { default: new (client: Client) => EventListener } = await import(filePath);
         const event = new Event(this.client);
         this.client.addEventListener(event.name, this.wrapHandler(extensionName, event.name, event.execute.bind(event)));
     }

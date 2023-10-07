@@ -18,10 +18,10 @@
  */
 
 import { ClientEvents, GuildMember } from "discord.js";
-import Event from "../../core/Event";
+import EventListener from "../../core/EventListener";
 import { logError } from "../../utils/logger";
 
-export default class GuildMemberAddEvent extends Event {
+export default class GuildMemberAddEvent extends EventListener {
     public name: keyof ClientEvents = "guildMemberAdd";
 
     async execute(member: GuildMember) {

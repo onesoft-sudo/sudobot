@@ -18,10 +18,10 @@
  */
 
 import { ClientEvents } from "discord.js";
-import Event from "../core/Event";
+import EventListener from "../core/EventListener";
 import { logError, logInfo, logWarn } from "../utils/logger";
 
-export default class ReadyEvent extends Event {
+export default class ReadyEvent extends EventListener {
     public name: keyof ClientEvents = "ready";
 
     async execute() {

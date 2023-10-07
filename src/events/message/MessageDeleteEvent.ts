@@ -18,9 +18,9 @@
  */
 
 import { ClientEvents, Message } from "discord.js";
-import Event from "../../core/Event";
+import EventListener from "../../core/EventListener";
 
-export default class MessageDeleteEvent extends Event {
+export default class MessageDeleteEvent extends EventListener {
     public name: keyof ClientEvents = "messageDelete";
 
     async execute(message: Message) {

@@ -18,9 +18,9 @@
  */
 
 import { ClientEvents, NonThreadGuildBasedChannel } from "discord.js";
-import Event from "../../core/Event";
+import EventListener from "../../core/EventListener";
 
-export default class ChannelDeleteEvent extends Event {
+export default class ChannelDeleteEvent extends EventListener {
     public name: keyof ClientEvents = "channelDelete";
 
     async execute(channel: NonThreadGuildBasedChannel) {

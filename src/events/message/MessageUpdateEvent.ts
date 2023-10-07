@@ -18,10 +18,10 @@
  */
 
 import { ClientEvents, Message } from "discord.js";
-import Event from "../../core/Event";
+import EventListener from "../../core/EventListener";
 import { logError } from "../../utils/logger";
 
-export default class MessageUpdateEvent extends Event {
+export default class MessageUpdateEvent extends EventListener {
     public readonly name: keyof ClientEvents = "messageUpdate";
 
     async execute(oldMessage: Message, newMessage: Message) {
