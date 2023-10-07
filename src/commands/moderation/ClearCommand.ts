@@ -31,6 +31,15 @@ import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandRetu
 import { logError } from "../../utils/logger";
 import { isTextableChannel } from "../../utils/utils";
 
+const THREE_DAYS = 1000 * 60 * 60 * 24 * 3;
+
+const filters = {
+    bots: (message: Message) => message.author.bot,
+    unverified_bots: (message: Message) => message.author.bot && !message.author.flags?.has("VerifiedBot"),
+    users: (message: Message) => !message.author.bot,
+    new_users: (message: Message) => !message.author.bot && message.createdAt.getTime() <= THREE_DAYS
+};
+
 export default class ClearCommand extends Command {
     public readonly name = "clear";
     public readonly validationRules: ValidationRule[] = [
@@ -78,7 +87,13 @@ export default class ClearCommand extends Command {
         .addIntegerOption(option =>
             option.setName("count").setDescription("The amount of messages to delete").setMaxValue(100).setMinValue(2)
         )
-        .addChannelOption(option => option.setName("channel").setDescription("The channel where the messages will be deleted"));
+        .addChannelOption(option => option.setName("channel").setDescription("The channel where the messages will be deleted"))
+        .addBooleanOption(option => option.setName("filter_bots").setDescription("Deletes messages from bots"))
+        .addBooleanOption(option => option.setName("filter_users").setDescription("Deletes messages from human users only"))
+        .addBooleanOption(option => option.setName("filter_new_users").setDescription("Deletes messages from new users"))
+        .addBooleanOption(option =>
+            option.setName("filter_unverifed_bots").setDescription("Deletes messages from unverified bots")
+        );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const count: number | undefined = !context.isLegacy
@@ -134,6 +149,22 @@ export default class ClearCommand extends Command {
             ephemeral: true
         });
 
+        const filterHandlers = [];
+
+        if (message instanceof ChatInputCommandInteraction) {
+            for (const option of message.options.data) {
+                if (!option.name.startsWith("filter_")) {
+                    continue;
+                }
+
+                const filter = filters[option.name.replace("filter_", "") as keyof typeof filters];
+
+                if (filter) {
+                    filterHandlers.push(filter);
+                }
+            }
+        }
+
         await this.client.infractionManager.bulkDeleteMessages({
             user,
             guild: message.guild!,
@@ -142,7 +173,8 @@ export default class ClearCommand extends Command {
             moderator: message.member!.user as User,
             notifyUser: false,
             messageChannel: message.channel! as TextChannel,
-            count
+            count,
+            filters: filterHandlers
         });
 
         if (message instanceof ChatInputCommandInteraction)

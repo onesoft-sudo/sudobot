@@ -30,6 +30,7 @@ import {
     EmbedField,
     Guild,
     GuildMember,
+    Message,
     MessageResolvable,
     OverwriteData,
     PermissionFlagsBits,
@@ -517,6 +518,16 @@ export default class InfractionManager extends Service {
         return { id, result };
     }
 
+    bulkDeleteMessagesApplyFilters(message: Message, filters: Function[]) {
+        for (const filter of filters) {
+            if (!filter(message)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     async bulkDeleteMessages({
         user,
         messagesToDelete,
@@ -526,7 +537,8 @@ export default class InfractionManager extends Service {
         reason,
         sendLog,
         count: messageCount,
-        logOnly = false
+        logOnly = false,
+        filters = []
     }: BulkDeleteMessagesOptions) {
         if (messageChannel && !(messagesToDelete && messagesToDelete.length === 0)) {
             let messages: MessageResolvable[] | null = messagesToDelete ?? null;
@@ -540,14 +552,15 @@ export default class InfractionManager extends Service {
 
                     let i = 0;
 
-                    for (const [id, m] of allMessages) {
+                    for (const [, m] of allMessages) {
                         if (messageCount && i >= messageCount) {
                             break;
                         }
 
                         if (
                             (user ? m.author.id === user.id : true) &&
-                            Date.now() - m.createdAt.getTime() <= 1000 * 60 * 60 * 24 * 7 * 2
+                            Date.now() - m.createdAt.getTime() <= 1000 * 60 * 60 * 24 * 7 * 2 &&
+                            this.bulkDeleteMessagesApplyFilters(m, filters)
                         ) {
                             messages.push(m);
                             i++;
@@ -1254,6 +1267,7 @@ export type BulkDeleteMessagesOptions = CommonOptions & {
     messageChannel?: TextChannel;
     count?: number;
     logOnly?: boolean;
+    filters?: Function[];
 };
 
 export type ActionDoneName = "banned" | "muted" | "kicked" | "warned" | "unbanned" | "unmuted" | "softbanned" | "beaned";
