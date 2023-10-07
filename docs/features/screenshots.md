@@ -4,6 +4,10 @@ title: Screenshots
 
 # Screenshots
 
-{% hint style="info" %}
-Screenshots aren't available right now. We'll be adding new screenshots very soon.
-{% endhint %}
+Here are some screenshots:
+
+
+
+<figure><img src="../.gitbook/assets/image.png" alt=""><figcaption><p>Help Command (Slash Command)</p></figcaption></figure>
+
+<figure><img src="../.gitbook/assets/image (1).png" alt=""><figcaption><p>About Command (Legacy)</p></figcaption></figure>
