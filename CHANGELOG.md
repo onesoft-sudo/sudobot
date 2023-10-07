@@ -1,3 +1,12 @@
+# [6.27.0](https://github.com/onesoft-sudo/sudobot/compare/v6.26.0...v6.27.0) (2023-10-07)
+
+
+### Features
+
+* clear command now accepts filter options ([44c0cdf](https://github.com/onesoft-sudo/sudobot/commit/44c0cdf11b68b6ce32b3266f84b91dad5f21e002))
+
+
+
 # [6.26.0](https://github.com/onesoft-sudo/sudobot/compare/v6.25.2...v6.26.0) (2023-10-06)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * added support for global avatar commands (`gavatar`) ([4524342](https://github.com/onesoft-sudo/sudobot/commit/452434240b70fa85f45c7b66da7c9073e57ebabb))
-
-
-
-# [6.24.0](https://github.com/onesoft-sudo/sudobot/compare/v6.23.0...v6.24.0) (2023-10-03)
-
-
-### Features
-
-* improved help command ([8391479](https://github.com/onesoft-sudo/sudobot/commit/8391479d43eb4a6d3873c5d1218b0883d3fde29a))
 
 
 
