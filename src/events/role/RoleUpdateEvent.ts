@@ -17,11 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ClientEvents, Role } from "discord.js";
+import { Role } from "discord.js";
 import EventListener from "../../core/EventListener";
+import { Events } from "../../types/ClientEvents";
 
-export default class RoleUpdateEvent extends EventListener {
-    public name: keyof ClientEvents = "roleUpdate";
+export default class RoleUpdateEvent extends EventListener<Events.RoleUpdate> {
+    public readonly name = Events.RoleUpdate;
 
     async execute(oldRole: Role, newRole: Role) {
         super.execute(oldRole, newRole);

@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ClientEvents } from "discord.js";
+import type { ClientEvents } from "../types/ClientEvents";
 
 export function GatewayEventListener(event: keyof ClientEvents | "raw") {
     return (target: Object, methodName: string, descriptor: TypedPropertyDescriptor<any>) => {

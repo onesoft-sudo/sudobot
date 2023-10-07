@@ -17,10 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ClientEvents } from "discord.js";
-import Client from "./Client";
+import type { ClientEvents } from "../types/ClientEvents";
+import type Client from "./Client";
 
-export default abstract class EventListener<K extends keyof ClientEvents = keyof ClientEvents> {
+export default abstract class EventListener<K extends keyof ClientEvents> {
     public abstract readonly name: K;
 
     constructor(protected client: Client) {}

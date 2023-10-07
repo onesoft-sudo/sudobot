@@ -18,12 +18,13 @@
  */
 
 import { InfractionType } from "@prisma/client";
-import { AuditLogEvent, ClientEvents, GuildBan } from "discord.js";
+import { AuditLogEvent, GuildBan } from "discord.js";
 import EventListener from "../../core/EventListener";
+import { Events } from "../../types/ClientEvents";
 import { logError } from "../../utils/logger";
 
-export default class GuildBanRemoveEvent extends EventListener {
-    public name: keyof ClientEvents = "guildBanRemove";
+export default class GuildBanRemoveEvent extends EventListener<Events.GuildBanRemove> {
+    public readonly name = Events.GuildBanRemove;
 
     async execute(ban: GuildBan) {
         super.execute(ban);

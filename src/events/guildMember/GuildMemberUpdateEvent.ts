@@ -18,12 +18,12 @@
  */
 
 import { InfractionType } from "@prisma/client";
-import { AuditLogEvent, ClientEvents, GuildMember } from "discord.js";
+import { AuditLogEvent, Events, GuildMember } from "discord.js";
 import EventListener from "../../core/EventListener";
 import { logError } from "../../utils/logger";
 
-export default class GuildMemberUpdateEvent extends EventListener {
-    public name: keyof ClientEvents = "guildMemberUpdate";
+export default class GuildMemberUpdateEvent extends EventListener<Events.GuildMemberUpdate> {
+    public readonly name = Events.GuildMemberUpdate;
 
     async execute(oldMember: GuildMember, newMember: GuildMember) {
         super.execute(oldMember, newMember);

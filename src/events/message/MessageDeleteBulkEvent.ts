@@ -1,18 +1,10 @@
-import {
-    AuditLogEvent,
-    ClientEvents,
-    Collection,
-    GuildTextBasedChannel,
-    Message,
-    PartialMessage,
-    Snowflake,
-    TextChannel
-} from "discord.js";
+import { AuditLogEvent, Collection, GuildTextBasedChannel, Message, PartialMessage, Snowflake, TextChannel } from "discord.js";
 import EventListener from "../../core/EventListener";
+import { Events } from "../../types/ClientEvents";
 import { logError } from "../../utils/logger";
 
-export default class MessageDeleteBulkEvent extends EventListener {
-    public readonly name: keyof ClientEvents = "messageDeleteBulk";
+export default class MessageDeleteBulkEvent extends EventListener<Events.MessageDeleteBulk> {
+    public readonly name = Events.MessageDeleteBulk;
 
     async execute(messages: Collection<Snowflake, Message | PartialMessage>, channel: GuildTextBasedChannel) {
         super.execute(messages, channel);

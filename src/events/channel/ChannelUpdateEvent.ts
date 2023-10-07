@@ -17,11 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ClientEvents, NonThreadGuildBasedChannel } from "discord.js";
+import { NonThreadGuildBasedChannel } from "discord.js";
 import EventListener from "../../core/EventListener";
+import { Events } from "../../types/ClientEvents";
 
-export default class ChannelUpdateEvent extends EventListener {
-    public name: keyof ClientEvents = "channelUpdate";
+export default class ChannelUpdateEvent extends EventListener<Events.ChannelUpdate> {
+    public readonly name = Events.ChannelUpdate;
 
     async execute(oldChannel: NonThreadGuildBasedChannel, newChannel: NonThreadGuildBasedChannel) {
         super.execute(oldChannel, newChannel);

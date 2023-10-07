@@ -17,11 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ClientEvents, Role } from "discord.js";
+import { Role } from "discord.js";
 import EventListener from "../../core/EventListener";
+import { Events } from "../../types/ClientEvents";
 
-export default class RoleDeleteEvent extends EventListener {
-    public name: keyof ClientEvents = "roleDelete";
+export default class RoleDeleteEvent extends EventListener<Events.RoleDelete> {
+    public readonly name = Events.RoleDelete;
 
     async execute(role: Role) {
         super.execute(role);

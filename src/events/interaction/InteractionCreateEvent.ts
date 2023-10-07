@@ -17,12 +17,13 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ClientEvents, Interaction } from "discord.js";
+import { Interaction } from "discord.js";
 import EventListener from "../../core/EventListener";
+import { Events } from "../../types/ClientEvents";
 import { logError } from "../../utils/logger";
 
-export default class InteractionCreateEvent extends EventListener {
-    public name: keyof ClientEvents = "interactionCreate";
+export default class InteractionCreateEvent extends EventListener<Events.InteractionCreate> {
+    public readonly name = Events.InteractionCreate;
 
     async execute(interaction: Interaction) {
         super.execute(interaction);

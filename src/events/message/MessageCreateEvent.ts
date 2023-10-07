@@ -17,13 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ChannelType, ClientEvents, GuildMember, Message, MessageType } from "discord.js";
+import { ChannelType, GuildMember, Message, MessageType } from "discord.js";
 import Client from "../../core/Client";
 import EventListener from "../../core/EventListener";
+import { Events } from "../../types/ClientEvents";
 import { log, logError } from "../../utils/logger";
 
-export default class MessageCreateEvent extends EventListener {
-    public name: keyof ClientEvents = "messageCreate";
+export default class MessageCreateEvent extends EventListener<Events.MessageCreate> {
+    public readonly name = Events.MessageCreate;
 
     public types = [MessageType.Default, MessageType.Reply];
 

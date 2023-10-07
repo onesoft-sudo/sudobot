@@ -17,11 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ClientEvents, NonThreadGuildBasedChannel } from "discord.js";
+import { NonThreadGuildBasedChannel } from "discord.js";
 import EventListener from "../../core/EventListener";
+import { Events } from "../../types/ClientEvents";
 
-export default class ChannelDeleteEvent extends EventListener {
-    public name: keyof ClientEvents = "channelDelete";
+export default class ChannelDeleteEvent extends EventListener<Events.ChannelDelete> {
+    public readonly name = Events.ChannelDelete;
 
     async execute(channel: NonThreadGuildBasedChannel) {
         await this.client.logger.logChannelDelete(channel);

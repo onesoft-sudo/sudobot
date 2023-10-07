@@ -17,15 +17,17 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ClientEvents } from "discord.js";
+import type Client from "../core/Client";
 import EventListener from "../core/EventListener";
+import { Events } from "../types/ClientEvents";
 import { logError, logInfo, logWarn } from "../utils/logger";
 
-export default class ReadyEvent extends EventListener {
-    public name: keyof ClientEvents = "ready";
+export default class ReadyEvent extends EventListener<Events.Ready> {
+    public readonly name = Events.Ready;
 
-    async execute() {
+    async execute(client: Client<true>) {
         logInfo("The bot has logged in.");
+
         await this.client.server.onReady();
         this.client.server.start().catch(logError);
         this.client.queueManager.onReady().catch(logError);
@@ -49,6 +51,6 @@ export default class ReadyEvent extends EventListener {
             }
         }
 
-        super.execute();
+        super.execute(client);
     }
 }

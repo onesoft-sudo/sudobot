@@ -17,12 +17,13 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ClientEvents, Message } from "discord.js";
+import { Message } from "discord.js";
 import EventListener from "../../core/EventListener";
+import { Events } from "../../types/ClientEvents";
 import { logError } from "../../utils/logger";
 
-export default class MessageUpdateEvent extends EventListener {
-    public readonly name: keyof ClientEvents = "messageUpdate";
+export default class MessageUpdateEvent extends EventListener<Events.MessageUpdate> {
+    public readonly name = Events.MessageUpdate;
 
     async execute(oldMessage: Message, newMessage: Message) {
         if (newMessage.author.bot) {

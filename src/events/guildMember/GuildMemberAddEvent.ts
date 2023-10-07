@@ -17,12 +17,13 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ClientEvents, GuildMember } from "discord.js";
+import { GuildMember } from "discord.js";
 import EventListener from "../../core/EventListener";
+import { Events } from "../../types/ClientEvents";
 import { logError } from "../../utils/logger";
 
-export default class GuildMemberAddEvent extends EventListener {
-    public name: keyof ClientEvents = "guildMemberAdd";
+export default class GuildMemberAddEvent extends EventListener<Events.GuildMemberAdd> {
+    public readonly name = Events.GuildMemberAdd;
 
     async execute(member: GuildMember) {
         super.execute(member);
