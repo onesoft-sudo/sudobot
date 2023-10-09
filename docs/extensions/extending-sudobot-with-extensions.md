@@ -56,7 +56,7 @@ We'll be using TypeScript to write the extension in this example. If you'd like 
 
 #### Setting up TypeScript and Dependencies
 
-First. run `npm init` to initialize your extension project. This will ask you a few questions and create a `package.json` file. Then run:
+First, run `npm init` to initialize your extension project. This will ask you a few questions and create a `package.json` file. Then run:
 
 <pre class="language-sh"><code class="lang-sh"><strong>npm link --save ../.. # Path to the sudobot project root
 </strong></code></pre>
