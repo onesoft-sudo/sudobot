@@ -1,3 +1,12 @@
+# [6.30.0](https://github.com/onesoft-sudo/sudobot/compare/v6.29.0...v6.30.0) (2023-10-10)
+
+
+### Features
+
+* **utils:** embed schema parsing ([62d513e](https://github.com/onesoft-sudo/sudobot/commit/62d513ed019a149488bc82e30268e516480db9da))
+
+
+
 # [6.29.0](https://github.com/onesoft-sudo/sudobot/compare/v6.28.0...v6.29.0) (2023-10-10)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * **commands:** add `temprole` command ([9e22461](https://github.com/onesoft-sudo/sudobot/commit/9e2246176a9b68dc74dcb28ba5f315cd2a4f5cdb))
-
-
-
-## [6.25.2](https://github.com/onesoft-sudo/sudobot/compare/v6.25.1...v6.25.2) (2023-10-04)
-
-
-### Bug Fixes
-
-* expired JWT tokens are not being disallowed in some cases ([06c060b](https://github.com/onesoft-sudo/sudobot/commit/06c060b1b621b5595b6a2819c37265f900034a54))
 
 
 
