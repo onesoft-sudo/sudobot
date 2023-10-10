@@ -22,6 +22,9 @@ import { MessageRuleSchema } from "./MessageRuleSchema";
 import { zSnowflake } from "./SnowflakeSchema";
 import { TriggerSchema } from "./TriggerSchema";
 
+/**
+ * The configuration object schema. Times are in milliseconds.
+ */
 export const GuildConfigSchema = z.object({
     prefix: z.string().default("-"),
     commands: z
@@ -294,6 +297,18 @@ export const GuildConfigSchema = z.object({
             enabled: z.boolean().optional(),
             installed_extensions: z.array(z.string()).default([]),
             disabled_extensions: z.array(z.string()).default([])
+        })
+        .optional(),
+    bump_reminder: z
+        .object({
+            enabled: z.boolean().optional(),
+            disabled_channels: z.array(zSnowflake).default([]),
+            remind_after: z
+                .number()
+                .int()
+                .default(1000 * 60 * 60 * 2),
+            reminder_content: z.string().nonempty().optional(),
+            on_bump_content: z.string().nonempty().optional()
         })
         .optional()
 });

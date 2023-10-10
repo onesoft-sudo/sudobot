@@ -34,6 +34,7 @@ import { SuppressErrorsMetadata } from "../decorators/SuppressErrors";
 import type AFKService from "../services/AFKService";
 import type AutoRoleService from "../services/AutoRoleService";
 import type BallotManager from "../services/BallotManager";
+import type BumpReminderService from "../services/BumpReminderService";
 import type ChannelLockManager from "../services/ChannelLockManager";
 import type CommandManager from "../services/CommandManager";
 import type ConfigManager from "../services/ConfigManager";
@@ -83,6 +84,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@services/BallotManager",
         "@services/TriggerService",
         "@services/ExtensionService",
+        "@services/BumpReminderService",
 
         "@automod/MessageFilter",
         "@automod/Antispam",
@@ -127,6 +129,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     triggerService: TriggerService = {} as TriggerService;
     aiAutoMod: AIAutoModService = {} as AIAutoModService;
     extensionService: ExtensionService = {} as ExtensionService;
+    bumpReminder: BumpReminderService = {} as BumpReminderService;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",
