@@ -1,3 +1,12 @@
+# [6.29.0](https://github.com/onesoft-sudo/sudobot/compare/v6.28.0...v6.29.0) (2023-10-10)
+
+
+### Features
+
+* bump reminder ([8d8edb5](https://github.com/onesoft-sudo/sudobot/commit/8d8edb518134c2a36334ae45405e100687543a19))
+
+
+
 # [6.28.0](https://github.com/onesoft-sudo/sudobot/compare/v6.27.0...v6.28.0) (2023-10-07)
 
 
@@ -36,15 +45,6 @@
 ### Bug Fixes
 
 * expired JWT tokens are not being disallowed in some cases ([06c060b](https://github.com/onesoft-sudo/sudobot/commit/06c060b1b621b5595b6a2819c37265f900034a54))
-
-
-
-## [6.25.1](https://github.com/onesoft-sudo/sudobot/compare/v6.25.0...v6.25.1) (2023-10-03)
-
-
-### Bug Fixes
-
-* help command showing repeated command names ([8fac595](https://github.com/onesoft-sudo/sudobot/commit/8fac595ccfeb4ac0195ad00729a43301e7fe39e3))
 
 
 
