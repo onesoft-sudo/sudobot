@@ -17,12 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { APIEmbed, Embed } from "discord.js";
+import { APIEmbed, Embed, EmbedBuilder, MessageCreateOptions, TextBasedChannel } from "discord.js";
 
 type EmbedType = Embed | APIEmbed;
 
 export default class EmbedSchema {
-    static parseString(string: string) {
+    static parseString(string: string): [EmbedBuilder[], string] {
         const length = string.length;
         const embeds = [];
         let outString = string;
@@ -48,7 +48,15 @@ export default class EmbedSchema {
 
                 if (i !== pos) {
                     try {
-                        embeds.push(JSON.parse(jsonStream));
+                        const parsedJSON = JSON.parse(jsonStream);
+
+                        if (typeof parsedJSON.color === "string") {
+                            parsedJSON.color = parsedJSON.color.startsWith("#")
+                                ? parseInt(parsedJSON.color.substring(1), 16)
+                                : parseInt(parsedJSON.color);
+                        }
+
+                        embeds.push(new EmbedBuilder(parsedJSON));
                         outString = outString.replace(new RegExp(`(\\s*)embed::(.{${jsonStream.length}})::(\\s*)`, "gm"), "");
                     } catch (e) {
                         console.error(e);
@@ -58,7 +66,7 @@ export default class EmbedSchema {
             }
         }
 
-        return { embeds, string: outString };
+        return [embeds, outString];
     }
 
     private static toSchemaStringSingle(embed: EmbedType) {
@@ -74,5 +82,27 @@ export default class EmbedSchema {
         }
 
         return this.toSchemaStringSingle(embed);
+    }
+
+    static getMessageCreateOptions({ content, embeds = [], ...options }: MessageCreateOptions) {
+        if (!content) {
+            return {
+                content,
+                embeds,
+                ...options
+            };
+        }
+
+        const [parsedEmbeds, strippedContent] = EmbedSchema.parseString(content);
+
+        return {
+            ...options,
+            embeds: [...embeds, ...parsedEmbeds],
+            content: strippedContent
+        };
+    }
+
+    static sendMessage(channel: TextBasedChannel, options: MessageCreateOptions) {
+        return channel.send(EmbedSchema.getMessageCreateOptions(options));
     }
 }
