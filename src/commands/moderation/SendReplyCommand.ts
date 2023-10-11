@@ -31,6 +31,7 @@ import {
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import { HasEventListeners } from "../../types/HasEventListeners";
+import EmbedSchemaParser from "../../utils/EmbedSchemaParser";
 import { logError } from "../../utils/logger";
 
 export default class SendReplyCommand extends Command implements HasEventListeners {
@@ -56,15 +57,15 @@ export default class SendReplyCommand extends Command implements HasEventListene
 
         const [, id] = interaction.customId.split("__");
 
-        await interaction.channel
-            ?.send({
-                content: interaction.fields.getTextInputValue("content"),
+        if (interaction.channel) {
+            await EmbedSchemaParser.sendMessage(interaction.channel, {
                 reply: {
                     messageReference: id,
                     failIfNotExists: true
-                }
-            })
-            .catch(logError);
+                },
+                content: interaction.fields.getTextInputValue("content")
+            }).catch(logError);
+        }
 
         await interaction
             .editReply({

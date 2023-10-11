@@ -19,6 +19,7 @@
 
 import { AttachmentPayload, Message, PermissionsBitField, SlashCommandBuilder } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import EmbedSchemaParser from "../../utils/EmbedSchemaParser";
 import { logError } from "../../utils/logger";
 
 export default class EchoCommand extends Command {
@@ -53,7 +54,9 @@ export default class EchoCommand extends Command {
         });
 
         const user = !context.isLegacy ? context.options.getUser("user") : context.parsedNamedArgs.user;
-        const content: string | undefined = !context.isLegacy ? context.options.getString("content", true) : context.parsedNamedArgs.content;
+        const content: string | undefined = !context.isLegacy
+            ? context.options.getString("content", true)
+            : context.parsedNamedArgs.content;
 
         if (!content && message instanceof Message && message.attachments.size === 0) {
             await this.error(message, "Please provide the message content or attachments!");
@@ -61,20 +64,22 @@ export default class EchoCommand extends Command {
         }
 
         try {
-            await user?.send({
-                content,
-                files:
-                    message instanceof Message
-                        ? message.attachments.map(
-                              a =>
-                                  ({
-                                      attachment: a.proxyURL,
-                                      name: a.name,
-                                      description: a.description
-                                  } as AttachmentPayload)
-                          )
-                        : undefined
-            });
+            if (user) {
+                await EmbedSchemaParser.sendMessage(user, {
+                    content,
+                    files:
+                        message instanceof Message
+                            ? message.attachments.map(
+                                  a =>
+                                      ({
+                                          attachment: a.proxyURL,
+                                          name: a.name,
+                                          description: a.description
+                                      } as AttachmentPayload)
+                              )
+                            : undefined
+                });
+            }
 
             if (message instanceof Message) {
                 await message.react(this.emoji("check"));
@@ -85,7 +90,10 @@ export default class EchoCommand extends Command {
             }
         } catch (e) {
             logError(e);
-            await this.error(message, `Could not deliver DM. Maybe the user does not share any server with me or has blocked me or disabled DMs?`);
+            await this.error(
+                message,
+                `Could not deliver DM. Maybe the user does not share any server with me or has blocked me or disabled DMs?`
+            );
         }
     }
 }
