@@ -1,3 +1,12 @@
+## [6.31.2](https://github.com/onesoft-sudo/sudobot/compare/v6.31.1...v6.31.2) (2023-10-11)
+
+
+### Bug Fixes
+
+* **EmbedSchemaParser:** slice parsedEmbeds array to prevent max embed limit exceeded error ([0ea51df](https://github.com/onesoft-sudo/sudobot/commit/0ea51dfd8f274a2e176cf0fa5edb0e449746c04f))
+
+
+
 ## [6.31.1](https://github.com/onesoft-sudo/sudobot/compare/v6.31.0...v6.31.1) (2023-10-11)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * bump reminder ([8d8edb5](https://github.com/onesoft-sudo/sudobot/commit/8d8edb518134c2a36334ae45405e100687543a19))
-
-
-
-# [6.28.0](https://github.com/onesoft-sudo/sudobot/compare/v6.27.0...v6.28.0) (2023-10-07)
-
-
-### Features
-
-* **extensions:** introduce `onCommand` event ([7757ab9](https://github.com/onesoft-sudo/sudobot/commit/7757ab99d4f120c84d2cb45babdf2eb05b5f120b))
 
 
 
