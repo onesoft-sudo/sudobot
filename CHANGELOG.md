@@ -1,3 +1,12 @@
+# [6.31.0](https://github.com/onesoft-sudo/sudobot/compare/v6.30.0...v6.31.0) (2023-10-11)
+
+
+### Features
+
+* **EmbedSchema:** string color literals ([e65afae](https://github.com/onesoft-sudo/sudobot/commit/e65afae5646720bf791d81ed222403b275df6e49))
+
+
+
 # [6.30.0](https://github.com/onesoft-sudo/sudobot/compare/v6.29.0...v6.30.0) (2023-10-10)
 
 
@@ -31,20 +40,6 @@
 ### Features
 
 * clear command now accepts filter options ([44c0cdf](https://github.com/onesoft-sudo/sudobot/commit/44c0cdf11b68b6ce32b3266f84b91dad5f21e002))
-
-
-
-# [6.26.0](https://github.com/onesoft-sudo/sudobot/compare/v6.25.2...v6.26.0) (2023-10-06)
-
-
-### Bug Fixes
-
-* **commands:** add missing description to `temprole` command ([0b42a13](https://github.com/onesoft-sudo/sudobot/commit/0b42a137f23405bfa609469bb2ec2200f7c53d04))
-
-
-### Features
-
-* **commands:** add `temprole` command ([9e22461](https://github.com/onesoft-sudo/sudobot/commit/9e2246176a9b68dc74dcb28ba5f315cd2a4f5cdb))
 
 
 
