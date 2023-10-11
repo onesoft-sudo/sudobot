@@ -85,7 +85,7 @@ export default class EmbedSchemaParser {
         return this.toSchemaStringSingle(embed);
     }
 
-    static getMessageCreateOptions({ content, embeds = [], ...options }: MessageCreateOptions) {
+    static getMessageCreateOptions({ content, embeds = [], ...options }: MessageCreateOptions, withContent = true) {
         if (!content) {
             return {
                 content,
@@ -99,7 +99,7 @@ export default class EmbedSchemaParser {
         return {
             ...options,
             embeds: [...embeds, ...parsedEmbeds.slice(0, 10)],
-            content: strippedContent
+            content: withContent ? strippedContent : undefined
         };
     }
 
