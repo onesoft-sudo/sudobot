@@ -34,6 +34,10 @@
                                     "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                                 },
                                 "default": []
+                            },
+                            "echo_mentions": {
+                                "type": "boolean",
+                                "default": false
                             }
                         },
                         "additionalProperties": false,
@@ -1371,6 +1375,57 @@
                                 },
                                 "additionalProperties": false,
                                 "default": {}
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "extensions": {
+                        "type": "object",
+                        "properties": {
+                            "enabled": {
+                                "type": "boolean"
+                            },
+                            "installed_extensions": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": []
+                            },
+                            "disabled_extensions": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "default": []
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "bump_reminder": {
+                        "type": "object",
+                        "properties": {
+                            "enabled": {
+                                "type": "boolean"
+                            },
+                            "disabled_channels": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
+                                },
+                                "default": []
+                            },
+                            "remind_after": {
+                                "type": "integer",
+                                "default": 7200000
+                            },
+                            "reminder_content": {
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            "on_bump_content": {
+                                "type": "string",
+                                "minLength": 1
                             }
                         },
                         "additionalProperties": false

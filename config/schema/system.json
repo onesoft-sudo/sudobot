@@ -151,7 +151,22 @@
                             "format": "date-time"
                         }
                     ],
-                    "default": "2023-09-25T11:38:26.892Z"
+                    "default": "2023-10-11T03:41:05.538Z"
+                }
+            },
+            "additionalProperties": false,
+            "default": {}
+        },
+        "extensions": {
+            "type": "object",
+            "properties": {
+                "default_mode": {
+                    "type": "string",
+                    "enum": [
+                        "enable_all",
+                        "disable_all"
+                    ],
+                    "default": "enable_all"
                 }
             },
             "additionalProperties": false,
