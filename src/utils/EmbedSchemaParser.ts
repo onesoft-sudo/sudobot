@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { APIEmbed, Embed, EmbedBuilder, MessageCreateOptions, TextBasedChannel } from "discord.js";
+import { APIEmbed, Embed, EmbedBuilder, GuildMember, MessageCreateOptions, TextBasedChannel, User } from "discord.js";
 import JSON5 from "json5";
 
 type EmbedType = Embed | APIEmbed;
@@ -103,7 +103,7 @@ export default class EmbedSchemaParser {
         };
     }
 
-    static sendMessage(channel: TextBasedChannel, options: MessageCreateOptions) {
-        return channel.send(EmbedSchemaParser.getMessageCreateOptions(options));
+    static sendMessage(sendable: TextBasedChannel | User | GuildMember, options: MessageCreateOptions) {
+        return sendable.send(EmbedSchemaParser.getMessageCreateOptions(options));
     }
 }
