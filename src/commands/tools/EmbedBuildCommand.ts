@@ -17,9 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { EmbedBuilder, Message, PermissionsBitField } from "discord.js";
-import JSON5 from "json5";
+import { Message, PermissionsBitField } from "discord.js";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import EmbedSchemaParser from "../../utils/EmbedSchemaParser";
 import { logError } from "../../utils/logger";
 
 export default class EmbedBuildCommand extends Command {
@@ -34,19 +34,21 @@ export default class EmbedBuildCommand extends Command {
         }
 
         const schema = context.isLegacy ? context.parsedNamedArgs.schema : context.options.getString("json_schema", true);
-        let json: EmbedBuilder | undefined = undefined;
+        const { embeds } = EmbedSchemaParser.getMessageCreateOptions(
+            {
+                content: schema
+            },
+            false
+        );
 
-        try {
-            json = JSON5.parse(schema);
-        } catch (e) {
-            logError(e);
+        if (embeds.length === 0) {
             await this.error(message, "Invalid JSON schema provided!");
             return;
         }
 
         try {
             await message.channel?.send({
-                embeds: [json!]
+                embeds
             });
 
             if (message instanceof Message) await message.react(this.emoji("check")).catch(logError);

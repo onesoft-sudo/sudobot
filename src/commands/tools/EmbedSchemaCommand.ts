@@ -18,9 +18,9 @@
  */
 
 import { ChatInputCommandInteraction, PermissionsBitField } from "discord.js";
-import JSON5 from "json5";
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 import { ChatInputCommandContext } from "../../services/CommandManager";
+import EmbedSchemaParser from "../../utils/EmbedSchemaParser";
 import { generateEmbed } from "../../utils/embed";
 
 export default class EmbedSchemaCommand extends Command {
@@ -37,7 +37,11 @@ export default class EmbedSchemaCommand extends Command {
             return;
         }
 
-        const json = JSON5.stringify(embed, null, 4);
+        if (!embed) {
+            return;
+        }
+
+        const json = EmbedSchemaParser.toSchemaString(embed?.toJSON());
 
         await this.deferredReply(interaction, {
             content: `Successfully generated embed schema:\n\n\`\`\`\n${json}\n\`\`\`\nYou can now reuse this schema as many times as you want to send embeds.`
