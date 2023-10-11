@@ -27,7 +27,7 @@ import {
     TextChannel
 } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import EmbedSchema from "../../utils/EmbedSchema";
+import EmbedSchemaParser from "../../utils/EmbedSchemaParser";
 import { isTextableChannel } from "../../utils/utils";
 
 export default class EchoCommand extends Command {
@@ -86,7 +86,7 @@ export default class EchoCommand extends Command {
             return;
         }
 
-        await EmbedSchema.sendMessage(channel, {
+        await EmbedSchemaParser.sendMessage(channel, {
             content,
             files:
                 message instanceof Message
