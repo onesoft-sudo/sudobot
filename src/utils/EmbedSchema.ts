@@ -18,6 +18,7 @@
  */
 
 import { APIEmbed, Embed, EmbedBuilder, MessageCreateOptions, TextBasedChannel } from "discord.js";
+import JSON5 from "json5";
 
 type EmbedType = Embed | APIEmbed;
 
@@ -48,7 +49,7 @@ export default class EmbedSchema {
 
                 if (i !== pos) {
                     try {
-                        const parsedJSON = JSON.parse(jsonStream);
+                        const parsedJSON = JSON5.parse(jsonStream);
 
                         if (typeof parsedJSON.color === "string") {
                             parsedJSON.color = parsedJSON.color.startsWith("#")
