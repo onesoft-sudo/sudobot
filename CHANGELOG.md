@@ -1,3 +1,12 @@
+## [6.31.1](https://github.com/onesoft-sudo/sudobot/compare/v6.31.0...v6.31.1) (2023-10-11)
+
+
+### Bug Fixes
+
+* **EmbedSchema:** use JSON5 parser ([2b6caed](https://github.com/onesoft-sudo/sudobot/commit/2b6caedd7686bf408d635645ab923ce5464cf056))
+
+
+
 # [6.31.0](https://github.com/onesoft-sudo/sudobot/compare/v6.30.0...v6.31.0) (2023-10-11)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **extensions:** introduce `onCommand` event ([7757ab9](https://github.com/onesoft-sudo/sudobot/commit/7757ab99d4f120c84d2cb45babdf2eb05b5f120b))
-
-
-
-# [6.27.0](https://github.com/onesoft-sudo/sudobot/compare/v6.26.0...v6.27.0) (2023-10-07)
-
-
-### Features
-
-* clear command now accepts filter options ([44c0cdf](https://github.com/onesoft-sudo/sudobot/commit/44c0cdf11b68b6ce32b3266f84b91dad5f21e002))
 
 
 
