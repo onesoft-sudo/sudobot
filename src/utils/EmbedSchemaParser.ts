@@ -98,7 +98,7 @@ export default class EmbedSchemaParser {
 
         return {
             ...options,
-            embeds: [...embeds, ...parsedEmbeds],
+            embeds: [...embeds, ...parsedEmbeds.slice(0, 10)],
             content: strippedContent
         };
     }
