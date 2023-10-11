@@ -1,3 +1,12 @@
+# [6.33.0](https://github.com/onesoft-sudo/sudobot/compare/v6.32.0...v6.33.0) (2023-10-11)
+
+
+### Features
+
+* `EmbedSchemaParser.sendMessage()` now accepts `User` and `GuildMember` as well ([95b18a0](https://github.com/onesoft-sudo/sudobot/commit/95b18a0b692a45f5d273334ffd01ff587b2ea6d3))
+
+
+
 # [6.32.0](https://github.com/onesoft-sudo/sudobot/compare/v6.31.2...v6.32.0) (2023-10-11)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **EmbedSchema:** string color literals ([e65afae](https://github.com/onesoft-sudo/sudobot/commit/e65afae5646720bf791d81ed222403b275df6e49))
-
-
-
-# [6.30.0](https://github.com/onesoft-sudo/sudobot/compare/v6.29.0...v6.30.0) (2023-10-10)
-
-
-### Features
-
-* **utils:** embed schema parsing ([62d513e](https://github.com/onesoft-sudo/sudobot/commit/62d513ed019a149488bc82e30268e516480db9da))
 
 
 
