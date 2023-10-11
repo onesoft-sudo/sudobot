@@ -1,3 +1,12 @@
+# [6.32.0](https://github.com/onesoft-sudo/sudobot/compare/v6.31.2...v6.32.0) (2023-10-11)
+
+
+### Features
+
+* **EmbedSchemaParser:** add withContent parameter to getMessageCreateOptions() method ([e20134d](https://github.com/onesoft-sudo/sudobot/commit/e20134dd17d692f005247f66d3ad2e2271d57ace))
+
+
+
 ## [6.31.2](https://github.com/onesoft-sudo/sudobot/compare/v6.31.1...v6.31.2) (2023-10-11)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **utils:** embed schema parsing ([62d513e](https://github.com/onesoft-sudo/sudobot/commit/62d513ed019a149488bc82e30268e516480db9da))
-
-
-
-# [6.29.0](https://github.com/onesoft-sudo/sudobot/compare/v6.28.0...v6.29.0) (2023-10-10)
-
-
-### Features
-
-* bump reminder ([8d8edb5](https://github.com/onesoft-sudo/sudobot/commit/8d8edb518134c2a36334ae45405e100687543a19))
 
 
 
