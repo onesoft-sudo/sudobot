@@ -85,7 +85,13 @@ export function generateEmbed(options: ChatInputCommandContext["options"]) {
                   })
             : [],
         url: getString("url")
-    }).setColor((getString("color") ?? "#007bff") as ColorResolvable);
+    });
+
+    const color = getString("color");
+
+    if (color) {
+        embed.setColor(color as ColorResolvable);
+    }
 
     return { embed };
 }
