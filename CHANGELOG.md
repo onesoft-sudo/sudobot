@@ -1,3 +1,12 @@
+# [6.34.0](https://github.com/onesoft-sudo/sudobot/compare/v6.33.0...v6.34.0) (2023-10-11)
+
+
+### Features
+
+* **commands:** add `setslowmode` command ([c471cc1](https://github.com/onesoft-sudo/sudobot/commit/c471cc1163894652911fc0bebca245640dae6014))
+
+
+
 # [6.33.0](https://github.com/onesoft-sudo/sudobot/compare/v6.32.0...v6.33.0) (2023-10-11)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **EmbedSchema:** use JSON5 parser ([2b6caed](https://github.com/onesoft-sudo/sudobot/commit/2b6caedd7686bf408d635645ab923ce5464cf056))
-
-
-
-# [6.31.0](https://github.com/onesoft-sudo/sudobot/compare/v6.30.0...v6.31.0) (2023-10-11)
-
-
-### Features
-
-* **EmbedSchema:** string color literals ([e65afae](https://github.com/onesoft-sudo/sudobot/commit/e65afae5646720bf791d81ed222403b275df6e49))
 
 
 
