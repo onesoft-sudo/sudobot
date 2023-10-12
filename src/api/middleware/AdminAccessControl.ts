@@ -5,7 +5,7 @@ const ROOT_USER_ID = 1;
 
 export default async function AdminAccessControl(request: Request, response: Response, next: NextFunction) {
     if (!request.user) {
-        response.status(400).send({
+        response.status(401).send({
             error: "Cannot authorize this request."
         });
 

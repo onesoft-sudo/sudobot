@@ -3,7 +3,7 @@ import Request from "../Request";
 
 export default async function GuildAccessControl(request: Request, response: Response, next: NextFunction) {
     if (!request.params.guild) {
-        response.status(400).send({
+        response.status(401).send({
             error: "Cannot authorize access without a Guild ID."
         });
 
