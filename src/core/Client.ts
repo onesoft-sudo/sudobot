@@ -344,7 +344,5 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
                 handler(...args);
             }
         }
-
-        log("Fired event: ", name);
     }
 }
