@@ -52,6 +52,11 @@ export default class LogServer extends Service {
         this.setupListeners();
     }
 
+    start() {
+        this.initialize();
+        this.listen();
+    }
+
     close() {
         this.io?.close();
         this._io = undefined;
