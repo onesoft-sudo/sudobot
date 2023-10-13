@@ -1,3 +1,5 @@
+#!/usr/bin/env ts-node
+
 /*
  * This file is part of SudoBot.
  *

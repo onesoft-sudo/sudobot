@@ -92,9 +92,14 @@ function makeContextMenuCommandBuilder(command: any) {
 
     const rest = new REST({ version: "10" }).setToken(TOKEN!);
 
-    rest.put(Routes[process.argv.includes("--guild") ? "applicationGuildCommands" : "applicationCommands"](CLIENT_ID!, HOME_GUILD_ID!), {
-        body: commands
-    })
-        .then(() => console.log("Successfully registered application " + (process.argv.includes("--guild") ? "guild " : "") + "commands."))
+    rest.put(
+        Routes[process.argv.includes("--guild") ? "applicationGuildCommands" : "applicationCommands"](CLIENT_ID!, HOME_GUILD_ID!),
+        {
+            body: commands
+        }
+    )
+        .then(() =>
+            console.log("Successfully registered application " + (process.argv.includes("--guild") ? "guild " : "") + "commands.")
+        )
         .catch(console.error);
 })();
