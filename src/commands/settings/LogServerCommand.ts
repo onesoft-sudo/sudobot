@@ -25,6 +25,7 @@ export default class LogServerCommand extends Command {
     public readonly permissions = [];
     public readonly systemAdminOnly = true;
     public readonly supportsInteractions = false;
+    public readonly description = "Start/stop the real-time log streaming server.";
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (!this.client.configManager.systemConfig.log_server?.enabled) {
