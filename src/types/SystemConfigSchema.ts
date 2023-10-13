@@ -72,7 +72,8 @@ export const SystemConfigSchema = z.object({
         .default({}),
     log_server: z
         .object({
-            enabled: z.boolean().default(false)
+            enabled: z.boolean().default(false),
+            auto_start: z.boolean().default(false)
         })
         .optional()
 });

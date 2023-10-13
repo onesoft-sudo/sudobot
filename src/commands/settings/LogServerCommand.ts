@@ -37,7 +37,7 @@ export default class LogServerCommand extends Command {
             this.client.logServer.initialize();
             await this.success(message, "The log server has started.");
         } else {
-            this.client.logServer.io.close();
+            this.client.logServer.close();
             await this.success(message, "The log server has stopped.");
         }
     }

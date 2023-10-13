@@ -36,7 +36,7 @@ export default class LogServer extends Service {
     constructor(client: Client) {
         super(client);
 
-        if (!client.configManager.systemConfig.log_server?.enabled) {
+        if (!client.configManager.systemConfig.log_server?.auto_start) {
             return;
         }
 
@@ -50,6 +50,11 @@ export default class LogServer extends Service {
     initialize() {
         this._io = new Server();
         this.setupListeners();
+    }
+
+    close() {
+        this.io?.close();
+        this._io = undefined;
     }
 
     isAuthorized(socket: Socket) {
