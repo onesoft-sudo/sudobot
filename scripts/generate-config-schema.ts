@@ -18,6 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
+import "reflect-metadata";
 
 import { existsSync } from "fs";
 import fs from "fs/promises";
