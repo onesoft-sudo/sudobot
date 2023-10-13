@@ -1,3 +1,12 @@
+## [6.35.4](https://github.com/onesoft-sudo/sudobot/compare/v6.35.3...v6.35.4) (2023-10-13)
+
+
+### Bug Fixes
+
+* **commands:** logstart command does not work ([2fc5882](https://github.com/onesoft-sudo/sudobot/commit/2fc5882edddcb51b0a9e7c349fae27fe8b402b06))
+
+
+
 ## [6.35.3](https://github.com/onesoft-sudo/sudobot/compare/v6.35.2...v6.35.3) (2023-10-13)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * log server ([f263293](https://github.com/onesoft-sudo/sudobot/commit/f263293eaad1eb836b404a299aaae08060dca44b))
-
-
-
-## [6.34.3](https://github.com/onesoft-sudo/sudobot/compare/v6.34.2...v6.34.3) (2023-10-13)
-
-
-### Bug Fixes
-
-* **EmbedSchemaParser:** validate embed JSON objects first ([80540bb](https://github.com/onesoft-sudo/sudobot/commit/80540bb4ae0d0e2bfe036bcb7ca0ffb6a513fb23))
 
 
 
