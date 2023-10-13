@@ -26,6 +26,7 @@ import {
     APIUser,
     ChannelType,
     ColorResolvable,
+    DiscordAPIError,
     EmbedBuilder,
     EmbedField,
     Guild,
@@ -415,6 +416,15 @@ export default class InfractionManager extends Service {
         user: User,
         { guild, moderator, reason, autoRemoveQueue = true, sendLog }: CommonOptions & { autoRemoveQueue?: boolean }
     ) {
+        if (autoRemoveQueue) await this.autoRemoveUnbanQueue(guild, user);
+
+        try {
+            await guild.bans.remove(user);
+        } catch (error) {
+            logError(error);
+            return { error, noSuchBan: error instanceof DiscordAPIError && error.code === 10026 && error.status === 404 };
+        }
+
         const { id } = await this.client.prisma.infraction.create({
             data: {
                 type: InfractionType.UNBAN,
@@ -434,15 +444,7 @@ export default class InfractionManager extends Service {
                 reason
             });
 
-        if (autoRemoveQueue) await this.autoRemoveUnbanQueue(guild, user);
-
-        try {
-            await guild.bans.remove(user);
-            return id;
-        } catch (e) {
-            logError(e);
-            return null;
-        }
+        return { id };
     }
 
     async createMemberKick(member: GuildMember, { guild, moderator, reason, notifyUser }: CommonOptions) {

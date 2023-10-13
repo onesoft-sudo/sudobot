@@ -57,7 +57,8 @@ export default class UnbanCommand extends Command {
         await this.deferIfInteraction(message);
 
         const user: User = context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user", true);
-        const reason: string | undefined = (!context.isLegacy ? context.options.getString("reason") : context.parsedNamedArgs.reason) ?? undefined;
+        const reason: string | undefined =
+            (!context.isLegacy ? context.options.getString("reason") : context.parsedNamedArgs.reason) ?? undefined;
 
         try {
             const member = message.guild!.members.cache.get(user.id) ?? (await message.guild!.members.fetch(user.id));
@@ -70,14 +71,17 @@ export default class UnbanCommand extends Command {
             logError(e);
         }
 
-        const id = await this.client.infractionManager
-            .removeUserBan(user, {
-                guild: message.guild!,
-                moderator: message.member!.user! as User,
-                reason,
-                sendLog: true
-            })
-            .catch(logError);
+        const { id, noSuchBan } = await this.client.infractionManager.removeUserBan(user, {
+            guild: message.guild!,
+            moderator: message.member!.user! as User,
+            reason,
+            sendLog: true
+        });
+
+        if (noSuchBan) {
+            await this.error(message, "This user wasn't banned.");
+            return;
+        }
 
         if (!id) {
             await this.error(message);
