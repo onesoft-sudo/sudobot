@@ -1,3 +1,12 @@
+# [6.35.0](https://github.com/onesoft-sudo/sudobot/compare/v6.34.3...v6.35.0) (2023-10-13)
+
+
+### Features
+
+* log server ([f263293](https://github.com/onesoft-sudo/sudobot/commit/f263293eaad1eb836b404a299aaae08060dca44b))
+
+
+
 ## [6.34.3](https://github.com/onesoft-sudo/sudobot/compare/v6.34.2...v6.34.3) (2023-10-13)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **commands:** add `setslowmode` command ([c471cc1](https://github.com/onesoft-sudo/sudobot/commit/c471cc1163894652911fc0bebca245640dae6014))
-
-
-
-# [6.33.0](https://github.com/onesoft-sudo/sudobot/compare/v6.32.0...v6.33.0) (2023-10-11)
-
-
-### Features
-
-* `EmbedSchemaParser.sendMessage()` now accepts `User` and `GuildMember` as well ([95b18a0](https://github.com/onesoft-sudo/sudobot/commit/95b18a0b692a45f5d273334ffd01ff587b2ea6d3))
 
 
 
