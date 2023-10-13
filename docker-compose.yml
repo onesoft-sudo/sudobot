@@ -14,11 +14,10 @@ services:
         ports:
             - 4000:4000
         volumes:
-            - ./tmp/volume:/data
-            - ./tmp/volume/config:/app/config
-            - ./tmp/volume/logs:/app/logs
-            - ./tmp/volume/storage:/app/storage
-            - ./tmp/volume/tmp:/app/tmp
+            - ./config:/app/config
+            - ./logs:/app/logs
+            - ./storage:/app/storage
+            - ./tmp:/app/tmp
         depends_on:
             - postgres
     
