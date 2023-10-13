@@ -1,3 +1,13 @@
+## [6.35.5](https://github.com/onesoft-sudo/sudobot/compare/v6.35.4...v6.35.5) (2023-10-13)
+
+
+### Bug Fixes
+
+* log message spacing ([1b8edad](https://github.com/onesoft-sudo/sudobot/commit/1b8edadc083ebec950c45d39c636087d15890ef1))
+* logserver command ([0f45a1c](https://github.com/onesoft-sudo/sudobot/commit/0f45a1c9308babb3590601bb04d9e37ae03e5850))
+
+
+
 ## [6.35.4](https://github.com/onesoft-sudo/sudobot/compare/v6.35.3...v6.35.4) (2023-10-13)
 
 
@@ -31,15 +41,6 @@
 ### Bug Fixes
 
 * add missing reflect-metadata import ([591903a](https://github.com/onesoft-sudo/sudobot/commit/591903ab0244db63f66d4f143d21c2390b5a7728))
-
-
-
-# [6.35.0](https://github.com/onesoft-sudo/sudobot/compare/v6.34.3...v6.35.0) (2023-10-13)
-
-
-### Features
-
-* log server ([f263293](https://github.com/onesoft-sudo/sudobot/commit/f263293eaad1eb836b404a299aaae08060dca44b))
 
 
 
