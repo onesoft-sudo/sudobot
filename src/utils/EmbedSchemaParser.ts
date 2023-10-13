@@ -19,10 +19,95 @@
 
 import { APIEmbed, Embed, EmbedBuilder, GuildMember, MessageCreateOptions, TextBasedChannel, User } from "discord.js";
 import JSON5 from "json5";
+import { z } from "zod";
+import { log } from "./logger";
 
 type EmbedType = Embed | APIEmbed;
 
 export default class EmbedSchemaParser {
+    private static readonly embedZodSchema = z.object({
+        title: z.string().max(256).optional(),
+        description: z.string().max(4096).optional(),
+        url: z.string().url().optional(),
+        timestamp: z.string().datetime().optional(),
+        color: z.number().min(0).max(0xffffff).optional(),
+        provider: z
+            .union([
+                z.object({
+                    name: z.string(),
+                    url: z.string().url()
+                }),
+                z.object({
+                    name: z.string().optional(),
+                    url: z.string().url()
+                }),
+                z.object({
+                    name: z.string(),
+                    url: z.string().url().optional()
+                })
+            ])
+            .optional(),
+        author: z
+            .object({
+                name: z.string().max(256),
+                icon_url: z.string().url().optional(),
+                url: z.string().url().optional(),
+                proxy_icon_url: z.string().url().optional()
+            })
+            .optional(),
+        footer: z
+            .object({
+                text: z.string().max(2048),
+                icon_url: z.string().url().optional(),
+                proxy_icon_url: z.string().url().optional()
+            })
+            .optional(),
+        image: z
+            .object({
+                url: z.string().url(),
+                proxy_url: z.string().url().optional(),
+                height: z.number().int().optional(),
+                width: z.number().int().optional()
+            })
+            .optional(),
+        thumbnail: z
+            .object({
+                url: z.string().url(),
+                proxy_url: z.string().url().optional(),
+                height: z.number().int().optional(),
+                width: z.number().int().optional()
+            })
+            .optional(),
+        video: z
+            .object({
+                url: z.string().url(),
+                proxy_url: z.string().url().optional(),
+                height: z.number().int().optional(),
+                width: z.number().int().optional()
+            })
+            .optional(),
+        fields: z
+            .array(
+                z.object({
+                    name: z.string().max(256),
+                    value: z.string().max(1024),
+                    inline: z.boolean().optional()
+                })
+            )
+            .optional()
+    });
+
+    private static readonly embedRequiredFieldNames = [
+        "title",
+        "description",
+        "author",
+        "footer",
+        "image",
+        "video",
+        "thumbnail",
+        "fields"
+    ];
+
     static parseString(string: string): [EmbedBuilder[], string] {
         const length = string.length;
         const embeds = [];
@@ -57,6 +142,10 @@ export default class EmbedSchemaParser {
                                 : parseInt(parsedJSON.color);
                         }
 
+                        if (!this.validate(parsedJSON)) {
+                            continue;
+                        }
+
                         embeds.push(new EmbedBuilder(parsedJSON));
                         outString = outString.replace(new RegExp(`(\\s*)embed::(.{${jsonStream.length}})::(\\s*)`, "gm"), "");
                     } catch (e) {
@@ -68,6 +157,27 @@ export default class EmbedSchemaParser {
         }
 
         return [embeds, outString];
+    }
+
+    private static validate(parsedJSON: object) {
+        log(parsedJSON);
+
+        const { success } = this.embedZodSchema.safeParse(parsedJSON);
+
+        if (!success) {
+            log("Embed validation failed");
+            return false;
+        }
+
+        for (const key of this.embedRequiredFieldNames) {
+            if (key in parsedJSON) {
+                return true;
+            }
+        }
+
+        log("Embed required key validation failed");
+
+        return false;
     }
 
     private static toSchemaStringSingle(embed: EmbedType) {
