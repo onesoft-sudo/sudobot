@@ -1,3 +1,12 @@
+## [6.35.6](https://github.com/onesoft-sudo/sudobot/compare/v6.35.5...v6.35.6) (2023-10-13)
+
+
+### Bug Fixes
+
+* only start log server on boot when auto start is enabled ([1ac28f2](https://github.com/onesoft-sudo/sudobot/commit/1ac28f23172294f6af0652349b64663c62c11e87))
+
+
+
 ## [6.35.5](https://github.com/onesoft-sudo/sudobot/compare/v6.35.4...v6.35.5) (2023-10-13)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * add missing command description ([08e2891](https://github.com/onesoft-sudo/sudobot/commit/08e28913f4aba7db8655665863c15aa387a77f6f))
-
-
-
-## [6.35.1](https://github.com/onesoft-sudo/sudobot/compare/v6.35.0...v6.35.1) (2023-10-13)
-
-
-### Bug Fixes
-
-* add missing reflect-metadata import ([591903a](https://github.com/onesoft-sudo/sudobot/commit/591903ab0244db63f66d4f143d21c2390b5a7728))
 
 
 
