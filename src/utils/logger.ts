@@ -73,13 +73,13 @@ export function logStringWithLevel(level: LogLevel = LogLevel.DEBUG, ...message:
 
         return `${chalk.gray("[system:debug]")} ` + message.join(" ");
     } else if (level === LogLevel.INFO) {
-        return `${chalk.cyan("[system:info]")}` + message.join(" ");
+        return `${chalk.cyan("[system:info]")} ` + message.join(" ");
     } else if (level === LogLevel.WARN) {
-        return `${chalk.yellow("[system:warn]")}` + message.join(" ");
+        return `${chalk.yellow("[system:warn]")} ` + message.join(" ");
     } else if (level === LogLevel.ERROR) {
-        return `${chalk.red("[system:error]")}` + message.join(" ");
+        return `${chalk.red("[system:error]")} ` + message.join(" ");
     } else if (level === LogLevel.CRITICAL) {
-        return `${chalk.redBright("[system:critical]")}` + message.join(" ");
+        return `${chalk.redBright("[system:critical]")} ` + message.join(" ");
     }
 }
 
