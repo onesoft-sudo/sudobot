@@ -1,3 +1,12 @@
+## [6.34.2](https://github.com/onesoft-sudo/sudobot/compare/v6.34.1...v6.34.2) (2023-10-13)
+
+
+### Bug Fixes
+
+* **moderation:** unban command doesn't show proper error message when the given user isn't banned ([8b811bb](https://github.com/onesoft-sudo/sudobot/commit/8b811bb902902f4b29eb62fa66370e51e78dcd09))
+
+
+
 ## [6.34.1](https://github.com/onesoft-sudo/sudobot/compare/v6.34.0...v6.34.1) (2023-10-12)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **EmbedSchemaParser:** add withContent parameter to getMessageCreateOptions() method ([e20134d](https://github.com/onesoft-sudo/sudobot/commit/e20134dd17d692f005247f66d3ad2e2271d57ace))
-
-
-
-## [6.31.2](https://github.com/onesoft-sudo/sudobot/compare/v6.31.1...v6.31.2) (2023-10-11)
-
-
-### Bug Fixes
-
-* **EmbedSchemaParser:** slice parsedEmbeds array to prevent max embed limit exceeded error ([0ea51df](https://github.com/onesoft-sudo/sudobot/commit/0ea51dfd8f274a2e176cf0fa5edb0e449746c04f))
 
 
 
