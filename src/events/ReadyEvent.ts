@@ -51,6 +51,10 @@ export default class ReadyEvent extends EventListener<Events.Ready> {
             }
         }
 
+        if (client.configManager.systemConfig.log_server?.enabled) {
+            this.client.logServer.listen();
+        }
+
         super.execute(client);
     }
 }

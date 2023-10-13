@@ -41,6 +41,7 @@ import type ConfigManager from "../services/ConfigManager";
 import type ExtensionService from "../services/ExtensionService";
 import type InfractionManager from "../services/InfractionManager";
 import type InviteTrackerService from "../services/InviteTrackerService";
+import type LogServer from "../services/LogServer";
 import type LoggerService from "../services/LoggerService";
 import type MetadataService from "../services/MetadataService";
 import type PermissionManager from "../services/PermissionManager";
@@ -85,6 +86,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@services/TriggerService",
         "@services/ExtensionService",
         "@services/BumpReminderService",
+        "@services/LogServer",
 
         "@automod/MessageFilter",
         "@automod/Antispam",
@@ -130,6 +132,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     aiAutoMod: AIAutoModService = {} as AIAutoModService;
     extensionService: ExtensionService = {} as ExtensionService;
     bumpReminder: BumpReminderService = {} as BumpReminderService;
+    logServer: LogServer = {} as LogServer;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",
@@ -143,8 +146,15 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     registeredEvents: string[] = [];
     eventMap = new Map<keyof ClientEvents, Function[]>();
 
+    private static _instance: Client;
+
+    static get instance() {
+        return this._instance;
+    }
+
     constructor(options: ClientOptions, { services }: { services?: string[] } = {}) {
         super(options);
+        Client._instance = this;
 
         if (services) {
             this.services = services;

@@ -69,7 +69,12 @@ export const SystemConfigSchema = z.object({
         .object({
             default_mode: z.enum(["enable_all", "disable_all"]).default("enable_all")
         })
-        .default({})
+        .default({}),
+    log_server: z
+        .object({
+            enabled: z.boolean().default(false)
+        })
+        .optional()
 });
 
 export type SystemConfig = z.infer<typeof SystemConfigSchema>;

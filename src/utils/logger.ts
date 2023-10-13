@@ -18,6 +18,7 @@
  */
 
 import chalk from "chalk";
+import Client from "../core/Client";
 import { developmentMode } from "./utils";
 
 export enum LogLevel {
@@ -29,6 +30,8 @@ export enum LogLevel {
 }
 
 export function logWithLevel(level: LogLevel = LogLevel.DEBUG, ...message: any[]) {
+    const logServerEnabled = Client.instance?.configManager?.systemConfig?.log_server?.enabled;
+
     if (level !== LogLevel.CRITICAL && level !== LogLevel.ERROR && process.env.SUDO_ENV?.toLowerCase() === "testing") {
         return;
     }
@@ -37,13 +40,46 @@ export function logWithLevel(level: LogLevel = LogLevel.DEBUG, ...message: any[]
         if (!developmentMode()) return;
 
         console.debug(`${chalk.gray("[system:debug]")}`, ...message);
-    } else if (level === LogLevel.INFO) console.info(`${chalk.cyan("[system:info]")}`, ...message);
-    else if (level === LogLevel.WARN) console.warn(`${chalk.yellow("[system:warn]")}`, ...message);
-    else if (level === LogLevel.ERROR) console.error(`${chalk.red("[system:error]")}`, ...message);
-    else if (level === LogLevel.CRITICAL) {
+    } else if (level === LogLevel.INFO) {
+        console.info(`${chalk.cyan("[system:info]")}`, ...message);
+    } else if (level === LogLevel.WARN) {
+        console.warn(`${chalk.yellow("[system:warn]")}`, ...message);
+    } else if (level === LogLevel.ERROR) {
+        console.error(`${chalk.red("[system:error]")}`, ...message);
+    } else if (level === LogLevel.CRITICAL) {
         console.error(`${chalk.redBright("[system:critical]")}`, ...message);
-        console.log("Critical error occurred. Exitting.");
+
+        if (logServerEnabled) {
+            Client.instance?.logServer?.send(`[system:critical] ${message.join(" ")}`);
+        }
+
+        console.log("Critical error occurred. Exiting.");
         process.exit(-1);
+    }
+
+    if (logServerEnabled) {
+        // `[system:${LogLevel[level].toLowerCase()}] ${message.join(" ")}`
+        Client.instance?.logServer?.log?.(level, message.join(" "));
+    }
+}
+
+export function logStringWithLevel(level: LogLevel = LogLevel.DEBUG, ...message: any[]) {
+    if (level !== LogLevel.CRITICAL && level !== LogLevel.ERROR && process.env.SUDO_ENV?.toLowerCase() === "testing") {
+        return;
+    }
+
+    if (level === LogLevel.DEBUG) {
+        if (!developmentMode()) return;
+
+        return `${chalk.gray("[system:debug]")} ` + message.join(" ");
+    } else if (level === LogLevel.INFO) {
+        return `${chalk.cyan("[system:info]")}` + message.join(" ");
+    } else if (level === LogLevel.WARN) {
+        return `${chalk.yellow("[system:warn]")}` + message.join(" ");
+    } else if (level === LogLevel.ERROR) {
+        return `${chalk.red("[system:error]")}` + message.join(" ");
+    } else if (level === LogLevel.CRITICAL) {
+        return `${chalk.redBright("[system:critical]")}` + message.join(" ");
     }
 }
 
