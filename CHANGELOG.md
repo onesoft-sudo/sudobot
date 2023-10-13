@@ -1,3 +1,12 @@
+## [6.35.3](https://github.com/onesoft-sudo/sudobot/compare/v6.35.2...v6.35.3) (2023-10-13)
+
+
+### Bug Fixes
+
+* remove unneeded event firing logs ([5a11e05](https://github.com/onesoft-sudo/sudobot/commit/5a11e05e919b9c9d1e77f4b90b285c7d2c16c620))
+
+
+
 ## [6.35.2](https://github.com/onesoft-sudo/sudobot/compare/v6.35.1...v6.35.2) (2023-10-13)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **EmbedSchemaParser:** validate embed JSON objects first ([80540bb](https://github.com/onesoft-sudo/sudobot/commit/80540bb4ae0d0e2bfe036bcb7ca0ffb6a513fb23))
-
-
-
-## [6.34.2](https://github.com/onesoft-sudo/sudobot/compare/v6.34.1...v6.34.2) (2023-10-13)
-
-
-### Bug Fixes
-
-* **moderation:** unban command doesn't show proper error message when the given user isn't banned ([8b811bb](https://github.com/onesoft-sudo/sudobot/commit/8b811bb902902f4b29eb62fa66370e51e78dcd09))
 
 
 
