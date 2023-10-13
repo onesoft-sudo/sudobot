@@ -1,3 +1,12 @@
+## [6.34.3](https://github.com/onesoft-sudo/sudobot/compare/v6.34.2...v6.34.3) (2023-10-13)
+
+
+### Bug Fixes
+
+* **EmbedSchemaParser:** validate embed JSON objects first ([80540bb](https://github.com/onesoft-sudo/sudobot/commit/80540bb4ae0d0e2bfe036bcb7ca0ffb6a513fb23))
+
+
+
 ## [6.34.2](https://github.com/onesoft-sudo/sudobot/compare/v6.34.1...v6.34.2) (2023-10-13)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * `EmbedSchemaParser.sendMessage()` now accepts `User` and `GuildMember` as well ([95b18a0](https://github.com/onesoft-sudo/sudobot/commit/95b18a0b692a45f5d273334ffd01ff587b2ea6d3))
-
-
-
-# [6.32.0](https://github.com/onesoft-sudo/sudobot/compare/v6.31.2...v6.32.0) (2023-10-11)
-
-
-### Features
-
-* **EmbedSchemaParser:** add withContent parameter to getMessageCreateOptions() method ([e20134d](https://github.com/onesoft-sudo/sudobot/commit/e20134dd17d692f005247f66d3ad2e2271d57ace))
 
 
 
