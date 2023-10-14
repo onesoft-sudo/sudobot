@@ -12,6 +12,7 @@ SudoBot has the following features:
 * Welcomer System (customizable message and randomization)
 * AFK system with powerful mention tracking
 * Snippet management with attachment support
+* AI-powered automatic moderation
 * And more!
 
 We're constantly adding new features so you can expect new stuff soon!
