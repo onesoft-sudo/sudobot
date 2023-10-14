@@ -1,3 +1,12 @@
+## [6.35.7](https://github.com/onesoft-sudo/sudobot/compare/v6.35.6...v6.35.7) (2023-10-14)
+
+
+### Bug Fixes
+
+* remove uneeded logging ([401347f](https://github.com/onesoft-sudo/sudobot/commit/401347f7b221807ead7035f9a9672228db8828b7))
+
+
+
 ## [6.35.6](https://github.com/onesoft-sudo/sudobot/compare/v6.35.5...v6.35.6) (2023-10-13)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * remove unneeded event firing logs ([5a11e05](https://github.com/onesoft-sudo/sudobot/commit/5a11e05e919b9c9d1e77f4b90b285c7d2c16c620))
-
-
-
-## [6.35.2](https://github.com/onesoft-sudo/sudobot/compare/v6.35.1...v6.35.2) (2023-10-13)
-
-
-### Bug Fixes
-
-* add missing command description ([08e2891](https://github.com/onesoft-sudo/sudobot/commit/08e28913f4aba7db8655665863c15aa387a77f6f))
 
 
 
