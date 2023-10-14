@@ -18,6 +18,9 @@
  */
 
 import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
     Collection,
     EmbedBuilder,
     PermissionResolvable,
@@ -28,6 +31,7 @@ import {
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import Pagination from "../../utils/Pagination";
+import { DOCS_URL, GITHUB_URL, WEBSITE_URL } from "../../utils/links";
 import { log } from "../../utils/logger";
 import { forceGetPermissionNames } from "../../utils/utils";
 
@@ -135,6 +139,23 @@ export default class HelpCommand extends Command {
                             text: `Page ${currentPage} of ${maxPages}`
                         }
                     }).setTimestamp();
+                },
+                messageOptions: {
+                    components: [
+                        new ActionRowBuilder<ButtonBuilder>().addComponents(
+                            new ButtonBuilder()
+                                .setStyle(ButtonStyle.Link)
+                                .setEmoji("📘")
+                                .setURL(DOCS_URL)
+                                .setLabel("Documentation"),
+                            new ButtonBuilder()
+                                .setStyle(ButtonStyle.Link)
+                                .setEmoji(this.emoji("github"))
+                                .setURL(GITHUB_URL)
+                                .setLabel("GitHub"),
+                            new ButtonBuilder().setStyle(ButtonStyle.Link).setEmoji("🌍").setURL(WEBSITE_URL).setLabel("Website")
+                        )
+                    ]
                 }
             });
 
