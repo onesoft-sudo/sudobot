@@ -1,3 +1,13 @@
+## [6.35.8](https://github.com/onesoft-sudo/sudobot/compare/v6.35.7...v6.35.8) (2023-10-14)
+
+
+### Bug Fixes
+
+* eval command logs errors twice ([b7b6456](https://github.com/onesoft-sudo/sudobot/commit/b7b6456fb86fcee9d68a257dc97baadf6ede18e8))
+* turn off prisma query logs on production mode ([4b016cc](https://github.com/onesoft-sudo/sudobot/commit/4b016cc0c2fc28b8cc9b6c9f91ae8243926cbfd2))
+
+
+
 ## [6.35.7](https://github.com/onesoft-sudo/sudobot/compare/v6.35.6...v6.35.7) (2023-10-14)
 
 
@@ -32,15 +42,6 @@
 ### Bug Fixes
 
 * **commands:** logstart command does not work ([2fc5882](https://github.com/onesoft-sudo/sudobot/commit/2fc5882edddcb51b0a9e7c349fae27fe8b402b06))
-
-
-
-## [6.35.3](https://github.com/onesoft-sudo/sudobot/compare/v6.35.2...v6.35.3) (2023-10-13)
-
-
-### Bug Fixes
-
-* remove unneeded event firing logs ([5a11e05](https://github.com/onesoft-sudo/sudobot/commit/5a11e05e919b9c9d1e77f4b90b285c7d2c16c620))
 
 
 
