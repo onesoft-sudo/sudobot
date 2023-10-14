@@ -1,3 +1,12 @@
+# [6.36.0](https://github.com/onesoft-sudo/sudobot/compare/v6.35.8...v6.36.0) (2023-10-14)
+
+
+### Features
+
+* add links to the help command action row ([57dff25](https://github.com/onesoft-sudo/sudobot/commit/57dff2506dd4e7af77e6054410a50c7546612d53))
+
+
+
 ## [6.35.8](https://github.com/onesoft-sudo/sudobot/compare/v6.35.7...v6.35.8) (2023-10-14)
 
 
@@ -33,15 +42,6 @@
 
 * log message spacing ([1b8edad](https://github.com/onesoft-sudo/sudobot/commit/1b8edadc083ebec950c45d39c636087d15890ef1))
 * logserver command ([0f45a1c](https://github.com/onesoft-sudo/sudobot/commit/0f45a1c9308babb3590601bb04d9e37ae03e5850))
-
-
-
-## [6.35.4](https://github.com/onesoft-sudo/sudobot/compare/v6.35.3...v6.35.4) (2023-10-13)
-
-
-### Bug Fixes
-
-* **commands:** logstart command does not work ([2fc5882](https://github.com/onesoft-sudo/sudobot/commit/2fc5882edddcb51b0a9e7c349fae27fe8b402b06))
 
 
 
