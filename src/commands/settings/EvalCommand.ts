@@ -116,8 +116,6 @@ export default class EvalCommand extends Command {
             }
         } catch (e) {
             logError("Evaluation failed");
-            logError(e);
-
             if ("stack" in (e as any) && "message" in (e as any)) exceptionHandler(e as any);
             else rejectionHandler(e);
         }
