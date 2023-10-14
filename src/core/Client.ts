@@ -55,6 +55,7 @@ import TriggerService from "../services/TriggerService";
 import type WelcomerService from "../services/WelcomerService";
 import { CustomEvents, type ClientEvents } from "../types/ClientEvents";
 import { log, logError, logInfo } from "../utils/logger";
+import { developmentMode } from "../utils/utils";
 import type Command from "./Command";
 import ServiceManager from "./ServiceManager";
 
@@ -136,7 +137,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
 
     prisma = new PrismaClient({
         errorFormat: "pretty",
-        log: ["query", "error", "info", "warn"]
+        log: developmentMode() ? ["query", "error", "info", "warn"] : ["error", "info", "warn"]
     });
 
     server = new Server(this);
