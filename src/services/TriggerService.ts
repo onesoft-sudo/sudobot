@@ -194,8 +194,6 @@ export default class TriggerService extends Service implements HasEventListeners
         const oldStatus = oldPresence?.activities.find(a => a.type === ActivityType.Custom)?.state ?? "";
         const newStatus = newPresence?.activities.find(a => a.type === ActivityType.Custom)?.state ?? "";
 
-        console.log(newPresence.status, newStatus);
-
         if (newPresence.status === "offline" || newPresence.status === "invisible") {
             return;
         }
