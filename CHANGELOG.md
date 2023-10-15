@@ -1,3 +1,12 @@
+# [6.38.0](https://github.com/onesoft-sudo/sudobot/compare/v6.37.0...v6.38.0) (2023-10-15)
+
+
+### Features
+
+* sniping message edits ([ca06a1a](https://github.com/onesoft-sudo/sudobot/commit/ca06a1a89416aaca8501024063628469388df4de))
+
+
+
 # [6.37.0](https://github.com/onesoft-sudo/sudobot/compare/v6.36.0...v6.37.0) (2023-10-15)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * remove uneeded logging ([401347f](https://github.com/onesoft-sudo/sudobot/commit/401347f7b221807ead7035f9a9672228db8828b7))
-
-
-
-## [6.35.6](https://github.com/onesoft-sudo/sudobot/compare/v6.35.5...v6.35.6) (2023-10-13)
-
-
-### Bug Fixes
-
-* only start log server on boot when auto start is enabled ([1ac28f2](https://github.com/onesoft-sudo/sudobot/commit/1ac28f23172294f6af0652349b64663c62c11e87))
 
 
 
