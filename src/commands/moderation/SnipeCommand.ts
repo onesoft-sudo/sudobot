@@ -38,11 +38,15 @@ export default class SnipeCommand extends Command implements HasEventListeners {
     ];
     public readonly permissions = [PermissionsBitField.Flags.ManageMessages];
     public readonly argumentSyntaxes = ["[index=1]"];
-    public readonly aliases = ["clearsnipe", "cs", "delsnipe", "csnipe", "s"];
+    public readonly aliases = ["clearsnipe", "cs", "delsnipe", "csnipe", "s", "ces", "ceditsnipe", "es", "editsnipe", "esnipe"];
     public readonly since: string = "4.4.0";
-    protected readonly lastDeletedMessages = new Map<Snowflake, Array<Message<boolean> | PartialMessage> | undefined>();
+    protected readonly lastDeletedMessages = new Map<Snowflake, Array<Message<boolean> | PartialMessage>>();
+    protected readonly lastEditedMessages = new Map<
+        Snowflake,
+        Array<[Message<boolean> | PartialMessage, Message<boolean> | PartialMessage]>
+    >();
 
-    public readonly description = "Reposts the last deleted message.";
+    public readonly description = "Reposts the last deleted/edited message.";
 
     @GatewayEventListener("messageDelete")
     onMessageDelete(message: Message<boolean> | PartialMessage) {
@@ -65,34 +69,57 @@ export default class SnipeCommand extends Command implements HasEventListeners {
         }
     }
 
+    @GatewayEventListener("messageUpdate")
+    onMessageUpdate(oldMessage: Message<boolean> | PartialMessage, newMessage: Message<boolean> | PartialMessage) {
+        if (
+            newMessage.author?.bot ||
+            !newMessage.content ||
+            !newMessage.channel.isTextBased() ||
+            newMessage.channel.type === ChannelType.DM ||
+            oldMessage.content === newMessage.content
+        ) {
+            return;
+        }
+
+        const editedMessages = this.lastEditedMessages.get(newMessage.guildId!);
+
+        if (editedMessages === undefined) {
+            this.lastEditedMessages.set(newMessage.guildId!, [[oldMessage, newMessage]]);
+        } else {
+            if (editedMessages.length > 10) editedMessages.pop();
+            editedMessages.unshift([oldMessage, newMessage]);
+        }
+    }
+
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         const index = context.isLegacy ? (context.parsedNamedArgs.index ?? 1) - 1 : 0;
-        const lastDeletedMessages = this.lastDeletedMessages.get(message.guildId!);
-        const lastDeletedMessage = lastDeletedMessages?.[index];
+        const editSnipe = context.isLegacy && ["es", "editsnipe", "esnipe", "ces", "ceditsnipe"].includes(context.argv[0]);
+        const messages = (editSnipe ? this.lastEditedMessages : this.lastDeletedMessages).get(message.guildId!);
+        const lastMessage = editSnipe ? (messages?.[index] as [Message, Message])?.[1] : (messages?.[index] as Message);
 
-        if (lastDeletedMessages?.length && index >= lastDeletedMessages?.length) {
+        if (messages?.length && index >= messages?.length) {
             await this.error(
                 message,
-                `Invalid message index - only ${lastDeletedMessages.length} message${
-                    lastDeletedMessages.length === 1 ? " is" : "s are"
+                `Invalid message index - only ${messages.length} ${editSnipe ? "edited" : "deleted"} message${
+                    messages.length === 1 ? " is" : "s are"
                 } have been recorded so far.`
             );
             return;
         }
 
-        if (!lastDeletedMessage) {
-            await this.error(message, `No deleted message was recorded yet.`);
+        if (!lastMessage) {
+            await this.error(message, `No ${editSnipe ? "edited" : "deleted"} message was recorded yet.`);
             return;
         }
 
-        if (context.isLegacy && context.argv[0] !== "s" && context.argv[0] !== "snipe") {
+        if (context.isLegacy && ["clearsnipe", "cs", "delsnipe", "csnipe", "ces", "ceditsnipe"].includes(context.argv[0])) {
             const hasValue = context.args[0] !== undefined;
 
             if (!hasValue) {
-                lastDeletedMessages.splice(0, lastDeletedMessages.length);
+                messages?.splice(0, messages.length);
                 await this.success(message, "Cleared sniped messages for this server.");
             } else {
-                lastDeletedMessages.splice(index, 1);
+                messages?.splice(index, 1);
                 await this.success(message, "Removed the given sniped message for this server.");
             }
 
@@ -104,16 +131,31 @@ export default class SnipeCommand extends Command implements HasEventListeners {
             embeds: [
                 new EmbedBuilder({
                     author: {
-                        name: lastDeletedMessage.author?.username ?? "Unknown",
-                        iconURL: lastDeletedMessage.author?.displayAvatarURL()
+                        name: lastMessage.author?.username ?? "Unknown",
+                        iconURL: lastMessage.author?.displayAvatarURL()
                     },
                     color: Math.floor(Math.random() * 0xffffff),
-                    description: lastDeletedMessage.content!,
                     footer: {
-                        text: `Sniped • ${lastDeletedMessages.length ?? 0} message${
-                            lastDeletedMessages.length === 1 ? " is" : "s are"
-                        } sniped`
-                    }
+                        text: `Sniped • ${messages?.length ?? 0} ${editSnipe ? "edited" : "deleted"} message${
+                            messages?.length === 1 ? "" : "s"
+                        } total`
+                    },
+                    ...(editSnipe
+                        ? {
+                              fields: [
+                                  {
+                                      name: "Before",
+                                      value: (messages?.[index] as [Message, Message])[0].content || "*No content*"
+                                  },
+                                  {
+                                      name: "After",
+                                      value: (messages?.[index] as [Message, Message])[1].content || "*No content*"
+                                  }
+                              ]
+                          }
+                        : {
+                              description: lastMessage.content!
+                          })
                 }).setTimestamp()
             ]
         };
