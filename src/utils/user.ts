@@ -1,23 +1,23 @@
 /*
-* This file is part of SudoBot.
-*
-* Copyright (C) 2021-2023 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2023 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
-import { User, UserFlags } from "discord.js";
+import { GuildMember, TimestampStyles, User, UserFlags, time } from "discord.js";
 import Client from "../core/Client";
 import { getEmoji } from "./utils";
 
@@ -49,6 +49,41 @@ export const getUserBadges = (client: Client, user: User) => {
             const emoji = getEmoji(client, emojiName);
             badges.push(`${emoji.toString()} ${badgeTitle}`);
         }
+    }
+
+    if (user.discriminator === "0") {
+        badges.push(`${getEmoji(client, "new_username")} Has opted-in to the new username system`);
+    }
+
+    return badges;
+};
+
+export const getMemberBadges = (client: Client, member: GuildMember) => {
+    const badges = getUserBadges(client, member.user);
+
+    if (
+        member.premiumSinceTimestamp ||
+        client.guilds.cache.some(guild => !!guild.members.cache.get(member.id)?.premiumSinceTimestamp)
+    ) {
+        badges.push(`${getEmoji(client, "nitro")} Nitro Subscriber`);
+    }
+
+    let minPremiumSince = member.premiumSince;
+
+    for (const guild of client.guilds.cache.values()) {
+        const guildMember = guild.members.cache.get(member.id);
+
+        if (
+            guildMember &&
+            guildMember.premiumSince &&
+            (minPremiumSince?.getTime() ?? 0) > (guildMember.premiumSince?.getTime() ?? 0)
+        ) {
+            minPremiumSince = guildMember.premiumSince;
+        }
+    }
+
+    if (minPremiumSince) {
+        badges.push(`${getEmoji(client, "boost")} Server boosting since ${time(minPremiumSince, TimestampStyles.LongDate)}`);
     }
 
     return badges;
