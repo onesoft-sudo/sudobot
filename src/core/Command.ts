@@ -86,6 +86,7 @@ export interface ValidationRule {
     lengthMax?: number;
     name?: string;
     timeMilliseconds?: boolean;
+    rawLinkString?: boolean;
 }
 
 type ValidationRuleAndOutputMap = {
@@ -563,6 +564,10 @@ export default abstract class Command {
                             case ArgumentType.Link:
                                 try {
                                     parsedArgs[index] = new URL(arg);
+
+                                    if (rule.rawLinkString) {
+                                        parsedArgs[index] = arg.trim();
+                                    }
                                 } catch (e) {
                                     break;
                                 }
