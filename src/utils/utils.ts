@@ -28,6 +28,7 @@ import {
     PermissionOverwrites,
     PermissionResolvable,
     PermissionsBitField,
+    TextBasedChannel,
     TextChannel,
     ThreadChannel,
     User,
@@ -213,4 +214,15 @@ export function chunkedString(str: string, chunkSize = 4000) {
 
 export function escapeRegex(string: string) {
     return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
+}
+
+export function safeMessageContent(content: string, member: GuildMember, channel?: TextBasedChannel) {
+    return member.permissions.has("MentionEveryone") &&
+        (!channel || member.permissionsIn(channel as TextChannel).has("MentionEveryone"))
+        ? content
+        : content
+              .replaceAll(/@everyone/gi, "`@everyone`")
+              .replaceAll(/@here/gi, "`@here`")
+              .replaceAll(`<@&${member.guild.id}>`, "`@everyone`")
+              .replace(/<@&(\d+)>/gim, (_, id) => `@${member.guild.roles.cache.get(id)?.name ?? id}`);
 }
