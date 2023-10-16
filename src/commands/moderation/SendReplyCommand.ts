@@ -49,6 +49,8 @@ export default class SendReplyCommand extends Command implements HasEventListene
             return;
         }
 
+        const echoMentions = this.client.configManager.config[interaction.guildId!]?.commands?.echo_mentions ?? false;
+
         await interaction
             .deferReply({
                 ephemeral: true
@@ -63,7 +65,15 @@ export default class SendReplyCommand extends Command implements HasEventListene
                     messageReference: id,
                     failIfNotExists: true
                 },
-                content: interaction.fields.getTextInputValue("content")
+                content: interaction.fields.getTextInputValue("content"),
+                allowedMentions: (interaction.member?.permissions as Readonly<PermissionsBitField>)?.has("MentionEveryone", true)
+                    ? undefined
+                    : echoMentions
+                    ? undefined
+                    : {
+                          roles: [],
+                          users: []
+                      }
             }).catch(logError);
         }
 
