@@ -1,3 +1,12 @@
+# [6.40.0](https://github.com/onesoft-sudo/sudobot/compare/v6.39.1...v6.40.0) (2023-10-16)
+
+
+### Features
+
+* add safeMessageContent() function ([76cf976](https://github.com/onesoft-sudo/sudobot/commit/76cf97674f53742045b444f67d391d2e16353a9e))
+
+
+
 ## [6.39.1](https://github.com/onesoft-sudo/sudobot/compare/v6.39.0...v6.39.1) (2023-10-16)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * support nitro, boost and new username badges in user profile command ([39ab50b](https://github.com/onesoft-sudo/sudobot/commit/39ab50bd57550658e1a2ba26d5d4e265654589f5))
-
-
-
-# [6.36.0](https://github.com/onesoft-sudo/sudobot/compare/v6.35.8...v6.36.0) (2023-10-14)
-
-
-### Features
-
-* add links to the help command action row ([57dff25](https://github.com/onesoft-sudo/sudobot/commit/57dff2506dd4e7af77e6054410a50c7546612d53))
 
 
 
