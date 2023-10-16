@@ -33,7 +33,7 @@ export const GuildConfigSchema = z.object({
             bean_safe: z.array(zSnowflake).default([]),
             shot_safe: z.array(zSnowflake).default([]),
             fakeban_safe: z.array(zSnowflake).default([]),
-            echo_mentions: z.boolean().default(true)
+            echo_mentions: z.boolean().default(false)
         })
         .default({}),
     permissions: z

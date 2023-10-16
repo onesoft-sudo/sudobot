@@ -71,8 +71,7 @@ export default class SendReplyCommand extends Command implements HasEventListene
                     : echoMentions
                     ? undefined
                     : {
-                          roles: [],
-                          users: []
+                          parse: ["users"]
                       }
             }).catch(logError);
         }

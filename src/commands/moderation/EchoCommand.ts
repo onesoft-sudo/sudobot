@@ -104,8 +104,7 @@ export default class EchoCommand extends Command {
                 : echoMentions
                 ? undefined
                 : {
-                      roles: [],
-                      users: []
+                      parse: ["users"]
                   }
         });
 
