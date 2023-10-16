@@ -1,3 +1,12 @@
+## [6.39.1](https://github.com/onesoft-sudo/sudobot/compare/v6.39.0...v6.39.1) (2023-10-16)
+
+
+### Bug Fixes
+
+* security check in send reply command ([2884d90](https://github.com/onesoft-sudo/sudobot/commit/2884d902a7e32ca24e7a9b46ec0f229515d9516f))
+
+
+
 # [6.39.0](https://github.com/onesoft-sudo/sudobot/compare/v6.38.0...v6.39.0) (2023-10-15)
 
 
@@ -32,16 +41,6 @@
 ### Features
 
 * add links to the help command action row ([57dff25](https://github.com/onesoft-sudo/sudobot/commit/57dff2506dd4e7af77e6054410a50c7546612d53))
-
-
-
-## [6.35.8](https://github.com/onesoft-sudo/sudobot/compare/v6.35.7...v6.35.8) (2023-10-14)
-
-
-### Bug Fixes
-
-* eval command logs errors twice ([b7b6456](https://github.com/onesoft-sudo/sudobot/commit/b7b6456fb86fcee9d68a257dc97baadf6ede18e8))
-* turn off prisma query logs on production mode ([4b016cc](https://github.com/onesoft-sudo/sudobot/commit/4b016cc0c2fc28b8cc9b6c9f91ae8243926cbfd2))
 
 
 
