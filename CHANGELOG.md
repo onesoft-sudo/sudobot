@@ -1,3 +1,12 @@
+# [6.41.0](https://github.com/onesoft-sudo/sudobot/compare/v6.40.0...v6.41.0) (2023-10-17)
+
+
+### Features
+
+* queues now work even if the input command message is removed ([88d4a00](https://github.com/onesoft-sudo/sudobot/commit/88d4a0039e3d130f8853e72da5678674f555841b))
+
+
+
 # [6.40.0](https://github.com/onesoft-sudo/sudobot/compare/v6.39.1...v6.40.0) (2023-10-16)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * sniping message edits ([ca06a1a](https://github.com/onesoft-sudo/sudobot/commit/ca06a1a89416aaca8501024063628469388df4de))
-
-
-
-# [6.37.0](https://github.com/onesoft-sudo/sudobot/compare/v6.36.0...v6.37.0) (2023-10-15)
-
-
-### Features
-
-* support nitro, boost and new username badges in user profile command ([39ab50b](https://github.com/onesoft-sudo/sudobot/commit/39ab50bd57550658e1a2ba26d5d4e265654589f5))
 
 
 
