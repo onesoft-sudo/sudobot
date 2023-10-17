@@ -23,10 +23,13 @@ import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandRetu
 export default class BallotCommand extends Command {
     public readonly name = "ballot";
     public readonly subcommands = ["create", "delete", "edit"];
+    public readonly subCommandCheck = true;
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.String],
-            requiredErrorMessage: `Please provide a subcommand! The valid commands are: \`${this.subcommands.join("`, `")}\``,
+            requiredErrorMessage: `Please provide a valid subcommand! The valid commands are: \`${this.subcommands.join(
+                "`, `"
+            )}\``,
             typeErrorMessage: "Please provide a valid subcommand!",
             name: "subcommand"
         }
@@ -69,6 +72,7 @@ export default class BallotCommand extends Command {
         const command = this.client.commands.get(`ballot__${subcommand}`);
 
         if (!command) {
+            await this.error(message, this.validationRules[0].requiredErrorMessage!);
             return;
         }
 

@@ -23,10 +23,11 @@ import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandRetu
 export default class QueueCommand extends Command {
     public readonly subcommands = ["add", "cancel", "list", "show"];
     public readonly name = "queue";
+    public readonly subCommandCheck = true;
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.String],
-            requiredErrorMessage: `Please provide a subcommand! The valid commands are: \`${this.subcommands.join(
+            requiredErrorMessage: `Please provide a valid subcommand! The valid commands are: \`${this.subcommands.join(
                 "`, `"
             )}\`, \`remove\`, \`view\``,
             typeErrorMessage: "Please provide a valid subcommand!",
@@ -73,6 +74,7 @@ export default class QueueCommand extends Command {
         const command = this.client.commands.get(`queue__${subcommand}`);
 
         if (!command) {
+            await this.error(message, this.validationRules[0].requiredErrorMessage!);
             return;
         }
 

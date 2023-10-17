@@ -17,12 +17,32 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Snowflake } from "discord.js";
+import { Collection, GuildMember, Snowflake, TextChannel } from "discord.js";
 import Queue from "../utils/Queue";
-import { safeChannelFetch, safeMessageFetch } from "../utils/fetch";
-import { logError } from "../utils/logger";
+import { safeChannelFetch, safeMemberFetch, safeMessageFetch } from "../utils/fetch";
+import { log, logError } from "../utils/logger";
 
 export default class CommandQueue extends Queue {
+    cloneObject(obj: object) {
+        const clonedObj = Object.create(Object.getPrototypeOf(obj));
+
+        for (const key of Reflect.ownKeys(obj)) {
+            const descriptor = Object.getOwnPropertyDescriptor(obj, key);
+
+            if (descriptor) {
+                Object.defineProperty(clonedObj, key, descriptor);
+            }
+        }
+
+        return clonedObj;
+    }
+
+    copyCollection<K, V>(destination: Collection<K, V>, source: Collection<K, V>) {
+        for (const [key, value] of source) {
+            destination.set(key, value);
+        }
+    }
+
     async run(channelId: Snowflake, messageId: Snowflake, contentWithoutPrefix: string) {
         try {
             const channel = await safeChannelFetch(this.guild, channelId);
@@ -31,17 +51,78 @@ export default class CommandQueue extends Queue {
                 return;
             }
 
-            const message = await safeMessageFetch(channel, messageId);
+            let message = await safeMessageFetch(channel, messageId);
+            let member = message?.member as GuildMember | null;
 
             if (!message) {
+                message =
+                    (this.guild.channels.cache.find(c => c.isTextBased() && c.lastMessage) as TextChannel | null)?.lastMessage ??
+                    null;
+
+                member = await safeMemberFetch(this.guild, this.userId);
+
+                if (message) {
+                    message = this.cloneObject(message);
+
+                    message!.reply = (...args: [any]) => channel.send(...args);
+                    message!.delete = (...args: any[]) => Promise.resolve(message!);
+                    message!.react = (...args: any[]) => Promise.resolve(null as any);
+                }
+            } else {
+                message = this.cloneObject(message);
+            }
+
+            if (!member) {
+                log("Aborting command queue as the member who ran the command was not found.");
                 return;
             }
 
-            message.content = `${this.client.configManager.config[this.guild.id]?.prefix ?? "-"}${contentWithoutPrefix}`;
+            if (!message) {
+                log(
+                    "Aborting command queue as no message alternative strategy can be used to run this command queue in a safe sandbox."
+                );
+                return;
+            }
+
+            const userMentions = message.mentions.users.clone();
+            const roleMentions = message.mentions.roles.clone();
+            const memberMentions = message.mentions.members?.clone();
+            const channelMentions = message.mentions.channels.clone();
 
             message.mentions.users.clear();
             message.mentions.roles.clear();
+            message.mentions.members?.clear();
             message.mentions.channels.clear();
+
+            message.mentions.users = userMentions;
+            message.mentions.roles = roleMentions;
+
+            if (message.mentions.members && memberMentions) {
+                this.copyCollection(message.mentions.members, memberMentions);
+            }
+
+            this.copyCollection(message.mentions.channels, channelMentions);
+
+            message.content = `${this.client.configManager.config[this.guild.id]?.prefix ?? "-"}${contentWithoutPrefix}`;
+            message.channelId = channel.id;
+
+            if (member) {
+                Object.defineProperty(message, "member", {
+                    get: () => member
+                });
+
+                Object.defineProperty(message, "author", {
+                    get: () => member?.user
+                });
+            }
+
+            Object.defineProperty(message, "channel", {
+                get: () => channel
+            });
+
+            Object.defineProperty(message, "url", {
+                get: () => `https://discord.com/channels/${this.guild.id}/${channel.id}/${messageId}`
+            });
 
             await this.client.commandManager.runCommandFromMessage(message);
         } catch (e) {

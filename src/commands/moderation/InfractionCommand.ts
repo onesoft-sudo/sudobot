@@ -72,11 +72,14 @@ const infractionTypes = [
 export default class InfractionCommand extends Command {
     public readonly name = "infraction";
     public readonly subcommands = ["view", "create", "edit", "delete", "list", "clear"];
+    public readonly subCommandCheck = true;
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.String],
             name: "subcommand",
-            requiredErrorMessage: `Please provide a valid subcommand! The available subcommands are: \`${this.subcommands.join("`, `")}\`.`
+            requiredErrorMessage: `Please provide a valid subcommand! The available subcommands are: \`${this.subcommands.join(
+                "`, `"
+            )}\`.`
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
@@ -100,7 +103,9 @@ export default class InfractionCommand extends Command {
                 .addStringOption(option => option.setName("new_reason").setDescription("New reason to set"))
                 .addStringOption(option => option.setName("new_duration").setDescription("New duration to set"))
                 .addBooleanOption(option =>
-                    option.setName("silent").setDescription("Specify if the bot should not let the user know about this, defaults to true")
+                    option
+                        .setName("silent")
+                        .setDescription("Specify if the bot should not let the user know about this, defaults to true")
                 )
         )
         .addSubcommand(subcommand =>
@@ -140,14 +145,18 @@ export default class InfractionCommand extends Command {
                         .setRequired(true)
                 )
                 .addStringOption(option => option.setName("reason").setDescription("The reason for giving this infraction"))
-                .addStringOption(option => option.setName("duration").setDescription("The duration of this infraction (e.g. 45, 1h30m)"))
+                .addStringOption(option =>
+                    option.setName("duration").setDescription("The duration of this infraction (e.g. 45, 1h30m)")
+                )
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const subcommand = context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true);
 
         if ((subcommand === "edit" || subcommand === "create") && context.isLegacy) {
-            await message.reply(`${this.emoji("error")} Please use the slash command \`/infraction ${subcommand}\` to perform this action.`);
+            await message.reply(
+                `${this.emoji("error")} Please use the slash command \`/infraction ${subcommand}\` to perform this action.`
+            );
             return;
         }
 
@@ -165,7 +174,9 @@ export default class InfractionCommand extends Command {
                 } else if (MessageMentions.UsersPattern.test(context.args[1])) {
                     userId = context.args[1].substring(context.args[1].includes("!") ? 3 : 2, context.args[1].length - 1);
                 } else {
-                    await message.reply(`${this.emoji("error")} Please provide a valid user mention or ID to perform this action!`);
+                    await message.reply(
+                        `${this.emoji("error")} Please provide a valid user mention or ID to perform this action!`
+                    );
                     return;
                 }
 

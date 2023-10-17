@@ -81,7 +81,7 @@ export default class CommandManager extends Service implements HasEventListeners
         log("Successfully synced command permission overwrites");
     }
 
-    public async runCommandFromMessage(message: Message, checkOnly = false) {
+    public async runCommandFromMessage(message: Message, checkOnly = false, wait: boolean = false) {
         if (!message.content) return;
 
         const config = this.client.configManager.config[message.guildId!];
@@ -158,16 +158,26 @@ export default class CommandManager extends Service implements HasEventListeners
             return;
         }
 
-        command
-            .run(message, context, checkOnly)
-            .then(result => {
-                if (result && typeof result === "object" && "__reply" in result && result.__reply === true) {
-                    message.reply(result as any).catch(console.error);
-                }
-            })
-            .catch(logError);
+        return new Promise<boolean | null>((resolve, reject) => {
+            command
+                .run(message, context, checkOnly, wait ? () => resolve(null) : undefined)
+                .then(result => {
+                    if (result && typeof result === "object" && "__reply" in result && result.__reply === true) {
+                        message.reply(result as any).catch(console.error);
+                    }
+                    if (wait) {
+                        resolve(true);
+                    }
+                })
+                .catch(e => {
+                    logError(e);
+                    reject(e);
+                });
 
-        return true;
+            if (!wait) {
+                resolve(true);
+            }
+        });
     }
 
     public async runCommandFromCommandInteraction(interaction: Exclude<CommandMessage, Message>, checkOnly = false) {

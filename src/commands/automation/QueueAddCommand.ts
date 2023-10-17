@@ -18,7 +18,7 @@
  */
 
 import { formatDistanceToNowStrict } from "date-fns";
-import { ChatInputCommandInteraction, EmbedBuilder, Message, PermissionsBitField, escapeMarkdown } from "discord.js";
+import { EmbedBuilder, Message, PermissionsBitField, escapeMarkdown } from "discord.js";
 import path from "path";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import QueueEntry from "../../utils/QueueEntry";
@@ -76,16 +76,24 @@ export default class QueueAddCommand extends Command {
         } else {
             commandName = message.commandName;
             message.commandName = commandString.split(/ +/)[0];
+
+            if (this.client.commands.get(message.commandName) && !this.client.commands.get(message.commandName)?.supportsLegacy) {
+                message.commandName = commandName;
+                await this.error(message, "This command doesn't support legacy mode, and only legacy commands can be queued!");
+                return;
+            }
         }
 
-        const result = context.isLegacy
-            ? await this.client.commandManager.runCommandFromMessage(message as Message, true)
-            : await this.client.commandManager.runCommandFromCommandInteraction(message as ChatInputCommandInteraction, true);
+        const result = await this.client.commandManager.runCommandFromMessage(message as Message, true, true);
 
         if (message instanceof Message) {
             message.content = content;
         } else {
             message.commandName = commandName;
+        }
+
+        if (result === null) {
+            return;
         }
 
         if (result === false) {

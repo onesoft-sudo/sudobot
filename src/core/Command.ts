@@ -149,6 +149,7 @@ export default abstract class Command {
     public readonly otherApplicationCommandBuilders: (ContextMenuCommandBuilder | SlashCommandBuilder)[] = [];
 
     public readonly subcommands: string[] = [];
+    public readonly subCommandCheck: boolean = false;
 
     constructor(protected client: Client) {}
 
@@ -189,7 +190,7 @@ export default abstract class Command {
         return getEmoji(this.client, name);
     }
 
-    async run(message: CommandMessage, context: AnyCommandContext, checkOnly = false) {
+    async run(message: CommandMessage, context: AnyCommandContext, checkOnly = false, onAbort?: () => any) {
         const isSystemAdmin = this.client.configManager.systemConfig.system_admins.includes(message.member!.user.id);
 
         if (this.systemAdminOnly && !isSystemAdmin) {
@@ -199,6 +200,7 @@ export default abstract class Command {
                     ephemeral: true
                 })
                 .catch(logError);
+            onAbort?.();
 
             return;
         }
@@ -209,6 +211,7 @@ export default abstract class Command {
 
             if (disabled_commands.includes(commandName ?? "")) {
                 await this.error(message, "This command is disabled.");
+                onAbort?.();
                 return;
             }
 
@@ -216,11 +219,13 @@ export default abstract class Command {
 
             if (guild && guild.includes(commandName ?? "")) {
                 await this.error(message, "This command is disabled in this server.");
+                onAbort?.();
                 return;
             }
 
             if (channels && channels[message.channelId!] && channels[message.channelId!].includes(commandName ?? "")) {
                 await this.error(message, "This command is disabled in this channel.");
+                onAbort?.();
                 return;
             }
         }
@@ -247,6 +252,7 @@ export default abstract class Command {
                             ephemeral: true
                         })
                         .catch(logError);
+                    onAbort?.();
                     return;
                 }
             }
@@ -274,6 +280,7 @@ export default abstract class Command {
                                     content: `${this.emoji("error")} You don't have permission to run this command.`,
                                     ephemeral: true
                                 });
+                                onAbort?.();
 
                                 log("Skip");
 
@@ -293,6 +300,7 @@ export default abstract class Command {
                                         ephemeral: true
                                     });
 
+                                    onAbort?.();
                                     return;
                                 }
                             }
@@ -319,6 +327,7 @@ export default abstract class Command {
                             ephemeral: true
                         });
 
+                        onAbort?.();
                         return;
                     }
             }
@@ -421,6 +430,7 @@ export default abstract class Command {
                             content: `${this.emoji("error")} This command is disabled in this channel.`,
                             ephemeral: true
                         });
+                        onAbort?.();
 
                         return;
                     }
@@ -432,12 +442,22 @@ export default abstract class Command {
                     content: `${this.emoji("error")} You don't have enough permissions to run this command.`,
                     ephemeral: true
                 });
+                onAbort?.();
 
                 return;
             }
         }
 
         if (context.isLegacy) {
+            if (this.subCommandCheck && !this.subcommands.includes(context.args[0])) {
+                this.error(
+                    message,
+                    `Please provide a valid subcommand! The valid subcommands are \`${this.subcommands.join("`, `")}\`.`
+                );
+                onAbort?.();
+                return;
+            }
+
             let index = 0,
                 ruleIndex = 0;
 
@@ -447,6 +467,7 @@ export default abstract class Command {
                 if (arg === undefined) {
                     if (!rule.optional) {
                         await this.error(message, rule.requiredErrorMessage ?? `Argument #${index} is required`);
+                        onAbort?.();
                         return;
                     }
 
@@ -480,6 +501,7 @@ export default abstract class Command {
                                     rule.minMaxErrorMessage ??
                                         `Argument #${index} has a min/max numeric value range but the given value is out of range.`
                                 );
+                                onAbort?.();
                                 return;
                             }
                         }
@@ -540,6 +562,7 @@ export default abstract class Command {
                                             })
                                             .catch(logError);
 
+                                        onAbort?.();
                                         return;
                                     }
 
@@ -555,6 +578,7 @@ export default abstract class Command {
                                         `${this.emoji("error")} ` + rule.minMaxErrorMessage ??
                                             `Argument #${index} has a min/max numeric time value range but the given value is out of range.`
                                     );
+                                    onAbort?.();
                                     return;
                                 }
 
@@ -635,6 +659,7 @@ export default abstract class Command {
                                                 `${this.emoji("error")} ` + rule.entityNotNullErrorMessage ??
                                                     `Argument ${index} is invalid`
                                             );
+                                            onAbort?.();
                                             return;
                                         }
 
@@ -680,6 +705,7 @@ export default abstract class Command {
                             await message.reply(
                                 `${this.emoji("error")} ` + rule.lengthMaxErrorMessage ?? `Argument #${index} is too long`
                             );
+                            onAbort?.();
                             return;
                         }
 
@@ -692,6 +718,7 @@ export default abstract class Command {
                         await message.reply(
                             `${this.emoji("error")} ` + rule.typeErrorMessage ?? `Argument #${index} is invalid, type mismatch`
                         );
+                        onAbort?.();
                         return;
                     }
                 }

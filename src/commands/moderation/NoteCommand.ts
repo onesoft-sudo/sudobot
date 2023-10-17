@@ -23,11 +23,14 @@ import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandRetu
 export default class NoteCommand extends Command {
     public readonly name = "note";
     public readonly subcommands = ["view", "create", "edit", "delete", "list", "clear"];
+    public readonly subCommandCheck = true;
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.String],
             name: "subcommand",
-            requiredErrorMessage: `Please provide a valid subcommand! The available subcommands are: \`${this.subcommands.join("`, `")}\`.`
+            requiredErrorMessage: `Please provide a valid subcommand! The available subcommands are: \`${this.subcommands.join(
+                "`, `"
+            )}\`.`
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
