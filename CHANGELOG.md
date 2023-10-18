@@ -1,3 +1,12 @@
+# [6.43.0](https://github.com/onesoft-sudo/sudobot/compare/v6.42.0...v6.43.0) (2023-10-18)
+
+
+### Features
+
+* **afk:** show dates ([bf16af7](https://github.com/onesoft-sudo/sudobot/commit/bf16af75ba52e2988c62c8a016e259873be9e72e))
+
+
+
 # [6.42.0](https://github.com/onesoft-sudo/sudobot/compare/v6.41.0...v6.42.0) (2023-10-18)
 
 
@@ -31,16 +40,6 @@
 ### Bug Fixes
 
 * security check in send reply command ([2884d90](https://github.com/onesoft-sudo/sudobot/commit/2884d902a7e32ca24e7a9b46ec0f229515d9516f))
-
-
-
-# [6.39.0](https://github.com/onesoft-sudo/sudobot/compare/v6.38.0...v6.39.0) (2023-10-15)
-
-
-### Features
-
-* add `rawLinkString` to command validation rules ([bd8d5a5](https://github.com/onesoft-sudo/sudobot/commit/bd8d5a521f81a0fd97738912b6f22f82456274df))
-* add extract emoji command ([fc3bd6e](https://github.com/onesoft-sudo/sudobot/commit/fc3bd6e47695aff5667c230170754cfb689cba03))
 
 
 
