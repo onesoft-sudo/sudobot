@@ -18,9 +18,10 @@
  */
 
 import { formatDistanceToNow } from "date-fns";
-import { ChatInputCommandInteraction, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
+import { ChatInputCommandInteraction, Message, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { stringToTimeInterval } from "../../utils/datetime";
+import { logError } from "../../utils/logger";
 import { protectSystemAdminsFromCommands } from "../../utils/troll";
 import { createModerationEmbed } from "../../utils/utils";
 
@@ -81,6 +82,11 @@ export default class FakeBanCommand extends Command {
             return;
         }
 
+        const {
+            commands: { moderation_command_behaviour }
+        } = context.config;
+        const deleteResponse = moderation_command_behaviour === "delete";
+
         let deleteMessageSeconds = !context.isLegacy
             ? undefined
             : typeof context.parsedArgs[1] === "number"
@@ -139,6 +145,10 @@ export default class FakeBanCommand extends Command {
             durationMs = result;
         }
 
+        if (deleteResponse && message instanceof Message) {
+            await message.delete().catch(logError);
+        }
+
         const id = await this.client.infractionManager.createUserFakeBan(user, {
             guild: message.guild!,
             moderator: message.member!.user as User,
@@ -151,31 +161,35 @@ export default class FakeBanCommand extends Command {
         });
 
         if (!id) {
-            await this.error(message);
+            await this.error(message, undefined, "channel");
             return;
         }
 
-        await this.deferredReply(message, {
-            embeds: [
-                await createModerationEmbed({
-                    user,
-                    actionDoneName: "banned",
-                    description: `**${escapeMarkdown(user.tag)}** has been banned from this server.`,
-                    fields: [
-                        {
-                            name: "Message Deletion",
-                            value: deleteMessageSeconds
-                                ? `Timeframe: ${formatDistanceToNow(
-                                      new Date(Date.now() - deleteMessageSeconds * 1000)
-                                  )}\nMessages in this timeframe by this user will be removed.`
-                                : "*No message will be deleted*"
-                        }
-                    ],
-                    id: `${id}`,
-                    reason,
-                    color: 0x007bff
-                })
-            ]
-        });
+        await this.deferredReply(
+            message,
+            {
+                embeds: [
+                    await createModerationEmbed({
+                        user,
+                        actionDoneName: "banned",
+                        description: `**${escapeMarkdown(user.tag)}** has been banned from this server.`,
+                        fields: [
+                            {
+                                name: "Message Deletion",
+                                value: deleteMessageSeconds
+                                    ? `Timeframe: ${formatDistanceToNow(
+                                          new Date(Date.now() - deleteMessageSeconds * 1000)
+                                      )}\nMessages in this timeframe by this user will be removed.`
+                                    : "*No message will be deleted*"
+                            }
+                        ],
+                        id: `${id}`,
+                        reason,
+                        color: 0x007bff
+                    })
+                ]
+            },
+            deleteResponse ? "channel" : "default"
+        );
     }
 }

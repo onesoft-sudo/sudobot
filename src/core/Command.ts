@@ -119,6 +119,8 @@ export type ValidationRuleParsedArgs<T extends readonly ValidationRule[]> = {
     [K in keyof T]: ValidationRuleParsedArg<T[K]["types"]>;
 };
 
+type DeferReplyMode = "delete" | "channel" | "default" | "auto";
+
 // TODO: Split the logic into separate methods
 
 export default abstract class Command {
@@ -161,21 +163,31 @@ export default abstract class Command {
 
     async deferredReply(
         message: CommandMessage,
-        options: MessageCreateOptions | MessagePayload | InteractionEditReplyOptions | string
+        options: MessageCreateOptions | MessagePayload | InteractionEditReplyOptions | string,
+        mode: DeferReplyMode = "default"
     ) {
         if (message instanceof ChatInputCommandInteraction || message instanceof ContextMenuCommandInteraction) {
             return message.deferred ? await message.editReply(options) : await message.reply(options as any);
         }
 
-        return message.reply(options as any);
+        const behaviour = this.client.configManager.config[message.guildId!]?.commands.moderation_command_behaviour;
+
+        if ((mode === "delete" || (mode === "auto" && behaviour === "delete")) && message instanceof Message) {
+            await message.delete().catch(logError);
+        }
+
+        return mode === "delete" || (mode === "auto" && behaviour === "delete") || mode === "channel"
+            ? message.channel.send(options as any)
+            : message.reply(options as any);
     }
 
-    async error(message: CommandMessage, errorMessage?: string) {
+    async error(message: CommandMessage, errorMessage?: string, mode: DeferReplyMode = "default") {
         return await this.deferredReply(
             message,
             errorMessage
                 ? `${this.emoji("error")} ${errorMessage}`
-                : `⚠️ An error has occurred while performing this action. Please make sure that the bot has the required permissions to perform this action.`
+                : `⚠️ An error has occurred while performing this action. Please make sure that the bot has the required permissions to perform this action.`,
+            mode
         );
     }
 

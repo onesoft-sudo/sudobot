@@ -56,6 +56,10 @@ export default class BeanCommand extends Command {
         await this.deferIfInteraction(message);
 
         const user = context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user", true);
+        const {
+            commands: { moderation_command_behaviour }
+        } = context.config;
+        const deleteResponse = moderation_command_behaviour === "delete";
 
         if (await protectSystemAdminsFromCommands(this.client, message, user.id, "bean_safe")) {
             return;
@@ -69,16 +73,20 @@ export default class BeanCommand extends Command {
             moderator: message.member!.user as User
         });
 
-        await this.deferredReply(message, {
-            embeds: [
-                await createModerationEmbed({
-                    user,
-                    actionDoneName: "beaned",
-                    id,
-                    color: 0x007bff,
-                    reason
-                })
-            ]
-        });
+        await this.deferredReply(
+            message,
+            {
+                embeds: [
+                    await createModerationEmbed({
+                        user,
+                        actionDoneName: "beaned",
+                        id,
+                        color: 0x007bff,
+                        reason
+                    })
+                ]
+            },
+            deleteResponse ? "delete" : "default"
+        );
     }
 }

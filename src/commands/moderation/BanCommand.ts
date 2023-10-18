@@ -169,26 +169,30 @@ export default class BanCommand extends Command {
             return;
         }
 
-        await this.deferredReply(message, {
-            embeds: [
-                await createModerationEmbed({
-                    user,
-                    actionDoneName: "banned",
-                    description: `**${escapeMarkdown(user.tag)}** has been banned from this server.`,
-                    fields: [
-                        {
-                            name: "Message Deletion",
-                            value: deleteMessageSeconds
-                                ? `Timeframe: ${formatDistanceToNow(
-                                      new Date(Date.now() - deleteMessageSeconds * 1000)
-                                  )}\nMessages in this timeframe by this user will be removed.`
-                                : "*No message will be deleted*"
-                        }
-                    ],
-                    id: `${id}`,
-                    reason
-                })
-            ]
-        });
+        await this.deferredReply(
+            message,
+            {
+                embeds: [
+                    await createModerationEmbed({
+                        user,
+                        actionDoneName: "banned",
+                        description: `**${escapeMarkdown(user.tag)}** has been banned from this server.`,
+                        fields: [
+                            {
+                                name: "Message Deletion",
+                                value: deleteMessageSeconds
+                                    ? `Timeframe: ${formatDistanceToNow(
+                                          new Date(Date.now() - deleteMessageSeconds * 1000)
+                                      )}\nMessages in this timeframe by this user will be removed.`
+                                    : "*No message will be deleted*"
+                            }
+                        ],
+                        id: `${id}`,
+                        reason
+                    })
+                ]
+            },
+            "auto"
+        );
     }
 }

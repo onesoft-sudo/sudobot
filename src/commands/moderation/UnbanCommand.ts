@@ -88,17 +88,21 @@ export default class UnbanCommand extends Command {
             return;
         }
 
-        await this.deferredReply(message, {
-            embeds: [
-                await createModerationEmbed({
-                    user,
-                    actionDoneName: "unbanned",
-                    description: `**${escapeMarkdown(user.tag)}** has been unbanned.`,
-                    id: `${id}`,
-                    reason,
-                    color: "Green"
-                })
-            ]
-        });
+        await this.deferredReply(
+            message,
+            {
+                embeds: [
+                    await createModerationEmbed({
+                        user,
+                        actionDoneName: "unbanned",
+                        description: `**${escapeMarkdown(user.tag)}** has been unbanned.`,
+                        id: `${id}`,
+                        reason,
+                        color: "Green"
+                    })
+                ]
+            },
+            "auto"
+        );
     }
 }

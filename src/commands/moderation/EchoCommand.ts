@@ -28,6 +28,7 @@ import {
 } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import EmbedSchemaParser from "../../utils/EmbedSchemaParser";
+import { logError } from "../../utils/logger";
 import { isTextableChannel } from "../../utils/utils";
 
 export default class EchoCommand extends Command {
@@ -61,6 +62,7 @@ export default class EchoCommand extends Command {
         });
 
         const echoMentions = this.client.configManager.config[message.guildId!]?.commands?.echo_mentions ?? false;
+        const deleteReply = this.client.configManager.config[message.guildId!]?.commands?.moderation_command_behaviour ?? false;
 
         const channel: TextChannel =
             (!context.isLegacy
@@ -109,7 +111,7 @@ export default class EchoCommand extends Command {
         });
 
         if (message instanceof Message) {
-            await message.react(this.emoji("check"));
+            deleteReply && message.deletable ? await message.delete().catch(logError) : await message.react(this.emoji("check"));
         } else {
             await this.deferredReply(message, `Message sent.`);
         }

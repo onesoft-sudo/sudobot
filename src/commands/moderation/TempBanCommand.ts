@@ -174,30 +174,34 @@ export default class TempBanCommand extends Command {
             return;
         }
 
-        await this.deferredReply(message, {
-            embeds: [
-                await createModerationEmbed({
-                    user,
-                    actionDoneName: "banned",
-                    description: `**${escapeMarkdown(user.tag)}** was temporarily banned from this server.`,
-                    fields: [
-                        {
-                            name: "Message Deletion",
-                            value: messageDeletionTimeframe
-                                ? `Timeframe: ${formatDistanceToNow(
-                                      new Date(Date.now() - messageDeletionTimeframe * 1000)
-                                  )}\nMessages in this timeframe by this user will be removed.`
-                                : "*No message will be deleted*"
-                        },
-                        {
-                            name: "Duration",
-                            value: formatDistanceToNowStrict(new Date(Date.now() - duration!))
-                        }
-                    ],
-                    id: `${id}`,
-                    reason
-                })
-            ]
-        });
+        await this.deferredReply(
+            message,
+            {
+                embeds: [
+                    await createModerationEmbed({
+                        user,
+                        actionDoneName: "banned",
+                        description: `**${escapeMarkdown(user.tag)}** was temporarily banned from this server.`,
+                        fields: [
+                            {
+                                name: "Message Deletion",
+                                value: messageDeletionTimeframe
+                                    ? `Timeframe: ${formatDistanceToNow(
+                                          new Date(Date.now() - messageDeletionTimeframe * 1000)
+                                      )}\nMessages in this timeframe by this user will be removed.`
+                                    : "*No message will be deleted*"
+                            },
+                            {
+                                name: "Duration",
+                                value: formatDistanceToNowStrict(new Date(Date.now() - duration!))
+                            }
+                        ],
+                        id: `${id}`,
+                        reason
+                    })
+                ]
+            },
+            "auto"
+        );
     }
 }

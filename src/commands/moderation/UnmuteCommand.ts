@@ -44,7 +44,8 @@ export default class UnmuteCommand extends Command {
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers];
 
     public readonly description = "Unmutes a server member.";
-    public readonly detailedDescription = "This command unmutes a server member. The muted role needs to be configured for this command to work!";
+    public readonly detailedDescription =
+        "This command unmutes a server member. The muted role needs to be configured for this command to work!";
     public readonly argumentSyntaxes = ["<UserID|UserMention> [reason]"];
 
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.ModerateMembers];
@@ -53,7 +54,9 @@ export default class UnmuteCommand extends Command {
         .addUserOption(option => option.setName("member").setDescription("The member").setRequired(true))
         .addStringOption(option => option.setName("reason").setDescription("The reason for unmuting this user"))
         .addBooleanOption(option =>
-            option.setName("silent").setDescription("Specify if the system should not notify the user about this action. Defaults to false")
+            option
+                .setName("silent")
+                .setDescription("Specify if the system should not notify the user about this action. Defaults to false")
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
@@ -68,7 +71,8 @@ export default class UnmuteCommand extends Command {
         }
 
         await this.deferIfInteraction(message);
-        const reason: string | undefined = (!context.isLegacy ? context.options.getString("reason") : context.parsedNamedArgs.reason) ?? undefined;
+        const reason: string | undefined =
+            (!context.isLegacy ? context.options.getString("reason") : context.parsedNamedArgs.reason) ?? undefined;
 
         if (!this.client.permissionManager.shouldModerate(member, message.member! as GuildMember)) {
             await this.error(message, "You don't have permission to unmute this user!");
@@ -90,17 +94,21 @@ export default class UnmuteCommand extends Command {
             return;
         }
 
-        await this.deferredReply(message, {
-            embeds: [
-                await createModerationEmbed({
-                    user: member.user,
-                    actionDoneName: "unmuted",
-                    description: `**${escapeMarkdown(member.user.tag)}** has been unmuted.`,
-                    id: `${id}`,
-                    reason,
-                    color: "Green"
-                })
-            ]
-        });
+        await this.deferredReply(
+            message,
+            {
+                embeds: [
+                    await createModerationEmbed({
+                        user: member.user,
+                        actionDoneName: "unmuted",
+                        description: `**${escapeMarkdown(member.user.tag)}** has been unmuted.`,
+                        id: `${id}`,
+                        reason,
+                        color: "Green"
+                    })
+                ]
+            },
+            "auto"
+        );
     }
 }

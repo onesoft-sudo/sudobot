@@ -61,6 +61,10 @@ export default class ShotCommand extends Command {
             return;
         }
 
+        const {
+            commands: { moderation_command_behaviour }
+        } = context.config;
+        const deleteResponse = moderation_command_behaviour === "delete";
         const reason = context.isLegacy ? context.parsedNamedArgs.reason : context.options.getString("reason");
 
         const id = await this.client.infractionManager.createUserShot(user, {
@@ -69,22 +73,26 @@ export default class ShotCommand extends Command {
             moderator: message.member!.user as User
         });
 
-        await this.deferredReply(message, {
-            embeds: [
-                await createModerationEmbed({
-                    user,
-                    id,
-                    color: 0x007bff,
-                    reason,
-                    description: `**${escapeMarkdown(user.username)}** has been given a shot.`,
-                    fields: [
-                        {
-                            name: "💉 Doctor",
-                            value: `${message.member!.user.username}`
-                        }
-                    ]
-                })
-            ]
-        });
+        await this.deferredReply(
+            message,
+            {
+                embeds: [
+                    await createModerationEmbed({
+                        user,
+                        id,
+                        color: 0x007bff,
+                        reason,
+                        description: `**${escapeMarkdown(user.username)}** has been given a shot.`,
+                        fields: [
+                            {
+                                name: "💉 Doctor",
+                                value: `${message.member!.user.username}`
+                            }
+                        ]
+                    })
+                ]
+            },
+            deleteResponse ? "delete" : "default"
+        );
     }
 }

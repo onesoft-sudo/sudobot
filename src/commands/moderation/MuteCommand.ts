@@ -151,30 +151,34 @@ export default class MuteCommand extends Command {
             return;
         }
 
-        await this.deferredReply(message, {
-            embeds: [
-                await createModerationEmbed({
-                    user: member.user,
-                    description: `**${escapeMarkdown(member.user.tag)}** has been muted.${
-                        result === false
-                            ? "\nFailed to deliver a DM to the user, and the fallback channel could not be created. The user will not know about this mute."
-                            : result === null
-                            ? "\nCould not deliver a DM since the user is not in the server. They will not know about this mute"
-                            : ""
-                    }`,
-                    actionDoneName: "muted",
-                    id,
-                    reason,
-                    fields: [
-                        {
-                            name: "Duration",
-                            value: duration
-                                ? formatDistanceToNowStrict(new Date(Date.now() - duration * 1000))
-                                : "*No duration set*"
-                        }
-                    ]
-                })
-            ]
-        });
+        await this.deferredReply(
+            message,
+            {
+                embeds: [
+                    await createModerationEmbed({
+                        user: member.user,
+                        description: `**${escapeMarkdown(member.user.tag)}** has been muted.${
+                            result === false
+                                ? "\nFailed to deliver a DM to the user, and the fallback channel could not be created. The user will not know about this mute."
+                                : result === null
+                                ? "\nCould not deliver a DM since the user is not in the server. They will not know about this mute"
+                                : ""
+                        }`,
+                        actionDoneName: "muted",
+                        id,
+                        reason,
+                        fields: [
+                            {
+                                name: "Duration",
+                                value: duration
+                                    ? formatDistanceToNowStrict(new Date(Date.now() - duration * 1000))
+                                    : "*No duration set*"
+                            }
+                        ]
+                    })
+                ]
+            },
+            "auto"
+        );
     }
 }
