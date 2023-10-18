@@ -1,3 +1,12 @@
+# [6.44.0](https://github.com/onesoft-sudo/sudobot/compare/v6.43.0...v6.44.0) (2023-10-18)
+
+
+### Features
+
+* global AFK support ([eb0fcef](https://github.com/onesoft-sudo/sudobot/commit/eb0fcefd3754b2e21f84a8a0359c5a374e483337))
+
+
+
 # [6.43.0](https://github.com/onesoft-sudo/sudobot/compare/v6.42.0...v6.43.0) (2023-10-18)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * add safeMessageContent() function ([76cf976](https://github.com/onesoft-sudo/sudobot/commit/76cf97674f53742045b444f67d391d2e16353a9e))
-
-
-
-## [6.39.1](https://github.com/onesoft-sudo/sudobot/compare/v6.39.0...v6.39.1) (2023-10-16)
-
-
-### Bug Fixes
-
-* security check in send reply command ([2884d90](https://github.com/onesoft-sudo/sudobot/commit/2884d902a7e32ca24e7a9b46ec0f229515d9516f))
 
 
 
