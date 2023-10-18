@@ -37,7 +37,15 @@ const filters = {
     bots: (message: Message) => message.author.bot,
     unverified_bots: (message: Message) => message.author.bot && !message.author.flags?.has("VerifiedBot"),
     users: (message: Message) => !message.author.bot,
-    new_users: (message: Message) => !message.author.bot && message.createdAt.getTime() <= THREE_DAYS
+    new_users: (message: Message) => !message.author.bot && message.createdAt.getTime() <= THREE_DAYS,
+    embeds: (message: Message) => message.embeds.length > 0
+};
+
+const filter_aliases: Record<string, keyof typeof filters> = {
+    bc: "bots",
+    hc: "users",
+    ec: "embeds",
+    nc: "new_users"
 };
 
 export default class ClearCommand extends Command {
@@ -73,7 +81,7 @@ export default class ClearCommand extends Command {
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.ManageMessages];
-    public readonly aliases = ["purge", "bulkdel", "bulkdelete"];
+    public readonly aliases = ["purge", "bulkdel", "bulkdelete", "bc", "hc", "ec", "nc"];
 
     public readonly description = "Clear messages in bulk.";
     public readonly detailedDescription =
@@ -91,6 +99,7 @@ export default class ClearCommand extends Command {
         .addBooleanOption(option => option.setName("filter_bots").setDescription("Deletes messages from bots"))
         .addBooleanOption(option => option.setName("filter_users").setDescription("Deletes messages from human users only"))
         .addBooleanOption(option => option.setName("filter_new_users").setDescription("Deletes messages from new users"))
+        .addBooleanOption(option => option.setName("filter_embeds").setDescription("Deletes messages that have embeds"))
         .addBooleanOption(option =>
             option.setName("filter_unverifed_bots").setDescription("Deletes messages from unverified bots")
         );
@@ -161,6 +170,18 @@ export default class ClearCommand extends Command {
 
                 if (filter) {
                     filterHandlers.push(filter);
+                }
+            }
+
+            if (context.isLegacy) {
+                const aliasHandlerName = filter_aliases[context.argv[0]];
+
+                if (aliasHandlerName) {
+                    const aliasHandler = filters[aliasHandlerName];
+
+                    if (aliasHandler) {
+                        filterHandlers.push(aliasHandler);
+                    }
                 }
             }
         }
