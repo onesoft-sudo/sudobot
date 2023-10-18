@@ -39,16 +39,18 @@ export default class AFKCommand extends Command {
         }
     ];
     public readonly permissions = [];
+    public readonly aliases = ["gafk"];
     public readonly description = "Sets your AFK status, and tells others that you're away.";
-    public readonly slashCommandBuilder = new SlashCommandBuilder().addStringOption(option =>
-        option.setName("reason").setDescription("The reason of you being AFK")
-    );
+    public readonly slashCommandBuilder = new SlashCommandBuilder()
+        .addStringOption(option => option.setName("reason").setDescription("The reason of you being AFK"))
+        .addBooleanOption(option => option.setName("global").setDescription("Globally set your AFK status. Defaults to false"));
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const { id } = (await this.deferIfInteraction(message, { fetchReply: true })) ?? {};
 
         const reason: string | undefined =
             (context.isLegacy ? context.parsedNamedArgs.reason : context.options.getString("reason")) ?? undefined;
+        const global = (context.isLegacy ? context.argv[0] === "gafk" : context.options.getBoolean("global")) ?? false;
 
         if (message instanceof ChatInputCommandInteraction && reason) {
             const newMessage = {
@@ -84,7 +86,7 @@ export default class AFKCommand extends Command {
 
         const isAFK = this.client.afkService.isAFK(message.guildId!, message.member!.user.id);
 
-        if (isAFK) {
+        if (isAFK && !!this.client.afkService.get(`global_${message.member!.user.id}`) !== global) {
             if (message instanceof ChatInputCommandInteraction) {
                 await this.success(message, "Successfully removed your AFK status.");
             }
@@ -92,13 +94,15 @@ export default class AFKCommand extends Command {
             return;
         }
 
-        await this.client.afkService.startAFK(message.guildId!, message.member!.user.id, reason);
+        await this.client.afkService.startAFK(message.guildId!, message.member!.user.id, reason, global);
 
         await this.deferredReply(message, {
             embeds: [
                 {
                     color: 0x007bff,
-                    description: `You're AFK now${reason ? `, for reason: **${escapeMarkdown(reason)}**` : ""}.`
+                    description: `You're${global ? " globally" : ""} AFK now${
+                        reason ? `, for reason: **${escapeMarkdown(reason)}**` : ""
+                    }.`
                 }
             ],
             allowedMentions: {

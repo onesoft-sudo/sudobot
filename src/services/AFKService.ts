@@ -38,12 +38,12 @@ export default class AFKService extends Service implements HasEventListeners {
         const entries = await this.client.prisma.afkEntry.findMany();
 
         for (const entry of entries) {
-            this.entries.set(`${entry.guildId}_${entry.userId}`, entry);
+            this.entries.set(`${entry.global ? "global" : entry.guildId}_${entry.userId}`, entry);
         }
     }
 
     isAFK(guildId: string, userId: string) {
-        return this.entries.has(`${guildId}_${userId}`);
+        return this.entries.has(`${guildId}_${userId}`) || this.entries.has(`global_${userId}`);
     }
 
     toggle(guildId: string, userId: string, reason?: string) {
@@ -55,7 +55,7 @@ export default class AFKService extends Service implements HasEventListeners {
     }
 
     async removeAFK(guildId: string, userId: string, shouldAwait: boolean = true) {
-        const entry = this.entries.get(`${guildId}_${userId}`)!;
+        const entry = this.entries.get(`${guildId}_${userId}`) ?? this.entries.get(`global_${userId}`);
 
         if (!entry) {
             return null;
@@ -69,20 +69,21 @@ export default class AFKService extends Service implements HasEventListeners {
 
         shouldAwait ? await promise : promise.then(log);
 
-        this.entries.delete(`${guildId}_${userId}`);
+        this.entries.delete(`${entry.global ? "global" : guildId}_${userId}`);
         return entry;
     }
 
-    async startAFK(guildId: string, userId: string, reason?: string) {
+    async startAFK(guildId: string, userId: string, reason?: string, global: boolean = false) {
         const entry = await this.client.prisma.afkEntry.create({
             data: {
                 guildId,
                 userId,
-                reason
+                reason,
+                global
             }
         });
 
-        this.entries.set(`${guildId}_${userId}`, entry);
+        this.entries.set(`${global ? "global" : guildId}_${userId}`, entry);
         return entry;
     }
 
@@ -98,7 +99,7 @@ export default class AFKService extends Service implements HasEventListeners {
         }
 
         entry.mentions.push(...mentions.map(m => `${m.userId}__${m.messageLink}__${new Date().toISOString()}`));
-        this.modifiedIds.add(`${guildId}_${userId}`);
+        this.modifiedIds.add(`${entry.global ? "global" : guildId}_${userId}`);
         this.queueSync();
 
         return true;
@@ -106,8 +107,8 @@ export default class AFKService extends Service implements HasEventListeners {
 
     queueSync() {
         this.syncTimeout ??= setTimeout(() => {
-            for (const guildId_UserId of this.modifiedIds) {
-                const entry = this.entries.get(guildId_UserId);
+            for (const guildId_userId of this.modifiedIds) {
+                const entry = this.entries.get(guildId_userId);
 
                 if (!entry) {
                     continue;
@@ -230,5 +231,9 @@ export default class AFKService extends Service implements HasEventListeners {
                       .join("\n")
                 : "")
         );
+    }
+
+    get(key: string) {
+        return this.entries.get(key);
     }
 }
