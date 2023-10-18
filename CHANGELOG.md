@@ -1,3 +1,12 @@
+# [6.42.0](https://github.com/onesoft-sudo/sudobot/compare/v6.41.0...v6.42.0) (2023-10-18)
+
+
+### Features
+
+* clear command aliases ([7c91684](https://github.com/onesoft-sudo/sudobot/commit/7c9168421923df44ad91557f526674dd1b14cb60))
+
+
+
 # [6.41.0](https://github.com/onesoft-sudo/sudobot/compare/v6.40.0...v6.41.0) (2023-10-17)
 
 
@@ -32,15 +41,6 @@
 
 * add `rawLinkString` to command validation rules ([bd8d5a5](https://github.com/onesoft-sudo/sudobot/commit/bd8d5a521f81a0fd97738912b6f22f82456274df))
 * add extract emoji command ([fc3bd6e](https://github.com/onesoft-sudo/sudobot/commit/fc3bd6e47695aff5667c230170754cfb689cba03))
-
-
-
-# [6.38.0](https://github.com/onesoft-sudo/sudobot/compare/v6.37.0...v6.38.0) (2023-10-15)
-
-
-### Features
-
-* sniping message edits ([ca06a1a](https://github.com/onesoft-sudo/sudobot/commit/ca06a1a89416aaca8501024063628469388df4de))
 
 
 
