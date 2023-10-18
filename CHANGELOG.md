@@ -1,3 +1,12 @@
+# [6.45.0](https://github.com/onesoft-sudo/sudobot/compare/v6.44.0...v6.45.0) (2023-10-18)
+
+
+### Features
+
+* add moderation command modes ([81ae68e](https://github.com/onesoft-sudo/sudobot/commit/81ae68e081462a2516c3b7e675b3c4bb08924b70))
+
+
+
 # [6.44.0](https://github.com/onesoft-sudo/sudobot/compare/v6.43.0...v6.44.0) (2023-10-18)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * queues now work even if the input command message is removed ([88d4a00](https://github.com/onesoft-sudo/sudobot/commit/88d4a0039e3d130f8853e72da5678674f555841b))
-
-
-
-# [6.40.0](https://github.com/onesoft-sudo/sudobot/compare/v6.39.1...v6.40.0) (2023-10-16)
-
-
-### Features
-
-* add safeMessageContent() function ([76cf976](https://github.com/onesoft-sudo/sudobot/commit/76cf97674f53742045b444f67d391d2e16353a9e))
 
 
 
