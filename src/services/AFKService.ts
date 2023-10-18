@@ -171,7 +171,7 @@ export default class AFKService extends Service implements HasEventListeners {
             const entry = this.entries.get(`${message.guildId!}_${users.at(0)!.id}`);
             description = `<@${users.at(0)!.id}> is AFK right now${
                 entry?.reason ? `, for reason: **${escapeMarkdown(entry?.reason)}**` : ""
-            }.`;
+            } ${time(entry?.createdAt ?? new Date(), "R")}`;
         } else {
             description = "The following users are AFK right now: \n\n";
 
@@ -180,7 +180,7 @@ export default class AFKService extends Service implements HasEventListeners {
                     const entry = this.entries.get(`${message.guildId!}_${id}`);
                     description += `* <@${id}>: ${entry?.reason ?? "*No reason provided*"} ${
                         entry?.createdAt ? `(${time(entry?.createdAt!)})` : ""
-                    }\n`;
+                    } ${time(entry?.createdAt ?? new Date(), "R")}\n`;
                 }
             }
         }
@@ -215,7 +215,9 @@ export default class AFKService extends Service implements HasEventListeners {
 
     generateAFKEndMessage(entry: AfkEntry | null | undefined) {
         return (
-            `You're no longer AFK. You had **${entry?.mentions.length ?? 0}** mentions in this server.` +
+            `You were AFK for ${formatDistanceToNowStrict(entry?.createdAt ?? new Date())}. You had **${
+                entry?.mentions.length ?? 0
+            }** mentions in this server.` +
             (entry?.mentions?.length
                 ? "\n\n" +
                   entry.mentions
