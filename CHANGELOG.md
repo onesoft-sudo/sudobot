@@ -1,3 +1,17 @@
+# [6.47.0](https://github.com/onesoft-sudo/sudobot/compare/v6.46.1...v6.47.0) (2023-10-20)
+
+
+### Bug Fixes
+
+* broken changes after updating discord.js ([876f3c7](https://github.com/onesoft-sudo/sudobot/commit/876f3c76debe3dcb10e3d9426e6390cd35828c02))
+
+
+### Features
+
+* auto updating ([2926620](https://github.com/onesoft-sudo/sudobot/commit/2926620c79412d3619ff5f19d7d6e99895c27c7a))
+
+
+
 ## [6.46.1](https://github.com/onesoft-sudo/sudobot/compare/v6.46.0...v6.46.1) (2023-10-20)
 
 
@@ -31,15 +45,6 @@
 ### Features
 
 * global AFK support ([eb0fcef](https://github.com/onesoft-sudo/sudobot/commit/eb0fcefd3754b2e21f84a8a0359c5a374e483337))
-
-
-
-# [6.43.0](https://github.com/onesoft-sudo/sudobot/compare/v6.42.0...v6.43.0) (2023-10-18)
-
-
-### Features
-
-* **afk:** show dates ([bf16af7](https://github.com/onesoft-sudo/sudobot/commit/bf16af75ba52e2988c62c8a016e259873be9e72e))
 
 
 
