@@ -17,16 +17,19 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import axios from "axios";
+import { spawnSync } from "child_process";
 import { formatDistanceToNowStrict } from "date-fns";
 import { APIEmbed, ActivityType, Colors, WebhookClient, escapeCodeBlock } from "discord.js";
 import { existsSync, readFileSync } from "fs";
 import { rm } from "fs/promises";
 import path from "path";
+import { gt } from "semver";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { safeChannelFetch, safeMessageFetch } from "../utils/fetch";
-import { log, logError, logInfo } from "../utils/logger";
+import { log, logError, logInfo, logSuccess } from "../utils/logger";
 import { chunkedString, getEmoji, sudoPrefix } from "../utils/utils";
 
 export const name = "startupManager";
@@ -35,6 +38,7 @@ const { BACKUP_CHANNEL_ID, ERROR_WEKHOOK_URL } = process.env;
 
 export default class StartupManager extends Service implements HasEventListeners {
     interval: NodeJS.Timer | undefined = undefined;
+    readonly packageJsonUrl = "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/package.json";
 
     @GatewayEventListener("ready")
     async onReady() {
@@ -97,8 +101,8 @@ export default class StartupManager extends Service implements HasEventListeners
         this.client.user?.setPresence({
             activities: [
                 {
-                    name: presence?.name ?? "Moderating the server",
-                    type: ActivityType[presence?.type ?? "Custom"],
+                    name: presence?.name ?? "over the server",
+                    type: ActivityType[presence?.type ?? "Watching"],
                     url: presence?.url
                 }
             ],
@@ -192,5 +196,35 @@ export default class StartupManager extends Service implements HasEventListeners
         logInfo(`Configuration backups will be sent in each ${formatDistanceToNowStrict(new Date(Date.now() - finalTime))}`);
         logInfo(`Sending initial backup`);
         this.sendConfigBackupCopy();
+    }
+
+    systemUpdate(branch = "main") {
+        if (spawnSync(`git pull origin ${branch}`).error?.message.endsWith("ENOENT")) {
+            logError("Cannot perform an automatic update - the system does not have Git installed and available in $PATH.");
+            return false;
+        }
+
+        if (spawnSync(`npm run build`).error) {
+            logError("Cannot perform an automatic update - failed to build the project");
+            return false;
+        }
+
+        const { version } = require("../../package.json");
+        logSuccess(`Successfully completed automatic update - system upgraded to version ${version}`);
+        return true;
+    }
+
+    async checkForUpdate() {
+        try {
+            const response = await axios.get(this.packageJsonUrl);
+            const newVersion = response.data?.version;
+
+            if (typeof newVersion === "string" && gt(newVersion, this.client.metadata.data.version)) {
+                logInfo("Found update - performing an automatic update");
+                this.systemUpdate();
+            }
+        } catch (e) {
+            logError(e);
+        }
     }
 }
