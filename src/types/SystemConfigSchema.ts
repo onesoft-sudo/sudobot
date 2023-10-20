@@ -19,6 +19,7 @@
 
 import { ActivityType } from "discord.js";
 import { z } from "zod";
+import { zSnowflake } from "./SnowflakeSchema";
 
 type ApplicationActivityType = Exclude<keyof typeof ActivityType, "Custom">;
 
@@ -74,6 +75,16 @@ export const SystemConfigSchema = z.object({
         .object({
             enabled: z.boolean().default(false),
             auto_start: z.boolean().default(false)
+        })
+        .optional(),
+    logging: z
+        .object({
+            enabled: z.boolean().default(false),
+            channels: z
+                .object({
+                    echo_send_logs: zSnowflake.optional()
+                })
+                .optional()
         })
         .optional()
 });

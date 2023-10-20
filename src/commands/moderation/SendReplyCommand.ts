@@ -26,12 +26,15 @@ import {
     ModalBuilder,
     PermissionsBitField,
     TextInputBuilder,
-    TextInputStyle
+    TextInputStyle,
+    User
 } from "discord.js";
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import { HasEventListeners } from "../../types/HasEventListeners";
 import EmbedSchemaParser from "../../utils/EmbedSchemaParser";
+import { channelInfo, userInfo } from "../../utils/embed";
+import { safeChannelFetch } from "../../utils/fetch";
 import { logError } from "../../utils/logger";
 
 export default class SendReplyCommand extends Command implements HasEventListeners {
@@ -58,22 +61,24 @@ export default class SendReplyCommand extends Command implements HasEventListene
             .catch(logError);
 
         const [, id] = interaction.customId.split("__");
+        const options = {
+            reply: {
+                messageReference: id,
+                failIfNotExists: true
+            },
+            content: interaction.fields.getTextInputValue("content"),
+            allowedMentions: (interaction.member?.permissions as Readonly<PermissionsBitField>)?.has("MentionEveryone", true)
+                ? undefined
+                : echoMentions
+                ? undefined
+                : {
+                      parse: ["users" as const]
+                  }
+        };
+        let messageId: string | undefined = undefined;
 
         if (interaction.channel) {
-            await EmbedSchemaParser.sendMessage(interaction.channel, {
-                reply: {
-                    messageReference: id,
-                    failIfNotExists: true
-                },
-                content: interaction.fields.getTextInputValue("content"),
-                allowedMentions: (interaction.member?.permissions as Readonly<PermissionsBitField>)?.has("MentionEveryone", true)
-                    ? undefined
-                    : echoMentions
-                    ? undefined
-                    : {
-                          parse: ["users"]
-                      }
-            }).catch(logError);
+            messageId = (await EmbedSchemaParser.sendMessage(interaction.channel, options).catch(logError))?.id;
         }
 
         await interaction
@@ -81,6 +86,74 @@ export default class SendReplyCommand extends Command implements HasEventListene
                 content: `${this.emoji("check")} Reply sent successfully.`
             })
             .catch(logError);
+
+        if (!this.client.configManager.systemConfig.logging?.enabled) {
+            return;
+        }
+
+        const logChannelId = this.client.configManager.systemConfig.logging?.channels?.echo_send_logs;
+
+        if (logChannelId) {
+            safeChannelFetch(interaction.guild!, logChannelId)
+                .then(async channel => {
+                    if (channel?.isTextBased()) {
+                        const sentMessage = await EmbedSchemaParser.sendMessage(channel, options).catch(logError);
+
+                        if (!sentMessage) {
+                            return;
+                        }
+
+                        await channel
+                            ?.send({
+                                embeds: [
+                                    {
+                                        title: "The Send Reply command was executed",
+                                        author: {
+                                            name: interaction.member!.user.username,
+                                            icon_url: (interaction.member!.user as User).displayAvatarURL?.()
+                                        },
+                                        description: `The message is [above](${sentMessage.url}).`,
+                                        fields: [
+                                            {
+                                                name: "Guild",
+                                                value: `${interaction.guild!.name} (${interaction.guild!.id})`,
+                                                inline: true
+                                            },
+
+                                            {
+                                                name: "Channel",
+                                                value: channelInfo(interaction.channel!),
+                                                inline: true
+                                            },
+                                            {
+                                                name: "Mode",
+                                                value: "Application Command"
+                                            },
+                                            {
+                                                name: "User",
+                                                value: userInfo(interaction.member!.user as User),
+                                                inline: true
+                                            },
+                                            {
+                                                name: "Message",
+                                                value: messageId
+                                                    ? `[Click here](https://discord.com/channels/${interaction.guildId}/${interaction.channelId}/${messageId})`
+                                                    : "*Not available*"
+                                            }
+                                        ],
+                                        footer: {
+                                            text: "Logged"
+                                        },
+                                        timestamp: new Date().toISOString(),
+                                        color: 0x007bff
+                                    }
+                                ]
+                            })
+                            .catch(logError);
+                    }
+                })
+                .catch(logError);
+        }
     }
 
     async execute(interaction: MessageContextMenuCommandInteraction): Promise<CommandReturn> {

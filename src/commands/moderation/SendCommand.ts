@@ -17,9 +17,11 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { AttachmentPayload, Message, PermissionsBitField, SlashCommandBuilder } from "discord.js";
+import { AttachmentPayload, Message, PermissionsBitField, SlashCommandBuilder, User } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import EmbedSchemaParser from "../../utils/EmbedSchemaParser";
+import { channelInfo, messageInfo, userInfo } from "../../utils/embed";
+import { safeChannelFetch } from "../../utils/fetch";
 import { logError } from "../../utils/logger";
 
 export default class EchoCommand extends Command {
@@ -64,22 +66,26 @@ export default class EchoCommand extends Command {
             return;
         }
 
+        const options = {
+            content,
+            files:
+                message instanceof Message
+                    ? message.attachments.map(
+                          a =>
+                              ({
+                                  attachment: a.proxyURL,
+                                  name: a.name,
+                                  description: a.description
+                              } as AttachmentPayload)
+                      )
+                    : undefined
+        };
+
+        let sentMessage: Message<boolean> | undefined = undefined;
+
         try {
             if (user) {
-                await EmbedSchemaParser.sendMessage(user, {
-                    content,
-                    files:
-                        message instanceof Message
-                            ? message.attachments.map(
-                                  a =>
-                                      ({
-                                          attachment: a.proxyURL,
-                                          name: a.name,
-                                          description: a.description
-                                      } as AttachmentPayload)
-                              )
-                            : undefined
-                });
+                sentMessage = await EmbedSchemaParser.sendMessage(user, options);
             }
 
             if (message instanceof Message) {
@@ -97,6 +103,77 @@ export default class EchoCommand extends Command {
                 message,
                 `Could not deliver DM. Maybe the user does not share any server with me or has blocked me or disabled DMs?`
             );
+        }
+
+        if (!this.client.configManager.systemConfig.logging?.enabled) {
+            return;
+        }
+
+        const logChannelId = this.client.configManager.systemConfig.logging?.channels?.echo_send_logs;
+
+        if (logChannelId) {
+            safeChannelFetch(message.guild!, logChannelId)
+                .then(async channel => {
+                    if (channel?.isTextBased()) {
+                        const sentMessage = await EmbedSchemaParser.sendMessage(channel, options).catch(logError);
+
+                        if (!sentMessage) {
+                            return;
+                        }
+
+                        await channel
+                            ?.send({
+                                embeds: [
+                                    {
+                                        title: "The send command was executed",
+                                        author: {
+                                            name: message.member!.user.username,
+                                            icon_url: (message.member!.user as User).displayAvatarURL?.()
+                                        },
+                                        description: `The message is [above](${sentMessage.url}).`,
+                                        fields: [
+                                            {
+                                                name: "Guild",
+                                                value: `${message.guild!.name} (${message.guild!.id})`,
+                                                inline: true
+                                            },
+
+                                            {
+                                                name: "Channel",
+                                                value: channelInfo(message.channel!),
+                                                inline: true
+                                            },
+                                            {
+                                                name: "Mode",
+                                                value: context.isLegacy ? "Legacy" : "Application Command"
+                                            },
+                                            {
+                                                name: "User (The person who ran the command)",
+                                                value: userInfo(message.member!.user as User),
+                                                inline: true
+                                            },
+                                            {
+                                                name: "User (The person who received the DM)",
+                                                value: userInfo(user),
+                                                inline: true
+                                            },
+                                            {
+                                                name: "Message Info",
+                                                value: !sentMessage ? "*Not available*" : messageInfo(sentMessage)
+                                            }
+                                        ],
+                                        footer: {
+                                            text: "Logged"
+                                        },
+                                        timestamp: new Date().toISOString(),
+                                        color: 0x007bff
+                                    }
+                                ]
+                            })
+                            .catch(logError);
+                    }
+                })
+                .catch(logError);
         }
     }
 }
