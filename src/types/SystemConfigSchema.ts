@@ -42,7 +42,7 @@ export const SystemConfigSchema = z.object({
             status: z.enum(["online", "idle", "dnd", "invisible"]).optional(),
             url: z.string().optional(),
             type: z.enum(
-                Object.keys(ActivityType).filter(a => typeof a === "string") as [
+                Object.keys(ActivityType).filter(a => typeof a === "string" && a !== "Custom") as [
                     ApplicationActivityType,
                     ...ApplicationActivityType[]
                 ]
