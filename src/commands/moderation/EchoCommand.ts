@@ -65,7 +65,8 @@ export default class EchoCommand extends Command {
         });
 
         const echoMentions = this.client.configManager.config[message.guildId!]?.commands?.echo_mentions ?? false;
-        const deleteReply = this.client.configManager.config[message.guildId!]?.commands?.moderation_command_behaviour ?? false;
+        const deleteReply =
+            this.client.configManager.config[message.guildId!]?.commands?.moderation_command_behaviour === "delete";
 
         const channel: TextChannel =
             (!context.isLegacy

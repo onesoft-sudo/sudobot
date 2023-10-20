@@ -59,7 +59,8 @@ export default class EchoCommand extends Command {
         const content: string | undefined = !context.isLegacy
             ? context.options.getString("content", true)
             : context.parsedNamedArgs.content;
-        const deleteReply = this.client.configManager.config[message.guildId!]?.commands?.moderation_command_behaviour ?? false;
+        const deleteReply =
+            this.client.configManager.config[message.guildId!]?.commands?.moderation_command_behaviour === "delete";
 
         if (!content && message instanceof Message && message.attachments.size === 0) {
             await this.error(message, "Please provide the message content or attachments!");
