@@ -1,3 +1,12 @@
+## [6.46.1](https://github.com/onesoft-sudo/sudobot/compare/v6.46.0...v6.46.1) (2023-10-20)
+
+
+### Bug Fixes
+
+* echo and send commands always remove the command message ([566f9f4](https://github.com/onesoft-sudo/sudobot/commit/566f9f48bbdb9c984b150010b30bf40753c5093e))
+
+
+
 # [6.46.0](https://github.com/onesoft-sudo/sudobot/compare/v6.45.0...v6.46.0) (2023-10-20)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **afk:** show dates ([bf16af7](https://github.com/onesoft-sudo/sudobot/commit/bf16af75ba52e2988c62c8a016e259873be9e72e))
-
-
-
-# [6.42.0](https://github.com/onesoft-sudo/sudobot/compare/v6.41.0...v6.42.0) (2023-10-18)
-
-
-### Features
-
-* clear command aliases ([7c91684](https://github.com/onesoft-sudo/sudobot/commit/7c9168421923df44ad91557f526674dd1b14cb60))
 
 
 
