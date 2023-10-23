@@ -17,7 +17,7 @@ jobs:
         uses: TriPSs/conventional-changelog-action@v3.15.0
         with:
           github-token: ${{ secrets.__TOKEN }}
-          version-file: './package.json,./package-lock.json'
+          version-file: './package.json'
           git-user-name: "Conventional Release Action"
           git-user-email: rakinar2@onesoftnet.eu.org
 
