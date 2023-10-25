@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { log } from "console";
 import { Message } from "discord.js";
 import EventListener from "../../core/EventListener";
 import { Events } from "../../types/ClientEvents";
@@ -35,10 +36,24 @@ export default class MessageUpdateEvent extends EventListener<Events.MessageUpda
         if (oldMessage.content === newMessage.content) return;
 
         await this.client.logger.logMessageEdit(oldMessage, newMessage);
-        const deleted = await this.client.messageFilter.scanMessage(newMessage).catch(logError);
+        let deleted = await this.client.messageFilter.scanMessage(newMessage).catch(logError);
 
-        if (deleted) return;
+        if (deleted) {
+            return;
+        }
 
-        await this.client.messageRuleService.onMessageCreate(newMessage).catch(logError);
+        deleted = await this.client.messageRuleService.onMessageCreate(newMessage).catch(logError);
+
+        if (deleted) {
+            return;
+        }
+
+        if (this.client.configManager.config[newMessage.guildId!]?.commands.rerun_on_edit) {
+            const value = await this.client.commandManager.runCommandFromMessage(newMessage).catch(logError);
+
+            if (value === false) {
+                log("Command or snippet not found: all strategies failed");
+            }
+        }
     }
 }
