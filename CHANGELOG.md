@@ -1,3 +1,12 @@
+# [6.49.0](https://github.com/onesoft-sudo/sudobot/compare/v6.48.0...v6.49.0) (2023-10-25)
+
+
+### Features
+
+* **antispam:** similar message spam protection ([ccf3c3b](https://github.com/onesoft-sudo/sudobot/commit/ccf3c3b35ad2132a448676548895087e09556aa6))
+
+
+
 # [6.48.0](https://github.com/onesoft-sudo/sudobot/compare/v6.47.0...v6.48.0) (2023-10-25)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * system level audit logging ([831d53b](https://github.com/onesoft-sudo/sudobot/commit/831d53b8854ea05d837ad7c3ecb2f64bbffe3141))
-
-
-
-# [6.45.0](https://github.com/onesoft-sudo/sudobot/compare/v6.44.0...v6.45.0) (2023-10-18)
-
-
-### Features
-
-* add moderation command modes ([81ae68e](https://github.com/onesoft-sudo/sudobot/commit/81ae68e081462a2516c3b7e675b3c4bb08924b70))
 
 
 
