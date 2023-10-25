@@ -153,6 +153,13 @@ export const GuildConfigSchema = z.object({
             limit: z.number().int().default(-1).optional(),
             timeframe: z.number().int().default(-1).optional(),
             mute_duration: z.number().int().default(-1).optional(),
+            similar_messages: z
+                .object({
+                    max: z.number().int().default(-1).optional(),
+                    channels: z.array(zSnowflake).or(z.boolean()).default(false).optional(),
+                    timeframe: z.number().int().min(0).optional()
+                })
+                .optional(),
             action: z
                 .union([
                     z.literal("verbal_warn"),

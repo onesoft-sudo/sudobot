@@ -28,10 +28,17 @@ interface SpamUserInfo {
     timeout?: NodeJS.Timeout;
 }
 
+interface SimilarMessageSpamInfo {
+    content?: string;
+    count: number;
+    timeout?: NodeJS.Timeout;
+}
+
 export const name = "antispam";
 
 export default class Antispam extends Service {
     protected readonly map: Record<`${Snowflake}_${Snowflake}`, SpamUserInfo | undefined> = {};
+    protected readonly similarMessageSpamMap: Record<`${Snowflake}_${Snowflake}`, SimilarMessageSpamInfo | undefined> = {};
 
     async muteUser(message: Message, antispam: GuildConfig["antispam"]) {
         this.client.infractionManager
@@ -128,6 +135,59 @@ export default class Antispam extends Service {
         }
     }
 
+    async checkForSimilarMessages(message: Message, config: GuildConfig) {
+        if (
+            !config.antispam?.similar_messages?.max ||
+            config.antispam?.similar_messages?.max < 0 ||
+            message.content.trim() === ""
+        ) {
+            return false;
+        }
+
+        const channels = config.antispam?.similar_messages?.channels;
+
+        if (typeof channels === "boolean" && !channels) {
+            return false;
+        }
+
+        if (channels !== true && !channels?.includes(message.channelId)) {
+            return false;
+        }
+
+        const lastMessageInfo = this.similarMessageSpamMap[`${message.guildId!}_${message.author.id}`];
+
+        if (!lastMessageInfo) {
+            this.similarMessageSpamMap[`${message.guildId!}_${message.author.id}`] = {
+                count: 0,
+                content: message.content,
+                timeout: setTimeout(() => {
+                    const lastMessageInfo = this.similarMessageSpamMap[`${message.guildId!}_${message.author.id}`];
+                    const max = config.antispam?.similar_messages?.max;
+
+                    if (lastMessageInfo && max && lastMessageInfo.count >= max) {
+                        lastMessageInfo.count = 0;
+                        this.takeAction(message).catch(console.error);
+                    }
+
+                    this.similarMessageSpamMap[`${message.guildId!}_${message.author.id}`] = undefined;
+                }, config.antispam.similar_messages?.timeframe ?? config.antispam.timeframe)
+            };
+
+            return false;
+        }
+
+        if (message.content === lastMessageInfo.content) {
+            log("Similar message found");
+            lastMessageInfo.count++;
+        } else {
+            log("Similar message count reset");
+            lastMessageInfo.count = 0;
+        }
+
+        this.similarMessageSpamMap[`${message.guildId!}_${message.author.id}`] = lastMessageInfo;
+        return false;
+    }
+
     async onMessageCreate(message: Message) {
         if (!isTextableChannel(message.channel)) return;
 
@@ -145,6 +205,12 @@ export default class Antispam extends Service {
         }
 
         if (isImmuneToAutoMod(this.client, message.member!, PermissionFlagsBits.ManageMessages)) {
+            return;
+        }
+
+        const result = await this.checkForSimilarMessages(message, config);
+
+        if (result) {
             return;
         }
 
