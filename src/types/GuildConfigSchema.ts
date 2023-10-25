@@ -162,7 +162,8 @@ export const GuildConfigSchema = z.object({
                     z.literal("mute_clear"),
                     z.literal("auto")
                 ])
-                .optional()
+                .optional(),
+            disabled_channels: z.array(zSnowflake).default([])
         })
         .optional(),
     antiraid: z

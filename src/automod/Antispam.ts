@@ -46,7 +46,10 @@ export default class Antispam extends Service {
                 moderator: this.client.user!,
                 bulkDeleteReason: "The system has detected spam messages from this user",
                 duration: antispam?.mute_duration && antispam?.mute_duration > 0 ? antispam?.mute_duration : 1000 * 60 * 60,
-                messageChannel: antispam?.action === "mute_clear" || antispam?.action === "auto" ? (message.channel! as TextChannel) : undefined,
+                messageChannel:
+                    antispam?.action === "mute_clear" || antispam?.action === "auto"
+                        ? (message.channel! as TextChannel)
+                        : undefined,
                 notifyUser: true,
                 reason: "Spam detected",
                 sendLog: true,
@@ -61,7 +64,9 @@ export default class Antispam extends Service {
                 guild: message.guild!,
                 moderator: this.client.user!,
                 notifyUser: true,
-                reason: `Spam detected.${antispam?.action === "auto" ? " If you continue to send spam messages, you might get muted." : ""}`,
+                reason: `Spam detected.${
+                    antispam?.action === "auto" ? " If you continue to send spam messages, you might get muted." : ""
+                }`,
                 sendLog: true
             })
             .catch(logError);
@@ -139,7 +144,8 @@ export default class Antispam extends Service {
             !config?.antispam.limit ||
             !config?.antispam.timeframe ||
             config.antispam.limit < 1 ||
-            config.antispam.timeframe < 1
+            config.antispam.timeframe < 1 ||
+            config.antispam.disabled_channels.includes(message.channelId!)
         ) {
             return;
         }
@@ -160,7 +166,9 @@ export default class Antispam extends Service {
 
             info.timeout = setTimeout(() => {
                 const delayedInfo = this.map[message.guildId!][message.author.id] ?? ({} as SpamUserInfo);
-                const timestamps = delayedInfo.timestamps.filter(timestamp => config.antispam?.timeframe! + timestamp >= Date.now());
+                const timestamps = delayedInfo.timestamps.filter(
+                    timestamp => config.antispam?.timeframe! + timestamp >= Date.now()
+                );
 
                 if (timestamps.length >= config.antispam?.limit!) {
                     this.takeAction(message).catch(console.error);
