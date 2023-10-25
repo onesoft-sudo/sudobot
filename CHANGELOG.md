@@ -1,3 +1,12 @@
+# [6.48.0](https://github.com/onesoft-sudo/sudobot/compare/v6.47.0...v6.48.0) (2023-10-25)
+
+
+### Features
+
+* **antispam:** `disabled_channels` option ([37e0e6e](https://github.com/onesoft-sudo/sudobot/commit/37e0e6ee9235f7216e99d9c7dbdc635b51ccc26b))
+
+
+
 # [6.47.0](https://github.com/onesoft-sudo/sudobot/compare/v6.46.1...v6.47.0) (2023-10-20)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * add moderation command modes ([81ae68e](https://github.com/onesoft-sudo/sudobot/commit/81ae68e081462a2516c3b7e675b3c4bb08924b70))
-
-
-
-# [6.44.0](https://github.com/onesoft-sudo/sudobot/compare/v6.43.0...v6.44.0) (2023-10-18)
-
-
-### Features
-
-* global AFK support ([eb0fcef](https://github.com/onesoft-sudo/sudobot/commit/eb0fcefd3754b2e21f84a8a0359c5a374e483337))
 
 
 
