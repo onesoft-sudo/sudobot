@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { GuildMember, Message, PermissionFlagsBits, TextChannel } from "discord.js";
+import { GuildMember, Message, PermissionFlagsBits, Snowflake, TextChannel } from "discord.js";
 import Service from "../core/Service";
 import { GuildConfig } from "../types/GuildConfigSchema";
 import { log, logError } from "../utils/logger";
@@ -31,13 +31,7 @@ interface SpamUserInfo {
 export const name = "antispam";
 
 export default class Antispam extends Service {
-    protected readonly map: Record<string, Record<string, SpamUserInfo | undefined>> = {};
-
-    boot() {
-        for (const guild in this.client.configManager.config) {
-            this.map[guild] = {};
-        }
-    }
+    protected readonly map: Record<`${Snowflake}_${Snowflake}`, SpamUserInfo | undefined> = {};
 
     async muteUser(message: Message, antispam: GuildConfig["antispam"]) {
         this.client.infractionManager
@@ -154,7 +148,7 @@ export default class Antispam extends Service {
             return;
         }
 
-        const info = this.map[message.guildId!][message.author.id] ?? ({} as SpamUserInfo);
+        const info = this.map[`${message.guildId!}_${message.author.id}`] ?? ({} as SpamUserInfo);
 
         info.timestamps ??= [];
         info.timestamps.push(Date.now());
@@ -165,7 +159,7 @@ export default class Antispam extends Service {
             log("Timeout set");
 
             info.timeout = setTimeout(() => {
-                const delayedInfo = this.map[message.guildId!][message.author.id] ?? ({} as SpamUserInfo);
+                const delayedInfo = this.map[`${message.guildId!}_${message.author.id}`] ?? ({} as SpamUserInfo);
                 const timestamps = delayedInfo.timestamps.filter(
                     timestamp => config.antispam?.timeframe! + timestamp >= Date.now()
                 );
@@ -174,11 +168,11 @@ export default class Antispam extends Service {
                     this.takeAction(message).catch(console.error);
                 }
 
-                this.map[message.guildId!][message.author.id] = undefined;
+                this.map[`${message.guildId!}_${message.author.id}`] = undefined;
                 log("Popped");
             }, config.antispam.timeframe);
         }
 
-        this.map[message.guildId!][message.author.id] = info;
+        this.map[`${message.guildId!}_${message.author.id}`] = info;
     }
 }
