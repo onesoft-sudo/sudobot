@@ -168,8 +168,8 @@ const guildIdResolvers: Array<{
             data?.guildMember?.guild.id ?? data2?.guildMember?.guild.id ?? undefined
     },
     {
-        events: ["typingStart", "webhooksUpdate"],
-        resolver: ([data]: ClientEvents["typingStart" | "webhooksUpdate"]) => data.guild?.id ?? undefined
+        events: ["typingStart", "webhookUpdate"],
+        resolver: ([data]: ClientEvents["typingStart" | "webhookUpdate"]) => data.guild?.id ?? undefined
     },
     {
         events: ["command"],
