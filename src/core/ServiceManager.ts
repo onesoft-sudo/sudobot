@@ -17,8 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { logInfo } from "../utils/logger";
+import { lstatSync } from "fs";
+import { readdir } from "fs/promises";
+import { join } from "path";
+import { log, logInfo, logWarn } from "../utils/logger";
 import Client from "./Client";
+import Service from "./Service";
 
 export default class ServiceManager {
     constructor(protected client: Client) {}
@@ -38,6 +42,59 @@ export default class ServiceManager {
             this.client[name as "services"] = serviceInstance;
             this.client.loadEventListenersFromMetadata(Service, serviceInstance);
             await serviceInstance.boot();
+        }
+    }
+
+    async loadServiceFromFile(path: string, extension?: string) {
+        const {
+            default: Service,
+            name
+        }: {
+            name?: string;
+            default: new (client: Client) => Service;
+        } = await import(path);
+
+        if (!name && extension) {
+            logWarn(
+                `Extension ${extension} has attempted to load a service that does not export a \`name\` constant. (file: ${path})`
+            );
+            return false;
+        }
+
+        if (extension) {
+            logInfo("Loading service: ", `${extension}:@services/${name}`);
+        } else {
+            logInfo("Loading service: ", `@services/${name ?? path}`);
+        }
+
+        const service = new Service(this.client);
+
+        this.client[name as "services"] = service as any;
+        this.client.loadEventListenersFromMetadata(Service, service);
+
+        await service.boot();
+        return true;
+    }
+
+    async loadServiceFromDirectory(path: string) {
+        const files = await readdir(path);
+
+        for (const file of files) {
+            const filePath = join(path, file);
+
+            if (lstatSync(filePath).isDirectory()) {
+                await this.loadServiceFromDirectory(filePath);
+                continue;
+            }
+
+            if (file.endsWith(".d.ts")) {
+                continue;
+            }
+
+            if (file.endsWith(".js") || file.endsWith(".ts")) {
+                log("Attempting to load service from file: ", filePath);
+                await this.loadServiceFromFile(filePath);
+            }
         }
     }
 }

@@ -33,6 +33,7 @@ export const name = "extensionService";
 type Metadata = {
     main?: string;
     commands?: string;
+    services?: string;
     events?: string;
     language?: "typescript" | "javascript";
     main_directory?: string;
@@ -233,14 +234,15 @@ export default class ExtensionService extends Service {
     async loadExtensionsFromIndex(extensionsIndex: string) {
         const { extensions } = JSON.parse(await fs.readFile(extensionsIndex, "utf-8"));
 
-        for (const { entry, commands, events, name } of extensions) {
+        for (const { entry, commands, events, name, services } of extensions) {
             logInfo("Loading extension (cached): ", name);
 
             await this.loadExtension({
                 extensionPath: entry,
                 commands,
                 events,
-                extensionName: name
+                extensionName: name,
+                services
             });
         }
     }
@@ -269,6 +271,7 @@ export default class ExtensionService extends Service {
                 main_directory = "./build",
                 commands = `./${main_directory}/commands`,
                 events = `./${main_directory}/events`,
+                services = `./${main_directory}/services`,
                 main = `./${main_directory}/index.js`
             } = metadata;
 
@@ -276,7 +279,8 @@ export default class ExtensionService extends Service {
                 extensionName,
                 extensionPath: path.join(extensionDirectory, main),
                 commandsDirectory: path.join(extensionDirectory, commands),
-                eventsDirectory: path.join(extensionDirectory, events)
+                eventsDirectory: path.join(extensionDirectory, events),
+                servicesDirectory: path.join(extensionDirectory, services)
             });
         }
     }
@@ -287,28 +291,51 @@ export default class ExtensionService extends Service {
         eventsDirectory,
         commands,
         events,
-        extensionName
+        extensionName,
+        services,
+        servicesDirectory
     }:
         | {
               extensionPath: string;
               commandsDirectory: string;
               eventsDirectory: string;
+              servicesDirectory: string;
               extensionName: string;
               commands?: never;
               events?: never;
+              services?: never;
           }
         | {
               extensionPath: string;
               commandsDirectory?: never;
               eventsDirectory?: never;
+              servicesDirectory?: never;
               commands: string[];
               events: string[];
+              services: string[];
               extensionName: string;
           }) {
         const { default: ExtensionClass }: { default: new (client: Client) => Extension } = await import(extensionPath);
         const extension = new ExtensionClass(this.client);
         const commandPaths = await extension.commands();
         const eventPaths = await extension.events();
+        const servicePaths = await extension.services();
+
+        if (servicePaths === null) {
+            if (servicesDirectory) {
+                if (existsSync(servicesDirectory)) {
+                    await this.client.serviceManager.loadServiceFromDirectory(servicesDirectory);
+                }
+            } else if (services) {
+                for (const servicePath of services) {
+                    await this.client.serviceManager.loadServiceFromFile(servicePath);
+                }
+            }
+        } else {
+            for (const servicePath of servicePaths) {
+                await this.client.serviceManager.loadServiceFromFile(servicePath);
+            }
+        }
 
         if (commandPaths === null) {
             if (commandsDirectory) {
