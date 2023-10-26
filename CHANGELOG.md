@@ -1,3 +1,12 @@
+# [6.51.0](https://github.com/onesoft-sudo/sudobot/compare/v6.50.1...v6.51.0) (2023-10-26)
+
+
+### Features
+
+* **extensions:** extension-specific services ([227d3f5](https://github.com/onesoft-sudo/sudobot/commit/227d3f563be3ea24d3b208cd416b8e9b98a0b791))
+
+
+
 ## [6.50.1](https://github.com/onesoft-sudo/sudobot/compare/v6.50.0...v6.50.1) (2023-10-26)
 
 
@@ -31,20 +40,6 @@
 ### Features
 
 * **antispam:** `disabled_channels` option ([37e0e6e](https://github.com/onesoft-sudo/sudobot/commit/37e0e6ee9235f7216e99d9c7dbdc635b51ccc26b))
-
-
-
-# [6.47.0](https://github.com/onesoft-sudo/sudobot/compare/v6.46.1...v6.47.0) (2023-10-20)
-
-
-### Bug Fixes
-
-* broken changes after updating discord.js ([876f3c7](https://github.com/onesoft-sudo/sudobot/commit/876f3c76debe3dcb10e3d9426e6390cd35828c02))
-
-
-### Features
-
-* auto updating ([2926620](https://github.com/onesoft-sudo/sudobot/commit/2926620c79412d3619ff5f19d7d6e99895c27c7a))
 
 
 
