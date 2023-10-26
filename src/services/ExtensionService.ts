@@ -310,7 +310,6 @@ export default class ExtensionService extends Service {
         const commandPaths = await extension.commands();
         const eventPaths = await extension.events();
 
-        // FIXME: Make sure to load the command metadata
         if (commandPaths === null) {
             if (commandsDirectory) {
                 if (existsSync(commandsDirectory)) {
