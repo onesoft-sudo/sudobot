@@ -1,3 +1,12 @@
+## [6.50.1](https://github.com/onesoft-sudo/sudobot/compare/v6.50.0...v6.50.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* **types:discord.js:** breaking type changes ([66b0399](https://github.com/onesoft-sudo/sudobot/commit/66b039944455553dd3ad2a89a9093695d44467e8))
+
+
+
 # [6.50.0](https://github.com/onesoft-sudo/sudobot/compare/v6.49.0...v6.50.0) (2023-10-25)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * auto updating ([2926620](https://github.com/onesoft-sudo/sudobot/commit/2926620c79412d3619ff5f19d7d6e99895c27c7a))
-
-
-
-## [6.46.1](https://github.com/onesoft-sudo/sudobot/compare/v6.46.0...v6.46.1) (2023-10-20)
-
-
-### Bug Fixes
-
-* echo and send commands always remove the command message ([566f9f4](https://github.com/onesoft-sudo/sudobot/commit/566f9f48bbdb9c984b150010b30bf40753c5093e))
 
 
 
