@@ -142,6 +142,31 @@ export default class HelloCommand extends BaseCommand {
 
 This command just responds to the user with "Hello world, from the hello extension!".
 
+#### Adding event listeners to the extension
+
+Now, let's add an event listener to the extension! Create a file `src/events/MessageCreateEvent.ts` and inside of that file, put the following code:
+
+```typescript
+import EventListener from "@sudobot/core/EventListener";
+import { Message } from "discord.js";
+
+export default class MessageCreateEvent extends EventListener<"messageCreate"> {
+    public readonly name = "messageCreate";
+
+    async execute(message: Message) {
+        if (message.author.bot) {
+            return;
+        }
+    
+        if (message.content === "ping") {
+            await message.reply("Pong, from the hello extension!");
+        }
+    }
+}
+```
+
+This event listener listens to `messageCreate` event, and whenever someone sends a message with content "ping", it will reply to them.
+
 #### Building the extension
 
 Go to the project root, and run the `extensions.js` script to build all the installed extensions:
