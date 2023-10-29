@@ -1,3 +1,12 @@
+## [6.51.1](https://github.com/onesoft-sudo/sudobot/compare/v6.51.0...v6.51.1) (2023-10-29)
+
+
+### Bug Fixes
+
+* **welcomer:** remove queued welcome message confirmation on button press ([72a671f](https://github.com/onesoft-sudo/sudobot/commit/72a671f27e38307cbce90937927815a75a1d45a0))
+
+
+
 # [6.51.0](https://github.com/onesoft-sudo/sudobot/compare/v6.50.1...v6.51.0) (2023-10-26)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **antispam:** similar message spam protection ([ccf3c3b](https://github.com/onesoft-sudo/sudobot/commit/ccf3c3b35ad2132a448676548895087e09556aa6))
-
-
-
-# [6.48.0](https://github.com/onesoft-sudo/sudobot/compare/v6.47.0...v6.48.0) (2023-10-25)
-
-
-### Features
-
-* **antispam:** `disabled_channels` option ([37e0e6e](https://github.com/onesoft-sudo/sudobot/commit/37e0e6ee9235f7216e99d9c7dbdc635b51ccc26b))
 
 
 
