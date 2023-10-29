@@ -177,27 +177,85 @@ export default class LoggerService extends Service {
         threatScore,
         isToxic,
         isThreat,
-        isSeverelyToxic
+        isSeverelyToxic,
+        isExplicit,
+        isFlirty,
+        isAttack,
+        isInsult,
+        isProfanity,
+        explicitScore,
+        flirtationScore,
+        identityAttackScore,
+        insultScore,
+        profanityScore
     }: {
         message: Message;
         toxicityScore: number;
         severeToxicityScore: number;
         threatScore: number;
+        explicitScore: number;
+        flirtationScore: number;
+        identityAttackScore: number;
+        insultScore: number;
+        profanityScore: number;
         isToxic?: boolean;
         isThreat?: boolean;
         isSeverelyToxic?: boolean;
+        isExplicit?: boolean;
+        isFlirty?: boolean;
+        isAttack?: boolean;
+        isInsult?: boolean;
+        isProfanity?: boolean;
     }) {
-        const { max_severe_toxicity, max_threat, max_toxicity } = this.client.configManager.config[message.guildId!]?.ai_automod
-            ?.parameters ?? {
+        const {
+            max_severe_toxicity,
+            max_threat,
+            max_toxicity,
+            max_explicit,
+            max_flirtation,
+            max_identity_attack,
+            max_insult,
+            max_profanity
+        } = this.client.configManager.config[message.guildId!]?.ai_automod?.parameters ?? {
             max_severe_toxicity: 100,
             max_threat: 100,
-            max_toxicity: 100
+            max_toxicity: 100,
+            max_explicit: 100,
+            max_flirtation: 100,
+            max_identity_attack: 100,
+            max_insult: 100,
+            max_profanity: 100
         };
 
         const threat = isThreat === undefined ? threatScore >= max_threat : isThreat;
         const toxic = isToxic === undefined ? toxicityScore >= max_toxicity : isToxic;
         const severeToxic = isSeverelyToxic === undefined ? severeToxicityScore >= max_severe_toxicity : isSeverelyToxic;
-        const messageType = threat ? "threatening" : toxic ? "toxic" : severeToxic ? "severly toxic" : undefined;
+
+        const explicit = isExplicit ?? explicitScore >= max_explicit;
+        const flirty = isFlirty ?? flirtationScore >= max_flirtation;
+        const attack = isAttack ?? identityAttackScore >= max_identity_attack;
+        const insult = isInsult ?? insultScore >= max_insult;
+        const profanity = isProfanity ?? profanityScore >= max_profanity;
+
+        let messageType: string = "removed for unknown reason";
+
+        if (threat) {
+            messageType = "threatening";
+        } else if (toxic) {
+            messageType = "toxic";
+        } else if (severeToxic) {
+            messageType = "severly toxic";
+        } else if (explicit) {
+            messageType = "sexually explicit";
+        } else if (flirty) {
+            messageType = "flirty";
+        } else if (attack) {
+            messageType = "attacking";
+        } else if (insult) {
+            messageType = "insulting";
+        } else if (profanity) {
+            messageType = "flagged for profanity";
+        }
 
         await this.sendLogEmbed(message.guild!, {
             title: "AI AutoMod has flagged this message",
@@ -208,7 +266,11 @@ export default class LoggerService extends Service {
                     name: "Score",
                     value: `Toxicity: ${toxicityScore.toFixed(2)}%\nThreat: ${threatScore.toFixed(
                         2
-                    )}%\nSevere Toxicity: ${severeToxicityScore.toFixed(2)}%`
+                    )}%\nSevere Toxicity: ${severeToxicityScore.toFixed(2)}%\nNSFW: ${explicitScore.toFixed(
+                        2
+                    )}%\nFlirtation: ${flirtationScore.toFixed(2)}%\nIdentity Attack: ${identityAttackScore.toFixed(
+                        2
+                    )}%\nInsult: ${insultScore.toFixed(2)}%\nProfanity: ${profanityScore.toFixed(2)}%`
                 },
                 {
                     name: "Reason",

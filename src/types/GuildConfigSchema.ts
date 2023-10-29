@@ -297,7 +297,12 @@ export const GuildConfigSchema = z.object({
                 .object({
                     max_toxicity: z.number().int().min(0).max(101).default(101),
                     max_severe_toxicity: z.number().int().min(0).max(101).default(101),
-                    max_threat: z.number().int().min(0).max(101).default(101)
+                    max_threat: z.number().int().min(0).max(101).default(101),
+                    max_profanity: z.number().int().min(0).max(101).default(101),
+                    max_flirtation: z.number().int().min(0).max(101).default(101),
+                    max_identity_attack: z.number().int().min(0).max(101).default(101),
+                    max_insult: z.number().int().min(0).max(101).default(101),
+                    max_explicit: z.number().int().min(0).max(101).default(101)
                 })
                 .default({})
         })

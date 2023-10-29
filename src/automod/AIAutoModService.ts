@@ -64,7 +64,16 @@ export default class AIAutoModService extends Service implements HasEventListene
             return;
         }
 
-        const { max_severe_toxicity, max_threat, max_toxicity } = config.parameters;
+        const {
+            max_severe_toxicity,
+            max_threat,
+            max_toxicity,
+            max_explicit,
+            max_flirtation,
+            max_identity_attack,
+            max_insult,
+            max_profanity
+        } = config.parameters;
 
         try {
             const response = await this.analyze(this.googleClient, {
@@ -73,7 +82,12 @@ export default class AIAutoModService extends Service implements HasEventListene
                     requestedAttributes: {
                         TOXICITY: {},
                         THREAT: {},
-                        SEVERE_TOXICITY: {}
+                        SEVERE_TOXICITY: {},
+                        IDENTITY_ATTACK: {},
+                        INSULT: {},
+                        PROFANITY: {},
+                        SEXUALLY_EXPLICIT: {},
+                        FLIRTATION: {}
                     },
                     comment: {
                         text: message.content
@@ -87,11 +101,22 @@ export default class AIAutoModService extends Service implements HasEventListene
             const threatScore = response.data.attributeScores.THREAT.summaryScore.value * 100;
             const toxicityScore = response.data.attributeScores.TOXICITY.summaryScore.value * 100;
             const severeToxicityScore = response.data.attributeScores.SEVERE_TOXICITY.summaryScore.value * 100;
+            const explicitScore = response.data.attributeScores.SEXUALLY_EXPLICIT.summaryScore.value * 100;
+            const flirtationScore = response.data.attributeScores.FLIRTATION.summaryScore.value * 100;
+            const identityAttackScore = response.data.attributeScores.IDENTITY_ATTACK.summaryScore.value * 100;
+            const insultScore = response.data.attributeScores.INSULT.summaryScore.value * 100;
+            const profanityScore = response.data.attributeScores.PROFANITY.summaryScore.value * 100;
+
             const isThreat = threatScore >= max_threat;
             const isToxic = toxicityScore >= max_toxicity;
             const isSeverelyToxic = severeToxicityScore >= max_severe_toxicity;
+            const isExplicit = explicitScore >= max_explicit;
+            const isFlirty = flirtationScore >= max_flirtation;
+            const isAttack = identityAttackScore >= max_identity_attack;
+            const isInsult = insultScore >= max_insult;
+            const isProfanity = profanityScore >= max_profanity;
 
-            if (isThreat || isToxic || isSeverelyToxic) {
+            if (isThreat || isToxic || isSeverelyToxic || isExplicit || isFlirty || isAttack || isInsult || isProfanity) {
                 await message.delete();
                 await this.client.logger.logAIAutoModMessageDelete({
                     message,
@@ -100,7 +125,17 @@ export default class AIAutoModService extends Service implements HasEventListene
                     threatScore,
                     isSeverelyToxic,
                     isThreat,
-                    isToxic
+                    isToxic,
+                    isExplicit,
+                    isFlirty,
+                    isAttack,
+                    isInsult,
+                    isProfanity,
+                    explicitScore,
+                    flirtationScore,
+                    identityAttackScore,
+                    insultScore,
+                    profanityScore
                 });
             }
         } catch (e) {
