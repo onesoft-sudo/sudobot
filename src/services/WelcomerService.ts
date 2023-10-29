@@ -136,11 +136,8 @@ export default class WelcomerService extends Service {
         this.mutexes[interaction.guildId!] ??= new Mutex();
         const wasLocked = this.mutexes[interaction.guildId!]!.isLocked();
 
-        if (wasLocked) {
-            await interaction[interaction.replied ? "followUp" : "reply"]({
-                content: `Queued.`,
-                ephemeral: true
-            });
+        if (!interaction.deferred && !interaction.replied) {
+            await interaction.deferUpdate();
         }
 
         const release = await this.mutexes[interaction.guildId!]!.acquire();
@@ -160,7 +157,7 @@ export default class WelcomerService extends Service {
 
         try {
             if (!messageId) {
-                const reply = await interaction[interaction.replied ? "followUp" : "reply"]({
+                const reply = await interaction[interaction.replied || interaction.deferred ? "followUp" : "reply"]({
                     content: `${interaction.user.id === memberId ? "__You__" : interaction.user.toString()}${
                         interaction.user.id === memberId ? " said hi to yourself!" : saysHiToYou
                     }`,
@@ -190,7 +187,7 @@ export default class WelcomerService extends Service {
                 }
             } else {
                 try {
-                    if (!interaction.replied) {
+                    if (!interaction.replied && !interaction.deferred) {
                         await interaction.deferUpdate();
                     }
 
