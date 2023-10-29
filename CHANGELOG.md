@@ -1,3 +1,12 @@
+## [6.51.2](https://github.com/onesoft-sudo/sudobot/compare/v6.51.1...v6.51.2) (2023-10-29)
+
+
+### Bug Fixes
+
+* **audit:logging:** searching for log channel in wrong server ([e6ca9f5](https://github.com/onesoft-sudo/sudobot/commit/e6ca9f57477138530830de660648885f834a361d))
+
+
+
 ## [6.51.1](https://github.com/onesoft-sudo/sudobot/compare/v6.51.0...v6.51.1) (2023-10-29)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **config:commands:** `rerun_on_edit` option to rerun commands automatically on message edit ([7b60d33](https://github.com/onesoft-sudo/sudobot/commit/7b60d33ba1df1d32f34a9a9541ae24c6ec2207bf))
-
-
-
-# [6.49.0](https://github.com/onesoft-sudo/sudobot/compare/v6.48.0...v6.49.0) (2023-10-25)
-
-
-### Features
-
-* **antispam:** similar message spam protection ([ccf3c3b](https://github.com/onesoft-sudo/sudobot/commit/ccf3c3b35ad2132a448676548895087e09556aa6))
 
 
 
