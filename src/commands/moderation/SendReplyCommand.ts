@@ -94,7 +94,7 @@ export default class SendReplyCommand extends Command implements HasEventListene
         const logChannelId = this.client.configManager.systemConfig.logging?.channels?.echo_send_logs;
 
         if (logChannelId) {
-            safeChannelFetch(interaction.guild!, logChannelId)
+            safeChannelFetch(await this.client.getHomeGuild(), logChannelId)
                 .then(async channel => {
                     if (channel?.isTextBased()) {
                         const sentMessage = await EmbedSchemaParser.sendMessage(channel, options).catch(logError);
