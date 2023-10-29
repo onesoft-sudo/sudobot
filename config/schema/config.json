@@ -1418,6 +1418,36 @@
                                         "minimum": 0,
                                         "maximum": 101,
                                         "default": 101
+                                    },
+                                    "max_profanity": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 101,
+                                        "default": 101
+                                    },
+                                    "max_flirtation": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 101,
+                                        "default": 101
+                                    },
+                                    "max_identity_attack": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 101,
+                                        "default": 101
+                                    },
+                                    "max_insult": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 101,
+                                        "default": 101
+                                    },
+                                    "max_explicit": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 101,
+                                        "default": 101
                                     }
                                 },
                                 "additionalProperties": false,
