@@ -1,3 +1,12 @@
+## [6.51.3](https://github.com/onesoft-sudo/sudobot/compare/v6.51.2...v6.51.3) (2023-10-29)
+
+
+### Bug Fixes
+
+* **audit:logging:** searching for log channel in wrong server ([c49481a](https://github.com/onesoft-sudo/sudobot/commit/c49481a4e5bc0ce9196d731650ab530f99bc3449))
+
+
+
 ## [6.51.2](https://github.com/onesoft-sudo/sudobot/compare/v6.51.1...v6.51.2) (2023-10-29)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **types:discord.js:** breaking type changes ([66b0399](https://github.com/onesoft-sudo/sudobot/commit/66b039944455553dd3ad2a89a9093695d44467e8))
-
-
-
-# [6.50.0](https://github.com/onesoft-sudo/sudobot/compare/v6.49.0...v6.50.0) (2023-10-25)
-
-
-### Features
-
-* **config:commands:** `rerun_on_edit` option to rerun commands automatically on message edit ([7b60d33](https://github.com/onesoft-sudo/sudobot/commit/7b60d33ba1df1d32f34a9a9541ae24c6ec2207bf))
 
 
 
