@@ -77,7 +77,6 @@
                         "Streaming",
                         "Listening",
                         "Watching",
-                        "Custom",
                         "Competing"
                     ]
                 }
@@ -151,7 +150,7 @@
                             "format": "date-time"
                         }
                     ],
-                    "default": "2023-10-13T05:04:41.536Z"
+                    "default": "2023-10-29T11:52:29.983Z"
                 }
             },
             "additionalProperties": false,
@@ -178,6 +177,27 @@
                 "enabled": {
                     "type": "boolean",
                     "default": false
+                },
+                "auto_start": {
+                    "type": "boolean",
+                    "default": false
+                }
+            },
+            "additionalProperties": false
+        },
+        "logging": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "channels": {
+                    "type": "object",
+                    "properties": {
+                        "echo_send_logs": {}
+                    },
+                    "additionalProperties": false
                 }
             },
             "additionalProperties": false

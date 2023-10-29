@@ -38,6 +38,18 @@
                             "echo_mentions": {
                                 "type": "boolean",
                                 "default": false
+                            },
+                            "moderation_command_behaviour": {
+                                "type": "string",
+                                "enum": [
+                                    "delete",
+                                    "default"
+                                ],
+                                "default": "default"
+                            },
+                            "rerun_on_edit": {
+                                "type": "boolean",
+                                "default": false
                             }
                         },
                         "additionalProperties": false,
@@ -344,6 +356,34 @@
                                 "type": "integer",
                                 "default": -1
                             },
+                            "similar_messages": {
+                                "type": "object",
+                                "properties": {
+                                    "max": {
+                                        "type": "integer",
+                                        "default": -1
+                                    },
+                                    "channels": {
+                                        "anyOf": [
+                                            {
+                                                "type": "array",
+                                                "items": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
+                                                }
+                                            },
+                                            {
+                                                "type": "boolean"
+                                            }
+                                        ],
+                                        "default": false
+                                    },
+                                    "timeframe": {
+                                        "type": "integer",
+                                        "minimum": 0
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
                             "action": {
                                 "type": "string",
                                 "enum": [
@@ -353,6 +393,13 @@
                                     "mute_clear",
                                     "auto"
                                 ]
+                            },
+                            "disabled_channels": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
+                                },
+                                "default": []
                             }
                         },
                         "additionalProperties": false
