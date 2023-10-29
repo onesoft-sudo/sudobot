@@ -1,3 +1,12 @@
+# [6.52.0](https://github.com/onesoft-sudo/sudobot/compare/v6.51.3...v6.52.0) (2023-10-29)
+
+
+### Features
+
+* **automod:ai:** add support for detecting other various type of unwanted messages ([62047b2](https://github.com/onesoft-sudo/sudobot/commit/62047b2acab0a5a335b971a95fe6608ec3827c62))
+
+
+
 ## [6.51.3](https://github.com/onesoft-sudo/sudobot/compare/v6.51.2...v6.51.3) (2023-10-29)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **extensions:** extension-specific services ([227d3f5](https://github.com/onesoft-sudo/sudobot/commit/227d3f563be3ea24d3b208cd416b8e9b98a0b791))
-
-
-
-## [6.50.1](https://github.com/onesoft-sudo/sudobot/compare/v6.50.0...v6.50.1) (2023-10-26)
-
-
-### Bug Fixes
-
-* **types:discord.js:** breaking type changes ([66b0399](https://github.com/onesoft-sudo/sudobot/commit/66b039944455553dd3ad2a89a9093695d44467e8))
 
 
 
