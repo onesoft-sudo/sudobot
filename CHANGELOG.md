@@ -1,3 +1,12 @@
+## [6.53.2](https://github.com/onesoft-sudo/sudobot/compare/v6.53.1...v6.53.2) (2023-10-30)
+
+
+### Bug Fixes
+
+* todos ([128b55a](https://github.com/onesoft-sudo/sudobot/commit/128b55a1d361781b5d1e4c6dcd75696524532076))
+
+
+
 ## [6.53.1](https://github.com/onesoft-sudo/sudobot/compare/v6.53.0...v6.53.1) (2023-10-30)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **audit:logging:** searching for log channel in wrong server ([c49481a](https://github.com/onesoft-sudo/sudobot/commit/c49481a4e5bc0ce9196d731650ab530f99bc3449))
-
-
-
-## [6.51.2](https://github.com/onesoft-sudo/sudobot/compare/v6.51.1...v6.51.2) (2023-10-29)
-
-
-### Bug Fixes
-
-* **audit:logging:** searching for log channel in wrong server ([e6ca9f5](https://github.com/onesoft-sudo/sudobot/commit/e6ca9f57477138530830de660648885f834a361d))
 
 
 
