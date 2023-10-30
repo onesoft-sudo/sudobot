@@ -1,32 +1,93 @@
 name: Releases
 on:
-  push:
-    branches:
-      - main
+    push:
+        branches:
+            - main
 
 jobs:
-  changelog:
-    if: github.repository_owner == 'onesoft-sudo'
-    runs-on: ubuntu-latest
+    build:
+        if: github.repository_owner == 'onesoft-sudo'
+        runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v3
+        strategy:
+            matrix:
+                node-version: [18.x, 21.x]
 
-      - name: Conventional Changelog Action
-        id: changelog
-        uses: TriPSs/conventional-changelog-action@v3.15.0
-        with:
-          github-token: ${{ secrets.__TOKEN }}
-          version-file: './package.json'
-          git-user-name: "Conventional Release Action"
-          git-user-email: rakinar2@onesoftnet.eu.org
+        steps:
+            - uses: actions/checkout@v3
 
-      - name: Create Release
-        uses: actions/create-release@v1
-        if: ${{ steps.changelog.outputs.skipped == 'false' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.__TOKEN }}
-        with:
-          tag_name: ${{ steps.changelog.outputs.tag }}
-          release_name: ${{ steps.changelog.outputs.tag }}
-          body: ${{ steps.changelog.outputs.clean_changelog }}
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node-version }}
+
+            - name: "Install Dependencies"
+              run: npm install
+
+            - name: "Install Dev Dependencies"
+              run: npm install -D
+
+            - name: "Generate prisma client"
+              run: npx prisma generate
+
+            - name: "ESLint"
+              run: npm run lint || echo "ESLint Failed"
+
+            - name: "Build"
+              run: npm run build --if-present
+
+            - name: "Package the built files"
+              run: |
+                  mv build sudobot;
+                  tar -cvzf sudobot-prebuilt.tar.gz sudobot
+
+            - name: Upload Release Artifacts
+              uses: actions/upload-artifact@v3
+              with:
+                  name: sudobot-release
+                  path: |
+                      ./sudobot-release.tar.gz
+
+    release:
+        needs: [build]
+        if: github.repository_owner == 'onesoft-sudo'
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Conventional Changelog Action
+              id: changelog
+              uses: TriPSs/conventional-changelog-action@v3.15.0
+              with:
+                  github-token: ${{ secrets.__TOKEN }}
+                  version-file: "./package.json"
+                  git-user-name: "Conventional Release Action"
+                  git-user-email: rakinar2@onesoftnet.eu.org
+
+            - name: Download Release Artifacts
+              uses: actions/download-artifact@v2
+              with:
+                  name: sudobot-release
+                  path: ./sudobot-release.tar.gz
+
+            - name: Create Release
+              uses: actions/create-release@v1
+              if: ${{ steps.changelog.outputs.skipped == 'false' }}
+              env:
+                  GITHUB_TOKEN: ${{ secrets.__TOKEN }}
+              with:
+                  tag_name: ${{ steps.changelog.outputs.tag }}
+                  release_name: ${{ steps.changelog.outputs.tag }}
+                  body: ${{ steps.changelog.outputs.clean_changelog }}
+
+            - name: Upload Release Asset
+              id: upload-release-asset
+              uses: actions/upload-release-asset@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.__TOKEN }}
+              with:
+                  upload_url: ${{ steps.create_release.outputs.upload_url }}
+                  asset_path: ./sudobot-release.tar.gz
+                  asset_name: sudobot-release.tar.gz
+                  asset_content_type: application/x-gzip
