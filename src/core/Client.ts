@@ -38,6 +38,7 @@ import type BumpReminderService from "../services/BumpReminderService";
 import type ChannelLockManager from "../services/ChannelLockManager";
 import type CommandManager from "../services/CommandManager";
 import type ConfigManager from "../services/ConfigManager";
+import type CooldownService from "../services/CooldownService";
 import type ExtensionService from "../services/ExtensionService";
 import type InfractionManager from "../services/InfractionManager";
 import type InviteTrackerService from "../services/InviteTrackerService";
@@ -51,7 +52,7 @@ import type ReactionRoleService from "../services/ReactionRoleService";
 import type SnippetManager from "../services/SnippetManager";
 import type StartupManager from "../services/StartupManager";
 import type TranslationService from "../services/TranslationService";
-import TriggerService from "../services/TriggerService";
+import type TriggerService from "../services/TriggerService";
 import type WelcomerService from "../services/WelcomerService";
 import { CustomEvents, type ClientEvents } from "../types/ClientEvents";
 import { log, logError, logInfo } from "../utils/logger";
@@ -88,6 +89,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@services/ExtensionService",
         "@services/BumpReminderService",
         "@services/LogServer",
+        "@services/CooldownService",
 
         "@automod/MessageFilter",
         "@automod/Antispam",
@@ -134,6 +136,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     extensionService: ExtensionService = {} as ExtensionService;
     bumpReminder: BumpReminderService = {} as BumpReminderService;
     logServer: LogServer = {} as LogServer;
+    cooldown: CooldownService = {} as CooldownService;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",

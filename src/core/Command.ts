@@ -152,6 +152,7 @@ export default abstract class Command {
 
     public readonly subcommands: string[] = [];
     public readonly subCommandCheck: boolean = false;
+    public readonly cooldown?: number = undefined;
 
     constructor(protected client: Client) {}
 
@@ -163,7 +164,7 @@ export default abstract class Command {
 
     async deferredReply(
         message: CommandMessage,
-        options: MessageCreateOptions | MessagePayload | InteractionEditReplyOptions | string,
+        options: ((MessageCreateOptions | MessagePayload | InteractionEditReplyOptions) & { ephemeral?: boolean }) | string,
         mode: DeferReplyMode = "default"
     ) {
         if (message instanceof ChatInputCommandInteraction || message instanceof ContextMenuCommandInteraction) {
@@ -202,6 +203,40 @@ export default abstract class Command {
         return getEmoji(this.client, name);
     }
 
+    /**
+     * Check for command cooldowns.
+     *
+     * @param message The target message
+     * @returns {Promise<boolean>} Whether to abort the command
+     */
+    private async cooldownCheck(message: CommandMessage): Promise<boolean> {
+        if (!this.cooldown) {
+            return false;
+        }
+
+        const { cooldown, enabled } = this.client.cooldown.lock(message.guildId!, this.name, this.cooldown);
+
+        if (enabled) {
+            const seconds = Math.max(Math.ceil(((cooldown ?? 0) - Date.now()) / 1000), 1);
+
+            await this.deferredReply(message, {
+                embeds: [
+                    {
+                        description: `${this.emoji(
+                            "clock_red"
+                        )} You're being rate limited, please wait for **${seconds}** second${seconds === 1 ? "" : "s"}.`,
+                        color: 0xf14a60
+                    }
+                ],
+                ephemeral: true
+            });
+
+            return true;
+        }
+
+        return false;
+    }
+
     async run(message: CommandMessage, context: AnyCommandContext, checkOnly = false, onAbort?: () => any) {
         const isSystemAdmin = this.client.configManager.systemConfig.system_admins.includes(message.member!.user.id);
 
@@ -212,8 +247,8 @@ export default abstract class Command {
                     ephemeral: true
                 })
                 .catch(logError);
-            onAbort?.();
 
+            onAbort?.();
             return;
         }
 
@@ -442,8 +477,8 @@ export default abstract class Command {
                             content: `${this.emoji("error")} This command is disabled in this channel.`,
                             ephemeral: true
                         });
-                        onAbort?.();
 
+                        onAbort?.();
                         return;
                     }
 
@@ -454,8 +489,17 @@ export default abstract class Command {
                     content: `${this.emoji("error")} You don't have enough permissions to run this command.`,
                     ephemeral: true
                 });
-                onAbort?.();
 
+                onAbort?.();
+                return;
+            }
+        }
+
+        if (this.cooldown) {
+            const abort = await this.cooldownCheck(message);
+
+            if (abort) {
+                onAbort?.();
                 return;
             }
         }
@@ -466,6 +510,7 @@ export default abstract class Command {
                     message,
                     `Please provide a valid subcommand! The valid subcommands are \`${this.subcommands.join("`, `")}\`.`
                 );
+
                 onAbort?.();
                 return;
             }
@@ -513,6 +558,7 @@ export default abstract class Command {
                                     rule.minMaxErrorMessage ??
                                         `Argument #${index} has a min/max numeric value range but the given value is out of range.`
                                 );
+
                                 onAbort?.();
                                 return;
                             }
