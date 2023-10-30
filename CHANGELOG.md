@@ -1,3 +1,12 @@
+## [6.53.1](https://github.com/onesoft-sudo/sudobot/compare/v6.53.0...v6.53.1) (2023-10-30)
+
+
+### Bug Fixes
+
+* reformat readme ([51007b0](https://github.com/onesoft-sudo/sudobot/commit/51007b0aafa72c66f4685dd21e505877baa58302))
+
+
+
 # [6.53.0](https://github.com/onesoft-sudo/sudobot/compare/v6.52.0...v6.53.0) (2023-10-30)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **audit:logging:** searching for log channel in wrong server ([e6ca9f5](https://github.com/onesoft-sudo/sudobot/commit/e6ca9f57477138530830de660648885f834a361d))
-
-
-
-## [6.51.1](https://github.com/onesoft-sudo/sudobot/compare/v6.51.0...v6.51.1) (2023-10-29)
-
-
-### Bug Fixes
-
-* **welcomer:** remove queued welcome message confirmation on button press ([72a671f](https://github.com/onesoft-sudo/sudobot/commit/72a671f27e38307cbce90937927815a75a1d45a0))
 
 
 
