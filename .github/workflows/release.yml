@@ -72,6 +72,7 @@ jobs:
                   path: ./sudobot-release.tar.gz
 
             - name: Create Release
+              id: create_release
               uses: actions/create-release@v1
               if: ${{ steps.changelog.outputs.skipped == 'false' }}
               env:
