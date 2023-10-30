@@ -65,7 +65,6 @@ jobs:
               uses: actions/download-artifact@v2
               with:
                   name: sudobot-release
-                  path: ./sudobot-release.tar.gz
 
             - name: Create Release
               id: create_release
