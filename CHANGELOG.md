@@ -1,3 +1,12 @@
+# [6.53.0](https://github.com/onesoft-sudo/sudobot/compare/v6.52.0...v6.53.0) (2023-10-30)
+
+
+### Features
+
+* **commands:** add better cooldown support ([b509437](https://github.com/onesoft-sudo/sudobot/commit/b50943723c1afcb027353e93165ddb9168263923))
+
+
+
 # [6.52.0](https://github.com/onesoft-sudo/sudobot/compare/v6.51.3...v6.52.0) (2023-10-29)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **welcomer:** remove queued welcome message confirmation on button press ([72a671f](https://github.com/onesoft-sudo/sudobot/commit/72a671f27e38307cbce90937927815a75a1d45a0))
-
-
-
-# [6.51.0](https://github.com/onesoft-sudo/sudobot/compare/v6.50.1...v6.51.0) (2023-10-26)
-
-
-### Features
-
-* **extensions:** extension-specific services ([227d3f5](https://github.com/onesoft-sudo/sudobot/commit/227d3f563be3ea24d3b208cd416b8e9b98a0b791))
 
 
 
