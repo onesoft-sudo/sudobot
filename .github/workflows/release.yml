@@ -69,22 +69,13 @@ jobs:
 
             - name: Create Release
               id: create_release
-              uses: actions/create-release@v1
+              uses: ncipollo/release-action@v1
               if: ${{ steps.changelog.outputs.skipped == 'false' }}
               env:
                   GITHUB_TOKEN: ${{ secrets.__TOKEN }}
               with:
-                  tag_name: ${{ steps.changelog.outputs.tag }}
-                  release_name: ${{ steps.changelog.outputs.tag }}
+                  tag: ${{ steps.changelog.outputs.tag }}
+                  name: ${{ steps.changelog.outputs.tag }}
                   body: ${{ steps.changelog.outputs.clean_changelog }}
-
-            - name: Upload Release Asset
-              id: upload-release-asset
-              uses: actions/upload-release-asset@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.__TOKEN }}
-              with:
-                  upload_url: ${{ steps.create_release.outputs.upload_url }}
-                  asset_path: ./sudobot-release.tar.gz
-                  asset_name: sudobot-release.tar.gz
-                  asset_content_type: application/x-gzip
+                  artifactContentType: application/x-gzip
+                  artifacts: ./sudobot-release.tar.gz
