@@ -1,4 +1,3 @@
-
 <p align="center">
 <a href="https://www.sudobot.org" title="Official Website of SudoBot" target="_blank">
 <img src="https://res.cloudinary.com/rakinar2/image/upload/f_auto,q_auto/em8aewnsfwj7mlfhqxtf" height="114px" width="348px">
@@ -25,11 +24,11 @@ If you like the bot, then please make sure to star this repository! And also if 
 
 ### Features
 
-- Strong auto moderation system with tools like anti-spam and anti-raid ([Click here](https://docs.sudobot.org/automoderation/#what-can-the-bot-do) to see the full list)
-- Useful moderation tools and utilities 
-- Secure
-- Fun commands
-- Active development & support
+-   Strong auto moderation system with tools like anti-spam and anti-raid ([Click here](https://docs.sudobot.org/automoderation/#what-can-the-bot-do) to see the full list)
+-   Useful moderation tools and utilities
+-   Secure
+-   Fun commands
+-   Active development & support
 
 ### Getting started
 
@@ -44,24 +43,23 @@ Please look at [this page](https://docs.sudobot.org/getting-started) of the docu
 
 Thanks to all the active and indirect contributors!
 
-
-* [Ar Rakin](https://github.com/virtual-designer) (Maintainer)
-* Hana (A Discord User)
-* [Kars](https://github.com/kars1996) (Contributed by giving away a domain to us)
-* [killerclaws12](https://github.com/killerclaws12)
-* [MonzterDev](https://github.com/MonzterDev)
+-   [Ar Rakin](https://github.com/virtual-designer) (Maintainer)
+-   Hana (A Discord User)
+-   [Kars](https://github.com/kars1996) (Contributed by giving away a domain to us)
+-   [killerclaws12](https://github.com/killerclaws12)
+-   [MonzterDev](https://github.com/MonzterDev)
 
 ### Support
 
-- **Email**: rakinar2@onesoftnet.eu.org
-- **Website**: https://www.sudobot.org
-- **Discord Servers**: [OneSoftNet Server](https://discord.gg/892GWhTzgs)
+-   **Email**: rakinar2@onesoftnet.eu.org
+-   **Website**: https://www.sudobot.org
+-   **Discord Servers**: [OneSoftNet Server](https://discord.gg/892GWhTzgs)
 
-### Extra 
+### Extra
 
-- **Download Emojis**: https://www.onesoftnet.eu.org/downloads/sudo/emojis/ <br />
-  Note that not all emojis are present there. You'll find the missing one's at [emoji.gg](https://emoji.gg).
-- **Dashboard**: https://github.com/onesoft-sudo/sudobot-dashboard <br />
-  The dashboard of SudoBot. Note that the dashboard is not complete yet.
+-   **Download Emojis**: https://www.onesoftnet.eu.org/downloads/sudo/emojis/ <br />
+    Note that not all emojis are present there. You'll find the missing one's at [emoji.gg](https://emoji.gg).
+-   **Dashboard**: https://github.com/onesoft-sudo/sudobot-dashboard <br />
+    The dashboard of SudoBot. Note that the dashboard is not complete yet.
 
 Copyright © 2022-2023 OSN and all the contributors of SudoBot.
