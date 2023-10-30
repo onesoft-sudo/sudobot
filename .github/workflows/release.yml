@@ -39,7 +39,7 @@ jobs:
             - name: "Package the built files"
               run: |
                   mv build sudobot;
-                  tar -cvzf sudobot-prebuilt.tar.gz sudobot
+                  tar -cvzf sudobot-release.tar.gz sudobot
 
             - name: Upload Release Artifacts
               uses: actions/upload-artifact@v3
