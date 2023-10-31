@@ -27,7 +27,8 @@ export enum LogLevel {
     WARN,
     ERROR,
     CRITICAL,
-    SUCCESS
+    SUCCESS,
+    EVENT
 }
 
 export function logWithLevel(level: LogLevel = LogLevel.DEBUG, ...message: any[]) {
@@ -49,6 +50,8 @@ export function logWithLevel(level: LogLevel = LogLevel.DEBUG, ...message: any[]
         console.error(`${chalk.red("[system:error]")}`, ...message);
     } else if (level === LogLevel.SUCCESS) {
         console.error(`${chalk.green("[system:success]")}`, ...message);
+    } else if (level === LogLevel.EVENT) {
+        console.error(`${chalk.green("[system:event]")}`, ...message);
     } else if (level === LogLevel.CRITICAL) {
         console.error(`${chalk.redBright("[system:critical]")}`, ...message);
 
@@ -83,6 +86,8 @@ export function logStringWithLevel(level: LogLevel = LogLevel.DEBUG, ...message:
         return `${chalk.red("[system:error]")} ` + message.join(" ");
     } else if (level === LogLevel.SUCCESS) {
         return `${chalk.green("[system:success]")} ` + message.join(" ");
+    } else if (level === LogLevel.EVENT) {
+        return `${chalk.green("[system:event]")} ` + message.join(" ");
     } else if (level === LogLevel.CRITICAL) {
         return `${chalk.redBright("[system:critical]")} ` + message.join(" ");
     }
