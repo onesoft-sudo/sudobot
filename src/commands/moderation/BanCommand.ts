@@ -175,6 +175,7 @@ export default class BanCommand extends Command {
                 embeds: [
                     await createModerationEmbed({
                         user,
+                        moderator: message.member!.user as User,
                         actionDoneName: "banned",
                         description: `**${escapeMarkdown(user.tag)}** has been banned from this server.`,
                         fields: [

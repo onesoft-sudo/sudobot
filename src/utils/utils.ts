@@ -38,6 +38,7 @@ import { mkdirSync } from "fs";
 import path from "path";
 import Client from "../core/Client";
 import { ActionDoneName } from "../services/InfractionManager";
+import { userInfo } from "./embed";
 
 export function isSnowflake(input: string) {
     return /^\d{16,22}$/.test(input);
@@ -45,6 +46,7 @@ export function isSnowflake(input: string) {
 
 export interface CreateModerationEmbedOptions {
     user: User;
+    moderator: User;
     actionDoneName?: ActionDoneName;
     reason?: string;
     description?: string;
@@ -62,7 +64,8 @@ export async function createModerationEmbed({
     description,
     fields,
     id,
-    color = 0xf14a60
+    color = 0xf14a60,
+    moderator
 }: CreateModerationEmbedOptions) {
     return new EmbedBuilder({
         author: {
@@ -79,6 +82,10 @@ export async function createModerationEmbed({
                               value: reason ?? "*No reason provided*"
                           },
                           {
+                              name: "Moderator",
+                              value: `${moderator.username} (${moderator.id})`
+                          },
+                          {
                               name: "Infraction ID",
                               value: `${id}`
                           }
@@ -90,6 +97,10 @@ export async function createModerationEmbed({
                       {
                           name: "Reason",
                           value: reason ?? "*No reason provided*"
+                      },
+                      {
+                          name: "Moderator",
+                          value: userInfo(moderator)
                       },
                       ...(fields ?? []),
                       {

@@ -99,6 +99,7 @@ export default class UnmuteCommand extends Command {
             {
                 embeds: [
                     await createModerationEmbed({
+                        moderator: message.member!.user as User,
                         user: member.user,
                         actionDoneName: "unmuted",
                         description: `**${escapeMarkdown(member.user.tag)}** has been unmuted.`,

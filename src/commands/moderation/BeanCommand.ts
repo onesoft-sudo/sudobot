@@ -78,6 +78,7 @@ export default class BeanCommand extends Command {
             {
                 embeds: [
                     await createModerationEmbed({
+                        moderator: message.member!.user as User,
                         user,
                         actionDoneName: "beaned",
                         id,

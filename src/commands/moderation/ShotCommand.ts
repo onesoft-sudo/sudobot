@@ -78,6 +78,7 @@ export default class ShotCommand extends Command {
             {
                 embeds: [
                     await createModerationEmbed({
+                        moderator: message.member!.user as User,
                         user,
                         id,
                         color: 0x007bff,

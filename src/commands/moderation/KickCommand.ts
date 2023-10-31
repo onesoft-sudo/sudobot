@@ -106,6 +106,7 @@ export default class KickCommand extends Command {
             {
                 embeds: [
                     await createModerationEmbed({
+                        moderator: message.member!.user as User,
                         user: member.user,
                         actionDoneName: "kicked",
                         id,

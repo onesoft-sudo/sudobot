@@ -154,6 +154,7 @@ export default class SoftBanCommand extends Command {
             {
                 embeds: [
                     await createModerationEmbed({
+                        moderator: message.member!.user as User,
                         user,
                         actionDoneName: "softbanned",
                         description: `**${escapeMarkdown(user.tag)}** was softbanned.`,

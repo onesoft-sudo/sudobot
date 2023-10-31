@@ -93,6 +93,7 @@ export default class UnbanCommand extends Command {
             {
                 embeds: [
                     await createModerationEmbed({
+                        moderator: message.member!.user as User,
                         user,
                         actionDoneName: "unbanned",
                         description: `**${escapeMarkdown(user.tag)}** has been unbanned.`,

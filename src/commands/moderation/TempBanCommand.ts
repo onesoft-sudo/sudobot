@@ -179,6 +179,7 @@ export default class TempBanCommand extends Command {
             {
                 embeds: [
                     await createModerationEmbed({
+                        moderator: message.member!.user as User,
                         user,
                         actionDoneName: "banned",
                         description: `**${escapeMarkdown(user.tag)}** was temporarily banned from this server.`,

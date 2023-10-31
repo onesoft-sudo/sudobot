@@ -95,6 +95,7 @@ export default class WarnCommand extends Command {
             {
                 embeds: [
                     await createModerationEmbed({
+                        moderator: message.member!.user as User,
                         user: member.user,
                         description: `**${escapeMarkdown(member.user.tag)}** has been warned.${
                             result === false
