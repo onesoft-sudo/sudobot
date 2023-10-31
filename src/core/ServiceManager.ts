@@ -24,6 +24,12 @@ import { log, logInfo, logWarn } from "../utils/logger";
 import Client from "./Client";
 import Service from "./Service";
 
+type LoadServiceOptions = {
+    extensionName?: string;
+    serviceAliasName?: string;
+    log?: boolean;
+};
+
 export default class ServiceManager {
     constructor(protected client: Client) {}
 
@@ -35,13 +41,52 @@ export default class ServiceManager {
                 replacedService = replacedService.replace(alias, this.client.aliases[alias as keyof typeof this.client.aliases]);
             }
 
-            logInfo("Loading service: ", service);
+            await this.loadService(replacedService);
+        }
+    }
 
-            const { default: Service, name } = await import(replacedService);
-            const serviceInstance = new Service(this.client);
-            this.client[name as "services"] = serviceInstance;
-            this.client.loadEventListenersFromMetadata(Service, serviceInstance);
+    async loadService(servicePath: string, { extensionName, serviceAliasName, log = true }: LoadServiceOptions = {}) {
+        const { default: Service, name } = await import(servicePath);
+        const wasPreviouslyLoaded = this.wasPreviouslyLoaded(name);
+        const finalName = extensionName ?? serviceAliasName ?? name;
+
+        if (log) {
+            logInfo(`${wasPreviouslyLoaded ? "Rel" : "L"}oading service: `, finalName);
+        }
+
+        const serviceInstance = new Service(this.client);
+        this.client[name as "services"] = serviceInstance;
+        this.client.loadEventListenersFromMetadata(Service, serviceInstance);
+        await this.serviceLifeCycle(serviceInstance, wasPreviouslyLoaded, finalName);
+    }
+
+    wasPreviouslyLoaded(name: string) {
+        return this.client[name as "services"] instanceof Service;
+    }
+
+    async deactivateService(name: string) {
+        if (!(this.client[name as "services"] instanceof Service)) {
+            return;
+        }
+
+        logInfo("Deactivated service: ", name);
+        await (this.client[name as "services"] as any)?.deactivate();
+        this.client[name as "services"] = {} as any;
+    }
+
+    async serviceLifeCycle(serviceInstance: Service, wasPreviouslyLoaded: boolean, finalName: string) {
+        if (wasPreviouslyLoaded) {
+            await serviceInstance.deactivate();
+        }
+
+        if (!wasPreviouslyLoaded) {
             await serviceInstance.boot();
+        }
+
+        await serviceInstance.reboot();
+
+        if (wasPreviouslyLoaded) {
+            await serviceInstance.rebootNext();
         }
     }
 
@@ -61,18 +106,17 @@ export default class ServiceManager {
             return false;
         }
 
-        if (extension) {
-            logInfo("Loading service: ", `${extension}:@services/${name}`);
-        } else {
-            logInfo("Loading service: ", `@services/${name ?? path}`);
-        }
+        const wasPreviouslyLoaded = !!this.client[name as "services"];
+        const finalName = extension ? `${extension}:@services/${name}` : `@services/${name ?? path}`;
+
+        logInfo("Loading service: ", finalName);
 
         const service = new Service(this.client);
 
         this.client[name as "services"] = service as any;
         this.client.loadEventListenersFromMetadata(Service, service);
 
-        await service.boot();
+        await this.serviceLifeCycle(service, wasPreviouslyLoaded, name ?? path);
         return true;
     }
 

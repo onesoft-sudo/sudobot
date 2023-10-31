@@ -42,6 +42,7 @@ import type CooldownService from "../services/CooldownService";
 import type ExtensionService from "../services/ExtensionService";
 import type InfractionManager from "../services/InfractionManager";
 import type InviteTrackerService from "../services/InviteTrackerService";
+import type KeypressHandlerService from "../services/KeypressHandlerService";
 import type LogServer from "../services/LogServer";
 import type LoggerService from "../services/LoggerService";
 import type MetadataService from "../services/MetadataService";
@@ -90,6 +91,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@services/BumpReminderService",
         "@services/LogServer",
         "@services/CooldownService",
+        "@services/KeypressHandlerService",
 
         "@automod/MessageFilter",
         "@automod/Antispam",
@@ -137,6 +139,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     bumpReminder: BumpReminderService = {} as BumpReminderService;
     logServer: LogServer = {} as LogServer;
     cooldown: CooldownService = {} as CooldownService;
+    keypressHandler: KeypressHandlerService = {} as KeypressHandlerService;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",

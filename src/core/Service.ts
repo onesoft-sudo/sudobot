@@ -21,5 +21,9 @@ import Client from "./Client";
 
 export default abstract class Service {
     constructor(protected client: Client) {}
+
     boot(): any {}
+    reboot(): any {}
+    rebootNext(): any {}
+    deactivate(): any {}
 }
