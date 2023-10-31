@@ -1,3 +1,13 @@
+# [6.55.0](https://github.com/onesoft-sudo/sudobot/compare/v6.54.0...v6.55.0) (2023-10-31)
+
+
+### Features
+
+* **core:services:** introduce more flexible lifecycle methods ([699ef9f](https://github.com/onesoft-sudo/sudobot/commit/699ef9f6b038cccc4ae411fb987dfc85558b15b6))
+* **development:** hot reloading of commands ([99ff93f](https://github.com/onesoft-sudo/sudobot/commit/99ff93f74bfa92d8b01f01626eabf5440e4191a8))
+
+
+
 # [6.54.0](https://github.com/onesoft-sudo/sudobot/compare/v6.53.2...v6.54.0) (2023-10-31)
 
 
@@ -31,15 +41,6 @@
 ### Features
 
 * **commands:** add better cooldown support ([b509437](https://github.com/onesoft-sudo/sudobot/commit/b50943723c1afcb027353e93165ddb9168263923))
-
-
-
-# [6.52.0](https://github.com/onesoft-sudo/sudobot/compare/v6.51.3...v6.52.0) (2023-10-29)
-
-
-### Features
-
-* **automod:ai:** add support for detecting other various type of unwanted messages ([62047b2](https://github.com/onesoft-sudo/sudobot/commit/62047b2acab0a5a335b971a95fe6608ec3827c62))
 
 
 
