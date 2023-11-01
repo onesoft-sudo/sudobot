@@ -18,7 +18,7 @@
  */
 
 import { PrismaClient } from "@prisma/client";
-import { ClientOptions, Collection, Client as DiscordClient, GuildEmoji, UserResolvable } from "discord.js";
+import { Awaitable, ClientOptions, Collection, Client as DiscordClient, GuildEmoji, UserResolvable } from "discord.js";
 import { Stats } from "fs";
 import fs from "fs/promises";
 import path, { basename, dirname } from "path";
@@ -186,7 +186,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     async loadCommands(
         directory = this.commandsDirectory,
         metadataLoader?: Function,
-        filter?: (path: string, name: string, info: Stats) => boolean
+        filter?: (path: string, name: string, info: Stats) => Awaitable<boolean>
     ) {
         const files = await fs.readdir(directory);
         const includeOnly = process.env.COMMANDS?.split(",");
@@ -209,7 +209,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
                 continue;
             }
 
-            if (filter !== undefined && !filter(filePath, file, info)) {
+            if (filter !== undefined && !(await filter(filePath, file, info))) {
                 continue;
             }
 

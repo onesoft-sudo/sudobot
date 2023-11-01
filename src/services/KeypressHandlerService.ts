@@ -17,9 +17,13 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { spawnSync } from "node:child_process";
+import { lstat } from "node:fs/promises";
+import path from "node:path";
+import { chdir, cwd } from "node:process";
 import readline from "node:readline";
 import Service from "../core/Service";
-import { LogLevel, logWarn, logWithLevel } from "../utils/logger";
+import { LogLevel, logError, logInfo, logWarn, logWithLevel } from "../utils/logger";
 import { developmentMode } from "../utils/utils";
 
 export const name = "keypressHandler";
@@ -36,7 +40,8 @@ export default class KeypressHandlerService extends Service {
         [CommandKey.ForceReloadCommands]: () => this.reloadCommands(true),
         [CommandKey.Quit]: this.quit.bind(this)
     };
-    commandLastLoad = Date.now();
+
+    lastCommandUpdate = Date.now();
 
     onKeyPress = (
         _: string,
@@ -84,19 +89,63 @@ export default class KeypressHandlerService extends Service {
     }
 
     async reloadCommands(force = false) {
-        // const srcDir = process.env.SOURCE_DIRECTORY_PATH ?? path.resolve(__dirname, "../../src");
-        // const buildDir = process.env.BUILD_DIRECTORY_PATH ?? path.resolve(__dirname, "../../build");
+        const srcDir = process.env.SOURCE_DIRECTORY_PATH ?? path.resolve(__dirname, "../../src");
+        const buildDir = process.env.BUILD_DIRECTORY_PATH ?? path.resolve(__dirname, "../../build");
+        let built = false,
+            failed = false;
 
         logWithLevel(LogLevel.EVENT, "Hot reloading commands");
 
-        await this.client.loadCommands(undefined, undefined, (_, __, info) => {
-            // const info = lstatSync(filePath.replace(buildDir, srcDir).replace(/\.js$/gi, ".ts"));
-            return force ? true : info.mtime.getTime() >= this.commandLastLoad;
+        await this.client.loadCommands(undefined, undefined, async filePath => {
+            if (failed) {
+                return false;
+            }
+
+            if (force) {
+                return true;
+            }
+
+            delete require.cache[require.resolve(filePath)];
+
+            const sourceFile = filePath.replace(buildDir, srcDir).replace(/\.js$/gi, ".ts");
+            const sourceInfo = await lstat(sourceFile);
+
+            if (sourceInfo.mtime.getTime() < this.lastCommandUpdate) {
+                return false;
+            }
+
+            if (!built) {
+                const currentDirectory = cwd();
+                chdir(path.resolve(__dirname, "../.."));
+
+                logInfo("Rebuilding project source files");
+
+                const { status } = spawnSync(`npm run build`, {
+                    encoding: "utf-8",
+                    shell: true,
+                    stdio: "inherit"
+                });
+
+                chdir(currentDirectory);
+
+                if (status !== 0) {
+                    failed = true;
+                    return false;
+                }
+
+                built = true;
+            }
+
+            return true;
         });
 
-        this.commandLastLoad = Date.now();
+        this.lastCommandUpdate = Date.now();
 
-        logWithLevel(LogLevel.EVENT, "Successfully hot reloaded commands");
+        if (failed) {
+            logError("Build failed. Aborting hot reload");
+        } else {
+            logWithLevel(LogLevel.EVENT, "Successfully hot reloaded commands");
+        }
     }
 
     override boot() {
