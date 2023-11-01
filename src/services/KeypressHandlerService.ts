@@ -17,7 +17,6 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import path from "node:path";
 import readline from "node:readline";
 import Service from "../core/Service";
 import { LogLevel, logWarn, logWithLevel } from "../utils/logger";
@@ -85,8 +84,8 @@ export default class KeypressHandlerService extends Service {
     }
 
     async reloadCommands(force = false) {
-        const srcDir = process.env.SOURCE_DIRECTORY_PATH ?? path.resolve(__dirname, "../../src");
-        const buildDir = process.env.BUILD_DIRECTORY_PATH ?? path.resolve(__dirname, "../../build");
+        // const srcDir = process.env.SOURCE_DIRECTORY_PATH ?? path.resolve(__dirname, "../../src");
+        // const buildDir = process.env.BUILD_DIRECTORY_PATH ?? path.resolve(__dirname, "../../build");
 
         logWithLevel(LogLevel.EVENT, "Hot reloading commands");
 
