@@ -19,6 +19,7 @@
 
 import { PrismaClient } from "@prisma/client";
 import { ClientOptions, Collection, Client as DiscordClient, GuildEmoji, UserResolvable } from "discord.js";
+import { Stats } from "fs";
 import fs from "fs/promises";
 import path, { basename, dirname } from "path";
 import Server from "../api/Server";
@@ -182,16 +183,21 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         }
     }
 
-    async loadCommands(directory = this.commandsDirectory, metadataLoader?: Function) {
+    async loadCommands(
+        directory = this.commandsDirectory,
+        metadataLoader?: Function,
+        filter?: (path: string, name: string, info: Stats) => boolean
+    ) {
         const files = await fs.readdir(directory);
         const includeOnly = process.env.COMMANDS?.split(",");
 
         for (const file of files) {
             const filePath = path.join(directory, file);
-            const isDirectory = (await fs.lstat(filePath)).isDirectory();
+            const info = await fs.lstat(filePath);
+            const isDirectory = info.isDirectory();
 
             if (isDirectory) {
-                await this.loadCommands(filePath);
+                await this.loadCommands(filePath, metadataLoader, filter);
                 continue;
             }
 
@@ -200,6 +206,10 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
             }
 
             if (includeOnly && !includeOnly.includes(file.replace(/\.(ts|js)/gi, ""))) {
+                continue;
+            }
+
+            if (filter !== undefined && !filter(filePath, file, info)) {
                 continue;
             }
 

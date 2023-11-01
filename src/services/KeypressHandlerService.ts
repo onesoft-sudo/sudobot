@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import path from "node:path";
 import readline from "node:readline";
 import Service from "../core/Service";
 import { LogLevel, logWarn, logWithLevel } from "../utils/logger";
@@ -25,18 +26,21 @@ import { developmentMode } from "../utils/utils";
 export const name = "keypressHandler";
 
 enum CommandKey {
-    ReloadCommands = "r",
-    Quit = "q"
+    ReloadCommands = "R",
+    ForceReloadCommands = "Shift+R",
+    Quit = "Q"
 }
 
 export default class KeypressHandlerService extends Service {
     readonly keyHandlers: Record<CommandKey, Function> = {
         [CommandKey.ReloadCommands]: this.reloadCommands.bind(this),
+        [CommandKey.ForceReloadCommands]: () => this.reloadCommands(true),
         [CommandKey.Quit]: this.quit.bind(this)
     };
+    commandLastLoad = Date.now();
 
     onKeyPress = (
-        character: CommandKey,
+        _: string,
         key: {
             ctrl: boolean;
             meta: boolean;
@@ -48,7 +52,14 @@ export default class KeypressHandlerService extends Service {
             return;
         }
 
-        const handler = this.keyHandlers[character];
+        const modifiers: string[] = [];
+
+        if (key.ctrl) modifiers.push("Ctrl");
+        if (key.meta) modifiers.push("Meta");
+        if (key.shift) modifiers.push("Shift");
+
+        const commandKey = `${modifiers.join("+")}${modifiers.length > 0 ? "+" : ""}${key.name.toUpperCase()}`;
+        const handler = this.keyHandlers[commandKey as CommandKey];
 
         if (handler) {
             handler();
@@ -60,16 +71,7 @@ export default class KeypressHandlerService extends Service {
             return;
         }
 
-        const modifiers: string[] = [];
-
-        if (key.ctrl) modifiers.push("Ctrl");
-        if (key.meta) modifiers.push("Meta");
-        if (key.shift) modifiers.push("Shift");
-
-        logWarn(
-            "Unrecognized command key: ",
-            `${modifiers.join("+")}${modifiers.length > 0 ? "+" : ""}${key.name.toUpperCase()}`
-        );
+        logWarn("Unrecognized command key: ", `${commandKey}`);
     };
 
     quit() {
@@ -82,9 +84,19 @@ export default class KeypressHandlerService extends Service {
         process.exit(1);
     }
 
-    async reloadCommands() {
+    async reloadCommands(force = false) {
+        const srcDir = process.env.SOURCE_DIRECTORY_PATH ?? path.resolve(__dirname, "../../src");
+        const buildDir = process.env.BUILD_DIRECTORY_PATH ?? path.resolve(__dirname, "../../build");
+
         logWithLevel(LogLevel.EVENT, "Hot reloading commands");
-        await this.client.loadCommands();
+
+        await this.client.loadCommands(undefined, undefined, (_, __, info) => {
+            // const info = lstatSync(filePath.replace(buildDir, srcDir).replace(/\.js$/gi, ".ts"));
+            return force ? true : info.mtime.getTime() >= this.commandLastLoad;
+        });
+
+        this.commandLastLoad = Date.now();
+
         logWithLevel(LogLevel.EVENT, "Successfully hot reloaded commands");
     }
 
