@@ -1,3 +1,12 @@
+# [6.56.0](https://github.com/onesoft-sudo/sudobot/compare/v6.55.0...v6.56.0) (2023-11-01)
+
+
+### Features
+
+* improved hot reloading ([73424c7](https://github.com/onesoft-sudo/sudobot/commit/73424c7c6ed25ab9d51add378b54836f81de4f0c))
+
+
+
 # [6.55.0](https://github.com/onesoft-sudo/sudobot/compare/v6.54.0...v6.55.0) (2023-10-31)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * reformat readme ([51007b0](https://github.com/onesoft-sudo/sudobot/commit/51007b0aafa72c66f4685dd21e505877baa58302))
-
-
-
-# [6.53.0](https://github.com/onesoft-sudo/sudobot/compare/v6.52.0...v6.53.0) (2023-10-30)
-
-
-### Features
-
-* **commands:** add better cooldown support ([b509437](https://github.com/onesoft-sudo/sudobot/commit/b50943723c1afcb027353e93165ddb9168263923))
 
 
 
