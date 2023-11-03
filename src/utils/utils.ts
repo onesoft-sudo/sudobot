@@ -118,7 +118,11 @@ export async function createModerationEmbed({
         .setColor(color);
 }
 
-export function getEmoji(client: Client, name: string, returnNull = false) {
+export function getEmoji<B extends boolean = false>(
+    client: Client,
+    name: string,
+    returnNull: B = false as B
+): B extends false ? string : string | null {
     return (
         client.configManager.systemConfig.emojis?.[name] ??
         client.emojiMap.get(name)?.toString() ??
