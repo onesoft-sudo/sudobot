@@ -1,3 +1,12 @@
+## [6.56.1](https://github.com/onesoft-sudo/sudobot/compare/v6.56.0...v6.56.1) (2023-11-01)
+
+
+### Bug Fixes
+
+* **development:hotreload:** files not reloading ([056260c](https://github.com/onesoft-sudo/sudobot/commit/056260ca61da4cd790dcd2292e780ba062d1d8e1))
+
+
+
 # [6.56.0](https://github.com/onesoft-sudo/sudobot/compare/v6.55.0...v6.56.0) (2023-11-01)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * todos ([128b55a](https://github.com/onesoft-sudo/sudobot/commit/128b55a1d361781b5d1e4c6dcd75696524532076))
-
-
-
-## [6.53.1](https://github.com/onesoft-sudo/sudobot/compare/v6.53.0...v6.53.1) (2023-10-30)
-
-
-### Bug Fixes
-
-* reformat readme ([51007b0](https://github.com/onesoft-sudo/sudobot/commit/51007b0aafa72c66f4685dd21e505877baa58302))
 
 
 
