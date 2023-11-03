@@ -28,10 +28,10 @@ import { log, logError } from "../utils/logger";
 export const name = "afkService";
 
 export default class AFKService extends Service implements HasEventListeners {
-    protected readonly entries = new Map<Snowflake, AfkEntry>();
+    protected readonly entries = new Map<`${Snowflake | "global"}_${Snowflake}`, AfkEntry>();
     protected readonly syncTimeoutDelay = 15_000;
     protected syncTimeout: NodeJS.Timeout | null = null;
-    protected readonly modifiedIds = new Set<string>();
+    protected readonly modifiedIds = new Set<`${Snowflake | "global"}_${Snowflake}`>();
 
     @GatewayEventListener("ready")
     async onReady() {
@@ -233,7 +233,7 @@ export default class AFKService extends Service implements HasEventListeners {
         );
     }
 
-    get(key: string) {
+    get(key: `${Snowflake | "global"}_${Snowflake}`) {
         return this.entries.get(key);
     }
 }
