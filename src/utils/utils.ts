@@ -237,3 +237,7 @@ export function safeMessageContent(content: string, member: GuildMember, channel
               .replaceAll(`<@&${member.guild.id}>`, "`@everyone`")
               .replace(/<@&(\d+)>/gim, (_, id) => `@${member.guild.roles.cache.get(id)?.name ?? id}`);
 }
+
+export function isSystemAdmin(client: Client, userId: string) {
+    return client.configManager.systemConfig.system_admins.includes(userId);
+}

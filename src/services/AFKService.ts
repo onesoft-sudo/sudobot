@@ -19,7 +19,7 @@
 
 import { AfkEntry } from "@prisma/client";
 import { formatDistanceToNowStrict } from "date-fns";
-import { ChannelType, GuildMember, Message, Snowflake, escapeMarkdown, time } from "discord.js";
+import { ChannelType, Collection, GuildMember, Message, Snowflake, escapeMarkdown, time } from "discord.js";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
@@ -28,7 +28,7 @@ import { log, logError } from "../utils/logger";
 export const name = "afkService";
 
 export default class AFKService extends Service implements HasEventListeners {
-    protected readonly entries = new Map<`${Snowflake | "global"}_${Snowflake}`, AfkEntry>();
+    protected readonly entries = new Collection<`${Snowflake | "global"}_${Snowflake}`, AfkEntry>();
     protected readonly syncTimeoutDelay = 15_000;
     protected syncTimeout: NodeJS.Timeout | null = null;
     protected readonly modifiedIds = new Set<`${Snowflake | "global"}_${Snowflake}`>();
@@ -235,5 +235,9 @@ export default class AFKService extends Service implements HasEventListeners {
 
     get(key: `${Snowflake | "global"}_${Snowflake}`) {
         return this.entries.get(key);
+    }
+
+    getEntries() {
+        return this.entries;
     }
 }
