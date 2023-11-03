@@ -1,3 +1,12 @@
+## [6.57.1](https://github.com/onesoft-sudo/sudobot/compare/v6.57.0...v6.57.1) (2023-11-03)
+
+
+### Bug Fixes
+
+* help command causing crash if the github emoji is not available ([56ec68a](https://github.com/onesoft-sudo/sudobot/commit/56ec68a6c904cb0164d1443cca6fb13d78dfcb00))
+
+
+
 # [6.57.0](https://github.com/onesoft-sudo/sudobot/compare/v6.56.1...v6.57.0) (2023-11-03)
 
 
@@ -32,15 +41,6 @@
 
 * **core:services:** introduce more flexible lifecycle methods ([699ef9f](https://github.com/onesoft-sudo/sudobot/commit/699ef9f6b038cccc4ae411fb987dfc85558b15b6))
 * **development:** hot reloading of commands ([99ff93f](https://github.com/onesoft-sudo/sudobot/commit/99ff93f74bfa92d8b01f01626eabf5440e4191a8))
-
-
-
-# [6.54.0](https://github.com/onesoft-sudo/sudobot/compare/v6.53.2...v6.54.0) (2023-10-31)
-
-
-### Features
-
-* **moderation:embeds:** show Moderator field ([1cc7b75](https://github.com/onesoft-sudo/sudobot/commit/1cc7b7591b7a2fb4838c73b43b5b69d598c0f708))
 
 
 
