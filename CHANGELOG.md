@@ -1,3 +1,12 @@
+# [6.57.0](https://github.com/onesoft-sudo/sudobot/compare/v6.56.1...v6.57.0) (2023-11-03)
+
+
+### Features
+
+* **commands:information:** add `afklist` command ([052f466](https://github.com/onesoft-sudo/sudobot/commit/052f466178400a619836014dd40340d93217d8fb))
+
+
+
 ## [6.56.1](https://github.com/onesoft-sudo/sudobot/compare/v6.56.0...v6.56.1) (2023-11-01)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * **moderation:embeds:** show Moderator field ([1cc7b75](https://github.com/onesoft-sudo/sudobot/commit/1cc7b7591b7a2fb4838c73b43b5b69d598c0f708))
-
-
-
-## [6.53.2](https://github.com/onesoft-sudo/sudobot/compare/v6.53.1...v6.53.2) (2023-10-30)
-
-
-### Bug Fixes
-
-* todos ([128b55a](https://github.com/onesoft-sudo/sudobot/commit/128b55a1d361781b5d1e4c6dcd75696524532076))
 
 
 
