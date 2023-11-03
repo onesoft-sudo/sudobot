@@ -1,3 +1,12 @@
+# [6.58.0](https://github.com/onesoft-sudo/sudobot/compare/v6.57.1...v6.58.0) (2023-11-03)
+
+
+### Features
+
+* **commands:automation:** system update command ([c391213](https://github.com/onesoft-sudo/sudobot/commit/c3912139455ecea64e1fb2dadacbe9f3fe5d901e))
+
+
+
 ## [6.57.1](https://github.com/onesoft-sudo/sudobot/compare/v6.57.0...v6.57.1) (2023-11-03)
 
 
@@ -31,16 +40,6 @@
 ### Features
 
 * improved hot reloading ([73424c7](https://github.com/onesoft-sudo/sudobot/commit/73424c7c6ed25ab9d51add378b54836f81de4f0c))
-
-
-
-# [6.55.0](https://github.com/onesoft-sudo/sudobot/compare/v6.54.0...v6.55.0) (2023-10-31)
-
-
-### Features
-
-* **core:services:** introduce more flexible lifecycle methods ([699ef9f](https://github.com/onesoft-sudo/sudobot/commit/699ef9f6b038cccc4ae411fb987dfc85558b15b6))
-* **development:** hot reloading of commands ([99ff93f](https://github.com/onesoft-sudo/sudobot/commit/99ff93f74bfa92d8b01f01626eabf5440e4191a8))
 
 
 
