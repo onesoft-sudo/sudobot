@@ -1,3 +1,12 @@
+## [6.61.2](https://github.com/onesoft-sudo/sudobot/compare/v6.61.1...v6.61.2) (2023-11-04)
+
+
+### Bug Fixes
+
+* **commands:mixemoji:** handle 404 error code ([390ec9c](https://github.com/onesoft-sudo/sudobot/commit/390ec9cf732eb55d6f809ef645315c2a61c22518))
+
+
+
 ## [6.61.1](https://github.com/onesoft-sudo/sudobot/compare/v6.61.0...v6.61.1) (2023-11-04)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **development:shortcuts:** add `Shift+L` and `L` action keys to write and load config files ([b721f67](https://github.com/onesoft-sudo/sudobot/commit/b721f67ddd625b804d79e54e3276013d5626a193))
-
-
-
-# [6.58.0](https://github.com/onesoft-sudo/sudobot/compare/v6.57.1...v6.58.0) (2023-11-03)
-
-
-### Features
-
-* **commands:automation:** system update command ([c391213](https://github.com/onesoft-sudo/sudobot/commit/c3912139455ecea64e1fb2dadacbe9f3fe5d901e))
 
 
 
