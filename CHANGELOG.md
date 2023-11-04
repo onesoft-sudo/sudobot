@@ -1,3 +1,12 @@
+## [6.61.7](https://github.com/onesoft-sudo/sudobot/compare/v6.61.6...v6.61.7) (2023-11-04)
+
+
+### Bug Fixes
+
+* **commands:update:** controls not working ([4589b40](https://github.com/onesoft-sudo/sudobot/commit/4589b40cdb8d5e0b3fe32da21e5e2909c315a767))
+
+
+
 ## [6.61.6](https://github.com/onesoft-sudo/sudobot/compare/v6.61.5...v6.61.6) (2023-11-04)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **commands:mixemoji:** better error message ([00b396a](https://github.com/onesoft-sudo/sudobot/commit/00b396a2965dd4240a2f507ff00639a873205963))
-
-
-
-## [6.61.2](https://github.com/onesoft-sudo/sudobot/compare/v6.61.1...v6.61.2) (2023-11-04)
-
-
-### Bug Fixes
-
-* **commands:mixemoji:** handle 404 error code ([390ec9c](https://github.com/onesoft-sudo/sudobot/commit/390ec9cf732eb55d6f809ef645315c2a61c22518))
 
 
 
