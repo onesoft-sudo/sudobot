@@ -40,7 +40,7 @@ export default class AboutCommand extends Command {
                         __**A free and open source Discord moderation bot**__.\n
                         This bot is free software, and you are welcome to redistribute it under certain conditions.
                         See the [GNU Affero General Public License v3](https://www.gnu.org/licenses/agpl-3.0.en.html) for more detailed information.
-                    `,
+                    `.replaceAll(/\n([ \t]+)/gm, "\n"),
                     color: 0x007bff,
                     fields: [
                         {
