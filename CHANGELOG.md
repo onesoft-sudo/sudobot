@@ -1,3 +1,12 @@
+## [6.61.6](https://github.com/onesoft-sudo/sudobot/compare/v6.61.5...v6.61.6) (2023-11-04)
+
+
+### Bug Fixes
+
+* **commands:about:** weird indents in discord mobile ([5d4f61a](https://github.com/onesoft-sudo/sudobot/commit/5d4f61a96a10049004320847df94f3131f56b02c))
+
+
+
 ## [6.61.5](https://github.com/onesoft-sudo/sudobot/compare/v6.61.4...v6.61.5) (2023-11-04)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **commands:mixemoji:** handle 404 error code ([390ec9c](https://github.com/onesoft-sudo/sudobot/commit/390ec9cf732eb55d6f809ef645315c2a61c22518))
-
-
-
-## [6.61.1](https://github.com/onesoft-sudo/sudobot/compare/v6.61.0...v6.61.1) (2023-11-04)
-
-
-### Bug Fixes
-
-* check if stdin is tty ([4bb5577](https://github.com/onesoft-sudo/sudobot/commit/4bb557735770ee24376de6be8e8f9a84b0456a08))
 
 
 
