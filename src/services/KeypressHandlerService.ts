@@ -31,6 +31,8 @@ export const name = "keypressHandler";
 enum CommandKey {
     ReloadCommands = "R",
     ForceReloadCommands = "Shift+R",
+    ReloadConfig = "L",
+    WriteConfig = "Shift+L",
     Quit = "Q"
 }
 
@@ -38,7 +40,9 @@ export default class KeypressHandlerService extends Service {
     readonly keyHandlers: Record<CommandKey, Function> = {
         [CommandKey.ReloadCommands]: this.reloadCommands.bind(this),
         [CommandKey.ForceReloadCommands]: () => this.reloadCommands(true),
-        [CommandKey.Quit]: this.quit.bind(this)
+        [CommandKey.Quit]: this.quit.bind(this),
+        [CommandKey.ReloadConfig]: this.reloadConfig.bind(this),
+        [CommandKey.WriteConfig]: this.writeConfig.bind(this)
     };
 
     lastCommandUpdate = Date.now();
@@ -86,6 +90,16 @@ export default class KeypressHandlerService extends Service {
     interrupt() {
         logWithLevel(LogLevel.EVENT, "SIGINT signal received. Exiting");
         process.exit(1);
+    }
+
+    async reloadConfig() {
+        await this.client.configManager.load();
+        logWithLevel(LogLevel.EVENT, "Successfully reloaded configuration files");
+    }
+
+    async writeConfig() {
+        await this.client.configManager.write({ guild: true, system: true });
+        logWithLevel(LogLevel.EVENT, "Successfully saved configuration files to disk");
     }
 
     async reloadCommands(force = false) {
