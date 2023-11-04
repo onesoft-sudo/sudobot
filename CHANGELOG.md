@@ -1,3 +1,12 @@
+# [6.61.0](https://github.com/onesoft-sudo/sudobot/compare/v6.60.0...v6.61.0) (2023-11-04)
+
+
+### Features
+
+* **commands:fun:** add `mixemoji` command ([00005d5](https://github.com/onesoft-sudo/sudobot/commit/00005d5eebb71ee6d53325af82b5c87e8dc87aca))
+
+
+
 # [6.60.0](https://github.com/onesoft-sudo/sudobot/compare/v6.59.0...v6.60.0) (2023-11-04)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * help command causing crash if the github emoji is not available ([56ec68a](https://github.com/onesoft-sudo/sudobot/commit/56ec68a6c904cb0164d1443cca6fb13d78dfcb00))
-
-
-
-# [6.57.0](https://github.com/onesoft-sudo/sudobot/compare/v6.56.1...v6.57.0) (2023-11-03)
-
-
-### Features
-
-* **commands:information:** add `afklist` command ([052f466](https://github.com/onesoft-sudo/sudobot/commit/052f466178400a619836014dd40340d93217d8fb))
 
 
 
