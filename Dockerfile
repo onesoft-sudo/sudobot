@@ -14,7 +14,9 @@ COPY ecosystem.config.js .
 
 RUN npx prisma generate
 RUN npm run build
-RUN npm prune --production
+
+# -- Uncomment the following line if you want a smaller image size
+# RUN npm prune --production
 
 EXPOSE 4000
 CMD ["npm", "run", "start:prod", "--", "--no-daemon"]
