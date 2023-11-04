@@ -22,10 +22,12 @@ import { spawnSync } from "child_process";
 import {
     ActionRowBuilder,
     ButtonBuilder,
+    ButtonInteraction,
     ButtonStyle,
     Colors,
     ComponentType,
     StringSelectMenuBuilder,
+    StringSelectMenuInteraction,
     StringSelectMenuOptionBuilder
 } from "discord.js";
 import { existsSync } from "fs";
@@ -76,15 +78,30 @@ export default class UpdateCommand extends Command {
                 components: this.actionRow({ updateAvailable, version })
             });
 
+            const filter = (interaction: StringSelectMenuInteraction | ButtonInteraction) => {
+                if (interaction.user.id === message.member!.user.id && interaction.customId === "system_update_channel") {
+                    return true;
+                }
+
+                interaction
+                    .reply({
+                        ephemeral: true,
+                        content: `That's not under your control.`
+                    })
+                    .catch(logError);
+
+                return false;
+            };
+
             const updateChannelCollector = await message.channel!.createMessageComponentCollector({
                 componentType: ComponentType.StringSelect,
-                filter: i => i.user.id === message.member!.user.id && i.customId === "system_update_channel",
+                filter,
                 time: 120_000
             });
 
             const confirmationCollector = await message.channel!.createMessageComponentCollector({
                 componentType: ComponentType.Button,
-                filter: i => i.user.id === message.member!.user.id && i.customId.startsWith("system_update"),
+                filter,
                 time: 120_000
             });
 
