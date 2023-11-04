@@ -1,3 +1,12 @@
+# [6.62.0](https://github.com/onesoft-sudo/sudobot/compare/v6.61.7...v6.62.0) (2023-11-04)
+
+
+### Features
+
+* **commands:** support running commands in `GUILD_VOICE` channels as well ([44d0920](https://github.com/onesoft-sudo/sudobot/commit/44d0920fc4db3a04ccc5c19bc124da8b75eaba48))
+
+
+
 ## [6.61.7](https://github.com/onesoft-sudo/sudobot/compare/v6.61.6...v6.61.7) (2023-11-04)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **commands:clear:** `bc` command alias not working ([823c8a7](https://github.com/onesoft-sudo/sudobot/commit/823c8a789cce5f7f1e133f39615260f18defbba2))
-
-
-
-## [6.61.3](https://github.com/onesoft-sudo/sudobot/compare/v6.61.2...v6.61.3) (2023-11-04)
-
-
-### Bug Fixes
-
-* **commands:mixemoji:** better error message ([00b396a](https://github.com/onesoft-sudo/sudobot/commit/00b396a2965dd4240a2f507ff00639a873205963))
 
 
 
