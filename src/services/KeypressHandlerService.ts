@@ -163,7 +163,7 @@ export default class KeypressHandlerService extends Service {
     }
 
     override boot() {
-        if (!developmentMode()) {
+        if (!developmentMode() || !process.stdin.isTTY) {
             return;
         }
 
@@ -173,7 +173,7 @@ export default class KeypressHandlerService extends Service {
     }
 
     override deactivate() {
-        if (!developmentMode()) {
+        if (!developmentMode() || !process.stdin.isTTY) {
             return;
         }
 
