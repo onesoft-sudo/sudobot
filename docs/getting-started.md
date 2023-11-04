@@ -12,7 +12,7 @@ These are the requirements to host SudoBot:
 
 * A Discord API Application token (Go to [Discord Developer Portal](https://discord.com/developers/applications) to obtain a token)
 * [Node.js](https://nodejs.org) version 18 or higher
-* A MySQL or PostgreSQL database (If you're looking for a free PostgreSQL hosting service, check out [Supabase](https://supabase.com))
+* A MySQL or PostgreSQL database (If you're looking for a free PostgreSQL hosting service, check out [Neon](https://neon.tech))
 
 Additionally, you can also set these up if you want to use them:
 
@@ -86,7 +86,7 @@ As we've said [before](getting-started.md#configuration-and-the-environment-vari
 * MySQL
 
 {% hint style="info" %}
-If you want a free PostgreSQL hosting service, check out [Supabase](https://supabase.com/). It's easy to set up, and completely free of cost.
+If you want a free PostgreSQL hosting service, check out [Neon](https://neon.tech). It's easy to set up, and completely free of cost.
 {% endhint %}
 
 Your database URL should look like this if you're using PostgreSQL:
@@ -166,9 +166,9 @@ And if everything was configured correctly, the bot will log in successfully to 
 
 ## Emojis
 
-The bot uses some custom emojis and it will try to find those emojis in the Home Guild (The main server, which is configured in `HOME_GUILD_ID` environment variable).&#x20;
+The bot uses some custom emojis and it will try to find those emojis in the Home Guild (The main server, which is configured in `HOME_GUILD_ID` environment variable).
 
-The emojs are freely available for download at the [download site](https://www.onesoftnet.eu.org/downloads/sudo/emojis/). The bot uses some other emojis as well, if you want you can download them from [emoji.gg](https://emoji.gg).&#x20;
+The emojs are freely available for download at the [download site](https://www.onesoftnet.eu.org/downloads/sudo/emojis/). The bot uses some other emojis as well, if you want you can download them from [emoji.gg](https://emoji.gg).
 
 If you don't add these emojis, the bot may send messages that look weird or too simple.
 
