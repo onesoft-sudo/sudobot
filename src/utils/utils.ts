@@ -140,7 +140,8 @@ export function isTextableChannel(
         ChannelType.GuildAnnouncement,
         ChannelType.GuildText,
         ChannelType.PrivateThread,
-        ChannelType.PublicThread
+        ChannelType.PublicThread,
+        ChannelType.GuildVoice
     ].includes(channel.type);
 }
 

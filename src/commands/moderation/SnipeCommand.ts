@@ -17,10 +17,11 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ChannelType, EmbedBuilder, Message, PartialMessage, PermissionsBitField, Snowflake } from "discord.js";
+import { EmbedBuilder, Message, PartialMessage, PermissionsBitField, Snowflake } from "discord.js";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import { HasEventListeners } from "../../types/HasEventListeners";
+import { isTextableChannel } from "../../utils/utils";
 
 export default class SnipeCommand extends Command implements HasEventListeners {
     public readonly name = "snipe";
@@ -50,12 +51,7 @@ export default class SnipeCommand extends Command implements HasEventListeners {
 
     @GatewayEventListener("messageDelete")
     onMessageDelete(message: Message<boolean> | PartialMessage) {
-        if (
-            message.author?.bot ||
-            !message.content ||
-            !message.channel.isTextBased() ||
-            message.channel.type === ChannelType.DM
-        ) {
+        if (message.author?.bot || !message.content || !isTextableChannel(message.channel)) {
             return;
         }
 
@@ -74,8 +70,7 @@ export default class SnipeCommand extends Command implements HasEventListeners {
         if (
             newMessage.author?.bot ||
             !newMessage.content ||
-            !newMessage.channel.isTextBased() ||
-            newMessage.channel.type === ChannelType.DM ||
+            !isTextableChannel(newMessage.channel) ||
             oldMessage.content === newMessage.content
         ) {
             return;

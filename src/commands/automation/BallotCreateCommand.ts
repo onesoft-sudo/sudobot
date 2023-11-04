@@ -20,6 +20,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, Message, User } from "discord.js";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn } from "../../core/Command";
 import { logError } from "../../utils/logger";
+import { isTextableChannel } from "../../utils/utils";
 
 export default class BallotCreateCommand extends Command {
     public readonly name = "ballot__create";
@@ -50,7 +51,7 @@ export default class BallotCreateCommand extends Command {
         const channel =
             (context.isLegacy ? null : context.options.getChannel<ChannelType.GuildText>("channel")) ?? message.channel!;
 
-        if (!channel.isTextBased()) {
+        if (!isTextableChannel(channel)) {
             await this.error(message, "Cannot send messages into a non-text based channel!");
             return;
         }

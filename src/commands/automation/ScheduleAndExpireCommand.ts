@@ -23,6 +23,7 @@ import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandRetu
 import QueueEntry from "../../utils/QueueEntry";
 import { stringToTimeInterval } from "../../utils/datetime";
 import { logError } from "../../utils/logger";
+import { isTextableChannel } from "../../utils/utils";
 
 export default class ScheduleAndExpireCommand extends Command {
     public readonly name = "scheduleandexpire";
@@ -120,7 +121,7 @@ export default class ScheduleAndExpireCommand extends Command {
             context.isLegacy ? message.channel! : context.options.getChannel("channel") ?? message.channel!
         ) as TextBasedChannel;
 
-        if (!channel.isTextBased()) {
+        if (!isTextableChannel(channel)) {
             await this.error(message, "Cannot send messages to a non-text based channel!");
             return;
         }
