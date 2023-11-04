@@ -102,6 +102,12 @@ export default class ClearCommand extends Command {
         .addBooleanOption(option => option.setName("filter_embeds").setDescription("Deletes messages that have embeds"))
         .addBooleanOption(option =>
             option.setName("filter_unverifed_bots").setDescription("Deletes messages from unverified bots")
+        )
+        .addStringOption(option =>
+            option.setName("filter_pattern").setDescription("Deletes messages matching with this regex pattern")
+        )
+        .addStringOption(option =>
+            option.setName("filter_pattern_flags").setDescription("Flags for the regex pattern. Defaults to 'g' (global)")
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
@@ -162,7 +168,7 @@ export default class ClearCommand extends Command {
 
         if (message instanceof ChatInputCommandInteraction) {
             for (const option of message.options.data) {
-                if (!option.name.startsWith("filter_")) {
+                if (!option.name.startsWith("filter_") || !option.value) {
                     continue;
                 }
 
@@ -170,6 +176,21 @@ export default class ClearCommand extends Command {
 
                 if (filter) {
                     filterHandlers.push(filter);
+                } else {
+                    if (option.name === "filter_pattern" && message.options.getString("filter_pattern")) {
+                        try {
+                            const regex = new RegExp(
+                                message.options.getString("filter_pattern", true),
+                                message.options.getString("filter_pattern_flags") ?? "g"
+                            );
+
+                            filterHandlers.push((message: Message) => regex.test(message.content));
+                        } catch (e) {
+                            logError(e);
+                            await this.error(message, "Invalid flag(s) supplied for the regex pattern");
+                            return;
+                        }
+                    }
                 }
             }
 
