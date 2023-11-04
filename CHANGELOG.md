@@ -1,3 +1,12 @@
+## [6.61.3](https://github.com/onesoft-sudo/sudobot/compare/v6.61.2...v6.61.3) (2023-11-04)
+
+
+### Bug Fixes
+
+* **commands:mixemoji:** better error message ([00b396a](https://github.com/onesoft-sudo/sudobot/commit/00b396a2965dd4240a2f507ff00639a873205963))
+
+
+
 ## [6.61.2](https://github.com/onesoft-sudo/sudobot/compare/v6.61.1...v6.61.2) (2023-11-04)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **commands:clear:** add support for regex based message clearing ([b126627](https://github.com/onesoft-sudo/sudobot/commit/b12662728ae934d646a429b88ed3433526ea9910))
-
-
-
-# [6.59.0](https://github.com/onesoft-sudo/sudobot/compare/v6.58.0...v6.59.0) (2023-11-04)
-
-
-### Features
-
-* **development:shortcuts:** add `Shift+L` and `L` action keys to write and load config files ([b721f67](https://github.com/onesoft-sudo/sudobot/commit/b721f67ddd625b804d79e54e3276013d5626a193))
 
 
 
