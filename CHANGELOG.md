@@ -1,3 +1,12 @@
+# [6.59.0](https://github.com/onesoft-sudo/sudobot/compare/v6.58.0...v6.59.0) (2023-11-04)
+
+
+### Features
+
+* **development:shortcuts:** add `Shift+L` and `L` action keys to write and load config files ([b721f67](https://github.com/onesoft-sudo/sudobot/commit/b721f67ddd625b804d79e54e3276013d5626a193))
+
+
+
 # [6.58.0](https://github.com/onesoft-sudo/sudobot/compare/v6.57.1...v6.58.0) (2023-11-03)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **development:hotreload:** files not reloading ([056260c](https://github.com/onesoft-sudo/sudobot/commit/056260ca61da4cd790dcd2292e780ba062d1d8e1))
-
-
-
-# [6.56.0](https://github.com/onesoft-sudo/sudobot/compare/v6.55.0...v6.56.0) (2023-11-01)
-
-
-### Features
-
-* improved hot reloading ([73424c7](https://github.com/onesoft-sudo/sudobot/commit/73424c7c6ed25ab9d51add378b54836f81de4f0c))
 
 
 
