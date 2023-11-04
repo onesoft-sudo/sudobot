@@ -50,12 +50,18 @@ export default class MixEmojiCommand extends Command {
         const second = (context.isLegacy ? context.parsedNamedArgs.second : context.options.getString("second", true)).trim();
 
         if (!/^\p{Extended_Pictographic}$/gu.test(first)) {
-            await this.error(message, "Invalid emoji given as the first argument. Make sure it's not a server emoji.");
+            await this.error(
+                message,
+                "Invalid emoji given as the first argument. Make sure it's not a server emoji, and put a space in between the 2 emojis."
+            );
             return;
         }
 
         if (!/^\p{Extended_Pictographic}$/gu.test(second)) {
-            await this.error(message, "Invalid emoji given as the second argument. Make sure it's not a server emoji.");
+            await this.error(
+                message,
+                "Invalid emoji given as the second argument. Make sure it's not a server emoji, and put a space in between the 2 emojis."
+            );
             return;
         }
 
