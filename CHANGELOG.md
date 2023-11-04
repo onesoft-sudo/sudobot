@@ -1,3 +1,12 @@
+## [6.61.5](https://github.com/onesoft-sudo/sudobot/compare/v6.61.4...v6.61.5) (2023-11-04)
+
+
+### Bug Fixes
+
+* **commands:update:** show not under control error message if interaction filter condition fails ([bb45d52](https://github.com/onesoft-sudo/sudobot/commit/bb45d5253c1fd10fa438ae4190feb02b400e5880))
+
+
+
 ## [6.61.4](https://github.com/onesoft-sudo/sudobot/compare/v6.61.3...v6.61.4) (2023-11-04)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * check if stdin is tty ([4bb5577](https://github.com/onesoft-sudo/sudobot/commit/4bb557735770ee24376de6be8e8f9a84b0456a08))
-
-
-
-# [6.61.0](https://github.com/onesoft-sudo/sudobot/compare/v6.60.0...v6.61.0) (2023-11-04)
-
-
-### Features
-
-* **commands:fun:** add `mixemoji` command ([00005d5](https://github.com/onesoft-sudo/sudobot/commit/00005d5eebb71ee6d53325af82b5c87e8dc87aca))
 
 
 
