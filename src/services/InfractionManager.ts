@@ -610,11 +610,11 @@ export default class InfractionManager extends Service {
                     .catch(logError);
             }
 
-            if (!logOnly && messages && count > 0) {
+            if (!logOnly && messages) {
                 try {
                     await messageChannel.bulkDelete(messages);
                     const reply = await messageChannel.send(
-                        `${getEmoji(this.client, "check")} Deleted ${count} messages${
+                        `${getEmoji(this.client, "check")} Deleted ${messages.length} messages${
                             user ? ` from user **@${escapeMarkdown(user.username)}**` : ""
                         }`
                     );

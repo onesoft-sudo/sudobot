@@ -60,7 +60,8 @@ export default class ClearCommand extends Command {
             typeErrorMessage: "Please either specify a message count or user at position 1!",
             minValue: 0,
             maxValue: 100,
-            minMaxErrorMessage: "The message count must be a number between 0 to 100"
+            minMaxErrorMessage: "The message count must be a number between 0 to 100",
+            optional: true
         },
         {
             types: [ArgumentType.Integer],
@@ -111,7 +112,11 @@ export default class ClearCommand extends Command {
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
-        const count: number | undefined = !context.isLegacy
+        const isPrimaryCommand = !context.isLegacy
+            ? !!context.options.data.find(option => option.name.startsWith("filter_"))
+            : context.argv[0].length > 2;
+
+        let count: number | undefined = !context.isLegacy
             ? context.options.getInteger("count") ?? undefined
             : typeof context.parsedNamedArgs.countOrUser === "number"
             ? context.parsedNamedArgs.countOrUser
@@ -122,6 +127,19 @@ export default class ClearCommand extends Command {
             : typeof context.parsedNamedArgs.countOrUser !== "number"
             ? context.parsedNamedArgs.countOrUser
             : undefined;
+
+        if (!count && count !== 0 && !user) {
+            if (isPrimaryCommand) {
+                return {
+                    __reply: true,
+                    content: `${this.emoji(
+                        "error"
+                    )} Please specify a user or message count, otherwise the system cannot determine how many messages to delete!`
+                };
+            } else {
+                count = 20;
+            }
+        }
 
         const channel: Channel | undefined = !context.isLegacy
             ? context.options.getChannel("channel") ?? undefined
@@ -134,13 +152,11 @@ export default class ClearCommand extends Command {
             };
         }
 
-        if (!count && count !== 0 && !user) {
-            return {
-                __reply: true,
-                content: `${this.emoji(
-                    "error"
-                )} Please specify a user or message count, otherwise the system cannot determine how many messages to delete!`
-            };
+        if (message instanceof ChatInputCommandInteraction) {
+            if (message.options.getString("filter_pattern_flags") && !message.options.getString("filter_pattern")) {
+                await this.error(message, `Option \`filter_pattern\` must be present when \`filter_pattern_flags\` is set.`);
+                return;
+            }
         }
 
         if (user) {
@@ -193,16 +209,14 @@ export default class ClearCommand extends Command {
                     }
                 }
             }
+        } else if (context.isLegacy) {
+            const aliasHandlerName = filter_aliases[context.argv[0]];
 
-            if (context.isLegacy) {
-                const aliasHandlerName = filter_aliases[context.argv[0]];
+            if (aliasHandlerName) {
+                const aliasHandler = filters[aliasHandlerName];
 
-                if (aliasHandlerName) {
-                    const aliasHandler = filters[aliasHandlerName];
-
-                    if (aliasHandler) {
-                        filterHandlers.push(aliasHandler);
-                    }
+                if (aliasHandler) {
+                    filterHandlers.push(aliasHandler);
                 }
             }
         }

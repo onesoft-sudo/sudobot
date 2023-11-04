@@ -1142,7 +1142,7 @@ export default class LoggerService extends Service {
                     }
                 ]
             },
-            sendJSON
+            sendJSON && messages.length > 0
                 ? {
                       files: [
                           {
@@ -1154,24 +1154,26 @@ export default class LoggerService extends Service {
                 : undefined
         );
 
-        message
-            ?.edit({
-                embeds: [
-                    {
-                        ...(message?.embeds[0]?.data ?? {}),
-                        fields: [
-                            ...(message?.embeds[0].data.fields ?? []),
-                            {
-                                name: "Messages",
-                                value: `[Click here to view the deleted messages](${
-                                    process.env.FRONTEND_URL
-                                }/view_deleted_messages?url=${encodeURIComponent(message.attachments.at(0)!.url)})`
-                            }
-                        ]
-                    }
-                ]
-            })
-            .catch(logError);
+        if (messages.length > 0 && sendJSON) {
+            message
+                ?.edit({
+                    embeds: [
+                        {
+                            ...(message?.embeds[0]?.data ?? {}),
+                            fields: [
+                                ...(message?.embeds[0].data.fields ?? []),
+                                {
+                                    name: "Messages",
+                                    value: `[Click here to view the deleted messages](${
+                                        process.env.FRONTEND_URL
+                                    }/view_deleted_messages?url=${encodeURIComponent(message.attachments.at(0)!.url)})`
+                                }
+                            ]
+                        }
+                    ]
+                })
+                .catch(logError);
+        }
     }
 
     async logMemberUnmute({
