@@ -1,3 +1,12 @@
+# [6.60.0](https://github.com/onesoft-sudo/sudobot/compare/v6.59.0...v6.60.0) (2023-11-04)
+
+
+### Features
+
+* **commands:clear:** add support for regex based message clearing ([b126627](https://github.com/onesoft-sudo/sudobot/commit/b12662728ae934d646a429b88ed3433526ea9910))
+
+
+
 # [6.59.0](https://github.com/onesoft-sudo/sudobot/compare/v6.58.0...v6.59.0) (2023-11-04)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **commands:information:** add `afklist` command ([052f466](https://github.com/onesoft-sudo/sudobot/commit/052f466178400a619836014dd40340d93217d8fb))
-
-
-
-## [6.56.1](https://github.com/onesoft-sudo/sudobot/compare/v6.56.0...v6.56.1) (2023-11-01)
-
-
-### Bug Fixes
-
-* **development:hotreload:** files not reloading ([056260c](https://github.com/onesoft-sudo/sudobot/commit/056260ca61da4cd790dcd2292e780ba062d1d8e1))
 
 
 
