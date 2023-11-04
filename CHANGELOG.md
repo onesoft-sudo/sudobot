@@ -1,3 +1,12 @@
+## [6.61.4](https://github.com/onesoft-sudo/sudobot/compare/v6.61.3...v6.61.4) (2023-11-04)
+
+
+### Bug Fixes
+
+* **commands:clear:** `bc` command alias not working ([823c8a7](https://github.com/onesoft-sudo/sudobot/commit/823c8a789cce5f7f1e133f39615260f18defbba2))
+
+
+
 ## [6.61.3](https://github.com/onesoft-sudo/sudobot/compare/v6.61.2...v6.61.3) (2023-11-04)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **commands:fun:** add `mixemoji` command ([00005d5](https://github.com/onesoft-sudo/sudobot/commit/00005d5eebb71ee6d53325af82b5c87e8dc87aca))
-
-
-
-# [6.60.0](https://github.com/onesoft-sudo/sudobot/compare/v6.59.0...v6.60.0) (2023-11-04)
-
-
-### Features
-
-* **commands:clear:** add support for regex based message clearing ([b126627](https://github.com/onesoft-sudo/sudobot/commit/b12662728ae934d646a429b88ed3433526ea9910))
 
 
 
