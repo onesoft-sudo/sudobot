@@ -78,30 +78,41 @@ export default class UpdateCommand extends Command {
                 components: this.actionRow({ updateAvailable, version })
             });
 
-            const filter = (interaction: StringSelectMenuInteraction | ButtonInteraction) => {
-                if (interaction.user.id === message.member!.user.id && interaction.customId === "system_update_channel") {
-                    return true;
-                }
-
-                interaction
-                    .reply({
-                        ephemeral: true,
-                        content: `That's not under your control.`
-                    })
-                    .catch(logError);
-
-                return false;
-            };
-
             const updateChannelCollector = await message.channel!.createMessageComponentCollector({
                 componentType: ComponentType.StringSelect,
-                filter,
+                filter: (interaction: StringSelectMenuInteraction) => {
+                    if (interaction.user.id === message.member!.user.id && interaction.customId === "system_update_channel") {
+                        return true;
+                    }
+
+                    interaction
+                        .reply({
+                            ephemeral: true,
+                            content: `That's not under your control.`
+                        })
+                        .catch(logError);
+
+                    return false;
+                },
                 time: 120_000
             });
 
             const confirmationCollector = await message.channel!.createMessageComponentCollector({
                 componentType: ComponentType.Button,
-                filter,
+                filter: (interaction: ButtonInteraction) => {
+                    if (interaction.user.id === message.member!.user.id && interaction.customId.startsWith(`system_update__`)) {
+                        return true;
+                    }
+
+                    interaction
+                        .reply({
+                            ephemeral: true,
+                            content: `That's not under your control.`
+                        })
+                        .catch(logError);
+
+                    return false;
+                },
                 time: 120_000
             });
 
