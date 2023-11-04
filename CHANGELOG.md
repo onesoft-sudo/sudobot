@@ -1,3 +1,12 @@
+## [6.61.1](https://github.com/onesoft-sudo/sudobot/compare/v6.61.0...v6.61.1) (2023-11-04)
+
+
+### Bug Fixes
+
+* check if stdin is tty ([4bb5577](https://github.com/onesoft-sudo/sudobot/commit/4bb557735770ee24376de6be8e8f9a84b0456a08))
+
+
+
 # [6.61.0](https://github.com/onesoft-sudo/sudobot/compare/v6.60.0...v6.61.0) (2023-11-04)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **commands:automation:** system update command ([c391213](https://github.com/onesoft-sudo/sudobot/commit/c3912139455ecea64e1fb2dadacbe9f3fe5d901e))
-
-
-
-## [6.57.1](https://github.com/onesoft-sudo/sudobot/compare/v6.57.0...v6.57.1) (2023-11-03)
-
-
-### Bug Fixes
-
-* help command causing crash if the github emoji is not available ([56ec68a](https://github.com/onesoft-sudo/sudobot/commit/56ec68a6c904cb0164d1443cca6fb13d78dfcb00))
 
 
 
