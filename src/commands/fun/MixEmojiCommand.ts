@@ -95,6 +95,12 @@ export default class MixEmojiCommand extends Command {
             });
         } catch (error) {
             logError(error);
+
+            if ((error as any)?.response?.status === 404) {
+                await this.error(message, "No combination found for the given emojis.");
+                return;
+            }
+
             await this.error(message, "An internal API error has occurred. Please try again later.");
         }
     }
