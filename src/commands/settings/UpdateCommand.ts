@@ -284,11 +284,11 @@ export default class UpdateCommand extends Command {
         const paths = process.env.PATH?.split(process.platform === "win32" ? ";" : ":") ?? [];
 
         for (const path of paths) {
-            if (process.platform === "win32" && join(path, "powershell.exe")) {
+            if (process.platform === "win32" && existsSync(join(path, "powershell.exe"))) {
                 return null;
             }
 
-            if (join(path, "unzip")) {
+            if (existsSync(join(path, "unzip"))) {
                 return null;
             }
         }
