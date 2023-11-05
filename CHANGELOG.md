@@ -1,3 +1,12 @@
+## [6.63.2](https://github.com/onesoft-sudo/sudobot/compare/v6.63.1...v6.63.2) (2023-11-05)
+
+
+### Bug Fixes
+
+* **api:reviews:** increase limit for `/review` endpoint responses ([6cedff1](https://github.com/onesoft-sudo/sudobot/commit/6cedff10a49d9ba83d273f1e03ff47f4cd5a3c00))
+
+
+
 ## [6.63.1](https://github.com/onesoft-sudo/sudobot/compare/v6.63.0...v6.63.1) (2023-11-05)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **commands:update:** controls not working ([4589b40](https://github.com/onesoft-sudo/sudobot/commit/4589b40cdb8d5e0b3fe32da21e5e2909c315a767))
-
-
-
-## [6.61.6](https://github.com/onesoft-sudo/sudobot/compare/v6.61.5...v6.61.6) (2023-11-04)
-
-
-### Bug Fixes
-
-* **commands:about:** weird indents in discord mobile ([5d4f61a](https://github.com/onesoft-sudo/sudobot/commit/5d4f61a96a10049004320847df94f3131f56b02c))
 
 
 
