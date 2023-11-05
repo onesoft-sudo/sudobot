@@ -1,3 +1,12 @@
+# [6.65.0](https://github.com/onesoft-sudo/sudobot/compare/v6.64.0...v6.65.0) (2023-11-05)
+
+
+### Features
+
+* **lib:** basic library directory structure ([e8a95af](https://github.com/onesoft-sudo/sudobot/commit/e8a95af7cbafbdb102bd5889197ed87369c54db2))
+
+
+
 # [6.64.0](https://github.com/onesoft-sudo/sudobot/compare/v6.63.2...v6.64.0) (2023-11-05)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * **commands:note:** add `note remove` command alias ([82d8da0](https://github.com/onesoft-sudo/sudobot/commit/82d8da05f9bc0fc3d23fe1417aa998981ebf8684))
-
-
-
-# [6.62.0](https://github.com/onesoft-sudo/sudobot/compare/v6.61.7...v6.62.0) (2023-11-04)
-
-
-### Features
-
-* **commands:** support running commands in `GUILD_VOICE` channels as well ([44d0920](https://github.com/onesoft-sudo/sudobot/commit/44d0920fc4db3a04ccc5c19bc124da8b75eaba48))
 
 
 
