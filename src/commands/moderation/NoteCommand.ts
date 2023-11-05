@@ -22,7 +22,7 @@ import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandRetu
 
 export default class NoteCommand extends Command {
     public readonly name = "note";
-    public readonly subcommands = ["view", "create", "edit", "delete", "list", "clear"];
+    public readonly subcommands = ["view", "create", "edit", "delete", "list", "clear", "remove"];
     public readonly subCommandCheck = true;
     public readonly validationRules: ValidationRule[] = [
         {

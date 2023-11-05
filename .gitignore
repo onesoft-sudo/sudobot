@@ -19,3 +19,4 @@ setup.sh
 /storage
 /extensions
 /lib
+/Makefile

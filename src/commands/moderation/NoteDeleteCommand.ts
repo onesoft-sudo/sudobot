@@ -27,6 +27,7 @@ export default class NoteDeleteCommand extends Command {
     public readonly permissionMode = "or";
     public readonly description = "Delete a note";
     public readonly argumentSyntaxes = ["<id>"];
+    public readonly aliases = ["note__remove"];
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (context.isLegacy && context.args[0] === undefined) {
