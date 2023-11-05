@@ -63,6 +63,7 @@ export default class EmojiCommand extends Command {
                 await message.reply({
                     embeds: [
                         new EmbedBuilder()
+                            .setColor("#007bff")
                             .setAuthor({
                                 name: parsedEmoji.name ?? "Unknown Emoji",
                                 iconURL: `https://cdn.discordapp.com/emojis/${parsedEmoji.id}`
