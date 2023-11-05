@@ -53,7 +53,7 @@ export default class UpdateCommand extends Command {
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         const unsatisfiedRequirement = this.checkRequirements();
 
-        if (!unsatisfiedRequirement) {
+        if (unsatisfiedRequirement) {
             await this.error(
                 message,
                 `The \`${unsatisfiedRequirement}\` program is not installed in the current system. Please install it if you want to use this command.`
