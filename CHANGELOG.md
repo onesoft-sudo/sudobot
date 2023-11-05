@@ -1,3 +1,12 @@
+# [6.63.0](https://github.com/onesoft-sudo/sudobot/compare/v6.62.0...v6.63.0) (2023-11-05)
+
+
+### Features
+
+* **commands:note:** add `note remove` command alias ([82d8da0](https://github.com/onesoft-sudo/sudobot/commit/82d8da05f9bc0fc3d23fe1417aa998981ebf8684))
+
+
+
 # [6.62.0](https://github.com/onesoft-sudo/sudobot/compare/v6.61.7...v6.62.0) (2023-11-04)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **commands:update:** show not under control error message if interaction filter condition fails ([bb45d52](https://github.com/onesoft-sudo/sudobot/commit/bb45d5253c1fd10fa438ae4190feb02b400e5880))
-
-
-
-## [6.61.4](https://github.com/onesoft-sudo/sudobot/compare/v6.61.3...v6.61.4) (2023-11-04)
-
-
-### Bug Fixes
-
-* **commands:clear:** `bc` command alias not working ([823c8a7](https://github.com/onesoft-sudo/sudobot/commit/823c8a789cce5f7f1e133f39615260f18defbba2))
 
 
 
