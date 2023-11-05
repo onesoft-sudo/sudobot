@@ -1,3 +1,12 @@
+## [6.65.1](https://github.com/onesoft-sudo/sudobot/compare/v6.65.0...v6.65.1) (2023-11-05)
+
+
+### Bug Fixes
+
+* **commands:update:** logic error ([3c3b651](https://github.com/onesoft-sudo/sudobot/commit/3c3b65170ca45013b68113ad457893017708f5b9))
+
+
+
 # [6.65.0](https://github.com/onesoft-sudo/sudobot/compare/v6.64.0...v6.65.0) (2023-11-05)
 
 
@@ -36,15 +45,6 @@
 ### Bug Fixes
 
 * **commands:emoji:** embed color ([aee9f1f](https://github.com/onesoft-sudo/sudobot/commit/aee9f1f25843cd31486d89dcb47170a311694d13))
-
-
-
-# [6.63.0](https://github.com/onesoft-sudo/sudobot/compare/v6.62.0...v6.63.0) (2023-11-05)
-
-
-### Features
-
-* **commands:note:** add `note remove` command alias ([82d8da0](https://github.com/onesoft-sudo/sudobot/commit/82d8da05f9bc0fc3d23fe1417aa998981ebf8684))
 
 
 
