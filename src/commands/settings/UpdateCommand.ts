@@ -44,15 +44,23 @@ export default class UpdateCommand extends Command {
     public readonly validationRules: ValidationRule[] = [];
     public readonly permissions = [];
     public readonly description = "Updates the bot to the latest version.";
-    public readonly availableOptions = {
-        "-u, --unstable": "Update to the latest unstable version."
-    };
     public readonly systemAdminOnly = true;
     protected readonly RELEASE_API_URL = "https://api.github.com/repos/onesoft-sudo/sudobot/releases/latest";
     protected readonly UNSTABLE_DOWNLOAD_URL = "https://github.com/onesoft-sudo/sudobot/archive/refs/heads/main.zip";
-    updateChannel?: "stable" | "unstable";
+    public updateChannel?: "stable" | "unstable";
+    public readonly beta = true;
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+        const unsatisfiedRequirement = this.checkRequirements();
+
+        if (!unsatisfiedRequirement) {
+            await this.error(
+                message,
+                `The \`${unsatisfiedRequirement}\` program is not installed in the current system. Please install it if you want to use this command.`
+            );
+            return;
+        }
+
         await this.deferIfInteraction(message);
 
         try {
@@ -272,6 +280,22 @@ export default class UpdateCommand extends Command {
         }
     }
 
+    checkRequirements() {
+        const paths = process.env.PATH?.split(process.platform === "win32" ? ";" : ":") ?? [];
+
+        for (const path of paths) {
+            if (process.platform === "win32" && join(path, "powershell.exe")) {
+                return null;
+            }
+
+            if (join(path, "unzip")) {
+                return null;
+            }
+        }
+
+        return process.platform === "win32" ? "powershell.exe" : "unzip";
+    }
+
     async unpackUpdate({ filePath, storagePath, version }: { version: string; filePath: string; storagePath: string }) {
         const dirname = `update-${this.updateChannel === "stable" ? version : "unstable"}`;
         const unpackedDirectory = join(storagePath!, dirname);
@@ -286,12 +310,17 @@ export default class UpdateCommand extends Command {
             await mkdir(unpackedDirectory);
             process.chdir(unpackedDirectory);
 
-            const { status, error } = spawnSync(`unzip ../${basename(filePath)}`, {
-                shell: true,
-                encoding: "utf-8",
-                stdio: "inherit",
-                cwd: unpackedDirectory
-            });
+            const { status, error } = spawnSync(
+                process.platform === "win32"
+                    ? `powershell -command "Expand-Archive -Force '${filePath}' '${unpackedDirectory}'"`
+                    : `unzip ../${basename(filePath)}`,
+                {
+                    shell: true,
+                    encoding: "utf-8",
+                    stdio: "inherit",
+                    cwd: unpackedDirectory
+                }
+            );
 
             if (status !== 0 || error) {
                 throw error;
