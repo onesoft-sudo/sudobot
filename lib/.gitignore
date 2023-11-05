@@ -1,0 +1,8 @@
+tmp/
+*.o
+*.so
+*.a
+*.la
+.deps/
+build/
+*~
