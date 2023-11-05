@@ -286,15 +286,15 @@ export default class UpdateCommand extends Command {
             await mkdir(unpackedDirectory);
             process.chdir(unpackedDirectory);
 
-            const { status } = spawnSync(`unzip ../${basename(filePath)}`, {
+            const { status, error } = spawnSync(`unzip ../${basename(filePath)}`, {
                 shell: true,
                 encoding: "utf-8",
                 stdio: "inherit",
                 cwd: unpackedDirectory
             });
 
-            if (status !== 0) {
-                throw new Error();
+            if (status !== 0 || error) {
+                throw error;
             }
 
             process.chdir(cwd);
