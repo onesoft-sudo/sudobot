@@ -78,7 +78,7 @@ export default class UpdateCommand extends Command {
                 components: this.actionRow({ updateAvailable, version })
             });
 
-            const updateChannelCollector = await message.channel!.createMessageComponentCollector({
+            const updateChannelCollector = message.channel!.createMessageComponentCollector({
                 componentType: ComponentType.StringSelect,
                 filter: (interaction: StringSelectMenuInteraction) => {
                     if (interaction.user.id === message.member!.user.id && interaction.customId === "system_update_channel") {
@@ -97,7 +97,7 @@ export default class UpdateCommand extends Command {
                 time: 120_000
             });
 
-            const confirmationCollector = await message.channel!.createMessageComponentCollector({
+            const confirmationCollector = message.channel!.createMessageComponentCollector({
                 componentType: ComponentType.Button,
                 filter: (interaction: ButtonInteraction) => {
                     if (interaction.user.id === message.member!.user.id && interaction.customId.startsWith(`system_update__`)) {
