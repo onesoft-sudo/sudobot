@@ -42,7 +42,7 @@ export default class ReviewController extends Controller {
             where: {
                 approved: true
             },
-            take: 5,
+            take: 10,
             orderBy: {
                 rating: "desc"
             },
