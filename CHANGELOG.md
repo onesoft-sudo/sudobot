@@ -1,3 +1,12 @@
+## [6.63.1](https://github.com/onesoft-sudo/sudobot/compare/v6.63.0...v6.63.1) (2023-11-05)
+
+
+### Bug Fixes
+
+* **commands:emoji:** embed color ([aee9f1f](https://github.com/onesoft-sudo/sudobot/commit/aee9f1f25843cd31486d89dcb47170a311694d13))
+
+
+
 # [6.63.0](https://github.com/onesoft-sudo/sudobot/compare/v6.62.0...v6.63.0) (2023-11-05)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **commands:about:** weird indents in discord mobile ([5d4f61a](https://github.com/onesoft-sudo/sudobot/commit/5d4f61a96a10049004320847df94f3131f56b02c))
-
-
-
-## [6.61.5](https://github.com/onesoft-sudo/sudobot/compare/v6.61.4...v6.61.5) (2023-11-04)
-
-
-### Bug Fixes
-
-* **commands:update:** show not under control error message if interaction filter condition fails ([bb45d52](https://github.com/onesoft-sudo/sudobot/commit/bb45d5253c1fd10fa438ae4190feb02b400e5880))
 
 
 
