@@ -44,6 +44,7 @@ export default class MixEmojiCommand extends Command {
         .addStringOption(option => option.setName("first").setDescription("The first emoji").setRequired(true))
         .addStringOption(option => option.setName("second").setDescription("The second emoji").setRequired(true));
     protected readonly API_URL = "https://emojiapi.onesoftnet.eu.org/emojis/combine";
+    public readonly description = "Mixes two emojis and shows you the result, if any. Uses Google's Emoji Kitchen.";
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const first = (context.isLegacy ? context.parsedNamedArgs.first : context.options.getString("first", true)).trim();
