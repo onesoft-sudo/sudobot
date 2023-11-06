@@ -1,3 +1,12 @@
+## [6.65.4](https://github.com/onesoft-sudo/sudobot/compare/v6.65.3...v6.65.4) (2023-11-06)
+
+
+### Bug Fixes
+
+* **commands:SendReply:** better error messages ([6dc38d2](https://github.com/onesoft-sudo/sudobot/commit/6dc38d28c14a786f01d578d0f3320b6de201488b))
+
+
+
 ## [6.65.3](https://github.com/onesoft-sudo/sudobot/compare/v6.65.2...v6.65.3) (2023-11-06)
 
 
@@ -31,20 +40,6 @@
 ### Features
 
 * **lib:** basic library directory structure ([e8a95af](https://github.com/onesoft-sudo/sudobot/commit/e8a95af7cbafbdb102bd5889197ed87369c54db2))
-
-
-
-# [6.64.0](https://github.com/onesoft-sudo/sudobot/compare/v6.63.2...v6.64.0) (2023-11-05)
-
-
-### Bug Fixes
-
-* **commands:update:** better error checking ([8473349](https://github.com/onesoft-sudo/sudobot/commit/84733497ae210a100958437e331fd8eeb83c0949))
-
-
-### Features
-
-* **commands:update:** support auto-updates in windows ([32ade76](https://github.com/onesoft-sudo/sudobot/commit/32ade76ff16d844d6a44975204b8a6ca9799fb40))
 
 
 
