@@ -1,8 +1,8 @@
-COMMON_OBJECTS = main.o events/on_ready.o
+COMMON_OBJECTS = $(patsubst %.c, %.o, $(wildcard **/*.c) $(wildcard *.c) $(wildcard **/**/*.c))
 BIN = sudobot
 
 all: $(COMMON_OBJECTS)
 	$(CC) $(LDFLAGS) $(COMMON_OBJECTS) -o $(BUILD_DIR)/bin/$(BIN) $(LDLIBS) 
 
 clean:
-	$(RM) -fv *.o
+	$(RM) -fv $(COMMON_OBJECTS)
