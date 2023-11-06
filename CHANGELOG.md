@@ -1,3 +1,12 @@
+## [6.65.3](https://github.com/onesoft-sudo/sudobot/compare/v6.65.2...v6.65.3) (2023-11-06)
+
+
+### Bug Fixes
+
+* **commands:emojimix:** add missing description ([ef176c3](https://github.com/onesoft-sudo/sudobot/commit/ef176c3f595c0dfeff04894c8587c02c670f6e2b))
+
+
+
 ## [6.65.2](https://github.com/onesoft-sudo/sudobot/compare/v6.65.1...v6.65.2) (2023-11-05)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * **commands:update:** support auto-updates in windows ([32ade76](https://github.com/onesoft-sudo/sudobot/commit/32ade76ff16d844d6a44975204b8a6ca9799fb40))
-
-
-
-## [6.63.2](https://github.com/onesoft-sudo/sudobot/compare/v6.63.1...v6.63.2) (2023-11-05)
-
-
-### Bug Fixes
-
-* **api:reviews:** increase limit for `/review` endpoint responses ([6cedff1](https://github.com/onesoft-sudo/sudobot/commit/6cedff10a49d9ba83d273f1e03ff47f4cd5a3c00))
 
 
 
