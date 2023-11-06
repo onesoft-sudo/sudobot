@@ -83,7 +83,9 @@ export default class SendReplyCommand extends Command implements HasEventListene
 
         await interaction
             .editReply({
-                content: `${this.emoji("check")} Reply sent successfully.`
+                content: `${this.emoji(messageId ? "check" : "error")} ${
+                    messageId ? "Reply sent successfully" : "Failed to send reply. Make sure it's a valid and reply-able message"
+                }.`
             })
             .catch(logError);
 
