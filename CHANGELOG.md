@@ -1,3 +1,12 @@
+# [6.66.0](https://github.com/onesoft-sudo/sudobot/compare/v6.65.4...v6.66.0) (2023-11-06)
+
+
+### Features
+
+* **lib:native:** basic command handling ([7f5057e](https://github.com/onesoft-sudo/sudobot/commit/7f5057e151a164dd2af64b1d475b167b6acd0719))
+
+
+
 ## [6.65.4](https://github.com/onesoft-sudo/sudobot/compare/v6.65.3...v6.65.4) (2023-11-06)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **commands:update:** logic error ([3c3b651](https://github.com/onesoft-sudo/sudobot/commit/3c3b65170ca45013b68113ad457893017708f5b9))
-
-
-
-# [6.65.0](https://github.com/onesoft-sudo/sudobot/compare/v6.64.0...v6.65.0) (2023-11-05)
-
-
-### Features
-
-* **lib:** basic library directory structure ([e8a95af](https://github.com/onesoft-sudo/sudobot/commit/e8a95af7cbafbdb102bd5889197ed87369c54db2))
 
 
 
