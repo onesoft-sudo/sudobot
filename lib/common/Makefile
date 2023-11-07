@@ -1,8 +1,6 @@
-COMMON_OBJECTS = $(patsubst %.c, %.o, $(wildcard **/*.c) $(wildcard *.c) $(wildcard **/**/*.c))
-BIN = sudobot
+OBJECTS = $(patsubst %.o,$(TOP_SRCDIR)/%.o,$(COMMON_OBJECTS))
 
-all: $(COMMON_OBJECTS)
-	$(CC) $(LDFLAGS) $(COMMON_OBJECTS) -o $(BUILD_DIR)/bin/$(BIN) $(LDLIBS) 
+all: $(OBJECTS)
 
 clean:
-	$(RM) -fv $(COMMON_OBJECTS)
+	$(RM) -fv $(OBJECTS)
