@@ -19,6 +19,7 @@
 import "module-alias/register";
 import "reflect-metadata";
 
+import { spawn } from "child_process";
 import { GatewayIntentBits, Partials } from "discord.js";
 import "dotenv/config";
 import Client from "./core/Client";
@@ -42,7 +43,24 @@ export const client = new Client({
     partials
 });
 
+function spawnNativeProcess() {
+    const path = process.env.EXPERIMENTAL_NATIVE_EXECUTABLE_PATH;
+
+    if (path) {
+        const child = spawn(path, {
+            stdio: "inherit",
+            env: process.env
+        });
+
+        process.on("exit", () => void (child.killed ? null : child.kill()));
+        process.on("uncaughtException", () => void (child.killed ? null : child.kill()));
+        process.on("unhandledRejection", () => void (child.killed ? null : child.kill()));
+    }
+}
+
 (async () => {
+    spawnNativeProcess();
+
     await client.boot();
     await client.loadEvents();
     await client.loadCommands();
