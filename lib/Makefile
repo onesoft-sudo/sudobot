@@ -13,7 +13,10 @@ export ALL_OBJECTS_WITHOUT_MAIN = $(filter-out $(MAIN_OBJECT),$(ALL_OBJECTS))
 export BIN = sudobot
 export LIB = libsudobot.so
 
-all: bin lib
+all: bin
+	@if test "$(BUILD_LIB)" != ""; then \
+		$(MAKE) lib; \
+	fi
 
 .PHONY: $(TARGETS)
 
