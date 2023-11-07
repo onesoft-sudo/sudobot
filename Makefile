@@ -1,3 +1,5 @@
+export ROOT = lib
+
 all:
 	$(MAKE) -C lib
 
