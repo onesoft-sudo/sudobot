@@ -58,7 +58,6 @@ bool sudobot_start_with_token(const char *token)
     discord_add_intents(client, INTENTS);
     discord_set_on_message_create(client, &on_message);
     discord_set_on_ready(client, &on_ready);
-    commands_init();
     discord_run(client);
 
     return true;

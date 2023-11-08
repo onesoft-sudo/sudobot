@@ -32,6 +32,5 @@ typedef struct sudobot_command_context
 typedef void (*cmd_callback_t)(struct discord *, cmdctx_t);
 
 void command_on_message_handler(struct discord *client, const struct discord_message *message);
-void commands_init();
 
 #endif /* SUDOBOT_COMMAND_H */

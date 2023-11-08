@@ -71,40 +71,29 @@ static void command_argv_print(size_t argc, char **argv)
 
 #define PREFIX "-"
 
-struct commands_table_bucket
+struct command_info
 {
-    char *key;
-    cmd_callback_t value;
-    int state;
+    const char *name;
+    cmd_callback_t callback;
 };
 
-struct commands_table
-{
-    int length;
-    int capacity;
-    struct commands_table_bucket *buckets;
+static struct command_info const command_list[] = {
+    { "about", &command_about },
 };
 
-#define COMMANDS_TABLE_INIT(bucket, _key, _value) \
-    chash_default_init(bucket, _key, _value)
-#define COMMANDS_TABLE_HEAP 1
-#define COMMANDS_TABLE_BUCKET struct commands_table_bucket
-#define COMMANDS_TABLE_FREE_KEY(key)
-#define COMMANDS_TABLE_HASH(key, hash) chash_string_hash(key, hash)
-#define COMMANDS_TABLE_FREE_VALUE(value) NULL
-#define COMMANDS_TABLE_COMPARE(cmp_a, cmp_b) chash_string_compare(cmp_a, cmp_b)
+static size_t command_count = sizeof (command_list) / sizeof (command_list[0]);
 
-static struct commands_table *table = NULL;
-
-static void commands_register()
+const struct command_info *command_find_by_name(const char *name)
 {
-    chash_assign(table, "about", &command_about, COMMANDS_TABLE);
-}
+    for (size_t i = 0; i < command_count; i++)
+    {
+        if (strcmp(name, command_list[i].name) == 0)
+        {
+            return &command_list[i];
+        }
+    }
 
-void commands_init()
-{
-    table = chash_init(table, COMMANDS_TABLE);
-    commands_register();
+    return NULL;
 }
 
 void command_on_message_handler(struct discord *client, const struct discord_message *message)
@@ -113,8 +102,6 @@ void command_on_message_handler(struct discord *client, const struct discord_mes
     {
         return;
     }
-
-    assert(table != NULL && "Command table is null");
 
     size_t prefix_len = strlen(PREFIX);
     assert(prefix_len != 0 && "Prefix cannot be an empty string");
@@ -126,15 +113,15 @@ void command_on_message_handler(struct discord *client, const struct discord_mes
     command_argv_print(argc, argv);
 
     const char *command_name = argv[0];
-    bool command_exists = chash_contains(table, command_name, command_exists, COMMANDS_TABLE);
-
-    if (!command_exists)
+    const struct command_info *command = command_find_by_name(command_name);
+    
+    if (command == NULL)
     {
         log_debug("Command not found: %s", command_name);
         goto command_on_message_handler_end;
     }
 
-    cmd_callback_t callback = chash_lookup(table, (char *)command_name, callback, COMMANDS_TABLE);
+    cmd_callback_t callback = command->callback;
 
     cmdctx_t context = {
         .type = CMDCTX_LEGACY,
