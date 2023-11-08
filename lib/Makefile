@@ -34,12 +34,22 @@ lib: prepare $(TARGETS)
 	$(CC) -shared $(LDFLAGS) $(ALL_OBJECTS_WITHOUT_MAIN) -o $(BUILD_DIR)/lib/$(LIB) $(LIB_LDLIBS)
 
 $(TARGETS):
-	$(MAKE) -C $@ "TOP_SRCDIR=$(shell realpath "$(shell pwd)" --relative-to $@)"
+	dir="$(realpath .)"; \
+	which realpath > /dev/null; \
+	if test "$$?" = "0"; then \
+		dir="$(shell realpath . --relative-to "$@")"; \
+	fi; \
+	echo $(MAKE) -C $@ "TOP_SRCDIR=\"$${dir}\""; \
+	$(MAKE) -C $@ "TOP_SRCDIR=$${dir}"
 
 clean:
 	for t in $(TARGETS); do \
-		abspath=$$(realpath . --relative-to $$t); \
-		$(MAKE) -C "$$t" clean TOP_SRCDIR=$$abspath; \
+		dir="$(realpath .)"; \
+		which realpath > /dev/null; \
+		if test "$$?" = "0"; then \
+			dir="$(shell realpath . --relative-to "$@")"; \
+		fi; \
+		$(MAKE) -C "$$t" clean "TOP_SRCDIR=$$dir"; \
 		if test "$$?" != "0"; then \
 			exit 1; \
 		fi \
