@@ -7,12 +7,12 @@ on: [push, pull_request]
 
 jobs:
     build:
-        runs-on: ubuntu-latest
-
         strategy:
             matrix:
                 node-version: [18.x, 20.x]
-                # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+                os: [ubuntu-latest, macos-latest]
+       
+        runs-on: ${{ matrix.os }}
 
         steps:
             - uses: actions/checkout@v3
@@ -22,8 +22,13 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
 
-            - name: "Install Tools"
+            - name: Install Libraries (Linux)
               run: sudo apt install build-essential libcurl4 libcurl4-gnutls-dev -y
+              if: matrix.os == 'ubuntu-latest'
+
+            - name: Install Libraries and Tools (macOS)
+              run: brew install curl
+              if: matrix.os == 'macos-latest'
 
             - name: "Install Native Libraries"
               run: |
