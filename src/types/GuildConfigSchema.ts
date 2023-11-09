@@ -35,7 +35,8 @@ export const GuildConfigSchema = z.object({
             fakeban_safe: z.array(zSnowflake).default([]),
             echo_mentions: z.boolean().default(false),
             moderation_command_behaviour: z.enum(["delete", "default"]).default("default"),
-            rerun_on_edit: z.boolean().default(false)
+            rerun_on_edit: z.boolean().default(false),
+            default_joke_type: z.enum(["random", "joke", "dadjoke"]).default("random")
         })
         .default({}),
     permissions: z
