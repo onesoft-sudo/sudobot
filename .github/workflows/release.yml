@@ -5,7 +5,7 @@ on:
             - main
 
 jobs:
-    build:
+    build_linux:
         if: github.repository_owner == 'onesoft-sudo'
         runs-on: ubuntu-latest
 
@@ -16,6 +16,22 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: 21.x
+
+            - name: "Install Programs, Libraies and Tools"
+              run: |
+                  sudo apt update;
+                  sudo apt install build-essential libcurl4 libcurl4-gnutls-dev -y;
+
+            - name: "Install Native Libraries"
+              run: |
+                  git clone https://github.com/Cogmasters/concord;
+                  cd concord;
+                  make;
+                  sudo make install;
+                  cd ..;
+
+            - name: "Build (Native)"
+              run: make
 
             - name: "Install Dependencies"
               run: npm install
@@ -34,18 +50,77 @@ jobs:
 
             - name: "Package the built files"
               run: |
+                  mkdir sudobot;
+                  mkdir sudobot/lib;
                   mv build sudobot;
-                  tar -cvzf sudobot-release.tar.gz sudobot
+                  mv lib/build sudobot/lib;
+                  tar -cvzf sudobot-release-linux.tar.gz sudobot
 
             - name: Upload Release Artifacts
               uses: actions/upload-artifact@v3
               with:
-                  name: sudobot-release
+                  name: sudobot-release-linux
                   path: |
-                      ./sudobot-release.tar.gz
+                      ./sudobot-release-linux.tar.gz
+
+    build_macos:
+        if: github.repository_owner == 'onesoft-sudo'
+        runs-on: macos-latest
+
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Use Node.js 21.x
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 21.x
+
+            - name: "Install Programs, Libraies and Tools"
+              run: brew install curl
+
+            - name: "Install Native Libraries"
+              run: |
+                  git clone https://github.com/Cogmasters/concord;
+                  cd concord;
+                  make;
+                  sudo make install;
+                  cd ..;
+
+            - name: "Build (Native)"
+              run: make
+
+            - name: "Install Dependencies"
+              run: npm install
+
+            - name: "Install Dev Dependencies"
+              run: npm install -D
+
+            - name: "Generate prisma client"
+              run: npx prisma generate
+
+            - name: "ESLint"
+              run: npm run lint || echo "ESLint Failed"
+
+            - name: "Build"
+              run: npm run build --if-present
+
+            - name: "Package the built files"
+              run: |
+                  mkdir sudobot;
+                  mkdir sudobot/lib;
+                  mv build sudobot;
+                  mv lib/build sudobot/lib;
+                  tar -cvzf sudobot-release-darwin.tar.gz sudobot
+
+            - name: Upload Release Artifacts
+              uses: actions/upload-artifact@v3
+              with:
+                  name: sudobot-release-darwin
+                  path: |
+                      ./sudobot-release-darwin.tar.gz
 
     release:
-        needs: [build]
+        needs: [build_linux, build_macos]
         if: github.repository_owner == 'onesoft-sudo'
         runs-on: ubuntu-latest
 
@@ -61,10 +136,15 @@ jobs:
                   git-user-name: "Conventional Release Action"
                   git-user-email: rakinar2@onesoftnet.eu.org
 
-            - name: Download Release Artifacts
+            - name: Download Linux Release Artifact
               uses: actions/download-artifact@v2
               with:
-                  name: sudobot-release
+                  name: sudobot-release-linux
+
+            - name: Download macOS Release Artifact
+              uses: actions/download-artifact@v2
+              with:
+                  name: sudobot-release-darwin
 
             - name: Create Release
               id: create_release
@@ -77,4 +157,4 @@ jobs:
                   name: ${{ steps.changelog.outputs.tag }}
                   body: ${{ steps.changelog.outputs.clean_changelog }}
                   artifactContentType: application/x-gzip
-                  artifacts: ./sudobot-release.tar.gz
+                  artifacts: ./sudobot-release-linux.tar.gz,./sudobot-release-darwin.tar.gz
