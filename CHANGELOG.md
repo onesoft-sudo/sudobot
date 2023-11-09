@@ -1,3 +1,12 @@
+# [6.68.0](https://github.com/onesoft-sudo/sudobot/compare/v6.67.0...v6.68.0) (2023-11-09)
+
+
+### Features
+
+* **commands:joke:** support multiple joke APIs ([40b2a7e](https://github.com/onesoft-sudo/sudobot/commit/40b2a7eaa680a5feb340a5a21d0cbee594b95635))
+
+
+
 # [6.67.0](https://github.com/onesoft-sudo/sudobot/compare/v6.66.0...v6.67.0) (2023-11-07)
 
 
@@ -33,15 +42,6 @@
 ### Bug Fixes
 
 * **commands:emojimix:** add missing description ([ef176c3](https://github.com/onesoft-sudo/sudobot/commit/ef176c3f595c0dfeff04894c8587c02c670f6e2b))
-
-
-
-## [6.65.2](https://github.com/onesoft-sudo/sudobot/compare/v6.65.1...v6.65.2) (2023-11-05)
-
-
-### Bug Fixes
-
-* **commands:update:** requirement checks not working ([7bee45d](https://github.com/onesoft-sudo/sudobot/commit/7bee45d99aab110530d3a569e958310810bdb94d))
 
 
 
