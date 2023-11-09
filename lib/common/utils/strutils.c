@@ -1,6 +1,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <stdarg.h>
 #include "strutils.h"
 #include "xmalloc.h"
 
@@ -102,4 +104,30 @@ bool str_starts_with(const char *restrict haystack, const char *restrict needle)
     }
 
     return true;
+}
+
+char *str_concat(const char *start, ...)
+{
+    va_list args;
+    char *buffer = strdup(start);
+    size_t length = strlen(start);    
+
+    va_start(args, start);
+
+    while (true)
+    {
+        const char *part = va_arg(args, const char *);
+        size_t part_length;
+        
+        if (part == NULL)
+            break;
+
+        part_length = strlen(part);
+        length += part_length;
+        buffer = xrealloc(buffer, length);
+        strncat(buffer, part, part_length);
+    }
+    
+    va_end(args);
+    return buffer;
 }
