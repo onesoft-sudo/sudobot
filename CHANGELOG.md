@@ -1,3 +1,12 @@
+# [6.69.0](https://github.com/onesoft-sudo/sudobot/compare/v6.68.0...v6.69.0) (2023-11-09)
+
+
+### Features
+
+* **native:commands:** add `about` command ([91694db](https://github.com/onesoft-sudo/sudobot/commit/91694db7464b09c0bd7da125997f656cf648b8ec))
+
+
+
 # [6.68.0](https://github.com/onesoft-sudo/sudobot/compare/v6.67.0...v6.68.0) (2023-11-09)
 
 
@@ -33,15 +42,6 @@
 ### Bug Fixes
 
 * **commands:SendReply:** better error messages ([6dc38d2](https://github.com/onesoft-sudo/sudobot/commit/6dc38d28c14a786f01d578d0f3320b6de201488b))
-
-
-
-## [6.65.3](https://github.com/onesoft-sudo/sudobot/compare/v6.65.2...v6.65.3) (2023-11-06)
-
-
-### Bug Fixes
-
-* **commands:emojimix:** add missing description ([ef176c3](https://github.com/onesoft-sudo/sudobot/commit/ef176c3f595c0dfeff04894c8587c02c670f6e2b))
 
 
 
