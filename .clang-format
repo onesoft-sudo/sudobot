@@ -5,3 +5,4 @@ AlignAfterOpenBracket: AlwaysBreak
 BreakAfterAttributes: Always
 BreakBeforeBraces: Allman
 SpaceAfterCStyleCast: true
+AlignArrayOfStructures: Left

@@ -7,6 +7,7 @@
 #include "about.h"
 #include "../../utils/strutils.h"
 #include "../../utils/defs.h"
+#include "../../io/printf.h"
 
 void command_about(struct discord *client, cmdctx_t context)
 {
@@ -20,9 +21,7 @@ void command_about(struct discord *client, cmdctx_t context)
     const char *avatar = user.avatar;
     bool avatar_is_animated = avatar[0] == 'a' && avatar[1] == '_';
     const char *avatar_extension = avatar_is_animated ? "gif" : "png";
-    char *icon_url = NULL;
-
-    asprintf(&icon_url, "https://cdn.discordapp.com/avatars/%lu/%s.%s",
+    char *icon_url = casprintf("https://cdn.discordapp.com/avatars/%lu/%s.%s",
                               user.id, avatar, avatar_extension);
 
     struct discord_embed_field embed_fields[] = {
