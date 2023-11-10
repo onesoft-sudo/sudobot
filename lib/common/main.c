@@ -14,7 +14,6 @@
 
 int main(void)
 {
-    exit(0);
     sudobot_start();
     return 0;
 }
