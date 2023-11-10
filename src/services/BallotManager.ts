@@ -139,7 +139,7 @@ export default class BallotManager extends Service implements HasEventListeners 
         await interaction.editReply({
             content: `Successfully ${
                 added === null ? "changed" : added ? "added" : "removed"
-            } your vote! If you want to remove your vote, press the same button again.`
+            } your vote! If you want to ${added === false ? "add" : "remove"} your vote${added === false ? " back" : ""}, press the same button again.`
         });
     }
 
