@@ -1,3 +1,12 @@
+## [6.69.1](https://github.com/onesoft-sudo/sudobot/compare/v6.69.0...v6.69.1) (2023-11-10)
+
+
+### Bug Fixes
+
+* add better DM fail check ([b024419](https://github.com/onesoft-sudo/sudobot/commit/b02441966263c67d2786ba64428ffe2b3b801717))
+
+
+
 # [6.69.0](https://github.com/onesoft-sudo/sudobot/compare/v6.68.0...v6.69.0) (2023-11-09)
 
 
@@ -33,15 +42,6 @@
 ### Features
 
 * **lib:native:** basic command handling ([7f5057e](https://github.com/onesoft-sudo/sudobot/commit/7f5057e151a164dd2af64b1d475b167b6acd0719))
-
-
-
-## [6.65.4](https://github.com/onesoft-sudo/sudobot/compare/v6.65.3...v6.65.4) (2023-11-06)
-
-
-### Bug Fixes
-
-* **commands:SendReply:** better error messages ([6dc38d2](https://github.com/onesoft-sudo/sudobot/commit/6dc38d28c14a786f01d578d0f3320b6de201488b))
 
 
 
