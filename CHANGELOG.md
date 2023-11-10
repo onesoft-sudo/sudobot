@@ -1,3 +1,12 @@
+## [6.71.1](https://github.com/onesoft-sudo/sudobot/compare/v6.71.0...v6.71.1) (2023-11-10)
+
+
+### Bug Fixes
+
+* **services:ballots:** interaction response strings ([93c7646](https://github.com/onesoft-sudo/sudobot/commit/93c76466fd2e982aa1ed04884ebd4c5044009960))
+
+
+
 # [6.71.0](https://github.com/onesoft-sudo/sudobot/compare/v6.70.0...v6.71.0) (2023-11-10)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * **native:commands:** add `about` command ([91694db](https://github.com/onesoft-sudo/sudobot/commit/91694db7464b09c0bd7da125997f656cf648b8ec))
-
-
-
-# [6.68.0](https://github.com/onesoft-sudo/sudobot/compare/v6.67.0...v6.68.0) (2023-11-09)
-
-
-### Features
-
-* **commands:joke:** support multiple joke APIs ([40b2a7e](https://github.com/onesoft-sudo/sudobot/commit/40b2a7eaa680a5feb340a5a21d0cbee594b95635))
 
 
 
