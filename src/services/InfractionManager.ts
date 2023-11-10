@@ -304,7 +304,7 @@ export default class InfractionManager extends Service {
                           }
                       ]
                     : undefined
-            });
+            }).catch(logError);
         }
 
         try {
