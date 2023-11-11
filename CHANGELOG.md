@@ -1,3 +1,12 @@
+# [6.74.0](https://github.com/onesoft-sudo/sudobot/compare/v6.73.0...v6.74.0) (2023-11-11)
+
+
+### Features
+
+* **commands:snipe:** update `snipe` command ([b0572ed](https://github.com/onesoft-sudo/sudobot/commit/b0572ed5b5c456ed170c33c23413998df7efba89))
+
+
+
 # [6.73.0](https://github.com/onesoft-sudo/sudobot/compare/v6.72.0...v6.73.0) (2023-11-11)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **services:ballots:** interaction response strings ([93c7646](https://github.com/onesoft-sudo/sudobot/commit/93c76466fd2e982aa1ed04884ebd4c5044009960))
-
-
-
-# [6.71.0](https://github.com/onesoft-sudo/sudobot/compare/v6.70.0...v6.71.0) (2023-11-10)
-
-
-### Features
-
-* **commands:** add reminder list command ([5b2ec09](https://github.com/onesoft-sudo/sudobot/commit/5b2ec0901672db51581d6a381eb7eabe608eb539))
 
 
 
