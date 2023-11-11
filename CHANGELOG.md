@@ -1,3 +1,12 @@
+# [6.72.0](https://github.com/onesoft-sudo/sudobot/compare/v6.71.2...v6.72.0) (2023-11-11)
+
+
+### Features
+
+* **native:** production and debug builds ([25d3c09](https://github.com/onesoft-sudo/sudobot/commit/25d3c09a0c587df29de638ae2c0cc81232811063))
+
+
+
 ## [6.71.2](https://github.com/onesoft-sudo/sudobot/compare/v6.71.1...v6.71.2) (2023-11-11)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * **native:io:** implement casprintf() function for a windows replacement of asprintf() ([f30bc11](https://github.com/onesoft-sudo/sudobot/commit/f30bc113e33515c7f85829cbbbcbe96cf31732c9))
-
-
-
-## [6.69.1](https://github.com/onesoft-sudo/sudobot/compare/v6.69.0...v6.69.1) (2023-11-10)
-
-
-### Bug Fixes
-
-* add better DM fail check ([b024419](https://github.com/onesoft-sudo/sudobot/commit/b02441966263c67d2786ba64428ffe2b3b801717))
 
 
 
