@@ -1,3 +1,12 @@
+# [6.73.0](https://github.com/onesoft-sudo/sudobot/compare/v6.72.0...v6.73.0) (2023-11-11)
+
+
+### Features
+
+* **native:** application command interaction support ([fa892a5](https://github.com/onesoft-sudo/sudobot/commit/fa892a59d0940c53e0e97b05be8996ceee7d0140))
+
+
+
 # [6.72.0](https://github.com/onesoft-sudo/sudobot/compare/v6.71.2...v6.72.0) (2023-11-11)
 
 
@@ -31,20 +40,6 @@
 ### Features
 
 * **commands:** add reminder list command ([5b2ec09](https://github.com/onesoft-sudo/sudobot/commit/5b2ec0901672db51581d6a381eb7eabe608eb539))
-
-
-
-# [6.70.0](https://github.com/onesoft-sudo/sudobot/compare/v6.69.1...v6.70.0) (2023-11-10)
-
-
-### Bug Fixes
-
-* remove debug exit ([11098b6](https://github.com/onesoft-sudo/sudobot/commit/11098b669a0424f3a8b8a9640e60c198dab60d23))
-
-
-### Features
-
-* **native:io:** implement casprintf() function for a windows replacement of asprintf() ([f30bc11](https://github.com/onesoft-sudo/sudobot/commit/f30bc113e33515c7f85829cbbbcbe96cf31732c9))
 
 
 
