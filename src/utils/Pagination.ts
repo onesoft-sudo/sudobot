@@ -71,7 +71,7 @@ export default class Pagination<T> {
         return this.options.embedBuilder({
             data: this.data ? data : this.currentData,
             currentPage: this.currentPage,
-            maxPages: Math.ceil((this.data?.length ?? this.maxPage) / this.options.limit)
+            maxPages: Math.max(Math.ceil((this.data?.length ?? this.maxPage) / this.options.limit), 1)
         });
     }
 
