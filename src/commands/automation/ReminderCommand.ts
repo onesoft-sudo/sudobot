@@ -23,12 +23,19 @@ import Command, { BasicCommandContext, CommandMessage, CommandReturn } from "../
 export default class ReminderCommand extends Command {
     public readonly name = "reminder";
     public readonly permissions = [];
-    public readonly subcommands = ["list"];
+    public readonly subcommands = ["list", "remove", "delete", "cancel"];
     public readonly description = "Manage your reminders.";
 
-    public readonly slashCommandBuilder = new SlashCommandBuilder().addSubcommand(subcommand =>
-        subcommand.setName("list").setDescription("Lists your upcoming reminders")
-    );
+    public readonly slashCommandBuilder = new SlashCommandBuilder()
+        .addSubcommand(subcommand => subcommand.setName("list").setDescription("Lists your upcoming reminders"))
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("remove")
+                .setDescription("Removes an upcoming reminder")
+                .addIntegerOption(option =>
+                    option.setName("id").setDescription("The ID of the reminder to delete").setRequired(true)
+                )
+        );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (context.isLegacy && (context.args[0] === undefined || !this.subcommands.includes(context.args[0]))) {
