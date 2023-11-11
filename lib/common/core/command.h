@@ -1,9 +1,13 @@
-#ifndef SUDOBOT_COMMAND_H
-#define SUDOBOT_COMMAND_H
+#ifndef SUDOBOT_CORE_COMMAND_H
+#define SUDOBOT_CORE_COMMAND_H
 
 #include <stdlib.h>
 #include <stdbool.h>
 #include <concord/discord.h>
+
+#define CMD_MODE_INTERACTION (CMD_MODE_CHAT_INPUT_COMMAND_INTERACTION | CMD_MODE_CONTEXT_MENU_INTERACTION)
+#define CMD_MODE_ALL (CMD_MODE_INTERACTION | CMD_MODE_LEGACY)
+#define CMD_MODE_BASIC (CMD_MODE_CHAT_INPUT_COMMAND_INTERACTION | CMD_MODE_LEGACY)
 
 typedef enum sudobot_command_context_type
 {
@@ -31,6 +35,24 @@ typedef struct sudobot_command_context
 
 typedef void (*cmd_callback_t)(struct discord *, cmdctx_t);
 
-void command_on_message_handler(struct discord *client, const struct discord_message *message);
+enum command_mode
+{
+    CMD_MODE_LEGACY = 1,
+    CMD_MODE_CHAT_INPUT_COMMAND_INTERACTION = 2,
+    CMD_MODE_CONTEXT_MENU_INTERACTION = 4,
+};
 
-#endif /* SUDOBOT_COMMAND_H */
+struct command_info
+{
+    const char *name;
+    cmd_callback_t callback;
+    int mode;
+    const char *description;
+    enum discord_application_command_types type;
+};
+
+void command_on_message_handler(struct discord *client, const struct discord_message *message);
+void register_slash_commands(struct discord *client, u64snowflake guild);
+void command_on_interaction_handler(struct discord *client, const struct discord_interaction *interaction);
+
+#endif /* SUDOBOT_CORE_COMMAND_H */

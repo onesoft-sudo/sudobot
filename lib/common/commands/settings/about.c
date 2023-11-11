@@ -55,16 +55,31 @@ See the " SUDOBOT_LICENSE_MD_LINK " for more detailed information.\n",
         .size = 1
     };
     
-    struct discord_create_message params = {
-        .embeds = &embeds,
-        .message_reference = & (struct discord_message_reference) {
-            .channel_id = context.message->channel_id,
-            .fail_if_not_exists = false,
-            .guild_id = context.message->guild_id,
-            .message_id = context.message->id,
-        },
-    };
+    if (context.type == CMDCTX_LEGACY) 
+    {
+        struct discord_create_message params = {
+            .embeds = &embeds,
+            .message_reference = & (struct discord_message_reference) {
+                .channel_id = context.message->channel_id,
+                .fail_if_not_exists = false,
+                .guild_id = context.message->guild_id,
+                .message_id = context.message->id,
+            },
+        };
 
-    discord_create_message(client, context.message->channel_id, &params, NULL);
+        discord_create_message(client, context.message->channel_id, &params, NULL);
+    }
+    else
+    {
+        struct discord_interaction_response params = {
+            .type = DISCORD_INTERACTION_CHANNEL_MESSAGE_WITH_SOURCE,
+            .data = & (struct discord_interaction_callback_data) {
+                .embeds = &embeds
+            }
+        };
+
+        discord_create_interaction_response(client, context.interaction->id, context.interaction->token, &params, NULL);
+    }
+
     dealloc(icon_url);
 }

@@ -3,10 +3,10 @@
 #include <ctype.h>
 #include <assert.h>
 #include "command.h"
-#include "../commands/settings/about.h"
 #include "../utils/strutils.h"
 #include "../utils/xmalloc.h"
 #include "../io/log.h"
+#include "../commands/commands.h"
 
 static void command_argv_create(const char *content, size_t *_argc, char ***_argv)
 {
@@ -71,18 +71,6 @@ static void command_argv_print(size_t argc, char **argv)
 
 #define PREFIX "-"
 
-struct command_info
-{
-    const char *name;
-    cmd_callback_t callback;
-};
-
-static struct command_info const command_list[] = {
-    { "about", &command_about },
-};
-
-static size_t command_count = sizeof (command_list) / sizeof (command_list[0]);
-
 const struct command_info *command_find_by_name(const char *name)
 {
     for (size_t i = 0; i < command_count; i++)
@@ -94,6 +82,40 @@ const struct command_info *command_find_by_name(const char *name)
     }
 
     return NULL;
+}
+
+void command_on_interaction_handler(struct discord *client, const struct discord_interaction *interaction)
+{
+    if (interaction->type != DISCORD_INTERACTION_APPLICATION_COMMAND)
+        return;
+
+    const char *command_name = interaction->data->name;
+
+    const struct command_info *command = command_find_by_name(command_name);
+    
+    if (command == NULL)
+    {
+        log_debug("Command not found: %s", command_name);
+        return;
+    }
+
+    if ((command->mode & CMD_MODE_CHAT_INPUT_COMMAND_INTERACTION) != CMD_MODE_CHAT_INPUT_COMMAND_INTERACTION) {
+        log_debug("Command does not support chat input command interaction mode: %s", command_name);
+        return;
+    }
+
+    cmd_callback_t callback = command->callback;
+
+    cmdctx_t context = {
+        .type = CMDCTX_CHAT_INPUT_COMMAND_INTERACTION,
+        .is_legacy = false,
+        .is_chat_input_command_interaction = true,
+        .is_interaction = true,
+        .command_name = command_name,
+        .interaction = interaction
+    };
+
+    callback(client, context);
 }
 
 void command_on_message_handler(struct discord *client, const struct discord_message *message)
@@ -121,6 +143,11 @@ void command_on_message_handler(struct discord *client, const struct discord_mes
         goto command_on_message_handler_end;
     }
 
+    if ((command->mode & CMD_MODE_LEGACY) != CMD_MODE_LEGACY) {
+        log_debug("Command does not support legacy mode: %s", command_name);
+        goto command_on_message_handler_end;
+    }
+
     cmd_callback_t callback = command->callback;
 
     cmdctx_t context = {
@@ -138,4 +165,28 @@ void command_on_message_handler(struct discord *client, const struct discord_mes
 
 command_on_message_handler_end:
     command_argv_free(argc, argv);
+}
+
+void register_slash_commands(struct discord *client, u64snowflake guild)
+{
+    const struct discord_user *self = discord_get_self(client);
+    struct discord_bulk_overwrite_guild_application_commands *params = xcalloc(1, sizeof (*params));
+    size_t count = 1;
+
+    for (size_t i = 0; i < command_count; i++)
+    {
+        const struct command_info command = command_list[i];
+
+        params = xrealloc(params, sizeof (*params) * (++count));
+
+        params[i].name = (char *) command.name;
+        params[i].type = command.type;
+        params[i].description = (char *) command.description;
+    }
+
+    memset(&params[count - 1], 0, sizeof (*params));
+
+    assert(guild != 0);
+
+    discord_bulk_overwrite_guild_application_commands(client, self->id, guild, params, NULL);
 }

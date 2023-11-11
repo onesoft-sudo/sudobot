@@ -10,6 +10,7 @@
 
 #include "events/on_ready.h"
 #include "events/on_message.h"
+#include "events/on_interaction.h"
 #include "utils/strutils.h"
 #include "core/command.h"
 #include "utils/utils.h"
@@ -56,6 +57,7 @@ bool sudobot_start_with_token(const char *token)
 
     log_info("Attempting to boot...");
     discord_add_intents(client, INTENTS);
+    discord_set_on_interaction_create(client, &on_interaction_create);
     discord_set_on_message_create(client, &on_message);
     discord_set_on_ready(client, &on_ready);
     discord_run(client);
