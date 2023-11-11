@@ -106,7 +106,7 @@ bool str_starts_with(const char *restrict haystack, const char *restrict needle)
     return true;
 }
 
-char *str_concat(const char *start, ...)
+char *str_concat_varg(const char *start, ...)
 {
     va_list args;
     char *buffer = strdup(start);

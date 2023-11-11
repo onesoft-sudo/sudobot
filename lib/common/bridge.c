@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <concord/discord.h>
-#include <concord/log.h>
+#include "io/log.h"
 
 #include "sudobot.h"
 

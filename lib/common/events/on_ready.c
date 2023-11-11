@@ -1,5 +1,5 @@
 #include <concord/discord.h>
-#include <concord/log.h>
+#include "../io/log.h"
 #include "on_ready.h"
 
 void on_ready(struct discord *client, const struct discord_ready *event)

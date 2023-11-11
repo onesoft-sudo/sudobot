@@ -1,12 +1,12 @@
 #define _GNU_SOURCE
 
 #include <concord/discord.h>
-#include <concord/log.h>
 #include <string.h>
 #include <stdio.h>
 #include "about.h"
 #include "../../utils/strutils.h"
 #include "../../utils/defs.h"
+#include "../../utils/utils.h"
 #include "../../io/printf.h"
 
 void command_about(struct discord *client, cmdctx_t context)
@@ -66,5 +66,5 @@ See the " SUDOBOT_LICENSE_MD_LINK " for more detailed information.\n",
     };
 
     discord_create_message(client, context.message->channel_id, &params, NULL);
-    free(icon_url);
+    dealloc(icon_url);
 }

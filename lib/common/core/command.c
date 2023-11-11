@@ -1,4 +1,3 @@
-#include <concord/log.h>
 #include <concord/chash.h>
 #include <string.h>
 #include <ctype.h>
@@ -7,6 +6,7 @@
 #include "../commands/settings/about.h"
 #include "../utils/strutils.h"
 #include "../utils/xmalloc.h"
+#include "../io/log.h"
 
 static void command_argv_create(const char *content, size_t *_argc, char ***_argv)
 {

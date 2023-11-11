@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <signal.h>
 #include <concord/discord.h>
-#include <concord/log.h>
+#include "io/log.h"
 
 #include "events/on_ready.h"
 #include "events/on_message.h"

@@ -1,4 +1,4 @@
-#include <concord/log.h>
+#include "../io/log.h"
 #include <stdlib.h>
 #include "utils.h"
 #include "xmalloc.h"

@@ -1,6 +1,11 @@
 export CC = gcc
 export CFLAGS = -O2 -fPIC -g -Wall -Wextra
-export CPPFLAGS = -DDCCORD_DEBUG_HTTP
+export CPPFLAGS = -DDCCORD_DEBUG_HTTP 
+
+ifeq ($(NDEBUG), 1)
+export CPPFLAGS += -DNDEBUG
+endif
+
 export LIBDISCORD = /usr/local/lib/libdiscord.a
 export BIN_LDLIBS = -pthread $(LIBDISCORD) -lcurl -lm
 export LIB_LDLIBS = -pthread -ldiscord -lcurl -lm
