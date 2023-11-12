@@ -1,3 +1,12 @@
+# [6.75.0](https://github.com/onesoft-sudo/sudobot/compare/v6.74.0...v6.75.0) (2023-11-11)
+
+
+### Features
+
+* **reminders:** add reminder remove command ([5f80ab2](https://github.com/onesoft-sudo/sudobot/commit/5f80ab232602bba29e4bb443a3fee36ea2ba6fbc))
+
+
+
 # [6.74.0](https://github.com/onesoft-sudo/sudobot/compare/v6.73.0...v6.74.0) (2023-11-11)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **utils:pagination:** fix 'Page 1 of 0' one-by-off errors ([41987d7](https://github.com/onesoft-sudo/sudobot/commit/41987d77c770306b83d2268538a85779e0063ae8))
-
-
-
-## [6.71.1](https://github.com/onesoft-sudo/sudobot/compare/v6.71.0...v6.71.1) (2023-11-10)
-
-
-### Bug Fixes
-
-* **services:ballots:** interaction response strings ([93c7646](https://github.com/onesoft-sudo/sudobot/commit/93c76466fd2e982aa1ed04884ebd4c5044009960))
 
 
 
