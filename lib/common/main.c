@@ -2,6 +2,7 @@
 #include <concord/log.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 #include <stdlib.h>
 #include <getopt.h>
 
@@ -16,14 +17,15 @@
 #define ENV_BOT_TOKEN "BOT_TOKEN"
 
 static struct option const long_options[] = {
-    { "update", no_argument, NULL, 'u' },
-    { 0,        0,           0,     0  }
+    { "update", no_argument,       NULL, 'u' },
+    { "env",    required_argument, NULL, 'e' },
+    { 0,        0,                 0,     0  }
 };
 
 int main(int argc, char **argv)
 {
     int longind = 0;
-    const char *shortopts = "u";
+    const char *shortopts = "ue:";
 
     opterr = 0;
 
@@ -39,6 +41,10 @@ int main(int argc, char **argv)
             case 'u':
                 flags_add(FLAG_UPDATE_COMMANDS);
                 log_info("Update of the commands has been queued");
+                break;
+
+            case 'e':
+                opt_env_file_path = strdup(optarg);
                 break;
             
             default:

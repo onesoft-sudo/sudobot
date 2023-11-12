@@ -1,5 +1,7 @@
+#include <stdlib.h>
 #include "flags.h"
 
+char *opt_env_file_path = NULL;
 static int flags = 0;
 
 void flags_add(int flag)
@@ -30,4 +32,9 @@ int flags_get()
 bool flags_has(int flag)
 {
     return (flags & flag) == flag;
+}
+
+void opt_cleanup()
+{
+    free(opt_env_file_path);
 }

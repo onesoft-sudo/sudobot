@@ -7,6 +7,7 @@
 #include <signal.h>
 #include <concord/discord.h>
 #include "io/log.h"
+#include "env/env.h"
 
 #include "events/on_ready.h"
 #include "events/on_message.h"
@@ -24,10 +25,12 @@ static const uint64_t INTENTS = DISCORD_GATEWAY_GUILD_MESSAGES |
                                 DISCORD_GATEWAY_MESSAGE_CONTENT;
 
 struct discord *client;
+env_t *env = { 0 };
 
 void sudobot_atexit()
 {
     discord_cleanup(client);
+    env_free(env);
 }
 
 void sudobot_sigterm_handler()
@@ -67,7 +70,16 @@ bool sudobot_start_with_token(const char *token)
 
 bool sudobot_start()
 {
-    const char *token = getenv(ENV_BOT_TOKEN);
+    env = env_init();
+
+    if (!env_load(env)) 
+    {
+        log_fatal("env: parse error: %s", env->error);
+        env_free(env);
+        return false;
+    }
+
+    const char *token = env_get(env, ENV_BOT_TOKEN);
 
     if (token == NULL)
     {
