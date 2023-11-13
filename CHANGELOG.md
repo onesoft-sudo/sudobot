@@ -1,3 +1,12 @@
+# [6.76.0](https://github.com/onesoft-sudo/sudobot/compare/v6.75.0...v6.76.0) (2023-11-12)
+
+
+### Features
+
+* **native:** environment file parsing ([a38793d](https://github.com/onesoft-sudo/sudobot/commit/a38793d7132d4dddfa4b0d977dc905d2ac6b6990))
+
+
+
 # [6.75.0](https://github.com/onesoft-sudo/sudobot/compare/v6.74.0...v6.75.0) (2023-11-11)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **native:** production and debug builds ([25d3c09](https://github.com/onesoft-sudo/sudobot/commit/25d3c09a0c587df29de638ae2c0cc81232811063))
-
-
-
-## [6.71.2](https://github.com/onesoft-sudo/sudobot/compare/v6.71.1...v6.71.2) (2023-11-11)
-
-
-### Bug Fixes
-
-* **utils:pagination:** fix 'Page 1 of 0' one-by-off errors ([41987d7](https://github.com/onesoft-sudo/sudobot/commit/41987d77c770306b83d2268538a85779e0063ae8))
 
 
 
