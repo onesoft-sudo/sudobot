@@ -34,7 +34,7 @@ export default class EmbedBuildCommand extends Command {
         }
 
         const schema = context.isLegacy ? context.parsedNamedArgs.schema : context.options.getString("json_schema", true);
-        const { embeds } = EmbedSchemaParser.getMessageCreateOptions(
+        const { embeds } = EmbedSchemaParser.getMessageOptions(
             {
                 content: schema
             },
