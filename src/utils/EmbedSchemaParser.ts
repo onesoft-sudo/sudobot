@@ -17,12 +17,25 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { APIEmbed, Embed, EmbedBuilder, GuildMember, MessageCreateOptions, TextBasedChannel, User } from "discord.js";
+import {
+    APIEmbed,
+    APIMessage,
+    Embed,
+    EmbedBuilder,
+    GuildMember,
+    JSONEncodable,
+    Message,
+    MessageCreateOptions,
+    MessageEditOptions,
+    TextBasedChannel,
+    User
+} from "discord.js";
 import JSON5 from "json5";
 import { z } from "zod";
 import { log } from "./logger";
 
 type EmbedType = Embed | APIEmbed;
+type GetMessageOptions = MessageCreateOptions | APIMessage | MessageEditOptions;
 
 export default class EmbedSchemaParser {
     private static readonly embedZodSchema = z.object({
@@ -195,13 +208,19 @@ export default class EmbedSchemaParser {
         return this.toSchemaStringSingle(embed);
     }
 
-    static getMessageCreateOptions({ content, embeds = [], ...options }: MessageCreateOptions, withContent = true) {
+    static getMessageOptions<T extends GetMessageOptions>(payload: T, withContent = true) {
+        const { content, embeds = [], ...options } = payload;
+
+        type GetMessageOptionsResult = (T extends MessageCreateOptions ? MessageCreateOptions : MessageEditOptions) & {
+            embeds: (APIEmbed | JSONEncodable<APIEmbed>)[];
+        };
+
         if (!content) {
             return {
                 content,
                 embeds,
                 ...options
-            };
+            } as unknown as GetMessageOptionsResult;
         }
 
         const [parsedEmbeds, strippedContent] = EmbedSchemaParser.parseString(content);
@@ -210,10 +229,16 @@ export default class EmbedSchemaParser {
             ...options,
             embeds: [...embeds, ...parsedEmbeds.slice(0, 10)],
             content: withContent ? strippedContent : undefined
+        } as unknown as (T extends MessageCreateOptions ? MessageCreateOptions : MessageEditOptions) & {
+            embeds: (APIEmbed | JSONEncodable<APIEmbed>)[];
         };
     }
 
     static sendMessage(sendable: TextBasedChannel | User | GuildMember, options: MessageCreateOptions) {
-        return sendable.send(EmbedSchemaParser.getMessageCreateOptions(options));
+        return sendable.send(EmbedSchemaParser.getMessageOptions(options));
+    }
+
+    static editMessage(message: Message, options: MessageEditOptions) {
+        return message.edit(EmbedSchemaParser.getMessageOptions(options));
     }
 }
