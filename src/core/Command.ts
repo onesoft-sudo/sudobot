@@ -18,6 +18,8 @@
  */
 
 import {
+    APIEmbed,
+    APIEmbedField,
     APIMessage,
     ApplicationCommandType,
     CacheType,
@@ -33,15 +35,20 @@ import {
     MessageCreateOptions,
     MessageMentions,
     MessagePayload,
+    ModalSubmitInteraction,
     PermissionResolvable,
     PermissionsBitField,
     Role,
     SlashCommandBuilder,
     Snowflake,
+    TextBasedChannel,
     User
 } from "discord.js";
 import { ChatInputCommandContext, ContextMenuCommandContext, LegacyCommandContext } from "../services/CommandManager";
+import EmbedSchemaParser from "../utils/EmbedSchemaParser";
 import { stringToTimeInterval } from "../utils/datetime";
+import { channelInfo, guildInfo, userInfo } from "../utils/embed";
+import { safeChannelFetch } from "../utils/fetch";
 import { log, logError } from "../utils/logger";
 import { getEmoji, isSnowflake } from "../utils/utils";
 import Client from "./Client";
@@ -201,6 +208,100 @@ export default abstract class Command {
 
     emoji(name: string) {
         return getEmoji(this.client, name);
+    }
+
+    protected async sendCommandRanLog(
+        message: CommandMessage | ModalSubmitInteraction,
+        options: APIEmbed,
+        params: {
+            fields?: (fields: APIEmbedField[]) => APIEmbedField[];
+            before?: (channel: TextBasedChannel, sentMessages: Array<Message | null>) => any;
+            previews?: Array<MessageCreateOptions | MessagePayload>;
+            url?: string | null;
+        } = {}
+    ) {
+        if (!this.client.configManager.systemConfig.logging?.enabled) {
+            return;
+        }
+
+        const { previews = [] } = params;
+
+        const logChannelId = this.client.configManager.systemConfig.logging?.channels?.echo_send_logs;
+
+        if (!logChannelId) {
+            return;
+        }
+
+        safeChannelFetch(await this.client.getHomeGuild(), logChannelId)
+            .then(async channel => {
+                if (!channel?.isTextBased()) {
+                    return;
+                }
+
+                const sentMessages = [];
+
+                for (const preview of previews) {
+                    const sentMessage = await EmbedSchemaParser.sendMessage(channel, {
+                        ...preview,
+                        reply: undefined
+                    } as MessageCreateOptions).catch(logError);
+                    sentMessages.push(sentMessage ?? null);
+                }
+
+                (await params.before?.(channel, sentMessages))?.catch?.(logError);
+
+                const embedFields = [
+                    {
+                        name: "Command Name",
+                        value: this.name
+                    },
+                    {
+                        name: "Guild Info",
+                        value: guildInfo(channel.guild!),
+                        inline: true
+                    },
+                    {
+                        name: "Channel Info",
+                        value: channelInfo(channel),
+                        inline: true
+                    },
+                    {
+                        name: "User (Executor)",
+                        value: userInfo(message.member!.user as User),
+                        inline: true
+                    },
+                    {
+                        name: "Mode",
+                        value: message instanceof Message ? "Legacy" : "Application Interation"
+                    },
+                    ...(params.url !== null
+                        ? [
+                              {
+                                  name: "Message URL",
+                                  value: params.url ?? (message instanceof Message ? message.url : "*Not available*")
+                              }
+                          ]
+                        : [])
+                ];
+
+                await channel
+                    ?.send({
+                        embeds: [
+                            {
+                                author: {
+                                    name: message.member?.user.username as string,
+                                    icon_url: (message.member?.user as User)?.displayAvatarURL()
+                                },
+                                title: "A command was executed",
+                                color: 0x007bff,
+                                fields: (await params.fields?.(embedFields)) ?? embedFields,
+                                ...options
+                            }
+                        ]
+                    })
+                    .catch(logError);
+            })
+            .catch(logError);
     }
 
     /**

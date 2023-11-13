@@ -18,19 +18,18 @@
  */
 
 import {
+    APIEmbed,
     AttachmentPayload,
     Channel,
     GuildChannel,
     Message,
     PermissionsBitField,
     SlashCommandBuilder,
-    TextChannel,
-    User
+    TextChannel
 } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import EmbedSchemaParser from "../../utils/EmbedSchemaParser";
-import { channelInfo, messageInfo, userInfo } from "../../utils/embed";
-import { safeChannelFetch } from "../../utils/fetch";
+import { messageInfo } from "../../utils/embed";
 import { logError } from "../../utils/logger";
 import { isTextableChannel } from "../../utils/utils";
 
@@ -121,70 +120,23 @@ export default class EchoCommand extends Command {
             await this.deferredReply(message, `Message sent.`);
         }
 
-        if (!this.client.configManager.systemConfig.logging?.enabled) {
-            return;
-        }
+        const embed: APIEmbed = {};
 
-        const logChannelId = this.client.configManager.systemConfig.logging?.channels?.echo_send_logs;
-
-        if (logChannelId) {
-            safeChannelFetch(await this.client.getHomeGuild(), logChannelId)
-                .then(async channel => {
-                    if (channel?.isTextBased()) {
-                        const sentMessage = await EmbedSchemaParser.sendMessage(channel, options).catch(logError);
-
-                        if (!sentMessage) {
-                            return;
-                        }
-
-                        await channel
-                            ?.send({
-                                embeds: [
-                                    {
-                                        title: "The echo command was executed",
-                                        author: {
-                                            name: message.member!.user.username,
-                                            icon_url: (message.member!.user as User).displayAvatarURL?.()
-                                        },
-                                        description: `The message is [above](${sentMessage.url}).`,
-                                        fields: [
-                                            {
-                                                name: "Mode",
-                                                value: context.isLegacy ? "Legacy" : "Application Command"
-                                            },
-                                            {
-                                                name: "Guild",
-                                                value: `${message.guild!.name} (${message.guild!.id})`,
-                                                inline: true
-                                            },
-
-                                            {
-                                                name: "Channel",
-                                                value: channelInfo(message.channel!),
-                                                inline: true
-                                            },
-                                            {
-                                                name: "User",
-                                                value: userInfo(message.member!.user as User),
-                                                inline: true
-                                            },
-                                            {
-                                                name: "Message Info",
-                                                value: !echoedMessage ? "*Not available*" : messageInfo(echoedMessage)
-                                            }
-                                        ],
-                                        footer: {
-                                            text: "Logged"
-                                        },
-                                        timestamp: new Date().toISOString(),
-                                        color: 0x007bff
-                                    }
-                                ]
-                            })
-                            .catch(logError);
+        await this.sendCommandRanLog(message, embed, {
+            previews: [options],
+            url: echoedMessage.url,
+            async before(channel, sentMessages) {
+                embed.description = `The message preview is [above](${sentMessages[0]?.url}).`;
+            },
+            fields(fields) {
+                return [
+                    ...fields,
+                    {
+                        name: "Message Info",
+                        value: !echoedMessage ? "*Not available*" : messageInfo(echoedMessage)
                     }
-                })
-                .catch(logError);
-        }
+                ];
+            }
+        });
     }
 }

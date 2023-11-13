@@ -18,6 +18,7 @@
  */
 
 import {
+    APIEmbed,
     ActionRowBuilder,
     ApplicationCommandType,
     CacheType,
@@ -26,15 +27,12 @@ import {
     ModalBuilder,
     PermissionsBitField,
     TextInputBuilder,
-    TextInputStyle,
-    User
+    TextInputStyle
 } from "discord.js";
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import { HasEventListeners } from "../../types/HasEventListeners";
 import EmbedSchemaParser from "../../utils/EmbedSchemaParser";
-import { channelInfo, userInfo } from "../../utils/embed";
-import { safeChannelFetch } from "../../utils/fetch";
 import { logError } from "../../utils/logger";
 
 export default class EditMessageCommand extends Command implements HasEventListeners {
@@ -113,75 +111,16 @@ export default class EditMessageCommand extends Command implements HasEventListe
             })
             .catch(logError);
 
-        if (!this.client.configManager.systemConfig.logging?.enabled) {
-            return;
-        }
+        const embed: APIEmbed = {};
 
-        const logChannelId = this.client.configManager.systemConfig.logging?.channels?.echo_send_logs;
-
-        if (logChannelId) {
-            safeChannelFetch(await this.client.getHomeGuild(), logChannelId)
-                .then(async channel => {
-                    if (channel?.isTextBased()) {
-                        const sentMessage = await EmbedSchemaParser.sendMessage(channel, options).catch(logError);
-
-                        if (!sentMessage) {
-                            return;
-                        }
-
-                        const oldMessage = await channel.send(oldMessageOptions).catch(logError);
-
-                        await channel
-                            ?.send({
-                                embeds: [
-                                    {
-                                        title: "The Edit Message command was executed",
-                                        author: {
-                                            name: interaction.member!.user.username,
-                                            icon_url: (interaction.member!.user as User).displayAvatarURL?.()
-                                        },
-                                        description: `The edited message preview is [above](${sentMessage.url}), and the old message is in the [middle](${oldMessage?.url}).`,
-                                        fields: [
-                                            {
-                                                name: "Guild",
-                                                value: `${interaction.guild!.name} (${interaction.guild!.id})`,
-                                                inline: true
-                                            },
-
-                                            {
-                                                name: "Channel",
-                                                value: channelInfo(interaction.channel!),
-                                                inline: true
-                                            },
-                                            {
-                                                name: "Mode",
-                                                value: "Application Command"
-                                            },
-                                            {
-                                                name: "User",
-                                                value: userInfo(interaction.member!.user as User),
-                                                inline: true
-                                            },
-                                            {
-                                                name: "Message",
-                                                value: message
-                                                    ? `[Click here](https://discord.com/channels/${interaction.guildId}/${interaction.channelId}/${message.id})`
-                                                    : "*Not available*"
-                                            }
-                                        ],
-                                        footer: {
-                                            text: "Logged"
-                                        },
-                                        timestamp: new Date().toISOString(),
-                                        color: 0x007bff
-                                    }
-                                ]
-                            })
-                            .catch(logError);
-                    }
-                })
-                .catch(logError);
-        }
+        await this.sendCommandRanLog(message, embed, {
+            url: message.url,
+            previews: [options],
+            async before(channel, sentMessages) {
+                const oldMessage = await channel.send(oldMessageOptions).catch(logError);
+                embed.description = `The edited message preview is [above](${sentMessages[0]?.url}), and the old message is in the [middle](${oldMessage?.url}).`;
+            }
+        });
     }
 
     async execute(interaction: MessageContextMenuCommandInteraction): Promise<CommandReturn> {

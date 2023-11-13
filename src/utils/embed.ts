@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Channel, ChannelType, ColorResolvable, EmbedBuilder, Message, User, resolveColor } from "discord.js";
+import { Channel, ChannelType, ColorResolvable, EmbedBuilder, Guild, Message, User, resolveColor } from "discord.js";
 import { ChatInputCommandContext } from "../services/CommandManager";
 
 export function generateEmbed(options: ChatInputCommandContext["options"]) {
@@ -106,4 +106,8 @@ export function messageInfo(message: Message) {
 
 export function channelInfo(channel: Channel) {
     return `ID: ${channel.id}\nType: ${ChannelType[channel.type]}\nMention: ${channel.toString()}`;
+}
+
+export function guildInfo(guild: Guild) {
+    return `ID: ${guild.id}\nName: ${guild.name}\nInvite: ${guild.invites.cache.first()?.url ?? "*Unavailable*"}`;
 }
