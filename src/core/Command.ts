@@ -161,7 +161,7 @@ export default abstract class Command {
     public readonly subCommandCheck: boolean = false;
     public readonly cooldown?: number = undefined;
 
-    constructor(protected client: Client) {}
+    constructor(protected client: Client<true>) {}
 
     abstract execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn>;
 
