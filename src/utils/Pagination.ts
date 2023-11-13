@@ -268,7 +268,7 @@ export interface FetchDataOption {
 export type MessageOptions = MessageReplyOptions & InteractionReplyOptions & MessageEditOptions;
 
 export interface PaginationOptions<T> {
-    client: Client;
+    client: Client<true>;
     limit: number;
     guildId: string;
     channelId: string;
