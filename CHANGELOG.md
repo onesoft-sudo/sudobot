@@ -1,3 +1,12 @@
+## [6.77.1](https://github.com/onesoft-sudo/sudobot/compare/v6.77.0...v6.77.1) (2023-11-14)
+
+
+### Bug Fixes
+
+* **system:audit_logging:** logs the home guild and log channel itself ([e7d6a9a](https://github.com/onesoft-sudo/sudobot/commit/e7d6a9a9132d6568f414309e3a24c87fa529a316))
+
+
+
 # [6.77.0](https://github.com/onesoft-sudo/sudobot/compare/v6.76.0...v6.77.0) (2023-11-13)
 
 
@@ -38,15 +47,6 @@
 ### Features
 
 * **commands:snipe:** update `snipe` command ([b0572ed](https://github.com/onesoft-sudo/sudobot/commit/b0572ed5b5c456ed170c33c23413998df7efba89))
-
-
-
-# [6.73.0](https://github.com/onesoft-sudo/sudobot/compare/v6.72.0...v6.73.0) (2023-11-11)
-
-
-### Features
-
-* **native:** application command interaction support ([fa892a5](https://github.com/onesoft-sudo/sudobot/commit/fa892a59d0940c53e0e97b05be8996ceee7d0140))
 
 
 
