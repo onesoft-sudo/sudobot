@@ -54,7 +54,37 @@ export default class AFKService extends Service implements HasEventListeners {
         return this.startAFK(guildId, userId, reason);
     }
 
-    async removeAFK(guildId: string, userId: string, shouldAwait: boolean = true) {
+    getGuildAFKs(guildId: Snowflake) {
+        return this.entries.filter(entry => entry.guildId === guildId && !entry.global);
+    }
+
+    async removeGuildAFKs(guildId: Snowflake) {
+        const entries = this.getGuildAFKs(guildId);
+        const ids = entries.map(entry => entry.id);
+
+        const { count } = await this.client.prisma.afkEntry.deleteMany({
+            where: {
+                id: {
+                    in: ids
+                }
+            }
+        });
+
+        for (const key of entries.keys()) {
+            this.entries.delete(key);
+        }
+
+        return {
+            count,
+            entries
+        };
+    }
+
+    async removeAFK(guildId: string, userId: string, shouldAwait: boolean = true, failIfGuildEntryNotFound = false) {
+        if (failIfGuildEntryNotFound && !this.entries.has(`${guildId}_${userId}`)) {
+            return null;
+        }
+
         const entry = this.entries.get(`${guildId}_${userId}`) ?? this.entries.get(`global_${userId}`);
 
         if (!entry) {

@@ -20,6 +20,8 @@
 import { SlashCommandBuilder } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
+export type AFKsCommandScope = "guild" | "everywhere" | "global";
+
 export default class AFKsCommand extends Command {
     public readonly name = "afks";
     public readonly subcommands = ["remove", "delete", "clear"];
@@ -43,7 +45,7 @@ export default class AFKsCommand extends Command {
                 .setDescription("Removes AFK status for a user")
                 .addUserOption(option => option.setName("user").setDescription("The user").setRequired(true))
                 .addStringOption(option =>
-                    option.setName("mode").setDescription("Mode for this removal; defaults to Guild Scoped mode").setChoices(
+                    option.setName("scope").setDescription("Scope for this removal; defaults to Guild Scope").setChoices(
                         {
                             name: "Guild-Scoped",
                             value: "guild"
@@ -54,7 +56,7 @@ export default class AFKsCommand extends Command {
                         },
                         {
                             name: "Everywhere",
-                            value: "all"
+                            value: "everywhere"
                         }
                     )
                 )
@@ -72,6 +74,6 @@ export default class AFKsCommand extends Command {
 
         if (context.isLegacy) context.args.shift();
 
-        return await command.execute(message, context);
+        return await command.run(message, context);
     }
 }
