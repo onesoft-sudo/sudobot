@@ -23,6 +23,7 @@ import {
     APIMessage,
     ApplicationCommandType,
     CacheType,
+    Channel,
     ChatInputCommandInteraction,
     ContextMenuCommandBuilder,
     ContextMenuCommandInteraction,
@@ -257,12 +258,12 @@ export default abstract class Command {
                     },
                     {
                         name: "Guild Info",
-                        value: guildInfo(channel.guild!),
+                        value: guildInfo(message.guild!),
                         inline: true
                     },
                     {
                         name: "Channel Info",
-                        value: channelInfo(channel),
+                        value: channelInfo(message.channel as Channel),
                         inline: true
                     },
                     {
