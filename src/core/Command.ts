@@ -54,7 +54,7 @@ import { log, logError } from "../utils/logger";
 import { getEmoji, isSnowflake } from "../utils/utils";
 import Client from "./Client";
 
-export type CommandMessage = Message<true> | ChatInputCommandInteraction<CacheType> | ContextMenuCommandInteraction;
+export type CommandMessage = Message<boolean> | ChatInputCommandInteraction<CacheType> | ContextMenuCommandInteraction;
 export type BasicCommandContext = LegacyCommandContext | ChatInputCommandContext;
 export type AnyCommandContext = BasicCommandContext | ContextMenuCommandContext;
 export type CommandReturn =
