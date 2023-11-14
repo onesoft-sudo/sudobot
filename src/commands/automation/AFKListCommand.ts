@@ -22,14 +22,15 @@ import { EmbedBuilder, PermissionsBitField } from "discord.js";
 import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { isSystemAdmin } from "../../utils/utils";
 
-export default class AFKListCommand extends Command {
-    public readonly name = "afklist";
+export default class AFKsListCommand extends Command {
+    public readonly name = "afks__list";
     public readonly validationRules: ValidationRule[] = [];
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers];
     public readonly description = "Lists all the users who are currently AFK, in this guild.";
     public readonly availableOptions = {
         "-g, --global": "Lists all the users who are AFK, in all servers [System Admin Only]"
     };
+    public readonly aliases = ["afklist", "afkslist"];
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
         const global = context.isLegacy && (context.args.includes("-g") || context.args.includes("--global"));
