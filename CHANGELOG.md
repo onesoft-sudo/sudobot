@@ -1,3 +1,18 @@
+# [6.78.0](https://github.com/onesoft-sudo/sudobot/compare/v6.77.1...v6.78.0) (2023-11-14)
+
+
+### Bug Fixes
+
+* **core:typings:** better typing ([f1f2c30](https://github.com/onesoft-sudo/sudobot/commit/f1f2c30409388236efffa4926829dc24c96c0f87))
+* **core:** typings ([04a5f3c](https://github.com/onesoft-sudo/sudobot/commit/04a5f3c0c8a738388a8fe40a9ddb03fd2ffc0a5b))
+
+
+### Features
+
+* **afk_system:** add afk management commands ([25afe00](https://github.com/onesoft-sudo/sudobot/commit/25afe002d9d2976fc22e46b7b746f8d3b346fb22))
+
+
+
 ## [6.77.1](https://github.com/onesoft-sudo/sudobot/compare/v6.77.0...v6.77.1) (2023-11-14)
 
 
@@ -38,15 +53,6 @@
 ### Features
 
 * **reminders:** add reminder remove command ([5f80ab2](https://github.com/onesoft-sudo/sudobot/commit/5f80ab232602bba29e4bb443a3fee36ea2ba6fbc))
-
-
-
-# [6.74.0](https://github.com/onesoft-sudo/sudobot/compare/v6.73.0...v6.74.0) (2023-11-11)
-
-
-### Features
-
-* **commands:snipe:** update `snipe` command ([b0572ed](https://github.com/onesoft-sudo/sudobot/commit/b0572ed5b5c456ed170c33c23413998df7efba89))
 
 
 
