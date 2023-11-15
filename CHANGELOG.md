@@ -1,3 +1,12 @@
+# [6.79.0](https://github.com/onesoft-sudo/sudobot/compare/v6.78.0...v6.79.0) (2023-11-15)
+
+
+### Features
+
+* **api:** introduce `MessageRuleController` ([9f25914](https://github.com/onesoft-sudo/sudobot/commit/9f2591413fc541fd8321ef8e185b7db09c6588ab))
+
+
+
 # [6.78.0](https://github.com/onesoft-sudo/sudobot/compare/v6.77.1...v6.78.0) (2023-11-14)
 
 
@@ -44,15 +53,6 @@
 ### Features
 
 * **native:** environment file parsing ([a38793d](https://github.com/onesoft-sudo/sudobot/commit/a38793d7132d4dddfa4b0d977dc905d2ac6b6990))
-
-
-
-# [6.75.0](https://github.com/onesoft-sudo/sudobot/compare/v6.74.0...v6.75.0) (2023-11-11)
-
-
-### Features
-
-* **reminders:** add reminder remove command ([5f80ab2](https://github.com/onesoft-sudo/sudobot/commit/5f80ab232602bba29e4bb443a3fee36ea2ba6fbc))
 
 
 
