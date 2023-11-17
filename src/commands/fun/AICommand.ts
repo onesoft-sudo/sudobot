@@ -111,6 +111,25 @@ export default class AICommand extends Command {
             }
 
             const chunks = chunkedString(content);
+
+            if (chunks.length === 1) {
+                await interaction.editReply({
+                    embeds: [
+                        new EmbedBuilder({
+                            title: "Response",
+                            color: 0x007bff,
+                            description: chunks[0],
+                            footer: {
+                                text: `Responses will not always be complete or correct`
+                            },
+                            timestamp: new Date().toISOString()
+                        })
+                    ]
+                });
+
+                return;
+            }
+
             const pagination = new Pagination(chunks, {
                 limit: 1,
                 channelId: interaction.channelId!,
