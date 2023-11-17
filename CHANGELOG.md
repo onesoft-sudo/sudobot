@@ -1,3 +1,12 @@
+## [6.80.1](https://github.com/onesoft-sudo/sudobot/compare/v6.80.0...v6.80.1) (2023-11-17)
+
+
+### Bug Fixes
+
+* **emojis:** invalid component emoji error ([17338df](https://github.com/onesoft-sudo/sudobot/commit/17338df53089610e3f4b06b2d35b06ba28e12071))
+
+
+
 # [6.80.0](https://github.com/onesoft-sudo/sudobot/compare/v6.79.0...v6.80.0) (2023-11-17)
 
 
@@ -37,22 +46,6 @@
 ### Bug Fixes
 
 * **system:audit_logging:** logs the home guild and log channel itself ([e7d6a9a](https://github.com/onesoft-sudo/sudobot/commit/e7d6a9a9132d6568f414309e3a24c87fa529a316))
-
-
-
-# [6.77.0](https://github.com/onesoft-sudo/sudobot/compare/v6.76.0...v6.77.0) (2023-11-13)
-
-
-### Bug Fixes
-
-* **types:** conflict ([a841773](https://github.com/onesoft-sudo/sudobot/commit/a841773f83a2e6a25b4a40c4e1f3cd180af7d756))
-* **types:** conflicting types ([ba18f1f](https://github.com/onesoft-sudo/sudobot/commit/ba18f1f75d5e542fea28484fcbac58b4df3f7ef1))
-* **typings:** embed build command type errors ([cb15511](https://github.com/onesoft-sudo/sudobot/commit/cb15511b8bcd689c76289b83269eef389b2e97c0))
-
-
-### Features
-
-* **commands:** add `Edit Message` command ([b984445](https://github.com/onesoft-sudo/sudobot/commit/b98444566fc28a0f201a061ca20296b2cfd670a9))
 
 
 
