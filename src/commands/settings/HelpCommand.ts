@@ -33,7 +33,7 @@ import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import Pagination from "../../utils/Pagination";
 import { DOCS_URL, GITHUB_URL, WEBSITE_URL } from "../../utils/links";
 import { log } from "../../utils/logger";
-import { forceGetPermissionNames, getEmoji } from "../../utils/utils";
+import { forceGetPermissionNames, getComponentEmojiResolvable } from "../../utils/utils";
 
 export interface CommandInfo {
     name: string;
@@ -150,7 +150,7 @@ export default class HelpCommand extends Command {
                                 .setLabel("Documentation"),
                             new ButtonBuilder()
                                 .setStyle(ButtonStyle.Link)
-                                .setEmoji(getEmoji(this.client, "github", true) ?? "☄️")
+                                .setEmoji(getComponentEmojiResolvable(this.client, "github") ?? "☄️")
                                 .setURL(GITHUB_URL)
                                 .setLabel("GitHub"),
                             new ButtonBuilder().setStyle(ButtonStyle.Link).setEmoji("🌍").setURL(WEBSITE_URL).setLabel("Website")

@@ -34,7 +34,7 @@ import {
 import * as uuid from "uuid";
 import Client from "../core/Client";
 import { log } from "./logger";
-import { getEmoji } from "./utils";
+import { getComponentEmojiResolvable } from "./utils";
 
 export default class Pagination<T> {
     protected readonly id: string;
@@ -132,22 +132,22 @@ export default class Pagination<T> {
                 .setCustomId(`pagination_first_${this.id}`)
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(!first)
-                .setEmoji(getEmoji(this.client, "ArrowLeft", true) ?? "⏮️"),
+                .setEmoji(getComponentEmojiResolvable(this.client, "ArrowLeft") ?? "⏮️"),
             new ButtonBuilder()
                 .setCustomId(`pagination_back_${this.id}`)
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(!back)
-                .setEmoji(getEmoji(this.client, "ChevronLeft", true) ?? "◀️"),
+                .setEmoji(getComponentEmojiResolvable(this.client, "ChevronLeft") ?? "◀️"),
             new ButtonBuilder()
                 .setCustomId(`pagination_next_${this.id}`)
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(!next)
-                .setEmoji(getEmoji(this.client, "ChevronRight", true) ?? "▶️"),
+                .setEmoji(getComponentEmojiResolvable(this.client, "ChevronRight") ?? "▶️"),
             new ButtonBuilder()
                 .setCustomId(`pagination_last_${this.id}`)
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(!last)
-                .setEmoji(getEmoji(this.client, "ArrowRight", true) ?? "⏭️")
+                .setEmoji(getComponentEmojiResolvable(this.client, "ArrowRight") ?? "⏭️")
         );
 
         return actionRow;

@@ -22,7 +22,9 @@ import {
     Channel,
     ChannelType,
     ColorResolvable,
+    ComponentEmojiResolvable,
     EmbedBuilder,
+    GuildEmoji,
     GuildMember,
     NewsChannel,
     PermissionOverwrites,
@@ -124,11 +126,34 @@ export function getEmoji<B extends boolean = false>(
     returnNull: B = false as B
 ): B extends false ? string : string | null {
     return (
+        client.guilds.cache
+            .get(process.env.HOME_GUILD_ID!)
+            ?.emojis.cache.find(e => e.name === name)
+            ?.toString() ??
         client.configManager.systemConfig.emojis?.[name] ??
         client.emojiMap.get(name)?.toString() ??
-        client.emojis.cache.find(e => e.name === name)?.toString() ??
         (returnNull ? null : "")
     );
+}
+
+export function getEmojiObject(client: Client, name: string): GuildEmoji | null {
+    return (
+        client.guilds.cache.get(process.env.HOME_GUILD_ID!)?.emojis.cache.find(e => e.name === name) ??
+        client.emojiMap.get(name) ??
+        null
+    );
+}
+
+export function getComponentEmojiResolvable(client: Client, name: string): ComponentEmojiResolvable | null {
+    const emoji = getEmojiObject(client, name);
+
+    return emoji
+        ? {
+              id: emoji?.id,
+              name: emoji?.name ?? emoji?.identifier,
+              animated: emoji?.animated ?? false
+          }
+        : null;
 }
 
 export function isTextableChannel(
