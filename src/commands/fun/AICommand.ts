@@ -18,15 +18,12 @@
  */
 
 import axios from "axios";
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 import Command, { CommandReturn } from "../../core/Command";
 import { ChatInputCommandContext } from "../../services/CommandManager";
+import Pagination from "../../utils/Pagination";
 import { logError } from "../../utils/logger";
-
-type AIMessage = {
-    role: "system" | "user";
-    content: string;
-};
+import { chunkedString } from "../../utils/utils";
 
 export default class AICommand extends Command {
     public readonly name = "ai";
@@ -36,48 +33,105 @@ export default class AICommand extends Command {
     public readonly slashCommandBuilder = new SlashCommandBuilder().addStringOption(option =>
         option.setName("prompt").setDescription("Ask something").setMaxLength(1000).setRequired(true)
     );
-    public readonly description = "Ask something to the AI, powered by LLAMA2 LLM.";
+    public readonly description = "Ask something to the AI.";
 
     async execute(interaction: ChatInputCommandInteraction, context: ChatInputCommandContext): Promise<CommandReturn> {
         await interaction.deferReply();
 
         const prompt = interaction.options.getString("prompt", true);
+        let content = "";
 
         try {
-            const { data } = await axios.post(
-                process.env.CF_AI_URL!,
-                {
-                    messages: [
+            if (process.env.GOOGLE_MAKERSUIT_KEY) {
+                const url = `https://generativelanguage.googleapis.com/v1beta2/models/chat-bison-001:generateMessage?key=${encodeURIComponent(
+                    process.env.GOOGLE_MAKERSUIT_KEY
+                )}`;
+
+                const response = await axios.post(url, {
+                    prompt: {
+                        messages: [
+                            {
+                                content: prompt
+                            }
+                        ],
+                        context: "You're SudoBot, a Discord Moderation Bot.",
+                        examples: undefined
+                    },
+                    temperature: undefined,
+                    candidate_count: 1,
+                    topK: undefined,
+                    topP: undefined
+                });
+
+                if (response.data.filters?.[0]?.reason) {
+                    const reason =
                         {
-                            role: "system",
-                            content:
-                                "You are a Discord Moderation bot. Your name is SudoBot. You were built at OSN, by open source developers."
-                        },
-                        { role: "user", content: prompt }
-                    ]
-                },
-                {
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
+                            BLOCKED_REASON_UNSPECIFIED: "for an unspecified reason",
+                            SAFETY: "by the safety filter"
+                        }[response.data.filters?.[0]?.reason as string] ?? "for unknown reasons";
+
+                    await interaction.editReply({
+                        content: `This request was cancelled ${reason}.`
+                    });
+
+                    return;
                 }
-            );
 
-            console.log(data);
+                console.log(JSON.stringify(response.data, null, 2));
 
-            await interaction.editReply({
-                embeds: [
+                content = response.data.candidates?.[0]?.content;
+            } else if (process.env.CF_AI_URL) {
+                const { data } = await axios.post(
+                    process.env.CF_AI_URL!,
                     {
+                        messages: [
+                            {
+                                role: "system",
+                                content:
+                                    "You are a Discord Moderation bot. Your name is SudoBot. You were built at OSN, by open source developers."
+                            },
+                            { role: "user", content: prompt }
+                        ]
+                    },
+                    {
+                        headers: {
+                            "Content-Type": "application/json"
+                        }
+                    }
+                );
+
+                console.log(data);
+                content = data.response;
+            } else {
+                await interaction.editReply({
+                    content: "No suitable AI service provider was configured."
+                });
+
+                return;
+            }
+
+            const chunks = chunkedString(content);
+            const pagination = new Pagination(chunks, {
+                limit: 1,
+                channelId: interaction.channelId!,
+                guildId: interaction.guildId!,
+                client: this.client,
+                embedBuilder({ currentPage, data: [chunk], maxPages }) {
+                    return new EmbedBuilder({
                         title: "Response",
                         color: 0x007bff,
-                        description: data.response,
+                        description: chunk,
                         footer: {
-                            text: "Responses will not always be complete or correct"
+                            text: `Page ${currentPage} of ${maxPages} • Responses will not always be complete or correct`
                         },
                         timestamp: new Date().toISOString()
-                    }
-                ]
+                    });
+                },
+                timeout: 60_000 * 5
             });
+
+            const message = await interaction.editReply(await pagination.getMessageOptions(1));
+            await pagination.start(message!);
         } catch (error) {
             logError(error);
 
