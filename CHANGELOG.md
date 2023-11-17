@@ -1,3 +1,12 @@
+# [6.80.0](https://github.com/onesoft-sudo/sudobot/compare/v6.79.0...v6.80.0) (2023-11-17)
+
+
+### Features
+
+* update AI command ([f1f7d07](https://github.com/onesoft-sudo/sudobot/commit/f1f7d07f2193ab7e866122ca79fb2af788c625f5))
+
+
+
 # [6.79.0](https://github.com/onesoft-sudo/sudobot/compare/v6.78.0...v6.79.0) (2023-11-15)
 
 
@@ -44,15 +53,6 @@
 ### Features
 
 * **commands:** add `Edit Message` command ([b984445](https://github.com/onesoft-sudo/sudobot/commit/b98444566fc28a0f201a061ca20296b2cfd670a9))
-
-
-
-# [6.76.0](https://github.com/onesoft-sudo/sudobot/compare/v6.75.0...v6.76.0) (2023-11-12)
-
-
-### Features
-
-* **native:** environment file parsing ([a38793d](https://github.com/onesoft-sudo/sudobot/commit/a38793d7132d4dddfa4b0d977dc905d2ac6b6990))
 
 
 
