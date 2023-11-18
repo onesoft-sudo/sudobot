@@ -1,3 +1,17 @@
+# [6.81.0](https://github.com/onesoft-sudo/sudobot/compare/v6.80.2...v6.81.0) (2023-11-18)
+
+
+### Features
+
+* **commands:ballot:** add `/ballot votelist` command ([663ed9b](https://github.com/onesoft-sudo/sudobot/commit/663ed9bc4dc3731a0f8db1b1131408d8caa073ec))
+
+
+### Performance Improvements
+
+* **utils:pagination:** skip collecting interactions if the data array is empty ([5ec6902](https://github.com/onesoft-sudo/sudobot/commit/5ec6902726d17b240aaec7c45986bb9e369ef663))
+
+
+
 ## [6.80.2](https://github.com/onesoft-sudo/sudobot/compare/v6.80.1...v6.80.2) (2023-11-17)
 
 
@@ -31,21 +45,6 @@
 ### Features
 
 * **api:** introduce `MessageRuleController` ([9f25914](https://github.com/onesoft-sudo/sudobot/commit/9f2591413fc541fd8321ef8e185b7db09c6588ab))
-
-
-
-# [6.78.0](https://github.com/onesoft-sudo/sudobot/compare/v6.77.1...v6.78.0) (2023-11-14)
-
-
-### Bug Fixes
-
-* **core:typings:** better typing ([f1f2c30](https://github.com/onesoft-sudo/sudobot/commit/f1f2c30409388236efffa4926829dc24c96c0f87))
-* **core:** typings ([04a5f3c](https://github.com/onesoft-sudo/sudobot/commit/04a5f3c0c8a738388a8fe40a9ddb03fd2ffc0a5b))
-
-
-### Features
-
-* **afk_system:** add afk management commands ([25afe00](https://github.com/onesoft-sudo/sudobot/commit/25afe002d9d2976fc22e46b7b746f8d3b346fb22))
 
 
 
