@@ -154,6 +154,10 @@ export default class Pagination<T> {
     }
 
     async start(message: Message) {
+        if (this.data?.length === 0) {
+            return;
+        }
+
         const collector = new InteractionCollector(this.client, {
             guild: this.options.guildId,
             channel: this.options.channelId,
