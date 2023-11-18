@@ -62,6 +62,28 @@ export default class BallotCommand extends Command {
         )
         .addSubcommand(subcommand =>
             subcommand
+                .setName("votelist")
+                .setDescription("Shows a list of each vote in a poll/ballot")
+                .addIntegerOption(option => option.setName("id").setDescription("The ballot ID").setRequired(true))
+                .addStringOption(option =>
+                    option.setName("mode").setDescription("Determines what kind of data is shown").setChoices(
+                        {
+                            name: "All Votes",
+                            value: "all"
+                        },
+                        {
+                            name: "Upvotes",
+                            value: "upvotes"
+                        },
+                        {
+                            name: "Downvotes",
+                            value: "downvotes"
+                        }
+                    )
+                )
+        )
+        .addSubcommand(subcommand =>
+            subcommand
                 .setName("delete")
                 .setDescription("Deletes a poll/ballot")
                 .addIntegerOption(option => option.setName("id").setDescription("The ballot ID").setRequired(true))
