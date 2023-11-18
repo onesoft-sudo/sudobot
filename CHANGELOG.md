@@ -1,3 +1,12 @@
+## [6.80.2](https://github.com/onesoft-sudo/sudobot/compare/v6.80.1...v6.80.2) (2023-11-17)
+
+
+### Performance Improvements
+
+* **commands:ai:** do not use pagination if there is a single chunk only ([cae4cc7](https://github.com/onesoft-sudo/sudobot/commit/cae4cc7fce20c1e2a51330a1c55ff0e8bfd6ef68))
+
+
+
 ## [6.80.1](https://github.com/onesoft-sudo/sudobot/compare/v6.80.0...v6.80.1) (2023-11-17)
 
 
@@ -37,15 +46,6 @@
 ### Features
 
 * **afk_system:** add afk management commands ([25afe00](https://github.com/onesoft-sudo/sudobot/commit/25afe002d9d2976fc22e46b7b746f8d3b346fb22))
-
-
-
-## [6.77.1](https://github.com/onesoft-sudo/sudobot/compare/v6.77.0...v6.77.1) (2023-11-14)
-
-
-### Bug Fixes
-
-* **system:audit_logging:** logs the home guild and log channel itself ([e7d6a9a](https://github.com/onesoft-sudo/sudobot/commit/e7d6a9a9132d6568f414309e3a24c87fa529a316))
 
 
 
