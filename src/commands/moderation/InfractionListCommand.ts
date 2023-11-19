@@ -69,7 +69,7 @@ export default class InfractionListCommand extends Command {
                     (description += `**Type**: ${
                         infraction.type === InfractionType.BULK_DELETE_MESSAGE
                             ? "Bulk message delete"
-                            : infraction.type[0] + infraction.type.substring(1).toLowerCase()
+                            : infraction.type[0] + infraction.type.substring(1).toLowerCase().replace(/_/g, ' ')
                     }\n`),
                         (description += `Responsible Moderator: <@${infraction.moderatorId}>\n`);
                     description += `Reason:\n${
