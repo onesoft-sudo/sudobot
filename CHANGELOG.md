@@ -1,3 +1,12 @@
+## [6.81.1](https://github.com/onesoft-sudo/sudobot/compare/v6.81.0...v6.81.1) (2023-11-19)
+
+
+### Bug Fixes
+
+* **commands:history:** replace underscrores with spaces in infraction type field ([4e94428](https://github.com/onesoft-sudo/sudobot/commit/4e94428d557dae25bd83fd74ac1d81fb5c750009))
+
+
+
 # [6.81.0](https://github.com/onesoft-sudo/sudobot/compare/v6.80.2...v6.81.0) (2023-11-18)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * update AI command ([f1f7d07](https://github.com/onesoft-sudo/sudobot/commit/f1f7d07f2193ab7e866122ca79fb2af788c625f5))
-
-
-
-# [6.79.0](https://github.com/onesoft-sudo/sudobot/compare/v6.78.0...v6.79.0) (2023-11-15)
-
-
-### Features
-
-* **api:** introduce `MessageRuleController` ([9f25914](https://github.com/onesoft-sudo/sudobot/commit/9f2591413fc541fd8321ef8e185b7db09c6588ab))
 
 
 
