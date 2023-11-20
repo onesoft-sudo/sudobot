@@ -31,9 +31,9 @@ import Request from "../Request";
 import Response from "../Response";
 
 async function middleware(client: Client, request: Request, response: ExpressResponse, next: NextFunction) {
-    if (client.configManager.config[request.params.guild]?.permissions.mode !== "advanced") {
+    if (client.configManager.config[request.params.guild]?.permissions.mode !== "layered") {
         response.status(400).json({
-            error: "Cannot use advanced permission system features when it's not enabled"
+            error: "Cannot use layered permission system features when it's not enabled"
         });
 
         return;
@@ -42,8 +42,8 @@ async function middleware(client: Client, request: Request, response: ExpressRes
     next();
 }
 
-export default class PermissionRoleController extends Controller {
-    @Action("GET", "/permission_roles/:guild", [middleware])
+export default class PermissionOverwriteController extends Controller {
+    @Action("GET", "/permission_overwrites/:guild", [middleware])
     @RequireAuth()
     @EnableGuildAccessControl()
     public async index(request: Request) {
@@ -74,7 +74,7 @@ export default class PermissionRoleController extends Controller {
         });
     }
 
-    @Action("PATCH", "/permission_roles/:guild/:id", [middleware])
+    @Action("PATCH", "/permission_overwrites/:guild/:id", [middleware])
     @RequireAuth()
     @EnableGuildAccessControl()
     @Validate(
@@ -93,7 +93,7 @@ export default class PermissionRoleController extends Controller {
         const id = parseInt(request.params.id);
 
         if (!id || isNaN(id)) {
-            return new Response({ status: 422, body: { error: "Invalid permission role ID." } });
+            return new Response({ status: 422, body: { error: "Invalid permission overwrite ID." } });
         }
 
         const updated = await this.client.permissionManager.updatePermissionRole({
@@ -111,7 +111,7 @@ export default class PermissionRoleController extends Controller {
         };
     }
 
-    @Action("POST", "/permission_roles/:guild", [middleware])
+    @Action("POST", "/permission_overwrites/:guild", [middleware])
     @RequireAuth()
     @EnableGuildAccessControl()
     @Validate(
@@ -132,14 +132,14 @@ export default class PermissionRoleController extends Controller {
         });
     }
 
-    @Action("DELETE", "/permission_roles/:guild/:id", [middleware])
+    @Action("DELETE", "/permission_overwrites/:guild/:id", [middleware])
     @RequireAuth()
     @EnableGuildAccessControl()
     public async delete(request: Request) {
         const id = parseInt(request.params.id);
 
         if (!id || isNaN(id)) {
-            return new Response({ status: 422, body: { error: "Invalid permission role ID." } });
+            return new Response({ status: 422, body: { error: "Invalid permission overwrite ID." } });
         }
 
         const permissionRole = await this.client.permissionManager.deletePermissionRole({
@@ -148,9 +148,9 @@ export default class PermissionRoleController extends Controller {
         });
 
         if (!permissionRole) {
-            return new Response({ status: 404, body: { error: "Permission role not found." } });
+            return new Response({ status: 404, body: { error: "Permission overwrite not found." } });
         }
 
-        return { success: true, message: "Successfully deleted the named permission role." };
+        return { success: true, message: "Successfully deleted the permission overwrite." };
     }
 }

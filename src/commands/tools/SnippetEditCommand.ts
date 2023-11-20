@@ -32,8 +32,10 @@ export default class SnippetEditCommand extends Command {
         },
         {
             types: [ArgumentType.String],
-            requiredErrorMessage: "Please specify what to edit in the snippet! One of these can be specified: `level`, `permission` (`perm`), `content`",
-            typeErrorMessage: "Please specify a valid attribute of the snippet to edit! One of these can be specified: `level`, `permission` (`perm`), `content`",
+            requiredErrorMessage:
+                "Please specify what to edit in the snippet! One of these can be specified: `level`, `permission` (`perm`), `content`",
+            typeErrorMessage:
+                "Please specify a valid attribute of the snippet to edit! One of these can be specified: `level`, `permission` (`perm`), `content`",
             name: "attr"
         }
     ];
@@ -50,8 +52,7 @@ export default class SnippetEditCommand extends Command {
     public readonly supportsInteractions = false;
 
     async execute(message: Message, context: LegacyCommandContext): Promise<CommandReturn> {
-        if (!this.client.configManager.config[message.guildId!])
-            return;
+        if (!this.client.configManager.config[message.guildId!]) return;
 
         const name: string = context.parsedNamedArgs.name;
 
@@ -68,17 +69,20 @@ export default class SnippetEditCommand extends Command {
 
         const attrs = ["level", "permission", "perm", "content"] as const;
 
-        if (!attrs.includes(context.args[index + 1]?.toLowerCase() as typeof attrs[number])) {
+        if (!attrs.includes(context.args[index + 1]?.toLowerCase() as (typeof attrs)[number])) {
             await this.error(message, this.validationRules[1].typeErrorMessage!);
             return;
         }
 
-        const attr = context.args[index + 1]?.toLowerCase() as typeof attrs[number];
+        const attr = context.args[index + 1]?.toLowerCase() as (typeof attrs)[number];
 
         switch (attr) {
             case "level": {
                 if (this.client.configManager.config[message.guildId!]?.permissions.mode !== "levels") {
-                    await this.error(message, "This server does not use the level-based permission system. Please switch to the level-based system to set a permission level for this snippet. Alternatively, if you're using the named permission system, please edit the `permission` (or `perm`) attribute instead.");
+                    await this.error(
+                        message,
+                        "This server does not use the level-based permission system. Please switch to the level-based system to set a permission level for this snippet. Alternatively, if you're using the named permission system, please edit the `permission` (or `perm`) attribute instead."
+                    );
                     return;
                 }
 
@@ -111,13 +115,16 @@ export default class SnippetEditCommand extends Command {
 
             case "perm":
             case "permission": {
-                if (this.client.configManager.config[message.guildId!]?.permissions.mode !== "advanced") {
-                    await this.error(message, "This server does not use the named permission system. Please switch to the named permission system to set a named permission for this snippet. Alternatively, if you're using the level-based permission system, please edit the `level` attribute instead.");
+                if (this.client.configManager.config[message.guildId!]?.permissions.mode !== "layered") {
+                    await this.error(
+                        message,
+                        "This server does not use the layered permission system. Please switch to the layered permission system to set a layered permission for this snippet. Alternatively, if you're using the level-based permission system, please edit the `level` attribute instead."
+                    );
                     return;
                 }
 
                 if (!context.args[index + 2]) {
-                    await this.error(message, "Please specify a permission role name to set!");
+                    await this.error(message, "Please specify a permission overwrite name to set!");
                     return;
                 }
 

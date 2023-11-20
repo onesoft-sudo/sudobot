@@ -424,7 +424,7 @@ export default abstract class Command {
                         if (!member.permissions.has(permission, true)) {
                             const mode = this.client.configManager.config[message.guildId!]?.permissions?.mode;
 
-                            if (mode !== "advanced" && mode !== "levels") {
+                            if (mode !== "layered" && mode !== "levels") {
                                 await message.reply({
                                     content: `${this.emoji("error")} You don't have permission to run this command.`,
                                     ephemeral: true
@@ -463,7 +463,7 @@ export default abstract class Command {
                             }
                         }
 
-                        if (mode === "advanced" || mode === "levels") {
+                        if (mode === "layered" || mode === "levels") {
                             for (const memberRequiredPermission of memberRequiredPermissions) {
                                 if (memberBotPermissions.has(memberRequiredPermission)) {
                                     break orMode;
