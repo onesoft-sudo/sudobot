@@ -50,6 +50,15 @@
                             "rerun_on_edit": {
                                 "type": "boolean",
                                 "default": false
+                            },
+                            "default_joke_type": {
+                                "type": "string",
+                                "enum": [
+                                    "random",
+                                    "joke",
+                                    "dadjoke"
+                                ],
+                                "default": "random"
                             }
                         },
                         "additionalProperties": false,
@@ -72,7 +81,7 @@
                                 "enum": [
                                     "discord",
                                     "levels",
-                                    "advanced"
+                                    "layered"
                                 ],
                                 "default": "discord"
                             }
