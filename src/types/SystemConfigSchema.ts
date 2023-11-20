@@ -86,7 +86,8 @@ export const SystemConfigSchema = z.object({
                 })
                 .optional()
         })
-        .optional()
+        .optional(),
+    sync_permission_managers_on_boot: z.boolean().default(false)
 });
 
 export type SystemConfig = z.infer<typeof SystemConfigSchema>;
