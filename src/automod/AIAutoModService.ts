@@ -60,7 +60,7 @@ export default class AIAutoModService extends Service implements HasEventListene
             return false;
         }
 
-        if (isImmuneToAutoMod(this.client, message.member!, PermissionFlagsBits.ManageMessages)) {
+        if (await isImmuneToAutoMod(this.client, message.member!, PermissionFlagsBits.ManageMessages)) {
             return;
         }
 

@@ -77,7 +77,7 @@ export default class MessageRuleService extends Service implements HasEventListe
         if (
             !config?.enabled ||
             config?.global_disabled_channels?.includes(message.channelId!) ||
-            this.client.permissionManager.isImmuneToAutoMod(message.member!, PermissionFlagsBits.ManageGuild)
+            (await this.client.permissionManager.isImmuneToAutoMod(message.member!, PermissionFlagsBits.ManageGuild))
         ) {
             return false;
         }

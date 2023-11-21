@@ -34,11 +34,15 @@ export default class ProfileFilter extends Service implements HasEventListeners 
         const oldStatus = oldMember.presence?.activities.find(a => a.type === ActivityType.Custom);
         const newStatus = newMember.presence?.activities.find(a => a.type === ActivityType.Custom);
 
-        if (oldMember.nickname === newMember.nickname && oldMember.user.username === newMember.user.username && oldStatus === newStatus) {
+        if (
+            oldMember.nickname === newMember.nickname &&
+            oldMember.user.username === newMember.user.username &&
+            oldStatus === newStatus
+        ) {
             return;
         }
 
-        if (isImmuneToAutoMod(this.client, newMember, [PermissionFlagsBits.ManageGuild])) {
+        if (await isImmuneToAutoMod(this.client, newMember, [PermissionFlagsBits.ManageGuild])) {
             return;
         }
 
@@ -51,15 +55,28 @@ export default class ProfileFilter extends Service implements HasEventListeners 
             const words = config.words ?? [];
             const tokens = config.tokens ?? [];
 
-            if (config.inherit_from_message_filter?.tokens && messageFilterConfig?.enabled && messageFilterConfig?.data?.blocked_tokens) {
+            if (
+                config.inherit_from_message_filter?.tokens &&
+                messageFilterConfig?.enabled &&
+                messageFilterConfig?.data?.blocked_tokens
+            ) {
                 tokens.push(...messageFilterConfig?.data?.blocked_tokens);
             }
 
-            if (config.inherit_from_message_filter?.words && messageFilterConfig?.enabled && messageFilterConfig?.data?.blocked_words) {
+            if (
+                config.inherit_from_message_filter?.words &&
+                messageFilterConfig?.enabled &&
+                messageFilterConfig?.data?.blocked_words
+            ) {
                 words.push(...messageFilterConfig?.data?.blocked_words);
             }
 
-            if (config.scan.includes("nickname") && config.actions?.nickname && config.actions?.nickname !== "none" && newMember.nickname) {
+            if (
+                config.scan.includes("nickname") &&
+                config.actions?.nickname &&
+                config.actions?.nickname !== "none" &&
+                newMember.nickname
+            ) {
                 const token = this.findToken(tokens, newMember.nickname);
 
                 if (token) {
@@ -91,7 +108,12 @@ export default class ProfileFilter extends Service implements HasEventListeners 
                 }
             }
 
-            if (config.scan.includes("username") && config.actions?.username && config.actions?.username !== "none" && newMember.user.username) {
+            if (
+                config.scan.includes("username") &&
+                config.actions?.username &&
+                config.actions?.username !== "none" &&
+                newMember.user.username
+            ) {
                 const token = this.findToken(tokens, newMember.user.username);
 
                 if (token) {

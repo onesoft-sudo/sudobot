@@ -48,7 +48,6 @@ import type LogServer from "../services/LogServer";
 import type LoggerService from "../services/LoggerService";
 import type MetadataService from "../services/MetadataService";
 import type PermissionManager from "../services/PermissionManager";
-import type PermissionManagerV2 from "../services/PermissionManagerV2";
 import type QueueManager from "../services/QueueManager";
 import type QuickMuteService from "../services/QuickMuteService";
 import type ReactionRoleService from "../services/ReactionRoleService";
@@ -94,7 +93,6 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@services/LogServer",
         "@services/CooldownService",
         "@services/KeypressHandlerService",
-        "@services/PermissionManagerV2",
 
         "@automod/MessageFilter",
         "@automod/Antispam",
@@ -143,7 +141,6 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     logServer: LogServer = {} as LogServer;
     cooldown: CooldownService = {} as CooldownService;
     keypressHandler: KeypressHandlerService = {} as KeypressHandlerService;
-    permissionManagerV2: PermissionManagerV2 = {} as PermissionManagerV2;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",

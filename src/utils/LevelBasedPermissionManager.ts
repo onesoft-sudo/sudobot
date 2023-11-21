@@ -1,7 +1,9 @@
 import { PermissionLevel } from "@prisma/client";
-import { GuildMember, PermissionsString, Snowflake } from "discord.js";
-import { AbstractPermissionManager, GetMemberPermissionInGuildResult } from "../services/PermissionManagerV2";
-import { logInfo } from "./logger";
+import { GuildMember, PermissionsBitField, PermissionsString, Snowflake } from "discord.js";
+import { GetMemberPermissionInGuildResult } from "../services/PermissionManager";
+import AbstractPermissionManager from "./AbstractPermissionManager";
+import { log, logInfo } from "./logger";
+import { isSystemAdmin } from "./utils";
 
 export default class LevelBasedPermissionManager extends AbstractPermissionManager {
     protected cache: Record<`${Snowflake}_${"r" | "u"}_${Snowflake}`, PermissionLevel> = {};
@@ -24,8 +26,28 @@ export default class LevelBasedPermissionManager extends AbstractPermissionManag
         logInfo(`[${this.constructor.name}] Synchronized permission levels`);
     }
 
+    shouldModerate(member: GuildMember, moderator: GuildMember) {
+        const memberLevel = this.getPermissionLevel(member);
+        const moderatorLevel = this.getPermissionLevel(moderator);
+
+        if (memberLevel >= moderatorLevel) {
+            log("Member has higher/equal permission level than moderator");
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * TODO: Introduce a configuration option that allows to specify a permission level that is immune to automod
+     */
+    isImmuneToAutoMod(member: GuildMember) {
+        const level = this.getPermissionLevel(member);
+        return level === 100;
+    }
+
     protected getMemberPermissionsFromHighestLevel(member: GuildMember, level: number) {
-        const permissions = new Set<PermissionsString>();
+        const permissions = new PermissionsBitField();
 
         for (const key in this.cache) {
             if (!key.startsWith(`${member.guild.id}_r`)) {
@@ -47,6 +69,10 @@ export default class LevelBasedPermissionManager extends AbstractPermissionManag
     }
 
     getPermissionLevel(member: GuildMember) {
+        if (member.guild.ownerId === member.user.id || isSystemAdmin(this.client, member.user.id)) {
+            return 100;
+        }
+
         let level = this.cache[`${member.guild.id}_u_${member.id}`]?.level ?? 0;
 
         for (const roleId of member.roles.cache.keys()) {
@@ -60,12 +86,14 @@ export default class LevelBasedPermissionManager extends AbstractPermissionManag
         return level;
     }
 
-    getMemberPermissions(member: GuildMember): GetMemberPermissionInGuildResult {
+    getMemberPermissions(member: GuildMember, mergeWithDiscordPermissions = true): GetMemberPermissionInGuildResult {
         const level = this.getPermissionLevel(member);
         const permissions = this.getMemberPermissionsFromHighestLevel(member, level);
 
-        for (const permission of member.permissions.toArray()) {
-            permissions.add(permission);
+        if (mergeWithDiscordPermissions) {
+            for (const permission of member.permissions.toArray()) {
+                permissions.add(permission);
+            }
         }
 
         for (const permission of this.cache[`${member.guild.id}_u_${member.id}`]?.grantedPermissions ?? []) {
@@ -74,7 +102,7 @@ export default class LevelBasedPermissionManager extends AbstractPermissionManag
 
         return {
             type: "levels",
-            permissions: [...permissions.values()],
+            permissions,
             level
         };
     }

@@ -1,6 +1,7 @@
 import { PermissionOverwrite } from "@prisma/client";
-import { GuildMember, PermissionsString, Role, Snowflake } from "discord.js";
-import { AbstractPermissionManager, GetMemberPermissionInGuildResult } from "../services/PermissionManagerV2";
+import { GuildMember, PermissionsBitField, PermissionsString, Role, Snowflake } from "discord.js";
+import { GetMemberPermissionInGuildResult } from "../services/PermissionManager";
+import AbstractPermissionManager from "./AbstractPermissionManager";
 import { logInfo } from "./logger";
 
 export default class LayerBasedPermissionManager extends AbstractPermissionManager {
@@ -24,10 +25,20 @@ export default class LayerBasedPermissionManager extends AbstractPermissionManag
         logInfo(`[${this.constructor.name}] Synchronized permission overwrites`);
     }
 
-    getMemberPermissions(member: GuildMember): GetMemberPermissionInGuildResult {
+    isImmuneToAutoMod(member: GuildMember) {
+        const { permissions } = this.getMemberPermissions(member);
+        return permissions.has("ManageGuild", true);
+    }
+
+    // FIXME: This is not implemented yet
+    shouldModerate(member: GuildMember, moderator: GuildMember) {
+        return false;
+    }
+
+    getMemberPermissions(member: GuildMember, mergeWithDiscordPermissions = true): GetMemberPermissionInGuildResult {
         const baseUserOverwrite = this.cache[`${member.guild.id}_u_${member.user.id}`];
-        const permissions = new Set<PermissionsString>([
-            ...member.permissions.toArray(),
+        const permissions = new PermissionsBitField([
+            ...(mergeWithDiscordPermissions ? member.permissions.toArray() : []),
             ...((baseUserOverwrite?.grantedPermissions as PermissionsString[]) ?? [])
         ]);
         let highestRoleHavingOverwrite: Role | undefined;
@@ -50,7 +61,7 @@ export default class LayerBasedPermissionManager extends AbstractPermissionManag
 
         return {
             type: "layered",
-            permissions: [...permissions.values()],
+            permissions,
             highestRoleHavingOverwrite,
             highestOverwrite
         };
