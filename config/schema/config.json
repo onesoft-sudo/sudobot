@@ -68,13 +68,23 @@
                         "type": "object",
                         "properties": {
                             "mod_role": {
-                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
+                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items",
+                                "description": "[DEPRECATED] Use one of the available permission systems instead"
                             },
                             "admin_role": {
-                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
+                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items",
+                                "description": "[DEPRECATED] Use one of the available permission systems instead"
                             },
                             "staff_role": {
-                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
+                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items",
+                                "description": "[DEPRECATED] Use one of the available permission systems instead"
+                            },
+                            "invincible_roles": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
+                                },
+                                "default": []
                             },
                             "mode": {
                                 "type": "string",
@@ -84,6 +94,16 @@
                                     "layered"
                                 ],
                                 "default": "discord"
+                            },
+                            "check_discord_permissions": {
+                                "type": "string",
+                                "enum": [
+                                    "both",
+                                    "automod",
+                                    "manual_actions",
+                                    "none"
+                                ],
+                                "default": "both"
                             }
                         },
                         "additionalProperties": false,
@@ -485,6 +505,10 @@
                             "say_hi_button": {
                                 "type": "boolean",
                                 "default": false
+                            },
+                            "say_hi_label": {
+                                "type": "string",
+                                "minLength": 1
                             },
                             "say_hi_emoji": {
                                 "type": "string",

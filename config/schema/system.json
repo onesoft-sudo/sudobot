@@ -150,7 +150,7 @@
                             "format": "date-time"
                         }
                     ],
-                    "default": "2023-11-20T16:00:45.747Z"
+                    "default": "2023-11-23T15:02:18.294Z"
                 }
             },
             "additionalProperties": false,
@@ -201,6 +201,10 @@
                 }
             },
             "additionalProperties": false
+        },
+        "sync_permission_managers_on_boot": {
+            "type": "boolean",
+            "default": false
         }
     },
     "additionalProperties": false,
