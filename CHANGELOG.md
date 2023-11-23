@@ -1,3 +1,12 @@
+## [6.84.1](https://github.com/onesoft-sudo/sudobot/compare/v6.84.0...v6.84.1) (2023-11-23)
+
+
+### Bug Fixes
+
+* **commands:moderation:** not showing user information ([6f618f9](https://github.com/onesoft-sudo/sudobot/commit/6f618f9db9ad1c9a83878db319b667c1573b61ca))
+
+
+
 # [6.84.0](https://github.com/onesoft-sudo/sudobot/compare/v6.83.0...v6.84.0) (2023-11-23)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * introduce permission manager v2 ([77d2f54](https://github.com/onesoft-sudo/sudobot/commit/77d2f5449c5638162e3c539a6e5da8cae6fcf4c8))
-
-
-
-## [6.81.1](https://github.com/onesoft-sudo/sudobot/compare/v6.81.0...v6.81.1) (2023-11-19)
-
-
-### Bug Fixes
-
-* **commands:history:** replace underscrores with spaces in infraction type field ([4e94428](https://github.com/onesoft-sudo/sudobot/commit/4e94428d557dae25bd83fd74ac1d81fb5c750009))
 
 
 
