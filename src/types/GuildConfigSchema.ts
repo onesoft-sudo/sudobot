@@ -41,9 +41,9 @@ export const GuildConfigSchema = z.object({
         .default({}),
     permissions: z
         .object({
-            mod_role: zSnowflake.optional(),
-            admin_role: zSnowflake.optional(),
-            staff_role: zSnowflake.optional(),
+            mod_role: zSnowflake.optional().describe("[DEPRECATED] Use one of the available permission systems instead"),
+            admin_role: zSnowflake.optional().describe("[DEPRECATED] Use one of the available permission systems instead"),
+            staff_role: zSnowflake.optional().describe("[DEPRECATED] Use one of the available permission systems instead"),
             mode: z
                 .union([z.literal("discord"), z.literal("levels"), z.literal("layered")])
                 .default("discord")
