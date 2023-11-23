@@ -1277,7 +1277,7 @@ export default class LoggerService extends Service {
             ...m,
             author: m.author,
             member: m.member,
-            authorColor: m.member?.roles.highest.color,
+            authorColor: m.member?.displayColor ?? m.member?.roles.highest.color,
             authorRoleIcon: m.member?.roles.highest.iconURL() ?? undefined,
             authorRoleName: m.member?.roles.highest.name ?? undefined,
             authorAvatarURL: m.author.displayAvatarURL(),
