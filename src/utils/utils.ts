@@ -84,8 +84,12 @@ export async function createModerationEmbed({
                               value: reason ?? "*No reason provided*"
                           },
                           {
+                              name: "User",
+                              value: userInfo(user)
+                          },
+                          {
                               name: "Moderator",
-                              value: `${moderator.username} (${moderator.id})`
+                              value: userInfo(moderator)
                           },
                           {
                               name: "Infraction ID",
@@ -99,6 +103,10 @@ export async function createModerationEmbed({
                       {
                           name: "Reason",
                           value: reason ?? "*No reason provided*"
+                      },
+                      {
+                          name: "User",
+                          value: userInfo(user)
                       },
                       {
                           name: "Moderator",
