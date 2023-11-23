@@ -43,7 +43,7 @@ export default class MessageFilter extends Service implements HasEventListeners 
 
         if (!config?.enabled) return;
 
-        if (isImmuneToAutoMod(this.client, message.member!, this.immunePermissions)) {
+        if (await isImmuneToAutoMod(this.client, message.member!, this.immunePermissions)) {
             return;
         }
 
@@ -57,28 +57,26 @@ export default class MessageFilter extends Service implements HasEventListeners 
 
         if (
             (!tokenSafe || !wordSafe || !messageSafe) &&
-            (
-                (!tokenSafe &&
-                    (config.send_logs === true || (typeof config.send_logs === "object" && config.send_logs.blocked_tokens))) ||
+            ((!tokenSafe &&
+                (config.send_logs === true || (typeof config.send_logs === "object" && config.send_logs.blocked_tokens))) ||
                 (!wordSafe &&
                     (config.send_logs === true || (typeof config.send_logs === "object" && config.send_logs.blocked_words))) ||
                 (!messageSafe &&
-                    (config.send_logs === true || (typeof config.send_logs === "object" && config.send_logs.blocked_messages)))
-            )
-            ) {
-                const blockType = !tokenSafe ? "token" : !wordSafe ? "word" : "message";
-                this.client.logger
-                    .logBlockedWordOrToken({
-                        guild: message.guild!,
-                        content: message.content,
-                        blockType: blockType,
-                        user: message.author,
-                        token: !tokenSafe ? token : undefined,
-                        word: !wordSafe ? word : undefined,
-                        message: !messageSafe ? theMessage : undefined,
-                    })
-                    .catch(logError);
-            }
+                    (config.send_logs === true || (typeof config.send_logs === "object" && config.send_logs.blocked_messages))))
+        ) {
+            const blockType = !tokenSafe ? "token" : !wordSafe ? "word" : "message";
+            this.client.logger
+                .logBlockedWordOrToken({
+                    guild: message.guild!,
+                    content: message.content,
+                    blockType: blockType,
+                    user: message.author,
+                    token: !tokenSafe ? token : undefined,
+                    word: !wordSafe ? word : undefined,
+                    message: !messageSafe ? theMessage : undefined
+                })
+                .catch(logError);
+        }
 
         if (!message.deletable) return false;
 
@@ -101,7 +99,8 @@ export default class MessageFilter extends Service implements HasEventListeners 
 
         if (
             !messageSafe &&
-            (config.delete_message === true || (typeof config.delete_message === "object" && config.delete_message.blocked_messages))
+            (config.delete_message === true ||
+                (typeof config.delete_message === "object" && config.delete_message.blocked_messages))
         ) {
             message.delete().catch(logError);
             return true;
@@ -133,7 +132,7 @@ export default class MessageFilter extends Service implements HasEventListeners 
     }
 
     async filterMessages(message: Message, blockedMessages: string[]) {
-        const content = message.content.toLowerCase()
+        const content = message.content.toLowerCase();
 
         for (const blockedMessage of blockedMessages) {
             if (content === blockedMessage.toLowerCase()) {
@@ -143,5 +142,4 @@ export default class MessageFilter extends Service implements HasEventListeners 
 
         return { safe: true };
     }
-
 }

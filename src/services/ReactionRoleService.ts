@@ -163,8 +163,8 @@ export default class ReactionRoleService extends Service implements HasEventList
                 return await this.removeReactionAndAbort(data);
             }
 
-            if (usesLevels && entry.level) {
-                const { level } = this.client.permissionManager.getMemberPermissionLevel(member);
+            if (this.client.permissionManager.usesLevelBasedMode(member.guild.id) && entry.level) {
+                const level = (await this.client.permissionManager.getManager(member.guild.id)).getPermissionLevel(member);
 
                 if (level < entry.level) {
                     log("Member does not have the required permission level");

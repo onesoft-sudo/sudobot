@@ -40,7 +40,7 @@ export default class ReportMessageCommand extends Command {
     public readonly supportsLegacy = false;
     public readonly description = "Reports the target message to the message log channel and deletes it.";
 
-    permissionCheck(interaction: MessageContextMenuCommandInteraction) {
+    async permissionCheck(interaction: MessageContextMenuCommandInteraction) {
         const config = this.client.configManager.config[interaction.guildId!]?.message_reporting;
 
         if (config?.users?.includes(interaction.user.id)) {
@@ -56,8 +56,9 @@ export default class ReportMessageCommand extends Command {
         if (
             config?.permissionLevel !== undefined &&
             config?.permissionLevel >= 0 &&
-            this.client.configManager.config[interaction.guildId!]?.permissions.mode === "levels" &&
-            this.client.permissionManager.getMemberPermissionLevel(member).level >= config?.permissionLevel
+            this.client.permissionManager.usesLevelBasedMode(member.guild.id) &&
+            (await this.client.permissionManager.getManager(member.guild.id)).getPermissionLevel(member) >=
+                config?.permissionLevel
         ) {
             return true;
         }
@@ -79,7 +80,7 @@ export default class ReportMessageCommand extends Command {
             return;
         }
 
-        if (!this.permissionCheck(interaction)) {
+        if (!(await this.permissionCheck(interaction))) {
             await this.error(interaction, "You don't have permission to run this command");
             return;
         }

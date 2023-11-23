@@ -416,7 +416,7 @@ export default abstract class Command {
                 (this.client.configManager.systemConfig.default_permissions_mode === "check" ||
                     (!permissionOverwrite && this.client.configManager.systemConfig.default_permissions_mode === "overwrite"))
             ) {
-                const memberBotPermissions = this.client.permissionManager.getMemberPermissions(member);
+                const { permissions: memberBotPermissions } = await this.client.permissionManager.getMemberPermissions(member);
                 const memberRequiredPermissions = new PermissionsBitField(permissions).toArray();
 
                 if (this.permissionMode === "and") {
@@ -436,14 +436,16 @@ export default abstract class Command {
                                 return;
                             }
 
-                            const memberBotPermissions = this.client.permissionManager.getMemberPermissions(member);
+                            const { permissions: memberBotPermissionsBits } =
+                                await this.client.permissionManager.getMemberPermissions(member);
+                            const memberBotPermissions = memberBotPermissionsBits.toArray();
                             const memberRequiredPermissions = new PermissionsBitField(permissions).toArray();
 
                             log("PERMS: ", [...memberBotPermissions.values()]);
                             log("PERMS 2: ", memberRequiredPermissions);
 
                             for (const memberRequiredPermission of memberRequiredPermissions) {
-                                if (!memberBotPermissions.has(memberRequiredPermission)) {
+                                if (!memberBotPermissionsBits.has(memberRequiredPermission)) {
                                     await message.reply({
                                         content: `${this.emoji("error")} You don't have permission to run this command.`,
                                         ephemeral: true
@@ -503,8 +505,13 @@ export default abstract class Command {
                         }
                     }
 
-                    if (mode === "levels" && permissionOverwrite.requiredLevel !== null) {
-                        const { level } = this.client.permissionManager.getMemberPermissionLevel(member);
+                    if (
+                        this.client.permissionManager.usesLevelBasedMode(member.guild.id) &&
+                        permissionOverwrite.requiredLevel !== null
+                    ) {
+                        const level = (await this.client.permissionManager.getManager(member.guild.id)).getPermissionLevel(
+                            member
+                        );
                         levelCheckPassed = level >= permissionOverwrite.requiredLevel;
 
                         log("level", level, "<", permissionOverwrite.requiredLevel);

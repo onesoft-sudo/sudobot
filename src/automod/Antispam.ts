@@ -204,7 +204,7 @@ export default class Antispam extends Service {
             return;
         }
 
-        if (isImmuneToAutoMod(this.client, message.member!, PermissionFlagsBits.ManageMessages)) {
+        if (await isImmuneToAutoMod(this.client, message.member!, PermissionFlagsBits.ManageMessages)) {
             return;
         }
 

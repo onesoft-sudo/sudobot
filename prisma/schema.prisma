@@ -112,6 +112,19 @@ model PermissionRole {
     @@map("permission_roles")
 }
 
+model PermissionOverwrite {
+    id                 Int      @id @default(autoincrement())
+    name               String?
+    guildId           String
+    roles              String[] @default([])
+    users              String[] @default([])
+    grantedPermissions String[] @default([])
+    createdAt          DateTime @default(now())
+    updatedAt          DateTime @default(now()) @updatedAt
+
+    @@map("permission_overwrites")
+}
+
 model ReactionRole {
     id                  Int      @id @default(autoincrement())
     emoji               String
@@ -216,6 +229,7 @@ model PermissionLevel {
     id                 Int      @id @default(autoincrement())
     guildId            String
     level              Int
+    disabled            Boolean @default(false)
     grantedPermissions String[] @default([])
     roles              String[] @default([])
     users              String[] @default([])

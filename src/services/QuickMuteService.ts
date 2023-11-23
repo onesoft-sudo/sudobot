@@ -89,7 +89,7 @@ export default class QuickMuteService extends Service implements HasEventListene
             return;
         }
 
-        const permissions = this.client.permissionManager.getMemberPermissions(moderator, true);
+        const { permissions } = await this.client.permissionManager.getMemberPermissions(moderator, true);
 
         if (!permissions.has("Administrator") && !permissions.has("ManageMessages") && !permissions.has("ModerateMembers")) {
             logInfo("This moderator does not have permission to use quickmute!");
@@ -107,12 +107,16 @@ export default class QuickMuteService extends Service implements HasEventListene
             guild,
             moderator: user as User,
             autoRemoveQueue: true,
-            bulkDeleteReason: clearMessages ? "Clearing recent messages from user, because the quickmute trigger was used." : undefined,
+            bulkDeleteReason: clearMessages
+                ? "Clearing recent messages from user, because the quickmute trigger was used."
+                : undefined,
             duration: config.duration ?? 1000 * 60 * 60 * 2,
             messageChannel: clearMessages ? (reaction.message.channel! as TextChannel) : undefined,
             notifyUser: true,
             sendLog: true,
-            reason: config.reason ?? "You have violated the rules or guidelines of the server. Please take a break, and come back later."
+            reason:
+                config.reason ??
+                "You have violated the rules or guidelines of the server. Please take a break, and come back later."
         });
 
         if (!clearMessages) {

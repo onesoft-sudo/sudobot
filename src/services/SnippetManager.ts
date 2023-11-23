@@ -194,7 +194,7 @@ export default class SnippetManager extends Service {
         return { success: true, snippet };
     }
 
-    checkPermissions(snippet: SnippetWithPermissions, member: GuildMember, guildId: string, channelId?: string) {
+    async checkPermissions(snippet: SnippetWithPermissions, member: GuildMember, guildId: string, channelId?: string) {
         if (member.permissions.has(PermissionFlagsBits.Administrator, true)) return true;
 
         if (
@@ -206,13 +206,18 @@ export default class SnippetManager extends Service {
             return false;
         }
 
-        const guildUsesPermissionLevels = this.client.configManager.config[guildId]?.permissions.mode === "levels";
-        const memberPermissions = this.client.permissionManager.getMemberPermissions(member, true);
+        const { permissions: memberPermissions } = await this.client.permissionManager.getMemberPermissions(member, true);
 
-        const snippetPermissions =
-            guildUsesPermissionLevels && typeof snippet.level === "number"
-                ? this.client.permissionManager.getPermissionsFromLevel(guildId, snippet.level) ?? ["Administrator"]
-                : this.client.permissionManager.getPermissionsFromEntries(snippet.permission_roles);
+        if (this.client.permissionManager.usesLevelBasedMode(guildId) && typeof snippet.level === "number") {
+            const level = (await this.client.permissionManager.getManager(member.guild.id)).getPermissionLevel(member);
+
+            if (level < snippet.level) {
+                log("User doesn't have enough permission to run this snippet. (level based permission system)");
+                return false;
+            }
+        }
+
+        const { permissions: snippetPermissions } = await this.client.permissionManager.getMemberPermissions(member);
 
         for (const permission of snippetPermissions) {
             if (!memberPermissions.has(permission)) {

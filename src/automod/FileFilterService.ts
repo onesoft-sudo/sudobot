@@ -44,7 +44,7 @@ export default class FileFilterService extends Service implements HasEventListen
             return false;
         }
 
-        if (this.client.permissionManager.isImmuneToAutoMod(message.member!, PermissionFlagsBits.ManageGuild)) {
+        if (await this.client.permissionManager.isImmuneToAutoMod(message.member!, PermissionFlagsBits.ManageGuild)) {
             return false;
         }
 

@@ -17,64 +17,56 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { PermissionLevel, PermissionRole } from "@prisma/client";
-import { GuildMember, PermissionFlagsBits, PermissionResolvable, PermissionsString, Snowflake } from "discord.js";
+import { PermissionOverwrite } from "@prisma/client";
+import { log } from "console";
+import { GuildMember, PermissionFlagsBits, PermissionResolvable, PermissionsBitField, Role, Snowflake } from "discord.js";
 import Service from "../core/Service";
-import { GatewayEventListener } from "../decorators/GatewayEventListener";
-import { HasEventListeners } from "../types/HasEventListeners";
-import { PermissionLevelsRecord, getDefaultPermissionLevels } from "../utils/PermissionLevels";
-import { log, logWarn } from "../utils/logger";
+import AbstractPermissionManager from "../utils/AbstractPermissionManager";
+import LayerBasedPermissionManager from "../utils/LayerBasedPermissionManager";
+import LevelBasedPermissionManager from "../utils/LevelBasedPermissionManager";
+import { logInfo } from "../utils/logger";
+import { GuildConfig } from "./ConfigManager";
 
 export const name = "permissionManager";
 
-export default class PermissionManager extends Service implements HasEventListeners {
-    public readonly users: Record<string, Map<string, PermissionRole> | undefined> = {};
-    public readonly roles: Record<string, Map<string, PermissionRole> | undefined> = {};
-    public readonly defaultLevels: PermissionLevelsRecord = getDefaultPermissionLevels();
-    public readonly levels: Record<`${Snowflake}_${"u" | "r"}_${Snowflake}`, PermissionLevel | undefined> = {};
-    public readonly permissionLevels: Record<string, number | undefined> = {};
+export type GetMemberPermissionInGuildResult = {
+    permissions: PermissionsBitField;
+} & (
+    | {
+          type: "levels";
+          level: number;
+      }
+    | {
+          type: "discord";
+      }
+    | {
+          type: "layered";
+          highestOverwrite?: PermissionOverwrite;
+          highestRoleHavingOverwrite?: Role;
+      }
+);
 
-    @GatewayEventListener("ready")
-    async onReady() {
-        await this.sync();
+export default class PermissionManager<M extends AbstractPermissionManager = AbstractPermissionManager> extends Service {
+    protected readonly cache: Record<`${Snowflake}_${Snowflake}`, object> = {};
+    protected readonly managers: Record<NonNullable<GuildConfig["permissions"]["mode"]>, AbstractPermissionManager | undefined> =
+        {
+            layered: new LayerBasedPermissionManager(this.client),
+            discord: null as unknown as AbstractPermissionManager,
+            levels: new LevelBasedPermissionManager(this.client)
+        };
+
+    boot() {
+        if (!this.client.configManager.systemConfig.sync_permission_managers_on_boot) {
+            return;
+        }
+
+        for (const managerName in this.managers) {
+            this.managers[managerName as keyof typeof this.managers]?.sync();
+            logInfo(`[${this.constructor.name}] Synchronizing ${managerName} permission manager`);
+        }
     }
 
-    shouldModerate(member: GuildMember, moderator: GuildMember) {
-        if (this.client.configManager.systemConfig.system_admins.includes(moderator.user.id)) return true;
-
-        const config = this.client.configManager.config[member.guild.id];
-
-        if (!config) return false;
-
-        if (member.guild.ownerId === member.user.id) return false;
-        if (member.guild.ownerId === moderator.user.id) return true;
-
-        const { admin_role, mod_role, staff_role, mode } = config.permissions ?? {};
-
-        if (member.roles.cache.hasAny(admin_role ?? "_", mod_role ?? "_", staff_role ?? "_")) {
-            log("Member has roles that are immune to this action");
-            return false;
-        }
-
-        if (member.roles.highest.position >= moderator.roles.highest.position) {
-            log("Member has higher/equal roles than moderator");
-            return false;
-        }
-
-        if (mode === "levels") {
-            const { level: memberLevel } = this.getMemberPermissionLevel(member);
-            const { level: moderatorLevel } = this.getMemberPermissionLevel(moderator);
-
-            if (memberLevel >= moderatorLevel) {
-                log("Member has higher/equal permission level than moderator");
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    isImmuneToAutoMod(member: GuildMember, permission?: PermissionResolvable[] | PermissionResolvable) {
+    async isImmuneToAutoMod(member: GuildMember, permission?: PermissionResolvable[] | PermissionResolvable) {
         if (this.client.configManager.systemConfig.system_admins.includes(member.user.id)) return true;
 
         const config = this.client.configManager.config[member.guild.id];
@@ -97,357 +89,72 @@ export default class PermissionManager extends Service implements HasEventListen
             return true;
         }
 
-        const permissions = this.getMemberPermissions(member, false);
+        const manager = await this.getManager(member.guild.id);
+        const { permissions } = manager.getMemberPermissions(member);
         const hasPermissions = permissions.has("Administrator") || permissions.has("ManageGuild");
 
-        if (hasPermissions) log("Member has permissions that are immune to automod");
+        if (hasPermissions) {
+            log("Member has permissions that are immune to automod");
+            return true;
+        }
 
-        return hasPermissions;
+        return manager.isImmuneToAutoMod(member, permission);
     }
 
-    getPermissionsFromLevel(guildId: string, level: number) {
-        if (level < 0 || level > 100) {
-            throw new Error("Level must be a number between 0-100");
+    async shouldModerate(member: GuildMember, moderator: GuildMember) {
+        if (this.client.configManager.systemConfig.system_admins.includes(moderator.user.id)) return true;
+
+        const config = this.client.configManager.config[member.guild.id];
+
+        if (!config) return false;
+
+        if (member.guild.ownerId === member.user.id) return false;
+        if (member.guild.ownerId === moderator.user.id) return true;
+
+        const { admin_role, mod_role, staff_role } = config.permissions ?? {};
+
+        if (member.roles.cache.hasAny(admin_role ?? "_", mod_role ?? "_", staff_role ?? "_")) {
+            log("Member has roles that are immune to this action");
+            return false;
         }
 
-        if (this.client.configManager.config[guildId]?.permissions.mode !== "levels") {
-            return [];
+        if (member.roles.highest.position >= moderator.roles.highest.position) {
+            log("Member has higher/equal roles than moderator");
+            return false;
         }
 
-        for (const key in this.levels) {
-            if (!key.startsWith(`${guildId}_`)) {
-                continue;
-            }
-
-            const permissionLevel = this.levels[key as keyof typeof this.levels];
-
-            if (permissionLevel?.level === level) {
-                return (
-                    permissionLevel.grantedPermissions.length > 0 ? permissionLevel.grantedPermissions : this.defaultLevels[level]
-                ) as readonly PermissionsString[];
-            }
-        }
-
-        return this.defaultLevels[level];
+        const manager = await this.getManager(member.guild.id);
+        return manager.shouldModerate(member, moderator);
     }
 
-    getMemberPermissionFromLevel(member: GuildMember, mergeWithDiscordPermissions?: boolean) {
-        const { permissionLevel } = this.getMemberPermissionLevel(member);
-
-        return new Set<PermissionsString>([
-            ...(mergeWithDiscordPermissions ? member.permissions.toArray() : []),
-            ...((permissionLevel && permissionLevel.grantedPermissions.length > 0
-                ? permissionLevel?.grantedPermissions
-                : permissionLevel && permissionLevel.grantedPermissions.length === 0
-                ? this.defaultLevels[permissionLevel.level]
-                : []) as PermissionsString[])
-        ]);
+    protected getMode(guildId: string) {
+        return this.client.configManager.config[guildId]?.permissions.mode ?? "discord";
     }
 
-    getMemberPermissionLevel(member: GuildMember) {
-        if (this.client.configManager.config[member.guild.id]?.permissions.mode !== "levels") {
-            logWarn(
-                "This guild does not use permission levels but getMemberPermissionLevel() was called. Assuming permission level is 0."
-            );
-            return { level: 0 };
+    async getManager(guildId: string): Promise<M> {
+        const manager = this.managers[this.getMode(guildId)];
+
+        if (!manager) {
+            throw new Error("Unknown/Unsupported permission mode: " + this.getMode(guildId));
         }
 
-        let permissionLevel = this.levels[`${member.guild.id}_u_${member.user.id}`];
-
-        for (const [id] of member.roles.cache) {
-            const roleLevel = this.levels[`${member.guild.id}_r_${id}`];
-
-            if ((roleLevel?.level ?? 0) > (permissionLevel?.level ?? 0)) {
-                permissionLevel = roleLevel;
-            }
-        }
-
-        return {
-            level:
-                (permissionLevel?.level ?? 0) < 0 ? 0 : (permissionLevel?.level ?? 0) > 100 ? 100 : permissionLevel?.level ?? 0,
-            permissionLevel
-        };
+        await manager.triggerSyncIfNeeded();
+        return manager as M;
     }
 
-    getPermissionsFromEntry(permissionRole: PermissionRole) {
-        return permissionRole.grantedPermissions as readonly PermissionsString[];
+    async getMemberPermissions(member: GuildMember, mergeWithDiscordPermissions?: boolean) {
+        return (await this.getManager(member.guild.id)).getMemberPermissions(member, mergeWithDiscordPermissions);
     }
 
-    getPermissionsFromEntries(permissionRoles: PermissionRole[]) {
-        const permissionStrings = new Set<PermissionsString>();
-
-        for (const permissionRole of permissionRoles) {
-            for (const permission of permissionRole.grantedPermissions as readonly PermissionsString[]) {
-                permissionStrings.add(permission);
-            }
-        }
-
-        return permissionStrings;
+    usesLayeredMode(guildId: string) {
+        return this.getMode(guildId) === "layered";
     }
 
-    getPermissionsFromPermissionRoleSet(permissionRole: PermissionRole) {
-        return new Set(this.getPermissionsFromEntry(permissionRole));
+    usesLevelBasedMode(guildId: string): this is PermissionManager<LevelBasedPermissionManager> {
+        return this.getMode(guildId) === "levels";
     }
 
-    getMemberPermissions(member: GuildMember, mergeWithDiscordPermissions?: boolean) {
-        const guildUsesPermissionLevels = this.client.configManager.config[member.guild.id]?.permissions.mode === "levels";
-
-        if (guildUsesPermissionLevels) {
-            return this.getMemberPermissionFromLevel(member, mergeWithDiscordPermissions);
-        }
-
-        const allPermissions = new Set<PermissionsString>(mergeWithDiscordPermissions ? member.permissions.toArray() : []);
-
-        if (this.users[member.guild.id]) {
-            const permissions = this.users[`${member.guild.id}_${member.user.id}`];
-
-            if (permissions) {
-                for (const permission of permissions.values()) {
-                    for (const key of permission.grantedPermissions) {
-                        allPermissions.add(key as PermissionsString);
-                    }
-                }
-            }
-        }
-
-        for (const [id] of member.roles.cache) {
-            const permissions = this.roles[`${member.guild.id}_${id}`];
-
-            if (!permissions) {
-                continue;
-            }
-
-            for (const permission of permissions.values()) {
-                for (const key of permission.grantedPermissions) {
-                    allPermissions.add(key as PermissionsString);
-                }
-            }
-        }
-
-        return allPermissions;
+    usesDiscordMode(guildId: string) {
+        return this.getMode(guildId) === "discord";
     }
-
-    async syncPermissionRoles(guildId?: string) {
-        const permissionRoles = await this.client.prisma.permissionRole.findMany({
-            where: {
-                guild_id: guildId
-            }
-        });
-
-        for (const permissionRole of permissionRoles) {
-            const guildUsesPermissionLevels =
-                this.client.configManager.config[permissionRole.guild_id]?.permissions.mode === "levels";
-
-            if (guildUsesPermissionLevels) {
-                continue;
-            }
-
-            for (const roleId of permissionRole.roles) {
-                this.roles[`${permissionRole.guild_id}_${roleId}`] ??= new Map();
-                this.roles[`${permissionRole.guild_id}_${roleId}`]!.set(permissionRole.name, permissionRole);
-            }
-
-            for (const userId of permissionRole.users) {
-                this.users[`${permissionRole.guild_id}_${userId}`] ??= new Map();
-                this.users[`${permissionRole.guild_id}_${userId}`]!.set(permissionRole.name, permissionRole);
-            }
-        }
-    }
-
-    async sync(guildId?: string) {
-        log("Started syncing permission roles and levels", guildId ? `for guild ${guildId}` : "");
-
-        await this.syncPermissionRoles(guildId);
-        await this.syncPermissionLevels(guildId);
-
-        log("Completed syncing permission roles and levels", guildId ? `for guild ${guildId}` : "");
-    }
-
-    private async syncPermissionLevels(guildId?: string) {
-        const permissionLevels = await this.client.prisma.permissionLevel.findMany({
-            where: {
-                guildId
-            }
-        });
-
-        for (const permissionLevel of permissionLevels) {
-            const guildUsesPermissionLevels =
-                this.client.configManager.config[permissionLevel.guildId]?.permissions.mode === "levels";
-
-            if (!guildUsesPermissionLevels) {
-                continue;
-            }
-
-            for (const userId of permissionLevel.users) {
-                if (
-                    this.levels[`${permissionLevel.guildId}_u_${userId}`] &&
-                    this.levels[`${permissionLevel.guildId}_u_${userId}`]!.level <= permissionLevel.level
-                ) {
-                    continue;
-                }
-
-                this.levels[`${permissionLevel.guildId}_u_${userId}`] = permissionLevel;
-            }
-
-            for (const roleId of permissionLevel.roles) {
-                if (
-                    this.levels[`${permissionLevel.guildId}_r_${roleId}`] &&
-                    this.levels[`${permissionLevel.guildId}_r_${roleId}`]!.level <= permissionLevel.level
-                ) {
-                    continue;
-                }
-
-                this.levels[`${permissionLevel.guildId}_r_${roleId}`] = permissionLevel;
-            }
-        }
-    }
-
-    async createPermissionRole({ guildId, name, permissions, roles, users }: Required<Omit<CreatePermissionLevelPayload, "id">>) {
-        const existingPermissionLevel = await this.client.prisma.permissionRole.findFirst({
-            where: {
-                name,
-                guild_id: guildId
-            }
-        });
-
-        if (existingPermissionLevel) {
-            return null;
-        }
-
-        const permissionLevel = await this.client.prisma.permissionRole.create({
-            data: {
-                name,
-                guild_id: guildId,
-                grantedPermissions: permissions,
-                roles,
-                users
-            }
-        });
-
-        for (const roleId of permissionLevel.roles) {
-            this.roles[`${permissionLevel.guild_id}_${roleId}`] ??= new Map();
-            this.roles[`${permissionLevel.guild_id}_${roleId}`]!.set(permissionLevel.name, permissionLevel);
-        }
-
-        for (const userId of permissionLevel.users) {
-            this.users[`${permissionLevel.guild_id}_${userId}`] ??= new Map();
-            this.users[`${permissionLevel.guild_id}_${userId}`]!.set(permissionLevel.name, permissionLevel);
-        }
-
-        return permissionLevel;
-    }
-
-    async deletePermissionRole({ guildId, name, id }: Pick<CreatePermissionLevelPayload, "guildId" | "name" | "id">) {
-        if (!name && !id) {
-            throw new Error("ID and name both are null/undefined");
-        }
-
-        const permissionLevel = await this.client.prisma.permissionRole.findFirst({
-            where: {
-                name,
-                id,
-                guild_id: guildId
-            }
-        });
-
-        if (!permissionLevel) return null;
-
-        await this.client.prisma.permissionRole.delete({
-            where: {
-                id: permissionLevel.id
-            }
-        });
-
-        for (const roleId of permissionLevel.roles) {
-            this.roles[`${permissionLevel.guild_id}_${roleId}`] ??= new Map();
-
-            if (this.roles[`${permissionLevel.guild_id}_${roleId}`]?.has(permissionLevel.name)) {
-                this.roles[`${permissionLevel.guild_id}_${roleId}`]!.delete(permissionLevel.name);
-            }
-        }
-
-        for (const userId of permissionLevel.users) {
-            this.users[`${permissionLevel.guild_id}_${userId}`] ??= new Map();
-
-            if (this.users[`${permissionLevel.guild_id}_${userId}`]?.has(permissionLevel.name)) {
-                this.users[`${permissionLevel.guild_id}_${userId}`]!.delete(permissionLevel.name);
-            }
-        }
-
-        return permissionLevel;
-    }
-
-    async updatePermissionRole({
-        guildId,
-        name,
-        id,
-        permissions,
-        newName,
-        roles,
-        users
-    }: CreatePermissionLevelPayload & { newName?: string }) {
-        if (!name && !id) {
-            throw new Error("ID and name both are null/undefined");
-        }
-
-        const existingPermissionLevel = await this.client.prisma.permissionRole.findFirst({
-            where: {
-                name,
-                id,
-                guild_id: guildId
-            }
-        });
-
-        if (!existingPermissionLevel) {
-            return null;
-        }
-
-        if (newName !== name || roles || users || permissions) {
-            const permissionLevel = await this.client.prisma.permissionRole.update({
-                where: {
-                    id: existingPermissionLevel.id
-                },
-                data: {
-                    name: newName,
-                    roles,
-                    users,
-                    grantedPermissions: permissions
-                }
-            });
-
-            for (const roleId of permissionLevel.roles) {
-                this.roles[`${permissionLevel.guild_id}_${roleId}`] ??= new Map();
-
-                if (this.roles[`${permissionLevel.guild_id}_${roleId}`]!.has(existingPermissionLevel.name)) {
-                    this.roles[`${permissionLevel.guild_id}_${roleId}`]!.delete(existingPermissionLevel.name);
-                }
-
-                this.roles[`${permissionLevel.guild_id}_${roleId}`]!.set(permissionLevel.name, permissionLevel);
-            }
-
-            for (const userId of permissionLevel.users) {
-                this.users[`${permissionLevel.guild_id}_${userId}`] ??= new Map();
-
-                if (this.users[`${permissionLevel.guild_id}_${userId}`]!.has(existingPermissionLevel.name)) {
-                    this.users[`${permissionLevel.guild_id}_${userId}`]!.delete(existingPermissionLevel.name);
-                }
-
-                this.users[`${permissionLevel.guild_id}_${userId}`]!.set(permissionLevel.name, permissionLevel);
-            }
-
-            return permissionLevel;
-        }
-
-        logWarn("Nothing updated");
-        return false;
-    }
-}
-
-interface CreatePermissionLevelPayload {
-    guildId: Snowflake;
-    name?: string;
-    id?: number;
-    permissions: PermissionsString[];
-    roles?: Snowflake[];
-    users?: Snowflake[];
 }
