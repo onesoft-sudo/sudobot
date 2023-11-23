@@ -7,7 +7,7 @@
 #include <signal.h>
 #include <concord/discord.h>
 #include "io/log.h"
-#include "env/env.h"
+#include "env.h"
 
 #include "events/on_ready.h"
 #include "events/on_message.h"

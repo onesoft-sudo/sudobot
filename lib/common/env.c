@@ -7,14 +7,14 @@
 #include <errno.h>
 #include <ctype.h>
 #include <concord/chash.h>
-#include "../io/log.h"
-#include "../io/io.h"
+#include "io/log.h"
+#include "io/io.h"
 #include "env.h"
-#include "../utils/xmalloc.h"
-#include "../utils/utils.h"
-#include "../utils/strutils.h"
-#include "../flags.h"
-#include "../sudobot.h"
+#include "utils/xmalloc.h"
+#include "utils/utils.h"
+#include "utils/strutils.h"
+#include "flags.h"
+#include "sudobot.h"
 
 #define ENVTABLE_BUCKET struct envtable_bucket
 #define ENVTABLE_HEAP 1

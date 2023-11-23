@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <concord/discord.h>
 #include "io/log.h"
-#include "env/env.h"
+#include "env.h"
 
 #define sudobot_fatal_error(...) do { log_fatal(__VA_ARGS__); exit(EXIT_FAILURE); } while (0)
 
