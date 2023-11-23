@@ -75,20 +75,29 @@ export default class PermissionManager<M extends AbstractPermissionManager = Abs
 
         if (!config) return true;
 
-        const { admin_role, mod_role, staff_role } = config.permissions ?? {};
+        const { admin_role, mod_role, staff_role, check_discord_permissions, invincible_roles } = config.permissions ?? {};
 
         if (member.roles.cache.hasAny(admin_role ?? "_", mod_role ?? "_", staff_role ?? "_")) {
             log("Member has roles that are immune to automod");
             return true;
         }
 
-        const hasDiscordPerms =
-            member.permissions.has(PermissionFlagsBits.ManageGuild, true) ||
-            (permission && member.permissions.has(permission, true));
+        for (const roleId of invincible_roles) {
+            if (member.roles.cache.has(roleId)) {
+                log("Member has roles that are immune to this action");
+                return false;
+            }
+        }
 
-        if (hasDiscordPerms) {
-            log("Member has discord permissions that are immune to automod");
-            return true;
+        if (check_discord_permissions === "automod" || check_discord_permissions === "both") {
+            const hasDiscordPerms =
+                member.permissions.has(PermissionFlagsBits.ManageGuild, true) ||
+                (permission && member.permissions.has(permission, true));
+
+            if (hasDiscordPerms) {
+                log("Member has discord permissions that are immune to automod");
+                return true;
+            }
         }
 
         const manager = await this.getManager(member.guild.id);
@@ -114,14 +123,24 @@ export default class PermissionManager<M extends AbstractPermissionManager = Abs
         if (member.guild.ownerId === member.user.id) return false;
         if (member.guild.ownerId === moderator.user.id) return true;
 
-        const { admin_role, mod_role, staff_role } = config.permissions ?? {};
+        const { admin_role, mod_role, staff_role, invincible_roles, check_discord_permissions } = config.permissions ?? {};
 
         if (member.roles.cache.hasAny(admin_role ?? "_", mod_role ?? "_", staff_role ?? "_")) {
             log("Member has roles that are immune to this action");
             return false;
         }
 
-        if (member.roles.highest.position >= moderator.roles.highest.position) {
+        for (const roleId of invincible_roles) {
+            if (member.roles.cache.has(roleId)) {
+                log("Member has roles that are immune to this action");
+                return false;
+            }
+        }
+
+        if (
+            (check_discord_permissions === "manual_actions" || check_discord_permissions === "both") &&
+            member.roles.highest.position >= moderator.roles.highest.position
+        ) {
             log("Member has higher/equal roles than moderator");
             return false;
         }
