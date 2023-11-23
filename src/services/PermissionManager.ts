@@ -22,6 +22,7 @@ import { log } from "console";
 import { GuildMember, PermissionFlagsBits, PermissionResolvable, PermissionsBitField, Role, Snowflake } from "discord.js";
 import Service from "../core/Service";
 import AbstractPermissionManager from "../utils/AbstractPermissionManager";
+import DiscordBasedPermissionManager from "../utils/DiscordBasedPermissionManager";
 import LayerBasedPermissionManager from "../utils/LayerBasedPermissionManager";
 import LevelBasedPermissionManager from "../utils/LevelBasedPermissionManager";
 import { logInfo } from "../utils/logger";
@@ -52,7 +53,7 @@ export default class PermissionManager<M extends AbstractPermissionManager = Abs
     protected readonly managers: Record<NonNullable<GuildConfig["permissions"]["mode"]>, AbstractPermissionManager | undefined> =
         {
             layered: new LayerBasedPermissionManager(this.client),
-            discord: null as unknown as AbstractPermissionManager,
+            discord: new DiscordBasedPermissionManager(this.client),
             levels: new LevelBasedPermissionManager(this.client)
         };
 
@@ -62,7 +63,7 @@ export default class PermissionManager<M extends AbstractPermissionManager = Abs
         }
 
         for (const managerName in this.managers) {
-            this.managers[managerName as keyof typeof this.managers]?.sync();
+            this.managers[managerName as keyof typeof this.managers]?.sync?.();
             logInfo(`[${this.constructor.name}] Synchronizing ${managerName} permission manager`);
         }
     }
@@ -102,6 +103,7 @@ export default class PermissionManager<M extends AbstractPermissionManager = Abs
         return manager.isImmuneToAutoMod(member, permission);
     }
 
+    // FIXME: Move these permission checks to DiscordBasedPermissionManager
     async shouldModerate(member: GuildMember, moderator: GuildMember) {
         if (this.client.configManager.systemConfig.system_admins.includes(moderator.user.id)) return true;
 

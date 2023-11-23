@@ -10,13 +10,13 @@ export default abstract class AbstractPermissionManager {
     triggerSyncIfNeeded() {
         if (!this.hasSyncedInitially) {
             this.hasSyncedInitially = true;
-            return this.sync();
+            return this.sync?.();
         }
 
         return null;
     }
 
-    abstract sync(): Awaitable<void>;
+    sync?(): Awaitable<void>;
     abstract shouldModerate(member: GuildMember, moderator: GuildMember): Awaitable<boolean>;
     abstract isImmuneToAutoMod(
         member: GuildMember,
