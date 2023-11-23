@@ -1,3 +1,12 @@
+## [6.82.1](https://github.com/onesoft-sudo/sudobot/compare/v6.82.0...v6.82.1) (2023-11-23)
+
+
+### Bug Fixes
+
+* introduce `overwriteIds` in `GetMemberPermissionInGuildResult` type ([f1ca24c](https://github.com/onesoft-sudo/sudobot/commit/f1ca24cff2e3f7a1f6a649f77b8069a1cd8faa6d))
+
+
+
 # [6.82.0](https://github.com/onesoft-sudo/sudobot/compare/v6.81.1...v6.82.0) (2023-11-23)
 
 
@@ -41,15 +50,6 @@
 ### Performance Improvements
 
 * **commands:ai:** do not use pagination if there is a single chunk only ([cae4cc7](https://github.com/onesoft-sudo/sudobot/commit/cae4cc7fce20c1e2a51330a1c55ff0e8bfd6ef68))
-
-
-
-## [6.80.1](https://github.com/onesoft-sudo/sudobot/compare/v6.80.0...v6.80.1) (2023-11-17)
-
-
-### Bug Fixes
-
-* **emojis:** invalid component emoji error ([17338df](https://github.com/onesoft-sudo/sudobot/commit/17338df53089610e3f4b06b2d35b06ba28e12071))
 
 
 
