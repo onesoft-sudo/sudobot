@@ -167,7 +167,8 @@ export default class WelcomerService extends Service {
                 const newCustomId = `welcomer_say_hi__${memberId}__${reply.id}`;
 
                 const actionRow = this.generateActionRow(memberId, {
-                    say_hi_emoji: config.welcomer?.say_hi_emoji!
+                    say_hi_emoji: config.welcomer?.say_hi_emoji!,
+                    say_hi_label: config.welcomer?.say_hi_label!
                 });
 
                 actionRow.components[0].setCustomId(newCustomId);
@@ -229,14 +230,17 @@ export default class WelcomerService extends Service {
         release();
     }
 
-    generateActionRow(memberId: string, { say_hi_emoji }: Pick<NotUndefined<GuildConfig["welcomer"]>, "say_hi_emoji">) {
+    generateActionRow(
+        memberId: string,
+        { say_hi_emoji, say_hi_label }: Pick<NotUndefined<GuildConfig["welcomer"]>, "say_hi_emoji" | "say_hi_label">
+    ) {
         const emoji =
             !say_hi_emoji || say_hi_emoji === "default"
                 ? "👋"
                 : this.client.emojis.cache.find(e => e.name === say_hi_emoji || e.identifier === say_hi_emoji);
         const button = new ButtonBuilder()
             .setCustomId(`welcomer_say_hi__${memberId}`)
-            .setLabel("Say Hi!")
+            .setLabel(say_hi_label ?? "Say Hi!")
             .setStyle(ButtonStyle.Secondary);
 
         if (emoji) button.setEmoji(emoji.toString());
