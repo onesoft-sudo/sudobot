@@ -43,6 +43,7 @@ export type GetMemberPermissionInGuildResult = {
           type: "layered";
           highestOverwrite?: PermissionOverwrite;
           highestRoleHavingOverwrite?: Role;
+          overwriteIds: number[];
       }
 );
 

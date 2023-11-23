@@ -36,6 +36,7 @@ export default class LayerBasedPermissionManager extends AbstractPermissionManag
     }
 
     getMemberPermissions(member: GuildMember, mergeWithDiscordPermissions = true): GetMemberPermissionInGuildResult {
+        const overwriteIds = [];
         const baseUserOverwrite = this.cache[`${member.guild.id}_u_${member.user.id}`];
         const permissions = new PermissionsBitField([
             ...(mergeWithDiscordPermissions ? member.permissions.toArray() : []),
@@ -44,10 +45,16 @@ export default class LayerBasedPermissionManager extends AbstractPermissionManag
         let highestRoleHavingOverwrite: Role | undefined;
         let highestOverwrite: PermissionOverwrite | undefined;
 
+        if (baseUserOverwrite) {
+            overwriteIds.push(baseUserOverwrite.id);
+        }
+
         for (const [roleId, role] of member.roles.cache) {
             const overwrite = this.cache[`${member.guild.id}_r_${roleId}`];
 
             if (overwrite) {
+                overwriteIds.push(overwrite.id);
+
                 for (const permission of overwrite.grantedPermissions) {
                     permissions.add(permission as PermissionsString);
                 }
@@ -63,7 +70,8 @@ export default class LayerBasedPermissionManager extends AbstractPermissionManag
             type: "layered",
             permissions,
             highestRoleHavingOverwrite,
-            highestOverwrite
+            highestOverwrite,
+            overwriteIds
         };
     }
 }
