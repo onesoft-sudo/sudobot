@@ -1,3 +1,12 @@
+# [6.83.0](https://github.com/onesoft-sudo/sudobot/compare/v6.82.1...v6.83.0) (2023-11-23)
+
+
+### Features
+
+* **permissions:** add `DiscordBasedPermissionManager` ([6945612](https://github.com/onesoft-sudo/sudobot/commit/6945612170ae979bc981440af9177a7cf0d767b7))
+
+
+
 ## [6.82.1](https://github.com/onesoft-sudo/sudobot/compare/v6.82.0...v6.82.1) (2023-11-23)
 
 
@@ -41,15 +50,6 @@
 ### Performance Improvements
 
 * **utils:pagination:** skip collecting interactions if the data array is empty ([5ec6902](https://github.com/onesoft-sudo/sudobot/commit/5ec6902726d17b240aaec7c45986bb9e369ef663))
-
-
-
-## [6.80.2](https://github.com/onesoft-sudo/sudobot/compare/v6.80.1...v6.80.2) (2023-11-17)
-
-
-### Performance Improvements
-
-* **commands:ai:** do not use pagination if there is a single chunk only ([cae4cc7](https://github.com/onesoft-sudo/sudobot/commit/cae4cc7fce20c1e2a51330a1c55ff0e8bfd6ef68))
 
 
 
