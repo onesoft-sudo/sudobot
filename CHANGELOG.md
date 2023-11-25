@@ -1,3 +1,12 @@
+## [6.85.1](https://github.com/onesoft-sudo/sudobot/compare/v6.85.0...v6.85.1) (2023-11-25)
+
+
+### Bug Fixes
+
+* **welcomer:** say_hi_label not working ([9342b53](https://github.com/onesoft-sudo/sudobot/commit/9342b535cdd087dafc970577921226ae843b73ee))
+
+
+
 # [6.85.0](https://github.com/onesoft-sudo/sudobot/compare/v6.84.1...v6.85.0) (2023-11-23)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **permissions:** add `DiscordBasedPermissionManager` ([6945612](https://github.com/onesoft-sudo/sudobot/commit/6945612170ae979bc981440af9177a7cf0d767b7))
-
-
-
-## [6.82.1](https://github.com/onesoft-sudo/sudobot/compare/v6.82.0...v6.82.1) (2023-11-23)
-
-
-### Bug Fixes
-
-* introduce `overwriteIds` in `GetMemberPermissionInGuildResult` type ([f1ca24c](https://github.com/onesoft-sudo/sudobot/commit/f1ca24cff2e3f7a1f6a649f77b8069a1cd8faa6d))
 
 
 
