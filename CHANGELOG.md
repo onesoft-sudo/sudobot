@@ -1,3 +1,12 @@
+## [6.85.2](https://github.com/onesoft-sudo/sudobot/compare/v6.85.1...v6.85.2) (2023-11-25)
+
+
+### Bug Fixes
+
+* **commands:snippets:** double response ([430b511](https://github.com/onesoft-sudo/sudobot/commit/430b511b90dc5dabe7f4d22f738495f30b09d00a))
+
+
+
 ## [6.85.1](https://github.com/onesoft-sudo/sudobot/compare/v6.85.0...v6.85.1) (2023-11-25)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * complete `check_discord_permissions` option ([18a97ac](https://github.com/onesoft-sudo/sudobot/commit/18a97acf5bf841b4aa471a1c5c2c4254adbf6676))
-
-
-
-# [6.83.0](https://github.com/onesoft-sudo/sudobot/compare/v6.82.1...v6.83.0) (2023-11-23)
-
-
-### Features
-
-* **permissions:** add `DiscordBasedPermissionManager` ([6945612](https://github.com/onesoft-sudo/sudobot/commit/6945612170ae979bc981440af9177a7cf0d767b7))
 
 
 
