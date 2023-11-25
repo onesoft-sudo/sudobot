@@ -49,7 +49,7 @@ export default class SnippetRenameCommand extends Command {
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const name: string = context.isLegacy ? context.parsedNamedArgs.name : context.options.getString("old_name", true);
 
-        if (!this.client.snippetManager.checkPermissionInSnippetCommands(name, message, this)) {
+        if (!await this.client.snippetManager.checkPermissionInSnippetCommands(name, message, this)) {
             return;
         }
 

@@ -99,7 +99,7 @@ export default class SnippetCommand extends Command {
         const command = this.client.commands.get(`snippet__${subcommand}`);
 
         if (command) {
-            return await command.execute(message, {
+            await command.execute(message, {
                 ...context,
                 ...(context.isLegacy
                     ? {

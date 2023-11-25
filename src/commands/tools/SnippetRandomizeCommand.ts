@@ -46,7 +46,7 @@ export default class SnippetRandomizeCommand extends Command {
     async execute(message: Message, context: LegacyCommandContext): Promise<CommandReturn> {
         const name: string = context.parsedNamedArgs.name;
 
-        if (!this.client.snippetManager.checkPermissionInSnippetCommands(name, message, this)) {
+        if (!await this.client.snippetManager.checkPermissionInSnippetCommands(name, message, this)) {
             return;
         }
 

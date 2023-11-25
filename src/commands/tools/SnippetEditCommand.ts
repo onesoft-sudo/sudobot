@@ -56,7 +56,7 @@ export default class SnippetEditCommand extends Command {
 
         const name: string = context.parsedNamedArgs.name;
 
-        if (!this.client.snippetManager.checkPermissionInSnippetCommands(name, message, this)) {
+        if (!await this.client.snippetManager.checkPermissionInSnippetCommands(name, message, this)) {
             return;
         }
 
