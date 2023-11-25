@@ -86,7 +86,8 @@ export default class WelcomerService extends Service {
             const actionRow = say_hi_button
                 ? [
                       this.generateActionRow(member.user.id, {
-                          say_hi_emoji: welcomer.say_hi_emoji
+                          say_hi_emoji: welcomer.say_hi_emoji,
+                          say_hi_label: welcomer.say_hi_label
                       })
                   ]
                 : undefined;
