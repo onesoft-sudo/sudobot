@@ -28,6 +28,7 @@ import Service from "../core/Service";
 import { downloadFile } from "../utils/download";
 import { LogLevel, log, logError, logInfo, logWithLevel } from "../utils/logger";
 import { sudoPrefix } from "../utils/utils";
+import EmbedSchemaParser from "../utils/EmbedSchemaParser";
 
 export const name = "snippetManager";
 
@@ -278,11 +279,13 @@ export default class SnippetManager extends Service {
             }
         }
 
+        const content = snippet.content[snippet.randomize ? Math.floor(Math.random() * snippet.content.length) : 0];
+
         return {
-            options: {
-                content: snippet.content[snippet.randomize ? Math.floor(Math.random() * snippet.content.length) : 0] ?? undefined,
+            options: EmbedSchemaParser.getMessageOptions({
+                content: content ?? undefined,
                 files
-            } as MessageCreateOptions,
+            } as MessageCreateOptions, true),
             found: true
         };
     }
