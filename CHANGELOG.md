@@ -1,3 +1,17 @@
+# [6.87.0](https://github.com/onesoft-sudo/sudobot/compare/v6.86.0...v6.87.0) (2023-11-26)
+
+
+### Bug Fixes
+
+* **snippetManager:** permission checking issues ([badd03a](https://github.com/onesoft-sudo/sudobot/commit/badd03af1270af22b90ca561d889c42d5181f716))
+
+
+### Features
+
+* **snippets:** support embed schemas in snippet contents ([818adc9](https://github.com/onesoft-sudo/sudobot/commit/818adc9394754d6ce666e7d2132472e723e355a7))
+
+
+
 # [6.86.0](https://github.com/onesoft-sudo/sudobot/compare/v6.85.2...v6.86.0) (2023-11-26)
 
 
@@ -31,15 +45,6 @@
 ### Features
 
 * **welcomer:** introduce `welcomer.say_hi_label` configuration option ([e17bcb3](https://github.com/onesoft-sudo/sudobot/commit/e17bcb3736972da84fab97f6d259a4ee23374177))
-
-
-
-## [6.84.1](https://github.com/onesoft-sudo/sudobot/compare/v6.84.0...v6.84.1) (2023-11-23)
-
-
-### Bug Fixes
-
-* **commands:moderation:** not showing user information ([6f618f9](https://github.com/onesoft-sudo/sudobot/commit/6f618f9db9ad1c9a83878db319b667c1573b61ca))
 
 
 
