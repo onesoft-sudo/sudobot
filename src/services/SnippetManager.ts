@@ -247,7 +247,7 @@ export default class SnippetManager extends Service {
         if (!snippet.content && snippet.attachments.length === 0)
             throw new Error("Corrupted database: snippet attachment and content both are unusable");
 
-        if (!this.checkPermissions(snippet, member, guildId, channelId)) {
+        if (!await this.checkPermissions(snippet, member, guildId, channelId)) {
             return {
                 options: undefined
             };
@@ -382,7 +382,7 @@ export default class SnippetManager extends Service {
             return false;
         }
 
-        if (!this.client.snippetManager.checkPermissions(snippet, message.member! as GuildMember, message.guildId!)) {
+        if (!await this.client.snippetManager.checkPermissions(snippet, message.member! as GuildMember, message.guildId!)) {
             await command.error(message, "You don't have permission to modify this snippet!");
             return false;
         }
