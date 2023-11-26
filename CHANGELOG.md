@@ -1,3 +1,12 @@
+# [6.86.0](https://github.com/onesoft-sudo/sudobot/compare/v6.85.2...v6.86.0) (2023-11-26)
+
+
+### Features
+
+* introduce command v2 ([12a1c44](https://github.com/onesoft-sudo/sudobot/commit/12a1c44067a18c48f9b9e793d23ce5012da5105b))
+
+
+
 ## [6.85.2](https://github.com/onesoft-sudo/sudobot/compare/v6.85.1...v6.85.2) (2023-11-25)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **commands:moderation:** not showing user information ([6f618f9](https://github.com/onesoft-sudo/sudobot/commit/6f618f9db9ad1c9a83878db319b667c1573b61ca))
-
-
-
-# [6.84.0](https://github.com/onesoft-sudo/sudobot/compare/v6.83.0...v6.84.0) (2023-11-23)
-
-
-### Features
-
-* complete `check_discord_permissions` option ([18a97ac](https://github.com/onesoft-sudo/sudobot/commit/18a97acf5bf841b4aa471a1c5c2c4254adbf6676))
 
 
 
