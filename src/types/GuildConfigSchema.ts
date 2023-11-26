@@ -27,6 +27,7 @@ import { TriggerSchema } from "./TriggerSchema";
  */
 export const GuildConfigSchema = z.object({
     prefix: z.string().default("-"),
+    debug_mode: z.boolean().default(false),
     commands: z
         .object({
             mention_prefix: z.boolean().default(true),
