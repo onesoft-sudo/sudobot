@@ -27,8 +27,12 @@ export default class BlockedMessageCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.String],
-            requiredErrorMessage: `Please provide a subcommand! The valid subcommands are: \`${this.subcommandsCustom.join("`, `")}\`.`,
-            typeErrorMessage: `Please provide a __valid__ subcommand! The valid subcommands are: \`${this.subcommandsCustom.join("`, `")}\`.`,
+            errors: {
+                required: `Please provide a subcommand! The valid subcommands are: \`${this.subcommandsCustom.join("`, `")}\`.`,
+                "type:invalid": `Please provide a __valid__ subcommand! The valid subcommands are: \`${this.subcommandsCustom.join(
+                    "`, `"
+                )}\`.`
+            },
             name: "subcommand"
         }
     ];
@@ -59,7 +63,9 @@ export default class BlockedMessageCommand extends Command {
             subcommand
                 .setName("remove")
                 .setDescription("Remove blocked message")
-                .addStringOption(option => option.setName("message").setDescription("The message to remove from blocklist").setRequired(true))
+                .addStringOption(option =>
+                    option.setName("message").setDescription("The message to remove from blocklist").setRequired(true)
+                )
         )
         .addSubcommand(subcommand =>
             subcommand
@@ -87,17 +93,24 @@ export default class BlockedMessageCommand extends Command {
     }
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
-        const subcommand = (context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true))?.toString();
+        const subcommand = (
+            context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true)
+        )?.toString();
 
         if (!this.subcommandsCustom.includes(subcommand)) {
-            await this.error(message, `Invalid subcommand provided. The valid subcommands are: \`${this.subcommandsCustom.join("`, `")}\`.`);
+            await this.error(
+                message,
+                `Invalid subcommand provided. The valid subcommands are: \`${this.subcommandsCustom.join("`, `")}\`.`
+            );
             return;
         }
 
         if (context.isLegacy && context.args[1] === undefined && subcommand !== "list") {
             await this.error(
                 message,
-                `You must specify a message ${subcommand === "add" ? "to block" : subcommand === "remove" ? "to remove" : "to check"}!`
+                `You must specify a message ${
+                    subcommand === "add" ? "to block" : subcommand === "remove" ? "to remove" : "to check"
+                }!`
             );
             return;
         }
@@ -116,10 +129,16 @@ export default class BlockedMessageCommand extends Command {
 
         switch (subcommand) {
             case "add":
-                const messageToBlock = context.isLegacy ? context.args[0] : context.options.getString("message", true)
+                const messageToBlock = context.isLegacy ? context.args[0] : context.options.getString("message", true);
 
-                if (!this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_messages.includes(messageToBlock)) {
-                    this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_messages.push(messageToBlock);
+                if (
+                    !this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_messages.includes(
+                        messageToBlock
+                    )
+                ) {
+                    this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_messages.push(
+                        messageToBlock
+                    );
                 }
 
                 await this.client.configManager.write();
@@ -129,7 +148,11 @@ export default class BlockedMessageCommand extends Command {
             case "has":
                 const messageToCheck = context.isLegacy ? context.args[0] : context.options.getString("message", true);
 
-                if (this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_messages.includes(messageToCheck)) {
+                if (
+                    this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_messages.includes(
+                        messageToCheck
+                    )
+                ) {
                     await this.success(message, `This message is in the blocklist.`);
                 } else {
                     await this.error(message, `This message is not in the blocklist.`);
@@ -138,9 +161,12 @@ export default class BlockedMessageCommand extends Command {
                 return;
 
             case "remove":
-                const messageToRemove = context.isLegacy ? context.args[0] : context.options.getString("message", true)
+                const messageToRemove = context.isLegacy ? context.args[0] : context.options.getString("message", true);
 
-                const index = this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_messages.indexOf(messageToRemove);
+                const index =
+                    this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_messages.indexOf(
+                        messageToRemove
+                    );
 
                 if (!index || index === -1) {
                     return;
@@ -154,7 +180,8 @@ export default class BlockedMessageCommand extends Command {
 
             case "list":
                 {
-                    const messages: string[] = this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_messages ?? [];
+                    const messages: string[] =
+                        this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_messages ?? [];
                     const safeMessages: string[][] = [];
                     let length = 0;
 

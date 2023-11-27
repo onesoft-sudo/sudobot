@@ -26,14 +26,18 @@ export default class SnippetCreateCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.String],
-            requiredErrorMessage: "Please specify a name for this new snippet/tag!",
-            typeErrorMessage: "Please specify a valid snippet/tag name!",
+            errors: {
+                required: "Please specify a name for this new snippet/tag!",
+                "type:invalid": "Please specify a valid snippet/tag name!"
+            },
             name: "name"
         },
         {
             types: [ArgumentType.StringRest],
-            requiredErrorMessage: "Please specify the content of this new snippet/tag!",
-            typeErrorMessage: "Please specify valid content for this new snippet/tag",
+            errors: {
+                required: "Please specify the content of this new snippet/tag!",
+                "type:invalid": "Please specify valid content for this new snippet/tag"
+            },
             name: "content",
             optional: true
         }
@@ -56,7 +60,9 @@ export default class SnippetCreateCommand extends Command {
             return;
         }
 
-        const content: string | undefined = context.isLegacy ? context.parsedNamedArgs.content : context.options.getString("content", true);
+        const content: string | undefined = context.isLegacy
+            ? context.parsedNamedArgs.content
+            : context.options.getString("content", true);
 
         if (message instanceof Message && !content && message.attachments.size === 0) {
             await this.error(message, "Please either specify text content or attachments to put inside the new snippet!");
@@ -86,7 +92,9 @@ export default class SnippetCreateCommand extends Command {
         await this.deferredReply(
             message,
             `${this.emoji("check")} Successfully created snippet \`${escapeInlineCode(escapeCodeBlock(name))}\`${
-                !this.client.configManager.systemConfig.snippets?.save_attachments && message instanceof Message && message.attachments.size > 0
+                !this.client.configManager.systemConfig.snippets?.save_attachments &&
+                message instanceof Message &&
+                message.attachments.size > 0
                     ? `\nYour message attachments were not saved. Please use links instead.`
                     : ""
             }`

@@ -27,10 +27,12 @@ export default class BallotCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.String],
-            requiredErrorMessage: `Please provide a valid subcommand! The valid commands are: \`${this.subcommands.join(
-                "`, `"
-            )}\``,
-            typeErrorMessage: "Please provide a valid subcommand!",
+            errors: {
+                required: `Please provide a valid subcommand! The valid commands are: \`${this.subcommands.join(
+                    "`, `"
+                )}\``,
+                "type:invalid": "Please provide a valid subcommand!",
+            },
             name: "subcommand"
         }
     ];
@@ -94,7 +96,7 @@ export default class BallotCommand extends Command {
         const command = this.client.commands.get(`ballot__${subcommand}`);
 
         if (!command) {
-            await this.error(message, this.validationRules[0].requiredErrorMessage!);
+            await this.error(message, this.validationRules[0].errors!.required!);
             return;
         }
 

@@ -26,16 +26,20 @@ export default class SnippetEditCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.String],
-            requiredErrorMessage: "Please specify the name of the snippet/tag to edit!",
-            typeErrorMessage: "Please specify a valid snippet/tag name!",
+            errors: {
+                required: "Please specify the name of the snippet/tag to edit!",
+                "type:invalid": "Please specify a valid snippet/tag name!"
+            },
             name: "name"
         },
         {
             types: [ArgumentType.String],
-            requiredErrorMessage:
-                "Please specify what to edit in the snippet! One of these can be specified: `level`, `permission` (`perm`), `content`",
-            typeErrorMessage:
-                "Please specify a valid attribute of the snippet to edit! One of these can be specified: `level`, `permission` (`perm`), `content`",
+            errors: {
+                required:
+                    "Please specify what to edit in the snippet! One of these can be specified: `level`, `permission` (`perm`), `content`",
+                "type:invalid":
+                    "Please specify a valid attribute of the snippet to edit! One of these can be specified: `level`, `permission` (`perm`), `content`"
+            },
             name: "attr"
         }
     ];
@@ -56,21 +60,21 @@ export default class SnippetEditCommand extends Command {
 
         const name: string = context.parsedNamedArgs.name;
 
-        if (!await this.client.snippetManager.checkPermissionInSnippetCommands(name, message, this)) {
+        if (!(await this.client.snippetManager.checkPermissionInSnippetCommands(name, message, this))) {
             return;
         }
 
         const index = name !== context.args[0] ? 1 : 0;
 
         if (!context.args[index + 1]) {
-            await this.error(message, this.validationRules[1].requiredErrorMessage!);
+            await this.error(message, this.validationRules[1].errors?.required!);
             return;
         }
 
         const attrs = ["level", "permission", "perm", "content"] as const;
 
         if (!attrs.includes(context.args[index + 1]?.toLowerCase() as (typeof attrs)[number])) {
-            await this.error(message, this.validationRules[1].typeErrorMessage!);
+            await this.error(message, this.validationRules[1].errors?.["type:invalid"]!);
             return;
         }
 

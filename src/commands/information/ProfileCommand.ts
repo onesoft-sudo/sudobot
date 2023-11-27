@@ -99,12 +99,16 @@ export default class ProfileCommand extends Command {
     public readonly name = "profile";
     public readonly validationRules: ValidationRule[] = [
         {
-            types: [ArgumentType.GuildMember, ArgumentType.User],
+            types: [ArgumentType.Member, ArgumentType.User],
             name: "member",
             optional: true,
-            typeErrorMessage: "Invalid user given!",
-            entityNotNull: true,
-            entityNotNullErrorMessage: "That user could not be found!"
+            errors: {
+                "type:invalid": "Invalid user given!",
+                "entity:null": "That user could not be found!",
+            },
+            entity: {
+                notNull: true
+            },
         }
     ];
     public readonly aliases = ["userprofile", "userinfo"];

@@ -27,9 +27,10 @@ export default class ExtractEmojiCommand extends Command {
         {
             types: [ArgumentType.Link],
             name: "message_link",
-            rawLinkString: true,
-            requiredErrorMessage: "Please provide a message link to extract emoji from!",
-            typeErrorMessage: "Invalid message link given!"
+            errors: {
+                required: "Please provide a message link to extract emoji from!",
+                "type:invalid": "Invalid message link given!"
+            }
         }
     ];
     public readonly permissions = [];
@@ -66,7 +67,7 @@ export default class ExtractEmojiCommand extends Command {
         const link = context.isLegacy ? context.parsedNamedArgs.message_link : context.options.getString("message_link", true);
 
         if (!/^https?:\/\/(canary\.|ptb\.|beta\.|www\.|)discord\.com\/channels\/\d+\/\d+\/\d+$/i.test(link.trim())) {
-            await this.error(message, this.validationRules[0].typeErrorMessage);
+            await this.error(message, this.validationRules[0].errors!["type:invalid"]!);
             return;
         }
 

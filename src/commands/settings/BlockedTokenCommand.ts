@@ -27,12 +27,12 @@ export default class BlockedTokenCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.String],
-            requiredErrorMessage: `Please provide a subcommand! The valid subcommands are: \`${this.subcommandsCustom.join(
-                "`, `"
-            )}\`.`,
-            typeErrorMessage: `Please provide a __valid__ subcommand! The valid subcommands are: \`${this.subcommandsCustom.join(
-                "`, `"
-            )}\`.`,
+            errors: {
+                required: `Please provide a subcommand! The valid subcommands are: \`${this.subcommandsCustom.join("`, `")}\`.`,
+                "type:invalid": `Please provide a __valid__ subcommand! The valid subcommands are: \`${this.subcommandsCustom.join(
+                    "`, `"
+                )}\`.`
+            },
             name: "subcommand"
         }
     ];

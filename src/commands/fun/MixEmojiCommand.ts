@@ -28,14 +28,18 @@ export default class MixEmojiCommand extends Command {
         {
             types: [ArgumentType.String],
             name: "first",
-            requiredErrorMessage: "Please specify 2 emojis to mix!",
-            typeErrorMessage: "Please specify 2 valid emojis to mix!"
+            errors: {
+                required: "Please specify 2 emojis to mix!",
+                "type:invalid": "Please specify 2 valid emojis to mix!"
+            }
         },
         {
             types: [ArgumentType.String],
             name: "second",
-            requiredErrorMessage: "Please specify 2 emojis to mix!",
-            typeErrorMessage: "Please specify 2 valid emojis to mix!"
+            errors: {
+                required: "Please specify 2 emojis to mix!",
+                "type:invalid": "Please specify 2 valid emojis to mix!"
+            }
         }
     ];
     public readonly permissions = [];

@@ -30,27 +30,43 @@ export default class FakeBanCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.User],
-            entityNotNull: true,
-            requiredErrorMessage: "You must specify a user to ban!",
-            typeErrorMessage: "You have specified an invalid user mention or ID.",
-            entityNotNullErrorMessage: "The given user does not exist!"
+            entity: {
+                notNull: true
+            },
+            errors: {
+                required: "You must specify a user to ban!",
+                "type:invalid": "You have specified an invalid user mention or ID.",
+                "entity:null": "The given user does not exist!"
+            }
         },
         {
             types: [ArgumentType.TimeInterval, ArgumentType.StringRest],
             optional: true,
-            minMaxErrorMessage: "The message deletion range must be a time interval from 0 second to 604800 seconds (7 days).",
-            typeErrorMessage:
-                "You have specified an invalid argument. The system expected you to provide a ban reason or the message deletion range here.",
-            minValue: 0,
-            maxValue: 604800,
-            lengthMax: 3999,
-            timeMilliseconds: false
+            errors: {
+                "time:range": "The message deletion range must be a time interval from 0 second to 604800 seconds (7 days).",
+                "type:invalid":
+                    "You have specified an invalid argument. The system expected you to provide a ban reason or the message deletion range here.",
+                "string:rest:length:max": "The ban reason must be less than 4000 characters long."
+            },
+            time: {
+                min: 0,
+                max: 604800,
+                unit: "s"
+            },
+            string: {
+                maxLength: 3999
+            }
         },
         {
             types: [ArgumentType.StringRest],
             optional: true,
-            typeErrorMessage: "You have specified an invalid ban reason.",
-            lengthMax: 3999
+            errors: {
+                "type:invalid": "You have specified an invalid ban reason.",
+                "string:rest:length:max": "The ban reason must be less than 4000 characters long."
+            },
+            string: {
+                maxLength: 3999
+            }
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.BanMembers];

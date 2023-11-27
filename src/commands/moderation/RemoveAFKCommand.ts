@@ -26,9 +26,11 @@ export default class RemoveAFKCommand extends Command {
         {
             types: [ArgumentType.User],
             name: "user",
-            requiredErrorMessage: "Please specify a user to perform this action!",
-            entityNotNull: true,
-            entityNotNullErrorMessage: "That user does not exist!"
+            errors: {
+                required: "Please specify a user to perform this action!",
+                "entity:null": "That user does not exist!"
+            },
+            entity: true
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ManageMessages];

@@ -32,18 +32,24 @@ export default class KickCommand extends Command {
     public readonly name = "kick";
     public readonly validationRules: ValidationRule[] = [
         {
-            types: [ArgumentType.GuildMember],
-            entityNotNull: true,
-            requiredErrorMessage: "You must specify a member to kick!",
-            typeErrorMessage: "You have specified an invalid user mention or ID.",
-            entityNotNullErrorMessage: "The given member does not exist in the server!",
+            types: [ArgumentType.Member],
+            entity: true,
+            errors: {
+                required: "You must specify a member to kick!",
+                "type:invalid": "You have specified an invalid user mention or ID.",
+                "entity:null": "The given member does not exist in the server!"
+            },
             name: "member"
         },
         {
             types: [ArgumentType.StringRest],
             optional: true,
-            typeErrorMessage: "You have specified an invalid kick reason.",
-            lengthMax: 3999,
+            errors: {
+                "string:rest:length:max": "The kick reason must be less than 4000 characters long."
+            },
+            string: {
+                maxLength: 3999
+            },
             name: "reason"
         }
     ];

@@ -28,7 +28,9 @@ export default class EvalCommand extends Command {
             types: [ArgumentType.StringRest],
             optional: false,
             name: "code",
-            requiredErrorMessage: "You must provide expression(s) to evaluate!"
+            errors: {
+                required: "You must provide expression(s) to evaluate!"
+            }
         }
     ];
     public readonly systemAdminOnly = true;

@@ -29,17 +29,25 @@ export default class RemindCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.TimeInterval],
-            minValue: 1,
-            minMaxErrorMessage: "Please specify a valid time interval!",
-            requiredErrorMessage: "Please specify after how long I should remind you!",
-            typeErrorMessage: "Please specify a valid time interval!",
-            timeMilliseconds: true,
+            number: {
+                min: 1
+            },
+            errors: {
+                "number:range:min": "Please specify a valid time interval!",
+                required: "Please specify after how long I should remind you!",
+                "type:invalid": "Please specify a valid time interval!",
+            },
+            time: {
+                unit: 'ms'
+            },
             name: "time_interval"
         },
         {
             types: [ArgumentType.StringRest],
             optional: true,
-            typeErrorMessage: "Please specify a valid reminder message!",
+            errors: {
+                "type:invalid": "Please specify a valid reminder message!",
+            },
             name: "message"
         }
     ];

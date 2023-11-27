@@ -27,8 +27,10 @@ export default class EmojiCommand extends Command {
         {
             name: "emoji",
             types: [ArgumentType.String],
-            requiredErrorMessage: "Please specify a server-based emoji!",
-            typeErrorMessage: "Invalid emoji specified"
+            errors: {
+                required: "Please specify a server-based emoji!",
+                "type:invalid": "Invalid emoji specified"
+            }
         }
     ];
     public readonly permissions = [];

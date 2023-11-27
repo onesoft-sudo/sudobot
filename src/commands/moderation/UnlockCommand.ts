@@ -29,7 +29,9 @@ export default class UnlockCommand extends Command {
             types: [ArgumentType.Channel, ArgumentType.String],
             optional: true,
             name: "channel",
-            typeErrorMessage: "Please provide a valid channel to unlock!"
+            errors: {
+                "type:invalid": "Please provide a valid channel to unlock!"
+            }
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.ManageChannels];

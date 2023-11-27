@@ -25,10 +25,10 @@ import fs from "fs/promises";
 import { basename } from "path";
 import Command, { CommandMessage } from "../core/Command";
 import Service from "../core/Service";
+import EmbedSchemaParser from "../utils/EmbedSchemaParser";
 import { downloadFile } from "../utils/download";
 import { LogLevel, log, logError, logInfo, logWithLevel } from "../utils/logger";
-import { sudoPrefix } from "../utils/utils";
-import EmbedSchemaParser from "../utils/EmbedSchemaParser";
+import { getEmoji, sudoPrefix } from "../utils/utils";
 
 export const name = "snippetManager";
 
@@ -248,7 +248,7 @@ export default class SnippetManager extends Service {
         if (!snippet.content && snippet.attachments.length === 0)
             throw new Error("Corrupted database: snippet attachment and content both are unusable");
 
-        if (!await this.checkPermissions(snippet, member, guildId, channelId)) {
+        if (!(await this.checkPermissions(snippet, member, guildId, channelId))) {
             return {
                 options: undefined
             };
@@ -282,10 +282,13 @@ export default class SnippetManager extends Service {
         const content = snippet.content[snippet.randomize ? Math.floor(Math.random() * snippet.content.length) : 0];
 
         return {
-            options: EmbedSchemaParser.getMessageOptions({
-                content: content ?? undefined,
-                files
-            } as MessageCreateOptions, true),
+            options: EmbedSchemaParser.getMessageOptions(
+                {
+                    content: content ?? undefined,
+                    files
+                } as MessageCreateOptions,
+                true
+            ),
             found: true
         };
     }
@@ -381,12 +384,15 @@ export default class SnippetManager extends Service {
         const snippet = this.snippets.get(`${message.guildId!}_${name}`);
 
         if (!snippet) {
-            await command.error(message, "No snippet found with that name!");
+            await command.deferredReply(message, `${getEmoji(this.client, "error")} No snippet found with that name!')}`);
             return false;
         }
 
-        if (!await this.client.snippetManager.checkPermissions(snippet, message.member! as GuildMember, message.guildId!)) {
-            await command.error(message, "You don't have permission to modify this snippet!");
+        if (!(await this.client.snippetManager.checkPermissions(snippet, message.member! as GuildMember, message.guildId!))) {
+            await command.deferredReply(
+                message,
+                `${getEmoji(this.client, "error")} You don't have permission to modify this snippet!`
+            );
             return false;
         }
 

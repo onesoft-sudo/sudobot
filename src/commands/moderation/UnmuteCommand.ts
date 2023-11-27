@@ -26,18 +26,25 @@ export default class UnmuteCommand extends Command {
     public readonly name = "unmute";
     public readonly validationRules: ValidationRule[] = [
         {
-            types: [ArgumentType.GuildMember],
-            entityNotNull: true,
-            requiredErrorMessage: "You must specify a member to unmute!",
-            typeErrorMessage: "You have specified an invalid member mention or ID.",
-            entityNotNullErrorMessage: "The given member does not exist!",
+            types: [ArgumentType.Member],
+            entity: true,
+            errors: {
+                required: "You must specify a member to unmute!",
+                "type:invalid": "You have specified an invalid member mention or ID.",
+                "entity:null": "The given member does not exist!"
+            },
             name: "member"
         },
         {
             types: [ArgumentType.StringRest],
             optional: true,
-            typeErrorMessage: "You have specified an invalid unmute reason.",
-            lengthMax: 3999,
+            errors: {
+                "type:invalid": "You have specified an invalid unmute reason.",
+                "string:rest:length:max": "The unmute reason must be less than 4000 characters long."
+            },
+            string: {
+                maxLength: 3999
+            },
             name: "reason"
         }
     ];

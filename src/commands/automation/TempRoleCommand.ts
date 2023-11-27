@@ -29,32 +29,48 @@ export default class TempRoleCommand extends Command {
         {
             types: [ArgumentType.TimeInterval],
             name: "duration",
-            requiredErrorMessage: "Please provide a duration and a role!",
-            typeErrorMessage: "You've specified an invalid duration.",
-            timeMilliseconds: true
+            errors: {
+                required: "Please provide a duration and a role!",
+                "type:invalid": "You've specified an invalid duration.",
+            },
+            time: {
+                unit: 'ms'
+            }
         },
         {
-            types: [ArgumentType.GuildMember],
-            entityNotNull: true,
-            entityNotNullErrorMessage: "That member does not exist!",
+            types: [ArgumentType.Member],
+            entity: {
+                notNull: true
+            },
             name: "member",
-            requiredErrorMessage: "Please provide a target member!",
-            typeErrorMessage: "You've specified an invalid member."
+            errors: {
+                "entity:null": "That member does not exist!",
+                required: "Please provide a target member!",
+                "type:invalid": "You've specified an invalid member."
+            }
         },
         {
             types: [ArgumentType.Role],
-            entityNotNull: true,
-            entityNotNullErrorMessage: "That role does not exist!",
+            entity: {
+                notNull: true
+            },
             name: "role",
-            requiredErrorMessage: "Please provide a target role!",
-            typeErrorMessage: "You've specified an invalid role."
+            errors: {
+                "entity:null": "That role does not exist!",
+                required: "Please provide a target role!",
+                "type:invalid": "You've specified an invalid role."
+            }
         },
         {
             types: [ArgumentType.TimeInterval],
             name: "offset",
-            requiredErrorMessage: "Please provide a valid offset duration!",
-            typeErrorMessage: "You've specified an invalid offset duration.",
-            timeMilliseconds: true,
+            errors: {
+                required: "Please provide a valid offset duration!",
+                "type:invalid": "You've specified an invalid offset duration.",
+            },
+            time: {
+                unit: 'ms'
+            },
             optional: true,
             default: 0
         }

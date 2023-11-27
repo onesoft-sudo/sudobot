@@ -29,15 +29,19 @@ export default class EchoCommand extends Command {
         {
             types: [ArgumentType.User],
             name: "user",
-            entityNotNull: true,
-            entityNotNullErrorMessage: "This user does not exist!",
-            typeErrorMessage: "Please provide a valid user to DM!",
-            requiredErrorMessage: "Please provide a user to DM!"
+            entity: true,
+            errors: {
+                "entity:null": "This user does not exist!",
+                "type:invalid": "Please provide a valid user to DM!",
+                required: "Please provide a user to DM!"
+            }
         },
         {
             types: [ArgumentType.StringRest],
             name: "content",
-            requiredErrorMessage: "Please provide the message content!",
+            errors: {
+                required: "Please provide the message content!"
+            },
             optional: true
         }
     ];

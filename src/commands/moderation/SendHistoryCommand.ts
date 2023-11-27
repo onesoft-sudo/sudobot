@@ -25,10 +25,12 @@ export default class SendHistoryCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.User],
-            entityNotNull: true,
-            requiredErrorMessage: "You must specify a user to give shot!",
-            typeErrorMessage: "You have specified an invalid user mention or ID.",
-            entityNotNullErrorMessage: "The given user does not exist!",
+            entity: true,
+            errors: {
+                required: "You must specify a user to give shot!",
+                "type:invalid": "You have specified an invalid user mention or ID.",
+                "entity:null": "The given user does not exist!"
+            },
             name: "user"
         }
     ];
@@ -45,7 +47,10 @@ export default class SendHistoryCommand extends Command {
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message, { ephemeral: true });
 
-        const { buffer, count } = await this.client.infractionManager.createInfractionHistoryBuffer(message.member!.user, message.guild!);
+        const { buffer, count } = await this.client.infractionManager.createInfractionHistoryBuffer(
+            message.member!.user,
+            message.guild!
+        );
 
         if (!buffer) {
             await this.deferredReply(message, "This user doesn't have any infractions.");
@@ -53,7 +58,9 @@ export default class SendHistoryCommand extends Command {
         }
 
         await this.deferredReply(message, {
-            content: `${this.emoji("check")} Successfully generated the infraction history. The attached files contains ${count} records.`,
+            content: `${this.emoji(
+                "check"
+            )} Successfully generated the infraction history. The attached files contains ${count} records.`,
             files: [
                 {
                     attachment: buffer,

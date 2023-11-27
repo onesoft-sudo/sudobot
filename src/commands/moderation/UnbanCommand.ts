@@ -27,17 +27,23 @@ export default class UnbanCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.User],
-            entityNotNull: true,
-            requiredErrorMessage: "You must specify a user to unban!",
-            typeErrorMessage: "You have specified an invalid user mention or ID.",
-            entityNotNullErrorMessage: "The given user does not exist!",
+            entity: true,
+            errors: {
+                required: "You must specify a user to unban!",
+                "type:invalid": "You have specified an invalid user mention or ID.",
+                "entity:null": "The given user does not exist!"
+            },
             name: "user"
         },
         {
             types: [ArgumentType.StringRest],
             optional: true,
-            typeErrorMessage: "You have specified an invalid unban reason.",
-            lengthMax: 3999,
+            errors: {
+                "type:invalid": "You have specified an invalid unban reason."
+            },
+            string: {
+                maxLength: 3999
+            },
             name: "reason"
         }
     ];

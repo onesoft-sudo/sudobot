@@ -18,7 +18,14 @@
  */
 
 import { SlashCommandBuilder } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    RunCommandOptions,
+    ValidationRule
+} from "../../core/Command";
 
 export type AFKsCommandScope = "guild" | "everywhere" | "global";
 
@@ -29,10 +36,12 @@ export default class AFKsCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.String],
-            requiredErrorMessage: `Please provide a valid subcommand! The valid commands are: \`${this.subcommands.join(
-                "`, `"
-            )}\``,
-            typeErrorMessage: "Please provide a valid subcommand!",
+            errors: {
+                required: `Please provide a valid subcommand! The valid commands are: \`${this.subcommands.join(
+                    "`, `"
+                )}\``,
+                "type:invalid": "Please provide a valid subcommand!"
+            },
             name: "subcommand"
         }
     ];
@@ -63,17 +72,20 @@ export default class AFKsCommand extends Command {
         )
         .addSubcommand(subcommand => subcommand.setName("clear").setDescription("Removes AFK statuses for all users in a guild"));
 
-    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage, context: BasicCommandContext, options: RunCommandOptions): Promise<CommandReturn> {
         const subcommand = context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true);
         const command = this.client.commands.get(`afks__${subcommand}`);
 
         if (!command) {
-            await this.error(message, this.validationRules[0].requiredErrorMessage!);
+            await this.error(message, this.validationRules[0].errors!.required!);
             return;
         }
 
         if (context.isLegacy) context.args.shift();
 
-        return await command.run(message, context);
+        return await command.run({
+            ...options,
+            context
+        });
     }
 }

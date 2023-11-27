@@ -25,8 +25,10 @@ export default class CrisisCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.String],
-            typeErrorMessage: "Invalid country code/name provided!",
-            requiredErrorMessage: "Please provide a country code or name!",
+            errors: {
+                "type:invalid": "Invalid country code/name provided!",
+                required: "Please provide a country code or name!",
+            },
             name: "country"
         }
     ];

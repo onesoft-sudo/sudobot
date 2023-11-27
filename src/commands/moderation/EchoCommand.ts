@@ -31,7 +31,7 @@ import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandRetu
 import EmbedSchemaParser from "../../utils/EmbedSchemaParser";
 import { messageInfo } from "../../utils/embed";
 import { logError } from "../../utils/logger";
-import { isTextableChannel } from "../../utils/utils";
+import { getEmojiObject, isTextableChannel } from "../../utils/utils";
 
 export default class EchoCommand extends Command {
     public readonly name = "echo";
@@ -39,14 +39,17 @@ export default class EchoCommand extends Command {
         {
             types: [ArgumentType.Channel, ArgumentType.StringRest],
             name: "channelOrContent",
-            entityNotNull: true,
-            entityNotNullErrorMessage: "This channel does not exist!",
-            requiredErrorMessage: "Please provide the message content!"
+            entity: {
+                notNull: true
+            },
+            errors: {
+                "entity:null": "This channel does not exist!",
+                required: "Please provide the message content!"
+            }
         },
         {
             types: [ArgumentType.StringRest],
             name: "content",
-            requiredErrorMessage: "Please provide the message content!",
             optional: true
         }
     ];
@@ -115,7 +118,9 @@ export default class EchoCommand extends Command {
         const echoedMessage = await EmbedSchemaParser.sendMessage(channel, options);
 
         if (message instanceof Message) {
-            deleteReply && message.deletable ? await message.delete().catch(logError) : await message.react(this.emoji("check"));
+            deleteReply && message.deletable
+                ? await message.delete().catch(logError)
+                : await message.react(getEmojiObject(this.client, "check") ?? "✅");
         } else {
             await this.deferredReply(message, `Message sent.`);
         }

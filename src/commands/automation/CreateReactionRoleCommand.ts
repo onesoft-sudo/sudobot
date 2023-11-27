@@ -29,20 +29,26 @@ export default class CreateReactionRoleCommand extends Command {
         {
             types: [ArgumentType.String],
             name: "link",
-            requiredErrorMessage: "Please provide a target message link!",
-            typeErrorMessage: "Please provide a __valid__ message link!"
+            errors: {
+                required: "Please provide a target message link!",
+                "type:invalid": "Please provide a __valid__ message link!"
+            }
         },
         {
             types: [ArgumentType.String],
             name: "emoji",
-            requiredErrorMessage: "Please provide a trigger emoji!",
-            typeErrorMessage: "Please provide a __valid__ emoji!"
+            errors: {
+                required: "Please provide a trigger emoji!",
+                "type:invalid": "Please provide a __valid__ emoji!"
+            }
         },
         {
             types: [ArgumentType.StringRest],
             name: "roles",
-            requiredErrorMessage: "Please provide at least one role!",
-            typeErrorMessage: "Please provide __valid__ roles!"
+            errors: {
+                required: "Please provide at least one role!",
+                "type:invalid": "Please provide __valid__ roles!"
+            }
         }
     ];
     public readonly permissions = [PermissionFlagsBits.ManageRoles];
@@ -79,7 +85,7 @@ export default class CreateReactionRoleCommand extends Command {
         const mode = (context.isLegacy ? null : (context.options.getString("mode") as "SINGLE" | "MULTIPLE")) ?? "MULTIPLE";
 
         if (!/^https?:\/\/(canary\.|ptb\.|beta\.|www\.|)discord\.com\/channels\/\d+\/\d+\/\d+$/i.test(link.trim())) {
-            await this.error(message, this.validationRules[0].typeErrorMessage);
+            await this.error(message, this.validationRules[0].errors!.required);
             return;
         }
 

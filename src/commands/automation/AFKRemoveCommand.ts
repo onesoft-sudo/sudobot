@@ -27,11 +27,15 @@ export default class AFKRemoveCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.User],
-            requiredErrorMessage: `Please provide a user to remove their AFK!`,
-            typeErrorMessage: "Please provide a valid user!",
-            entityNotNullErrorMessage: "Please provide a valid user!",
             name: "user",
-            entityNotNull: true
+            entity: {
+                notNull: false
+            },
+            errors: {
+                required: "Please provide a user to remove their AFK!",
+                "type:invalid": "Please provide a valid user!",
+                "entity:null": "Please provide a valid user!",
+            }
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers];

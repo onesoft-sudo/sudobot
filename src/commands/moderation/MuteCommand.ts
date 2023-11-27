@@ -34,27 +34,38 @@ export default class MuteCommand extends Command {
     public readonly name = "mute";
     public readonly validationRules: ValidationRule[] = [
         {
-            types: [ArgumentType.GuildMember],
-            entityNotNull: true,
-            requiredErrorMessage: "You must specify a member to mute!",
-            typeErrorMessage: "You have specified an invalid user mention or ID.",
-            entityNotNullErrorMessage: "The given member does not exist in the server!",
+            types: [ArgumentType.Member],
+            entity: true,
+            errors: {
+                required: "You must specify a member to mute!",
+                "type:invalid": "You have specified an invalid user mention or ID.",
+                "entity:null": "The given member does not exist in the server!"
+            },
             name: "member"
         },
         {
             types: [ArgumentType.TimeInterval, ArgumentType.StringRest],
             optional: true,
-            minMaxErrorMessage: "The mute duration must be a valid time interval.",
-            typeErrorMessage:
-                "You have specified an invalid argument. The system expected you to provide a mute reason or the mute duration here.",
-            lengthMax: 3999,
+            errors: {
+                "time:range": "The mute duration must be a valid time interval.",
+                "type:invalid":
+                    "You have specified an invalid argument. The system expected you to provide a mute reason or the mute duration here."
+            },
+            string: {
+                maxLength: 3999
+            },
             name: "durationOrReason"
         },
         {
             types: [ArgumentType.StringRest],
             optional: true,
-            typeErrorMessage: "You have specified an invalid warning reason.",
-            lengthMax: 3999,
+            errors: {
+                "type:invalid":
+                    "You have specified an invalid argument. The system expected you to provide a mute reason or the mute duration here."
+            },
+            string: {
+                maxLength: 3999
+            },
             name: "reason"
         }
     ];
