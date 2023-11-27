@@ -55,7 +55,7 @@ export default class InfractionCreateCommand extends Command {
         try {
             const member = interaction.guild!.members.cache.get(user.id) ?? (await interaction.guild!.members.fetch(user.id));
 
-            if (!this.client.permissionManager.shouldModerate(member, interaction.member! as GuildMember)) {
+            if (!(await this.client.permissionManager.shouldModerate(member, interaction.member! as GuildMember))) {
                 await this.error(interaction, "You don't have permission to create infractions for this user!");
                 return;
             }

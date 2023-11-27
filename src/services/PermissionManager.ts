@@ -146,7 +146,7 @@ export default class PermissionManager<M extends AbstractPermissionManager = Abs
         }
 
         const manager = await this.getManager(member.guild.id);
-        return manager.shouldModerate(member, moderator);
+        return await manager.shouldModerate(member, moderator);
     }
 
     protected getMode(guildId: string) {

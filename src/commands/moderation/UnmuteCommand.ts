@@ -81,7 +81,7 @@ export default class UnmuteCommand extends Command {
         const reason: string | undefined =
             (!context.isLegacy ? context.options.getString("reason") : context.parsedNamedArgs.reason) ?? undefined;
 
-        if (!this.client.permissionManager.shouldModerate(member, message.member! as GuildMember)) {
+        if (!(await this.client.permissionManager.shouldModerate(member, message.member! as GuildMember))) {
             await this.error(message, "You don't have permission to unmute this user!");
             return;
         }

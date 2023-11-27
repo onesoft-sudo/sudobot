@@ -46,7 +46,7 @@ export default class CommandArgumentParser implements CommandArgumentParserInter
         const max = state.rule.time?.max;
         const min = state.rule.time?.min;
 
-        if (min !== undefined && result > min) {
+        if (min !== undefined && result < min) {
             throw new ArgumentParseError("Time interval is less than the minimum limit", ["time:range:min", "time:range"]);
         } else if (max !== undefined && result > max) {
             throw new ArgumentParseError("Time interval has exceeded the maximum limit", ["time:range:max", "time:range"]);
@@ -82,7 +82,7 @@ export default class CommandArgumentParser implements CommandArgumentParserInter
         const max = state.rule.number?.max;
         const min = state.rule.number?.min;
 
-        if (min !== undefined && number > min) {
+        if (min !== undefined && number < min) {
             throw new ArgumentParseError("Numeric value is less than the minimum limit", ["number:range:min", "number:range"]);
         } else if (max !== undefined && number > max) {
             throw new ArgumentParseError("Numeric value exceeded the maximum limit", ["number:range:max", "number:range"]);

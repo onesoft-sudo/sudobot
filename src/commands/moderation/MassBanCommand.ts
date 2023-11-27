@@ -134,7 +134,7 @@ export default class MassBanCommand extends Command {
 
                 log("Fetched member to check permissions");
 
-                if (!this.client.permissionManager.shouldModerate(member, message.member! as GuildMember)) {
+                if (!(await this.client.permissionManager.shouldModerate(member, message.member! as GuildMember))) {
                     await this.deferredReply(message, {
                         content: `${this.emoji("error")} You don't have permission to ban ${member.user.toString()}!`,
                         allowedMentions: {

@@ -139,7 +139,7 @@ export default class MuteCommand extends Command {
             await message.deferReply();
         }
 
-        if (!this.client.permissionManager.shouldModerate(member, message.member! as GuildMember)) {
+        if (!(await this.client.permissionManager.shouldModerate(member, message.member! as GuildMember))) {
             await this.error(message, "You don't have permission to mute this user!");
             return;
         }

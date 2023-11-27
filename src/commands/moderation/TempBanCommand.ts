@@ -166,7 +166,7 @@ export default class TempBanCommand extends Command {
         try {
             const member = message.guild!.members.cache.get(user.id) ?? (await message.guild!.members.fetch(user.id));
 
-            if (!this.client.permissionManager.shouldModerate(member, message.member! as GuildMember)) {
+            if (!(await this.client.permissionManager.shouldModerate(member, message.member! as GuildMember))) {
                 await this.error(message, "You don't have permission to ban this user!");
                 return;
             }
