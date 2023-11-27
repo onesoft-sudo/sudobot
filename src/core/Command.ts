@@ -1,58 +1,38 @@
-/**
- * This file is part of SudoBot.
- *
- * Copyright (C) 2021-2023 OSN Developers.
- *
- * SudoBot is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * SudoBot is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
- */
-
 import {
     APIEmbed,
     APIEmbedField,
     APIMessage,
     ApplicationCommandType,
+    Awaitable,
     CacheType,
     Channel,
     ChatInputCommandInteraction,
     ContextMenuCommandBuilder,
     ContextMenuCommandInteraction,
-    GuildBasedChannel,
     GuildMember,
     InteractionDeferReplyOptions,
     InteractionEditReplyOptions,
     InteractionReplyOptions,
     Message,
     MessageCreateOptions,
-    MessageMentions,
     MessagePayload,
     ModalSubmitInteraction,
     PermissionResolvable,
-    PermissionsBitField,
-    Role,
     SlashCommandBuilder,
-    Snowflake,
     TextBasedChannel,
     User
 } from "discord.js";
 import { ChatInputCommandContext, ContextMenuCommandContext, LegacyCommandContext } from "../services/CommandManager";
 import EmbedSchemaParser from "../utils/EmbedSchemaParser";
-import { stringToTimeInterval } from "../utils/datetime";
 import { channelInfo, guildInfo, userInfo } from "../utils/embed";
 import { safeChannelFetch } from "../utils/fetch";
-import { log, logError } from "../utils/logger";
-import { getEmoji, isSnowflake } from "../utils/utils";
+import { logError } from "../utils/logger";
+import { getEmoji } from "../utils/utils";
 import Client from "./Client";
+import CommandArgumentParser from "./CommandArgumentParser";
+import { ValidationRule } from "./CommandArgumentParserInterface";
+
+export * from "./CommandArgumentParserInterface";
 
 export type CommandMessage = Message<boolean> | ChatInputCommandInteraction<CacheType> | ContextMenuCommandInteraction;
 export type BasicCommandContext = LegacyCommandContext | ChatInputCommandContext;
@@ -63,73 +43,26 @@ export type CommandReturn =
     | null
     | void;
 
-export enum ArgumentType {
-    String = 1,
-    StringRest,
-    Number,
-    Integer,
-    Float,
-    Boolean,
-    Snowflake,
-    User,
-    GuildMember,
-    Channel,
-    Role,
-    Link,
-    TimeInterval
-}
-
-export interface ValidationRule {
-    types?: readonly ArgumentType[];
-    optional?: boolean;
-    default?: any;
-    requiredErrorMessage?: string;
-    typeErrorMessage?: string;
-    entityNotNullErrorMessage?: string;
-    entityNotNull?: boolean;
-    minValue?: number;
-    maxValue?: number;
-    minMaxErrorMessage?: string;
-    lengthMaxErrorMessage?: string;
-    lengthMax?: number;
-    name?: string;
-    timeMilliseconds?: boolean;
-    rawLinkString?: boolean;
-}
-
-type ValidationRuleAndOutputMap = {
-    [ArgumentType.Boolean]: boolean;
-    [ArgumentType.Channel]: GuildBasedChannel;
-    [ArgumentType.Float]: number;
-    [ArgumentType.Number]: number;
-    [ArgumentType.Integer]: number;
-    [ArgumentType.TimeInterval]: number;
-    [ArgumentType.Link]: string;
-    [ArgumentType.Role]: Role;
-    [ArgumentType.Snowflake]: Snowflake;
-    [ArgumentType.String]: string;
-    [ArgumentType.StringRest]: string;
-    [ArgumentType.User]: User;
-    [ArgumentType.GuildMember]: GuildMember;
-};
-
-type ValidationRuleParsedArg<T extends ValidationRule["types"]> = T extends ReadonlyArray<infer U>
-    ? U extends keyof ValidationRuleAndOutputMap
-        ? ValidationRuleAndOutputMap[U]
-        : never
-    : T extends Array<infer U>
-    ? U extends keyof ValidationRuleAndOutputMap
-        ? ValidationRuleAndOutputMap[U]
-        : never
-    : never;
-
-export type ValidationRuleParsedArgs<T extends readonly ValidationRule[]> = {
-    [K in keyof T]: ValidationRuleParsedArg<T[K]["types"]>;
-};
+type CommandSlashCommandBuilder =
+    | Partial<Pick<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">>
+    | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
 
 type DeferReplyMode = "delete" | "channel" | "default" | "auto";
-
-// TODO: Split the logic into separate methods
+type DeferReplyOptions =
+    | ((MessageCreateOptions | MessagePayload | InteractionEditReplyOptions) & { ephemeral?: boolean })
+    | string;
+type PermissionValidationResult =
+    | boolean
+    | {
+          isPermitted: boolean;
+          source?: string;
+      };
+export type RunCommandOptions = {
+    message: CommandMessage;
+    context: AnyCommandContext;
+    onAbort?: () => unknown;
+    checkOnly?: boolean;
+};
 
 export default abstract class Command {
     public readonly name: string = "";
@@ -151,9 +84,7 @@ export default abstract class Command {
     public readonly beta: boolean = false;
     public readonly since: string = "1.0.0";
     public readonly botRequiredPermissions: PermissionResolvable[] = [];
-    public readonly slashCommandBuilder?:
-        | Partial<Pick<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">>
-        | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
+    public readonly slashCommandBuilder?: CommandSlashCommandBuilder;
 
     public readonly applicationCommandType: ApplicationCommandType = ApplicationCommandType.ChatInput;
     public readonly otherApplicationCommandBuilders: (ContextMenuCommandBuilder | SlashCommandBuilder)[] = [];
@@ -162,26 +93,34 @@ export default abstract class Command {
     public readonly subCommandCheck: boolean = false;
     public readonly cooldown?: number = undefined;
 
-    constructor(protected client: Client<true>) {}
+    protected message?: CommandMessage;
 
-    abstract execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn>;
+    protected static argumentParser = new CommandArgumentParser(Client.instance);
 
-    async deferIfInteraction(message: CommandMessage, options?: InteractionDeferReplyOptions) {
+    protected constructor(protected client: Client<true>) {}
+
+    abstract execute(message: CommandMessage, context: AnyCommandContext, options?: RunCommandOptions): Promise<CommandReturn>;
+
+    protected getCommandMessage(): CommandMessage {
+        if (!this.message) {
+            throw new TypeError(`${this.constructor.name}.message is undefined`);
+        }
+
+        return this.message;
+    }
+
+    protected async deferIfInteraction(message: CommandMessage, options?: InteractionDeferReplyOptions) {
         if (message instanceof ChatInputCommandInteraction) return await message.deferReply(options).catch(logError);
     }
 
-    async deferredReply(
-        message: CommandMessage,
-        options: ((MessageCreateOptions | MessagePayload | InteractionEditReplyOptions) & { ephemeral?: boolean }) | string,
-        mode: DeferReplyMode = "default"
-    ) {
+    public async deferredReply(message: CommandMessage, options: DeferReplyOptions, mode: DeferReplyMode = "default") {
         if (message instanceof ChatInputCommandInteraction || message instanceof ContextMenuCommandInteraction) {
             return message.deferred ? await message.editReply(options) : await message.reply(options as any);
         }
 
         const behaviour = this.client.configManager.config[message.guildId!]?.commands.moderation_command_behaviour;
 
-        if ((mode === "delete" || (mode === "auto" && behaviour === "delete")) && message instanceof Message) {
+        if (mode === "delete" || (mode === "auto" && behaviour === "delete")) {
             await message.delete().catch(logError);
         }
 
@@ -190,7 +129,7 @@ export default abstract class Command {
             : message.reply(options as any);
     }
 
-    async error(message: CommandMessage, errorMessage?: string, mode: DeferReplyMode = "default") {
+    protected async error(message: CommandMessage, errorMessage?: string, mode: DeferReplyMode = "default") {
         return await this.deferredReply(
             message,
             errorMessage
@@ -200,14 +139,23 @@ export default abstract class Command {
         );
     }
 
-    async success(message: CommandMessage, successMessage?: string) {
+    protected async success(message: CommandMessage, successMessage?: string, mode: DeferReplyMode = "default") {
         return await this.deferredReply(
             message,
-            successMessage ? `${this.emoji("check")} ${successMessage}` : `Successfully completed the given task.`
+            successMessage ? `${this.emoji("check")} ${successMessage}` : `Successfully completed the given task.`,
+            mode
         );
     }
 
-    emoji(name: string) {
+    protected sendError(errorMessage?: string, mode: DeferReplyMode = "default") {
+        return this.error(this.getCommandMessage(), errorMessage, mode);
+    }
+
+    protected sendSuccess(successMessage?: string, mode: DeferReplyMode = "default") {
+        return this.success(this.getCommandMessage(), successMessage, mode);
+    }
+
+    protected emoji(name: string) {
         return getEmoji(this.client, name);
     }
 
@@ -215,7 +163,7 @@ export default abstract class Command {
         message: CommandMessage | ModalSubmitInteraction,
         options: APIEmbed,
         params: {
-            fields?: (fields: APIEmbedField[]) => APIEmbedField[];
+            fields?: (fields: APIEmbedField[]) => Awaitable<APIEmbedField[]>;
             before?: (channel: TextBasedChannel, sentMessages: Array<Message | null>) => any;
             previews?: Array<MessageCreateOptions | MessagePayload>;
             url?: string | null;
@@ -226,83 +174,84 @@ export default abstract class Command {
         }
 
         const { previews = [] } = params;
-
         const logChannelId = this.client.configManager.systemConfig.logging?.channels?.echo_send_logs;
 
         if (!logChannelId) {
             return;
         }
 
-        safeChannelFetch(await this.client.getHomeGuild(), logChannelId)
-            .then(async channel => {
-                if (!channel?.isTextBased()) {
-                    return;
-                }
+        try {
+            const channel = await safeChannelFetch(await this.client.getHomeGuild(), logChannelId);
 
-                const sentMessages = [];
+            if (!channel?.isTextBased()) {
+                return;
+            }
 
-                for (const preview of previews) {
-                    const sentMessage = await EmbedSchemaParser.sendMessage(channel, {
-                        ...preview,
-                        reply: undefined
-                    } as MessageCreateOptions).catch(logError);
-                    sentMessages.push(sentMessage ?? null);
-                }
+            const sentMessages = [];
 
-                (await params.before?.(channel, sentMessages))?.catch?.(logError);
+            for (const preview of previews) {
+                const sentMessage = await EmbedSchemaParser.sendMessage(channel, {
+                    ...preview,
+                    reply: undefined
+                } as MessageCreateOptions).catch(logError);
+                sentMessages.push(sentMessage ?? null);
+            }
 
-                const embedFields = [
-                    {
-                        name: "Command Name",
-                        value: this.name
-                    },
-                    {
-                        name: "Guild Info",
-                        value: guildInfo(message.guild!),
-                        inline: true
-                    },
-                    {
-                        name: "Channel Info",
-                        value: channelInfo(message.channel as Channel),
-                        inline: true
-                    },
-                    {
-                        name: "User (Executor)",
-                        value: userInfo(message.member!.user as User),
-                        inline: true
-                    },
-                    {
-                        name: "Mode",
-                        value: message instanceof Message ? "Legacy" : "Application Interation"
-                    },
-                    ...(params.url !== null
-                        ? [
-                              {
-                                  name: "Message URL",
-                                  value: params.url ?? (message instanceof Message ? message.url : "*Not available*")
-                              }
-                          ]
-                        : [])
-                ];
+            (await params.before?.(channel, sentMessages))?.catch?.(logError);
 
-                await channel
-                    ?.send({
-                        embeds: [
-                            {
-                                author: {
-                                    name: message.member?.user.username as string,
-                                    icon_url: (message.member?.user as User)?.displayAvatarURL()
-                                },
-                                title: "A command was executed",
-                                color: 0x007bff,
-                                fields: (await params.fields?.(embedFields)) ?? embedFields,
-                                ...options
-                            }
-                        ]
-                    })
-                    .catch(logError);
-            })
-            .catch(logError);
+            const embedFields = [
+                {
+                    name: "Command Name",
+                    value: this.name
+                },
+                {
+                    name: "Guild Info",
+                    value: guildInfo(message.guild!),
+                    inline: true
+                },
+                {
+                    name: "Channel Info",
+                    value: channelInfo(message.channel as Channel),
+                    inline: true
+                },
+                {
+                    name: "User (Executor)",
+                    value: userInfo(message.member!.user as User),
+                    inline: true
+                },
+                {
+                    name: "Mode",
+                    value: message instanceof Message ? "Legacy" : "Application Interaction"
+                },
+                ...(params.url !== null
+                    ? [
+                          {
+                              name: "Message URL",
+                              value: params.url ?? (message instanceof Message ? message.url : "*Not available*")
+                          }
+                      ]
+                    : [])
+            ];
+
+            await channel
+                ?.send({
+                    embeds: [
+                        {
+                            author: {
+                                name: message.member?.user.username as string,
+                                icon_url: (message.member?.user as User)?.displayAvatarURL()
+                            },
+                            title: "A command was executed",
+                            color: 0x007bff,
+                            fields: (await params.fields?.(embedFields)) ?? embedFields,
+                            ...options
+                        }
+                    ]
+                })
+                .catch(logError);
+        } catch (error) {
+            logError(error);
+        }
     }
 
     /**
@@ -339,576 +288,111 @@ export default abstract class Command {
         return false;
     }
 
-    async run(message: CommandMessage, context: AnyCommandContext, checkOnly = false, onAbort?: () => any) {
-        const isSystemAdmin = this.client.configManager.systemConfig.system_admins.includes(message.member!.user.id);
-
-        if (this.systemAdminOnly && !isSystemAdmin) {
-            message
-                .reply({
-                    content: `${this.emoji("error")} You don't have permission to run this command.`,
-                    ephemeral: true
-                })
-                .catch(logError);
-
-            onAbort?.();
-            return;
+    protected async validateCommandBuiltInPermissions(member: GuildMember): Promise<boolean> {
+        // TODO: Implement support for 'overwrite'
+        if (this.client.configManager.systemConfig.default_permissions_mode === "ignore") {
+            return true;
         }
 
-        if (!isSystemAdmin) {
-            const commandName = this.client.commands.get(context.isLegacy ? context.argv[0] : context.commandName)?.name;
-            const { disabled_commands } = this.client.configManager.systemConfig;
+        return !(
+            (this.permissionMode === "and" && !member.permissions.has(this.permissions, true)) ||
+            (this.permissionMode === "or" && !member.permissions.any(this.permissions, true))
+        );
+    }
 
-            if (disabled_commands.includes(commandName ?? "")) {
-                await this.error(message, "This command is disabled.");
-                onAbort?.();
-                return;
-            }
+    protected validatePermissions({ message }: RunCommandOptions): Awaitable<PermissionValidationResult> {
+        // TODO
+        return this.validateCommandBuiltInPermissions(message.member as GuildMember);
+    }
 
-            const { channels, guild } = this.client.configManager.config[message.guildId!]?.disabled_commands ?? {};
+    protected async doChecks(options: RunCommandOptions) {
+        const { message } = options;
+        const permissionValidationResult = await this.validatePermissions(options);
+        const isPermitted =
+            (typeof permissionValidationResult === "boolean" && permissionValidationResult) ||
+            (typeof permissionValidationResult === "object" && permissionValidationResult.isPermitted);
+        const permissionValidationFailureSource =
+            (typeof permissionValidationResult === "object" && permissionValidationResult.source) || undefined;
+        const debugMode =
+            (this.client.configManager.systemConfig.debug_mode ||
+                this.client.configManager.config[message.guildId!]?.debug_mode) ??
+            false;
 
-            if (guild && guild.includes(commandName ?? "")) {
-                await this.error(message, "This command is disabled in this server.");
-                onAbort?.();
-                return;
-            }
-
-            if (channels && channels[message.channelId!] && channels[message.channelId!].includes(commandName ?? "")) {
-                await this.error(message, "This command is disabled in this channel.");
-                onAbort?.();
-                return;
-            }
-        }
-
-        const { validationRules, permissions } = this;
-        const parsedArgs = [];
-        const parsedNamedArgs: Record<string, any> = {};
-
-        if (!isSystemAdmin) {
-            let member: GuildMember = <any>message.member!;
-
-            if (!(member.permissions as any)?.has) {
-                try {
-                    member = await message.guild!.members.fetch(member.user.id);
-
-                    if (!member) {
-                        throw new Error("Invalid member");
-                    }
-                } catch (e) {
-                    logError(e);
-                    message
-                        .reply({
-                            content: `Sorry, I couldn't determine whether you have the enough permissions to perform this action or not. Please contact the bot developer.`,
-                            ephemeral: true
-                        })
-                        .catch(logError);
-                    onAbort?.();
-                    return;
-                }
-            }
-
-            const mode = this.client.configManager.config[message.guildId!]?.permissions?.mode;
-            const permissionOverwrite = this.client.commandManager.permissionOverwrites.get(
-                `${message.guildId!}____${this.name}`
+        if (!isPermitted) {
+            await this.error(
+                message,
+                `You don't have permission to run this command.${
+                    debugMode && permissionValidationFailureSource ? `\nSource: \`${permissionValidationFailureSource}\`` : ""
+                }`
             );
-
-            if (
-                permissions.length > 0 &&
-                (this.client.configManager.systemConfig.default_permissions_mode === "check" ||
-                    (!permissionOverwrite && this.client.configManager.systemConfig.default_permissions_mode === "overwrite"))
-            ) {
-                const { permissions: memberBotPermissions } = await this.client.permissionManager.getMemberPermissions(member);
-                const memberRequiredPermissions = new PermissionsBitField(permissions).toArray();
-
-                if (this.permissionMode === "and") {
-                    for (const permission of permissions) {
-                        if (!member.permissions.has(permission, true)) {
-                            const mode = this.client.configManager.config[message.guildId!]?.permissions?.mode;
-
-                            if (mode !== "layered" && mode !== "levels") {
-                                await message.reply({
-                                    content: `${this.emoji("error")} You don't have permission to run this command.`,
-                                    ephemeral: true
-                                });
-                                onAbort?.();
-
-                                log("Skip");
-
-                                return;
-                            }
-
-                            const { permissions: memberBotPermissionsBits } =
-                                await this.client.permissionManager.getMemberPermissions(member);
-                            const memberBotPermissions = memberBotPermissionsBits.toArray();
-                            const memberRequiredPermissions = new PermissionsBitField(permissions).toArray();
-
-                            log("PERMS: ", [...memberBotPermissions.values()]);
-                            log("PERMS 2: ", memberRequiredPermissions);
-
-                            for (const memberRequiredPermission of memberRequiredPermissions) {
-                                if (!memberBotPermissionsBits.has(memberRequiredPermission)) {
-                                    await message.reply({
-                                        content: `${this.emoji("error")} You don't have permission to run this command.`,
-                                        ephemeral: true
-                                    });
-
-                                    onAbort?.();
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                } else
-                    orMode: {
-                        for (const permission of permissions) {
-                            if (member.permissions.has(permission, true)) {
-                                break orMode;
-                            }
-                        }
-
-                        if (mode === "layered" || mode === "levels") {
-                            for (const memberRequiredPermission of memberRequiredPermissions) {
-                                if (memberBotPermissions.has(memberRequiredPermission)) {
-                                    break orMode;
-                                }
-                            }
-                        }
-
-                        await message.reply({
-                            content: `${this.emoji("error")} You don't have enough permissions to run this command.`,
-                            ephemeral: true
-                        });
-
-                        onAbort?.();
-                        return;
-                    }
-            }
-
-            log([...this.client.commandManager.permissionOverwrites.keys()]);
-
-            errorRootBlock: if (permissionOverwrite) {
-                let userCheckPassed = false;
-                let levelCheckPassed = false;
-                let roleCheckPassed = false;
-                let permissonCheckPassed = false;
-
-                permissionOverwriteIfBlock: {
-                    if (permissionOverwrite.requiredUsers.length > 0) {
-                        userCheckPassed = permissionOverwrite.requiredUsers.includes(member.user.id);
-
-                        if (permissionOverwrite.mode === "AND" && !userCheckPassed) {
-                            break permissionOverwriteIfBlock;
-                        }
-
-                        if (permissionOverwrite.mode === "OR" && userCheckPassed) {
-                            log("User check passed [OR]");
-                            break errorRootBlock;
-                        }
-                    }
-
-                    if (
-                        this.client.permissionManager.usesLevelBasedMode(member.guild.id) &&
-                        permissionOverwrite.requiredLevel !== null
-                    ) {
-                        const level = (await this.client.permissionManager.getManager(member.guild.id)).getPermissionLevel(
-                            member
-                        );
-                        levelCheckPassed = level >= permissionOverwrite.requiredLevel;
-
-                        log("level", level, "<", permissionOverwrite.requiredLevel);
-
-                        if (!levelCheckPassed && permissionOverwrite.mode === "AND") {
-                            break permissionOverwriteIfBlock;
-                        } else if (levelCheckPassed && permissionOverwrite.mode === "OR") {
-                            log("Level check passed [OR]");
-                            break errorRootBlock;
-                        }
-                    }
-
-                    if (permissionOverwrite.requiredPermissions.length > 0) {
-                        const requiredPermissions = permissionOverwrite.requiredPermissions as PermissionResolvable[];
-
-                        if (permissionOverwrite.requiredPermissionMode === "OR") {
-                            let found = false;
-
-                            for (const permission of requiredPermissions) {
-                                if (member.permissions.has(permission, true)) {
-                                    found = true;
-                                    break;
-                                }
-                            }
-
-                            permissonCheckPassed = found;
-
-                            if (!found && permissionOverwrite.mode === "AND") {
-                                break permissionOverwriteIfBlock;
-                            } else if (found && permissionOverwrite.mode === "OR") {
-                                log("Permission check passed [OR_OR]");
-                                break errorRootBlock;
-                            }
-                        } else {
-                            log(requiredPermissions);
-                            permissonCheckPassed = member.permissions.has(requiredPermissions, true);
-
-                            if (!permissonCheckPassed && permissionOverwrite.mode === "AND") {
-                                log("Fail");
-                                break permissionOverwriteIfBlock;
-                            } else if (permissonCheckPassed && permissionOverwrite.mode === "OR") {
-                                log("Permission check passed [AND_OR]");
-                                break errorRootBlock;
-                            }
-                        }
-                    }
-
-                    if (permissionOverwrite.requiredRoles.length > 0) {
-                        roleCheckPassed = member.roles.cache.hasAll(...permissionOverwrite.requiredRoles);
-
-                        if (!roleCheckPassed && permissionOverwrite.mode === "AND") {
-                            break permissionOverwriteIfBlock;
-                        } else if (roleCheckPassed && permissionOverwrite.mode === "OR") {
-                            break errorRootBlock;
-                        }
-                    }
-
-                    log("userCheckPassed", userCheckPassed);
-                    log("levelCheckPassed", levelCheckPassed);
-                    log("permissonCheckPassed", permissonCheckPassed);
-                    log("roleCheckPassed", roleCheckPassed);
-
-                    if (permissionOverwrite.mode === "OR") {
-                        break permissionOverwriteIfBlock;
-                    }
-
-                    if (
-                        permissionOverwrite.requiredChannels.length > 0 &&
-                        !permissionOverwrite.requiredChannels.includes(message.channelId!)
-                    ) {
-                        await message.reply({
-                            content: `${this.emoji("error")} This command is disabled in this channel.`,
-                            ephemeral: true
-                        });
-
-                        onAbort?.();
-                        return;
-                    }
-
-                    break errorRootBlock;
-                }
-
-                await message.reply({
-                    content: `${this.emoji("error")} You don't have enough permissions to run this command.`,
-                    ephemeral: true
-                });
-
-                onAbort?.();
-                return;
-            }
+            return false;
         }
 
         if (this.cooldown) {
             const abort = await this.cooldownCheck(message);
 
             if (abort) {
-                onAbort?.();
                 return;
             }
         }
 
-        if (context.isLegacy) {
-            if (this.subCommandCheck && !this.subcommands.includes(context.args[0])) {
-                this.error(
-                    message,
-                    `Please provide a valid subcommand! The valid subcommands are \`${this.subcommands.join("`, `")}\`.`
-                );
+        return true;
+    }
 
-                onAbort?.();
-                return;
-            }
-
-            let index = 0,
-                ruleIndex = 0;
-
-            loop: for await (const rule of validationRules) {
-                const arg = context.args[index];
-
-                if (arg === undefined) {
-                    if (!rule.optional) {
-                        await this.error(message, rule.requiredErrorMessage ?? `Argument #${index} is required`);
-                        onAbort?.();
-                        return;
-                    }
-
-                    if (rule.default !== undefined) {
-                        parsedArgs.push(rule.default);
-                    }
-
-                    continue;
-                }
-
-                if (rule.types) {
-                    const prevLengthOuter = parsedArgs.length;
-
-                    for (const type of rule.types) {
-                        const prevLength = parsedArgs.length;
-
-                        if (
-                            /^(\-)?[\d\.]+$/.test(arg) &&
-                            (((rule.minValue || rule.maxValue) && type === ArgumentType.Float) ||
-                                type === ArgumentType.Integer ||
-                                type === ArgumentType.Number)
-                        ) {
-                            const float = parseFloat(arg);
-
-                            if (
-                                !isNaN(float) &&
-                                ((rule.minValue !== undefined && rule.minValue > float) ||
-                                    (rule.maxValue !== undefined && rule.maxValue < float))
-                            ) {
-                                await message.reply(
-                                    rule.minMaxErrorMessage ??
-                                        `Argument #${index} has a min/max numeric value range but the given value is out of range.`
-                                );
-
-                                onAbort?.();
-                                return;
-                            }
-                        }
-
-                        switch (type) {
-                            case ArgumentType.Boolean:
-                                if (["true", "false"].includes(arg.toLowerCase())) {
-                                    parsedArgs[index] = arg.toLowerCase() === "true";
-                                }
-
-                                break;
-
-                            case ArgumentType.Float:
-                                const float = parseFloat(arg);
-
-                                if (isNaN(float)) {
-                                    break;
-                                }
-
-                                parsedArgs[index] = float;
-                                break;
-
-                            case ArgumentType.Integer:
-                                if (!/^(\-)?\d+$/.test(arg)) {
-                                    break;
-                                }
-
-                                const int = parseInt(arg);
-
-                                if (isNaN(int)) {
-                                    break;
-                                }
-
-                                parsedArgs[index] = int;
-                                break;
-
-                            case ArgumentType.Number:
-                                const number = arg.includes(".") ? parseFloat(arg) : parseInt(arg);
-
-                                if (isNaN(number)) {
-                                    break;
-                                }
-
-                                parsedArgs[index] = number;
-                                break;
-
-                            case ArgumentType.TimeInterval:
-                                const { result, error } = stringToTimeInterval(arg, {
-                                    milliseconds: rule.timeMilliseconds ?? false
-                                });
-
-                                if (error) {
-                                    if (rule.types.length === 1) {
-                                        await message
-                                            .reply({
-                                                ephemeral: true,
-                                                content: `${this.emoji("error")} ${error}`
-                                            })
-                                            .catch(logError);
-
-                                        onAbort?.();
-                                        return;
-                                    }
-
-                                    break;
-                                }
-
-                                if (
-                                    !isNaN(result) &&
-                                    ((rule.minValue !== undefined && rule.minValue > result) ||
-                                        (rule.maxValue !== undefined && rule.maxValue < result))
-                                ) {
-                                    await message.reply(
-                                        `${this.emoji("error")} ` + rule.minMaxErrorMessage ??
-                                            `Argument #${index} has a min/max numeric time value range but the given value is out of range.`
-                                    );
-                                    onAbort?.();
-                                    return;
-                                }
-
-                                parsedArgs[index] = result;
-                                break;
-
-                            case ArgumentType.Link:
-                                try {
-                                    parsedArgs[index] = new URL(arg);
-
-                                    if (rule.rawLinkString) {
-                                        parsedArgs[index] = arg.trim();
-                                    }
-                                } catch (e) {
-                                    break;
-                                }
-
-                                break;
-
-                            case ArgumentType.String:
-                                if (arg.trim() === "") break;
-
-                                parsedArgs[index] = arg;
-                                break;
-
-                            case ArgumentType.Snowflake:
-                                if (!isSnowflake(arg)) break;
-
-                                parsedArgs[index] = arg;
-                                break;
-
-                            case ArgumentType.User:
-                            case ArgumentType.GuildMember:
-                            case ArgumentType.Channel:
-                            case ArgumentType.Role:
-                                // TODO: Use message.mentions object to improve performance and reduce API requests
-
-                                let id;
-
-                                if (MessageMentions.UsersPattern.test(arg)) {
-                                    id = arg.substring(arg.includes("!") ? 3 : 2, arg.length - 1);
-                                } else if (MessageMentions.ChannelsPattern.test(arg)) {
-                                    id = arg.substring(2, arg.length - 1);
-                                } else if (MessageMentions.RolesPattern.test(arg)) {
-                                    id = arg.substring(3, arg.length - 1);
-                                } else if (isSnowflake(arg)) {
-                                    id = arg;
-                                } else {
-                                    break;
-                                }
-
-                                try {
-                                    let entity = null;
-
-                                    if (type === ArgumentType.User) entity = await this.client.users.fetch(id);
-                                    else {
-                                        entity =
-                                            type === ArgumentType.Role
-                                                ? await message.guild!.roles.fetch(id)
-                                                : type === ArgumentType.Channel
-                                                ? await message.guild!.channels.fetch(id)
-                                                : await message.guild!.members.fetch(id);
-                                    }
-
-                                    if (!entity) {
-                                        throw new Error("Invalid entity received");
-                                    }
-
-                                    parsedArgs[index] = entity;
-                                } catch (e) {
-                                    logError(e);
-
-                                    if (ruleIndex >= rule.types.length - 1) {
-                                        log(ruleIndex, rule.types.length);
-
-                                        if (rule.entityNotNull) {
-                                            await message.reply(
-                                                `${this.emoji("error")} ` + rule.entityNotNullErrorMessage ??
-                                                    `Argument ${index} is invalid`
-                                            );
-                                            onAbort?.();
-                                            return;
-                                        }
-
-                                        parsedArgs[index] = null;
-                                    } else if (rule.entityNotNull) {
-                                        break;
-                                    }
-                                }
-
-                                break;
-
-                            case ArgumentType.StringRest:
-                                if (arg.trim() === "") break;
-
-                                let str = ((message as Message).content ?? "")
-                                    .slice(context.prefix.length)
-                                    .trimStart()
-                                    .slice(context.argv[0].length)
-                                    .trimStart();
-
-                                for (let i = 0; i < index; i++) {
-                                    str = str.slice(context.args[i].length).trimStart();
-                                }
-
-                                str = str.trimEnd();
-
-                                if (str === "") break;
-
-                                parsedArgs[index] = str;
-
-                                if (rule.name) {
-                                    parsedNamedArgs[rule.name] = parsedArgs[index];
-                                }
-
-                                break loop;
-                        }
-
-                        if (
-                            rule.lengthMax !== undefined &&
-                            typeof parsedArgs[index] === "string" &&
-                            parsedArgs[index].length > rule.lengthMax
-                        ) {
-                            await message.reply(
-                                `${this.emoji("error")} ` + rule.lengthMaxErrorMessage ?? `Argument #${index} is too long`
-                            );
-                            onAbort?.();
-                            return;
-                        }
-
-                        if (prevLength !== parsedArgs.length) {
-                            break;
-                        }
-                    }
-
-                    if (prevLengthOuter === parsedArgs.length) {
-                        await message.reply(
-                            `${this.emoji("error")} ` + rule.typeErrorMessage ?? `Argument #${index} is invalid, type mismatch`
-                        );
-                        onAbort?.();
-                        return;
-                    }
-                }
-
-                if (rule.name) {
-                    parsedNamedArgs[rule.name] = parsedArgs[index];
-                }
-
-                index++;
-                ruleIndex++;
-            }
+    protected async parseArguments({ message, context }: RunCommandOptions) {
+        if (!(message instanceof Message) || !context.isLegacy) {
+            return true;
         }
 
-        if (!checkOnly) {
-            return await this.execute(message, {
-                ...context,
-                ...(context.isLegacy
-                    ? {
-                          parsedArgs,
-                          parsedNamedArgs
-                      }
-                    : {})
-            });
+        const { error, parsedArgs } = await Command.argumentParser.parse({
+            message,
+            input: message.content,
+            prefix: context.prefix,
+            rules: this.validationRules
+        });
+
+        if (error) {
+            await this.error(message, error);
+            return false;
         }
+
+        return parsedArgs;
+    }
+
+    async run(options: RunCommandOptions) {
+        const { message, context, checkOnly = false, onAbort } = options;
+
+        this.message = message;
+
+        if (!(await this.doChecks(options))) {
+            this.message = undefined;
+            onAbort?.();
+            return;
+        }
+
+        if (checkOnly) {
+            this.message = undefined;
+            return;
+        }
+
+        const parsedArgs = await this.parseArguments(options);
+
+        if (parsedArgs === false) {
+            return;
+        }
+
+        if (typeof parsedArgs === "object" && context.isLegacy) {
+            context.parsedArgs = [];
+
+            for (const key in parsedArgs) {
+                context.parsedArgs[key as unknown as number] = parsedArgs[key];
+            }
+
+            context.parsedNamedArgs = parsedArgs;
+        }
+
+        const commandReturn = await this.execute(message, context);
+        this.message = undefined;
+        return commandReturn;
     }
 }
