@@ -12,7 +12,7 @@ These are the requirements to host SudoBot:
 
 * A Discord API Application token (Go to [Discord Developer Portal](https://discord.com/developers/applications) to obtain a token)
 * [Node.js](https://nodejs.org) version 18 or higher
-* A MySQL or PostgreSQL database (If you're looking for a free PostgreSQL hosting service, check out [Neon](https://neon.tech))
+* A PostgreSQL database (If you're looking for a free PostgreSQL hosting service, check out [Neon](https://neon.tech))
 
 Additionally, you can also set these up if you want to use them:
 
@@ -80,10 +80,11 @@ A few more environment variables can be specified:
 
 ## Setting up a Database for the bot
 
-As we've said [before](getting-started.md#configuration-and-the-environment-variables), `DB_URL` is the environment variable that you need to put in `.env` and the value of this variable should be the database URL. SudoBot at the moment, only supports the following databases:
+As we've said [before](getting-started.md#configuration-and-the-environment-variables), `DB_URL` is the environment variable that you need to put in `.env` and the value of this variable should be the database URL. SudoBot at the moment, only supports **PostgreSQL**.
 
-* PostgreSQL (Recommended)
-* MySQL
+{% hint style="danger" %}
+As of November 28, 2023, we no longer officially support MySQL as a database for being used with SudoBot. Please migrate to PostgreSQL.
+{% endhint %}
 
 {% hint style="info" %}
 If you want a free PostgreSQL hosting service, check out [Neon](https://neon.tech). It's easy to set up, and completely free of cost.
@@ -100,8 +101,6 @@ postgresql://username:password@hostname:port/dbname
 * `hostname` is your database hostname
 * `port` is your database port (usually this is `5432`)
 * `dbname` is your database name (usually this is`postgres`)
-
-MySQL database URLs will be almost similar, except the protocol will be `mysql://` instead of `postgresql://` and the port will be `3306` instead of `5432`.
 
 After you have set the database URL inside `.env`, you can run the following command:
 
