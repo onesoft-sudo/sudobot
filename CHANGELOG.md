@@ -1,3 +1,17 @@
+# [6.88.0](https://github.com/onesoft-sudo/sudobot/compare/v6.87.0...v6.88.0) (2023-11-28)
+
+
+### Bug Fixes
+
+* issues introduced by the refactor ([cfdc893](https://github.com/onesoft-sudo/sudobot/commit/cfdc893fa1b35d446f46d6b06a655b96e25cb980))
+
+
+### Features
+
+* command permission overwrites ([27c9f7b](https://github.com/onesoft-sudo/sudobot/commit/27c9f7b5bc7351e6c02b6b6e27e0a6bd0aff4455))
+
+
+
 # [6.87.0](https://github.com/onesoft-sudo/sudobot/compare/v6.86.0...v6.87.0) (2023-11-26)
 
 
@@ -36,15 +50,6 @@
 ### Bug Fixes
 
 * **welcomer:** say_hi_label not working ([9342b53](https://github.com/onesoft-sudo/sudobot/commit/9342b535cdd087dafc970577921226ae843b73ee))
-
-
-
-# [6.85.0](https://github.com/onesoft-sudo/sudobot/compare/v6.84.1...v6.85.0) (2023-11-23)
-
-
-### Features
-
-* **welcomer:** introduce `welcomer.say_hi_label` configuration option ([e17bcb3](https://github.com/onesoft-sudo/sudobot/commit/e17bcb3736972da84fab97f6d259a4ee23374177))
 
 
 
