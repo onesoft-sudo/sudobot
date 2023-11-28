@@ -20,7 +20,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, Message, User } from "discord.js";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn } from "../../core/Command";
 import { logError } from "../../utils/logger";
-import { isTextableChannel } from "../../utils/utils";
+import { getComponentEmojiResolvable, isTextableChannel } from "../../utils/utils";
 
 export default class BallotCreateCommand extends Command {
     public readonly name = "ballot__create";
@@ -84,11 +84,11 @@ export default class BallotCreateCommand extends Command {
                     new ActionRowBuilder<ButtonBuilder>().addComponents(
                         new ButtonBuilder()
                             .setCustomId("ballot__upvote")
-                            .setEmoji(this.emoji("ArrowTop"))
+                            .setEmoji(getComponentEmojiResolvable(this.client, "ArrowTop") ?? "⬆️")
                             .setStyle(ButtonStyle.Secondary),
                         new ButtonBuilder()
                             .setCustomId("ballot__downvote")
-                            .setEmoji(this.emoji("ArrowDown"))
+                            .setEmoji(getComponentEmojiResolvable(this.client, "ArrowDown") ?? "⬇️")
                             .setStyle(ButtonStyle.Secondary)
                     )
                 ]

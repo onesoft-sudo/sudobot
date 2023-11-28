@@ -191,6 +191,9 @@ enum PermissionLogicMode {
     AND
 }
 
+// TODO: Rename to CommandPermissionOverwrite
+// TODO: Add 'requiredPermissionOverwrites' field, type: @relation with PermissionOverwrite[]
+
 model CommandPermissionOverwrites {
     id                     Int                 @id @default(autoincrement())
     guildId                String

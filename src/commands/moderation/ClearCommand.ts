@@ -56,7 +56,7 @@ export default class ClearCommand extends Command {
             entity: {
                 notNull: true
             },
-            name: "countOrUser", // TODO: Be sure to support multiple names for the same argument
+            name: "countOrUser", // TODO: Be sure to support multiple names for the same argument [User, Integer] -> ['user', 'count'] = [User, 10]
             errors: {
                 "entity:null": "This user does not exist! If it's an ID, make sure it's correct!",
                 required: "You must specify the count of messages to delete or a user to delete messages from!",

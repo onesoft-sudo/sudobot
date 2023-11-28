@@ -64,6 +64,8 @@ export type RunCommandOptions = {
     checkOnly?: boolean;
 };
 
+class PermissionError extends Error {}
+
 export default abstract class Command {
     public readonly name: string = "";
     public group: string = "Default";
@@ -288,43 +290,134 @@ export default abstract class Command {
         return false;
     }
 
-    protected async validateCommandBuiltInPermissions(member: GuildMember): Promise<boolean> {
-        // TODO: Implement support for 'overwrite'
-        if (this.client.configManager.systemConfig.default_permissions_mode === "ignore") {
+    protected async validateCommandBuiltInPermissions(member: GuildMember, hasOverwrite: boolean): Promise<boolean> {
+        if (
+            this.client.configManager.systemConfig.default_permissions_mode === "ignore" ||
+            (hasOverwrite && this.client.configManager.systemConfig.default_permissions_mode === "overwrite")
+        ) {
             return true;
         }
 
-        return !(
-            (this.permissionMode === "and" && !member.permissions.has(this.permissions, true)) ||
-            (this.permissionMode === "or" && !member.permissions.any(this.permissions, true))
+        return (
+            (this.permissionMode === "and" && member.permissions.has(this.permissions, true)) ||
+            (this.permissionMode === "or" && member.permissions.any(this.permissions, true))
         );
     }
 
-    protected validatePermissions({ message }: RunCommandOptions): Awaitable<PermissionValidationResult> {
-        // TODO
-        return this.validateCommandBuiltInPermissions(message.member as GuildMember);
+    protected async validateNonSystemAdminPermissions({ message }: RunCommandOptions) {
+        const commandName = this.name;
+        const { disabled_commands } = this.client.configManager.systemConfig;
+
+        if (disabled_commands.includes(commandName ?? "")) {
+            throw new PermissionError("This command is disabled.");
+        }
+
+        const { channels, guild } = this.client.configManager.config[message.guildId!]?.disabled_commands ?? {};
+
+        if (guild && guild.includes(commandName ?? "")) {
+            throw new PermissionError("This command is disabled in this server.");
+        }
+
+        if (channels && channels[message.channelId!] && channels[message.channelId!].includes(commandName ?? "")) {
+            throw new PermissionError("This command is disabled in this channel.");
+        }
+
+        return true;
+    }
+
+    protected validateSystemAdminPermissions(member: GuildMember) {
+        const isSystemAdmin = this.client.configManager.systemConfig.system_admins.includes(member.id);
+
+        if (this.systemAdminOnly && !isSystemAdmin) {
+            throw new PermissionError("This command is only available to system administrators.");
+        }
+
+        return {
+            isSystemAdmin
+        };
+    }
+
+    protected async validatePermissions(
+        options: RunCommandOptions
+    ): Promise<{ result?: PermissionValidationResult; abort?: boolean; error?: string }> {
+        const { message } = options;
+
+        try {
+            const { isSystemAdmin } = this.validateSystemAdminPermissions(message.member as GuildMember);
+
+            if (isSystemAdmin) {
+                return { result: true };
+            }
+
+            const builtInValidationResult = await this.validateCommandBuiltInPermissions(
+                message.member as GuildMember,
+                !!this.client.commandPermissionOverwriteManager.permissionOverwrites.get(`${message.guildId!}____${this.name}`)
+                    ?.length
+            );
+
+            if (!builtInValidationResult) {
+                return { result: false };
+            }
+
+            const { result: permissionOverwriteResult } =
+                await this.client.commandPermissionOverwriteManager.validatePermissionOverwrites({
+                    commandName: this.name,
+                    guildId: message.guildId!,
+                    member: message.member as GuildMember,
+                    channelId: message.channelId!
+                });
+
+            if (!permissionOverwriteResult) {
+                return {
+                    error: "You don't have enough permissions to run this command."
+                };
+            }
+
+            return {
+                result: await this.validateNonSystemAdminPermissions(options)
+            };
+        } catch (error) {
+            if (error instanceof PermissionError) {
+                return {
+                    error: error.message
+                };
+            }
+
+            logError(error);
+
+            return {
+                abort: true
+            };
+        }
     }
 
     protected async doChecks(options: RunCommandOptions) {
         const { message } = options;
-        const permissionValidationResult = await this.validatePermissions(options);
+        const { result: permissionValidationResult, abort, error } = await this.validatePermissions(options);
+
+        if (abort) {
+            return;
+        }
+
         const isPermitted =
             (typeof permissionValidationResult === "boolean" && permissionValidationResult) ||
             (typeof permissionValidationResult === "object" && permissionValidationResult.isPermitted);
-        const permissionValidationFailureSource =
-            (typeof permissionValidationResult === "object" && permissionValidationResult.source) || undefined;
-        const debugMode =
-            (this.client.configManager.systemConfig.debug_mode ||
-                this.client.configManager.config[message.guildId!]?.debug_mode) ??
-            false;
 
-        if (!isPermitted) {
+        if (!isPermitted || error) {
+            const permissionValidationFailureSource =
+                (typeof permissionValidationResult === "object" && permissionValidationResult.source) || undefined;
+            const debugMode =
+                (this.client.configManager.systemConfig.debug_mode ||
+                    this.client.configManager.config[message.guildId!]?.debug_mode) ??
+                false;
+
             await this.error(
                 message,
-                `You don't have permission to run this command.${
+                `${error ?? "You don't have permission to run this command."}${
                     debugMode && permissionValidationFailureSource ? `\nSource: \`${permissionValidationFailureSource}\`` : ""
                 }`
             );
+
             return false;
         }
 
@@ -356,6 +449,15 @@ export default abstract class Command {
             return false;
         }
 
+        if (context.isLegacy && this.subCommandCheck && !this.subcommands.includes(context.args[0])) {
+            await this.error(
+                message,
+                `Please provide a valid subcommand! The valid subcommands are \`${this.subcommands.join("`, `")}\`.`
+            );
+
+            return false;
+        }
+
         return parsedArgs;
     }
 
@@ -370,14 +472,16 @@ export default abstract class Command {
             return;
         }
 
-        if (checkOnly) {
-            this.message = undefined;
-            return;
-        }
-
         const parsedArgs = await this.parseArguments(options);
 
         if (parsedArgs === false) {
+            this.message = undefined;
+            onAbort?.();
+            return;
+        }
+
+        if (checkOnly) {
+            this.message = undefined;
             return;
         }
 
