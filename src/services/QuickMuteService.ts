@@ -98,7 +98,7 @@ export default class QuickMuteService extends Service implements HasEventListene
 
         const member = reaction.message.member!;
 
-        if (!this.client.permissionManager.shouldModerate(member, moderator)) {
+        if (!(await this.client.permissionManager.shouldModerate(member, moderator))) {
             logInfo("This moderator does not have permission to mute this user!");
             return false;
         }

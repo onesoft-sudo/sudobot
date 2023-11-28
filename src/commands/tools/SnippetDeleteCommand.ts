@@ -25,8 +25,10 @@ export default class SnippetDeleteCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.String],
-            requiredErrorMessage: "Please specify the name of the snippet/tag to remove!",
-            typeErrorMessage: "Please specify a valid snippet/tag name!",
+            errors: {
+                required: "Please specify the name of the snippet/tag to remove!",
+                "type:invalid": "Please specify a valid snippet/tag name!"
+            },
             name: "name"
         }
     ];
@@ -43,7 +45,7 @@ export default class SnippetDeleteCommand extends Command {
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const name: string = context.isLegacy ? context.parsedNamedArgs.name : context.options.getString("name", true);
 
-        if (!await this.client.snippetManager.checkPermissionInSnippetCommands(name, message, this)) {
+        if (!(await this.client.snippetManager.checkPermissionInSnippetCommands(name, message, this))) {
             return;
         }
 

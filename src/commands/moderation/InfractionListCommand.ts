@@ -29,10 +29,12 @@ export default class InfractionListCommand extends Command {
         {
             types: [ArgumentType.User],
             name: "user",
-            requiredErrorMessage: `Please provide a user to view their infractions!`,
-            typeErrorMessage: `Please provide a __valid__ user!`,
-            entityNotNull: true,
-            entityNotNullErrorMessage: "This user does not exist!"
+            errors: {
+                required: `Please provide a user to view their infractions!`,
+                "type:invalid": `Please provide a __valid__ user!`,
+                "entity:null": "This user does not exist!"
+            },
+            entity: true
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
@@ -69,7 +71,7 @@ export default class InfractionListCommand extends Command {
                     (description += `**Type**: ${
                         infraction.type === InfractionType.BULK_DELETE_MESSAGE
                             ? "Bulk message delete"
-                            : infraction.type[0] + infraction.type.substring(1).toLowerCase().replace(/_/g, ' ')
+                            : infraction.type[0] + infraction.type.substring(1).toLowerCase().replace(/_/g, " ")
                     }\n`),
                         (description += `Responsible Moderator: <@${infraction.moderatorId}>\n`);
                     description += `Reason:\n${

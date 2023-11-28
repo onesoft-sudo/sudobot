@@ -75,7 +75,7 @@ export default class ReportMessageCommand extends Command {
 
         await interaction.deferReply({ ephemeral: true });
 
-        if (!this.client.permissionManager.shouldModerate(targetMessage.member!, interaction.member as GuildMember)) {
+        if (!(await this.client.permissionManager.shouldModerate(targetMessage.member!, interaction.member as GuildMember))) {
             await this.error(interaction, "You don't have permission to report messsages from this user!");
             return;
         }

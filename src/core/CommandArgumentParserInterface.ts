@@ -32,15 +32,15 @@ export type ValidationErrorType =
     | "entity:null"
     | "number:range:min"
     | "number:range:max"
-    | "number:invalid"
+    | "number:range"
+    | "time:range:min"
+    | "time:range:max"
+    | "time:range"
     | "string:length:min"
     | "string:length:max"
     | "string:rest:length:min"
     | "string:rest:length:max"
-    | "string:empty"
-    | "snowflake:invalid"
-    | "url:invalid"
-    | "time:invalid";
+    | "string:empty";
 
 export type ValidationRuleErrorMessages = { [K in ValidationErrorType]?: string };
 export type ValidationRule = {
@@ -59,14 +59,18 @@ export type ValidationRule = {
         notEmpty?: boolean;
     };
     time?: {
-        unit?: 'ms' | 's';
+        unit?: "ms" | "s";
+        min?: number;
+        max?: number;
     };
     link?: {
         urlObject?: boolean;
     };
-    entity?: {
-        allowNull?: boolean;
-    };
+    entity?:
+        | boolean
+        | {
+              notNull?: boolean;
+          };
 };
 
 export type ParseOptions = {

@@ -25,7 +25,7 @@ function url() {
     return `https://pixabay.com/api/?key=${process.env.PIXABAY_TOKEN}&safesearch=true&per_page=3`;
 }
 
-export async function image(cmd: Command, message: CommandMessage, options: BasicCommandContext, type: "photo" | "all" | "illustration" | "vector") {
+export async function image(cmd: Command & { hitError: Function }, message: CommandMessage, options: BasicCommandContext, type: "photo" | "all" | "illustration" | "vector") {
     let genurl = `${url()}&image_type=${type}`;
     let query = !options.isLegacy ? options.options.getString("query") : options.parsedNamedArgs.query;
 
@@ -41,7 +41,7 @@ export async function image(cmd: Command, message: CommandMessage, options: Basi
             if (res && res.status === 200) {
                 //console.log(res.data.hits);
                 if (!res.data.hits || res.data.hits?.length < 1) {
-                    await cmd.error(message, "No search result found from the API.");
+                    await cmd.hitError(message, "No search result found from the API.");
 
                     return;
                 }
@@ -61,15 +61,15 @@ export async function image(cmd: Command, message: CommandMessage, options: Basi
         });
 }
 
-export async function photo(cmd: Command, message: CommandMessage, options: BasicCommandContext) {
+export async function photo(cmd: Command & { hitError: Function }, message: CommandMessage, options: BasicCommandContext) {
     await image(cmd, message, options, "photo");
 }
 
-export async function vector(cmd: Command, message: CommandMessage, options: BasicCommandContext) {
+export async function vector(cmd: Command & { hitError: Function }, message: CommandMessage, options: BasicCommandContext) {
     await image(cmd, message, options, "vector");
 }
 
-export async function illustration(cmd: Command, message: CommandMessage, options: BasicCommandContext) {
+export async function illustration(cmd: Command & { hitError: Function }, message: CommandMessage, options: BasicCommandContext) {
     await image(cmd, message, options, "illustration");
 }
 
@@ -80,13 +80,17 @@ export default class PixabayCommand extends Command {
         {
             types: [ArgumentType.String],
             name: "subcommand",
-            requiredErrorMessage: `Please provide a valid subcommand! The available subcommands are: \`${this.subcommandsCustom.join("`, `")}\`.`
+            errors: {
+                required: `Please provide a valid subcommand! The available subcommands are: \`${this.subcommandsCustom.join("`, `")}\`.`
+            }
         },
         {
             types: [ArgumentType.StringRest],
             name: "query",
             optional: true,
-            typeErrorMessage: "Invalid query given"
+            errors: {
+                "type:invalid": "Invalid query given"
+            }
         }
     ];
     public readonly permissions = [];
@@ -117,6 +121,10 @@ export default class PixabayCommand extends Command {
                 .setDescription("Fetch illustrations")
                 .addStringOption(option => option.setName("query").setDescription("The search query"))
         );
+
+    public hitError(message: CommandMessage, errorMessage: string) {
+        return this.error(message, errorMessage);
+    }
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const subcmd = context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true);

@@ -41,8 +41,10 @@ export default class TranslateCommand extends Command implements HasEventListene
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.StringRest],
-            requiredErrorMessage: "Please specify the text to translate!",
-            typeErrorMessage: "Invalid input given",
+            errors: {
+                required: "Please specify the text to translate!",
+                "type:invalid": "Invalid input given"
+            },
             name: "text"
         }
     ];

@@ -77,9 +77,11 @@ export default class InfractionCommand extends Command {
         {
             types: [ArgumentType.String],
             name: "subcommand",
-            requiredErrorMessage: `Please provide a valid subcommand! The available subcommands are: \`${this.subcommands.join(
-                "`, `"
-            )}\`.`
+            errors: {
+                required: `Please provide a valid subcommand! The available subcommands are: \`${this.subcommands.join(
+                    "`, `"
+                )}\`.`
+            }
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];

@@ -25,10 +25,12 @@ export default class SpamResetCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.User],
-            requiredErrorMessage: "Please provide a user to perform this action!",
-            entityNotNull: true,
-            entityNotNullErrorMessage: "Invalid user given or the user does not exist!",
-            typeErrorMessage: "Please provide a valid user ID/mention!",
+            entity: true,
+            errors: {
+                required: "Please provide a user to perform this action!",
+                "entity:null": "Invalid user given or the user does not exist!",
+                "type:invalid": "Please provide a valid user ID/mention!"
+            },
             name: "user"
         }
     ];

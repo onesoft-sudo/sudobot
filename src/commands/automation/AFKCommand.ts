@@ -35,7 +35,9 @@ export default class AFKCommand extends Command {
             types: [ArgumentType.StringRest],
             name: "reason",
             optional: true,
-            typeErrorMessage: "Please provide a usable/valid reason!"
+            errors: {
+                "type:invalid": "Please provide a usable/valid reason!"
+            }
         }
     ];
     public readonly permissions = [];

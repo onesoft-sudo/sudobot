@@ -23,34 +23,48 @@ import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandRetu
 import QueueEntry from "../../utils/QueueEntry";
 import { stringToTimeInterval } from "../../utils/datetime";
 import { logError } from "../../utils/logger";
-import { isTextableChannel } from "../../utils/utils";
+import { getEmojiObject, isTextableChannel } from "../../utils/utils";
 
 export default class ScheduleAndExpireCommand extends Command {
     public readonly name = "scheduleandexpire";
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.TimeInterval],
-            minValue: 1,
-            minMaxErrorMessage: "Please specify a valid time interval!",
-            requiredErrorMessage: "Please specify after how long the message should be sent!",
-            typeErrorMessage: "Please specify a valid time interval!",
-            timeMilliseconds: true,
+            number: {
+                min: 1
+            },
+            errors: {
+                "number:range:min": "Please specify a valid time interval!",
+                required: "Please specify after how long the message should be sent!",
+                "type:invalid": "Please specify a valid time interval!"
+            },
+            time: {
+                unit: "ms"
+            },
             name: "time_interval_send"
         },
         {
             types: [ArgumentType.TimeInterval],
-            minValue: 1,
-            minMaxErrorMessage: "Please specify a valid deletion time interval!",
-            requiredErrorMessage: "Please specify after how long the message should be deleted!",
-            typeErrorMessage: "Please specify a valid deletion time interval!",
-            timeMilliseconds: true,
+            number: {
+                min: 1
+            },
+            errors: {
+                "number:range:min": "Please specify a valid deletion time interval!",
+                required: "Please specify after how long the message should be deleted!",
+                "type:invalid": "Please specify a valid deletion time interval!"
+            },
+            time: {
+                unit: "ms"
+            },
             name: "time_interval_remove"
         },
         {
             types: [ArgumentType.StringRest],
             optional: true,
-            requiredErrorMessage: "Please specify a message content!",
-            typeErrorMessage: "Please specify a valid message content!",
+            errors: {
+                required: "Please specify a message content!",
+                "type:invalid": "Please specify a valid message content!"
+            },
             name: "content"
         }
     ];
@@ -140,7 +154,7 @@ export default class ScheduleAndExpireCommand extends Command {
         );
 
         if (message instanceof Message) {
-            await message.react(this.emoji("check")).catch(logError);
+            await message.react(getEmojiObject(this.client, "check") ?? "✅").catch(logError);
         } else {
             await this.success(message, "Successfully scheduled message.");
         }

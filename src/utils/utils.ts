@@ -46,6 +46,20 @@ export function isSnowflake(input: string) {
     return /^\d{16,22}$/.test(input);
 }
 
+export function pick<T, K extends Array<keyof T>>(object: T, keys: K): Pick<T, K extends Array<infer E> ? E : never> {
+    if (typeof object === "object" && object !== null) {
+        const picked: Partial<T> = {};
+
+        for (const key of keys) {
+            picked[key] = object[key];
+        }
+
+        return picked as Pick<T, K extends Array<infer E> ? E : never>;
+    }
+
+    return {} as Pick<T, K extends Array<infer E> ? E : never>;
+}
+
 export interface CreateModerationEmbedOptions {
     user: User;
     moderator: User;

@@ -53,32 +53,46 @@ export default class ClearCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.User, ArgumentType.Integer],
-            entityNotNull: true,
-            entityNotNullErrorMessage: "This user does not exist! If it's an ID, make sure it's correct!",
-            name: "countOrUser",
-            requiredErrorMessage: "You must specify the count of messages to delete or a user to delete messages from!",
-            typeErrorMessage: "Please either specify a message count or user at position 1!",
-            minValue: 0,
-            maxValue: 100,
-            minMaxErrorMessage: "The message count must be a number between 0 to 100",
+            entity: {
+                notNull: true
+            },
+            name: "countOrUser", // TODO: Be sure to support multiple names for the same argument [User, Integer] -> ['user', 'count'] = [User, 10]
+            errors: {
+                "entity:null": "This user does not exist! If it's an ID, make sure it's correct!",
+                required: "You must specify the count of messages to delete or a user to delete messages from!",
+                "type:invalid": "Please either specify a message count or user at position 1!",
+                "number:range": "The message count must be a number between 0 to 100"
+            },
+            number: {
+                min: 0,
+                max: 100
+            },
             optional: true
         },
         {
             types: [ArgumentType.Integer],
             optional: true,
             name: "count",
-            typeErrorMessage: "Please specify a valid message count at position 2!",
-            minValue: 0,
-            maxValue: 100,
-            minMaxErrorMessage: "The message count must be a number between 0 to 100"
+            errors: {
+                "type:invalid": "Please specify a valid message count at position 2!",
+                "number:range": "The message count must be a number between 0 to 100"
+            },
+            number: {
+                min: 0,
+                max: 100
+            }
         },
         {
             types: [ArgumentType.Channel],
             optional: true,
-            entityNotNull: true,
-            entityNotNullErrorMessage: "This channel does not exist! If it's an ID, make sure it's correct!",
-            name: "channel",
-            typeErrorMessage: "Please specify a valid text channel at position 3!"
+            entity: {
+                notNull: true
+            },
+            errors: {
+                "entity:null": "This channel does not exist! If it's an ID, make sure it's correct!",
+                "type:invalid": "Please specify a valid text channel at position 3!"
+            },
+            name: "channel"
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.ManageMessages];
@@ -163,7 +177,7 @@ export default class ClearCommand extends Command {
             try {
                 const member = message.guild!.members.cache.get(user.id) ?? (await message.guild!.members.fetch(user.id));
 
-                if (!this.client.permissionManager.shouldModerate(member, message.member! as GuildMember)) {
+                if (!(await this.client.permissionManager.shouldModerate(member, message.member! as GuildMember))) {
                     await this.error(message, "You don't have permission to clear messages from this user!");
                     return;
                 }

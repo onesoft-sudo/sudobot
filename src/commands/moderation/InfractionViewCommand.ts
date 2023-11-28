@@ -26,8 +26,10 @@ export default class InfractionViewCommand extends Command {
         {
             types: [ArgumentType.Integer],
             name: "id",
-            requiredErrorMessage: `Please provide an infraction ID!`,
-            typeErrorMessage: `Please provide a __valid__ infraction ID!`
+            errors: {
+                required: `Please provide an infraction ID!`,
+                "type:invalid": `Please provide a __valid__ infraction ID!`
+            }
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
@@ -52,7 +54,9 @@ export default class InfractionViewCommand extends Command {
         const user = await this.client.fetchUserSafe(infraction.userId);
 
         await this.deferredReply(message, {
-            embeds: [this.client.infractionManager.generateInfractionDetailsEmbed(user, infraction).setTitle("Showing Infraction")]
+            embeds: [
+                this.client.infractionManager.generateInfractionDetailsEmbed(user, infraction).setTitle("Showing Infraction")
+            ]
         });
     }
 }

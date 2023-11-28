@@ -27,17 +27,24 @@ export default class ShotCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.User],
-            entityNotNull: true,
-            requiredErrorMessage: "You must specify a user to give shot!",
-            typeErrorMessage: "You have specified an invalid user mention or ID.",
-            entityNotNullErrorMessage: "The given user does not exist!",
+            entity: true,
+            errors: {
+                required: "You must specify a user to give shot!",
+                "type:invalid": "You have specified an invalid user mention or ID.",
+                "entity:null": "The given user does not exist!"
+            },
             name: "user"
         },
         {
             types: [ArgumentType.StringRest],
             optional: true,
-            typeErrorMessage: "You have specified an invalid shot reason.",
-            lengthMax: 3999,
+            errors: {
+                "type:invalid": "You have specified an invalid shot reason.",
+                "string:rest:length:max": "The shot reason must be less than 4000 characters long."
+            },
+            string: {
+                maxLength: 3999
+            },
             name: "reason"
         }
     ];

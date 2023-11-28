@@ -17,12 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { CommandPermissionOverwrites } from "@prisma/client";
-import { ChatInputCommandInteraction, ContextMenuCommandInteraction, Message, Snowflake } from "discord.js";
-import Command, { CommandMessage, ValidationRuleParsedArgs } from "../core/Command";
+import { ChatInputCommandInteraction, ContextMenuCommandInteraction, Message } from "discord.js";
+import { CommandMessage } from "../core/Command";
 import Service from "../core/Service";
-import { GatewayEventListener } from "../decorators/GatewayEventListener";
-import { HasEventListeners } from "../types/HasEventListeners";
 import { log, logError, logWarn } from "../utils/logger";
 import { GuildConfig } from "./ConfigManager";
 
@@ -42,11 +39,6 @@ export interface LegacyCommandContext extends CommandContext {
     parsedNamedArgs: Record<string, any>;
     prefix: string;
     has(arg: string): boolean;
-    getParsedArgs<C extends Command>(command: C): ValidationRuleParsedArgs<C["validationRules"]>;
-    getParsedArg<C extends Command, I extends keyof C["validationRules"]>(
-        command: C,
-        index: I
-    ): ValidationRuleParsedArgs<C["validationRules"]>[I];
 }
 
 export interface ChatInputCommandContext extends CommandContext {
@@ -63,24 +55,7 @@ export interface ContextMenuCommandContext extends CommandContext {
     commandName: string;
 }
 
-export default class CommandManager extends Service implements HasEventListeners {
-    readonly permissionOverwrites = new Map<`${Snowflake}____${string}`, CommandPermissionOverwrites>();
-
-    @GatewayEventListener("ready")
-    async onReady() {
-        log("Syncing command permission overwrites...");
-
-        const permissionOverwrites = await this.client.prisma.commandPermissionOverwrites.findMany();
-
-        for (const permissionOverwrite of permissionOverwrites) {
-            for (const command of permissionOverwrite.commands) {
-                this.permissionOverwrites.set(`${permissionOverwrite.guildId}____${command}`, permissionOverwrite);
-            }
-        }
-
-        log("Successfully synced command permission overwrites");
-    }
-
+export default class CommandManager extends Service {
     public async runCommandFromMessage(message: Message, checkOnly = false, wait: boolean = false) {
         if (!message.content) return;
 
@@ -135,12 +110,6 @@ export default class CommandManager extends Service implements HasEventListeners
             prefix: foundPrefix,
             has(arg: string) {
                 return this.args.includes(arg);
-            },
-            getParsedArg<C extends Command, I extends keyof C["validationRules"]>(command: C, index: I) {
-                return this.parsedArgs[index as number] as ValidationRuleParsedArgs<C["validationRules"]>[I];
-            },
-            getParsedArgs<C extends Command>(command: C) {
-                return this.parsedArgs as ValidationRuleParsedArgs<C["validationRules"]>;
             }
         } satisfies LegacyCommandContext;
 
@@ -160,7 +129,12 @@ export default class CommandManager extends Service implements HasEventListeners
 
         return new Promise<boolean | null>((resolve, reject) => {
             command
-                .run(message, context, checkOnly, wait ? () => resolve(null) : undefined)
+                .run({
+                    context,
+                    checkOnly,
+                    message,
+                    onAbort: wait ? () => resolve(null) : undefined
+                })
                 .then(result => {
                     if (result && typeof result === "object" && "__reply" in result && result.__reply === true) {
                         message.reply(result as any).catch(console.error);
@@ -223,7 +197,11 @@ export default class CommandManager extends Service implements HasEventListeners
         }
 
         command
-            .run(interaction, context, checkOnly)
+            .run({
+                message: interaction,
+                context,
+                checkOnly
+            })
             .then(result => {
                 if (result && typeof result === "object" && "__reply" in result && result.__reply === true) {
                     interaction.reply(result as any).catch(console.error);

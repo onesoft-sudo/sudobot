@@ -32,7 +32,7 @@ export default class LayerBasedPermissionManager extends AbstractPermissionManag
 
     // FIXME: This is not implemented yet
     shouldModerate(member: GuildMember, moderator: GuildMember) {
-        return false;
+        return true;
     }
 
     getMemberPermissions(member: GuildMember, mergeWithDiscordPermissions = true): GetMemberPermissionInGuildResult {

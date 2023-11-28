@@ -28,7 +28,7 @@ import {
 } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { stringToTimeInterval } from "../../utils/datetime";
-import { logError } from "../../utils/logger";
+import { logError, logSuccess } from "../../utils/logger";
 import { createModerationEmbed } from "../../utils/utils";
 
 export default class BanCommand extends Command {
@@ -36,27 +36,41 @@ export default class BanCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.User],
-            entityNotNull: true,
-            requiredErrorMessage: "You must specify a user to ban!",
-            typeErrorMessage: "You have specified an invalid user mention or ID.",
-            entityNotNullErrorMessage: "The given user does not exist!"
+            entity: {
+                notNull: true
+            },
+            errors: {
+                required: "You must specify a user to ban!",
+                "type:invalid": "You have specified an invalid user mention or ID.",
+                "entity:null": "The given user does not exist!"
+            }
         },
         {
             types: [ArgumentType.TimeInterval, ArgumentType.StringRest],
             optional: true,
-            minMaxErrorMessage: "The message deletion range must be a time interval from 0 second to 604800 seconds (7 days).",
-            typeErrorMessage:
-                "You have specified an invalid argument. The system expected you to provide a ban reason or the message deletion range here.",
-            minValue: 0,
-            maxValue: 604800,
-            lengthMax: 3999,
-            timeMilliseconds: false
+            errors: {
+                "time:range": "The message deletion range must be a time interval from 0 second to 604800 seconds (7 days).",
+                "type:invalid":
+                    "You have specified an invalid argument. The system expected you to provide a ban reason or the message deletion range here."
+            },
+            time: {
+                min: 0,
+                max: 604800,
+                unit: "s"
+            },
+            string: {
+                maxLength: 3999
+            }
         },
         {
             types: [ArgumentType.StringRest],
             optional: true,
-            typeErrorMessage: "You have specified an invalid ban reason.",
-            lengthMax: 3999
+            errors: {
+                "type:invalid": "You have specified an invalid ban reason."
+            },
+            string: {
+                maxLength: 3999
+            }
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.BanMembers];
@@ -145,13 +159,15 @@ export default class BanCommand extends Command {
         try {
             const member = message.guild!.members.cache.get(user.id) ?? (await message.guild!.members.fetch(user.id));
 
-            if (!this.client.permissionManager.shouldModerate(member, message.member! as GuildMember)) {
+            if (!(await this.client.permissionManager.shouldModerate(member, message.member! as GuildMember))) {
                 await this.error(message, "You don't have permission to ban this user!");
                 return;
             }
         } catch (e) {
             logError(e);
         }
+
+        logSuccess("DEBUGGG", reason);
 
         const id = await this.client.infractionManager.createUserBan(user, {
             guild: message.guild!,

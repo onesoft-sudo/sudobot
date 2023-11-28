@@ -23,25 +23,33 @@ import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandRetu
 import QueueEntry from "../../utils/QueueEntry";
 import { stringToTimeInterval } from "../../utils/datetime";
 import { logError } from "../../utils/logger";
-import { isTextableChannel } from "../../utils/utils";
+import { getEmojiObject, isTextableChannel } from "../../utils/utils";
 
 export default class ExpireCommand extends Command {
     public readonly name = "expire";
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.TimeInterval],
-            minValue: 1,
-            minMaxErrorMessage: "Please specify a valid time interval!",
-            requiredErrorMessage: "Please specify after how long the message will expire!",
-            typeErrorMessage: "Please specify a valid time interval!",
-            timeMilliseconds: true,
+            number: {
+                min: 1
+            },
+            errors: {
+                "number:range:min": "Please specify a valid time interval!",
+                required: "Please specify after how long the message will expire!",
+                "type:invalid": "Please specify a valid time interval!"
+            },
+            time: {
+                unit: "ms"
+            },
             name: "time_interval"
         },
         {
             types: [ArgumentType.StringRest],
             optional: true,
-            requiredErrorMessage: "Please specify a message content!",
-            typeErrorMessage: "Please specify a valid message content!",
+            errors: {
+                required: "Please specify a message content!",
+                "type:invalid": "Please specify a valid message content!"
+            },
             name: "content"
         }
     ];
@@ -114,7 +122,7 @@ export default class ExpireCommand extends Command {
             );
 
             if (message instanceof Message) {
-                await message.react(this.emoji("check")).catch(logError);
+                await message.react(getEmojiObject(this.client, "check") ?? "✅").catch(logError);
             } else {
                 await this.success(message, "Successfully queued message deletion.");
             }

@@ -28,20 +28,26 @@ export default class SetSlowmodeCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.TimeInterval],
-            requiredErrorMessage: "Please provide a slowmode duration to set!",
-            minValue: 0,
-            maxValue: 6 * 60 * 60, // 6 hours
-            timeMilliseconds: false,
-            minMaxErrorMessage: "The slowmode duration must be in range 0 seconds to 6 hours!",
-            typeErrorMessage: "Please provide a valid slowmode duration to set!",
+            time: {
+                unit: "s",
+                min: 0,
+                max: 6 * 60 * 60 // 6 hours
+            },
+            errors: {
+                required: "Please provide a slowmode duration to set!",
+                "time:range": "The slowmode duration must be in range 0 seconds to 6 hours!",
+                "type:invalid": "Please provide a valid slowmode duration to set!"
+            },
             name: "duration"
         },
         {
             types: [ArgumentType.Channel],
             optional: true,
-            entityNotNull: true,
-            entityNotNullErrorMessage: "That channel does not exist!",
-            typeErrorMessage: "Please provide a valid channel!",
+            entity: true,
+            errors: {
+                "entity:null": "That channel does not exist!",
+                "type:invalid": "Please provide a valid channel!"
+            },
             name: "channel"
         }
     ];

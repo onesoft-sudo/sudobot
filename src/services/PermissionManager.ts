@@ -146,7 +146,7 @@ export default class PermissionManager<M extends AbstractPermissionManager = Abs
         }
 
         const manager = await this.getManager(member.guild.id);
-        return manager.shouldModerate(member, moderator);
+        return await manager.shouldModerate(member, moderator);
     }
 
     protected getMode(guildId: string) {
@@ -165,7 +165,10 @@ export default class PermissionManager<M extends AbstractPermissionManager = Abs
     }
 
     async getMemberPermissions(member: GuildMember, mergeWithDiscordPermissions?: boolean) {
-        return (await this.getManager(member.guild.id)).getMemberPermissions(member, mergeWithDiscordPermissions);
+        console.log("before Getting member permissions");
+        const manager = await this.getManager(member.guild.id);
+        console.log("Getting member permissions");
+        return manager.getMemberPermissions(member, mergeWithDiscordPermissions);
     }
 
     usesLayeredMode(guildId: string) {

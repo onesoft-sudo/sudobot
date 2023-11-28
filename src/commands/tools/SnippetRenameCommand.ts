@@ -25,14 +25,18 @@ export default class SnippetRenameCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.String],
-            requiredErrorMessage: "Please specify the name of the snippet/tag to rename!",
-            typeErrorMessage: "Please specify a valid snippet/tag name!",
+            errors: {
+                required: "Please specify the name of the snippet/tag to rename!",
+                "type:invalid": "Please specify a valid snippet/tag name!"
+            },
             name: "name"
         },
         {
             types: [ArgumentType.String],
-            requiredErrorMessage: "Please specify a new name to set!",
-            typeErrorMessage: "Please specify a valid snippet/tag name!",
+            errors: {
+                required: "Please specify a new name to set!",
+                "type:invalid": "Please specify a valid snippet/tag name!"
+            },
             name: "new_name"
         }
     ];
@@ -49,7 +53,7 @@ export default class SnippetRenameCommand extends Command {
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const name: string = context.isLegacy ? context.parsedNamedArgs.name : context.options.getString("old_name", true);
 
-        if (!await this.client.snippetManager.checkPermissionInSnippetCommands(name, message, this)) {
+        if (!(await this.client.snippetManager.checkPermissionInSnippetCommands(name, message, this))) {
             return;
         }
 

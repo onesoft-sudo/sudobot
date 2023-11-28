@@ -29,7 +29,9 @@ export default class LockCommand extends Command {
             types: [ArgumentType.Channel, ArgumentType.String],
             optional: true,
             name: "channel",
-            typeErrorMessage: "Please provide a valid channel to lock!"
+            errors: {
+                "type:invalid": "Please provide a valid channel to lock!"
+            }
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.ManageChannels];

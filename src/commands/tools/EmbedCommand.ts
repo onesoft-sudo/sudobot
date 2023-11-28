@@ -55,9 +55,9 @@ export default class EmbedCommand extends Command {
         {
             types: [ArgumentType.String],
             name: "subcommand",
-            requiredErrorMessage: `Please provide a subcommand! The available subcommands are: \`${this.subcommands.join(
-                "`, `"
-            )}\``
+            errors: {
+                required: `Please provide a subcommand! The available subcommands are: \`${this.subcommands.join("`, `")}\``
+            }
         },
         {
             types: [ArgumentType.StringRest],

@@ -26,8 +26,10 @@ export default class SnippetPushFileCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.String],
-            requiredErrorMessage: "Please specify the name of the snippet/tag to push a new file!",
-            typeErrorMessage: "Please specify a valid snippet/tag name!",
+            errors: {
+                required: "Please specify the name of the snippet/tag to push a new file!",
+                "type:invalid": "Please specify a valid snippet/tag name!"
+            },
             name: "name"
         }
     ];
@@ -46,7 +48,7 @@ export default class SnippetPushFileCommand extends Command {
     async execute(message: Message, context: LegacyCommandContext): Promise<CommandReturn> {
         const name: string = context.parsedNamedArgs.name;
 
-        if (!await this.client.snippetManager.checkPermissionInSnippetCommands(name, message, this)) {
+        if (!(await this.client.snippetManager.checkPermissionInSnippetCommands(name, message, this))) {
             return;
         }
 

@@ -27,17 +27,26 @@ export default class BeanCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.User],
-            entityNotNull: true,
-            requiredErrorMessage: "You must specify a user to bean!",
-            typeErrorMessage: "You have specified an invalid user mention or ID.",
-            entityNotNullErrorMessage: "The given user does not exist!",
+            entity: {
+                notNull: true,
+            },
+            errors: {
+                required: "You must specify a user to bean!",
+                "type:invalid": "You have specified an invalid user mention or ID.",
+                "entity:null": "The given user does not exist!",
+            },
             name: "user"
         },
         {
             types: [ArgumentType.StringRest],
             optional: true,
-            typeErrorMessage: "You have specified an invalid bean reason.",
-            lengthMax: 3999,
+            errors: {
+                "type:invalid": "You have specified an invalid bean reason.",
+                "string:length:max": "Max length was exceeded for the reason."
+            },
+            string: {
+                maxLength: 3999
+            },
             name: "reason"
         }
     ];

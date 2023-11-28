@@ -38,6 +38,7 @@ import type BallotManager from "../services/BallotManager";
 import type BumpReminderService from "../services/BumpReminderService";
 import type ChannelLockManager from "../services/ChannelLockManager";
 import type CommandManager from "../services/CommandManager";
+import CommandPermissionOverwriteManager from "../services/CommandPermissionOverwriteManager";
 import type ConfigManager from "../services/ConfigManager";
 import type CooldownService from "../services/CooldownService";
 import type ExtensionService from "../services/ExtensionService";
@@ -93,6 +94,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@services/LogServer",
         "@services/CooldownService",
         "@services/KeypressHandlerService",
+        "@services/CommandPermissionOverwriteManager",
 
         "@automod/MessageFilter",
         "@automod/Antispam",
@@ -141,6 +143,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     logServer: LogServer = {} as LogServer;
     cooldown: CooldownService = {} as CooldownService;
     keypressHandler: KeypressHandlerService = {} as KeypressHandlerService;
+    commandPermissionOverwriteManager: CommandPermissionOverwriteManager = {} as CommandPermissionOverwriteManager;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",

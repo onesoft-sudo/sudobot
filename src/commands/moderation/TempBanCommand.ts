@@ -29,36 +29,52 @@ export default class TempBanCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.User],
-            entityNotNull: true,
-            requiredErrorMessage: "You must specify a user to ban!",
-            typeErrorMessage: "You have specified an invalid user mention or ID.",
-            entityNotNullErrorMessage: "The given user does not exist!",
+            entity: true,
+            errors: {
+                required: "You must specify a user to ban!",
+                "type:invalid": "You have specified an invalid user mention or ID.",
+                "entity:null": "The given user does not exist!"
+            },
             name: "user"
         },
         {
             types: [ArgumentType.TimeInterval],
-            typeErrorMessage: "You have specified an invalid argument. The system expected you to provide a duration here.",
-            requiredErrorMessage: "Please specify a ban duration!",
-            lengthMax: 3999,
+            errors: {
+                "type:invalid": "You have specified an invalid argument. The system expected you to provide a duration here.",
+                required: "Please specify a ban duration!"
+            },
             name: "duration",
-            timeMilliseconds: true
+            time: {
+                unit: "ms"
+            }
         },
         {
             types: [ArgumentType.TimeInterval, ArgumentType.StringRest],
             optional: true,
-            typeErrorMessage:
-                "You have specified an invalid argument. The system expected you to provide a ban reason or the message deletion timeframe here.",
-            lengthMax: 3999,
-            minValue: 0,
-            maxValue: 604800,
-            name: "timeframeOrReason",
-            minMaxErrorMessage: "The message deletion range must be a time interval from 0 second to 604800 seconds (7 days)."
+            errors: {
+                "type:invalid":
+                    "You have specified an invalid argument. The system expected you to provide a ban reason or the message deletion timeframe here.",
+                "time:range": "The message deletion range must be a time interval from 0 second to 604800 seconds (7 days)."
+            },
+            string: {
+                maxLength: 3999
+            },
+            time: {
+                min: 0,
+                max: 604800,
+                unit: "s"
+            },
+            name: "timeframeOrReason"
         },
         {
             types: [ArgumentType.StringRest],
             optional: true,
-            typeErrorMessage: "You have specified an invalid ban reason.",
-            lengthMax: 3999,
+            errors: {
+                "type:invalid": "You have specified an invalid ban reason."
+            },
+            string: {
+                maxLength: 3999
+            },
             name: "reason"
         }
     ];
@@ -150,7 +166,7 @@ export default class TempBanCommand extends Command {
         try {
             const member = message.guild!.members.cache.get(user.id) ?? (await message.guild!.members.fetch(user.id));
 
-            if (!this.client.permissionManager.shouldModerate(member, message.member! as GuildMember)) {
+            if (!(await this.client.permissionManager.shouldModerate(member, message.member! as GuildMember))) {
                 await this.error(message, "You don't have permission to ban this user!");
                 return;
             }

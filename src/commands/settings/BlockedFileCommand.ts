@@ -29,8 +29,10 @@ export default class BlockedFileCommand extends Command {
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.String],
-            requiredErrorMessage: `Please provide a subcommand! The valid commands are: \`${this.subcommands.join("`, `")}\``,
-            typeErrorMessage: "Please provide a valid subcommand!",
+            errors: {
+                required: `Please provide a subcommand! The valid commands are: \`${this.subcommands.join("`, `")}\``,
+                "type:invalid": "Please provide a valid subcommand!"
+            },
             name: "subcommand"
         }
     ];

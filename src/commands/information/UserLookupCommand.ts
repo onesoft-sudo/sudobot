@@ -29,10 +29,14 @@ export default class UserLookupCommand extends Command {
         {
             types: [ArgumentType.User],
             name: "user",
-            typeErrorMessage: "Invalid user mention or ID given",
-            entityNotNull: true,
-            entityNotNullErrorMessage: "That user could not be found!",
-            requiredErrorMessage: "Please provide a user!"
+            errors: {
+                "type:invalid": "Invalid user mention or ID given",
+                "entity:null": "That user could not be found!",
+                required: "Please provide a user!"
+            },
+            entity: {
+                notNull: true
+            }
         }
     ];
     public readonly permissions = [PermissionFlagsBits.BanMembers, PermissionFlagsBits.ManageGuild];

@@ -34,10 +34,14 @@ export default class SnipeCommand extends Command implements HasEventListeners {
         {
             types: [ArgumentType.Integer],
             optional: true,
-            typeErrorMessage: "You must provide a valid message index/number between 1-10!",
-            minMaxErrorMessage: "You must provide a valid message index/number between 1-10!",
-            maxValue: 11,
-            minValue: 1,
+            errors: {
+                "type:invalid": "You must provide a valid message index/number between 1-10!",
+                "number:range": "You must provide a valid message index/number between 1-10!"
+            },
+            number: {
+                max: 11,
+                min: 1
+            },
             default: null,
             name: "index"
         }

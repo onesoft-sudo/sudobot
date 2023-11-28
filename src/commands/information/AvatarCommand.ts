@@ -28,9 +28,13 @@ export default class AvatarCommand extends Command {
             types: [ArgumentType.User],
             name: "user",
             optional: true,
-            typeErrorMessage: "Invalid user given",
-            entityNotNull: true,
-            entityNotNullErrorMessage: "That user could not be found!"
+            errors: {
+                "type:invalid": "Invalid user given",
+                "entity:null": "That user could not be found!"
+            },
+            entity: {
+                notNull: true
+            }
         }
     ];
     public readonly permissions = [];

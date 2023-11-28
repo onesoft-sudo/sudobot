@@ -32,18 +32,24 @@ export default class WarnCommand extends Command {
     public readonly name = "warn";
     public readonly validationRules: ValidationRule[] = [
         {
-            types: [ArgumentType.GuildMember],
-            entityNotNull: true,
-            requiredErrorMessage: "You must specify a member to warn!",
-            typeErrorMessage: "You have specified an invalid user mention or ID.",
-            entityNotNullErrorMessage: "The given member does not exist in the server!",
+            types: [ArgumentType.Member],
+            entity: true,
+            errors: {
+                required: "You must specify a member to warn!",
+                "type:invalid": "You have specified an invalid user mention or ID.",
+                "entity:null": "The given member does not exist in the server!"
+            },
             name: "member"
         },
         {
             types: [ArgumentType.StringRest],
             optional: true,
-            typeErrorMessage: "You have specified an invalid warning reason.",
-            lengthMax: 3999,
+            errors: {
+                "string:rest:length:max": "The reason must be less than 4000 characters long."
+            },
+            string: {
+                maxLength: 3999
+            },
             name: "reason"
         }
     ];
@@ -75,7 +81,7 @@ export default class WarnCommand extends Command {
             await message.deferReply();
         }
 
-        if (!this.client.permissionManager.shouldModerate(member, message.member! as GuildMember)) {
+        if (!(await this.client.permissionManager.shouldModerate(member, message.member! as GuildMember))) {
             await this.error(message, "You don't have permission to warn this user!");
             return;
         }
