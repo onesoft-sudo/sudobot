@@ -208,9 +208,9 @@ export default class CommandArgumentParser implements CommandArgumentParserInter
     }
 
     async parse(parseOptions: ParseOptions) {
-        const { input, rules } = parseOptions;
+        const { input, rules, prefix } = parseOptions;
         const parsedArgs: Record<string | number, any> = {};
-        const argv = input.split(/\s+/);
+        const argv = input.trim().substring(prefix.length).trim().split(/\s+/);
         const args = [...argv];
 
         args.shift();
