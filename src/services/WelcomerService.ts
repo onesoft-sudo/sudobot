@@ -24,6 +24,7 @@ import {
     ButtonBuilder,
     ButtonStyle,
     ColorResolvable,
+    ComponentEmojiResolvable,
     EmbedBuilder,
     GuildMember,
     Interaction,
@@ -35,8 +36,8 @@ import JSON5 from "json5";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { NotUndefined } from "../types/NotUndefined";
-import { log, logError } from "../utils/logger";
-import { sudoPrefix } from "../utils/utils";
+import { log, logError, logWarn } from "../utils/logger";
+import { pick, sudoPrefix } from "../utils/utils";
 import { GuildConfig } from "./ConfigManager";
 
 export const name = "welcomer";
@@ -155,13 +156,22 @@ export default class WelcomerService extends Service {
         }
 
         const [, memberId, messageId] = interaction.customId.split("__");
+        let sayHiReply = this.client.configManager.config[interaction.guildId!]?.welcomer?.say_hi_reply;
+
+        if (typeof sayHiReply === "string" && !sayHiReply?.includes(":mentions:")) {
+            logWarn("config.welcomer.say_hi_reply does not include :mentions: placeholder, defaulting to the built in message");
+
+            sayHiReply = undefined;
+        }
 
         try {
             if (!messageId) {
                 const reply = await interaction[interaction.replied || interaction.deferred ? "followUp" : "reply"]({
-                    content: `${interaction.user.id === memberId ? "__You__" : interaction.user.toString()}${
-                        interaction.user.id === memberId ? " said hi to yourself!" : saysHiToYou
-                    }`,
+                    content:
+                        sayHiReply?.replace(/:mentions:/gi, `<@${interaction.user.id}>`) ??
+                        `${interaction.user.id === memberId ? "__You__" : interaction.user.toString()}${
+                            interaction.user.id === memberId ? " said hi to yourself!" : saysHiToYou
+                        }`,
                     fetchReply: true
                 });
 
@@ -202,9 +212,34 @@ export default class WelcomerService extends Service {
                         return;
                     }
 
+                    const parts = sayHiReply?.split(/:mentions:/i);
+                    let contentOrUsers: string | string[] = message.content;
+                    let usersArray: string[] | undefined;
+
+                    if (parts !== undefined) {
+                        let content = message.content;
+
+                        for (const part of parts) {
+                            content = content.replace(part.trim(), "");
+                        }
+
+                        content = content.trim();
+
+                        const users = content.split(/\s*,\s*/).filter((part, index, array) => array.lastIndexOf(part) === index);
+
+                        console.log("DEBUG", users);
+                        contentOrUsers = [...users];
+
+                        if (!users.includes(`<@${interaction.user.id}>`)) {
+                            users.push(`<@${interaction.user.id}>`);
+                        }
+
+                        usersArray = users;
+                    }
+
                     if (
-                        (interaction.user.id === memberId && message.content.includes("__You__")) ||
-                        (interaction.user.id !== memberId && message.content.includes(`${interaction.user.toString()}`))
+                        contentOrUsers.includes(`${interaction.user.toString()}`) ||
+                        (interaction.user.id === memberId && contentOrUsers.includes("__You__"))
                     ) {
                         await interaction.followUp({
                             content: `You've already said hi to ${interaction.user.id === memberId ? "yourself!" : "the user!"}`,
@@ -216,9 +251,12 @@ export default class WelcomerService extends Service {
                     }
 
                     await message.edit({
-                        content: `${message.content.replace(saysHiToYou, "").replace(" said hi to yourself!", "")}, ${
-                            interaction.user.id === memberId ? "__You__" : interaction.user.toString()
-                        }${saysHiToYou}`
+                        content:
+                            sayHiReply === undefined
+                                ? `${message.content.replace(saysHiToYou, "").replace(" said hi to yourself!", "").trim()}, ${
+                                      interaction.user.id === memberId ? "__You__" : interaction.user.toString()
+                                  }${saysHiToYou}`
+                                : sayHiReply.replace(/:mentions:/gi, usersArray!.join(", "))
                     });
                 } catch (e) {
                     logError(e);
@@ -244,7 +282,12 @@ export default class WelcomerService extends Service {
             .setLabel(say_hi_label ?? "Say Hi!")
             .setStyle(ButtonStyle.Secondary);
 
-        if (emoji) button.setEmoji(emoji.toString());
+        if (emoji)
+            button.setEmoji(
+                typeof emoji === "string"
+                    ? emoji
+                    : pick(emoji as Exclude<ComponentEmojiResolvable, string>, ["id", "name", "animated"])
+            );
 
         return new ActionRowBuilder<ButtonBuilder>().addComponents(button);
     }
