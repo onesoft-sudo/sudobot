@@ -9,6 +9,10 @@
                         "type": "string",
                         "default": "-"
                     },
+                    "debug_mode": {
+                        "type": "boolean",
+                        "default": false
+                    },
                     "commands": {
                         "type": "object",
                         "properties": {
@@ -513,6 +517,9 @@
                             "say_hi_emoji": {
                                 "type": "string",
                                 "default": "default"
+                            },
+                            "say_hi_reply": {
+                                "type": "string"
                             },
                             "say_hi_expire_after": {
                                 "anyOf": [

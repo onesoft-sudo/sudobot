@@ -207,6 +207,7 @@ export const GuildConfigSchema = z.object({
             say_hi_button: z.boolean().optional().default(false),
             say_hi_label: z.string().min(1).optional(),
             say_hi_emoji: z.string().optional().default("default"),
+            say_hi_reply: z.string().optional(),
             say_hi_expire_after: z
                 .number()
                 .int()
