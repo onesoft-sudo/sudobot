@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { CommandPermissionOverwrites } from "@prisma/client";
+import { CommandPermissionOverwrite } from "@prisma/client";
 import { GuildMember, PermissionsString, Snowflake } from "discord.js";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
@@ -28,7 +28,7 @@ import { GetMemberPermissionInGuildResult } from "./PermissionManager";
 export const name = "commandPermissionOverwriteManager";
 
 export default class CommandPermissionOverwriteManager extends Service implements HasEventListeners {
-    readonly permissionOverwrites = new Map<`${Snowflake}____${string}`, CommandPermissionOverwrites[]>();
+    readonly permissionOverwrites = new Map<`${Snowflake}____${string}`, CommandPermissionOverwrite[]>();
     readonly validators: Array<keyof this> = [
         "validatePermissionOverwriteUsers",
         "validatePermissionOverwriteChannels",
@@ -41,7 +41,7 @@ export default class CommandPermissionOverwriteManager extends Service implement
     async onReady() {
         log("Syncing command permission overwrites...");
 
-        const permissionOverwrites = await this.client.prisma.commandPermissionOverwrites.findMany();
+        const permissionOverwrites = await this.client.prisma.commandPermissionOverwrite.findMany();
         this.permissionOverwrites.clear();
 
         for (const permissionOverwrite of permissionOverwrites) {
@@ -62,7 +62,7 @@ export default class CommandPermissionOverwriteManager extends Service implement
     }
 
     async validatePermissionOverwritePermissions(
-        permissionOverwrite: CommandPermissionOverwrites,
+        permissionOverwrite: CommandPermissionOverwrite,
         _: ValidatePermissionOverwritesOptions,
         { permissions }: GetMemberPermissionInGuildResult
     ) {
@@ -75,7 +75,7 @@ export default class CommandPermissionOverwriteManager extends Service implement
     }
 
     validatePermissionOverwriteChannels(
-        permissionOverwrite: CommandPermissionOverwrites,
+        permissionOverwrite: CommandPermissionOverwrite,
         { channelId }: ValidatePermissionOverwritesOptions
     ) {
         if (permissionOverwrite.requiredChannels.length === 0) {
@@ -86,7 +86,7 @@ export default class CommandPermissionOverwriteManager extends Service implement
     }
 
     validatePermissionOverwriteUsers(
-        permissionOverwrite: CommandPermissionOverwrites,
+        permissionOverwrite: CommandPermissionOverwrite,
         { member }: ValidatePermissionOverwritesOptions
     ) {
         if (permissionOverwrite.requiredUsers.length === 0) {
@@ -97,7 +97,7 @@ export default class CommandPermissionOverwriteManager extends Service implement
     }
 
     validatePermissionOverwriteRoles(
-        permissionOverwrite: CommandPermissionOverwrites,
+        permissionOverwrite: CommandPermissionOverwrite,
         { member }: ValidatePermissionOverwritesOptions
     ) {
         if (permissionOverwrite.requiredRoles.length === 0) {
@@ -114,7 +114,7 @@ export default class CommandPermissionOverwriteManager extends Service implement
     }
 
     validatePermissionOverwriteLevels(
-        permissionOverwrite: CommandPermissionOverwrites,
+        permissionOverwrite: CommandPermissionOverwrite,
         _: ValidatePermissionOverwritesOptions,
         permissions: GetMemberPermissionInGuildResult
     ) {
