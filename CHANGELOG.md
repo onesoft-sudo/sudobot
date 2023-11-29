@@ -1,3 +1,12 @@
+## [6.88.2](https://github.com/onesoft-sudo/sudobot/compare/v6.88.1...v6.88.2) (2023-11-29)
+
+
+### Bug Fixes
+
+* **db:schema:** rename `CommandPermissionOverwrite` model name ([d7bad1f](https://github.com/onesoft-sudo/sudobot/commit/d7bad1f4e4d6a131fcd5d8fbd09aeaf04ea8e939))
+
+
+
 ## [6.88.1](https://github.com/onesoft-sudo/sudobot/compare/v6.88.0...v6.88.1) (2023-11-28)
 
 
@@ -41,15 +50,6 @@
 ### Features
 
 * introduce command v2 ([12a1c44](https://github.com/onesoft-sudo/sudobot/commit/12a1c44067a18c48f9b9e793d23ce5012da5105b))
-
-
-
-## [6.85.2](https://github.com/onesoft-sudo/sudobot/compare/v6.85.1...v6.85.2) (2023-11-25)
-
-
-### Bug Fixes
-
-* **commands:snippets:** double response ([430b511](https://github.com/onesoft-sudo/sudobot/commit/430b511b90dc5dabe7f4d22f738495f30b09d00a))
 
 
 
