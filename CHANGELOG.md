@@ -1,3 +1,12 @@
+# [6.89.0](https://github.com/onesoft-sudo/sudobot/compare/v6.88.2...v6.89.0) (2023-11-29)
+
+
+### Features
+
+* **welcomer:** custom say hi reply message template ([47b85e4](https://github.com/onesoft-sudo/sudobot/commit/47b85e4d61067182f974fd4950c1e93b8e487b5d))
+
+
+
 ## [6.88.2](https://github.com/onesoft-sudo/sudobot/compare/v6.88.1...v6.88.2) (2023-11-29)
 
 
@@ -41,15 +50,6 @@
 ### Features
 
 * **snippets:** support embed schemas in snippet contents ([818adc9](https://github.com/onesoft-sudo/sudobot/commit/818adc9394754d6ce666e7d2132472e723e355a7))
-
-
-
-# [6.86.0](https://github.com/onesoft-sudo/sudobot/compare/v6.85.2...v6.86.0) (2023-11-26)
-
-
-### Features
-
-* introduce command v2 ([12a1c44](https://github.com/onesoft-sudo/sudobot/commit/12a1c44067a18c48f9b9e793d23ce5012da5105b))
 
 
 
