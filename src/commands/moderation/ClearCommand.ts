@@ -35,6 +35,7 @@ const THREE_DAYS = 1000 * 60 * 60 * 24 * 3;
 
 const filters = {
     bots: (message: Message) => message.author.bot,
+    mentions: (message: Message) => /<(@!?|#|@&)\d+>/.test(message.content),
     unverified_bots: (message: Message) => message.author.bot && !message.author.flags?.has("VerifiedBot"),
     users: (message: Message) => !message.author.bot,
     new_users: (message: Message) => !message.author.bot && message.createdAt.getTime() <= THREE_DAYS,
@@ -45,7 +46,8 @@ const filter_aliases: Record<string, keyof typeof filters> = {
     bc: "bots",
     hc: "users",
     ec: "embeds",
-    nc: "new_users"
+    nc: "new_users",
+    mc: "mentions"
 };
 
 export default class ClearCommand extends Command {
@@ -96,7 +98,7 @@ export default class ClearCommand extends Command {
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.ManageMessages];
-    public readonly aliases = ["purge", "bulkdel", "bulkdelete", "bc", "hc", "ec", "nc"];
+    public readonly aliases = ["purge", "bulkdel", "bulkdelete", "bc", "hc", "ec", "nc", "mc"];
 
     public readonly description = "Clear messages in bulk.";
     public readonly detailedDescription =
