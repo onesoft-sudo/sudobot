@@ -1,3 +1,12 @@
+# [6.90.0](https://github.com/onesoft-sudo/sudobot/compare/v6.89.0...v6.90.0) (2023-12-01)
+
+
+### Features
+
+* **commands:clear:** `mc` alias ([9a1fd3d](https://github.com/onesoft-sudo/sudobot/commit/9a1fd3d00f2a0e5f8cb279d6429d007ab66c94a6))
+
+
+
 # [6.89.0](https://github.com/onesoft-sudo/sudobot/compare/v6.88.2...v6.89.0) (2023-11-29)
 
 
@@ -36,20 +45,6 @@
 ### Features
 
 * command permission overwrites ([27c9f7b](https://github.com/onesoft-sudo/sudobot/commit/27c9f7b5bc7351e6c02b6b6e27e0a6bd0aff4455))
-
-
-
-# [6.87.0](https://github.com/onesoft-sudo/sudobot/compare/v6.86.0...v6.87.0) (2023-11-26)
-
-
-### Bug Fixes
-
-* **snippetManager:** permission checking issues ([badd03a](https://github.com/onesoft-sudo/sudobot/commit/badd03af1270af22b90ca561d889c42d5181f716))
-
-
-### Features
-
-* **snippets:** support embed schemas in snippet contents ([818adc9](https://github.com/onesoft-sudo/sudobot/commit/818adc9394754d6ce666e7d2132472e723e355a7))
 
 
 
