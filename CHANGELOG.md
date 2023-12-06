@@ -1,3 +1,12 @@
+# [6.91.0](https://github.com/onesoft-sudo/sudobot/compare/v6.90.0...v6.91.0) (2023-12-06)
+
+
+### Features
+
+* **moderation:bulk_delete_msgs:** support `offset` option ([1fe95e4](https://github.com/onesoft-sudo/sudobot/commit/1fe95e4ddabe5df8799bdf4726e3eb9a6c7c3a79))
+
+
+
 # [6.90.0](https://github.com/onesoft-sudo/sudobot/compare/v6.89.0...v6.90.0) (2023-12-01)
 
 
@@ -31,20 +40,6 @@
 ### Bug Fixes
 
 * **core:argument_parser:** mention prefix does not work ([d9ca8d6](https://github.com/onesoft-sudo/sudobot/commit/d9ca8d6917796928d112154e720b31bbfce8d308))
-
-
-
-# [6.88.0](https://github.com/onesoft-sudo/sudobot/compare/v6.87.0...v6.88.0) (2023-11-28)
-
-
-### Bug Fixes
-
-* issues introduced by the refactor ([cfdc893](https://github.com/onesoft-sudo/sudobot/commit/cfdc893fa1b35d446f46d6b06a655b96e25cb980))
-
-
-### Features
-
-* command permission overwrites ([27c9f7b](https://github.com/onesoft-sudo/sudobot/commit/27c9f7b5bc7351e6c02b6b6e27e0a6bd0aff4455))
 
 
 
