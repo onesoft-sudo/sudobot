@@ -1,3 +1,12 @@
+# [6.92.0](https://github.com/onesoft-sudo/sudobot/compare/v6.91.0...v6.92.0) (2023-12-06)
+
+
+### Features
+
+* **services:react_roles:** better rate limiting ([433d26a](https://github.com/onesoft-sudo/sudobot/commit/433d26a00f6b411911977323c553b5ca221bb879))
+
+
+
 # [6.91.0](https://github.com/onesoft-sudo/sudobot/compare/v6.90.0...v6.91.0) (2023-12-06)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **db:schema:** rename `CommandPermissionOverwrite` model name ([d7bad1f](https://github.com/onesoft-sudo/sudobot/commit/d7bad1f4e4d6a131fcd5d8fbd09aeaf04ea8e939))
-
-
-
-## [6.88.1](https://github.com/onesoft-sudo/sudobot/compare/v6.88.0...v6.88.1) (2023-11-28)
-
-
-### Bug Fixes
-
-* **core:argument_parser:** mention prefix does not work ([d9ca8d6](https://github.com/onesoft-sudo/sudobot/commit/d9ca8d6917796928d112154e720b31bbfce8d308))
 
 
 
