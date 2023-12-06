@@ -540,7 +540,8 @@ export default class InfractionManager extends Service {
         sendLog,
         count: messageCount,
         logOnly = false,
-        filters = []
+        filters = [],
+        offset = 0
     }: BulkDeleteMessagesOptions) {
         if (messageChannel && !(messagesToDelete && messagesToDelete.length === 0)) {
             let messages: MessageResolvable[] | null = messagesToDelete ?? null;
@@ -555,6 +556,11 @@ export default class InfractionManager extends Service {
                     let i = 0;
 
                     for (const [, m] of allMessages) {
+                        if (i < offset) {
+                            i++;
+                            continue;
+                        }
+
                         if (messageCount && i >= messageCount) {
                             break;
                         }
@@ -1268,6 +1274,7 @@ export type BulkDeleteMessagesOptions = CommonOptions & {
     messagesToDelete?: MessageResolvable[];
     messageChannel?: TextChannel;
     count?: number;
+    offset?: number;
     logOnly?: boolean;
     filters?: Function[];
 };

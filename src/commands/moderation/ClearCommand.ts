@@ -112,6 +112,9 @@ export default class ClearCommand extends Command {
         .addIntegerOption(option =>
             option.setName("count").setDescription("The amount of messages to delete").setMaxValue(100).setMinValue(2)
         )
+        .addIntegerOption(option =>
+            option.setName("offset").setDescription("The message count offset").setMaxValue(99).setMinValue(0)
+        )
         .addChannelOption(option => option.setName("channel").setDescription("The channel where the messages will be deleted"))
         .addBooleanOption(option => option.setName("filter_bots").setDescription("Deletes messages from bots"))
         .addBooleanOption(option => option.setName("filter_users").setDescription("Deletes messages from human users only"))
@@ -137,6 +140,8 @@ export default class ClearCommand extends Command {
             : typeof context.parsedNamedArgs.countOrUser === "number"
             ? context.parsedNamedArgs.countOrUser
             : context.parsedNamedArgs.count;
+
+        const offset = (!context.isLegacy ? context.options.getInteger("offset") : null) ?? 0;
 
         const user: User | undefined = !context.isLegacy
             ? context.options.getUser("user") ?? undefined
@@ -246,6 +251,7 @@ export default class ClearCommand extends Command {
             notifyUser: false,
             messageChannel: message.channel! as TextChannel,
             count,
+            offset,
             filters: filterHandlers
         });
 
