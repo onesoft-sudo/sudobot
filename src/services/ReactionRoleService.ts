@@ -27,9 +27,15 @@ import { log, logError } from "../utils/logger";
 
 export const name = "reactionRoleService";
 
+interface UserRequestInfo {
+    timestamps: number[];
+    timeout?: NodeJS.Timeout;
+}
+
 export default class ReactionRoleService extends Service implements HasEventListeners {
     readonly reactionRoleEntries = new Map<string, ReactionRole | undefined>();
-    readonly usersInProgress = new Set<Snowflake>();
+    readonly users: Record<string, UserRequestInfo> = {};
+    readonly rateLimited = new Map<string, number>();
 
     @GatewayEventListener("ready")
     async onReady(client: Client<true>) {
@@ -59,19 +65,40 @@ export default class ReactionRoleService extends Service implements HasEventList
             return;
         }
 
-        log(JSON.stringify(data, null, 2));
-
-        if (this.usersInProgress.has(data.d.user_id)) {
-            log("The user has hit a ratelimit.");
+        if (!this.client.configManager.config[data.d.guild_id]?.reaction_roles?.enabled) {
             return;
         }
 
-        this.usersInProgress.add(data.d.user_id);
+        log(JSON.stringify(data, null, 2));
+
+        const config = this.client.configManager.config[data.d.guild_id]?.reaction_roles?.ratelimiting;
+
+        if (config?.enabled) {
+            const rateLimitedAt = this.rateLimited.get(data.d.user_id) ?? 0;
+
+            if (Date.now() - rateLimitedAt < config.block_duration) {
+                log("The user has hit a ratelimit.");
+                return;
+            }
+
+            this.rateLimited.delete(data.d.user_id);
+
+            if (!this.users[data.d.user_id]) {
+                this.users[data.d.user_id] = {
+                    timestamps: []
+                };
+            }
+
+            const info = this.users[data.d.user_id];
+
+            info.timestamps.push(Date.now());
+        }
+
         const { aborted, member, reactionRole } = await this.processRequest(data, data.t === "MESSAGE_REACTION_ADD");
 
         if (aborted) {
             log("Request aborted");
-            setTimeout(() => this.usersInProgress.delete(data.d.user_id), 1500);
+            this.setTimeout(data.d.user_id, data.d.guild_id);
             return;
         }
 
@@ -85,7 +112,28 @@ export default class ReactionRoleService extends Service implements HasEventList
             logError(e);
         }
 
-        setTimeout(() => this.usersInProgress.delete(data.d.user_id), 1500);
+        this.setTimeout(data.d.user_id, data.d.guild_id);
+    }
+
+    setTimeout(userId: string, guildId: string) {
+        if (!this.users[userId]) {
+            return;
+        }
+
+        this.users[userId].timeout ??= setTimeout(() => {
+            const config = this.client.configManager.config[guildId]?.reaction_roles?.ratelimiting;
+
+            if (config?.enabled) {
+                const delayedInfo = this.users[userId];
+                const timestamps = delayedInfo.timestamps.filter(timestamp => config.timeframe + timestamp >= Date.now());
+
+                if (timestamps.length >= config.max_attempts) {
+                    this.rateLimited.set(userId, Date.now());
+                }
+            }
+
+            delete this.users[userId];
+        }, 9000);
     }
 
     async processRequest(
@@ -113,7 +161,6 @@ export default class ReactionRoleService extends Service implements HasEventList
         }
 
         const config = this.client.configManager.config[guildId]?.reaction_roles;
-        const usesLevels = this.client.configManager.config[guildId]?.permissions.mode === "levels";
 
         if (!config?.enabled || (config.ignore_bots && data.d.member?.user?.bot)) {
             return { aborted: true };

@@ -260,7 +260,15 @@ export const GuildConfigSchema = z.object({
     reaction_roles: z
         .object({
             enabled: z.boolean().optional().default(false),
-            ignore_bots: z.boolean().optional().default(true)
+            ignore_bots: z.boolean().optional().default(true),
+            ratelimiting: z
+                .object({
+                    enabled: z.boolean().optional().default(true),
+                    timeframe: z.number().int().min(0).default(7000),
+                    max_attempts: z.number().int().min(0).default(5),
+                    block_duration: z.number().int().min(0).default(10_000)
+                })
+                .optional()
         })
         .optional(),
     create_boost_role: z
