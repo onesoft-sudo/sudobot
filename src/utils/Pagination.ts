@@ -53,8 +53,6 @@ export default class Pagination<T> {
     }
 
     async getPaginatedData(page: number = 1) {
-        log(page, this.getOffset(page));
-
         if (this.options.fetchData)
             this.currentData = await this.options.fetchData({
                 currentPage: page,
@@ -91,8 +89,6 @@ export default class Pagination<T> {
                 limit: this.options.limit,
                 offset: this.getOffset(page)
             });
-
-        log("Max Page", this.maxPage);
 
         if (actionRowOptionsDup && page <= 1) {
             actionRowOptionsDup.back = false;
@@ -182,7 +178,6 @@ export default class Pagination<T> {
         });
 
         collector.on("collect", async (interaction: ButtonInteraction) => {
-            log("Here 2");
             if (!interaction.customId.endsWith(this.id)) {
                 return;
             }
@@ -191,23 +186,21 @@ export default class Pagination<T> {
             const componentOptions = { first: true, last: true, next: true, back: true };
 
             if ([`pagination_next_${this.id}`, `pagination_back_${this.id}`].includes(interaction.customId)) {
-                log("here");
-
                 if (this.currentPage >= maxPage && interaction.customId === `pagination_next_${this.id}`) {
-                    log("here");
                     await interaction.reply({
                         content: maxPage === 1 ? "This is the only page!" : "You've reached the last page!",
                         ephemeral: true
                     });
+
                     return;
                 }
 
                 if (this.currentPage <= 1 && interaction.customId === `pagination_back_${this.id}`) {
-                    log("here");
                     await interaction.reply({
                         content: maxPage === 1 ? "This is the only page!" : "You're in the very first page!",
                         ephemeral: true
                     });
+
                     return;
                 }
             }
