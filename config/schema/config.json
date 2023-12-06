@@ -718,6 +718,31 @@
                             "ignore_bots": {
                                 "type": "boolean",
                                 "default": true
+                            },
+                            "ratelimiting": {
+                                "type": "object",
+                                "properties": {
+                                    "enabled": {
+                                        "type": "boolean",
+                                        "default": true
+                                    },
+                                    "timeframe": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "default": 7000
+                                    },
+                                    "max_attempts": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "default": 5
+                                    },
+                                    "block_duration": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "default": 10000
+                                    }
+                                },
+                                "additionalProperties": false
                             }
                         },
                         "additionalProperties": false
