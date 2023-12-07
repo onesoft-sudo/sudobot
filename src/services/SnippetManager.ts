@@ -17,9 +17,18 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { PermissionRole, Snippet } from "@prisma/client";
+import { Snippet } from "@prisma/client";
 import { AxiosError } from "axios";
-import { Attachment, Collection, GuildMember, Message, MessageCreateOptions, PermissionFlagsBits, Snowflake } from "discord.js";
+import {
+    Attachment,
+    Collection,
+    GuildMember,
+    Message,
+    MessageCreateOptions,
+    PermissionFlagsBits,
+    PermissionsString,
+    Snowflake
+} from "discord.js";
 import { existsSync } from "fs";
 import fs from "fs/promises";
 import { basename } from "path";
@@ -32,17 +41,11 @@ import { getEmoji, sudoPrefix } from "../utils/utils";
 
 export const name = "snippetManager";
 
-type SnippetWithPermissions = Snippet & { permission_roles: PermissionRole[] };
-
 export default class SnippetManager extends Service {
-    public readonly snippets = new Collection<`${Snowflake}_${string}`, SnippetWithPermissions>();
+    public readonly snippets = new Collection<`${Snowflake}_${string}`, Snippet>();
 
     async boot() {
-        const snippets = await this.client.prisma.snippet.findMany({
-            include: {
-                permission_roles: true
-            }
-        });
+        const snippets = await this.client.prisma.snippet.findMany();
 
         for (const snippet of snippets) {
             this.snippets.set(`${snippet.guild_id}_${snippet.name}`, snippet);
@@ -66,7 +69,9 @@ export default class SnippetManager extends Service {
         roles,
         channels,
         users,
-        randomize
+        randomize,
+        permissions,
+        permissionMode = "AND"
     }: CreateSnippetOptions) {
         if (!content && (!attachments || attachments.length === 0)) {
             return { error: "Content or attachment is required to create a snippet" };
@@ -116,10 +121,9 @@ export default class SnippetManager extends Service {
                 roles,
                 users,
                 name,
-                randomize
-            },
-            include: {
-                permission_roles: true
+                randomize,
+                permissions,
+                permissionMode
             }
         });
 
@@ -195,13 +199,18 @@ export default class SnippetManager extends Service {
         return { success: true, snippet };
     }
 
-    async checkPermissions(snippet: SnippetWithPermissions, member: GuildMember, guildId: string, channelId?: string) {
+    async checkPermissions(snippet: Snippet, member: GuildMember, guildId: string, channelId?: string) {
         if (member.permissions.has(PermissionFlagsBits.Administrator, true)) return true;
 
         if (
             (snippet.channels.length > 0 && channelId && !snippet.channels.includes(channelId)) ||
             (snippet.users.length > 0 && !snippet.users.includes(member.user.id)) ||
-            (snippet.roles.length > 0 && !member.roles.cache.hasAll(...snippet.roles))
+            (snippet.roles.length > 0 && !member.roles.cache.hasAll(...snippet.roles)) ||
+            (snippet.permissions.length > 0 &&
+                ((snippet.permissionMode === "AND" &&
+                    !member.permissions.has(snippet.permissions as PermissionsString[], true)) ||
+                    (snippet.permissionMode === "OR" &&
+                        !member.permissions.any(snippet.permissions as PermissionsString[], true))))
         ) {
             log("Channel/user doesn't have permission to run this snippet.");
             return false;
@@ -407,30 +416,13 @@ export default class SnippetManager extends Service {
         randomize,
         roles,
         users,
-        permissionRoleName,
         level
-    }: Partial<Omit<CreateSnippetOptions, "attachments" | "userId">> &
-        CommonSnippetActionOptions & { permissionRoleName?: string; level?: number }) {
+    }: Partial<Omit<CreateSnippetOptions, "attachments" | "userId">> & CommonSnippetActionOptions & { level?: number }) {
         if (!this.snippets.has(`${guildId}_${name}`)) {
             return { error: "No snippet found with that name" };
         }
 
         const snippet = this.snippets.get(`${guildId}_${name}`)!;
-
-        let permissionRole: PermissionRole | null = null;
-
-        if (permissionRoleName) {
-            permissionRole = await this.client.prisma.permissionRole.findFirst({
-                where: {
-                    guild_id: guildId,
-                    name: permissionRoleName
-                }
-            });
-
-            if (!permissionRole) {
-                return { error: "No named permission role found with the given name!" };
-            }
-        }
 
         const updatedSnippet = await this.client.prisma.snippet.update({
             where: {
@@ -442,17 +434,7 @@ export default class SnippetManager extends Service {
                 roles,
                 randomize,
                 users,
-                permission_roles: permissionRole
-                    ? {
-                          connect: {
-                              id: permissionRole.id
-                          }
-                      }
-                    : undefined,
                 level
-            },
-            include: {
-                permission_roles: true
             }
         });
 
@@ -477,4 +459,6 @@ interface CreateSnippetOptions extends CommonSnippetActionOptions {
     users: string[];
     channels: string[];
     randomize?: boolean;
+    permissions?: PermissionsString[];
+    permissionMode?: "AND" | "OR";
 }

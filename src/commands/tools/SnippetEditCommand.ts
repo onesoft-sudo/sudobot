@@ -17,9 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Message, PermissionsBitField } from "discord.js";
+import { Message, PermissionsBitField, PermissionsString } from "discord.js";
 import Command, { ArgumentType, CommandReturn, ValidationRule } from "../../core/Command";
 import { LegacyCommandContext } from "../../services/CommandManager";
+import { logError } from "../../utils/logger";
 
 export default class SnippetEditCommand extends Command {
     public readonly name = "snippet__edit";
@@ -119,23 +120,27 @@ export default class SnippetEditCommand extends Command {
 
             case "perm":
             case "permission": {
-                if (this.client.configManager.config[message.guildId!]?.permissions.mode !== "layered") {
-                    await this.error(
-                        message,
-                        "This server does not use the layered permission system. Please switch to the layered permission system to set a layered permission for this snippet. Alternatively, if you're using the level-based permission system, please edit the `level` attribute instead."
-                    );
+                if (!context.args[index + 2]) {
+                    await this.error(message, "Please specify permission name(s) to require!");
                     return;
                 }
 
-                if (!context.args[index + 2]) {
-                    await this.error(message, "Please specify a permission overwrite name to set!");
-                    return;
+                const permissionNames = context.args.slice(index + 2) as PermissionsString[];
+
+                for (const name of permissionNames) {
+                    try {
+                        PermissionsBitField.resolve(name);
+                    } catch (error) {
+                        logError(error);
+                        await this.error(message, `\`${name}\` is not a valid permission name!`);
+                        return;
+                    }
                 }
 
                 const { error } = await this.client.snippetManager.updateSnippet({
                     name,
                     guildId: message.guildId!,
-                    permissionRoleName: context.args[index + 2]
+                    permissions: permissionNames
                 });
 
                 if (error) {

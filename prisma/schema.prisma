@@ -78,7 +78,8 @@ model Snippet {
     attachments      String[]         @default([])
     content          String[]         @default([])
     randomize        Boolean          @default(false)
-    permission_roles PermissionRole[]
+    permissions String[] @default([])
+    permissionMode PermissionLogicMode @default(AND)
     level            Int?
     createdAt        DateTime         @default(now())
     updatedAt        DateTime         @default(now()) @updatedAt
@@ -95,21 +96,6 @@ model ChannelLock {
     updatedAt   DateTime @default(now()) @updatedAt
 
     @@map("channel_locks")
-}
-
-model PermissionRole {
-    id                 Int      @id @default(autoincrement())
-    name               String
-    guild_id           String
-    roles              String[] @default([])
-    users              String[] @default([])
-    grantedPermissions String[] @default([])
-    createdAt          DateTime @default(now())
-    updatedAt          DateTime @default(now()) @updatedAt
-    snippet            Snippet? @relation(fields: [snippetId], references: [id])
-    snippetId          Int?
-
-    @@map("permission_roles")
 }
 
 model PermissionOverwrite {
