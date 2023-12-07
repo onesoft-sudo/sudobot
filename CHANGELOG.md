@@ -1,3 +1,12 @@
+# [6.93.0](https://github.com/onesoft-sudo/sudobot/compare/v6.92.0...v6.93.0) (2023-12-06)
+
+
+### Features
+
+* **partial:verification:** implement recaptcha system ([b8f18db](https://github.com/onesoft-sudo/sudobot/commit/b8f18dbefb3a485af16a59d4616c7d2a0e418c61))
+
+
+
 # [6.92.0](https://github.com/onesoft-sudo/sudobot/compare/v6.91.0...v6.92.0) (2023-12-06)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **welcomer:** custom say hi reply message template ([47b85e4](https://github.com/onesoft-sudo/sudobot/commit/47b85e4d61067182f974fd4950c1e93b8e487b5d))
-
-
-
-## [6.88.2](https://github.com/onesoft-sudo/sudobot/compare/v6.88.1...v6.88.2) (2023-11-29)
-
-
-### Bug Fixes
-
-* **db:schema:** rename `CommandPermissionOverwrite` model name ([d7bad1f](https://github.com/onesoft-sudo/sudobot/commit/d7bad1f4e4d6a131fcd5d8fbd09aeaf04ea8e939))
 
 
 
