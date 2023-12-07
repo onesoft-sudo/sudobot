@@ -1,3 +1,16 @@
+# [7.0.0](https://github.com/onesoft-sudo/sudobot/compare/v6.93.0...v7.0.0) (2023-12-07)
+
+
+* feat(snippets)!: remove `permission_roles` field from the database schema ([42e0da8](https://github.com/onesoft-sudo/sudobot/commit/42e0da8c416739e66ed29e99928aef100a7c24af))
+
+
+### BREAKING CHANGES
+
+* Be sure to back up your data before upgrading.
+NOTE: Run `npx prisma db push` to update your database schema.
+
+
+
 # [6.93.0](https://github.com/onesoft-sudo/sudobot/compare/v6.92.0...v6.93.0) (2023-12-06)
 
 
@@ -31,15 +44,6 @@
 ### Features
 
 * **commands:clear:** `mc` alias ([9a1fd3d](https://github.com/onesoft-sudo/sudobot/commit/9a1fd3d00f2a0e5f8cb279d6429d007ab66c94a6))
-
-
-
-# [6.89.0](https://github.com/onesoft-sudo/sudobot/compare/v6.88.2...v6.89.0) (2023-11-29)
-
-
-### Features
-
-* **welcomer:** custom say hi reply message template ([47b85e4](https://github.com/onesoft-sudo/sudobot/commit/47b85e4d61067182f974fd4950c1e93b8e487b5d))
 
 
 
