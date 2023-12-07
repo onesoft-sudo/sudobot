@@ -23,7 +23,7 @@ jobs:
                   node-version: ${{ matrix.node-version }}
 
             - name: Install Libraries (Linux)
-              run: sudo apt install build-essential libcurl4 libcurl4-gnutls-dev -y
+              run: sudo apt update && sudo apt install build-essential libcurl4 libcurl4-gnutls-dev -y
               if: matrix.os == 'ubuntu-latest'
 
             - name: Install Libraries and Tools (macOS)
