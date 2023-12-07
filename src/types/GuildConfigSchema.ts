@@ -336,8 +336,57 @@ export const GuildConfigSchema = z.object({
                 .number()
                 .int()
                 .default(1000 * 60 * 60 * 2),
-            reminder_content: z.string().nonempty().optional(),
-            on_bump_content: z.string().nonempty().optional()
+            reminder_content: z.string().min(1).optional(),
+            on_bump_content: z.string().min(1).optional()
+        })
+        .optional(),
+    verification: z
+        .object({
+            enabled: z.boolean().default(false).optional(),
+            parameters: z
+                .object({
+                    age_less_than: z
+                        .number()
+                        .int()
+                        .default(1000 * 60 * 60 * 24 * 3)
+                        .optional(), // 3 days
+                    no_avatar: z.boolean().optional(),
+                    always: z.boolean().optional()
+                })
+                .optional(), // TODO
+            unverified_roles: z.array(zSnowflake).default([]),
+            verified_roles: z.array(zSnowflake).default([]),
+            action_on_fail: z
+                .union([
+                    z.object({
+                        type: z.literal("ban")
+                    }),
+                    z.object({
+                        type: z.literal("kick")
+                    }),
+                    z.object({
+                        type: z.literal("mute")
+                    }),
+                    z.object({
+                        type: z.literal("role"),
+                        mode: z.enum(["give", "take"]),
+                        roles: z.array(zSnowflake)
+                    })
+                ])
+                .optional(), // TODO
+            max_attempts: z.number().int().default(0).describe("Set this to 0 to allow every attempt"),
+            max_time: z
+                .number()
+                .int()
+                .default(1000 * 60 * 60 * 2),
+            logging: z
+                .object({
+                    enabled: z.boolean(),
+                    channel: zSnowflake.optional()
+                })
+                .default({
+                    enabled: true
+                })
         })
         .optional()
 });

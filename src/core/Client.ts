@@ -31,6 +31,7 @@ import type FileFilterService from "../automod/FileFilterService";
 import type MessageFilter from "../automod/MessageFilter";
 import type MessageRuleService from "../automod/MessageRuleService";
 import type ProfileFilter from "../automod/ProfileFilter";
+import VerificationService from "../automod/VerificationService";
 import { SuppressErrorsMetadata } from "../decorators/SuppressErrors";
 import type AFKService from "../services/AFKService";
 import type AutoRoleService from "../services/AutoRoleService";
@@ -103,7 +104,8 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@automod/ProfileFilter",
         "@automod/FileFilterService",
         "@automod/MessageRuleService",
-        "@automod/AIAutoModService"
+        "@automod/AIAutoModService",
+        "@automod/VerificationService"
     ];
 
     commandsDirectory = path.resolve(__dirname, "../commands");
@@ -143,6 +145,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     logServer: LogServer = {} as LogServer;
     cooldown: CooldownService = {} as CooldownService;
     keypressHandler: KeypressHandlerService = {} as KeypressHandlerService;
+    verification: VerificationService = {} as VerificationService;
     commandPermissionOverwriteManager: CommandPermissionOverwriteManager = {} as CommandPermissionOverwriteManager;
 
     prisma = new PrismaClient({

@@ -33,5 +33,7 @@ export default class GuildMemberAddEvent extends EventListener<Events.GuildMembe
             await member.kick("Anti join system is enabled").catch(logError);
             return;
         }
+
+        await this.client.verification.onGuildMemberAdd(member);
     }
 }
