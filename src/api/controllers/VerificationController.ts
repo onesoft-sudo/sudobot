@@ -34,8 +34,6 @@ export default class VerificationController extends Controller {
                 }
             );
 
-            console.log(response.data);
-
             if (!response.data.success) {
                 throw new Error();
             }

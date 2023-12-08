@@ -244,8 +244,8 @@ export default class VerificationService extends Service implements HasEventList
                         Hello **${escapeMarkdown(member.user.username)}**,\n
                         [${member.guild.name}](https://discord.com/channels/${
                         member.guild.id
-                    }) requires you to verify to continue. Click on the button below to complete verification. Alternatively, you can copy-paste this link into your browser:\n\n
-                        ${url}
+                    }) requires you to verify to continue. Click on the button below to complete verification. Alternatively, you can copy-paste this link into your browser:\n
+                        ${url}\n
                         You might be asked to solve a captcha.\n
                         Sincerely,
                         **The Staff of ${member.guild.name}**
@@ -276,8 +276,8 @@ export default class VerificationService extends Service implements HasEventList
                     },
                     color: Colors.Green,
                     description: `
-                        Hello **${escapeMarkdown(member.user.username)}**,\n
-                        You have successfully verified yourself. You've been granted access to the server now.
+                        Hello **${escapeMarkdown(member.user.username)}**,
+                        You have successfully verified yourself. You've been granted access to the server now.\n
                         Cheers,
                         **The Staff of ${member.guild.name}**
                     `.replace(/(\r\n|\n)\t+/, "\n"),
@@ -317,13 +317,17 @@ export default class VerificationService extends Service implements HasEventList
         let userIdFromPayload: string | undefined;
 
         try {
-            const { payload } = jwt.verify(entry.token, process.env.JWT_SECRET!, {
+            let { payload } = jwt.verify(entry.token, process.env.JWT_SECRET!, {
                 complete: true,
                 issuer: "SudoBot",
                 subject: "Verification Token"
             });
 
-            userId = typeof payload === "string" ? undefined : payload.userId;
+            if (typeof payload === "string") {
+                payload = JSON.parse(payload);
+            }
+
+            userIdFromPayload = (payload as { [key: string]: string }).userId;
         } catch (error) {
             logError(error);
         }
