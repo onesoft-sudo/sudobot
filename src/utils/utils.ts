@@ -293,3 +293,7 @@ export function safeMessageContent(content: string, member: GuildMember, channel
 export function isSystemAdmin(client: Client, userId: string) {
     return client.configManager.systemConfig.system_admins.includes(userId);
 }
+
+export function assertUnreachable(_value: never): never {
+    throw new Error("This statement should be unreachable");
+}

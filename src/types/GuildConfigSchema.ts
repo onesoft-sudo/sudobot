@@ -371,12 +371,13 @@ export const GuildConfigSchema = z.object({
                         roles: z.array(zSnowflake)
                     })
                 ])
-                .optional(), // TODO
+                .optional(),
             max_attempts: z.number().int().default(0).describe("Set this to 0 to allow every attempt"),
             max_time: z
                 .number()
                 .int()
-                .default(1000 * 60 * 60 * 2),
+                .default(1000 * 60 * 60 * 2)
+                .describe("Set this to 0 to disable time checks"),
             logging: z
                 .object({
                     enabled: z.boolean(),

@@ -17,9 +17,20 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { VerificationEntry } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { formatDistanceToNowStrict } from "date-fns";
-import { APIEmbed, ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, Guild, GuildMember, escapeMarkdown } from "discord.js";
+import {
+    APIEmbed,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    Colors,
+    Guild,
+    GuildMember,
+    escapeMarkdown,
+    time
+} from "discord.js";
 import jwt from "jsonwebtoken";
 import Service from "../core/Service";
 import { HasEventListeners } from "../types/HasEventListeners";
@@ -94,6 +105,65 @@ export default class VerificationService extends Service implements HasEventList
             },
             timestamp: new Date().toISOString()
         });
+    }
+
+    async onMemberVerificationFail(member: GuildMember, { attempts, guildId }: VerificationEntry, remainingTime: number) {
+        const config = this.client.configManager.config[guildId]?.verification!;
+
+        if ((config.max_attempts === 0 || attempts < config.max_attempts) && remainingTime > 0) {
+            return;
+        }
+
+        switch (config.action_on_fail?.type) {
+            case "ban":
+                if (member.bannable) {
+                    await this.client.infractionManager.createUserBan(member.user, {
+                        guild: member.guild,
+                        moderator: this.client.user!,
+                        autoRemoveQueue: true,
+                        notifyUser: true,
+                        sendLog: true,
+                        reason: "Failed verification"
+                    });
+                }
+
+                break;
+
+            case "kick":
+                if (member.kickable) {
+                    await this.client.infractionManager.createMemberKick(member, {
+                        guild: member.guild,
+                        moderator: this.client.user!,
+                        notifyUser: true,
+                        sendLog: true,
+                        reason: "Failed verification"
+                    });
+                }
+
+                break;
+
+            case "mute":
+                if (member.manageable || member.moderatable) {
+                    await this.client.infractionManager.createMemberMute(member, {
+                        guild: member.guild,
+                        moderator: this.client.user!,
+                        notifyUser: true,
+                        sendLog: true,
+                        reason: "Failed verification",
+                        autoRemoveQueue: true
+                    });
+                }
+
+                break;
+
+            case "role":
+                if (member.manageable) {
+                    const methodName = config.action_on_fail!.mode === "give" ? "add" : "remove";
+                    await member.roles[methodName](config.action_on_fail!.roles).catch(logError);
+                }
+
+                break;
+        }
     }
 
     requiresVerification(member: GuildMember) {
@@ -233,7 +303,7 @@ export default class VerificationService extends Service implements HasEventList
         const config = this.client.configManager.config[entry.guildId]?.verification;
         const guild = this.client.guilds.cache.get(entry.guildId);
 
-        if (!guild) {
+        if (!guild || !config) {
             return null;
         }
 
@@ -261,6 +331,11 @@ export default class VerificationService extends Service implements HasEventList
             typeof config?.max_attempts === "number" && config?.max_attempts > 0 && entry.attempts > config?.max_attempts;
 
         if (entry.token !== token || userIdFromPayload !== userId || maxAttemptsExcceded) {
+            const remainingTime =
+                config.max_time === 0
+                    ? Number.POSITIVE_INFINITY
+                    : Math.max(entry.createdAt.getTime() + config.max_time - Date.now(), 0);
+
             await this.sendLog(guild, {
                 author: {
                     name: member?.user.username ?? "Unknown",
@@ -280,6 +355,16 @@ export default class VerificationService extends Service implements HasEventList
                                 ? `(${config?.max_attempts} max)`
                                 : ""
                         }`
+                    },
+                    {
+                        name: "Verification Initiated At",
+                        value: `${time(entry.createdAt, "R")} (${
+                            remainingTime === 0
+                                ? "Session expired"
+                                : Number.isFinite(remainingTime)
+                                ? `${formatDistanceToNowStrict(new Date(Date.now() - remainingTime))} remaining`
+                                : `Session never expires`
+                        })`
                     }
                 ],
                 footer: {
@@ -301,6 +386,7 @@ export default class VerificationService extends Service implements HasEventList
                 });
             }
 
+            await this.onMemberVerificationFail(member, entry, remainingTime);
             return null;
         }
 
