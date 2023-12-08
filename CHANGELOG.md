@@ -1,3 +1,12 @@
+## [7.3.1](https://github.com/onesoft-sudo/sudobot/compare/v7.3.0...v7.3.1) (2023-12-08)
+
+
+### Bug Fixes
+
+* **automod:verification:** add missing userId query parameter to the DM url ([0541533](https://github.com/onesoft-sudo/sudobot/commit/0541533ee0ef89c930209ca52fb333dcdc4cf825))
+
+
+
 # [7.3.0](https://github.com/onesoft-sudo/sudobot/compare/v7.2.0...v7.3.0) (2023-12-08)
 
 
@@ -35,15 +44,6 @@
 
 * Be sure to back up your data before upgrading.
 NOTE: Run `npx prisma db push` to update your database schema.
-
-
-
-# [6.93.0](https://github.com/onesoft-sudo/sudobot/compare/v6.92.0...v6.93.0) (2023-12-06)
-
-
-### Features
-
-* **partial:verification:** implement recaptcha system ([b8f18db](https://github.com/onesoft-sudo/sudobot/commit/b8f18dbefb3a485af16a59d4616c7d2a0e418c61))
 
 
 
