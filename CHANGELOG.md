@@ -1,3 +1,12 @@
+## [7.3.2](https://github.com/onesoft-sudo/sudobot/compare/v7.3.1...v7.3.2) (2023-12-08)
+
+
+### Bug Fixes
+
+* **automod:verification:** runtime errors ([e65aef8](https://github.com/onesoft-sudo/sudobot/commit/e65aef8989372cfcb6ddd5b4a42aca66d0d2ef21))
+
+
+
 ## [7.3.1](https://github.com/onesoft-sudo/sudobot/compare/v7.3.0...v7.3.1) (2023-12-08)
 
 
@@ -31,19 +40,6 @@
 ### Features
 
 * **automod:** verification system ([5f7e003](https://github.com/onesoft-sudo/sudobot/commit/5f7e0030d1c7fa0cd22b09c48c6396945786a5ad))
-
-
-
-# [7.0.0](https://github.com/onesoft-sudo/sudobot/compare/v6.93.0...v7.0.0) (2023-12-07)
-
-
-* feat(snippets)!: remove `permission_roles` field from the database schema ([42e0da8](https://github.com/onesoft-sudo/sudobot/commit/42e0da8c416739e66ed29e99928aef100a7c24af))
-
-
-### BREAKING CHANGES
-
-* Be sure to back up your data before upgrading.
-NOTE: Run `npx prisma db push` to update your database schema.
 
 
 
