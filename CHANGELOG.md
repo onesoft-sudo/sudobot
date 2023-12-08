@@ -1,3 +1,12 @@
+# [7.3.0](https://github.com/onesoft-sudo/sudobot/compare/v7.2.0...v7.3.0) (2023-12-08)
+
+
+### Features
+
+* **automod:verification:** support `action_on_fail` option ([32d3160](https://github.com/onesoft-sudo/sudobot/commit/32d3160ddfcd17369a9b9aebf8c9a052c3b27b95))
+
+
+
 # [7.2.0](https://github.com/onesoft-sudo/sudobot/compare/v7.1.0...v7.2.0) (2023-12-08)
 
 
@@ -35,15 +44,6 @@ NOTE: Run `npx prisma db push` to update your database schema.
 ### Features
 
 * **partial:verification:** implement recaptcha system ([b8f18db](https://github.com/onesoft-sudo/sudobot/commit/b8f18dbefb3a485af16a59d4616c7d2a0e418c61))
-
-
-
-# [6.92.0](https://github.com/onesoft-sudo/sudobot/compare/v6.91.0...v6.92.0) (2023-12-06)
-
-
-### Features
-
-* **services:react_roles:** better rate limiting ([433d26a](https://github.com/onesoft-sudo/sudobot/commit/433d26a00f6b411911977323c553b5ca221bb879))
 
 
 
