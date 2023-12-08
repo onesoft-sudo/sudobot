@@ -1,4 +1,4 @@
-#!/bin/ts-node
+#!/usr/bin/env node
 
 /**
  * This file is part of SudoBot.
@@ -18,17 +18,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
-import "reflect-metadata";
 
-import { REST } from "@discordjs/rest";
-import { Routes } from "discord-api-types/v9";
-import { ApplicationCommandType, ContextMenuCommandBuilder, SlashCommandBuilder } from "discord.js";
-import { config } from "dotenv";
-import { existsSync } from "fs";
-import path from "path";
+require("reflect-metadata");
 
-function makeSlashCommandBuilder(command: any) {
-    const builder: SlashCommandBuilder = (command.slashCommandBuilder as SlashCommandBuilder) ?? new SlashCommandBuilder();
+const { REST } = require("@discordjs/rest");
+const { Routes } = require("discord-api-types/v9");
+const { ApplicationCommandType, ContextMenuCommandBuilder, SlashCommandBuilder } = require("discord.js");
+const { config } = require("dotenv");
+const { existsSync } = require("fs");
+const path = require("path");
+
+function makeSlashCommandBuilder(command) {
+    const builder = command.slashCommandBuilder ?? new SlashCommandBuilder();
 
     if (!builder.name) builder.setName(command.name);
     if (!builder.description && command.description) builder.setDescription(command.description);
@@ -36,7 +37,7 @@ function makeSlashCommandBuilder(command: any) {
     return builder.setDMPermission(false);
 }
 
-function makeContextMenuCommandBuilder(command: any) {
+function makeContextMenuCommandBuilder(command) {
     return new ContextMenuCommandBuilder().setName(command.name).setType(command.applicationCommandType).setDMPermission(false);
 }
 
@@ -51,14 +52,15 @@ function makeContextMenuCommandBuilder(command: any) {
 
     const { CLIENT_ID, HOME_GUILD_ID, TOKEN } = process.env;
 
-    const commands: (SlashCommandBuilder | ContextMenuCommandBuilder)[] = [];
+    const commands = [];
 
     if (!process.argv.includes("--clear")) {
-        const clientPath = path.resolve(existsSync(path.join(__dirname, "../build")) ? "build" : "src", "core/Client");
+        const clientPath = path.resolve(existsSync(path.join(__dirname, "../build")) ? "build" : "src", "core/Client.js");
 
         console.info("Importing client from: ", clientPath);
 
-        const { default: Client } = await import(clientPath);
+        const { default: Client } = require(clientPath);
+
         const client = new Client({
             intents: []
         });
@@ -90,10 +92,10 @@ function makeContextMenuCommandBuilder(command: any) {
         )
     );
 
-    const rest = new REST({ version: "10" }).setToken(TOKEN!);
+    const rest = new REST({ version: "10" }).setToken(TOKEN);
 
     rest.put(
-        Routes[process.argv.includes("--guild") ? "applicationGuildCommands" : "applicationCommands"](CLIENT_ID!, HOME_GUILD_ID!),
+        Routes[process.argv.includes("--guild") ? "applicationGuildCommands" : "applicationCommands"](CLIENT_ID, HOME_GUILD_ID),
         {
             body: commands
         }
