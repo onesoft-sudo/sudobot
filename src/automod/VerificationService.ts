@@ -230,7 +230,7 @@ export default class VerificationService extends Service implements HasEventList
     }
 
     sendVerificationDMToMember(member: GuildMember, token: string) {
-        const url = `${process.env.FRONTEND_URL}/challenge/verify?t=${encodeURIComponent(token)}`;
+        const url = `${process.env.FRONTEND_URL}/challenge/verify?t=${encodeURIComponent(token)}&u=${member.id}`;
 
         return member.send({
             embeds: [
@@ -245,7 +245,8 @@ export default class VerificationService extends Service implements HasEventList
                         [${member.guild.name}](https://discord.com/channels/${
                         member.guild.id
                     }) requires you to verify to continue. Click on the button below to complete verification. Alternatively, you can copy-paste this link into your browser:\n\n
-                        ${url}\n\n
+                        ${url}
+                        You might be asked to solve a captcha.\n
                         Sincerely,
                         **The Staff of ${member.guild.name}**
                     `.replace(/(\r\n|\n)\t+/, "\n"),
