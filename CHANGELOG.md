@@ -1,3 +1,12 @@
+# [7.2.0](https://github.com/onesoft-sudo/sudobot/compare/v7.1.0...v7.2.0) (2023-12-08)
+
+
+### Features
+
+* **automod:verification:** support `parameters` option ([65d3f8f](https://github.com/onesoft-sudo/sudobot/commit/65d3f8f7d97e12df4def46a62e8dc39da5bfe77b))
+
+
+
 # [7.1.0](https://github.com/onesoft-sudo/sudobot/compare/v7.0.0...v7.1.0) (2023-12-07)
 
 
@@ -35,15 +44,6 @@ NOTE: Run `npx prisma db push` to update your database schema.
 ### Features
 
 * **services:react_roles:** better rate limiting ([433d26a](https://github.com/onesoft-sudo/sudobot/commit/433d26a00f6b411911977323c553b5ca221bb879))
-
-
-
-# [6.91.0](https://github.com/onesoft-sudo/sudobot/compare/v6.90.0...v6.91.0) (2023-12-06)
-
-
-### Features
-
-* **moderation:bulk_delete_msgs:** support `offset` option ([1fe95e4](https://github.com/onesoft-sudo/sudobot/commit/1fe95e4ddabe5df8799bdf4726e3eb9a6c7c3a79))
 
 
 
