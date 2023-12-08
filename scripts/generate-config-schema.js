@@ -1,4 +1,4 @@
-#!/usr/bin/env ts-node
+#!/usr/bin/env node
 
 /*
  * This file is part of SudoBot.
@@ -18,15 +18,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
-import "reflect-metadata";
 
-import { existsSync } from "fs";
-import fs from "fs/promises";
-import path from "path";
-import { z } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema";
-import { GuildConfigSchema } from "../src/services/ConfigManager";
-import { SystemConfigSchema } from "../src/types/SystemConfigSchema";
+const { existsSync } = require("fs");
+const fs = require("fs/promises");
+const path = require("path");
+const { z } = require("zod");
+const { zodToJsonSchema } = require("zod-to-json-schema");
+const { GuildConfigSchema } = require("../build/services/ConfigManager");
+const { SystemConfigSchema } = require("../build/types/SystemConfigSchema");
 
 (async () => {
     const SCHEMA_DIR = path.join(__dirname, "../config/schema");
