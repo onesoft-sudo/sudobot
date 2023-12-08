@@ -343,17 +343,15 @@ export const GuildConfigSchema = z.object({
     verification: z
         .object({
             enabled: z.boolean().default(false).optional(),
-            parameters: z
-                .object({
-                    age_less_than: z
-                        .number()
-                        .int()
-                        .default(1000 * 60 * 60 * 24 * 3)
-                        .optional(), // 3 days
-                    no_avatar: z.boolean().optional(),
-                    always: z.boolean().optional()
-                })
-                .optional(), // TODO
+            parameters: z.object({
+                age_less_than: z
+                    .number()
+                    .int()
+                    .default(1000 * 60 * 60 * 24 * 3)
+                    .optional(), // 3 days
+                no_avatar: z.boolean().optional(),
+                always: z.boolean().optional()
+            }),
             unverified_roles: z.array(zSnowflake).default([]),
             verified_roles: z.array(zSnowflake).default([]),
             action_on_fail: z

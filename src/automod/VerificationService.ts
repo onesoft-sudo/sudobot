@@ -37,7 +37,7 @@ export default class VerificationService extends Service implements HasEventList
 
         const config = this.client.configManager.config[member.guild.id]?.verification;
 
-        if (!config?.enabled) {
+        if (!config?.enabled || !this.requiresVerification(member)) {
             return;
         }
 
@@ -94,6 +94,17 @@ export default class VerificationService extends Service implements HasEventList
             },
             timestamp: new Date().toISOString()
         });
+    }
+
+    requiresVerification(member: GuildMember) {
+        const config = this.client.configManager.config[member.guild.id]?.verification;
+
+        return (
+            config?.parameters?.always ||
+            (typeof config?.parameters?.age_less_than === "number" &&
+                Date.now() - member.user.createdAt.getTime() < config?.parameters?.age_less_than) ||
+            (config?.parameters?.no_avatar && member.user.avatar === null)
+        );
     }
 
     async createDatabaseEntry(member: GuildMember) {
