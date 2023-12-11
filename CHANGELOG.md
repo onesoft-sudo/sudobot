@@ -1,3 +1,12 @@
+## [7.3.3](https://github.com/onesoft-sudo/sudobot/compare/v7.3.2...v7.3.3) (2023-12-09)
+
+
+### Bug Fixes
+
+* **automod:verification:** update generated query params for the target url ([9283a89](https://github.com/onesoft-sudo/sudobot/commit/9283a89e620db590424664dec672ea79807ed694))
+
+
+
 ## [7.3.2](https://github.com/onesoft-sudo/sudobot/compare/v7.3.1...v7.3.2) (2023-12-08)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **automod:verification:** support `parameters` option ([65d3f8f](https://github.com/onesoft-sudo/sudobot/commit/65d3f8f7d97e12df4def46a62e8dc39da5bfe77b))
-
-
-
-# [7.1.0](https://github.com/onesoft-sudo/sudobot/compare/v7.0.0...v7.1.0) (2023-12-07)
-
-
-### Features
-
-* **automod:** verification system ([5f7e003](https://github.com/onesoft-sudo/sudobot/commit/5f7e0030d1c7fa0cd22b09c48c6396945786a5ad))
 
 
 

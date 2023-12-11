@@ -230,7 +230,7 @@ export default class VerificationService extends Service implements HasEventList
     }
 
     sendVerificationDMToMember(member: GuildMember, token: string) {
-        const url = `${process.env.FRONTEND_URL}/challenge/verify?t=${encodeURIComponent(token)}&u=${member.id}`;
+        const url = `${process.env.FRONTEND_URL}/challenge/verify?t=${encodeURIComponent(token)}&u=${member.id}&g=${member.guild.id}&n=${encodeURIComponent(member.guild.name)}`;
 
         return member.send({
             embeds: [
