@@ -1,21 +1,21 @@
 /*
-* This file is part of SudoBot.
-*
-* Copyright (C) 2021-2023 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2023 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 import axios from "axios";
 import { z } from "zod";
@@ -27,8 +27,51 @@ import Controller from "../Controller";
 import Request from "../Request";
 import Response from "../Response";
 
+const showInfoSchema = z.object({
+    token: z.string(),
+    userId: zSnowflake
+});
+
 export default class VerificationController extends Controller {
-    @Action("POST", "/challenge/verify")
+    @Action("GET", "/challenge/verify")
+    async showInfo(request: Request) {
+        const parsed = showInfoSchema.safeParse(request.query);
+
+        if (!parsed.success) {
+            return new Response({
+                status: 422,
+                body: "Invalid Payload"
+            });
+        }
+
+        const { token, userId } = parsed.data;
+
+        const info = await this.client.prisma.verificationEntry.findFirst({
+            where: {
+                userId,
+                token
+            }
+        });
+
+        const guild = this.client.guilds.cache.get(info?.guildId!);
+
+        if (!info || !guild) {
+            return new Response({
+                status: 404,
+                body: {
+                    error: "Not found"
+                }
+            });
+        }
+
+        return {
+            ...info,
+            guildName: guild.name,
+            icon: guild.icon
+        };
+    }
+
+    @Action("POST", "/challenge/verify/captcha")
     @Validate(
         z.object({
             responseToken: z.string(),
