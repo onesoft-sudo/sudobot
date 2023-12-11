@@ -1,3 +1,12 @@
+# [7.4.0](https://github.com/onesoft-sudo/sudobot/compare/v7.3.3...v7.4.0) (2023-12-11)
+
+
+### Features
+
+* **api:** add /challenge/verify endpoint to retrive meta info ([6082c76](https://github.com/onesoft-sudo/sudobot/commit/6082c7649d28958b5d76a42a6131ab60d9388f98))
+
+
+
 ## [7.3.3](https://github.com/onesoft-sudo/sudobot/compare/v7.3.2...v7.3.3) (2023-12-09)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **automod:verification:** support `action_on_fail` option ([32d3160](https://github.com/onesoft-sudo/sudobot/commit/32d3160ddfcd17369a9b9aebf8c9a052c3b27b95))
-
-
-
-# [7.2.0](https://github.com/onesoft-sudo/sudobot/compare/v7.1.0...v7.2.0) (2023-12-08)
-
-
-### Features
-
-* **automod:verification:** support `parameters` option ([65d3f8f](https://github.com/onesoft-sudo/sudobot/commit/65d3f8f7d97e12df4def46a62e8dc39da5bfe77b))
 
 
 
