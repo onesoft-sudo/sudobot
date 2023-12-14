@@ -28,6 +28,7 @@ import {
     Colors,
     Guild,
     GuildMember,
+    PartialGuildMember,
     escapeMarkdown,
     time
 } from "discord.js";
@@ -104,6 +105,15 @@ export default class VerificationService extends Service implements HasEventList
                 text: "Initiated"
             },
             timestamp: new Date().toISOString()
+        });
+    }
+
+    async onGuildMemberRemove(member: GuildMember | PartialGuildMember) {
+        await this.client.prisma.verificationEntry.deleteMany({
+            where: {
+                userId: member.user.id,
+                guildId: member.guild.id
+            }
         });
     }
 
@@ -230,7 +240,9 @@ export default class VerificationService extends Service implements HasEventList
     }
 
     sendVerificationDMToMember(member: GuildMember, token: string) {
-        const url = `${process.env.FRONTEND_URL}/challenge/verify?t=${encodeURIComponent(token)}&u=${member.id}&g=${member.guild.id}&n=${encodeURIComponent(member.guild.name)}`;
+        const url = `${process.env.FRONTEND_URL}/challenge/verify?t=${encodeURIComponent(token)}&u=${member.id}&g=${
+            member.guild.id
+        }&n=${encodeURIComponent(member.guild.name)}`;
 
         return member.send({
             embeds: [
@@ -293,7 +305,8 @@ export default class VerificationService extends Service implements HasEventList
     async attemptToVerifyUserByToken(userId: string, token: string) {
         const entry = await this.client.prisma.verificationEntry.findFirst({
             where: {
-                userId
+                userId,
+                token
             }
         });
 
