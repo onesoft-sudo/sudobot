@@ -1,3 +1,12 @@
+## [7.4.1](https://github.com/onesoft-sudo/sudobot/compare/v7.4.0...v7.4.1) (2023-12-14)
+
+
+### Bug Fixes
+
+* verification service misbehaving ([dc5bb41](https://github.com/onesoft-sudo/sudobot/commit/dc5bb411a5f928ff6d96a80ac066b2d9ee1319f5))
+
+
+
 # [7.4.0](https://github.com/onesoft-sudo/sudobot/compare/v7.3.3...v7.4.0) (2023-12-11)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **automod:verification:** add missing userId query parameter to the DM url ([0541533](https://github.com/onesoft-sudo/sudobot/commit/0541533ee0ef89c930209ca52fb333dcdc4cf825))
-
-
-
-# [7.3.0](https://github.com/onesoft-sudo/sudobot/compare/v7.2.0...v7.3.0) (2023-12-08)
-
-
-### Features
-
-* **automod:verification:** support `action_on_fail` option ([32d3160](https://github.com/onesoft-sudo/sudobot/commit/32d3160ddfcd17369a9b9aebf8c9a052c3b27b95))
 
 
 
