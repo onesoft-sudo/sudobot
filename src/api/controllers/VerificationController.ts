@@ -18,6 +18,8 @@
  */
 
 import axios from "axios";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { Action } from "../../decorators/Action";
 import { Validate } from "../../decorators/Validate";
@@ -71,6 +73,84 @@ export default class VerificationController extends Controller {
         };
     }
 
+    @Action("PUT", "/challenge/verify/email/initiate")
+    @Validate(
+        z.object({
+            verificationToken: z.string(),
+            email: z.string().email(),
+            userId: zSnowflake
+        })
+    )
+    async verifyByEmail(request: Request) {
+        const { email, verificationToken, userId } = request.parsedBody;
+        const key = request.headers["x-frontend-key"];
+
+        if (key !== process.env.FRONTEND_AUTH_KEY) {
+            return new Response({
+                status: 401,
+                body: {
+                    error: "Unauthorized"
+                }
+            });
+        }
+
+        const entry = await this.client.prisma.verificationEntry.findFirst({
+            where: {
+                userId,
+                token: verificationToken
+            }
+        });
+
+        if (!entry) {
+            return new Response({
+                status: 401,
+                body: {
+                    error: "Unauthorized"
+                }
+            });
+        }
+
+        const config = this.client.configManager.config[entry.guildId!]?.verification;
+        const seed = await bcrypt.hash((Math.random() * 100000000).toString(), await bcrypt.genSalt());
+        const emailVerificationToken = jwt.sign(
+            {
+                seed,
+                userId: entry.userId,
+                email
+            },
+            process.env.JWT_SECRET!,
+            {
+                expiresIn: config?.max_time === 0 ? undefined : config?.max_time,
+                issuer: `SudoBot`,
+                subject: "Email Verification Token"
+            }
+        );
+
+        await this.client.prisma.verificationEntry.update({
+            where: {
+                id: entry.id
+            },
+            data: {
+                meta: {
+                    email,
+                    emailVerificationToken
+                }
+            }
+        });
+
+        return {
+            success: true,
+            data: {
+                ...entry,
+                guildName: this.client.guilds.cache.get(entry.guildId)?.name,
+                meta: {
+                    email,
+                    emailVerificationToken
+                }
+            }
+        };
+    }
+
     @Action("POST", "/challenge/verify/captcha")
     @Validate(
         z.object({
@@ -79,7 +159,7 @@ export default class VerificationController extends Controller {
             userId: zSnowflake
         })
     )
-    async verify(request: Request) {
+    async verifyByCaptcha(request: Request) {
         const { responseToken, verificationToken, userId } = request.parsedBody;
 
         try {
