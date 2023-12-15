@@ -1,3 +1,12 @@
+# [7.5.0](https://github.com/onesoft-sudo/sudobot/compare/v7.4.1...v7.5.0) (2023-12-15)
+
+
+### Features
+
+* email verification support ([97e147f](https://github.com/onesoft-sudo/sudobot/commit/97e147f59c3d7ff90f8bfefe2514c215f26a7b07))
+
+
+
 ## [7.4.1](https://github.com/onesoft-sudo/sudobot/compare/v7.4.0...v7.4.1) (2023-12-14)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **automod:verification:** runtime errors ([e65aef8](https://github.com/onesoft-sudo/sudobot/commit/e65aef8989372cfcb6ddd5b4a42aca66d0d2ef21))
-
-
-
-## [7.3.1](https://github.com/onesoft-sudo/sudobot/compare/v7.3.0...v7.3.1) (2023-12-08)
-
-
-### Bug Fixes
-
-* **automod:verification:** add missing userId query parameter to the DM url ([0541533](https://github.com/onesoft-sudo/sudobot/commit/0541533ee0ef89c930209ca52fb333dcdc4cf825))
 
 
 
