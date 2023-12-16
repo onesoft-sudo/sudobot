@@ -61,6 +61,6 @@ export default class GuildBanAddEvent extends EventListener<Events.GuildBanAdd> 
             } catch (e) {
                 logError(e);
             }
-        }, 3500);
+        }, 5500);
     }
 }
