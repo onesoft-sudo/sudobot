@@ -1,3 +1,12 @@
+## [7.5.1](https://github.com/onesoft-sudo/sudobot/compare/v7.5.0...v7.5.1) (2023-12-16)
+
+
+### Bug Fixes
+
+* **logging:** ban reasons not showing up ([510a584](https://github.com/onesoft-sudo/sudobot/commit/510a584c02409b1a724003d50bdb99967ee6a0fb))
+
+
+
 # [7.5.0](https://github.com/onesoft-sudo/sudobot/compare/v7.4.1...v7.5.0) (2023-12-15)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **automod:verification:** update generated query params for the target url ([9283a89](https://github.com/onesoft-sudo/sudobot/commit/9283a89e620db590424664dec672ea79807ed694))
-
-
-
-## [7.3.2](https://github.com/onesoft-sudo/sudobot/compare/v7.3.1...v7.3.2) (2023-12-08)
-
-
-### Bug Fixes
-
-* **automod:verification:** runtime errors ([e65aef8](https://github.com/onesoft-sudo/sudobot/commit/e65aef8989372cfcb6ddd5b4a42aca66d0d2ef21))
 
 
 
