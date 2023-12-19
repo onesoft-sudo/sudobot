@@ -1,3 +1,18 @@
+# [7.6.0](https://github.com/onesoft-sudo/sudobot/compare/v7.5.1...v7.6.0) (2023-12-19)
+
+
+### Bug Fixes
+
+* **commands:** make reason optional in `sysban` command ([ee9caca](https://github.com/onesoft-sudo/sudobot/commit/ee9caca5592d17aa882293aa22c52e996048aa5a))
+
+
+### Features
+
+* **auth:** banning users from the system ([be65452](https://github.com/onesoft-sudo/sudobot/commit/be65452bdbf92fa8adc99dbb432c92f6d62b8ed8))
+* **system:** add `sysban` and `sysunban` commands ([285efa5](https://github.com/onesoft-sudo/sudobot/commit/285efa57816668dd953182627641cc7972dd5df2))
+
+
+
 ## [7.5.1](https://github.com/onesoft-sudo/sudobot/compare/v7.5.0...v7.5.1) (2023-12-16)
 
 
@@ -31,15 +46,6 @@
 ### Features
 
 * **api:** add /challenge/verify endpoint to retrive meta info ([6082c76](https://github.com/onesoft-sudo/sudobot/commit/6082c7649d28958b5d76a42a6131ab60d9388f98))
-
-
-
-## [7.3.3](https://github.com/onesoft-sudo/sudobot/compare/v7.3.2...v7.3.3) (2023-12-09)
-
-
-### Bug Fixes
-
-* **automod:verification:** update generated query params for the target url ([9283a89](https://github.com/onesoft-sudo/sudobot/commit/9283a89e620db590424664dec672ea79807ed694))
 
 
 
