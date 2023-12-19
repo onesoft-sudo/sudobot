@@ -20,7 +20,7 @@
 import { User } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { add } from "date-fns";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, escapeMarkdown } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Snowflake, escapeMarkdown } from "discord.js";
 import jwt from "jsonwebtoken";
 import { randomInt } from "node:crypto";
 import { request as undiciRequest } from "undici";
@@ -34,6 +34,18 @@ import Request from "../Request";
 import Response from "../Response";
 
 export default class AuthController extends Controller {
+    private isBannedUser(discordId?: Snowflake | null) {
+        if (!discordId) {
+            return true;
+        }
+
+        if (this.client.commandManager.isBanned(discordId)) {
+            return true;
+        }
+
+        return false;
+    }
+
     private async genToken(user: User) {
         if (!user.token || (user.token && user.tokenExpiresAt && user.tokenExpiresAt.getTime() <= Date.now())) {
             user.token = jwt.sign(
@@ -85,6 +97,15 @@ export default class AuthController extends Controller {
                 status: 403,
                 body: {
                     error: "Invalid username or code provided"
+                }
+            });
+        }
+
+        if (this.isBannedUser(user.discordId)) {
+            return new Response({
+                status: 403,
+                body: {
+                    error: "Forbidden"
                 }
             });
         }
@@ -150,6 +171,15 @@ export default class AuthController extends Controller {
                 status: 403,
                 body: {
                     error: "Invalid username or token provided"
+                }
+            });
+        }
+
+        if (this.isBannedUser(user.discordId)) {
+            return new Response({
+                status: 403,
+                body: {
+                    error: "Forbidden"
                 }
             });
         }
@@ -251,6 +281,15 @@ export default class AuthController extends Controller {
                 status: 403,
                 body: {
                     error: "Invalid username provided"
+                }
+            });
+        }
+
+        if (this.isBannedUser(user.discordId)) {
+            return new Response({
+                status: 403,
+                body: {
+                    error: "Forbidden"
                 }
             });
         }
@@ -367,6 +406,15 @@ export default class AuthController extends Controller {
             });
         }
 
+        if (this.isBannedUser(user.discordId)) {
+            return new Response({
+                status: 403,
+                body: {
+                    error: "Unable to log in"
+                }
+            });
+        }
+
         await this.genToken(user);
 
         const guilds = [];
@@ -458,6 +506,15 @@ export default class AuthController extends Controller {
 
             if (!user) {
                 return new Response({ status: 400, body: "Access denied, no such user found" });
+            }
+
+            if (this.isBannedUser(user.discordId)) {
+                return new Response({
+                    status: 403,
+                    body: {
+                        error: "Unable to log in"
+                    }
+                });
             }
 
             await this.genToken(user);
