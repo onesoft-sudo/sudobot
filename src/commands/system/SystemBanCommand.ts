@@ -39,7 +39,8 @@ export default class SystemBanCommand extends Command {
         {
             types: [ArgumentType.StringRest],
             name: "reason",
-            default: null
+            default: null,
+            optional: true
         }
     ];
     public readonly aliases = ["sysban"];
