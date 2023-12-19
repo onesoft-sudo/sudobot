@@ -17,7 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ChatInputCommandInteraction, ContextMenuCommandInteraction, Message } from "discord.js";
+import { GlobalUserBan } from "@prisma/client";
+import { ChatInputCommandInteraction, Collection, ContextMenuCommandInteraction, Message, Snowflake, User } from "discord.js";
 import { CommandMessage } from "../core/Command";
 import Service from "../core/Service";
 import { log, logError, logWarn } from "../utils/logger";
@@ -56,6 +57,99 @@ export interface ContextMenuCommandContext extends CommandContext {
 }
 
 export default class CommandManager extends Service {
+    protected readonly userBans = new Collection<Snowflake, GlobalUserBan>();
+
+    async boot() {
+        const bans = await this.client.prisma.globalUserBan.findMany();
+
+        for (const ban of bans) {
+            this.userBans.set(ban.userId, ban);
+        }
+    }
+
+    getBan(userId: Snowflake) {
+        return this.userBans.get(userId);
+    }
+
+    isBanned(userId: Snowflake) {
+        return this.userBans.has(userId);
+    }
+
+    async addBan(userId: Snowflake, executorId: Snowflake, reason: string | null = null) {
+        if (this.isBanned(userId)) {
+            throw new Error("This user is already banned");
+        }
+
+        const ban = await this.client.prisma.globalUserBan.create({
+            data: {
+                userId,
+                reason,
+                executorId
+            }
+        });
+
+        this.userBans.set(ban.userId, ban);
+        return ban;
+    }
+
+    async removeBan(userId: Snowflake) {
+        const ban = this.getBan(userId);
+
+        if (!ban) {
+            return null;
+        }
+
+        const info = await this.client.prisma.globalUserBan.delete({
+            where: {
+                id: ban.id
+            }
+        });
+
+        this.userBans.delete(ban.userId);
+        return info;
+    }
+
+    async notifyBannedUser(user: User) {
+        const ban = this.getBan(user.id);
+
+        if (ban) {
+            const newBan = await this.client.prisma.globalUserBan.update({
+                where: {
+                    id: ban.id
+                },
+                data: {
+                    notified: true
+                }
+            });
+
+            this.userBans.set(ban.userId, newBan);
+
+            await user
+                .send({
+                    embeds: [
+                        {
+                            author: {
+                                icon_url: this.client.user?.displayAvatarURL(),
+                                name: "You have been banned from using SudoBot"
+                            },
+                            description: `You won't be able to use SudoBot anymore, and your SudoBot account will be terminated. Please try not to violate the SudoBot [Terms of Service](https://docs.sudobot.org/legal/terms) before we take action on your account.`,
+                            fields: [
+                                {
+                                    name: "Reason",
+                                    value: ban.reason ?? "No reason provided"
+                                }
+                            ],
+                            color: 0xf14a60,
+                            timestamp: new Date().toISOString()
+                        }
+                    ]
+                })
+                .catch(logError);
+
+            return newBan;
+        }
+    }
+
     public async runCommandFromMessage(message: Message, checkOnly = false, wait: boolean = false) {
         if (!message.content) return;
 
