@@ -68,21 +68,21 @@ model Queue {
 }
 
 model Snippet {
-    id               Int              @id @default(autoincrement())
-    name             String
-    user_id          String
-    guild_id         String
-    roles            String[]         @default([])
-    channels         String[]         @default([])
-    users            String[]         @default([])
-    attachments      String[]         @default([])
-    content          String[]         @default([])
-    randomize        Boolean          @default(false)
-    permissions String[] @default([])
+    id             Int                 @id @default(autoincrement())
+    name           String
+    user_id        String
+    guild_id       String
+    roles          String[]            @default([])
+    channels       String[]            @default([])
+    users          String[]            @default([])
+    attachments    String[]            @default([])
+    content        String[]            @default([])
+    randomize      Boolean             @default(false)
+    permissions    String[]            @default([])
     permissionMode PermissionLogicMode @default(AND)
-    level            Int?
-    createdAt        DateTime         @default(now())
-    updatedAt        DateTime         @default(now()) @updatedAt
+    level          Int?
+    createdAt      DateTime            @default(now())
+    updatedAt      DateTime            @default(now()) @updatedAt
 
     @@map("snippets")
 }
@@ -101,7 +101,7 @@ model ChannelLock {
 model PermissionOverwrite {
     id                 Int      @id @default(autoincrement())
     name               String?
-    guildId           String
+    guildId            String
     roles              String[] @default([])
     users              String[] @default([])
     grantedPermissions String[] @default([])
@@ -217,7 +217,7 @@ model PermissionLevel {
     id                 Int      @id @default(autoincrement())
     guildId            String
     level              Int
-    disabled            Boolean @default(false)
+    disabled           Boolean  @default(false)
     grantedPermissions String[] @default([])
     roles              String[] @default([])
     users              String[] @default([])
@@ -243,14 +243,26 @@ model Review {
 }
 
 model VerificationEntry {
-    id            Int      @id @default(autoincrement())
-    userId String
-    token String @unique
-    guildId String
-    attempts Int @default(0)
-    meta Json?
-    createdAt     DateTime @default(now())
-    updatedAt     DateTime @default(now()) @updatedAt
+    id        Int      @id @default(autoincrement())
+    userId    String
+    token     String   @unique
+    guildId   String
+    attempts  Int      @default(0)
+    meta      Json?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
 
     @@map("verification_entries")
+}
+
+model GlobalUserBan {
+    id        Int      @id @default(autoincrement())
+    userId    String   @unique
+    reason    String?
+    executorId String
+    notified Boolean @default(false)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    @@map("global_user_bans")
 }
