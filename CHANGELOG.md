@@ -1,3 +1,12 @@
+# [7.7.0](https://github.com/onesoft-sudo/sudobot/compare/v7.6.0...v7.7.0) (2023-12-19)
+
+
+### Features
+
+* **api:** disallow banned users to log in or reset password ([7c15d99](https://github.com/onesoft-sudo/sudobot/commit/7c15d99a5a6f0adbfdd4da947ebbb7314aa2820a))
+
+
+
 # [7.6.0](https://github.com/onesoft-sudo/sudobot/compare/v7.5.1...v7.6.0) (2023-12-19)
 
 
@@ -37,15 +46,6 @@
 ### Bug Fixes
 
 * verification service misbehaving ([dc5bb41](https://github.com/onesoft-sudo/sudobot/commit/dc5bb411a5f928ff6d96a80ac066b2d9ee1319f5))
-
-
-
-# [7.4.0](https://github.com/onesoft-sudo/sudobot/compare/v7.3.3...v7.4.0) (2023-12-11)
-
-
-### Features
-
-* **api:** add /challenge/verify endpoint to retrive meta info ([6082c76](https://github.com/onesoft-sudo/sudobot/commit/6082c7649d28958b5d76a42a6131ab60d9388f98))
 
 
 
