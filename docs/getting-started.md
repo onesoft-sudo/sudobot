@@ -140,7 +140,7 @@ If you're using an IDE or editor like [VS Code](https://code.visualstudio.com/) 
 If you want to use the application slash commands and context menu commands of SudoBot, you have to register it to the API first. To do that, simply run:
 
 ```
-npx ts-node scripts/deploy-commands.ts
+node scripts/deploy-commands.js
 ```
 
 Pass the `--guild` option to register guild commands instead of global commands, and `--clear` to clear all the registered slash commands in the API.
