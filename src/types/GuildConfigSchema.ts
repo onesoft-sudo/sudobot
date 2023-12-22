@@ -108,7 +108,7 @@ export const GuildConfigSchema = z.object({
     message_reporting: z
         .object({
             enabled: z.boolean().default(false),
-            channel: zSnowflake.optional(),
+            logging_channel: zSnowflake.optional(),
             users: z.array(zSnowflake).default([]),
             roles: z.array(zSnowflake).default([]),
             permissions: z.array(z.string()).default([]),

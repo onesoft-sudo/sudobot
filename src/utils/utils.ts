@@ -297,3 +297,7 @@ export function isSystemAdmin(client: Client, userId: string) {
 export function assertUnreachable(_value: never): never {
     throw new Error("This statement should be unreachable");
 }
+
+export function TODO(message?: string): never {
+    throw new Error(message ?? "Not implemented");
+}

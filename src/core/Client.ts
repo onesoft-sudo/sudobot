@@ -31,7 +31,7 @@ import type FileFilterService from "../automod/FileFilterService";
 import type MessageFilter from "../automod/MessageFilter";
 import type MessageRuleService from "../automod/MessageRuleService";
 import type ProfileFilter from "../automod/ProfileFilter";
-import VerificationService from "../automod/VerificationService";
+import type VerificationService from "../automod/VerificationService";
 import { SuppressErrorsMetadata } from "../decorators/SuppressErrors";
 import type AFKService from "../services/AFKService";
 import type AutoRoleService from "../services/AutoRoleService";
@@ -39,7 +39,7 @@ import type BallotManager from "../services/BallotManager";
 import type BumpReminderService from "../services/BumpReminderService";
 import type ChannelLockManager from "../services/ChannelLockManager";
 import type CommandManager from "../services/CommandManager";
-import CommandPermissionOverwriteManager from "../services/CommandPermissionOverwriteManager";
+import type CommandPermissionOverwriteManager from "../services/CommandPermissionOverwriteManager";
 import type ConfigManager from "../services/ConfigManager";
 import type CooldownService from "../services/CooldownService";
 import type ExtensionService from "../services/ExtensionService";
@@ -53,6 +53,7 @@ import type PermissionManager from "../services/PermissionManager";
 import type QueueManager from "../services/QueueManager";
 import type QuickMuteService from "../services/QuickMuteService";
 import type ReactionRoleService from "../services/ReactionRoleService";
+import type ReportService from "../services/ReportService";
 import type SnippetManager from "../services/SnippetManager";
 import type StartupManager from "../services/StartupManager";
 import type TranslationService from "../services/TranslationService";
@@ -96,6 +97,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@services/CooldownService",
         "@services/KeypressHandlerService",
         "@services/CommandPermissionOverwriteManager",
+        "@services/ReportService",
 
         "@automod/MessageFilter",
         "@automod/Antispam",
@@ -146,6 +148,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     cooldown: CooldownService = {} as CooldownService;
     keypressHandler: KeypressHandlerService = {} as KeypressHandlerService;
     verification: VerificationService = {} as VerificationService;
+    reportService: ReportService = {} as ReportService;
     commandPermissionOverwriteManager: CommandPermissionOverwriteManager = {} as CommandPermissionOverwriteManager;
 
     prisma = new PrismaClient({

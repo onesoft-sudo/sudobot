@@ -17,19 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-    ApplicationCommandType,
-    Colors,
-    EmbedBuilder,
-    GuildMember,
-    MessageContextMenuCommandInteraction,
-    PermissionsString
-} from "discord.js";
+import { ApplicationCommandType, GuildMember, MessageContextMenuCommandInteraction, PermissionsString } from "discord.js";
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 import { ContextMenuCommandContext } from "../../services/CommandManager";
-import { channelInfo, messageInfo, userInfo } from "../../utils/embed";
-import { safeChannelFetch } from "../../utils/fetch";
-import { logError } from "../../utils/logger";
 
 export default class ReportMessageCommand extends Command {
     public readonly name = "Report Message";
@@ -80,11 +70,6 @@ export default class ReportMessageCommand extends Command {
             return;
         }
 
-        if (!(await this.permissionCheck(interaction))) {
-            await this.error(interaction, "You don't have permission to run this command");
-            return;
-        }
-
         if (!this.client.configManager.config[interaction.guildId!]?.message_reporting?.enabled) {
             await interaction.editReply({
                 content: "This server has message reporting turned off. Please turn it on to use this command."
@@ -93,88 +78,22 @@ export default class ReportMessageCommand extends Command {
             return;
         }
 
-        const channelId =
-            this.client.configManager.config[interaction.guildId!]?.message_reporting?.channel ??
-            this.client.configManager.config[interaction.guildId!]?.logging?.primary_channel;
+        const { error } = await this.client.reportService.report({
+            guildId: interaction.guildId!,
+            moderator: interaction.member as GuildMember,
+            message: interaction.targetMessage
+        });
 
-        if (!channelId) {
+        if (error) {
             await interaction.editReply({
-                content: "This server does not have report logging channel set up. Please set it up first."
+                content: error
             });
 
             return;
         }
 
-        const channel = await safeChannelFetch(interaction.guild!, channelId!);
-
-        if (!channel?.isTextBased()) {
-            await interaction.editReply({
-                content: "Could not send the reported message to the log channel. This is probably due to a misconfiguration."
-            });
-            return;
-        }
-
-        let url = "";
-
-        try {
-            url = (
-                await channel.send({
-                    embeds: [
-                        new EmbedBuilder({
-                            color: Colors.Red,
-                            title: "Message reported",
-                            author: {
-                                name: targetMessage.author.username,
-                                icon_url: targetMessage.author.displayAvatarURL()
-                            },
-                            description: targetMessage.content ?? "No content",
-                            fields: [
-                                {
-                                    name: "User",
-                                    value: userInfo(targetMessage.author),
-                                    inline: true
-                                },
-                                {
-                                    name: "Reported By",
-                                    value: userInfo(interaction.user),
-                                    inline: true
-                                },
-                                {
-                                    name: "Message",
-                                    value: messageInfo(targetMessage)
-                                },
-                                {
-                                    name: "Channel",
-                                    value: channelInfo(targetMessage.channel)
-                                }
-                            ],
-                            footer: {
-                                text: "Reported"
-                            }
-                        }).setTimestamp()
-                    ],
-                    files: targetMessage.attachments.toJSON()
-                })
-            ).url;
-        } catch (e) {
-            logError(e);
-            await this.error(
-                interaction,
-                "Could not send the reported message into the log channel! Make sure I have enough permissions."
-            );
-            return;
-        }
-
-        try {
-            await targetMessage.delete();
-        } catch (e) {
-            logError(e);
-            await this.error(interaction, "Could not remove the reported message! Make sure I have enough permissions.");
-        }
-
-        await this.success(
-            interaction,
-            `The message was reported and removed. [Click here](${url}) to nagivate to the reported message.`
-        );
+        await interaction.editReply({
+            content: "Successfully reported the message."
+        });
     }
 }
