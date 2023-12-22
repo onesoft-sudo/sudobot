@@ -39,7 +39,7 @@ If you like the bot, then please make sure to star this repository! And also if 
 
 ### Getting started
 
-You can request an invitation for SudoBot [here](https://discord.gg/pazm3tqYh5), it's completely free.
+You can request an invitation for SudoBot [here](https://discord.gg/pazm3tqYh5), it's completely free, and you can ask us for help anytime.
 Alternatively, you can create your own Discord API application and then host SudoBot.
 
 ### Setup for Custom Hosting
