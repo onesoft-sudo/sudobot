@@ -1,3 +1,13 @@
+## [7.10.1](https://github.com/onesoft-sudo/sudobot/compare/v7.10.0...v7.10.1) (2023-12-24)
+
+
+### Bug Fixes
+
+* **core:permissions:discord:** denying actions for simple role-less setups ([a203e39](https://github.com/onesoft-sudo/sudobot/commit/a203e39f8b5a2d5cbda627247b7da2888ebe1a55))
+* discord based permission system ([465b5f6](https://github.com/onesoft-sudo/sudobot/commit/465b5f620550eb0384d4ee6cc488bce7fec55c51))
+
+
+
 # [7.10.0](https://github.com/onesoft-sudo/sudobot/compare/v7.9.0...v7.10.0) (2023-12-24)
 
 
@@ -31,21 +41,6 @@
 ### Features
 
 * **api:** disallow banned users to log in or reset password ([7c15d99](https://github.com/onesoft-sudo/sudobot/commit/7c15d99a5a6f0adbfdd4da947ebbb7314aa2820a))
-
-
-
-# [7.6.0](https://github.com/onesoft-sudo/sudobot/compare/v7.5.1...v7.6.0) (2023-12-19)
-
-
-### Bug Fixes
-
-* **commands:** make reason optional in `sysban` command ([ee9caca](https://github.com/onesoft-sudo/sudobot/commit/ee9caca5592d17aa882293aa22c52e996048aa5a))
-
-
-### Features
-
-* **auth:** banning users from the system ([be65452](https://github.com/onesoft-sudo/sudobot/commit/be65452bdbf92fa8adc99dbb432c92f6d62b8ed8))
-* **system:** add `sysban` and `sysunban` commands ([285efa5](https://github.com/onesoft-sudo/sudobot/commit/285efa57816668dd953182627641cc7972dd5df2))
 
 
 
