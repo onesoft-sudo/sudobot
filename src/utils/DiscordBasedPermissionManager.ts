@@ -30,7 +30,7 @@ export default class DiscordBasedPermissionManager extends AbstractPermissionMan
         member: GuildMember,
         permission?: PermissionResolvable | PermissionResolvable[] | undefined
     ): Awaitable<boolean> {
-        return true;
+        return false;
     }
 
     getMemberPermissions(
