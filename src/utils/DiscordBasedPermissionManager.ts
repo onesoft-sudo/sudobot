@@ -23,14 +23,14 @@ import AbstractPermissionManager from "./AbstractPermissionManager";
 
 export default class DiscordBasedPermissionManager extends AbstractPermissionManager {
     shouldModerate(member: GuildMember, moderator: GuildMember) {
-        return false;
+        return true;
     }
 
     isImmuneToAutoMod(
         member: GuildMember,
         permission?: PermissionResolvable | PermissionResolvable[] | undefined
     ): Awaitable<boolean> {
-        return false;
+        return true;
     }
 
     getMemberPermissions(
