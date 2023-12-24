@@ -1,3 +1,12 @@
+# [7.8.0](https://github.com/onesoft-sudo/sudobot/compare/v7.7.0...v7.8.0) (2023-12-22)
+
+
+### Features
+
+* **moderation:** add reporting system (incomplete) ([394cf8d](https://github.com/onesoft-sudo/sudobot/commit/394cf8dc5ce2a87af89812fb9074f13f85804588))
+
+
+
 # [7.7.0](https://github.com/onesoft-sudo/sudobot/compare/v7.6.0...v7.7.0) (2023-12-19)
 
 
@@ -37,15 +46,6 @@
 ### Features
 
 * email verification support ([97e147f](https://github.com/onesoft-sudo/sudobot/commit/97e147f59c3d7ff90f8bfefe2514c215f26a7b07))
-
-
-
-## [7.4.1](https://github.com/onesoft-sudo/sudobot/compare/v7.4.0...v7.4.1) (2023-12-14)
-
-
-### Bug Fixes
-
-* verification service misbehaving ([dc5bb41](https://github.com/onesoft-sudo/sudobot/commit/dc5bb411a5f928ff6d96a80ac066b2d9ee1319f5))
 
 
 
