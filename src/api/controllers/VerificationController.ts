@@ -17,9 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { VerificationEntry } from "@prisma/client";
 import axios from "axios";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { Action } from "../../decorators/Action";
 import { Validate } from "../../decorators/Validate";
@@ -34,7 +34,21 @@ const showInfoSchema = z.object({
     userId: zSnowflake
 });
 
+const emailVerificationSchema = z.object({
+    emailVerificationToken: z.string(),
+    verificationToken: z.string(),
+    userId: zSnowflake
+});
+
 export default class VerificationController extends Controller {
+    checkExpiry(entry: VerificationEntry) {
+        const config = this.client.configManager.config[entry.guildId!]?.verification;
+        return (
+            entry.createdAt.getTime() + (config?.max_time ?? 0) > Date.now() &&
+            entry.attempts <= ((config?.max_attempts ?? 0) === 0 ? Number.POSITIVE_INFINITY : config!.max_attempts)
+        );
+    }
+
     @Action("GET", "/challenge/verify")
     async showInfo(request: Request) {
         const parsed = showInfoSchema.safeParse(request.query);
@@ -57,7 +71,7 @@ export default class VerificationController extends Controller {
 
         const guild = this.client.guilds.cache.get(info?.guildId!);
 
-        if (!info || !guild) {
+        if (!info || !guild || !this.checkExpiry(info)) {
             return new Response({
                 status: 404,
                 body: {
@@ -101,7 +115,7 @@ export default class VerificationController extends Controller {
             }
         });
 
-        if (!entry) {
+        if (!entry || !this.checkExpiry(entry)) {
             return new Response({
                 status: 401,
                 body: {
@@ -110,21 +124,7 @@ export default class VerificationController extends Controller {
             });
         }
 
-        const config = this.client.configManager.config[entry.guildId!]?.verification;
-        const seed = await bcrypt.hash((Math.random() * 100000000).toString(), await bcrypt.genSalt());
-        const emailVerificationToken = jwt.sign(
-            {
-                seed,
-                userId: entry.userId,
-                email
-            },
-            process.env.JWT_SECRET!,
-            {
-                expiresIn: config?.max_time === 0 ? undefined : config?.max_time,
-                issuer: `SudoBot`,
-                subject: "Email Verification Token"
-            }
-        );
+        const emailVerificationToken = await bcrypt.hash(userId + (Math.random() * 100000000).toString(), await bcrypt.genSalt());
 
         await this.client.prisma.verificationEntry.update({
             where: {
@@ -148,6 +148,58 @@ export default class VerificationController extends Controller {
                     emailVerificationToken
                 }
             }
+        };
+    }
+
+    @Action("POST", "/challenge/verify/email/finish")
+    @Validate(emailVerificationSchema)
+    async verifyByEmailFinish(request: Request) {
+        const { emailVerificationToken, verificationToken, userId } = request.parsedBody;
+
+        const entry = await this.client.prisma.verificationEntry.findFirst({
+            where: {
+                userId,
+                token: verificationToken
+            }
+        });
+
+        if (!entry || !this.checkExpiry(entry) || typeof entry.meta !== "object") {
+            return new Response({
+                status: 401,
+                body: {
+                    error: "Unauthorized"
+                }
+            });
+        }
+
+        const info = entry.meta as {
+            emailVerificationToken: string;
+            email: string;
+        };
+
+        if (!info.emailVerificationToken || !info.email || info.emailVerificationToken !== emailVerificationToken) {
+            return new Response({
+                status: 403,
+                body: {
+                    error: "Forbidden"
+                }
+            });
+        }
+
+        const result = await this.client.verification.attemptToVerifyUserByToken(userId, verificationToken, "Email");
+
+        if (!result) {
+            return new Response({
+                status: 401,
+                body: {
+                    success: false,
+                    error: "We were unable to verify you."
+                }
+            });
+        }
+
+        return {
+            success: true
         };
     }
 
@@ -191,7 +243,7 @@ export default class VerificationController extends Controller {
             });
         }
 
-        const result = await this.client.verification.attemptToVerifyUserByToken(userId, verificationToken);
+        const result = await this.client.verification.attemptToVerifyUserByToken(userId, verificationToken, "Captcha");
 
         if (!result) {
             return new Response({

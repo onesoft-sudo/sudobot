@@ -42,6 +42,7 @@ import { logError } from "../utils/logger";
 export const name = "verification";
 
 export default class VerificationService extends Service implements HasEventListeners {
+    // FIXME: do not create doubled entries if the user leaves and rejoins
     async onGuildMemberAdd(member: GuildMember) {
         if (member.user.bot) {
             return;
@@ -302,7 +303,7 @@ export default class VerificationService extends Service implements HasEventList
         });
     }
 
-    async attemptToVerifyUserByToken(userId: string, token: string) {
+    async attemptToVerifyUserByToken(userId: string, token: string, method: string) {
         const entry = await this.client.prisma.verificationEntry.findFirst({
             where: {
                 userId,
@@ -383,6 +384,10 @@ export default class VerificationService extends Service implements HasEventList
                                 ? `${formatDistanceToNowStrict(new Date(Date.now() - remainingTime))} remaining`
                                 : `Session never expires`
                         })`
+                    },
+                    {
+                        name: "Method",
+                        value: method
                     }
                 ],
                 footer: {
@@ -423,6 +428,10 @@ export default class VerificationService extends Service implements HasEventList
                 {
                     name: "User",
                     value: member ? userInfo(member.user) : entry.userId
+                },
+                {
+                    name: "Method",
+                    value: method
                 }
             ],
             footer: {
