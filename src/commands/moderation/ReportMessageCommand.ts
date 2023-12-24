@@ -44,11 +44,11 @@ export default class ReportMessageCommand extends Command {
         }
 
         if (
-            config?.permissionLevel !== undefined &&
-            config?.permissionLevel >= 0 &&
+            config?.permission_level !== undefined &&
+            config?.permission_level >= 0 &&
             this.client.permissionManager.usesLevelBasedMode(member.guild.id) &&
             (await this.client.permissionManager.getManager(member.guild.id)).getPermissionLevel(member) >=
-                config?.permissionLevel
+                config?.permission_level
         ) {
             return true;
         }

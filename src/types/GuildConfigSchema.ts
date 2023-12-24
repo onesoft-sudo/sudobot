@@ -112,7 +112,16 @@ export const GuildConfigSchema = z.object({
             users: z.array(zSnowflake).default([]),
             roles: z.array(zSnowflake).default([]),
             permissions: z.array(z.string()).default([]),
-            permissionLevel: z.number().int().min(-1).max(100).default(-1).optional()
+            permission_level: z.number().int().min(-1).max(100).default(-1).optional(),
+            action_required_permissions: z
+                .object({
+                    ban: z.array(z.string()).default(["BanMembers"]),
+                    kick: z.array(z.string()).default(["KickMembers"]),
+                    mute: z.array(z.string()).default(["or", "ModerateMembers", "ManageMessages"]),
+                    warn: z.array(z.string()).default(["or", "ModerateMembers", "ManageMessages"]),
+                    ignore: z.array(z.string()).default(["or", "ModerateMembers", "ManageMessages", "BanMembers", "KickMembers"])
+                })
+                .default({})
         })
         .optional(),
     invite_tracking: z
