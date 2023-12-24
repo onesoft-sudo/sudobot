@@ -85,7 +85,7 @@ export default class PermissionManager<M extends AbstractPermissionManager = Abs
         for (const roleId of invincible_roles) {
             if (member.roles.cache.has(roleId)) {
                 log("Member has roles that are immune to this action");
-                return false;
+                return true;
             }
         }
 
