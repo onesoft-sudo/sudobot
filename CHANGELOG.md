@@ -1,3 +1,12 @@
+## [7.10.2](https://github.com/onesoft-sudo/sudobot/compare/v7.10.1...v7.10.2) (2023-12-24)
+
+
+### Bug Fixes
+
+* **core:permissions:** automod permission checking error ([e192d36](https://github.com/onesoft-sudo/sudobot/commit/e192d3608739d53de1694522ee5efc8f9c8c1e37))
+
+
+
 ## [7.10.1](https://github.com/onesoft-sudo/sudobot/compare/v7.10.0...v7.10.1) (2023-12-24)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * **moderation:** add reporting system (incomplete) ([394cf8d](https://github.com/onesoft-sudo/sudobot/commit/394cf8dc5ce2a87af89812fb9074f13f85804588))
-
-
-
-# [7.7.0](https://github.com/onesoft-sudo/sudobot/compare/v7.6.0...v7.7.0) (2023-12-19)
-
-
-### Features
-
-* **api:** disallow banned users to log in or reset password ([7c15d99](https://github.com/onesoft-sudo/sudobot/commit/7c15d99a5a6f0adbfdd4da947ebbb7314aa2820a))
 
 
 
