@@ -1,3 +1,12 @@
+# [7.9.0](https://github.com/onesoft-sudo/sudobot/compare/v7.8.0...v7.9.0) (2023-12-24)
+
+
+### Features
+
+* **moderation:reports:** support processing action select menu ([0748366](https://github.com/onesoft-sudo/sudobot/commit/07483668f0f5a7d6b33d1d79c55cb400e8e314de))
+
+
+
 # [7.8.0](https://github.com/onesoft-sudo/sudobot/compare/v7.7.0...v7.8.0) (2023-12-22)
 
 
@@ -37,15 +46,6 @@
 ### Bug Fixes
 
 * **logging:** ban reasons not showing up ([510a584](https://github.com/onesoft-sudo/sudobot/commit/510a584c02409b1a724003d50bdb99967ee6a0fb))
-
-
-
-# [7.5.0](https://github.com/onesoft-sudo/sudobot/compare/v7.4.1...v7.5.0) (2023-12-15)
-
-
-### Features
-
-* email verification support ([97e147f](https://github.com/onesoft-sudo/sudobot/commit/97e147f59c3d7ff90f8bfefe2514c215f26a7b07))
 
 
 
