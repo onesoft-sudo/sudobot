@@ -29,9 +29,6 @@ SudoBot has the following automoderation features:
 * Anti-Join System
 * Moderation History Tracker
 * Autorole System
-
-{% hint style="warning" %}
-The verification system was removed since we are rewriting the bot dashboard. We plan to bring it back soon.
-{% endhint %}
+* Verification System
 
 We're adding new features frequently, so you may see something new soon!
