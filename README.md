@@ -55,6 +55,7 @@ Thanks to all the active and indirect contributors!
 -   [Kars](https://github.com/kars1996) (Contributed by giving away a domain to us)
 -   [killerclaws12](https://github.com/killerclaws12)
 -   [MonzterDev](https://github.com/MonzterDev)
+-   [GuynnR](https://github.com/GuynnR)
 
 ### Support
 
