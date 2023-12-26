@@ -54,7 +54,8 @@ export default class ReviewController extends Controller {
                 email: false,
                 discordId: false,
                 rating: true,
-                reviewer: true
+                reviewer: true,
+                ip: false
             }
         });
     }
@@ -88,7 +89,8 @@ export default class ReviewController extends Controller {
                 aboutReviewer,
                 discordId,
                 email,
-                reviewer
+                reviewer,
+                ip: request.ip
             }
         });
 
