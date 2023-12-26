@@ -1,9 +1,9 @@
 # SudoBot Configuration
 
-SudoBot's behavior is controlled through a comprehensive JSON schema. This README provides an overview of the Guild Configuration Schema, allowing you to tailor the bot's behavior to suit your server's needs. Refer to [GuildConfigSchema.ts](GuildConfigSchema.ts) for the complete schema.
+SudoBot's behavior is controlled through a comprehensive JSON schema. This README provides an overview of the Guild Configuration Schema, allowing you to tailor the bot's behavior to suit your server's needs. Refer to [GuildConfigSchema.ts](https://github.com/onesoft-sudo/sudobot/blob/main/src/types/GuildConfigSchema.ts) and [SystemConfigSchema.ts](https://github.com/onesoft-sudo/sudobot/blob/main/src/types/SystemConfigSchema.ts) for the complete schema.
 
 ## Guild Configuration Schema
-
+ 
 The Guild Configuration Schema encompasses various settings for SudoBot. Below are detailed explanations for key sections of the schema:
 
 ### Prefix and Debug Mode
@@ -18,9 +18,9 @@ The Guild Configuration Schema encompasses various settings for SudoBot. Below a
 
   - **`mention_prefix`**: If set to `true`, allows commands to be triggered with mentions (e.g., `@SudoBot help`). If set to `false`, only the command prefix triggers commands.
 
-  - **`bean_safe`**, **`shot_safe`**, **`fakeban_safe`**: Arrays of Snowflake IDs for safe actions. Users with these IDs are exempt from certain actions.
+  - **`bean_safe`**, **`shot_safe`**, **`fakeban_safe`**: Arrays of User IDs who are immune from bean, shot or fakeban commands.
 
-  - **`echo_mentions`**: Toggles echoing of mentions in command responses. If set to `true`, mentions in command responses are echoed; otherwise, they are removed.
+  - **`echo_mentions`**: If set to "True" option tells the bot whether to also ping roles when someone uses the echo comamnd.
 
   - **`moderation_command_behaviour`**: Specifies the behavior for moderation commands, either "delete" (delete the command message) or "default" (keep the command message).
 
@@ -36,23 +36,6 @@ The Guild Configuration Schema encompasses various settings for SudoBot. Below a
 
   - **`invincible_roles`**: Array of Snowflake IDs for roles with invincible permissions. Members with these roles have immunity from certain actions.
 
-  - **`mode`**: Permission mode. Options are "discord" (Discord roles only), "levels" (experience/leveling system), or "layered" (combination of Discord roles and levels).
+  - **`mode`**: Permission mode. Options are "discord" (Discord roles only), "levels" (0-100), or "layered" (permission overwrite based system).
 
-  - **`check_discord_permissions`**: Checking mode for Discord permissions. Options are "both" (check both Discord and custom permissions), "automod" (check custom permissions only for automod actions), "manual_actions" (check custom permissions only for manual actions), or "none" (do not check custom permissions).
-
-
-## Example Usage
-
-```typescript
-// Example usage of the configuration schema
-import { GuildConfigSchema, GuildConfig } from './path-to-your-config-file';
-
-const defaultConfig: GuildConfig = GuildConfigSchema.parse({
-  // ... default configuration values
-});
-
-// Modify the configuration as needed
-const modifiedConfig: GuildConfig = {
-  ...defaultConfig,
-  // ... custom modifications
-};
+  - **`check_discord_permissions`**: This option checks for role positions when taking actions by using commands, or when AutoMod decides to take an action. If this is "false", none of those safe permission checking will be done.
