@@ -23,7 +23,7 @@ A free and open source Discord bot for moderation purposes. <a href="https://doc
 <a href="https://sourceforge.net/projects/sudobot/files/latest/download"><img alt="Download from SourceForge" src="https://a.fsdn.com/con/app/sf-download-button" width="276" height="48" srcset="https://a.fsdn.com/con/app/sf-download-button?button_size=2x 2x"></a>
 </p>
 
-## ❗ Contributors
+## ❗ Need Contributors
 
 This project needs more contributors. Please look at the [Todos](https://github.com/onesoft-sudo/sudobot/blob/main/TODO.md) to see what you can do to help us. Of course you can add new features and/or fix/improve something that isn't listed in the todos! We'll be really thankful if you contribute.
 
@@ -55,6 +55,7 @@ Thanks to all the active and indirect contributors!
 -   [Kars](https://github.com/kars1996) (Contributed by giving away a domain to us)
 -   [killerclaws12](https://github.com/killerclaws12)
 -   [MonzterDev](https://github.com/MonzterDev)
+-   [GuynnR](https://github.com/GuynnR)
 
 ### Support
 
