@@ -5,6 +5,7 @@
 * [Features](features/README.md)
   * [Features](features/features.md)
   * [Screenshots](features/screenshots.md)
+* [Guild Configuration](guild-config-schema.md)
 * [Moderation](moderation/README.md)
   * [Banning Users](moderation/banning\_users.md)
   * [Clearing messages in bulk](moderation/clear\_command.md)
