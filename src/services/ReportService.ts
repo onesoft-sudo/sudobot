@@ -21,6 +21,7 @@ import {
     APIEmbed,
     ActionRowBuilder,
     Colors,
+    Guild,
     GuildMember,
     Interaction,
     Message,
@@ -29,6 +30,7 @@ import {
     ModalSubmitInteraction,
     PermissionsBitField,
     PermissionsString,
+    Snowflake,
     StringSelectMenuBuilder,
     StringSelectMenuInteraction,
     TextBasedChannel,
@@ -40,6 +42,7 @@ import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
 import LevelBasedPermissionManager from "../utils/LevelBasedPermissionManager";
+import { stringToTimeInterval } from "../utils/datetime";
 import { userInfo } from "../utils/embed";
 import { safeChannelFetch, safeMemberFetch } from "../utils/fetch";
 import { logError } from "../utils/logger";
@@ -57,7 +60,25 @@ type ReportOptions = {
 
 type Action = "ignore" | "warn" | "mute" | "kick" | "ban";
 
+type ActionOptions = {
+    action: Action;
+    type: "m" | "u";
+    duration?: number;
+    reason: string;
+    member: GuildMember;
+    moderator: User;
+    guild: Guild;
+};
+
 export default class ReportService extends Service implements HasEventListeners {
+    protected readonly actionPastParticiples: Record<Action, string> = {
+        ban: "Banned",
+        ignore: "Ignored",
+        kick: "Kicked",
+        mute: "Muted",
+        warn: "Warned"
+    };
+
     async check(guildId: string, moderator: GuildMember, member: GuildMember) {
         const config = this.client.configManager.config[guildId!]?.message_reporting;
         const manager = await this.client.permissionManager.getManager(guildId!);
@@ -131,7 +152,7 @@ export default class ReportService extends Service implements HasEventListeners 
                             }
                         ],
                         footer: {
-                            text: "Reported"
+                            text: `${member ? "This user was muted for 3 hours" : "Reported"}` // TODO
                         }
                     },
                     {
@@ -181,7 +202,7 @@ export default class ReportService extends Service implements HasEventListeners 
                 new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
                     new StringSelectMenuBuilder()
                         .setCustomId(`report_action_${type}_${offender.id}`)
-                        .setMinValues(1)
+                        .setMinValues(0)
                         .setMaxValues(1)
                         .setPlaceholder("Select an action to take...")
                         .setOptions(
@@ -256,28 +277,7 @@ export default class ReportService extends Service implements HasEventListeners 
         }
 
         if (action === "ignore") {
-            await interaction.message.edit({
-                components: [],
-                embeds: [
-                    {
-                        ...interaction.message.embeds[0].data,
-                        fields: [
-                            ...interaction.message.embeds[0].fields,
-                            {
-                                name: "Action",
-                                value: "Ignored",
-                                inline: true
-                            },
-                            {
-                                name: "Action Taken By",
-                                value: userInfo(interaction.user),
-                                inline: true
-                            }
-                        ],
-                        color: Colors.Green
-                    }
-                ]
-            });
+            await this.editMessage(interaction, "Ignored");
 
             await interaction.reply({
                 content: "Operation completed.",
@@ -289,7 +289,7 @@ export default class ReportService extends Service implements HasEventListeners 
 
         const modal = new ModalBuilder()
             .setCustomId(`report_action_info_${action}_${type}_${userId}`)
-            .setTitle("Taking Action")
+            .setTitle(`${action[0].toUpperCase()}${action.substring(1)} Member`)
             .addComponents(
                 new ActionRowBuilder<TextInputBuilder>().addComponents(
                     new TextInputBuilder()
@@ -314,6 +314,31 @@ export default class ReportService extends Service implements HasEventListeners 
         }
 
         await interaction.showModal(modal);
+    }
+
+    editMessage(interaction: StringSelectMenuInteraction | ModalSubmitInteraction, action: string, color?: number) {
+        return interaction.message?.edit({
+            components: [],
+            embeds: [
+                {
+                    ...interaction.message.embeds[0].data,
+                    fields: [
+                        ...interaction.message.embeds[0].fields,
+                        {
+                            name: "Action",
+                            value: action,
+                            inline: true
+                        },
+                        {
+                            name: "Action Taken By",
+                            value: userInfo(interaction.user),
+                            inline: true
+                        }
+                    ],
+                    color: color ?? Colors.Green
+                }
+            ]
+        });
     }
 
     async commonChecks(action: Action, userId: string, interaction: ModalSubmitInteraction | StringSelectMenuInteraction) {
@@ -355,13 +380,106 @@ export default class ReportService extends Service implements HasEventListeners 
     }
 
     async onModalSubmit(interaction: ModalSubmitInteraction) {
-        const [action, type, userId] = interaction.customId.split("_").slice(3);
+        const [action, type, userId] = interaction.customId.split("_").slice(3) as [Action, "m" | "u", Snowflake];
 
-        if (!(await this.commonChecks(action as Action, userId, interaction))) {
+        if (!(await this.commonChecks(action, userId, interaction))) {
             return;
         }
 
-        TODO("Not implemented");
+        const duration = interaction.fields.fields.find(field => field.customId === "duration")
+            ? interaction.fields.getTextInputValue("duration")
+            : null;
+        const reason = interaction.fields.getTextInputValue("reason");
+        const parsedDuration = duration
+            ? stringToTimeInterval(duration, {
+                  milliseconds: true
+              })
+            : null;
+
+        if (parsedDuration && parsedDuration.error) {
+            await interaction.reply({
+                ephemeral: true,
+                content: "Invalid duration given. The duration should look something like these: 20h, 50m, 10m60s etc."
+            });
+
+            return;
+        }
+
+        await interaction.deferReply({
+            ephemeral: true
+        });
+
+        const member = await safeMemberFetch(interaction.guild!, userId);
+
+        if (!member) {
+            await interaction.editReply({
+                content: "Failed to find the member in the server!"
+            });
+
+            return;
+        }
+
+        await this.takeAction({
+            action,
+            type,
+            member,
+            reason,
+            duration: parsedDuration?.result,
+            moderator: interaction.user,
+            guild: interaction.guild!
+        });
+
+        await this.editMessage(interaction, this.actionPastParticiples[action], Colors.Red);
+        await interaction.editReply({
+            content: "Operation completed."
+        });
+    }
+
+    takeAction({ action, member, guild, moderator, reason, duration }: ActionOptions) {
+        switch (action) {
+            case "ban":
+                return this.client.infractionManager.createUserBan(member.user, {
+                    guild,
+                    moderator,
+                    autoRemoveQueue: true,
+                    duration,
+                    notifyUser: true,
+                    reason,
+                    sendLog: true
+                });
+
+            case "kick":
+                return this.client.infractionManager.createMemberKick(member, {
+                    guild,
+                    moderator,
+                    notifyUser: true,
+                    reason,
+                    sendLog: true
+                });
+
+            case "mute":
+                return this.client.infractionManager.createMemberMute(member, {
+                    guild,
+                    moderator,
+                    notifyUser: true,
+                    reason,
+                    sendLog: true,
+                    autoRemoveQueue: true,
+                    duration
+                });
+
+            case "ignore":
+                return null;
+
+            case "warn":
+                return this.client.infractionManager.createMemberWarn(member, {
+                    guild,
+                    moderator,
+                    notifyUser: true,
+                    reason,
+                    sendLog: true
+                });
+        }
     }
 
     @GatewayEventListener("interactionCreate")
