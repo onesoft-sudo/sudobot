@@ -1,3 +1,12 @@
+# [7.12.0](https://github.com/onesoft-sudo/sudobot/compare/v7.11.0...v7.12.0) (2023-12-29)
+
+
+### Features
+
+* **moderation:reporting:** stable report system ([657e7be](https://github.com/onesoft-sudo/sudobot/commit/657e7be7a300950741b2e0ec36189a127b58e1f8))
+
+
+
 # [7.11.0](https://github.com/onesoft-sudo/sudobot/compare/v7.10.2...v7.11.0) (2023-12-26)
 
 
@@ -33,15 +42,6 @@
 ### Features
 
 * **api:** add email verification finish route ([5cd249c](https://github.com/onesoft-sudo/sudobot/commit/5cd249c993b6c9af3f983f2878388945daa65ce8))
-
-
-
-# [7.9.0](https://github.com/onesoft-sudo/sudobot/compare/v7.8.0...v7.9.0) (2023-12-24)
-
-
-### Features
-
-* **moderation:reports:** support processing action select menu ([0748366](https://github.com/onesoft-sudo/sudobot/commit/07483668f0f5a7d6b33d1d79c55cb400e8e314de))
 
 
 
