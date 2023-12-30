@@ -98,17 +98,38 @@ export default class TempRoleCommand extends Command {
         }
 
         const role: Role = context.isLegacy ? context.parsedNamedArgs.role : context.options.getRole("role", true);
-        const duration: number = context.isLegacy
+
+        let duration: number | ReturnType<typeof stringToTimeInterval> = context.isLegacy
             ? context.parsedNamedArgs.duration ?? 0
             : stringToTimeInterval(context.options.getString("duration", true), {
                   milliseconds: true
               });
-        const offset: number = context.isLegacy
+
+        let offset: number | ReturnType<typeof stringToTimeInterval> = context.isLegacy
             ? context.parsedNamedArgs.offset ?? 0
             : stringToTimeInterval(context.options.getString("start_after") ?? "0s", {
                   milliseconds: true
               });
-        const totalDuration = offset + duration;
+
+        if (typeof duration === "object") {
+            if (duration.error) {
+                await this.error(message, `Invalid duration specified!\nDescription: ${duration.error}`);
+                return;
+            }
+
+            duration = duration.result;
+        }
+
+        if (typeof offset === "object") {
+            if (offset.error) {
+                await this.error(message, `Invalid time offset specified!\nDescription: ${offset.error}`);
+                return;
+            }
+
+            offset = offset.result;
+        }
+
+        const totalDuration = (offset as number) + (duration as number);
 
         if (offset === 0) {
             await member.roles.add(role, "Adding role to member as the I was commanded to do so");
@@ -122,7 +143,7 @@ export default class TempRoleCommand extends Command {
                     guild: message.guild!,
                     name: "TempRoleAddQueue",
                     userId: message.member!.user.id,
-                    willRunAt: new Date(Date.now() + offset)
+                    willRunAt: new Date((Date.now() + offset) as number)
                 })
             );
         }
@@ -143,7 +164,7 @@ export default class TempRoleCommand extends Command {
         await this.success(
             message,
             `Successfully ${
-                offset === 0 ? "added the given role to the member" : " queued a job to add the role to the member"
+                offset === 0 ? "added the given role to the member" : "queued a job to add the role to the member"
             }. I'll take away the role ${time(new Date(Date.now() + totalDuration), "R")}.`
         );
     }
