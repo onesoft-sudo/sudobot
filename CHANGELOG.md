@@ -1,3 +1,12 @@
+## [7.12.2](https://github.com/onesoft-sudo/sudobot/compare/v7.12.1...v7.12.2) (2023-12-30)
+
+
+### Bug Fixes
+
+* **commands:temprole:** prisma invokation errors ([2f4da4b](https://github.com/onesoft-sudo/sudobot/commit/2f4da4b19b3a3f2f8391cdd6f2fd0cd07dcf7bc9))
+
+
+
 ## [7.12.1](https://github.com/onesoft-sudo/sudobot/compare/v7.12.0...v7.12.1) (2023-12-30)
 
 
@@ -32,16 +41,6 @@
 ### Bug Fixes
 
 * **core:permissions:** automod permission checking error ([e192d36](https://github.com/onesoft-sudo/sudobot/commit/e192d3608739d53de1694522ee5efc8f9c8c1e37))
-
-
-
-## [7.10.1](https://github.com/onesoft-sudo/sudobot/compare/v7.10.0...v7.10.1) (2023-12-24)
-
-
-### Bug Fixes
-
-* **core:permissions:discord:** denying actions for simple role-less setups ([a203e39](https://github.com/onesoft-sudo/sudobot/commit/a203e39f8b5a2d5cbda627247b7da2888ebe1a55))
-* discord based permission system ([465b5f6](https://github.com/onesoft-sudo/sudobot/commit/465b5f620550eb0384d4ee6cc488bce7fec55c51))
 
 
 
