@@ -31,10 +31,10 @@ export default class TempRoleCommand extends Command {
             name: "duration",
             errors: {
                 required: "Please provide a duration and a role!",
-                "type:invalid": "You've specified an invalid duration.",
+                "type:invalid": "You've specified an invalid duration."
             },
             time: {
-                unit: 'ms'
+                unit: "ms"
             }
         },
         {
@@ -66,17 +66,17 @@ export default class TempRoleCommand extends Command {
             name: "offset",
             errors: {
                 required: "Please provide a valid offset duration!",
-                "type:invalid": "You've specified an invalid offset duration.",
+                "type:invalid": "You've specified an invalid offset duration."
             },
             time: {
-                unit: 'ms'
+                unit: "ms"
             },
             optional: true,
             default: 0
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.ManageRoles];
-    public readonly slashCOmmandBuilder = new SlashCommandBuilder()
+    public readonly slashCommandBuilder = new SlashCommandBuilder()
         .addUserOption(option => option.setName("member").setDescription("The target member").setRequired(true))
         .addRoleOption(option => option.setName("role").setDescription("The target role to give").setRequired(true))
         .addStringOption(option =>
