@@ -1,182 +1,84 @@
 # Getting Started
 
-Thanks for choosing SudoBot! In this article you'll learn how to set up a custom instance of SudoBot and configure it so that it does exactly what you want.
+Thanks for choosing SudoBot! In this article, you'll learn how to set up a custom instance of SudoBot and configure it to meet your requirements.
 
-{% hint style="info" %}
-If you don't want to set the bot up yourself and want a pre-hosted solution for free, you can contact [@rakinar2](https://discord.com/users/774553653394538506) at Discord. Your Discord server should have at least 50 members to be eligible.
-{% endhint %}
+> **Note:** If you don't want to set up the bot yourself and prefer a pre-hosted solution for free, you can contact [@rakinar2](https://discord.com/users/774553653394538506) on Discord. Your Discord server should have at least 50 members to be eligible.
 
 ## Requirements
+Ensure that you meet the following requirements to host SudoBot:
 
-These are the requirements to host SudoBot:
+- A Discord API Application token (Obtain a token from [Discord Developer Portal](https://discord.com/developers/applications))
+- [Node.js](https://nodejs.org) version 18 or higher
+- A PostgreSQL database (For free PostgreSQL hosting, check [Neon](https://neon.tech))
 
-* A Discord API Application token (Go to [Discord Developer Portal](https://discord.com/developers/applications) to obtain a token)
-* [Node.js](https://nodejs.org) version 18 or higher
-* A PostgreSQL database (If you're looking for a free PostgreSQL hosting service, check out [Neon](https://neon.tech))
+You can also set up additional features with these tokens:
+- Cat and dog API Token (for fetching cat and dog images using `cat` and `dog` commands)
+- Pixabay API Token to use the `pixabay` command
+- Discord Webhook URL for sending error reports
 
-Additionally, you can also set these up if you want to use them:
+## Cloning the Project and Setting Up
+Clone the repository using git or download the [latest release](https://github.com/onesoft-sudo/sudobot/releases/latest) and extract it. If you choose to clone, use the following command:
 
-* Cat and dog API Token (for fetching cat and dog images using `cat` and `dog` commands, the tokens can be obtained at [thecatapi.com](https://thecatapi.com) and [thedogapi.com](https://thedogapi.com))
-* Pixabay API Token to use the `pixabay` command (can be obtained [here](https://pixabay.com/api/docs/))
-* A Discord Webhook URL for sending error reports
-
-## Cloning the project and setting up
-
-First of all, clone the repository using [git](https://git-scm.com) or download the [latest release](https://github.com/onesoft-sudo/sudobot/releases/latest) and extract it.
-
-To clone the repository, run this command:
-
-```
+```bash
 git clone https://github.com/onesoft-sudo/sudobot
-```
+cd sudobot/
+Install dependencies:
 
-After this command completes, go inside of the directory. (`sudobot/` if you cloned it using the above command)
+```bash
 
-Then, install the dependencies using the following command:
-
-```
 npm install -D
-```
+Generate the JSON config schema files:
 
-Generate the JSON config schema files using the following command:
-
-```
+```bash
 npx ts-node scripts/generate-config-schema.ts
-```
+Environment Variables
+Create a file named .env in the root project directory and add the following variables:
+dotenv
 
-## The environment variables
-
-Create a file named `.env` inside of the root project directory. This file will contain some secret information that the bot needs, to work. (e.g. bot token)
-
-Then you need to add a few variables to `.env` file:
-
-```
-# This is your bot's token.
+# Bot Token
 TOKEN=
-
-# This is the home server, where the bot will search for emojis.
+# Main Server ID
 HOME_GUILD_ID=
-
-# The client ID of your bot application.
+# Client ID
 CLIENT_ID=
-
 # Database URL
 DB_URL=
-```
 
-Here:
+# Additional Environment Variables (if needed)
+DEBUG=
+SUDO_ENV=
+NODE_ENV=
+CAT_API_TOKEN=
+DOG_API_TOKEN=
+Setting Up a Database for the Bot
+Set the DB_URL in .env to your PostgreSQL database URL. Then, run:
 
-* `TOKEN` is your bot token. Make sure to put the correct token here, otherwise the bot won't be able to log in to Discord. The bot token can be obtained from [https://discord.com/developers/applications](https://discord.com/developers/applications).
-* `HOME_GUILD_ID` is the main server ID of the bot. The bot expects that it will always stay in that server, and it will search for the emojis there. You can download the emojis and use them freely. To download, go to [the downloads list](https://www.onesoftnet.eu.org/downloads/sudo/emojis/).
-* `CLIENT_ID` is the client ID of your bot application. You can obtain the client ID for your bot at [https://discord.com/developers/applications](https://discord.com/developers/applications).
-* `DB_URL` is the database URL. We'll be talking about this just in a moment. You can [jump](getting-started.md#setting-up-a-database-for-the-bot) into that section right now if you want.
+```bash
 
-A few more environment variables can be specified:
-
-* `DEBUG`: Used by the [Prisma](https://prisma.io/) ORM. This enables extra debug logging, aka Verbose Mode.
-* `SUDO_ENV` and `NODE_ENV`: If one of these is set to `dev`, then the bot will enter Verbose Mode, and log everything that it does or happens. This is useful if you want to debug the bot or troubleshoot something.
-* `CAT_API_TOKEN`: The Cat API token to use when fetching cat images, using `cat` command.
-* `DOG_API_TOKEN`: The Dog API token to use when fetching dog images, using `dog` command.
-
-## Setting up a Database for the bot
-
-As we've said [before](getting-started.md#configuration-and-the-environment-variables), `DB_URL` is the environment variable that you need to put in `.env` and the value of this variable should be the database URL. SudoBot at the moment, only supports **PostgreSQL**.
-
-{% hint style="danger" %}
-As of November 28, 2023, we no longer officially support MySQL as a database for being used with SudoBot. Please migrate to PostgreSQL.
-{% endhint %}
-
-{% hint style="info" %}
-If you want a free PostgreSQL hosting service, check out [Neon](https://neon.tech). It's easy to set up, and completely free of cost.
-{% endhint %}
-
-Your database URL should look like this if you're using PostgreSQL:
-
-```
-postgresql://username:password@hostname:port/dbname
-```
-
-* `username` is your database username (usually this is `postgres`)
-* `password` is your database password
-* `hostname` is your database hostname
-* `port` is your database port (usually this is `5432`)
-* `dbname` is your database name (usually this is`postgres`)
-
-After you have set the database URL inside `.env`, you can run the following command:
-
-```
 npx prisma db push
-```
+This command creates the necessary tables in the database.
 
-This will create the necessary tables for you inside the database.
+Configuration
+Edit the config/config.json and config/system.json files as needed. Follow the provided JSON schema and autocomplete features in your IDE/editor.
 
-## Configuration
+Registering Application Commands
+Run the following command to register application slash commands and context menu commands:
 
-Now it's time to configure the bot. Now, SudoBot comes with the config files bundled already, but you should edit them.
+```bash
 
-**Step 1.** Open up `config/config.json` and you have two options:
-
-Remove everything inside of the file, and just put an empty object `{}` inside of that file and save it if you don't want to configure anything and just want the default settings. Or,
-
-Manually set the settings inside of the file. If you're following along this documentation and have run the script `generate-config-schema.ts` (previously specified [here](getting-started.md#cloning-the-project-and-setting-up)), then when you edit the file, you can remove everything inside of the file, and put the following JSON object inside of that file:
-
-```
-{
-    "$schema": "./schema/config.json",
-    "guild_id": {
-        
-    }
-}
-```
-
-Replace `guild_id` with your main guild ID, where you want to use the bot. If you want to use the bot in multiple servers, specify them here, as the keys of the root object.
-
-If you're using an IDE or editor like [VS Code](https://code.visualstudio.com/) or [WebStorm](https://www.jetbrains.com/webstorm/), you can hit Ctrl + Space (or Cmd + Space if you're on a Mac) to get auto completion and see available options. The IDE/editor will highlight errors inside of your config file if you have any.
-
-**Step 2.** Open up `config/system.json` file and similarly here you'll get autocompletion. But you don't need to delete everything here, just change the `system_admins` property, which is an array of user IDs. Just add your User ID into the array. System Admins are those who have full access to the bot and can control everything. They are able to run commands like `-eval`.
-
-## Registering Application Commands
-
-If you want to use the application slash commands and context menu commands of SudoBot, you have to register it to the API first. To do that, simply run:
-
-```
 node scripts/deploy-commands.js
-```
+Building the Bot
+Compile the bot using:
 
-Pass the `--guild` option to register guild commands instead of global commands, and `--clear` to clear all the registered slash commands in the API.
-
-## Building the bot
-
-Now that we have configured the bot and specified every setting, we can go ahead and invoke the TypeScript compiler (`tsc`) to build the bot and generate compiled JavaScript files that the NodeJS interpreter can run. To compile the bot, simply run:
-
-```
+```bash
 npm run build
-```
+Starting the Bot
+Start the bot:
 
-## Starting the bot
+```bash
 
-Now it's time to start the bot. Run the following command to start the bot:
-
-```
 npm start
-```
+If configured correctly, the bot will log in successfully to Discord. Congratulations, your SudoBot instance is ready!
 
-And if everything was configured correctly, the bot will log in successfully to Discord. Congratulations, you've set up your own instance of SudoBot!
-
-## Emojis
-
-The bot uses some custom emojis and it will try to find those emojis in the Home Guild (The main server, which is configured in `HOME_GUILD_ID` environment variable).
-
-The emojs are freely available for download at the [download site](https://www.onesoftnet.eu.org/downloads/sudo/emojis/). The bot uses some other emojis as well, if you want you can download them from [emoji.gg](https://emoji.gg).
-
-If you don't add these emojis, the bot may send messages that look weird or too simple.
-
-## Help & Support
-
-In case if you're facing issues, feel free to open an issue at [GitHub](https://github.com/onesoft-sudo/sudobot/issues). Or you can contact the Author of the bot in the following ways:
-
-* Email: [rakinar2@onesoftnet.eu.org](mailto:rakinar2@onesoftnet.eu.org)
-* Discord: [@rakinar2](https://discord.com/users/774553653394538506)
-* Discord Servers: [OSN's server](https://discord.gg/JJDy9SHzGv)
-
-Give the repository a star to show your support! We'll be really thankful if you do.
+#Emojis
+Download custom emojis from [here](https://www.onesoftnet.eu.org/downloads/sudo/emojis/). If not added, the bot may send messages that look odd.
