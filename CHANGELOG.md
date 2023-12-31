@@ -1,3 +1,12 @@
+## [7.12.3](https://github.com/onesoft-sudo/sudobot/compare/v7.12.2...v7.12.3) (2023-12-31)
+
+
+### Bug Fixes
+
+* **services:afk:** random crashes because of a missing null check ([56474f4](https://github.com/onesoft-sudo/sudobot/commit/56474f4886b65fa191c6cc4298f3b7e7cd1ad50f))
+
+
+
 ## [7.12.2](https://github.com/onesoft-sudo/sudobot/compare/v7.12.1...v7.12.2) (2023-12-30)
 
 
@@ -32,15 +41,6 @@
 
 * **api:** store IP addresses when a user submits a review ([b43514e](https://github.com/onesoft-sudo/sudobot/commit/b43514ef18e9f3b622cc1555ba857f96164adcbc))
 * **db:schema:** add ip field to Review model ([528cc51](https://github.com/onesoft-sudo/sudobot/commit/528cc517aeda3edb4f257b17c5fca7e158153745))
-
-
-
-## [7.10.2](https://github.com/onesoft-sudo/sudobot/compare/v7.10.1...v7.10.2) (2023-12-24)
-
-
-### Bug Fixes
-
-* **core:permissions:** automod permission checking error ([e192d36](https://github.com/onesoft-sudo/sudobot/commit/e192d3608739d53de1694522ee5efc8f9c8c1e37))
 
 
 
