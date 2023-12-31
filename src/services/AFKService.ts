@@ -124,7 +124,7 @@ export default class AFKService extends Service implements HasEventListeners {
 
         const entry = this.entries.get(`${guildId}_${userId}`)!;
 
-        if (entry.mentions.length >= 10) {
+        if (!entry || entry.mentions.length >= 10) {
             return false;
         }
 
