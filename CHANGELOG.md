@@ -1,3 +1,12 @@
+# [7.13.0](https://github.com/onesoft-sudo/sudobot/compare/v7.12.3...v7.13.0) (2024-01-01)
+
+
+### Features
+
+* **commands:userlookup:** infraction and moderation statistics ([7ce611a](https://github.com/onesoft-sudo/sudobot/commit/7ce611a9c445ff3f57f0b42cf144a6f495e437f2))
+
+
+
 ## [7.12.3](https://github.com/onesoft-sudo/sudobot/compare/v7.12.2...v7.12.3) (2023-12-31)
 
 
@@ -31,16 +40,6 @@
 ### Features
 
 * **moderation:reporting:** stable report system ([657e7be](https://github.com/onesoft-sudo/sudobot/commit/657e7be7a300950741b2e0ec36189a127b58e1f8))
-
-
-
-# [7.11.0](https://github.com/onesoft-sudo/sudobot/compare/v7.10.2...v7.11.0) (2023-12-26)
-
-
-### Features
-
-* **api:** store IP addresses when a user submits a review ([b43514e](https://github.com/onesoft-sudo/sudobot/commit/b43514ef18e9f3b622cc1555ba857f96164adcbc))
-* **db:schema:** add ip field to Review model ([528cc51](https://github.com/onesoft-sudo/sudobot/commit/528cc517aeda3edb4f257b17c5fca7e158153745))
 
 
 
