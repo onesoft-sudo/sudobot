@@ -59,6 +59,8 @@ export default class UserLookupCommand extends Command {
             logError(e);
         }
 
+        const { action, points, summary } = await this.client.infractionManager.getUserStats(user.id, message.guildId!);
+
         const flags = flagsToString(user.flags!);
         const fields = [
             {
@@ -122,6 +124,24 @@ export default class UserLookupCommand extends Command {
                 value: `${member?.roles.highest.toString()} (${member?.roles.highest.id})`
             });
         }
+
+        fields.push(
+            {
+                name: "Moderation Points",
+                value: `**${points}**`,
+                inline: true
+            },
+            {
+                name: "Infractions",
+                value: summary,
+                inline: true
+            },
+            {
+                name: "Recommended Action",
+                value: action,
+                inline: true
+            }
+        );
 
         await this.deferredReply(message, {
             embeds: [

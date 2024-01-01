@@ -54,6 +54,124 @@ import { getEmoji, wait } from "../utils/utils";
 export const name = "infractionManager";
 
 export default class InfractionManager extends Service {
+    protected readonly multiplier: Record<InfractionType, number> = {
+        BAN: 30,
+        MASSBAN: 30,
+        TEMPBAN: 25,
+        KICK: 20,
+        MASSKICK: 20,
+        BEAN: 0,
+        BULK_DELETE_MESSAGE: 1,
+        MUTE: 10,
+        NOTE: 0,
+        SOFTBAN: 20,
+        TIMEOUT: 10,
+        TIMEOUT_REMOVE: 0,
+        UNBAN: 0,
+        UNMUTE: 0,
+        WARNING: 5
+    };
+
+    calculatePoints(infractionCounts: Record<InfractionType, number>) {
+        let points = 0;
+
+        for (const type in infractionCounts) {
+            points += (infractionCounts[type as InfractionType] ?? 0) * this.multiplier[type as InfractionType];
+        }
+
+        return points;
+    }
+
+    recommendAction(infractions: Array<{ _count: number; type: InfractionType }>) {
+        const infractionCounts = {} as Record<InfractionType, number>;
+
+        for (const { type, _count: count } of infractions) {
+            infractionCounts[type] = count;
+        }
+
+        for (const key in InfractionType) {
+            infractionCounts[key as InfractionType] ??= 0;
+        }
+
+        const points = this.calculatePoints(infractionCounts);
+
+        if ((infractionCounts.BAN ?? 0) > 0 || (infractionCounts.MASSBAN ?? 0) > 0) {
+            return { action: "Permanent Ban", points };
+        }
+
+        if ((infractionCounts.MASSKICK ?? 0) > 0) {
+            return { action: "Kick", points };
+        }
+
+        if ((infractionCounts.TEMPBAN ?? 0) > 0 && (infractionCounts.TEMPBAN ?? 0) < 3) {
+            return { action: `Temporary Ban for **${infractionCounts.TEMPBAN}** days`, points };
+        } else if ((infractionCounts.TEMPBAN ?? 0) >= 3) {
+            return { action: "Permanent Ban", points };
+        }
+
+        if (points >= 60) {
+            return { action: "Permanent Ban", points };
+        } else if (points >= 50 && points < 60) {
+            return { action: `Temporary Ban for **${points - 50 + 1}** days`, points };
+        } else if (points >= 45 && points < 50) {
+            return { action: `Softban`, points };
+        } else if (points >= 40 && points < 45) {
+            return { action: `Kick`, points };
+        } else if (points >= 20 && points < 40) {
+            return {
+                action: `Mute for ${
+                    points < 30
+                        ? `**${points - 20 + 1}** hour${points === 20 ? "" : "s"}`
+                        : `**${points - 30 + 1}** days${points === 30 ? "" : "s"}`
+                }`,
+                points
+            };
+        } else if (points >= 10 && points < 20) {
+            return {
+                action: "Manual Warning",
+                points
+            };
+        } else if (points > 0) {
+            return {
+                action: "Verbal Warning",
+                points
+            };
+        }
+
+        return { action: "None", points };
+    }
+
+    summarizeInfractionsGroup(infractions: Array<{ _count: number; type: InfractionType }>) {
+        let string = "";
+        let totalCount = 0;
+
+        for (const { type, _count: count } of infractions) {
+            string += `**${count}** ${type[0]}${type.substring(1).toLowerCase()}${count === 1 ? "" : "s"}, `;
+            totalCount += count;
+        }
+
+        return string === "" ? "No infractions yet" : `${string}**${totalCount}** total`;
+    }
+
+    getInfractionCountsInGroup(userId: string, guildId: string) {
+        return this.client.prisma.infraction.groupBy({
+            by: "type",
+            where: {
+                userId,
+                guildId
+            },
+            _count: true
+        });
+    }
+
+    async getUserStats(userId: string, guildId: string) {
+        const infractions = await this.getInfractionCountsInGroup(userId, guildId);
+        return {
+            summary: this.summarizeInfractionsGroup(infractions),
+            ...this.recommendAction(infractions)
+        };
+    }
+
     generateInfractionDetailsEmbed(user: User | null, infraction: Infraction) {
         let metadataString = "";
 
