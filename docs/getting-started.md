@@ -38,10 +38,20 @@ Then, install the dependencies using the following command:
 npm install -D
 ```
 
+## Building the bot
+
+Now we need to invoke the TypeScript compiler (`tsc`) to build the bot and generate compiled JavaScript files that the Node.js interpreter can run. To compile the bot, simply run:
+
+```
+npm run build
+```
+
+## JSON Configuration Schema
+
 Generate the JSON config schema files using the following command:
 
 ```
-npx ts-node scripts/generate-config-schema.ts
+npm run gen:schema
 ```
 
 ## The environment variables
@@ -144,14 +154,6 @@ node scripts/deploy-commands.js
 ```
 
 Pass the `--guild` option to register guild commands instead of global commands, and `--clear` to clear all the registered slash commands in the API.
-
-## Building the bot
-
-Now that we have configured the bot and specified every setting, we can go ahead and invoke the TypeScript compiler (`tsc`) to build the bot and generate compiled JavaScript files that the NodeJS interpreter can run. To compile the bot, simply run:
-
-```
-npm run build
-```
 
 ## Starting the bot
 
