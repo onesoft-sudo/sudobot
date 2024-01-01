@@ -1,6 +1,6 @@
 # Terms of Service
 
-Last updated: 29 September 2023
+Last updated: 1 January 2024
 
 Please read these terms of service (“terms”, “terms of service”) carefully before using the Discord Bot, SudoBot (the “service”) operated by OSN Inc (“us”, ‘we”, “our”).
 
@@ -37,11 +37,11 @@ The entire communication with us is electronic. Every time you send us an email 
 
 ### Applicable Law
 
-By visiting this website, you agree that the laws of the Bangladesh, without regard to principles of conflict laws, will govern these terms of service, or any dispute of any sort that might come between OSN Inc. and you, or its business partners and associates.
+By visiting this website, you agree that the laws of Bangladesh, without regard to principles of conflict laws, will govern these terms of service, or any dispute of any sort that might come between OSN Inc. and you, or its business partners and associates.
 
 ### Disputes
 
-Any dispute related in any way to your visit to this website or to products you purchase from us shall be arbitrated by state or federal court Bangladesh and you consent to exclusive jurisdiction and venue of such courts.
+Any dispute related in any way to your visit to this website or to products you purchase from us shall be arbitrated by state or federal court of Bangladesh and you consent to exclusive jurisdiction and venue of such courts.
 
 ### Comments, Reviews, and Emails
 
@@ -51,7 +51,7 @@ We reserve all rights (but not the obligation) to remove and/or edit such conten
 
 ### License and Site Access
 
-We grant you a limited license to access and make personal use of this website. You are not allowed to download or modify it. This may be done only with written consent from us.
+We grant you a free license to access and make personal use of this website. You are not allowed to violate copyright laws, however you can make use of the website under the [AGPL-3.0 License](https://www.gnu.org/licenses/agpl-3.0.en.html).
 
 ### User Account
 
