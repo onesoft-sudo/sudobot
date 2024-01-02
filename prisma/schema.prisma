@@ -257,13 +257,26 @@ model VerificationEntry {
 }
 
 model GlobalUserBan {
-    id        Int      @id @default(autoincrement())
-    userId    String   @unique
-    reason    String?
+    id         Int      @id @default(autoincrement())
+    userId     String   @unique
+    reason     String?
     executorId String
-    notified Boolean @default(false)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
+    notified   Boolean  @default(false)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @default(now()) @updatedAt
 
     @@map("global_user_bans")
+}
+
+model UserStatistics {
+    id              Int      @id @default(autoincrement())
+    userId          String   @unique
+    guilds          Int      @default(0)
+    messagesSent    Int      @default(0)
+    messagesEdited  Int      @default(0)
+    messagesDeleted Int      @default(0)
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @default(now()) @updatedAt
+
+    @@map("user_statistics")
 }

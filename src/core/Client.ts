@@ -56,6 +56,7 @@ import type ReactionRoleService from "../services/ReactionRoleService";
 import type ReportService from "../services/ReportService";
 import type SnippetManager from "../services/SnippetManager";
 import type StartupManager from "../services/StartupManager";
+import type StatsService from "../services/StatsService";
 import type TranslationService from "../services/TranslationService";
 import type TriggerService from "../services/TriggerService";
 import type WelcomerService from "../services/WelcomerService";
@@ -98,6 +99,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@services/KeypressHandlerService",
         "@services/CommandPermissionOverwriteManager",
         "@services/ReportService",
+        "@services/StatsService",
 
         "@automod/MessageFilter",
         "@automod/Antispam",
@@ -150,6 +152,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     verification: VerificationService = {} as VerificationService;
     reportService: ReportService = {} as ReportService;
     commandPermissionOverwriteManager: CommandPermissionOverwriteManager = {} as CommandPermissionOverwriteManager;
+    statsService: StatsService = {} as StatsService;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",
