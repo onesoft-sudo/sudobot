@@ -1,3 +1,12 @@
+# [7.14.0](https://github.com/onesoft-sudo/sudobot/compare/v7.13.0...v7.14.0) (2024-01-02)
+
+
+### Features
+
+* experimental user stats service ([afd74e6](https://github.com/onesoft-sudo/sudobot/commit/afd74e6f292c28574070348a026af3e852e42163))
+
+
+
 # [7.13.0](https://github.com/onesoft-sudo/sudobot/compare/v7.12.3...v7.13.0) (2024-01-01)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **commands:temprole:** typo in `slashCommandBuilder` ([87fe96f](https://github.com/onesoft-sudo/sudobot/commit/87fe96f26d5364a8819a707750deefa94b9d3109))
-
-
-
-# [7.12.0](https://github.com/onesoft-sudo/sudobot/compare/v7.11.0...v7.12.0) (2023-12-29)
-
-
-### Features
-
-* **moderation:reporting:** stable report system ([657e7be](https://github.com/onesoft-sudo/sudobot/commit/657e7be7a300950741b2e0ec36189a127b58e1f8))
 
 
 
