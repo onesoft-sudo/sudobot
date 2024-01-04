@@ -1,3 +1,13 @@
+## [7.14.1](https://github.com/onesoft-sudo/sudobot/compare/v7.14.0...v7.14.1) (2024-01-04)
+
+
+### Bug Fixes
+
+* **commands:unmute:** better error message ([bf6eaab](https://github.com/onesoft-sudo/sudobot/commit/bf6eaab16e96b8145d87f3e791328b9397942c02))
+* **commands:unmute:** better error message ([d351b08](https://github.com/onesoft-sudo/sudobot/commit/d351b0860824d588c14df61b97092a1e37e133e2))
+
+
+
 # [7.14.0](https://github.com/onesoft-sudo/sudobot/compare/v7.13.0...v7.14.0) (2024-01-02)
 
 
@@ -31,15 +41,6 @@
 ### Bug Fixes
 
 * **commands:temprole:** prisma invokation errors ([2f4da4b](https://github.com/onesoft-sudo/sudobot/commit/2f4da4b19b3a3f2f8391cdd6f2fd0cd07dcf7bc9))
-
-
-
-## [7.12.1](https://github.com/onesoft-sudo/sudobot/compare/v7.12.0...v7.12.1) (2023-12-30)
-
-
-### Bug Fixes
-
-* **commands:temprole:** typo in `slashCommandBuilder` ([87fe96f](https://github.com/onesoft-sudo/sudobot/commit/87fe96f26d5364a8819a707750deefa94b9d3109))
 
 
 
