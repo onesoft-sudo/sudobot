@@ -97,7 +97,7 @@ export default class UnmuteCommand extends Command {
             .catch(logError);
 
         if (!id) {
-            await this.error(message, "Failed to unmute this user or I'm missing permission to mute this user!");
+            await this.error(message, "Failed to unmute this user or I'm missing permissions to mute this user!");
             return;
         }
 
