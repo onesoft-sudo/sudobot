@@ -87,7 +87,7 @@ export default class SystemCommand extends Command {
                         },
                         {
                             name: "Uptime",
-                            value: `${formatDistanceToNow(Date.now() - os.uptime() * 1000)}`
+                            value: `${formatDistanceToNow(Date.now() - (global as { bootDate: number }).bootDate)}`
                         }
                     ]
                 }).setTimestamp()
