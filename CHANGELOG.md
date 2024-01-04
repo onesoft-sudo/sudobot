@@ -1,3 +1,12 @@
+## [7.14.2](https://github.com/onesoft-sudo/sudobot/compare/v7.14.1...v7.14.2) (2024-01-04)
+
+
+### Bug Fixes
+
+* temprole command not behaving correctly due to cache miss ([353d414](https://github.com/onesoft-sudo/sudobot/commit/353d4141037664b5e4d8e6f87093a20fb21f0fa9))
+
+
+
 ## [7.14.1](https://github.com/onesoft-sudo/sudobot/compare/v7.14.0...v7.14.1) (2024-01-04)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * **services:afk:** random crashes because of a missing null check ([56474f4](https://github.com/onesoft-sudo/sudobot/commit/56474f4886b65fa191c6cc4298f3b7e7cd1ad50f))
-
-
-
-## [7.12.2](https://github.com/onesoft-sudo/sudobot/compare/v7.12.1...v7.12.2) (2023-12-30)
-
-
-### Bug Fixes
-
-* **commands:temprole:** prisma invokation errors ([2f4da4b](https://github.com/onesoft-sudo/sudobot/commit/2f4da4b19b3a3f2f8391cdd6f2fd0cd07dcf7bc9))
 
 
 
