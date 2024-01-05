@@ -70,4 +70,4 @@ Thanks to all the active and indirect contributors!
 -   **Dashboard**: https://github.com/onesoft-sudo/sudobot-dashboard <br />
     The dashboard of SudoBot. Note that the dashboard is not complete yet.
 
-Copyright © 2022-2023 OSN and all the contributors of SudoBot.
+Copyright © 2022-2024 OSN and all the contributors of SudoBot.

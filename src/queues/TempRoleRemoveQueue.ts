@@ -27,9 +27,7 @@ export default class TempRoleRemoveQueue extends Queue {
 
             if (!member) throw new Error("Member is null | undefined");
 
-            if (member.roles.cache.has(roleId)) {
-                await member.roles.remove(roleId, "Taking away temporary role");
-            }
+            await member.roles.remove(roleId, "Taking away temporary role");
         } catch (e) {
             logError(e);
         }
