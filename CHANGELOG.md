@@ -1,3 +1,12 @@
+# [7.15.0](https://github.com/onesoft-sudo/sudobot/compare/v7.14.3...v7.15.0) (2024-01-05)
+
+
+### Features
+
+* listen for message events for statistics ([67b08ec](https://github.com/onesoft-sudo/sudobot/commit/67b08ec31c7bb7dadc69ac14ca380fd27bc53dd6))
+
+
+
 ## [7.14.3](https://github.com/onesoft-sudo/sudobot/compare/v7.14.2...v7.14.3) (2024-01-05)
 
 
@@ -35,15 +44,6 @@
 ### Features
 
 * experimental user stats service ([afd74e6](https://github.com/onesoft-sudo/sudobot/commit/afd74e6f292c28574070348a026af3e852e42163))
-
-
-
-# [7.13.0](https://github.com/onesoft-sudo/sudobot/compare/v7.12.3...v7.13.0) (2024-01-01)
-
-
-### Features
-
-* **commands:userlookup:** infraction and moderation statistics ([7ce611a](https://github.com/onesoft-sudo/sudobot/commit/7ce611a9c445ff3f57f0b42cf144a6f495e437f2))
 
 
 
