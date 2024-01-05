@@ -1,3 +1,15 @@
+## [7.14.3](https://github.com/onesoft-sudo/sudobot/compare/v7.14.2...v7.14.3) (2024-01-05)
+
+
+### Bug Fixes
+
+* build failure for global type casting ([9835a5c](https://github.com/onesoft-sudo/sudobot/commit/9835a5cc6404c2f8dea4dd43dacf0ebe765f6ffb))
+* build failure for global type casting ([2512028](https://github.com/onesoft-sudo/sudobot/commit/25120289255c3ec4d1f436840fcf37951261ac70))
+* set global boot date ([65052ce](https://github.com/onesoft-sudo/sudobot/commit/65052ce976745a7555c162dd46d8c870d7ca61bd))
+* system command should show the uptime of the bot system ([7039f8e](https://github.com/onesoft-sudo/sudobot/commit/7039f8e59c4f27c73ed84a960e9e743c2f127e2c))
+
+
+
 ## [7.14.2](https://github.com/onesoft-sudo/sudobot/compare/v7.14.1...v7.14.2) (2024-01-04)
 
 
@@ -32,15 +44,6 @@
 ### Features
 
 * **commands:userlookup:** infraction and moderation statistics ([7ce611a](https://github.com/onesoft-sudo/sudobot/commit/7ce611a9c445ff3f57f0b42cf144a6f495e437f2))
-
-
-
-## [7.12.3](https://github.com/onesoft-sudo/sudobot/compare/v7.12.2...v7.12.3) (2023-12-31)
-
-
-### Bug Fixes
-
-* **services:afk:** random crashes because of a missing null check ([56474f4](https://github.com/onesoft-sudo/sudobot/commit/56474f4886b65fa191c6cc4298f3b7e7cd1ad50f))
 
 
 
