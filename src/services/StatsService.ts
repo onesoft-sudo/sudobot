@@ -18,39 +18,45 @@
  */
 
 import { UserStatistics } from "@prisma/client";
-import { Message, Snowflake } from "discord.js";
+import { Message, PartialMessage, Snowflake } from "discord.js";
 import Service from "../core/Service";
 import { HasEventListeners } from "../types/HasEventListeners";
 
 export const name = "statsService";
 
+type CacheEntry = Omit<UserStatistics, "id" | "createdAt" | "updatedAt"> & { id?: number; createdAt?: Date; updatedAt?: Date };
+
 export default class StatsService extends Service implements HasEventListeners {
-    protected readonly cache = new Map<
-        Snowflake,
-        Omit<UserStatistics, "id" | "createdAt" | "updatedAt"> & { id?: number; createdAt?: Date; updatedAt?: Date }
-    >();
+    protected readonly cache = new Map<`${Snowflake}_${Snowflake}`, CacheEntry>();
     protected hasQueue: boolean = false;
 
-    async onMessageCreate(message: Message<boolean>) {
+    getOrCreateUserInfo(guildId: string, userId: string, callback: (info: CacheEntry) => void) {
         const config = this.client.configManager.systemConfig?.statistics;
+        const guildConfig = this.client.configManager.config[guildId]?.statistics;
 
-        if (!config?.enabled) {
+        if (!config?.enabled || !guildConfig?.enabled) {
             return;
         }
 
-        let info = this.cache.get(message.author.id);
+        const key = `${guildId}_${userId}` as const;
+        let info = this.cache.get(key);
         let setInfo = false;
 
         if (!info) {
-            info = {} as UserStatistics;
+            info = {
+                guildId,
+                userId,
+                messagesSent: 0,
+                messagesDeleted: 0,
+                messagesEdited: 0
+            } as UserStatistics;
             setInfo = true;
         }
 
-        info.messagesSent ??= 0;
-        info.messagesSent++;
+        callback(info);
 
         if (setInfo) {
-            this.cache.set(message.author.id, info);
+            this.cache.set(key, info);
         }
 
         if (!this.hasQueue) {
@@ -63,6 +69,36 @@ export default class StatsService extends Service implements HasEventListeners {
         }
     }
 
+    onMessageCreate(message: Message<boolean>) {
+        if (message.author.bot) {
+            return;
+        }
+
+        this.getOrCreateUserInfo(message.guildId!, message.author.id, info => {
+            info.messagesSent++;
+        });
+    }
+
+    onMessageUpdate(oldMessage: Message<boolean> | PartialMessage, newMessage: Message<boolean> | PartialMessage) {
+        if (!newMessage.author || newMessage.author.bot || !newMessage.guildId) {
+            return;
+        }
+
+        this.getOrCreateUserInfo(newMessage.guildId, newMessage.author.id, info => {
+            info.messagesEdited++;
+        });
+    }
+
+    onMessageDelete(message: Message<boolean> | PartialMessage) {
+        if (!message.author || !message.guildId! || message.author.bot) {
+            return;
+        }
+
+        this.getOrCreateUserInfo(message.guildId, message.author.id, info => {
+            info.messagesDeleted++;
+        });
+    }
+
     async syncWithDatabase() {
         const config = this.client.configManager.systemConfig?.statistics;
 
@@ -71,7 +107,6 @@ export default class StatsService extends Service implements HasEventListeners {
         }
 
         const values = [...this.cache.values()];
-
         const existingRecords = (
             await this.client.prisma.userStatistics.findMany({
                 where: {
@@ -94,10 +129,10 @@ export default class StatsService extends Service implements HasEventListeners {
                     },
                     data: {
                         messagesDeleted: value.id,
-                        guilds: value.guilds,
                         messagesEdited: value.messagesEdited,
                         messagesSent: value.messagesSent,
-                        userId: value.userId
+                        userId: value.userId,
+                        guildId: value.guildId
                     }
                 });
             } else {

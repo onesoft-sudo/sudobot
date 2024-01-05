@@ -396,6 +396,11 @@ export const GuildConfigSchema = z.object({
                     enabled: true
                 })
         })
+        .optional(),
+    statistics: z
+        .object({
+            enabled: z.boolean().default(false)
+        })
         .optional()
 });
 

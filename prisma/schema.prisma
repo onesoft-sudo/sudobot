@@ -270,8 +270,8 @@ model GlobalUserBan {
 
 model UserStatistics {
     id              Int      @id @default(autoincrement())
-    userId          String   @unique
-    guilds          Int      @default(0)
+    userId          String   
+    guildId         String
     messagesSent    Int      @default(0)
     messagesEdited  Int      @default(0)
     messagesDeleted Int      @default(0)

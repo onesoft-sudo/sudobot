@@ -25,8 +25,7 @@ import { log, logError } from "../../utils/logger";
 
 export default class MessageCreateEvent extends EventListener<Events.MessageCreate> {
     public readonly name = Events.MessageCreate;
-
-    public types = [MessageType.Default, MessageType.Reply];
+    public readonly types = [MessageType.Default, MessageType.Reply];
 
     constructor(protected client: Client) {
         super(client);
@@ -41,7 +40,6 @@ export default class MessageCreateEvent extends EventListener<Events.MessageCrea
         super.execute(message);
 
         if (!this.types.includes(message.type)) return;
-
         if (message.channel.type === ChannelType.DM) return;
 
         let member: GuildMember = <any>message.member!;
@@ -77,6 +75,8 @@ export default class MessageCreateEvent extends EventListener<Events.MessageCrea
         if (deleted) return;
 
         await this.client.antispam.onMessageCreate(message).catch(logError);
+
+        this.client.statsService.onMessageCreate(message);
         this.client.triggerService.onMessageCreate(message);
 
         const value = await this.client.commandManager.runCommandFromMessage(message).catch(logError);

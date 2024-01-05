@@ -35,7 +35,8 @@ export default class MessageUpdateEvent extends EventListener<Events.MessageUpda
 
         if (oldMessage.content === newMessage.content) return;
 
-        await this.client.logger.logMessageEdit(oldMessage, newMessage);
+        this.client.statsService.onMessageUpdate(oldMessage, newMessage);
+
         let deleted = await this.client.messageFilter.scanMessage(newMessage).catch(logError);
 
         if (deleted) {
@@ -47,6 +48,8 @@ export default class MessageUpdateEvent extends EventListener<Events.MessageUpda
         if (deleted) {
             return;
         }
+
+        await this.client.logger.logMessageEdit(oldMessage, newMessage);
 
         if (this.client.configManager.config[newMessage.guildId!]?.commands.rerun_on_edit) {
             const value = await this.client.commandManager.runCommandFromMessage(newMessage).catch(logError);
