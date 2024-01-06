@@ -19,7 +19,6 @@
 
 import { formatDistanceToNow } from "date-fns";
 import { ChatInputCommandInteraction, Colors, EmbedBuilder, Message } from "discord.js";
-import os from "os";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 const emoji = (ms: number) => {
@@ -71,7 +70,9 @@ export default class SystemCommand extends Command {
                     },
                     color: 0x007bff,
                     description:
-                        systemLatencyEmoji === "🔴" ? `${this.emoji("error")} Elevated latency/downtime` : `${this.emoji("check")} Operational`,
+                        systemLatencyEmoji === "🔴"
+                            ? `${this.emoji("error")} Elevated latency/downtime`
+                            : `${this.emoji("check")} Operational`,
                     fields: [
                         {
                             name: "System Latency",
@@ -87,7 +88,7 @@ export default class SystemCommand extends Command {
                         },
                         {
                             name: "Uptime",
-                            value: `${formatDistanceToNow(Date.now() - (global as unknown as { bootDate: number }).bootDate)}`
+                            value: `${formatDistanceToNow(Date.now() - global.bootDate)}`
                         }
                     ]
                 }).setTimestamp()

@@ -24,7 +24,7 @@ import { GatewayIntentBits, Partials } from "discord.js";
 import "dotenv/config";
 import Client from "./core/Client";
 
-(global as unknown as { bootDate: number }).bootDate = Date.now();
+global.bootDate = Date.now();
 
 const intents = [
     GatewayIntentBits.Guilds,
