@@ -1,3 +1,12 @@
+# [7.16.0](https://github.com/onesoft-sudo/sudobot/compare/v7.15.0...v7.16.0) (2024-01-06)
+
+
+### Features
+
+* add strongly-typed global variables and environment variables ([94ef3b7](https://github.com/onesoft-sudo/sudobot/commit/94ef3b70ccc024da578227423bb7140463b417fa))
+
+
+
 # [7.15.0](https://github.com/onesoft-sudo/sudobot/compare/v7.14.3...v7.15.0) (2024-01-05)
 
 
@@ -35,15 +44,6 @@
 
 * **commands:unmute:** better error message ([bf6eaab](https://github.com/onesoft-sudo/sudobot/commit/bf6eaab16e96b8145d87f3e791328b9397942c02))
 * **commands:unmute:** better error message ([d351b08](https://github.com/onesoft-sudo/sudobot/commit/d351b0860824d588c14df61b97092a1e37e133e2))
-
-
-
-# [7.14.0](https://github.com/onesoft-sudo/sudobot/compare/v7.13.0...v7.14.0) (2024-01-02)
-
-
-### Features
-
-* experimental user stats service ([afd74e6](https://github.com/onesoft-sudo/sudobot/commit/afd74e6f292c28574070348a026af3e852e42163))
 
 
 
