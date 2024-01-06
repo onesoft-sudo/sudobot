@@ -100,7 +100,7 @@
         /* Skip type checking all .d.ts files. */,
     },
     "include": [
-        "globals.d.ts",
+        "./src/types/globals.d.ts",
         "src/**/*.ts"
     ],
     "exclude": ["./backup", "./tmp", "./tmp/**", "./scripts", "./tests", "./build", "./extensions"]
