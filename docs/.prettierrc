@@ -1,0 +1,7 @@
+{
+    "tabWidth": 4,
+    "endOfLine": "lf",
+    "jsxSingleQuote": false,
+    "semi": true,
+    "trailingComma": "all"
+}
