@@ -8,8 +8,8 @@
 }
 
 .logoWrapper img {
-    height: 40px;
-    width: 40px;
+    height: 35px;
+    width: 35px;
 }
 
 .logoWrapper {
@@ -20,7 +20,7 @@
 
 .logoWrapper span {
     margin-left: 10px;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
 }
 
 .ul {
@@ -47,8 +47,25 @@
     color: #fff;
 }
 
-@media (min-width: 971px) {
+@media (min-width: 1350px) {
     .nav {
         padding: 10px 20%;
+    }
+}
+
+@media (min-width: 971px) {
+    .logoWrapper span {
+        font-size: 1.2rem;
+    }
+
+    .logoWrapper img {
+        height: 40px;
+        width: 40px;
+    }
+}
+
+@media (min-width: 971px) and (max-width: 1350px) {
+    .nav {
+        padding: 10px 10%;
     }
 }

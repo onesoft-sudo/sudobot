@@ -1,7 +1,8 @@
 import styles from "@/styles/GitHubStats.module.css";
+import { ComponentProps } from "react";
 import { FaCodeFork, FaEye, FaGithub, FaStar } from "react-icons/fa6";
 
-type GitHubStatsProps = {
+type GitHubStatsProps = ComponentProps<"a"> & {
     url: string;
 };
 
@@ -25,12 +26,22 @@ async function getData(repoName: string) {
     };
 }
 
-export default async function GitHubStats({ url }: GitHubStatsProps) {
+export default async function GitHubStats({
+    url,
+    className,
+    ...props
+}: GitHubStatsProps) {
     const repoName = url.replace(/^http(s?):\/\/github.com\//gi, "");
     const { error, forks, stars, watchers } = await getData(repoName);
 
     return (
-        <a className={styles.main} href={url} target="_blank" rel="noreferrer">
+        <a
+            className={`${styles.main} ${className}`}
+            href={url}
+            target="_blank"
+            rel="noreferrer"
+            {...props}
+        >
             <div className={styles.repo}>
                 <FaGithub size={17} />
                 <span>{repoName}</span>

@@ -25,3 +25,15 @@ body {
         )
         rgb(var(--background-start-rgb));
 }
+
+@media (max-width: 970px) {
+    .desktop {
+        display: none;
+    }
+}
+
+@media (min-width: 971px) {
+    .mobile {
+        display: none;
+    }
+}
