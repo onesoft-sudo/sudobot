@@ -95,6 +95,7 @@ export default function Drawer({
                 className={`${styles.overlay} ${
                     isOpen ? styles.openOverlay : styles.closedOverlay
                 }`}
+                onClick={isOpen ? onClose : undefined}
             ></div>
         </>
     );

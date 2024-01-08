@@ -37,3 +37,13 @@ body {
         display: none !important;
     }
 }
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    width: 5px;
+    background: #ddd;
+    border-radius: 5px;
+}

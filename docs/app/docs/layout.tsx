@@ -1,4 +1,4 @@
-import DocsLayout from "@/components/layouts/DocsLayout";
+import DocsLayout from "@/components/Layouts/DocsLayout";
 import { PropsWithChildren } from "react";
 
 export default function Layout({ children }: PropsWithChildren) {
