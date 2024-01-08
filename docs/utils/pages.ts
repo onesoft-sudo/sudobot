@@ -8,8 +8,10 @@ import {
 export type DocsPage = {
     name: string;
     url?: string;
-    children?: DocsPage[];
+    children?: DocsPageWithChildren[];
 };
+
+export type DocsPageWithChildren = Omit<DocsPage, "children">;
 
 export const pages = [
     {

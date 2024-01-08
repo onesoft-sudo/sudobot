@@ -3,10 +3,11 @@
     height: 100vh;
     position: fixed;
     top: 0;
-    left: 0;
     background: #000;
     box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.1);
     z-index: 1000;
+    transition: ease 0.2s;
+    overflow-x: hidden;
 }
 
 .overlay {
@@ -28,6 +29,10 @@
     background: rgb(30, 30, 30);
 }
 
+.controls[data-expanded="true"] {
+    justify-content: space-between;
+}
+
 .list {
     padding: 5px;
     margin: 10px 15px;
@@ -37,11 +42,31 @@
     margin: 5px 0;
 }
 
-.listItem a {
+.listItemAnchor {
     padding: 5px 10px;
-    display: block;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.listItem a:hover {
+.listItem.active .listItemAnchor,
+.listItemAnchor.active,
+.listItemAnchor:hover {
     background: rgb(30, 30, 30);
+}
+
+.open {
+    left: 0;
+}
+
+.closed {
+    left: -100vw;
+}
+
+.closedOverlay {
+    display: none;
+}
+
+.openOverlay {
+    display: block;
 }

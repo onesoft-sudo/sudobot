@@ -28,12 +28,12 @@ body {
 
 @media (max-width: 970px) {
     .desktop {
-        display: none;
+        display: none !important;
     }
 }
 
 @media (min-width: 971px) {
     .mobile {
-        display: none;
+        display: none !important;
     }
 }

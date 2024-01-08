@@ -1,59 +1,101 @@
-"use client";
-
 import styles from "@/styles/Drawer.module.css";
-import { DocsPage, pages } from "@/utils/pages";
+import { pages } from "@/utils/pages";
 import { Button } from "@mui/material";
-import { MdArrowDropDown, MdClose } from "react-icons/md";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
+import { HiArrowTopRightOnSquare } from "react-icons/hi2";
+import { MdClose, MdNavigateBefore } from "react-icons/md";
+import DocsLinkList from "./DocsLinkList";
+import DocsLinks from "./DocsLinks";
 
-type DrawerProps = {
-    items: DocsPage[];
-};
+export default function Drawer({
+    onClose,
+    isOpen,
+}: {
+    onClose: () => unknown;
+    isOpen: boolean;
+}) {
+    const pathname = usePathname();
+    const [docsExpanded, setDocsExpanded] = useState(() =>
+        pathname.startsWith("/docs"),
+    );
 
-export default function Drawer({ items }: DrawerProps) {
     return (
         <>
-            <aside className={styles.aside}>
-                <div className={styles.controls}>
-                    <Button style={{ minWidth: 0, color: "white" }}>
+            <aside
+                className={`${styles.aside} ${
+                    isOpen ? styles.open : styles.closed
+                }`}
+            >
+                <div
+                    className={styles.controls}
+                    data-expanded={docsExpanded ? "true" : "false"}
+                >
+                    {docsExpanded && (
+                        <button
+                            onClick={() => setDocsExpanded(false)}
+                            className="flex justify-center items-center text-[15px] hover:text-[#ccc]"
+                        >
+                            <MdNavigateBefore size={20} />
+                            <span>Main menu</span>
+                        </button>
+                    )}
+
+                    <Button
+                        style={{ minWidth: 0, color: "white" }}
+                        onClick={onClose}
+                    >
                         <MdClose size={20} />
                     </Button>
                 </div>
 
-                <ul className={styles.list}>
-                    {pages.map((link) => (
-                        <li
-                            key={`${link.url}_${link.name}`}
-                            className={styles.listItem}
-                        >
-                            <a
-                                href={link.url}
-                                {...(/^http(s?):\/\//gi.test(link.url)
-                                    ? { target: "_blank", rel: "noreferrer" }
-                                    : {})}
-                                title={link.name}
+                <div className="relative">
+                    <ul
+                        className={styles.list}
+                        style={{
+                            position: "absolute",
+                            left: docsExpanded ? `-100vh` : 0,
+                            transition: "ease 0.3s",
+                            width: "90%",
+                        }}
+                    >
+                        {pages.map(link => (
+                            <li
+                                key={`${link.url}_${link.name}`}
+                                className={styles.listItem}
                             >
-                                {link.name}
-                            </a>
-                        </li>
-                    ))}
+                                <a
+                                    href={link.url}
+                                    {...(/^http(s?):\/\//gi.test(link.url)
+                                        ? {
+                                              target: "_blank",
+                                              rel: "noreferrer",
+                                          }
+                                        : {})}
+                                    title={link.name}
+                                    className={styles.listItemAnchor}
+                                >
+                                    <span>{link.name}</span>
+                                    {/^http(s?):\/\//gi.test(link.url) && (
+                                        <HiArrowTopRightOnSquare />
+                                    )}
+                                </a>
+                            </li>
+                        ))}
 
-                    <li className={styles.listItem}>
-                        <a
-                            href="#"
-                            className="!flex justify-between items-center w-[100%]"
-                        >
-                            <span>Docs</span>
-                            <span>
-                                <MdArrowDropDown
-                                    className="inline-block"
-                                    size={20}
-                                />
-                            </span>
-                        </a>
-                    </li>
-                </ul>
+                        <DocsLinks
+                            onNavigateNext={() => setDocsExpanded(true)}
+                        />
+                    </ul>
+                </div>
+
+                <DocsLinkList expanded={docsExpanded} />
             </aside>
-            <div className={styles.overlay}></div>
+            <div
+                className={`${styles.overlay} ${
+                    isOpen ? styles.openOverlay : styles.closedOverlay
+                }`}
+            ></div>
         </>
     );
 }

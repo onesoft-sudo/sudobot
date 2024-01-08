@@ -3,5 +3,6 @@
     "endOfLine": "lf",
     "jsxSingleQuote": false,
     "semi": true,
-    "trailingComma": "all"
+    "trailingComma": "all",
+    "arrowParens": "avoid"
 }
