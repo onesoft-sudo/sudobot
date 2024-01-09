@@ -6,7 +6,7 @@
     background: #000;
     box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.1);
     z-index: 1000;
-    transition: ease 0.4s;
+    transition: 0.3s;
     overflow-x: hidden;
 }
 
