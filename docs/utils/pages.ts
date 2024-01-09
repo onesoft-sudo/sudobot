@@ -42,6 +42,10 @@ export const pages = [
 
 export const docsPages: DocsPage[] = [
     {
+        name: "Main Page",
+        url: "/",
+    },
+    {
         name: "Getting Started",
         url: "getting-started",
     },
@@ -51,12 +55,16 @@ export const docsPages: DocsPage[] = [
         children: [
             {
                 name: "Creating an Extension",
-                url: "create",
+                url: "extensions/create",
             },
             {
                 name: "Installing an Extension",
-                url: "install",
+                url: "extensions/install",
             },
         ],
     },
 ];
+
+export function resolveDocsURL(url: string) {
+    return url.startsWith("/") ? url : `/docs/${url}`;
+}
