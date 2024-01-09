@@ -32,7 +32,7 @@ export default function Navbar() {
 
             <GitHubStats className="desktop" url={GITHUB_REPO_URL} />
 
-            <div className="mobile w-[1rem]"></div>
+            <div className="mobile w-[20px]"></div>
 
             <NavbarClientSide />
         </nav>
