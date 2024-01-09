@@ -6,7 +6,7 @@
     background: #000;
     box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.1);
     z-index: 1000;
-    transition: 0.3s;
+    transition: 0.2s;
     overflow-x: hidden;
 }
 
@@ -47,6 +47,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-radius: 5px;
 }
 
 .listItem.active .listItemAnchor,
@@ -60,7 +61,7 @@
 }
 
 .closed {
-    left: -100vw;
+    left: -70vw;
 }
 
 .closedOverlay {
