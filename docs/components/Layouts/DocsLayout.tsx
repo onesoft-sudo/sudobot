@@ -7,6 +7,7 @@ export default function DocsLayout({ children }: PropsWithChildren) {
     return (
         <div className="grid lg:grid-cols-[3fr_10fr_2.5fr] md:gap-[50px] mb-10">
             <DocsLinkList desktopOnly fragment />
+
             <div className="lg:px-[50px] xl:px-[100px]">
                 <article
                     id="article"
