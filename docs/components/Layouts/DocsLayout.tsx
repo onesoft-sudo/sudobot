@@ -10,7 +10,7 @@ export default function DocsLayout({ children }: PropsWithChildren) {
             <div className="lg:px-[50px] xl:px-[100px]">
                 <article
                     id="article"
-                    className="prose prose-neutral prose-invert mt-8 p-3 text-wrap max-w-[100vw]"
+                    className="prose prose-neutral prose-invert prose-code:before:hidden prose-code:after:hidden mt-8 p-3 text-wrap max-w-[100vw]"
                 >
                     {children}
                 </article>
