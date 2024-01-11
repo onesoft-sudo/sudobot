@@ -1,3 +1,4 @@
+import "prism-themes/themes/prism-coldark-dark.css";
 import { Fragment, PropsWithChildren } from "react";
 import TableOfContents from "../MDX/TableOfContents";
 import DocsLinkList from "../Navbar/DocsLinkList";

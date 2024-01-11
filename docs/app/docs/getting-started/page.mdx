@@ -30,7 +30,7 @@ First of all, clone the repository using [git](https://git-scm.com) or download 
 
 To clone the repository, run this command:
 
-```
+```bash
 git clone https://github.com/onesoft-sudo/sudobot
 ```
 
@@ -38,7 +38,7 @@ After this command completes, go inside of the directory. (`sudobot/` if you clo
 
 Then, install the dependencies using the following command:
 
-```
+```bash
 npm install -D
 ```
 
@@ -46,7 +46,7 @@ npm install -D
 
 Now we need to invoke the TypeScript compiler (`tsc`) to build the bot and generate compiled JavaScript files that the Node.js interpreter can run. To compile the bot, simply run:
 
-```
+```bash
 npm run build
 ```
 
@@ -54,7 +54,7 @@ npm run build
 
 Generate the JSON config schema files using the following command:
 
-```
+```bash
 npm run gen:schema
 ```
 
@@ -64,7 +64,7 @@ Create a file named `.env` inside of the root project directory. This file will 
 
 Then you need to add a few variables to `.env` file:
 
-```
+```bash
 # This is your bot's token.
 TOKEN=
 
@@ -114,7 +114,7 @@ postgresql://username:password@hostname:port/dbname
 
 After you have set the database URL inside `.env`, you can run the following command:
 
-```
+```bash
 npx prisma db push
 ```
 
@@ -128,14 +128,12 @@ Now it's time to configure the bot. Now, SudoBot comes with the config files bun
 
 Remove everything inside of the file, and just put an empty object `{}` inside of that file and save it if you don't want to configure anything and just want the default settings. Or,
 
-Manually set the settings inside of the file. If you're following along this documentation and have run the script `generate-config-schema.ts` (previously specified [here](getting-started.md#cloning-the-project-and-setting-up)), then when you edit the file, you can remove everything inside of the file, and put the following JSON object inside of that file:
+Manually set the settings inside of the file. If you're following along this documentation and have run the script `generate-config-schema.js` (previously specified [here](getting-started.md#cloning-the-project-and-setting-up)), then when you edit the file, you can remove everything inside of the file, and put the following JSON object inside of that file:
 
-```
+```json
 {
     "$schema": "./schema/config.json",
-    "guild_id": {
-
-    }
+    "guild_id": {}
 }
 ```
 
@@ -149,7 +147,7 @@ If you're using an IDE or editor like [VS Code](https://code.visualstudio.com/) 
 
 If you want to use the application slash commands and context menu commands of SudoBot, you have to register it to the API first. To do that, simply run:
 
-```
+```bash
 node scripts/deploy-commands.js
 ```
 
@@ -159,7 +157,7 @@ Pass the `--guild` option to register guild commands instead of global commands,
 
 Now it's time to start the bot. Run the following command to start the bot:
 
-```
+```bash
 npm start
 ```
 
