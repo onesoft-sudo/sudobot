@@ -9,41 +9,45 @@ import { MdArrowBack, MdArrowForward } from "react-icons/md";
 
 interface NavigatorProps {}
 
+const flattenRoutes = () => {
+    const flatRoutes = [];
+
+    for (const page of docsPages) {
+        if (page.url) {
+            flatRoutes.push({
+                name: page.name,
+                url: page.url,
+            });
+        }
+
+        if (page.children) {
+            for (const child of page.children) {
+                flatRoutes.push(child);
+            }
+        }
+    }
+
+    return flatRoutes;
+};
+
+const flatRoutes = flattenRoutes();
+
 const Navigator: FC<NavigatorProps> = () => {
     const pathname = usePathname();
-    let parent = null;
-    const currentPage = docsPages.findIndex((page, index) => {
+
+    const currentPage = flatRoutes.findIndex(page => {
         if (!page.url) {
             return false;
         }
 
         const url = resolveDocsURL(page.url);
 
-        if (url === pathname) {
-            return true;
-        }
-
-        if (!page.children) {
-            return false;
-        }
-
-        for (const child of page.children) {
-            if (child.url && resolveDocsURL(child.url)) {
-                parent = index;
-                return true;
-            }
-        }
-
-        return false;
+        return url === pathname;
     });
     const nextIndex = currentPage + 1;
     const prevIndex = currentPage - 1;
-    const nextPage = parent
-        ? docsPages[parent].children![nextIndex]
-        : docsPages[nextIndex];
-    const prevPage = parent
-        ? docsPages[parent].children![prevIndex]
-        : docsPages[prevIndex];
+    const nextPage = flatRoutes[nextIndex];
+    const prevPage = flatRoutes[prevIndex];
 
     return (
         <div

@@ -21,10 +21,20 @@ export default function DocsLinkItem({
     onNavigate,
     subpages = [],
 }: DocsLinkItemProps) {
-    const [expanded, setExpanded] = useState(false);
     const pathname = usePathname();
+    const [expanded, setExpanded] = useState(() =>
+        subpages.some(page => {
+            const link = page.url
+                ? page.url.startsWith("/")
+                    ? page.url
+                    : `/docs/${page.url}`
+                : "#";
+            return link === pathname;
+        }),
+    );
     const toggle = (e: SyntheticEvent) => {
         e.preventDefault();
+        e.stopPropagation();
         setExpanded(s => !s);
     };
     const Root = as;
@@ -72,7 +82,18 @@ export default function DocsLinkItem({
                 <div
                     className="ml-[13px] pl-[10px] [border-left:1px_solid_#444]"
                     style={{
-                        maxHeight: expanded ? `${subpages.length * 50}px` : 0,
+                        maxHeight: expanded
+                            ? `${
+                                  subpages.length *
+                                  (50 +
+                                      Math.max(
+                                          subpages
+                                              .map(p => p.name.length)
+                                              .sort()[0] - 10,
+                                          0,
+                                      ))
+                              }px`
+                            : 0,
                         transition: "0.2s",
                         overflowY: "hidden",
                     }}

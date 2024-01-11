@@ -51,15 +51,10 @@ export const docsPages: DocsPage[] = [
     },
     {
         name: "Extensions",
-        url: "extensions",
         children: [
             {
-                name: "Creating an Extension",
-                url: "extensions/create",
-            },
-            {
-                name: "Installing an Extension",
-                url: "extensions/install",
+                name: "Extending SudoBot with Extensions",
+                url: "extensions/extending-sudobot-with-extensions",
             },
         ],
     },

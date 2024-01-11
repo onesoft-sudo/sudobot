@@ -49,3 +49,9 @@ body {
     background: #ddd;
     border-radius: 5px;
 }
+
+#article pre,
+#article code {
+    font-family: "Ubuntu Mono", "SF Mono", "Consolas", "Droid Mono",
+        "Roboto Mono", "Courier New", Courier, monospace;
+}

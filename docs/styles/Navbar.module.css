@@ -66,6 +66,11 @@
         height: 40px;
         width: 40px;
     }
+
+    .nav {
+        background: rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(20px);
+    }
 }
 
 @media (min-width: 971px) and (max-width: 1350px) {
