@@ -1,5 +1,5 @@
 ---
-title: Welcome to SudoBot Documentation!
+title: Extending SudoBot with Extensions
 ---
 
 import Callout from "@/components/Alerts/Callout";
@@ -22,12 +22,12 @@ The `extension.json` file looks something like this:
 
 ```json5
 {
-    main: "./build/index.js" /* The entry point. */,
-    commands: "./build/commands" /* Commands directory. The bot will load commands from this directory. */,
-    events: "./build/events" /* Event handlers directory. The bot will load event handlers from this directory. */,
-    language: "typescript" /* The language being used for this extension. Can be either "javascript" or "typescript". */,
-    main_directory: "./build" /* The main directory where the entry point is located. */,
-    build_command: "npm run build" /* Command to build the extension. In this case `npm run build` invokes `tsc`. */,
+    "main": "./build/index.js" /* The entry point. */,
+    "commands": "./build/commands" /* Commands directory. The bot will load commands from this directory. */,
+    "events": "./build/events" /* Event handlers directory. The bot will load event handlers from this directory. */,
+    "language": "typescript" /* The language being used for this extension. Can be either "javascript" or "typescript". */,
+    "main_directory": "./build" /* The main directory where the entry point is located. */,
+    "build_command": "npm run build" /* Command to build the extension. In this case `npm run build` invokes `tsc`. */,
 }
 ```
 
