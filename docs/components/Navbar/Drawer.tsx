@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { HiArrowTopRightOnSquare } from "react-icons/hi2";
 import { MdClose, MdNavigateBefore } from "react-icons/md";
+import DocsLink from "./DocsLink";
 import DocsLinkList from "./DocsLinkList";
-import DocsLinks from "./DocsLinks";
 
 export default function Drawer({
     onClose,
@@ -54,7 +54,7 @@ export default function Drawer({
                         className={styles.list}
                         style={{
                             position: "absolute",
-                            left: docsExpanded ? `-100vh` : 0,
+                            left: docsExpanded ? `-100vw` : 0,
                             transition: "ease 0.3s",
                             width: "90%",
                         }}
@@ -74,6 +74,7 @@ export default function Drawer({
                                         : {})}
                                     title={link.name}
                                     className={styles.listItemAnchor}
+                                    onClick={onClose}
                                 >
                                     <span>{link.name}</span>
                                     {/^http(s?):\/\//gi.test(link.url) && (
@@ -83,13 +84,13 @@ export default function Drawer({
                             </li>
                         ))}
 
-                        <DocsLinks
+                        <DocsLink
                             onNavigateNext={() => setDocsExpanded(true)}
                         />
                     </ul>
                 </div>
 
-                <DocsLinkList expanded={docsExpanded} />
+                <DocsLinkList expanded={docsExpanded} onNavigate={onClose} />
             </aside>
             <div
                 className={`${styles.overlay} ${

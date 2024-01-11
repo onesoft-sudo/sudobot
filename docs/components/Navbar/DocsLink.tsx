@@ -6,7 +6,7 @@ type DocsLinksProps = {
     onNavigateNext: () => void;
 };
 
-export default function DocsLinks({ onNavigateNext }: DocsLinksProps) {
+export default function DocsLink({ onNavigateNext }: DocsLinksProps) {
     return (
         <li className={styles.listItem}>
             <div
@@ -25,23 +25,6 @@ export default function DocsLinks({ onNavigateNext }: DocsLinksProps) {
                     <MdNavigateNext className={`inline-block`} size={20} />
                 </Button>
             </div>
-
-            {/* 
-            {expanded && (
-                <div>
-                    <ul className="list-none">
-                        {docsPages.map(page => (
-                            <DocsLinkItem
-                                key={`${page.name}_${page.url}`}
-                                as="li"
-                                name={page.name}
-                                url={page.url}
-                                subpages={page.children}
-                            />
-                        ))}
-                    </ul>
-                </div>
-            )} */}
         </li>
     );
 }

@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import { Fragment, PropsWithChildren } from "react";
 import TableOfContents from "../MDX/TableOfContents";
 import DocsLinkList from "../Navbar/DocsLinkList";
 import Navigator from "../Navigation/Navigator";
@@ -30,10 +30,9 @@ export default function DocsLayout({ children }: PropsWithChildren) {
                     </div>
                 </div>
             </div>
-            <div className="hidden md:block mr-5">
-                <h2 className="text-center my-3 text-lg">Table of Contents</h2>
-                <br />
-                <TableOfContents elementSelector="#article" />
+
+            <div className="hidden lg:block mr-5 fixed right-0 max-h-[calc(100vh-50px)] overflow-y-scroll">
+                <TableOfContents as={Fragment} />
             </div>
         </div>
     );

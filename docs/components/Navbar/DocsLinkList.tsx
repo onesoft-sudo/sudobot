@@ -9,12 +9,14 @@ type DocsLinkListProps = {
     expanded?: boolean;
     desktopOnly?: boolean;
     fragment?: boolean;
+    onNavigate?: () => void;
 };
 
 export default function DocsLinkList({
     expanded,
     desktopOnly = false,
     fragment = false,
+    onNavigate,
 }: DocsLinkListProps) {
     const isDesktop = useIsDesktop();
 
@@ -55,6 +57,7 @@ export default function DocsLinkList({
                             name={page.name}
                             url={page.url}
                             subpages={page.children}
+                            onNavigate={onNavigate}
                         />
                     ))}
                 </ul>

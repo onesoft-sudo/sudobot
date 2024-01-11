@@ -2,6 +2,7 @@ import styles from "@/styles/DocsLinkItem.module.css";
 import { DocsPageWithChildren } from "@/utils/pages";
 import { Button } from "@mui/material";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { SyntheticEvent, useState } from "react";
 import { MdExpandMore } from "react-icons/md";
 
@@ -10,15 +11,18 @@ type DocsLinkItemProps = {
     url?: string;
     name: string;
     subpages?: DocsPageWithChildren[];
+    onNavigate?: () => void;
 };
 
 export default function DocsLinkItem({
     as = "li",
     url,
     name,
+    onNavigate,
     subpages = [],
 }: DocsLinkItemProps) {
     const [expanded, setExpanded] = useState(false);
+    const pathname = usePathname();
     const toggle = (e: SyntheticEvent) => {
         e.preventDefault();
         setExpanded(s => !s);
@@ -29,12 +33,16 @@ export default function DocsLinkItem({
     const IconWrapperComponent = url === undefined ? "span" : Button;
 
     return (
-        <Root className={styles.root}>
+        <Root
+            className={`${styles.root} ${
+                pathname === link ? styles.active : ""
+            }`}
+        >
             <LinkComponent
                 className={styles.anchor}
                 href={link}
                 title={name}
-                onClick={url !== undefined ? undefined : toggle}
+                onClick={url !== undefined ? onNavigate : toggle}
                 style={{
                     paddingRight: url !== undefined ? 2 : undefined,
                 }}

@@ -13,5 +13,5 @@
 .root.active .anchor,
 .anchor.active,
 .anchor:hover {
-    background: rgb(30, 30, 30);
+    background: rgba(255, 255, 255, 0.1);
 }
