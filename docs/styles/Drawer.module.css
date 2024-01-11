@@ -52,8 +52,8 @@
 
 .listItem.active .listItemAnchor,
 .listItemAnchor.active,
-.listItemAnchor:hover {
-    background: rgb(30, 30, 30);
+.listItemAnchor:hover {    
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .open {
