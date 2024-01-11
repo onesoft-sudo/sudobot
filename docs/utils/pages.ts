@@ -42,7 +42,7 @@ export const pages = [
 
 export const docsPages: DocsPage[] = [
     {
-        name: "Main Page",
+        name: "Welcome",
         url: "/",
     },
     {

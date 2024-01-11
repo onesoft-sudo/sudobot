@@ -2,13 +2,20 @@
 title: Getting Started - SudoBot
 ---
 
+import Callout from "@/components/Alerts/Callout";
+
 export const metadata = frontmatter;
 
 # Getting Started
 
 Thanks for choosing SudoBot! In this article you'll learn how to set up a custom instance of SudoBot and configure it so that it does exactly what you want.
 
-**If you don't want to set the bot up yourself and want a pre-hosted solution for free, you can contact [@rakinar2](https://discord.com/users/774553653394538506) at Discord. Your Discord server should have at least 50 members to be eligible.**
+<Callout type="info">
+    If you don't want to set the bot up yourself and want a pre-hosted solution
+    for free, you can contact
+    [@rakinar2](https://discord.com/users/774553653394538506) at Discord. Your
+    Discord server should have at least 50 members to be eligible.
+</Callout>
 
 ## Requirements
 
@@ -96,9 +103,15 @@ A few more environment variables can be specified:
 
 As we've said [before](getting-started.md#configuration-and-the-environment-variables), `DB_URL` is the environment variable that you need to put in `.env` and the value of this variable should be the database URL. SudoBot at the moment, only supports **PostgreSQL**.
 
-**As of November 28, 2023, we no longer officially support MySQL as a database for being used with SudoBot. Please migrate to PostgreSQL.**
+<Callout type="warning">
+    As of November 28, 2023, we no longer officially support MySQL as a database
+    for being used with SudoBot. Please migrate to PostgreSQL.
+</Callout>
 
-**If you want a free PostgreSQL hosting service, check out [Neon](https://neon.tech). It's easy to set up, and completely free of cost.**
+<Callout type="info">
+    If you want a free PostgreSQL hosting service, check out
+    [Neon](https://neon.tech). It's easy to set up, and completely free of cost.
+</Callout>
 
 Your database URL should look like this if you're using PostgreSQL:
 
