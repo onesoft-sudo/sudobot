@@ -17,6 +17,7 @@
         "@mui/material": "^5.15.3",
         "@next/mdx": "^14.0.4",
         "@types/mdx": "^2.0.10",
+        "date-fns": "^3.2.0",
         "next": "14.0.4",
         "prism-themes": "^1.9.0",
         "react": "^18",

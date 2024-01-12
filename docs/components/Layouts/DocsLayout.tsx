@@ -1,10 +1,11 @@
 import "prism-themes/themes/prism-coldark-dark.css";
 import { Fragment, PropsWithChildren } from "react";
+import PageInfo from "../MDX/PageInfo";
 import TableOfContents from "../MDX/TableOfContents";
 import DocsLinkList from "../Navbar/DocsLinkList";
 import Navigator from "../Navigation/Navigator";
 
-export default function DocsLayout({ children }: PropsWithChildren) {
+export default async function DocsLayout({ children }: PropsWithChildren) {
     return (
         <div className="grid lg:grid-cols-[3fr_10fr_2.5fr] md:gap-[50px] mb-10 relative">
             <DocsLinkList desktopOnly fragment />
@@ -20,15 +21,8 @@ export default function DocsLayout({ children }: PropsWithChildren) {
                 <div className="mx-3">
                     <Navigator />
                     <hr className="[border-top:1px_solid_#333] mb-5" />
-                    <div className="flex items-center gap-3">
-                        <img
-                            src="https://avatars.githubusercontent.com/virtual-designer"
-                            className="w-[30px] h-[30px] rounded-full [border:1px_solid_#007bff]"
-                        />
-                        <span className="text-[#999]">
-                            Last modified 2 days ago
-                        </span>
-                    </div>
+
+                    <PageInfo />
                 </div>
             </div>
 
