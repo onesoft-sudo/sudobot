@@ -1,13 +1,11 @@
 "use client";
 
+import { branch } from "@/utils/links";
 import { formatDistanceToNowStrict } from "date-fns";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-async function getPageInfo(
-    pathname: string,
-    branch = "docs/migrate-to-nextjs",
-) {
+async function getPageInfo(pathname: string) {
     const githubURL = pathname
         ? `https://api.github.com/repos/onesoft-sudo/sudobot/commits?path=docs%2Fapp${encodeURIComponent(
               pathname,
