@@ -31,7 +31,7 @@ export type SearchResultItem = {
 
 export default function SearchModal({ onClose }: SearchModalProps) {
     const [query, isQueued, setQuery] = useDebouncedState<string | null>(null);
-    const [results, setResults] = useState<SearchResultItem[]>([]);
+    const [results, setResults] = useState<SearchResultItem[] | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
@@ -95,7 +95,7 @@ export default function SearchModal({ onClose }: SearchModalProps) {
                             onKeyUp={event => {
                                 if (!(event.target as HTMLInputElement).value) {
                                     setQuery(null);
-                                    setResults([]);
+                                    setResults(null);
                                 }
                             }}
                         />
@@ -106,7 +106,7 @@ export default function SearchModal({ onClose }: SearchModalProps) {
                             <div className="flex justify-center items-center">
                                 <CircularProgress />
                             </div>
-                        ) : (
+                        ) : (results && results.length > 0) ? (
                             results?.map((result, index) => (
                                 <SearchResult
                                     result={result}
@@ -115,6 +115,8 @@ export default function SearchModal({ onClose }: SearchModalProps) {
                                     onClick={onClose}
                                 />
                             ))
+                        ) : (
+                            <h3 className="text-lg md:text-xl text-center">No results found. <span className="text-[#999]">Maybe search again with a different keyboard?</span></h3>
                         )}
                     </div>
                 </div>
