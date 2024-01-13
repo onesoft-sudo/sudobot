@@ -1,9 +1,8 @@
 import styles from "@/styles/Navbar.module.css";
-import { GITHUB_REPO_URL } from "@/utils/links";
 import { pages } from "@/utils/pages";
 import Image from "next/image";
 import logo from "../../images/sudobot.png";
-import GitHubStats from "./GitHubStats";
+import Search from "../Searching/Search";
 import NavbarClientSide from "./NavbarClientSIde";
 
 export default function Navbar() {
@@ -11,7 +10,8 @@ export default function Navbar() {
         <nav className={styles.nav}>
             <a className={styles.logoWrapper} href="/">
                 <Image src={logo.src} alt="Logo" height={128} width={128} />
-                <span>SudoBot</span>
+                <span className="mobile">SudoBot</span>
+                <span className="desktop">SudoBot Docs</span>
             </a>
 
             <ul className={`${styles.ul} desktop`}>
@@ -30,9 +30,8 @@ export default function Navbar() {
                 ))}
             </ul>
 
-            <GitHubStats className="desktop" url={GITHUB_REPO_URL} />
-
-            <div className="mobile w-[20px]"></div>
+            {/* <GitHubStats className="desktop" url={GITHUB_REPO_URL} /> */}
+            <Search />
 
             <NavbarClientSide />
         </nav>

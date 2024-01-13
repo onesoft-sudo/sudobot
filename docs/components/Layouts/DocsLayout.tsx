@@ -22,7 +22,7 @@ export default function DocsLayout({ children }: PropsWithChildren) {
                     className="prose prose-neutral prose-invert prose-code:before:hidden prose-code:after:hidden mt-8 p-3 text-wrap max-w-[100vw] relative"
                 >
                     <Button
-                        className="not-prose min-w-[0] absolute top-[14px] right-[20px] lg:right-0"
+                        className="hidden lg:block not-prose min-w-[0] absolute top-[14px] right-[20px] lg:right-0"
                         style={{ minWidth: 0, position: "absolute" }}
                         href={`${GITHUB_REPO_URL}/edit/${encodeURIComponent(
                             branch,

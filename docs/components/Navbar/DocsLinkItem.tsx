@@ -105,6 +105,7 @@ export default function DocsLinkItem({
                                 as="li"
                                 name={page.name}
                                 url={page.url}
+                                onNavigate={onNavigate}
                             />
                         ))}
                     </ul>

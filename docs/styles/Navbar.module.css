@@ -54,7 +54,7 @@
 
 @media (min-width: 1350px) {
     .nav {
-        padding: 10px 20%;
+        padding: 10px 20px;
     }
 }
 
@@ -71,6 +71,8 @@
     .nav {
         background: rgba(0, 0, 0, 0.2);
         backdrop-filter: blur(20px);
+        display: grid;
+        grid-template-columns: 5fr 20fr 5fr;
     }
 }
 
