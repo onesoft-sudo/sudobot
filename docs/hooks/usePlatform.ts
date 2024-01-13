@@ -1,3 +1,5 @@
+"use client";
+
 export default function usePlatform() {
     return navigator.userAgent.includes("Macintosh")
         ? "darwin"
