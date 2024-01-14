@@ -115,9 +115,9 @@ export default function SearchModal({ onClose }: SearchModalProps) {
                                     onClick={onClose}
                                 />
                             ))
-                        ) : (
+                        ) : query?.trim() ? (
                             <h3 className="text-lg md:text-xl text-center">No results found. <span className="text-[#999]">Maybe search again with a different keyboard?</span></h3>
-                        )}
+                        ) : ""}
                     </div>
                 </div>
             </div>
