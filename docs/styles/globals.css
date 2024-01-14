@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+:root {
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 214, 219, 220;
+    --background-end-rgb: 255, 255, 255;
+}
+*/
+
+:root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+    scroll-behavior: smooth;
+}
+
+body {
+    color: rgb(var(--foreground-rgb));
+    background: linear-gradient(
+            to bottom,
+            transparent,
+            rgb(var(--background-end-rgb))
+        )
+        rgb(var(--background-start-rgb));
+    overflow-x: hidden;
+}
+
+@media (max-width: 970px) {
+    .desktop {
+        display: none !important;
+    }
+}
+
+@media (min-width: 971px) {
+    .mobile {
+        display: none !important;
+    }
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    width: 5px;
+    background: #ddd;
+    border-radius: 5px;
+}
+
+#article pre,
+#article code {
+    font-family: "Ubuntu Mono", "SF Mono", "Consolas", "Droid Mono",
+        "Roboto Mono", "Courier New", Courier, monospace;
+}
+
+#article :is(h1, h2, h3, h4, h5, h6):hover .autolink {
+    display: inline-block;
+    margin-bottom: -5px;
+}
+
+.autolink {
+    height: 1em;
+    width: 1em;
+    display: none;
+    filter: invert(1);
+    margin-left: 10px;
+    opacity: 0.8;
+    background-image: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke-width%3D%221.5%22%20stroke%3D%22currentColor%22%20class%3D%22w-6%20h-6%22%3E%0A%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22M13.19%208.688a4.5%204.5%200%200%201%201.242%207.244l-4.5%204.5a4.5%204.5%200%200%201-6.364-6.364l1.757-1.757m13.35-.622%201.757-1.757a4.5%204.5%200%200%200-6.364-6.364l-4.5%204.5a4.5%204.5%200%200%200%201.242%207.244%22%20%2F%3E%0A%3C%2Fsvg%3E);
+}
