@@ -30,6 +30,10 @@ const withMDX = createMDX({
             rehypePrism,
         ],
     },
+    webpack(config) {
+        require("./generate-sitemap.js");
+        return config;
+    },
 });
 
 export default withMDX(nextConfig);
