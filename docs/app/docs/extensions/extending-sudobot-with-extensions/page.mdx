@@ -4,8 +4,6 @@ title: Extending SudoBot with Extensions
 
 import Callout from "@/components/Alerts/Callout";
 
-export const metadata = frontmatter;
-
 # Extending SudoBot with Extensions
 
 SudoBot has support for extensions, and it was introduced in version 6.17. Extensions can extend the bot's feature, by adding commands, event listeners, services and a lot more stuff. You can install/uninstall/disable extensions, or create your own to make the bot behave exactly how you want. Extensions can be written using JavaScript and TypeScript.
@@ -22,12 +20,12 @@ The `extension.json` file looks something like this:
 
 ```json5
 {
-    "main": "./build/index.js" /* The entry point. */,
-    "commands": "./build/commands" /* Commands directory. The bot will load commands from this directory. */,
-    "events": "./build/events" /* Event handlers directory. The bot will load event handlers from this directory. */,
-    "language": "typescript" /* The language being used for this extension. Can be either "javascript" or "typescript". */,
-    "main_directory": "./build" /* The main directory where the entry point is located. */,
-    "build_command": "npm run build" /* Command to build the extension. In this case `npm run build` invokes `tsc`. */,
+    main: "./build/index.js" /* The entry point. */,
+    commands: "./build/commands" /* Commands directory. The bot will load commands from this directory. */,
+    events: "./build/events" /* Event handlers directory. The bot will load event handlers from this directory. */,
+    language: "typescript" /* The language being used for this extension. Can be either "javascript" or "typescript". */,
+    main_directory: "./build" /* The main directory where the entry point is located. */,
+    build_command: "npm run build" /* Command to build the extension. In this case `npm run build` invokes `tsc`. */,
 }
 ```
 

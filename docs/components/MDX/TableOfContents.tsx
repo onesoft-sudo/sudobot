@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { FC, useEffect, useRef, useState } from "react";
 
 const selector = ":is(h1, h2, h3, h4, h5, h6)[id]";
@@ -19,6 +20,7 @@ export default function TableOfContents({
     const observer = useRef<IntersectionObserver>();
     const [activeId, setActiveId] = useState("");
     const Root = as ?? "div";
+    const pathname = usePathname();
 
     useEffect(() => {
         const headings = Array.from(
@@ -29,7 +31,7 @@ export default function TableOfContents({
         }));
 
         setHeadings(headings);
-    }, []);
+    }, [pathname]);
 
     useEffect(() => {
         observer.current = new IntersectionObserver(
@@ -48,8 +50,11 @@ export default function TableOfContents({
         const elements = document.querySelectorAll(selector);
         elements.forEach(element => observer.current?.observe(element));
 
-        return () => observer.current?.disconnect();
-    }, []);
+        return () => {
+            observer.current?.disconnect();
+            setActiveId("");
+        };
+    }, [pathname]);
 
     return (
         <Root>

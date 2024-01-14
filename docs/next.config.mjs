@@ -13,7 +13,11 @@ const nextConfig = {
 
 const withMDX = createMDX({
     options: {
-        remarkPlugins: [remarkGfm, remarkFrontmatter, remarkMdxFrontmatter],
+        remarkPlugins: [
+            remarkGfm,
+            remarkFrontmatter,
+            [remarkMdxFrontmatter, { name: "metadata" }],
+        ],
         rehypePlugins: [
             rehypeSlug,
             [
