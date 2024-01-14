@@ -38,10 +38,11 @@ export default function Search() {
             <div className={styles.root}>
                 {!isDesktop && (
                     <Button
-                        style={{ minWidth: 0, color: "white" }}
+                        style={{ minWidth: 0, color: "#fff" }}
+                        className="text-white"
                         onClick={() => setModalOpen(true)}
                     >
-                        <MdSearch size={23} />
+                        <MdSearch size={23} style={{ color: "white" }} />
                     </Button>
                 )}
                 {isDesktop && <MdSearch size={25} />}
