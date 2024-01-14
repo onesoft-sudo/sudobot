@@ -2,6 +2,8 @@ FROM node:21-alpine
 
 WORKDIR /app
 
+RUN apk add --no-cache python build-base g++ cairo-dev jpeg-dev pango-dev giflib-dev
+
 COPY .env.docke[r] ./.env
 COPY package.json .
 RUN npm install -D
@@ -12,7 +14,6 @@ COPY prisma ./prisma
 COPY resources ./resources
 COPY ecosystem.config.js .
 
-RUN apk add --no-cache python build-base g++ cairo-dev jpeg-dev pango-dev giflib-dev
 RUN npx prisma generate
 RUN npm run build
 
