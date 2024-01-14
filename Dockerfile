@@ -12,7 +12,7 @@ COPY prisma ./prisma
 COPY resources ./resources
 COPY ecosystem.config.js .
 
-RUN apk add --no-cache build-base g++ cairo-dev jpeg-dev pango-dev giflib-dev
+RUN apk add --no-cache python build-base g++ cairo-dev jpeg-dev pango-dev giflib-dev
 RUN npx prisma generate
 RUN npm run build
 
