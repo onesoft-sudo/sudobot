@@ -22,7 +22,6 @@ const theme = createTheme({
 
 export type SearchResultItem = {
     title?: string;
-
     description?: string;
     data: string;
     match: "title" | "description" | "data";
