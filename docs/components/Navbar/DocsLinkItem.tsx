@@ -1,5 +1,5 @@
 import styles from "@/styles/DocsLinkItem.module.css";
-import { DocsPageWithChildren } from "@/utils/pages";
+import { DocsPageWithChildren, resolveDocsURL } from "@/utils/pages";
 import { Button } from "@mui/material";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -38,7 +38,7 @@ export default function DocsLinkItem({
         setExpanded(s => !s);
     };
     const Root = as;
-    const link = url ? (url.startsWith("/") ? url : `/docs/${url}`) : "#";
+    const link = url ? resolveDocsURL(url) : "#";
     const LinkComponent = url ? Link : "a";
     const IconWrapperComponent = url === undefined ? "span" : Button;
 

@@ -103,5 +103,5 @@ export const docsPages: DocsPage[] = [
 ];
 
 export function resolveDocsURL(url: string) {
-    return url.startsWith("/") ? url : `/docs/${url}`;
+    return url.startsWith("/") ? url : `/${url}`;
 }

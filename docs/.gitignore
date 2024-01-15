@@ -36,3 +36,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 index.json
+
+sitemap.xml
+sitemap.json
