@@ -9,7 +9,7 @@ async function getPageInfo(pathname: string) {
     const githubURL = pathname
         ? `https://api.github.com/repos/onesoft-sudo/sudobot/commits?path=docs%2Fapp${encodeURIComponent(
               pathname,
-          )}&sha=${encodeURIComponent(branch)}`
+          )}%2Fpage.mdx&sha=${encodeURIComponent(branch)}`
         : null;
     let lastModifiedDate = new Date();
     let avatarURL = null;

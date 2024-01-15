@@ -2,7 +2,7 @@
 
 import useIsDesktop from "@/hooks/useIsDesktop";
 import styles from "@/styles/DocsLinkList.module.css";
-import { docsPages } from "@/utils/pages";
+import { getDocsPages } from "@/utils/pages";
 import DocsLinkItem from "./DocsLinkItem";
 
 type DocsLinkListProps = {
@@ -50,7 +50,7 @@ export default function DocsLinkList({
                 } md:w-[10vw] lg:w-[15vw] xl:w-[20vw]`}
             >
                 <ul className="list-none m-3">
-                    {docsPages.map(page => (
+                    {getDocsPages().map(page => (
                         <DocsLinkItem
                             key={`${page.name}_${page.url}`}
                             as="li"

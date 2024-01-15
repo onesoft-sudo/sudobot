@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "@/styles/Navigator.module.css";
-import { docsPages, resolveDocsURL } from "@/utils/pages";
+import { getDocsPages, resolveDocsURL } from "@/utils/pages";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FC } from "react";
@@ -12,7 +12,7 @@ interface NavigatorProps {}
 const flattenRoutes = () => {
     const flatRoutes = [];
 
-    for (const page of docsPages) {
+    for (const page of getDocsPages()) {
         if (page.url) {
             flatRoutes.push({
                 name: page.name,

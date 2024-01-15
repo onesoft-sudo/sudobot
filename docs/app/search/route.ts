@@ -1,42 +1,9 @@
-import indexJson from "@/index.json";
+import { getIndex } from "@/utils/pages";
 import { NextRequest, NextResponse } from "next/server";
-
-type Index = {
-    title?: string;
-    description?: string;
-    data: string;
-};
-
-let index: Index[] | null = null,
-    lowercasedIndex: Index[] | null = null;
-
-async function loadIndex() {
-    if (index !== null) {
-        return;
-    }
-
-    // const indexPath = path.resolve(__dirname, "../../index.json");
-
-    // if (!existsSync(indexPath)) {
-    //     console.warn("No index was built at ", indexPath);
-    //     return;
-    // }
-
-    // index = JSON.parse(await readFile(indexPath, { encoding: "utf-8" }));
-
-    index = indexJson;
-    lowercasedIndex =
-        index?.map(entry => ({
-            data: entry.data.toLowerCase(),
-            title: entry.title?.toLowerCase(),
-            description: entry.description?.toLowerCase(),
-        })) ?? null;
-}
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
-    await loadIndex();
     const query = new URL(request.url).searchParams.get("q")?.toLowerCase();
 
     if (!query) {
@@ -50,16 +17,16 @@ export async function GET(request: NextRequest) {
         );
     }
 
-    console.log(query, lowercasedIndex);
+    const index = await getIndex();
+    console.log(query, index);
 
     const results = [];
 
-    if (lowercasedIndex) {
-        for (const i in lowercasedIndex) {
-            const titleIncludes = lowercasedIndex[i].title?.includes(query);
-            const descriptionIncludes =
-                lowercasedIndex[i].description?.includes(query);
-            const dataIncludes = lowercasedIndex[i].data.includes(query);
+    if (index) {
+        for (const i in index) {
+            const titleIncludes = index[i].title?.includes(query);
+            const descriptionIncludes = index[i].description?.includes(query);
+            const dataIncludes = index[i].data.includes(query);
 
             if (titleIncludes || descriptionIncludes || dataIncludes) {
                 results.push({

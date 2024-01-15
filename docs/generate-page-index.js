@@ -57,8 +57,7 @@ async function generateIndexForMDXPage(page) {
     const frontmatterData = entries ? Object.fromEntries(entries) : null;
 
     return {
-        title: frontmatterData?.title,
-        description: frontmatterData?.description,
+        ...frontmatterData,
         data: data
             .replace(/^(([\s\r\n]*)import([^.]+);)+/gi, "")
             .replace(/^(([\s\r\n]*)export([^.]+);)+/gi, "")
@@ -66,6 +65,7 @@ async function generateIndexForMDXPage(page) {
             .replace(/<\/?[^>]+(>|$)/g, ""),
         url:
             "/" + page.replace(/^app\//gi, "").replace(/page\.(ts|md)x$/gi, ""),
+        path: page,
     };
 }
 

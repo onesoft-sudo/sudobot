@@ -1,5 +1,5 @@
 import styles from "@/styles/DocsLinkItem.module.css";
-import { DocsPageWithChildren, resolveDocsURL } from "@/utils/pages";
+import { DocsPageWithoutChildren, resolveDocsURL } from "@/utils/pages";
 import { Button } from "@mui/material";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -10,7 +10,7 @@ type DocsLinkItemProps = {
     as: keyof JSX.IntrinsicElements;
     url?: string;
     name: string;
-    subpages?: DocsPageWithChildren[];
+    subpages?: DocsPageWithoutChildren[];
     onNavigate?: () => void;
 };
 
