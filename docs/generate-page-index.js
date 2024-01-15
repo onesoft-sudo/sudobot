@@ -60,9 +60,9 @@ async function generateIndexForMDXPage(page) {
         title: frontmatterData?.title,
         description: frontmatterData?.description,
         data: data
-            .replace(/^(([\s\r\n]*)import(.+);)+/gi, "")
-            .replace(/^(([\s\r\n]*)export(.+);)+/gi, "")
-            .replace(/(([\s\r\n]*)export default (.+);(\s*))+$/gi, "")
+            .replace(/^(([\s\r\n]*)import([^.]+);)+/gi, "")
+            .replace(/^(([\s\r\n]*)export([^.]+);)+/gi, "")
+            .replace(/(([\s\r\n]*)export default ([^;]+);(\s*))+$/gi, "")
             .replace(/<\/?[^>]+(>|$)/g, ""),
         url:
             "/" + page.replace(/^app\//gi, "").replace(/page\.(ts|md)x$/gi, ""),

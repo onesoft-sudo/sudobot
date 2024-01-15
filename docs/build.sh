@@ -1,5 +1,5 @@
 #!/bin/sh
 
 node generate-sitemap.js
-node generate-search-index.js
+node generate-page-index.js
 next build
