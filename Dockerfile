@@ -2,7 +2,7 @@ FROM node:21-alpine
 
 WORKDIR /app
 
-RUN apk add --no-cache python build-base g++ cairo-dev jpeg-dev pango-dev giflib-dev
+RUN apk add --no-cache python3 build-base g++ cairo-dev jpeg-dev pango-dev giflib-dev
 
 COPY .env.docke[r] ./.env
 COPY package.json .
