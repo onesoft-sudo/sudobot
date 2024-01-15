@@ -29,9 +29,13 @@ export type SearchResultItem = {
 };
 
 export default function SearchModal({ onClose }: SearchModalProps) {
-    const [query, isQueued, setQuery] = useDebouncedState<string | null>(null);
+    const [query, isQueued, setQuery] = useDebouncedState<string | null>(
+        null,
+        500,
+    );
     const [results, setResults] = useState<SearchResultItem[] | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [isNotFound, setIsNotFound] = useState(false);
 
     useEffect(() => {
         if (!query?.trim()) {
@@ -51,8 +55,16 @@ export default function SearchModal({ onClose }: SearchModalProps) {
         })
             .then(response => response.json())
             .then(data => {
+                if (isNotFound) {
+                    setIsNotFound(false);
+                }
+
                 setIsLoading(false);
                 setResults(data.results);
+
+                if (data.results.length === 0) {
+                    setIsNotFound(true);
+                }
             })
             .catch(console.error);
 
@@ -96,6 +108,10 @@ export default function SearchModal({ onClose }: SearchModalProps) {
                                     setQuery(null);
                                     setResults(null);
                                 }
+
+                                if (isNotFound) {
+                                    setIsNotFound(false);
+                                }
                             }}
                         />
                     </ThemeProvider>
@@ -105,7 +121,7 @@ export default function SearchModal({ onClose }: SearchModalProps) {
                             <div className="flex justify-center items-center">
                                 <CircularProgress />
                             </div>
-                        ) : (results && results.length > 0) ? (
+                        ) : results && results.length > 0 && !isNotFound ? (
                             results?.map((result, index) => (
                                 <SearchResult
                                     result={result}
@@ -114,9 +130,17 @@ export default function SearchModal({ onClose }: SearchModalProps) {
                                     onClick={onClose}
                                 />
                             ))
-                        ) : query?.trim() ? (
-                            <h3 className="text-lg md:text-xl text-center">No results found. <span className="text-[#999]">Maybe search again with a different keyboard?</span></h3>
-                        ) : ""}
+                        ) : isNotFound ? (
+                            <h3 className="text-lg md:text-xl text-center">
+                                No results found.{" "}
+                                <span className="text-[#999]">
+                                    Maybe search again with a different
+                                    keyboard?
+                                </span>
+                            </h3>
+                        ) : (
+                            ""
+                        )}
                     </div>
                 </div>
             </div>

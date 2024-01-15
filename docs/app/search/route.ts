@@ -17,16 +17,19 @@ export async function GET(request: NextRequest) {
         );
     }
 
-    const index = await getIndex();
-    console.log(query, index);
+    const index = getIndex();
+    const lowercasedIndex = getIndex(true);
+
+    console.log(query, lowercasedIndex);
 
     const results = [];
 
-    if (index) {
-        for (const i in index) {
-            const titleIncludes = index[i].title?.includes(query);
-            const descriptionIncludes = index[i].description?.includes(query);
-            const dataIncludes = index[i].data.includes(query);
+    if (lowercasedIndex) {
+        for (const i in lowercasedIndex) {
+            const titleIncludes = lowercasedIndex[i].title?.includes(query);
+            const descriptionIncludes =
+                lowercasedIndex[i].description?.includes(query);
+            const dataIncludes = lowercasedIndex[i].data.includes(query);
 
             if (titleIncludes || descriptionIncludes || dataIncludes) {
                 results.push({
