@@ -33,6 +33,8 @@ async function loadIndex() {
         })) ?? null;
 }
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
     await loadIndex();
     const query = new URL(request.url).searchParams.get("q")?.toLowerCase();
