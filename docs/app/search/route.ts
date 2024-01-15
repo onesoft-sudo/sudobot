@@ -1,7 +1,5 @@
-import { existsSync } from "fs";
-import { readFile } from "fs/promises";
+import indexJson from "@/index.json";
 import { NextRequest, NextResponse } from "next/server";
-import path from "path";
 
 type Index = {
     title?: string;
@@ -17,14 +15,16 @@ async function loadIndex() {
         return;
     }
 
-    const indexPath = path.resolve(__dirname, "../../index.json");
+    // const indexPath = path.resolve(__dirname, "../../index.json");
 
-    if (!existsSync(indexPath)) {
-        console.warn("No index was built at ", indexPath);
-        return;
-    }
+    // if (!existsSync(indexPath)) {
+    //     console.warn("No index was built at ", indexPath);
+    //     return;
+    // }
 
-    index = JSON.parse(await readFile(indexPath, { encoding: "utf-8" }));
+    // index = JSON.parse(await readFile(indexPath, { encoding: "utf-8" }));
+
+    index = indexJson;
     lowercasedIndex =
         index?.map(entry => ({
             data: entry.data.toLowerCase(),
@@ -33,7 +33,7 @@ async function loadIndex() {
         })) ?? null;
 }
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
     await loadIndex();

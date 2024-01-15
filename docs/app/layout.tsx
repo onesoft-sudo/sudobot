@@ -1,3 +1,4 @@
+import DocsLayout from "@/components/Layouts/DocsLayout";
 import Navbar from "@/components/Navbar/Navbar";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -16,7 +17,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
         <html lang="en" className="dark">
             <body className={inter.className}>
                 <Navbar />
-                {children}
+                <DocsLayout>{children}</DocsLayout>
             </body>
         </html>
     );
