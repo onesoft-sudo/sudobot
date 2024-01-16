@@ -1,17 +1,12 @@
-import { GITHUB_REPO_URL, branch } from "@/utils/links";
-import { Button } from "@mui/material";
-import { headers } from "next/headers";
 import "prism-themes/themes/prism-coldark-dark.css";
 import { Fragment, PropsWithChildren } from "react";
-import { MdEdit } from "react-icons/md";
+import EditButton from "../MDX/EditButton";
 import PageInfo from "../MDX/PageInfo";
 import TableOfContents from "../MDX/TableOfContents";
 import DocsLinkList from "../Navbar/DocsLinkList";
 import Navigator from "../Navigation/Navigator";
 
 export default function DocsLayout({ children }: PropsWithChildren) {
-    const url = headers().get("x-invoke-url");
-
     return (
         <div className="grid lg:grid-cols-[3fr_10fr_2.5fr] md:gap-[50px] mb-10 relative">
             <DocsLinkList desktopOnly fragment />
@@ -21,26 +16,13 @@ export default function DocsLayout({ children }: PropsWithChildren) {
                     id="article"
                     className="prose prose-neutral prose-invert prose-code:before:hidden prose-code:after:hidden mt-8 p-3 text-wrap max-w-[100vw] relative"
                 >
-                    <Button
-                        className="desktop not-prose min-w-[0] absolute top-[14px] right-[20px] lg:right-0"
-                        style={{ minWidth: 0, position: "absolute" }}
-                        href={`${GITHUB_REPO_URL}/edit/${encodeURIComponent(
-                            branch,
-                        )}/docs/app${url?.replace(/\.mdx?$/, "")}${
-                            url === "/" ? "" : "/"
-                        }page.mdx`}
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        <MdEdit size={20} />
-                    </Button>
+                    <EditButton />
                     {children}
                 </article>
                 <br />
                 <div className="mx-3">
                     <Navigator />
                     <hr className="[border-top:1px_solid_#333] mb-5" />
-
                     <PageInfo />
                 </div>
             </div>

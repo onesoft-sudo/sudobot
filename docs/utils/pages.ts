@@ -146,15 +146,8 @@ function loadDocsPages() {
             continue;
         }
 
-        const mainPage = pages[key].find(
-            page => toTitleCase(page.url?.split("/")[1] ?? "") === key,
-        );
-
-        console.log(key);
-
         docsPages?.push({
             name: key,
-            url: mainPage?.url,
             children: pages[key].sort(
                 (a, b) => a.name.charCodeAt(0) - b.name.charCodeAt(0),
             ),
@@ -187,6 +180,4 @@ function loadDocsPages() {
 
         return a.name.localeCompare(b.name);
     });
-
-    console.log(pages);
 }
