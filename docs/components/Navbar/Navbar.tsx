@@ -1,9 +1,10 @@
+import Link from "@/components/Navigation/Link";
 import styles from "@/styles/Navbar.module.css";
 import { pages } from "@/utils/pages";
 import Image from "next/image";
 import logo from "../../images/sudobot.png";
 import Search from "../Searching/Search";
-import NavbarClientSide from "./NavbarClientSIde";
+import NavbarClientSide from "./NavbarClientSide";
 
 export default function Navbar() {
     return (
@@ -15,22 +16,24 @@ export default function Navbar() {
             </a>
 
             <ul className={`${styles.ul} desktop`}>
-                {pages.map(link => (
-                    <li key={`${link.url}_${link.name}`}>
-                        <a
-                            href={link.url}
-                            {...(/^http(s?):\/\//gi.test(link.url)
-                                ? { target: "_blank", rel: "noreferrer" }
-                                : {})}
-                            title={link.name}
-                        >
-                            {link.name}
-                        </a>
-                    </li>
-                ))}
+                {pages.map(link => {
+                    const LinkComponent = link.url.startsWith("/") ? Link : "a";
+                    return (
+                        <li key={`${link.url}_${link.name}`}>
+                            <LinkComponent
+                                href={link.url}
+                                {...(/^http(s?):\/\//gi.test(link.url)
+                                    ? { target: "_blank", rel: "noreferrer" }
+                                    : {})}
+                                title={link.name}
+                            >
+                                {link.name}
+                            </LinkComponent>
+                        </li>
+                    );
+                })}
             </ul>
 
-            {/* <GitHubStats className="desktop" url={GITHUB_REPO_URL} /> */}
             <Search />
 
             <NavbarClientSide />

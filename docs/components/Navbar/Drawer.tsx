@@ -1,7 +1,7 @@
+import useActualPathname from "@/hooks/useActualPathname";
 import styles from "@/styles/Drawer.module.css";
 import { pages } from "@/utils/pages";
 import { Button } from "@mui/material";
-import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { HiArrowTopRightOnSquare } from "react-icons/hi2";
 import { MdClose, MdNavigateBefore } from "react-icons/md";
@@ -15,7 +15,7 @@ export default function Drawer({
     onClose: () => unknown;
     isOpen: boolean;
 }) {
-    const pathname = usePathname();
+    const pathname = useActualPathname();
     const [docsExpanded, setDocsExpanded] = useState(() =>
         pathname.startsWith("/docs"),
     );

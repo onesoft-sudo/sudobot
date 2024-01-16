@@ -1,8 +1,8 @@
+import Link from "@/components/Navigation/Link";
+import useActualPathname from "@/hooks/useActualPathname";
 import styles from "@/styles/DocsLinkItem.module.css";
 import { DocsPageWithoutChildren, resolveDocsURL } from "@/utils/pages";
 import { Button } from "@mui/material";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { SyntheticEvent, useState } from "react";
 import { MdExpandMore } from "react-icons/md";
 
@@ -21,7 +21,7 @@ export default function DocsLinkItem({
     onNavigate,
     subpages = [],
 }: DocsLinkItemProps) {
-    const pathname = usePathname();
+    const pathname = useActualPathname();
     const [expanded, setExpanded] = useState(() =>
         subpages.some(page => {
             const link = page.url

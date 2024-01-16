@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/Navigation/Link";
 import { SearchResultItem } from "./SearchModal";
 
 type SearchResultProps = {

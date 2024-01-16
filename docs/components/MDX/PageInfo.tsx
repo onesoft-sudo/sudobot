@@ -1,8 +1,8 @@
 "use client";
 
+import useActualPathname from "@/hooks/useActualPathname";
 import { branch } from "@/utils/links";
 import { formatDistanceToNowStrict } from "date-fns";
-import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 async function getPageInfo(pathname: string) {
@@ -38,7 +38,7 @@ async function getPageInfo(pathname: string) {
 export default function LastModified() {
     const [date, setDate] = useState<Date | null>(null);
     const [avatar, setAvatar] = useState<string | null>(null);
-    const pathname = usePathname();
+    const pathname = useActualPathname();
 
     useEffect(() => {
         getPageInfo(pathname)

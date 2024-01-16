@@ -26,7 +26,9 @@ export default function DocsLayout({ children }: PropsWithChildren) {
                         style={{ minWidth: 0, position: "absolute" }}
                         href={`${GITHUB_REPO_URL}/edit/${encodeURIComponent(
                             branch,
-                        )}/docs/app${url}${url === "/" ? "" : "/"}page.mdx`}
+                        )}/docs/app${url?.replace(/\.mdx?$/, "")}${
+                            url === "/" ? "" : "/"
+                        }page.mdx`}
                         target="_blank"
                         rel="noreferrer"
                     >

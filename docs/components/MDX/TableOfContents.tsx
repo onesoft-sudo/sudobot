@@ -1,11 +1,10 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import useActualPathname from "@/hooks/useActualPathname";
 import { FC, useEffect, useRef, useState } from "react";
 
 const selector = ":is(h1, h2, h3, h4, h5, h6)[id]";
 
-// TODO: Implement scroll based active heading changing
 export default function TableOfContents({
     as,
 }: {
@@ -20,7 +19,7 @@ export default function TableOfContents({
     const observer = useRef<IntersectionObserver>();
     const [activeId, setActiveId] = useState("");
     const Root = as ?? "div";
-    const pathname = usePathname();
+    const pathname = useActualPathname();
 
     useEffect(() => {
         const headings = Array.from(

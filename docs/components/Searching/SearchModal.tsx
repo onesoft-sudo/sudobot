@@ -1,11 +1,5 @@
 import useDebouncedState from "@/hooks/useDebouncedState";
-import {
-    Button,
-    CircularProgress,
-    TextField,
-    ThemeProvider,
-    createTheme,
-} from "@mui/material";
+import { Button, CircularProgress, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { MdClose } from "react-icons/md";
 import SearchResult from "./SearchResult";
@@ -13,12 +7,6 @@ import SearchResult from "./SearchResult";
 type SearchModalProps = {
     onClose: () => void;
 };
-
-const theme = createTheme({
-    palette: {
-        mode: "dark",
-    },
-});
 
 export type SearchResultItem = {
     title?: string;
@@ -93,28 +81,25 @@ export default function SearchModal({ onClose }: SearchModalProps) {
                             </Button>
                         </div>
                     </div>
-                    <ThemeProvider theme={theme}>
-                        <TextField
-                            fullWidth
-                            autoFocus
-                            type="text"
-                            variant="outlined"
-                            placeholder="Type here to search"
-                            onChange={event =>
-                                setQuery(event.target.value.trim())
-                            }
-                            onKeyUp={event => {
-                                if (!(event.target as HTMLInputElement).value) {
-                                    setQuery(null);
-                                    setResults(null);
-                                }
 
-                                if (isNotFound) {
-                                    setIsNotFound(false);
-                                }
-                            }}
-                        />
-                    </ThemeProvider>
+                    <TextField
+                        fullWidth
+                        autoFocus
+                        type="text"
+                        variant="outlined"
+                        placeholder="Type here to search"
+                        onChange={event => setQuery(event.target.value.trim())}
+                        onKeyUp={event => {
+                            if (!(event.target as HTMLInputElement).value) {
+                                setQuery(null);
+                                setResults(null);
+                            }
+
+                            if (isNotFound) {
+                                setIsNotFound(false);
+                            }
+                        }}
+                    />
                     <br />
                     <div className="mt-4">
                         {isLoading ? (

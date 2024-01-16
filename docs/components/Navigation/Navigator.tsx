@@ -1,9 +1,9 @@
 "use client";
 
+import useActualPathname from "@/hooks/useActualPathname";
 import styles from "@/styles/Navigator.module.css";
 import { getDocsPages, resolveDocsURL } from "@/utils/pages";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { FC } from "react";
 import { MdArrowBack, MdArrowForward } from "react-icons/md";
 
@@ -33,7 +33,7 @@ const flattenRoutes = () => {
 const flatRoutes = flattenRoutes();
 
 const Navigator: FC<NavigatorProps> = () => {
-    const pathname = usePathname();
+    const pathname = useActualPathname();
 
     const currentPage = flatRoutes.findIndex(page => {
         if (!page.url) {
