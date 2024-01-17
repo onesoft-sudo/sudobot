@@ -15,8 +15,6 @@ export async function getPageInfo(pathname: string) {
     let lastModifiedDate = new Date();
     let avatarURL = null;
 
-    console.log(githubURL);
-
     if (githubURL) {
         try {
             const response = await fetch(githubURL, {
