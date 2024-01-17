@@ -22,14 +22,24 @@ export default function TableOfContents({
     const pathname = useActualPathname();
 
     useEffect(() => {
-        const headings = Array.from(
+        const headingElements = Array.from(
             document.querySelectorAll(selector) as Iterable<HTMLElement>,
-        ).map(element => ({
+        );
+
+        if (
+            headingElements.length > 1 &&
+            headingElements[0]?.tagName === "H1"
+        ) {
+            headingElements.shift();
+        }
+
+        const headings = headingElements.map(element => ({
             title: element.innerText.replaceAll("&amp;", "&"),
             id: element.id,
         }));
 
         setHeadings(headings);
+        setActiveId(headings[0].id);
     }, [pathname]);
 
     useEffect(() => {
@@ -42,7 +52,7 @@ export default function TableOfContents({
                 }
             },
             {
-                rootMargin: "0% 0% -70% 0%",
+                rootMargin: "-30% 0% -30% 0%",
             },
         );
 
@@ -55,6 +65,8 @@ export default function TableOfContents({
         };
     }, [pathname]);
 
+    const onlyOne = headings.length === 1;
+
     return (
         <Root>
             <h4 className="pl-[15px] mb-3 mt-4 uppercase font-bold tracking-wider text-[15px]">
@@ -65,7 +77,7 @@ export default function TableOfContents({
                     <li key={heading.id}>
                         <a
                             className={`my-2 block ${
-                                activeId === heading.id
+                                activeId === heading.id || onlyOne
                                     ? "text-blue-500 [border-left:3px_solid_#007bff] pl-[15px]"
                                     : "pl-[18px] hover:text-blue-500"
                             }`}
@@ -79,7 +91,7 @@ export default function TableOfContents({
 
                                 element?.scrollIntoView({
                                     behavior: "smooth",
-                                    block: "start",
+                                    block: "center",
                                     inline: "center",
                                 });
                             }}
