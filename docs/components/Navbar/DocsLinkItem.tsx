@@ -63,7 +63,7 @@ export default function DocsLinkItem({
                         onClick={toggle}
                         style={{
                             minWidth: 0,
-                            padding: 5,
+                            padding: 2,
                             margin: 0,
                             color: "white",
                         }}

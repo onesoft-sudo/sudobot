@@ -39,8 +39,16 @@ export default function Link({
         if (
             !stringHref.startsWith("https://") &&
             !stringHref.startsWith("http://") &&
-            pathname !== stringHref.substring(0, pos === -1 ? undefined : pos)
+            pathname !==
+                stringHref
+                    .substring(0, pos === -1 ? undefined : pos)
+                    .replace(/\/+/g, "/")
+                    .replace(/\/$/g, "")
         ) {
+            console.log(
+                pathname,
+                stringHref.substring(0, pos === -1 ? undefined : pos),
+            );
             setIsChanging(true);
         }
     };

@@ -53,7 +53,20 @@ async function generateIndexForMDXPage(page) {
     const entries = frontmatter
         ?.split("\n")
         .filter(Boolean)
-        .map(entry => entry.split(":").map(a => a.trim()));
+        .map(entry =>
+            entry
+                .split(/:(.*)/s)
+                .filter(Boolean)
+                .map((a, i) => {
+                    const trimmed = a.trim();
+                    return i === 1 &&
+                        trimmed.startsWith('"') &&
+                        trimmed.endsWith('"')
+                        ? trimmed.substring(1, trimmed.length - 1).trim()
+                        : trimmed;
+                }),
+        );
+
     const frontmatterData = entries ? Object.fromEntries(entries) : null;
 
     return {

@@ -67,7 +67,7 @@ export default function SearchModal({ onClose }: SearchModalProps) {
             >
                 <div
                     onClick={event => event.stopPropagation()}
-                    className="block z-[10002] shadow-[0_0_1px_1px_rgba(255,255,255,0.2)] fixed bottom-[10px] lg:top-[50vh] left-[50%] translate-x-[-50%] lg:translate-y-[-50%] bg-[#222] min-h-[50vh] overflow-y-scroll w-[calc(100%-20px)] lg:w-[auto] md:min-w-[50vw] rounded-md p-4"
+                    className="max-h-[95vh] block z-[10002] shadow-[0_0_1px_1px_rgba(255,255,255,0.2)] fixed bottom-[10px] lg:top-[50vh] left-[50%] translate-x-[-50%] lg:translate-y-[-50%] bg-[#222] min-h-[50vh] overflow-y-scroll w-[calc(100%-20px)] lg:w-[auto] md:min-w-[50vw] rounded-md p-4"
                 >
                     <div className="text-xl lg:text-2xl text-center mb-5 grid grid-cols-[1fr_5fr_1fr]">
                         <span></span>
@@ -107,14 +107,25 @@ export default function SearchModal({ onClose }: SearchModalProps) {
                                 <CircularProgress />
                             </div>
                         ) : results && results.length > 0 && !isNotFound ? (
-                            results?.map((result, index) => (
-                                <SearchResult
-                                    result={result}
-                                    query={query ?? ""}
-                                    key={index}
-                                    onClick={onClose}
-                                />
-                            ))
+                            <>
+                                {results?.length && (
+                                    <>
+                                        <p className="text-[#aaa] text-sm">
+                                            Found {results.length} results.
+                                        </p>
+                                        <br />
+                                    </>
+                                )}
+
+                                {results?.map((result, index) => (
+                                    <SearchResult
+                                        result={result}
+                                        query={query ?? ""}
+                                        key={index}
+                                        onClick={onClose}
+                                    />
+                                ))}
+                            </>
                         ) : isNotFound ? (
                             <h3 className="text-lg md:text-xl text-center">
                                 No results found.{" "}

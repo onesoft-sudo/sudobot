@@ -35,14 +35,32 @@ export async function GET(request: NextRequest) {
                 results.push({
                     ...index?.[i],
                     match: titleIncludes
-                        ? "title"
+                        ? ("title" as const)
                         : descriptionIncludes
-                        ? "description"
-                        : "data",
+                        ? ("description" as const)
+                        : ("data" as const),
                 });
             }
         }
     }
+
+    results.sort((a, b) => {
+        if (a.match === "title" && b.match === "title") {
+            return a.title!.localeCompare(b.title!);
+        }
+
+        if (a.match === "title") {
+            return -1;
+        }
+
+        if (b.match === "title") {
+            return 1;
+        }
+
+        return a[a.match]!.substring(0, 10).localeCompare(
+            b[b.match]!.substring(0, 10),
+        );
+    });
 
     return NextResponse.json({
         results,
