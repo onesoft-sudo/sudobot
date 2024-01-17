@@ -14,7 +14,7 @@ export default function EditButton() {
             style={{ minWidth: 0, position: "absolute" }}
             href={`${GITHUB_REPO_URL}/edit/${encodeURIComponent(
                 branch,
-            )}/docs/app/${pathname === "/" ? "" : "(docs)"}${pathname?.replace(
+            )}/docs/app${pathname === "/" ? "" : "/(docs)"}${pathname?.replace(
                 /\.mdx?$/,
                 "",
             )}${pathname === "/" ? "" : "/"}page.mdx`}
