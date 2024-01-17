@@ -1,39 +1,9 @@
 "use client";
 
+import { getPageInfo } from "@/actions/pageinfo";
 import useActualPathname from "@/hooks/useActualPathname";
-import { branch } from "@/utils/links";
 import { formatDistanceToNowStrict } from "date-fns";
 import { useEffect, useState } from "react";
-
-async function getPageInfo(pathname: string) {
-    const githubURL = pathname
-        ? `https://api.github.com/repos/onesoft-sudo/sudobot/commits?path=docs%2Fapp${encodeURIComponent(
-              pathname,
-          )}%2Fpage.mdx&sha=${encodeURIComponent(branch)}`
-        : null;
-    let lastModifiedDate = new Date();
-    let avatarURL = null;
-
-    if (githubURL) {
-        try {
-            const response = await fetch(githubURL, {
-                cache: "force-cache",
-            });
-
-            const json = await response.json();
-            const timestamp = json?.[0]?.commit?.author?.date;
-            avatarURL = json?.[0]?.author?.avatar_url;
-
-            if (timestamp) {
-                lastModifiedDate = new Date(timestamp);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    return { lastModifiedDate, avatarURL };
-}
 
 export default function LastModified() {
     const [date, setDate] = useState<Date | null>(null);
