@@ -22,7 +22,7 @@ export const pages = [
     },
     {
         name: "FAQ",
-        url: "/",
+        url: "/faq",
     },
     {
         name: "Invite",
