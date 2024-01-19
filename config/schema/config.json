@@ -237,7 +237,7 @@
                                 "type": "boolean",
                                 "default": false
                             },
-                            "channel": {
+                            "logging_channel": {
                                 "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                             },
                             "users": {
@@ -261,11 +261,71 @@
                                 },
                                 "default": []
                             },
-                            "permissionLevel": {
+                            "permission_level": {
                                 "type": "integer",
                                 "minimum": -1,
                                 "maximum": 100,
                                 "default": -1
+                            },
+                            "action_required_permissions": {
+                                "type": "object",
+                                "properties": {
+                                    "ban": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "default": [
+                                            "BanMembers"
+                                        ]
+                                    },
+                                    "kick": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "default": [
+                                            "KickMembers"
+                                        ]
+                                    },
+                                    "mute": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "default": [
+                                            "or",
+                                            "ModerateMembers",
+                                            "ManageMessages"
+                                        ]
+                                    },
+                                    "warn": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "default": [
+                                            "or",
+                                            "ModerateMembers",
+                                            "ManageMessages"
+                                        ]
+                                    },
+                                    "ignore": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "default": [
+                                            "or",
+                                            "ModerateMembers",
+                                            "ManageMessages",
+                                            "BanMembers",
+                                            "KickMembers"
+                                        ]
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "default": {}
                             }
                         },
                         "additionalProperties": false
@@ -1290,6 +1350,67 @@
                                                 "type"
                                             ],
                                             "additionalProperties": false
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "disabled_channels": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/disabled_channels"
+                                                },
+                                                "immune_roles": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/immune_roles"
+                                                },
+                                                "immune_users": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/immune_users"
+                                                },
+                                                "actions": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/actions"
+                                                },
+                                                "verbal_warning_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/verbal_warning_reason"
+                                                },
+                                                "warning_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/warning_reason"
+                                                },
+                                                "mute_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_reason"
+                                                },
+                                                "common_reason": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/common_reason"
+                                                },
+                                                "mute_duration": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mute_duration"
+                                                },
+                                                "mode": {
+                                                    "$ref": "#/additionalProperties/anyOf/0/properties/message_rules/properties/rules/items/anyOf/0/properties/mode"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "const": "image"
+                                                },
+                                                "tokens": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "default": []
+                                                },
+                                                "words": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "default": []
+                                                },
+                                                "inherit_from_word_filter": {
+                                                    "type": "boolean",
+                                                    "default": false
+                                                }
+                                            },
+                                            "required": [
+                                                "type"
+                                            ],
+                                            "additionalProperties": false
                                         }
                                     ]
                                 },
@@ -1712,6 +1833,16 @@
                         "required": [
                             "parameters"
                         ],
+                        "additionalProperties": false
+                    },
+                    "statistics": {
+                        "type": "object",
+                        "properties": {
+                            "enabled": {
+                                "type": "boolean",
+                                "default": false
+                            }
+                        },
                         "additionalProperties": false
                     }
                 },

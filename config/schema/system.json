@@ -150,7 +150,7 @@
                             "format": "date-time"
                         }
                     ],
-                    "default": "2023-12-08T17:29:17.493Z"
+                    "default": "2024-01-19T11:29:34.886Z"
                 }
             },
             "additionalProperties": false,
@@ -209,6 +209,20 @@
         "debug_mode": {
             "type": "boolean",
             "default": false
+        },
+        "statistics": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "sync_delay": {
+                    "type": "integer",
+                    "default": 60000
+                }
+            },
+            "additionalProperties": false
         }
     },
     "additionalProperties": false,
