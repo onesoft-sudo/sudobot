@@ -103,5 +103,5 @@
         "./src/types/globals.d.ts",
         "src/**/*.ts"
     ],
-    "exclude": ["./backup", "./tmp", "./tmp/**", "./scripts", "./tests", "./build", "./extensions"]
+    "exclude": ["./backup", "./tmp", "./tmp/**", "./scripts", "./tests", "./build", "./extensions", "./docs", "./docs/**"]
 }
