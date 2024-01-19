@@ -19,3 +19,4 @@ setup.sh
 /storage
 /extensions
 *.bak
+*.traineddata
