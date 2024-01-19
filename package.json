@@ -55,6 +55,7 @@
     "reflect-metadata": "^0.1.13",
     "semver": "^7.5.4",
     "socket.io": "^4.7.2",
+    "tesseract.js": "^5.0.4",
     "tslib": "^2.6.1",
     "undici": "^5.23.0",
     "uuid": "^9.0.0",
