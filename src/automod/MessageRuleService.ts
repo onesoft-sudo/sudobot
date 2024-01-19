@@ -57,7 +57,8 @@ const handlers: Record<MessageRuleType["type"], RuleInfo> = {
     regex_filter: "ruleRegexFilter",
     block_repeated_text: "ruleRepeatedText",
     block_mass_mention: "ruleBlockMassMention",
-    regex_must_match: "ruleRegexMustMatch"
+    regex_must_match: "ruleRegexMustMatch",
+    image: "ruleImage"
 };
 
 type MessageRuleAction = MessageRuleType["actions"][number];
@@ -258,6 +259,105 @@ export default class MessageRuleService extends Service implements HasEventListe
 
                 break;
         }
+    }
+
+    async ruleImage(message: Message, rule: Extract<MessageRuleType, { type: "image" }>) {
+        log("here");
+
+        if (message.attachments.size === 0) {
+            return null;
+        }
+
+        const config = this.client.configManager.config[message.guildId!]?.message_filter;
+        const { mode, tokens, words, inherit_from_word_filter } = rule;
+
+        if (config?.enabled && inherit_from_word_filter) {
+            words.push(...config.data.blocked_words);
+            tokens.push(...config.data.blocked_tokens);
+        }
+
+        for (const attachment of message.attachments.values()) {
+            if (!attachment.contentType?.startsWith("image/")) {
+                log(`Not scanning attachment ${attachment.id} as it's not an image`);
+                continue;
+            }
+
+            const {
+                data: { text: actualText, words: textWords }
+            } = await this.client.imageRecognitionService.recognize(attachment.proxyURL);
+            const text = actualText.toLowerCase();
+
+            for (const token of tokens) {
+                const includes = text.includes(token.toLowerCase());
+
+                if (includes && mode === "normal") {
+                    return {
+                        title: "Blocked token(s) detected in image",
+                        fields: [
+                            {
+                                name: "Token",
+                                value: `||${escapeMarkdown(token)}||`
+                            },
+                            {
+                                name: "Method",
+                                value: "Image Scan"
+                            }
+                        ]
+                    } satisfies CreateLogEmbedOptions;
+                } else if (!includes && mode === "inverse") {
+                    return {
+                        title: "Required token(s) were not found in image",
+                        fields: [
+                            {
+                                name: "Token",
+                                value: `||${escapeMarkdown(token)}||`
+                            },
+                            {
+                                name: "Method",
+                                value: "Image Scan"
+                            }
+                        ]
+                    } satisfies CreateLogEmbedOptions;
+                }
+            }
+
+            for (const textWord of textWords) {
+                const includes = words.includes(textWord.text.toLowerCase());
+
+                if (includes && mode === "normal") {
+                    return {
+                        title: "Blocked word(s) detected in image",
+                        fields: [
+                            {
+                                name: "Word",
+                                value: `||${escapeMarkdown(textWord.text)}||`
+                            },
+                            {
+                                name: "Method",
+                                value: "Image Scan"
+                            }
+                        ]
+                    } satisfies CreateLogEmbedOptions;
+                } else if (!includes && mode === "inverse") {
+                    return {
+                        title: "Required word(s) were not found in image",
+                        fields: [
+                            {
+                                name: "Word",
+                                value: `||${escapeMarkdown(textWord.text)}||`
+                            },
+                            {
+                                name: "Method",
+                                value: "Image Scan"
+                            }
+                        ]
+                    } satisfies CreateLogEmbedOptions;
+                }
+            }
+        }
+
+        log("Image scan passed");
+        return null;
     }
 
     async ruleDomain(message: Message, rule: Extract<MessageRuleType, { type: "domain" }>) {

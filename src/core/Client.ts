@@ -43,6 +43,7 @@ import type CommandPermissionOverwriteManager from "../services/CommandPermissio
 import type ConfigManager from "../services/ConfigManager";
 import type CooldownService from "../services/CooldownService";
 import type ExtensionService from "../services/ExtensionService";
+import type ImageRecognitionService from "../services/ImageRecognitionService";
 import type InfractionManager from "../services/InfractionManager";
 import type InviteTrackerService from "../services/InviteTrackerService";
 import type KeypressHandlerService from "../services/KeypressHandlerService";
@@ -100,6 +101,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@services/CommandPermissionOverwriteManager",
         "@services/ReportService",
         "@services/StatsService",
+        "@services/ImageRecognitionService",
 
         "@automod/MessageFilter",
         "@automod/Antispam",
@@ -153,6 +155,7 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
     reportService: ReportService = {} as ReportService;
     commandPermissionOverwriteManager: CommandPermissionOverwriteManager = {} as CommandPermissionOverwriteManager;
     statsService: StatsService = {} as StatsService;
+    imageRecognitionService: ImageRecognitionService = {} as ImageRecognitionService;
 
     prisma = new PrismaClient({
         errorFormat: "pretty",

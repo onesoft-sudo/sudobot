@@ -1,21 +1,21 @@
 /*
-* This file is part of SudoBot.
-*
-* Copyright (C) 2021-2023 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2023 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 import { z } from "zod";
 import { zSnowflake } from "./SnowflakeSchema";
@@ -92,6 +92,14 @@ export const BlockMassMentionRule = z.object({
     max_role_mentions: z.number().int().default(-1)
 });
 
+export const ImageRule = z.object({
+    ...Common,
+    type: z.literal("image"),
+    tokens: z.array(z.string()).default([]),
+    words: z.array(z.string()).default([]),
+    inherit_from_word_filter: z.boolean().default(false)
+});
+
 export const MessageRuleSchema = z.union([
     DomainRule,
     BlockedMimeTypeRule,
@@ -100,7 +108,8 @@ export const MessageRuleSchema = z.union([
     RegexFilterRule,
     BlockRepeatedTextRule,
     BlockMassMentionRule,
-    RegexMustMatchRule
+    RegexMustMatchRule,
+    ImageRule
 ]);
 
 export type MessageRuleType = z.infer<typeof MessageRuleSchema>;
