@@ -1,3 +1,13 @@
+# [7.17.0](https://github.com/onesoft-sudo/sudobot/compare/v7.16.0...v7.17.0) (2024-01-19)
+
+
+### Features
+
+* **automod:rules:** image scan rule for OCR text scanning ([3112932](https://github.com/onesoft-sudo/sudobot/commit/31129329134a62aa5303ab05926dc834a7efbe8c))
+* **services:** add image recognition (OCR) service ([aa2a73f](https://github.com/onesoft-sudo/sudobot/commit/aa2a73ffc3a3863b72ca91ea2769b3e072cbd36b))
+
+
+
 # [7.16.0](https://github.com/onesoft-sudo/sudobot/compare/v7.15.0...v7.16.0) (2024-01-06)
 
 
@@ -34,16 +44,6 @@
 ### Bug Fixes
 
 * temprole command not behaving correctly due to cache miss ([353d414](https://github.com/onesoft-sudo/sudobot/commit/353d4141037664b5e4d8e6f87093a20fb21f0fa9))
-
-
-
-## [7.14.1](https://github.com/onesoft-sudo/sudobot/compare/v7.14.0...v7.14.1) (2024-01-04)
-
-
-### Bug Fixes
-
-* **commands:unmute:** better error message ([bf6eaab](https://github.com/onesoft-sudo/sudobot/commit/bf6eaab16e96b8145d87f3e791328b9397942c02))
-* **commands:unmute:** better error message ([d351b08](https://github.com/onesoft-sudo/sudobot/commit/d351b0860824d588c14df61b97092a1e37e133e2))
 
 
 
