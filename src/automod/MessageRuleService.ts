@@ -20,6 +20,8 @@
 // TODO: Add an allow/disallow mode to all roles
 
 import {
+    Attachment,
+    EmbedAssetData,
     Message,
     PermissionFlagsBits,
     Snowflake,
@@ -349,27 +351,47 @@ export default class MessageRuleService extends Service implements HasEventListe
     }
 
     async ruleImage(message: Message, rule: Extract<MessageRuleType, { type: "image" }>) {
-        if (message.attachments.size === 0) {
+        if (message.attachments.size === 0 && (!rule.scan_embeds || message.embeds.length === 0)) {
             return null;
         }
 
         const config = this.client.configManager.config[message.guildId!]?.message_filter;
-        const { mode, tokens, words, inherit_from_word_filter } = rule;
+        const { mode, tokens, words, inherit_from_word_filter, scan_embeds } = rule;
 
         if (config?.enabled && inherit_from_word_filter) {
             words.push(...config.data.blocked_words);
             tokens.push(...config.data.blocked_tokens);
         }
 
-        for (const attachment of message.attachments.values()) {
-            if (!attachment.contentType?.startsWith("image/")) {
+        const attachments: Array<EmbedAssetData | Attachment> = [...message.attachments.values()];
+
+        if (scan_embeds) {
+            for (const embed of message.embeds) {
+                if (embed.image) {
+                    attachments.push(embed.image);
+                }
+
+                if (embed.thumbnail) {
+                    attachments.push(embed.thumbnail);
+                }
+
+                if (embed.author?.proxyIconURL ?? embed.author?.iconURL) {
+                    attachments.push({
+                        url: embed.author?.proxyIconURL ?? embed.author?.iconURL!
+                    });
+                }
+            }
+        }
+
+        for (const attachment of attachments) {
+            if (attachment instanceof Attachment && !attachment.contentType?.startsWith("image/")) {
                 log(`Not scanning attachment ${attachment.id} as it's not an image`);
                 continue;
             }
 
             const {
                 data: { text: actualText, words: textWords }
-            } = await this.client.imageRecognitionService.recognize(attachment.proxyURL);
+            } = await this.client.imageRecognitionService.recognize(attachment.proxyURL ?? attachment.url);
             const text = actualText.toLowerCase();
 
             for (const token of tokens) {

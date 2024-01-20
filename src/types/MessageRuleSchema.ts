@@ -97,7 +97,8 @@ export const ImageRule = z.object({
     type: z.literal("image"),
     tokens: z.array(z.string()).default([]),
     words: z.array(z.string()).default([]),
-    inherit_from_word_filter: z.boolean().default(false)
+    inherit_from_word_filter: z.boolean().default(false),
+    scan_embeds: z.boolean().default(false)
 });
 
 export const EmbedRule = z.object({
