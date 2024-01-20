@@ -1,3 +1,12 @@
+# [7.18.0](https://github.com/onesoft-sudo/sudobot/compare/v7.17.0...v7.18.0) (2024-01-20)
+
+
+### Features
+
+* **automod:rules:** add `embed` rule ([0609958](https://github.com/onesoft-sudo/sudobot/commit/06099587c8f29338eb75a88163b6b4d27a4bc89f))
+
+
+
 # [7.17.0](https://github.com/onesoft-sudo/sudobot/compare/v7.16.0...v7.17.0) (2024-01-19)
 
 
@@ -35,15 +44,6 @@
 * build failure for global type casting ([2512028](https://github.com/onesoft-sudo/sudobot/commit/25120289255c3ec4d1f436840fcf37951261ac70))
 * set global boot date ([65052ce](https://github.com/onesoft-sudo/sudobot/commit/65052ce976745a7555c162dd46d8c870d7ca61bd))
 * system command should show the uptime of the bot system ([7039f8e](https://github.com/onesoft-sudo/sudobot/commit/7039f8e59c4f27c73ed84a960e9e743c2f127e2c))
-
-
-
-## [7.14.2](https://github.com/onesoft-sudo/sudobot/compare/v7.14.1...v7.14.2) (2024-01-04)
-
-
-### Bug Fixes
-
-* temprole command not behaving correctly due to cache miss ([353d414](https://github.com/onesoft-sudo/sudobot/commit/353d4141037664b5e4d8e6f87093a20fb21f0fa9))
 
 
 
