@@ -159,8 +159,11 @@ export default class LoggerService extends Service {
         return await this.send(
             guild,
             {
-                embeds: [this.createLogEmbed(options)],
-                ...((extraOptions as any) ?? {})
+                ...((extraOptions as any) ?? {}),
+                embeds: [
+                    this.createLogEmbed(options),
+                    ...(extraOptions && "embeds" in extraOptions ? extraOptions.embeds ?? [] : [])
+                ]
             },
             channel
         );
@@ -780,6 +783,24 @@ export default class LoggerService extends Service {
             return;
         }
 
+        const changedEmbeds = [];
+        const mainArray = oldMessage.embeds.length > newMessage.embeds.length ? oldMessage.embeds : newMessage.embeds;
+        const mainArrayRef = oldMessage.embeds.length > newMessage.embeds.length ? "oldMessage" : "newMessage";
+        const otherArray = oldMessage.embeds.length > newMessage.embeds.length ? newMessage.embeds : oldMessage.embeds;
+
+        outerLoop: for (const embed of mainArray) {
+            for (const otherEmbed of otherArray) {
+                if (embed.equals(otherEmbed)) {
+                    continue outerLoop;
+                }
+            }
+
+            changedEmbeds.push({
+                old: mainArrayRef === "oldMessage" ? embed : otherArray,
+                new: mainArrayRef === "newMessage" ? embed : otherArray
+            });
+        }
+
         const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
             new ButtonBuilder()
                 .setStyle(ButtonStyle.Link)
@@ -826,12 +847,29 @@ export default class LoggerService extends Service {
                         value: `Link: [Click here](${`https://discord.com/channels/${newMessage.guildId!}/${newMessage.channelId!}/${
                             newMessage.id
                         }`})\nID: ${newMessage.id}`
-                    }
+                    },
+                    ...(changedEmbeds.length > 0
+                        ? [
+                              {
+                                  name: "Embeds",
+                                  value: "The changed embeds are sent as JSON with this log message."
+                              }
+                          ]
+                        : [])
                 ],
                 footerText: "Updated"
             },
             {
-                components: [row]
+                components: [row],
+                files:
+                    changedEmbeds.length > 0
+                        ? [
+                              {
+                                  name: "changed_embeds.json",
+                                  attachment: Buffer.from(JSON.stringify(changedEmbeds, null, 4))
+                              }
+                          ]
+                        : undefined
             },
             "message_logging_channel"
         );
@@ -900,7 +938,8 @@ export default class LoggerService extends Service {
                                 } as AttachmentBuilder)
                         )
                         .values()
-                ]
+                ],
+                embeds: message.embeds
             },
             "message_logging_channel"
         );
