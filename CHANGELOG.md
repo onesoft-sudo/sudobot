@@ -1,3 +1,12 @@
+# [7.19.0](https://github.com/onesoft-sudo/sudobot/compare/v7.18.0...v7.19.0) (2024-01-20)
+
+
+### Features
+
+* **automod:rules:image:** allow images in embeds to be scanned ([f9663fc](https://github.com/onesoft-sudo/sudobot/commit/f9663fc128990dc1e7a5f971a5c7a68ac5b70f13))
+
+
+
 # [7.18.0](https://github.com/onesoft-sudo/sudobot/compare/v7.17.0...v7.18.0) (2024-01-20)
 
 
@@ -32,18 +41,6 @@
 ### Features
 
 * listen for message events for statistics ([67b08ec](https://github.com/onesoft-sudo/sudobot/commit/67b08ec31c7bb7dadc69ac14ca380fd27bc53dd6))
-
-
-
-## [7.14.3](https://github.com/onesoft-sudo/sudobot/compare/v7.14.2...v7.14.3) (2024-01-05)
-
-
-### Bug Fixes
-
-* build failure for global type casting ([9835a5c](https://github.com/onesoft-sudo/sudobot/commit/9835a5cc6404c2f8dea4dd43dacf0ebe765f6ffb))
-* build failure for global type casting ([2512028](https://github.com/onesoft-sudo/sudobot/commit/25120289255c3ec4d1f436840fcf37951261ac70))
-* set global boot date ([65052ce](https://github.com/onesoft-sudo/sudobot/commit/65052ce976745a7555c162dd46d8c870d7ca61bd))
-* system command should show the uptime of the bot system ([7039f8e](https://github.com/onesoft-sudo/sudobot/commit/7039f8e59c4f27c73ed84a960e9e743c2f127e2c))
 
 
 
