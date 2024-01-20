@@ -58,7 +58,8 @@ const handlers: Record<MessageRuleType["type"], RuleInfo> = {
     block_repeated_text: "ruleRepeatedText",
     block_mass_mention: "ruleBlockMassMention",
     regex_must_match: "ruleRegexMustMatch",
-    image: "ruleImage"
+    image: "ruleImage",
+    embed: "ruleEmbed"
 };
 
 type MessageRuleAction = MessageRuleType["actions"][number];
@@ -261,9 +262,93 @@ export default class MessageRuleService extends Service implements HasEventListe
         }
     }
 
-    async ruleImage(message: Message, rule: Extract<MessageRuleType, { type: "image" }>) {
-        log("here");
+    private scanForBlockedWordsAndTokens(tokens: string[] = [], words: string[] = [], ...strings: (string | null | undefined)[]) {
+        for (const string of strings) {
+            if (!string) {
+                continue;
+            }
 
+            for (const token of tokens) {
+                if (string.includes(token)) {
+                    return { includes: true, token };
+                }
+            }
+
+            const splitted = string.split(/\s+/);
+
+            for (const word of words) {
+                if (splitted.includes(word)) {
+                    return { includes: true, word };
+                }
+            }
+        }
+
+        return { includes: false };
+    }
+
+    async ruleEmbed(message: Message, rule: Extract<MessageRuleType, { type: "embed" }>) {
+        if (message.embeds.length === 0) {
+            return null;
+        }
+
+        const config = this.client.configManager.config[message.guildId!]?.message_filter;
+        const { mode, tokens, words, inherit_from_word_filter } = rule;
+
+        if (config?.enabled && inherit_from_word_filter) {
+            words.push(...config.data.blocked_words);
+            tokens.push(...config.data.blocked_tokens);
+        }
+
+        for (const embed of message.embeds) {
+            const fieldsStrings = embed.fields.reduce((acc, value) => {
+                acc.push(value.name, value.value);
+                return acc;
+            }, [] as string[]);
+            const { includes, word, token } = this.scanForBlockedWordsAndTokens(
+                tokens,
+                words,
+                embed.author?.name,
+                embed.description,
+                embed.title,
+                embed.footer?.text,
+                ...fieldsStrings
+            );
+
+            if (includes && mode === "normal") {
+                return {
+                    title: `Blocked ${token ? "token" : word ? "word" : "word/token"}(s) detected in embed`,
+                    fields: [
+                        {
+                            name: `${token ? "Token" : word ? "Word" : "Word/Token"}`,
+                            value: `||${escapeMarkdown(token ?? word ?? "[???]")}||`
+                        },
+                        {
+                            name: "Method",
+                            value: "Embed Scan"
+                        }
+                    ]
+                } as CreateLogEmbedOptions;
+            } else if (!includes && mode === "inverse") {
+                return {
+                    title: `Blocked ${token ? "token" : word ? "word" : "word/token"}(s) was not found in embed`,
+                    fields: [
+                        {
+                            name: `${token ? "Token" : word ? "Word" : "Word/Token"}`,
+                            value: `||${escapeMarkdown(token ?? word ?? "[???]")}||`
+                        },
+                        {
+                            name: "Method",
+                            value: "Embed Scan"
+                        }
+                    ]
+                } as CreateLogEmbedOptions;
+            }
+        }
+
+        return null;
+    }
+
+    async ruleImage(message: Message, rule: Extract<MessageRuleType, { type: "image" }>) {
         if (message.attachments.size === 0) {
             return null;
         }

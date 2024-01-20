@@ -100,6 +100,14 @@ export const ImageRule = z.object({
     inherit_from_word_filter: z.boolean().default(false)
 });
 
+export const EmbedRule = z.object({
+    ...Common,
+    type: z.literal("embed"),
+    tokens: z.array(z.string()).default([]),
+    words: z.array(z.string()).default([]),
+    inherit_from_word_filter: z.boolean().default(false)
+});
+
 export const MessageRuleSchema = z.union([
     DomainRule,
     BlockedMimeTypeRule,
@@ -109,7 +117,8 @@ export const MessageRuleSchema = z.union([
     BlockRepeatedTextRule,
     BlockMassMentionRule,
     RegexMustMatchRule,
-    ImageRule
+    ImageRule,
+    EmbedRule
 ]);
 
 export type MessageRuleType = z.infer<typeof MessageRuleSchema>;
