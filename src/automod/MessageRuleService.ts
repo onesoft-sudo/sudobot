@@ -66,6 +66,9 @@ const handlers: Record<MessageRuleType["type"], RuleInfo> = {
 
 type MessageRuleAction = MessageRuleType["actions"][number];
 
+// TODO: Allow specific words/tokens even after having rules that disallow it
+// TODO: Introduce rule bypassers ^^
+
 export default class MessageRuleService extends Service implements HasEventListeners {
     private config(guildId: Snowflake) {
         return this.client.configManager.config[guildId]?.message_rules;
