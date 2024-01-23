@@ -1,3 +1,12 @@
+# [7.20.0](https://github.com/onesoft-sudo/sudobot/compare/v7.19.0...v7.20.0) (2024-01-20)
+
+
+### Features
+
+* **automod:logging:** log changed/removed embeds ([9130f8d](https://github.com/onesoft-sudo/sudobot/commit/9130f8d147769046fdff193c4b802c3f336fcf00))
+
+
+
 # [7.19.0](https://github.com/onesoft-sudo/sudobot/compare/v7.18.0...v7.19.0) (2024-01-20)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * add strongly-typed global variables and environment variables ([94ef3b7](https://github.com/onesoft-sudo/sudobot/commit/94ef3b70ccc024da578227423bb7140463b417fa))
-
-
-
-# [7.15.0](https://github.com/onesoft-sudo/sudobot/compare/v7.14.3...v7.15.0) (2024-01-05)
-
-
-### Features
-
-* listen for message events for statistics ([67b08ec](https://github.com/onesoft-sudo/sudobot/commit/67b08ec31c7bb7dadc69ac14ca380fd27bc53dd6))
 
 
 
