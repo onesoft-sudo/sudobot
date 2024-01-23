@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import axios, { AxiosRequestConfig } from "axios";
 import {
     APIEmbedField,
     Channel,
@@ -300,4 +301,12 @@ export function assertUnreachable(_value: never): never {
 
 export function TODO(message?: string): never {
     throw new Error(message ?? "Not implemented");
+}
+
+export async function request<D = any>(options: AxiosRequestConfig<D>) {
+    try {
+        return [await axios(options), null] as const;
+    } catch (error) {
+        return [null, error] as const;
+    }
 }

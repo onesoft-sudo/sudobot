@@ -35,7 +35,7 @@ import { CreateLogEmbedOptions } from "../services/LoggerService";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { MessageRuleType } from "../types/MessageRuleSchema";
 import { log, logError, logWarn } from "../utils/logger";
-import { escapeRegex, getEmoji } from "../utils/utils";
+import { escapeRegex, getEmoji, request } from "../utils/utils";
 
 export const name = "messageRuleService";
 
@@ -61,7 +61,8 @@ const handlers: Record<MessageRuleType["type"], RuleInfo> = {
     block_mass_mention: "ruleBlockMassMention",
     regex_must_match: "ruleRegexMustMatch",
     image: "ruleImage",
-    embed: "ruleEmbed"
+    embed: "ruleEmbed",
+    EXPERIMENTAL_url_crawl: "ruleURLCrawl"
 };
 
 type MessageRuleAction = MessageRuleType["actions"][number];
@@ -467,6 +468,107 @@ export default class MessageRuleService extends Service implements HasEventListe
         }
 
         log("Image scan passed");
+        return null;
+    }
+
+    /** This rule is experimental. It needs caching support. */
+    async ruleURLCrawl(message: Message, rule: Extract<MessageRuleType, { type: "EXPERIMENTAL_url_crawl" }>) {
+        if (message.content.trim() === "") {
+            return null;
+        }
+
+        const { excluded_domains_regex, excluded_link_regex, excluded_links, words, tokens, inherit_from_word_filter, mode } =
+            rule;
+        const config = this.client.configManager.config[message.guildId!]?.message_filter;
+
+        const matches = message.content.matchAll(/https?:\/\/([A-Za-z0-9-\.]*[A-Za-z0-9-])[\S]*/gim);
+
+        for (const match of matches) {
+            const url = match[0].toLowerCase();
+            const domain = match[1].toLowerCase();
+
+            if (excluded_links.includes(url)) {
+                return null;
+            }
+
+            for (const regex of excluded_domains_regex) {
+                if (new RegExp(regex, "gim").test(domain)) {
+                    return null;
+                }
+            }
+
+            for (const regex of excluded_link_regex) {
+                if (new RegExp(regex, "gim").test(url)) {
+                    return null;
+                }
+            }
+        }
+
+        if (config?.enabled && inherit_from_word_filter) {
+            words.push(...config.data.blocked_words);
+            tokens.push(...config.data.blocked_tokens);
+        }
+
+        for (const match of matches) {
+            const url = match[0].toLowerCase();
+
+            const [response, error] = await request({
+                url,
+                method: "GET",
+                transformResponse: r => r
+            });
+
+            if (error) {
+                logError(error);
+                continue;
+            }
+
+            if (typeof response?.data !== "string") {
+                logWarn("The response returned by the server during URL crawl is invalid");
+                continue;
+            }
+
+            const lowerCasedData = response.data.toLowerCase();
+
+            for (const token of tokens) {
+                if (lowerCasedData.includes(token)) {
+                    return {
+                        title: "Website contains blocked token(s)",
+                        fields: [
+                            {
+                                name: "Token",
+                                value: `||${token}||`
+                            },
+                            {
+                                name: "Method",
+                                value: "URL Crawling"
+                            }
+                        ]
+                    } satisfies CreateLogEmbedOptions;
+                }
+            }
+
+            const textWords = lowerCasedData.split(/\s+/);
+
+            for (const word of words) {
+                if (textWords.includes(word)) {
+                    return {
+                        title: "Website contains blocked word(s)",
+                        fields: [
+                            {
+                                name: "Word",
+                                value: `||${word}||`
+                            },
+                            {
+                                name: "Method",
+                                value: "URL Crawling"
+                            }
+                        ]
+                    } satisfies CreateLogEmbedOptions;
+                }
+            }
+        }
+
         return null;
     }
 

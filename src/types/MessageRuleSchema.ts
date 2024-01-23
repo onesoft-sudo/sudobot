@@ -109,6 +109,19 @@ export const EmbedRule = z.object({
     inherit_from_word_filter: z.boolean().default(false)
 });
 
+export const URLCrawlRule = z
+    .object({
+        ...Common,
+        type: z.literal("EXPERIMENTAL_url_crawl"),
+        excluded_domains_regex: z.array(z.string()).default([]),
+        excluded_links: z.array(z.string().url()).default([]),
+        excluded_link_regex: z.array(z.string()).default([]),
+        tokens: z.array(z.string()).default([]),
+        words: z.array(z.string()).default([]),
+        inherit_from_word_filter: z.boolean().default(false)
+    })
+    .describe("Experimental. Use at your own risk.");
+
 export const MessageRuleSchema = z.union([
     DomainRule,
     BlockedMimeTypeRule,
@@ -119,7 +132,8 @@ export const MessageRuleSchema = z.union([
     BlockMassMentionRule,
     RegexMustMatchRule,
     ImageRule,
-    EmbedRule
+    EmbedRule,
+    URLCrawlRule
 ]);
 
 export type MessageRuleType = z.infer<typeof MessageRuleSchema>;
