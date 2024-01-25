@@ -1,3 +1,12 @@
+# [7.22.0](https://github.com/onesoft-sudo/sudobot/compare/v7.21.2...v7.22.0) (2024-01-25)
+
+
+### Features
+
+* credentials server auth ([dd4517c](https://github.com/onesoft-sudo/sudobot/commit/dd4517c9645ee1b5b972872fa66919b94ded735c))
+
+
+
 ## [7.21.2](https://github.com/onesoft-sudo/sudobot/compare/v7.21.1...v7.21.2) (2024-01-25)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **automod:logging:** log changed/removed embeds ([9130f8d](https://github.com/onesoft-sudo/sudobot/commit/9130f8d147769046fdff193c4b802c3f336fcf00))
-
-
-
-# [7.19.0](https://github.com/onesoft-sudo/sudobot/compare/v7.18.0...v7.19.0) (2024-01-20)
-
-
-### Features
-
-* **automod:rules:image:** allow images in embeds to be scanned ([f9663fc](https://github.com/onesoft-sudo/sudobot/commit/f9663fc128990dc1e7a5f971a5c7a68ac5b70f13))
 
 
 
