@@ -20,7 +20,7 @@ import "module-alias/register";
 import "reflect-metadata";
 
 import { spawn } from "child_process";
-import { GatewayIntentBits, Partials } from "discord.js";
+import { GatewayIntentBits, Options, Partials } from "discord.js";
 import "dotenv/config";
 import Client from "./core/Client";
 
@@ -42,7 +42,23 @@ const partials = [Partials.Channel];
 
 export const client = new Client({
     intents,
-    partials
+    partials,
+    makeCache: Options.cacheWithLimits({
+        ...Options.DefaultMakeCacheSettings,
+        ReactionManager: 0,
+        DMMessageManager: 0,
+        GuildForumThreadManager: 0,
+        GuildScheduledEventManager: 0,
+        VoiceStateManager: 0,
+        StageInstanceManager: 0,
+        GuildTextThreadManager: 0,
+        GuildStickerManager: 0,
+        AutoModerationRuleManager: 0,
+        ApplicationCommandManager: 0,
+        ThreadMemberManager: 0,
+        ThreadManager: 0,
+        ReactionUserManager: 0
+    })
 });
 
 function spawnNativeProcess() {
