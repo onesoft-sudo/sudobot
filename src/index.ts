@@ -89,8 +89,6 @@ async function fetchCredentials() {
             for (const key in response.data.config) {
                 process.env[key] = response.data.config[key];
             }
-
-            console.log(response.data.config);
         } else {
             throw new Error("Invalid response received");
         }
