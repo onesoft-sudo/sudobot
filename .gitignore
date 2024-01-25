@@ -20,3 +20,5 @@ setup.sh
 /extensions
 *.bak
 *.traineddata
+/credentials_api
+/.env*
