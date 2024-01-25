@@ -1,3 +1,12 @@
+## [7.23.2](https://github.com/onesoft-sudo/sudobot/compare/v7.23.1...v7.23.2) (2024-01-25)
+
+
+### Bug Fixes
+
+* system command ([85a1571](https://github.com/onesoft-sudo/sudobot/commit/85a1571685f860879ff14871a5d042948ecf8a01))
+
+
+
 ## [7.23.1](https://github.com/onesoft-sudo/sudobot/compare/v7.23.0...v7.23.1) (2024-01-25)
 
 
@@ -31,15 +40,6 @@
 ### Performance Improvements
 
 * better cache sweeping and management ([55f4aea](https://github.com/onesoft-sudo/sudobot/commit/55f4aea0cf21154e05abad7d71003a190b05187c))
-
-
-
-## [7.21.1](https://github.com/onesoft-sudo/sudobot/compare/v7.21.0...v7.21.1) (2024-01-25)
-
-
-### Performance Improvements
-
-* better cache management ([c05824a](https://github.com/onesoft-sudo/sudobot/commit/c05824afd9f7549d1530110059bbb6a1c51afd26))
 
 
 
