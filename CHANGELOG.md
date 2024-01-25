@@ -1,3 +1,12 @@
+## [7.23.1](https://github.com/onesoft-sudo/sudobot/compare/v7.23.0...v7.23.1) (2024-01-25)
+
+
+### Bug Fixes
+
+* remove unneeded logs ([44494a9](https://github.com/onesoft-sudo/sudobot/commit/44494a9f0c59011bebf8fb8945a0c2a72d9fec3d))
+
+
+
 # [7.23.0](https://github.com/onesoft-sudo/sudobot/compare/v7.22.0...v7.23.0) (2024-01-25)
 
 
@@ -31,15 +40,6 @@
 ### Performance Improvements
 
 * better cache management ([c05824a](https://github.com/onesoft-sudo/sudobot/commit/c05824afd9f7549d1530110059bbb6a1c51afd26))
-
-
-
-# [7.21.0](https://github.com/onesoft-sudo/sudobot/compare/v7.20.0...v7.21.0) (2024-01-23)
-
-
-### Features
-
-* **automod:rules:** url crawl rule (experimental) ([e3cf4fb](https://github.com/onesoft-sudo/sudobot/commit/e3cf4fb5f04a91754678020d8826ebb5f94e404f))
 
 
 
