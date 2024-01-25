@@ -1,3 +1,12 @@
+## [7.21.1](https://github.com/onesoft-sudo/sudobot/compare/v7.21.0...v7.21.1) (2024-01-25)
+
+
+### Performance Improvements
+
+* better cache management ([c05824a](https://github.com/onesoft-sudo/sudobot/commit/c05824afd9f7549d1530110059bbb6a1c51afd26))
+
+
+
 # [7.21.0](https://github.com/onesoft-sudo/sudobot/compare/v7.20.0...v7.21.0) (2024-01-23)
 
 
@@ -31,16 +40,6 @@
 ### Features
 
 * **automod:rules:** add `embed` rule ([0609958](https://github.com/onesoft-sudo/sudobot/commit/06099587c8f29338eb75a88163b6b4d27a4bc89f))
-
-
-
-# [7.17.0](https://github.com/onesoft-sudo/sudobot/compare/v7.16.0...v7.17.0) (2024-01-19)
-
-
-### Features
-
-* **automod:rules:** image scan rule for OCR text scanning ([3112932](https://github.com/onesoft-sudo/sudobot/commit/31129329134a62aa5303ab05926dc834a7efbe8c))
-* **services:** add image recognition (OCR) service ([aa2a73f](https://github.com/onesoft-sudo/sudobot/commit/aa2a73ffc3a3863b72ca91ea2769b3e072cbd36b))
 
 
 
