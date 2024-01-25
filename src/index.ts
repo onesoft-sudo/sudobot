@@ -57,8 +57,29 @@ export const client = new Client({
         ApplicationCommandManager: 0,
         ThreadMemberManager: 0,
         ThreadManager: 0,
-        ReactionUserManager: 0
-    })
+        ReactionUserManager: 0,
+        GuildMemberManager: 25,
+        GuildBanManager: 0,
+        GuildEmojiManager: 25,
+        GuildInviteManager: 5,
+        GuildMessageManager: 50,
+        BaseGuildEmojiManager: 5
+    }),
+    sweepers: {
+        ...Options.DefaultSweeperSettings,
+        messages: {
+            interval: 1200, // Every 20 minutes.
+            lifetime: 600 // Remove messages older than 10 minutes.
+        },
+        users: {
+            interval: 1200,
+            filter: () => user => user.bot && user.id !== user.client.user.id // Remove all bots.
+        },
+        guildMembers: {
+            interval: 1200,
+            filter: () => member => member.user.bot && member.id !== member.client.user.id // Remove all bots.
+        }
+    }
 });
 
 function spawnNativeProcess() {
