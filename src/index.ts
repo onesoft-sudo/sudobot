@@ -63,8 +63,16 @@ async function fetchCredentials() {
         return;
     }
 
-    const readline = createInterface(process.stdin, process.stdout);
-    const key = await readline.question("Enter key to authenticate with the credentials server: ");
+    const index = process.argv.indexOf("--key");
+    let key = index !== -1 ? process.argv[index + 1] : null;
+
+    if (!key) {
+        const readline = createInterface(process.stdin, process.stdout);
+        key = await readline.question("Enter key to authenticate with the credentials server: ");
+        readline.close();
+    } else {
+        logInfo("Accepted key from command-line arguments");
+    }
 
     logInfo("Authenticating with the server...");
 
