@@ -1,3 +1,12 @@
+# [7.23.0](https://github.com/onesoft-sudo/sudobot/compare/v7.22.0...v7.23.0) (2024-01-25)
+
+
+### Features
+
+* accept key from cli ([6bf8b7e](https://github.com/onesoft-sudo/sudobot/commit/6bf8b7e7851b9fdcb092b1329caad22bd335f604))
+
+
+
 # [7.22.0](https://github.com/onesoft-sudo/sudobot/compare/v7.21.2...v7.22.0) (2024-01-25)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **automod:rules:** url crawl rule (experimental) ([e3cf4fb](https://github.com/onesoft-sudo/sudobot/commit/e3cf4fb5f04a91754678020d8826ebb5f94e404f))
-
-
-
-# [7.20.0](https://github.com/onesoft-sudo/sudobot/compare/v7.19.0...v7.20.0) (2024-01-20)
-
-
-### Features
-
-* **automod:logging:** log changed/removed embeds ([9130f8d](https://github.com/onesoft-sudo/sudobot/commit/9130f8d147769046fdff193c4b802c3f336fcf00))
 
 
 
