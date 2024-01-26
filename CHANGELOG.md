@@ -1,3 +1,12 @@
+# [7.24.0](https://github.com/onesoft-sudo/sudobot/compare/v7.23.2...v7.24.0) (2024-01-26)
+
+
+### Features
+
+* **credentials:** allow the restart command to work as before ([b3eccec](https://github.com/onesoft-sudo/sudobot/commit/b3eccec97d7ca6771e071776c0a1420548c7d5fa))
+
+
+
 ## [7.23.2](https://github.com/onesoft-sudo/sudobot/compare/v7.23.1...v7.23.2) (2024-01-25)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * credentials server auth ([dd4517c](https://github.com/onesoft-sudo/sudobot/commit/dd4517c9645ee1b5b972872fa66919b94ded735c))
-
-
-
-## [7.21.2](https://github.com/onesoft-sudo/sudobot/compare/v7.21.1...v7.21.2) (2024-01-25)
-
-
-### Performance Improvements
-
-* better cache sweeping and management ([55f4aea](https://github.com/onesoft-sudo/sudobot/commit/55f4aea0cf21154e05abad7d71003a190b05187c))
 
 
 
