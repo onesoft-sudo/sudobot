@@ -491,6 +491,37 @@ export default class UpdateCommand extends Command {
             return false;
         }
 
+        if (
+            existsSync(path.join(__dirname, "../../..", ".git")) &&
+            (existsSync("/usr/bin/git") || existsSync("/usr/local/bin/git") || existsSync("/bin/git"))
+        ) {
+            const { error, dirpairs } = await this.backupCurrentSystem(["build", "src", "prisma", "scripts"]);
+
+            if (error) {
+                return false;
+            }
+
+            const { status: gitStatus } = spawnSync(`git pull`, {
+                stdio: "inherit",
+                cwd: path.join(__dirname, "../../.."),
+                encoding: "utf-8",
+                shell: true
+            });
+
+            if (!gitStatus) {
+                return false;
+            }
+
+            const buildSucceeded = await this.buildNewInstallation(dirpairs!);
+
+            if (!buildSucceeded) {
+                await this.rollbackUpdate(dirpairs!).catch(logError);
+                return false;
+            }
+
+            return true;
+        }
+
         const { error: downloadError, filePath, storagePath } = await this.downloadUpdate({ stableDownloadURL, version });
 
         if (downloadError) {
