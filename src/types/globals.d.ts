@@ -20,6 +20,7 @@ namespace NodeJS {
         JWT_ISSUER: string;
         JWT_SECRET: string;
         FRONTEND_AUTH_KEY: string;
+        CREDENTIAL_SERVER?: string;
     }
 }
 

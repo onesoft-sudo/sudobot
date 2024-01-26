@@ -23,9 +23,12 @@ import axios from "axios";
 import { spawn } from "child_process";
 import { GatewayIntentBits, Partials } from "discord.js";
 import "dotenv/config";
+import { existsSync, readFileSync } from "fs";
 import { createInterface } from "node:readline/promises";
+import path from "path";
 import Client from "./core/Client";
 import { logError, logInfo, logSuccess } from "./utils/logger";
+import { sudoPrefix } from "./utils/utils";
 
 global.bootDate = Date.now();
 
@@ -63,13 +66,29 @@ async function fetchCredentials() {
         return;
     }
 
+    const restartJsonFile = path.join(sudoPrefix("tmp", true), "restart.json");
+    let restartKey = null;
+
+    if (existsSync(restartJsonFile)) {
+        logInfo("Found restart.json file: ", restartJsonFile);
+
+        try {
+            const { key } = JSON.parse(readFileSync(restartJsonFile, { encoding: "utf-8" }));
+            restartKey = key;
+        } catch (error) {
+            logError(error);
+        }
+    }
+
     const index = process.argv.indexOf("--key");
-    let key = index !== -1 ? process.argv[index + 1] : null;
+    let key = restartKey ?? (index !== -1 ? process.argv[index + 1] : null);
 
     if (!key) {
         const readline = createInterface(process.stdin, process.stdout);
         key = await readline.question("Enter key to authenticate with the credentials server: ");
         readline.close();
+    } else if (restartKey) {
+        logInfo("Accepted key during last restart command");
     } else {
         logInfo("Accepted key from command-line arguments");
     }

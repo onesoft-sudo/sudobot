@@ -17,7 +17,16 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, CacheType, Interaction, Snowflake } from "discord.js";
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    CacheType,
+    ChatInputCommandInteraction,
+    Interaction,
+    SlashCommandBuilder,
+    Snowflake
+} from "discord.js";
 import { writeFile } from "fs/promises";
 import path from "path";
 import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
@@ -31,6 +40,9 @@ export default class RestartCommand extends Command implements HasEventListeners
     public readonly validationRules: ValidationRule[] = [];
     public readonly aliases = ["reboot"];
     public readonly systemAdminOnly = true;
+    public readonly slashCommandBuilder = new SlashCommandBuilder().addStringOption(option =>
+        option.setName("credential_key").setDescription("The key to authenticate with the credentials server, if needed")
+    );
 
     public readonly description = "Restarts the bot.";
 
@@ -46,7 +58,8 @@ export default class RestartCommand extends Command implements HasEventListeners
             return;
         }
 
-        const [, , guildId, channelId, userId] = customId.split("__");
+        const [, , guildId, channelId, userId, ...keyParts] = customId.split("__");
+        const key = keyParts?.join("__") ?? "";
 
         if (!guildId || !channelId || !userId) {
             return;
@@ -85,7 +98,8 @@ export default class RestartCommand extends Command implements HasEventListeners
                     guildId,
                     channelId,
                     messageId: interaction.message.id,
-                    time: Date.now()
+                    time: Date.now(),
+                    key
                 },
                 null,
                 4
@@ -112,6 +126,14 @@ export default class RestartCommand extends Command implements HasEventListeners
     }
 
     async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+        if (
+            process.env.CREDENTIAL_SERVER &&
+            (!(message instanceof ChatInputCommandInteraction) || !message.options.getString("credential_key"))
+        ) {
+            await this.error(message, "Please enter the credentials server key to restart the bot!");
+            return;
+        }
+
         return {
             __reply: true,
             embeds: [
@@ -123,20 +145,25 @@ export default class RestartCommand extends Command implements HasEventListeners
             ],
             components: [
                 new ActionRowBuilder<ButtonBuilder>().addComponents(
-                    ...this.buildButtons(message.guildId!, message.channelId!, message.member!.user.id)
+                    ...this.buildButtons(
+                        message.guildId!,
+                        message.channelId!,
+                        message.member!.user.id,
+                        message instanceof ChatInputCommandInteraction ? message.options.getString("credential_key") : ""
+                    )
                 )
             ]
         };
     }
 
-    buildButtons(guildId: Snowflake, channelId: Snowflake, userId: Snowflake) {
+    buildButtons(guildId: Snowflake, channelId: Snowflake, userId: Snowflake, key?: string | null) {
         return [
             new ButtonBuilder()
-                .setCustomId(`restart__yes__${guildId}__${channelId}__${userId}`)
+                .setCustomId(`restart__yes__${guildId}__${channelId}__${userId}__${key}`)
                 .setLabel("Restart")
                 .setStyle(ButtonStyle.Success),
             new ButtonBuilder()
-                .setCustomId(`restart__no__${guildId}__${channelId}__${userId}`)
+                .setCustomId(`restart__no__${guildId}__${channelId}__${userId}__${key}`)
                 .setLabel("Cancel")
                 .setStyle(ButtonStyle.Danger)
         ];
