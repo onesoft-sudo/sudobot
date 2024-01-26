@@ -52,7 +52,7 @@ Thanks to all the active and indirect contributors!
 
 -   [Ar Rakin](https://github.com/virtual-designer) (Maintainer)
 -   Hana (A Discord User)
--   [Kars](https://github.com/kars1996) (Contributed by giving away a domain to us)
+-   [Kars](https://github.com/kars1996) (Contributed by giving away a domain and a hosting server to us)
 -   [killerclaws12](https://github.com/killerclaws12)
 -   [MonzterDev](https://github.com/MonzterDev)
 -   [GuynnR](https://github.com/GuynnR)
