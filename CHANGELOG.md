@@ -1,3 +1,12 @@
+## [7.24.1](https://github.com/onesoft-sudo/sudobot/compare/v7.24.0...v7.24.1) (2024-01-26)
+
+
+### Bug Fixes
+
+* **commands:update:** registering guild slash commands instead of global ([1ba3467](https://github.com/onesoft-sudo/sudobot/commit/1ba3467f2bfc6a6092ec2c64bc0c056423f0c939))
+
+
+
 # [7.24.0](https://github.com/onesoft-sudo/sudobot/compare/v7.23.2...v7.24.0) (2024-01-26)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * accept key from cli ([6bf8b7e](https://github.com/onesoft-sudo/sudobot/commit/6bf8b7e7851b9fdcb092b1329caad22bd335f604))
-
-
-
-# [7.22.0](https://github.com/onesoft-sudo/sudobot/compare/v7.21.2...v7.22.0) (2024-01-25)
-
-
-### Features
-
-* credentials server auth ([dd4517c](https://github.com/onesoft-sudo/sudobot/commit/dd4517c9645ee1b5b972872fa66919b94ded735c))
 
 
 
