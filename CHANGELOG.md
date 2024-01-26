@@ -1,3 +1,12 @@
+# [7.25.0](https://github.com/onesoft-sudo/sudobot/compare/v7.24.1...v7.25.0) (2024-01-26)
+
+
+### Features
+
+* **commands:update:** support updates via git ([766202e](https://github.com/onesoft-sudo/sudobot/commit/766202e9335b73cfd07ec4f8a40a5e4bae5d6c24))
+
+
+
 ## [7.24.1](https://github.com/onesoft-sudo/sudobot/compare/v7.24.0...v7.24.1) (2024-01-26)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * remove unneeded logs ([44494a9](https://github.com/onesoft-sudo/sudobot/commit/44494a9f0c59011bebf8fb8945a0c2a72d9fec3d))
-
-
-
-# [7.23.0](https://github.com/onesoft-sudo/sudobot/compare/v7.22.0...v7.23.0) (2024-01-25)
-
-
-### Features
-
-* accept key from cli ([6bf8b7e](https://github.com/onesoft-sudo/sudobot/commit/6bf8b7e7851b9fdcb092b1329caad22bd335f604))
 
 
 
