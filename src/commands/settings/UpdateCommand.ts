@@ -37,7 +37,7 @@ import semver from "semver";
 import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { downloadFile } from "../../utils/download";
 import { log, logError, logInfo, logWarn } from "../../utils/logger";
-import { developmentMode, sudoPrefix } from "../../utils/utils";
+import { sudoPrefix } from "../../utils/utils";
 
 export default class UpdateCommand extends Command {
     public readonly name = "update";
@@ -470,7 +470,7 @@ export default class UpdateCommand extends Command {
             return this.rollbackUpdate(dirpairs);
         }
 
-        const { status: slashCommandStatus } = spawnSync(`npm run deploy${developmentMode() ? " -- --guild" : ""}`, {
+        const { status: slashCommandStatus } = spawnSync(`npm run deploy`, {
             stdio: "inherit",
             cwd: path.join(__dirname, "../../.."),
             encoding: "utf-8",
