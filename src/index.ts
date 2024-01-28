@@ -117,7 +117,7 @@ async function fetchCredentials() {
     }
 }
 
-(async () => {
+const promise = (async () => {
     await fetchCredentials();
     const client = new Client({
         intents,
@@ -174,3 +174,8 @@ async function fetchCredentials() {
         await client.login(process.env.TOKEN);
     }
 })();
+
+if (process.versions.bun) {
+    // @ts-ignore
+    await promise;
+}
