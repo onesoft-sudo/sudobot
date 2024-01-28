@@ -65,7 +65,9 @@ function makeContextMenuCommandBuilder(command) {
             intents: []
         });
 
-        await client.loadCommands();
+        await client.boot({
+            events: false
+        });
 
         for (const [name, command] of client.commands) {
             if (name.includes("__") || client.commands.get(name)?.name !== name) continue;

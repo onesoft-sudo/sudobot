@@ -128,12 +128,12 @@ const promise = (async () => {
 
     await client.boot();
 
-    // if (process.env.SERVER_ONLY_MODE) {
-    //     await client.server.boot();
-    //     await client.server.start();
-    // } else {
-    //     await client.login(process.env.TOKEN);
-    // }
+    if (process.env.SERVER_ONLY_MODE) {
+        await client.server.boot();
+        await client.server.start();
+    } else {
+        await client.login(process.env.TOKEN);
+    }
 })();
 
 export default promise;

@@ -18,7 +18,7 @@
  */
 
 import { PrismaClient } from "@prisma/client";
-import { Collection, ClientEvents as DiscordClientEvents, Client as DiscordJSClient } from "discord.js";
+import { Collection, ClientEvents as DiscordClientEvents, Client as DiscordJSClient, GuildEmoji } from "discord.js";
 import path from "node:path";
 import Server from "../api/Server";
 import type AIAutoModService from "../automod/AIAutoModService";
@@ -67,6 +67,7 @@ import ServiceManager from "./ServiceManager";
 class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
     private readonly eventListeners = new Map<string, Function[]>();
     public readonly commands = new Collection<string, Command>();
+    public readonly emojiMap = new Map<string, GuildEmoji>();
 
     public readonly prisma = new PrismaClient({
         errorFormat: "pretty",
@@ -173,6 +174,10 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
         }
     }
 
+    async getHomeGuild() {
+        return this.guilds.cache.get(process.env.HOME_GUILD_ID) ?? (await this.guilds.fetch(process.env.HOME_GUILD_ID));
+    }
+
     addEventListener<K extends keyof ClientEvents>(name: K, listener: (...args: ClientEvents[K]) => unknown) {
         const handlers = this.eventListeners.get(name) ?? [];
 
@@ -200,6 +205,22 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
 
         const handler = handlers.splice(index, 1)[0];
         this.off(name as keyof DiscordClientEvents, handler as (...args: DiscordClientEvents[keyof DiscordClientEvents]) => void);
+    }
+
+    emitWaitLocal<K extends keyof ClientEvents>(name: K, ...args: ClientEvents[K]) {
+        return new Promise<void>(async (resolve, reject) => {
+            for (const listener of this.eventListeners.get(name) ?? []) {
+                await listener(...args);
+            }
+
+            resolve();
+        });
+    }
+
+    emitWait<K extends keyof ClientEvents>(name: K, ...args: ClientEvents[K]) {
+        for (const listener of this.eventListeners.get(name) ?? []) {
+            listener(...args);
+        }
     }
 }
 

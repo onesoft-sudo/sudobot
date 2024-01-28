@@ -3,7 +3,6 @@
     "description": "A Discord bot for moderation purposes.",
     "version": "7.25.0",
     "main": "build/index.js",
-    "type": "module",
     "license": "GPL-3.0-or-later",
     "keywords": [
         "bot",
