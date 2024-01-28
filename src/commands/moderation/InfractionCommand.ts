@@ -20,6 +20,7 @@
 import { InfractionType } from "@prisma/client";
 import { MessageMentions, PermissionsBitField, SlashCommandBuilder } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { safeUserFetch } from "../../utils/fetch";
 import { isSnowflake } from "../../utils/utils";
 
 const infractionTypes = [
@@ -182,7 +183,7 @@ export default class InfractionCommand extends Command {
                     return;
                 }
 
-                const user = await this.client.fetchUserSafe(userId);
+                const user = await safeUserFetch(this.client, userId);
 
                 if (!user) {
                     await message.reply(`${this.emoji("error")} That user does not exist!`);

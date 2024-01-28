@@ -29,6 +29,7 @@ import { log, logError, logInfo, logWarn } from "../utils/logger";
 import Controller from "./Controller";
 import Response from "./Response";
 
+// FIXME: Support new decorators
 export default class Server {
     protected expressApp = express();
     public readonly port = process.env.PORT ?? 4000;

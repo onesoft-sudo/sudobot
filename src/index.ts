@@ -32,6 +32,10 @@ import { sudoPrefix } from "./utils/utils";
 
 global.bootDate = Date.now();
 
+if (!Symbol.metadata) {
+    (Symbol as unknown as Record<string, symbol>).metadata ??= Symbol("metadata");
+}
+
 const intents = [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.MessageContent,

@@ -22,6 +22,7 @@ import { ChatInputCommandInteraction, EmbedBuilder, PermissionsBitField } from "
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 import { ChatInputCommandContext } from "../../services/CommandManager";
 import { stringToTimeInterval } from "../../utils/datetime";
+import { safeUserFetch } from "../../utils/fetch";
 
 export default class InfractionEditCommand extends Command {
     public readonly name = "infraction__edit";
@@ -87,7 +88,7 @@ export default class InfractionEditCommand extends Command {
             return;
         }
 
-        const user = await this.client.fetchUserSafe(infraction.userId);
+        const user = await safeUserFetch(this.client, infraction.userId);
 
         if (newDurationSeconds && infraction.queueId) {
             const queue = this.client.queueManager.queues.get(`${infraction.queueId}`);

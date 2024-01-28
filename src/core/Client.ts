@@ -18,7 +18,13 @@
  */
 
 import { PrismaClient } from "@prisma/client";
-import { Collection, ClientEvents as DiscordClientEvents, Client as DiscordJSClient, GuildEmoji } from "discord.js";
+import {
+    ClientOptions,
+    Collection,
+    ClientEvents as DiscordClientEvents,
+    Client as DiscordJSClient,
+    GuildEmoji
+} from "discord.js";
 import path from "node:path";
 import Server from "../api/Server";
 import type AIAutoModService from "../automod/AIAutoModService";
@@ -65,6 +71,7 @@ import DynamicLoader from "./DynamicLoader";
 import ServiceManager from "./ServiceManager";
 
 class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
+    public static instance: Client;
     private readonly eventListeners = new Map<string, Function[]>();
     public readonly commands = new Collection<string, Command>();
     public readonly emojiMap = new Map<string, GuildEmoji>();
@@ -161,6 +168,11 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
     commandPermissionOverwriteManager!: CommandPermissionOverwriteManager;
     statsService!: StatsService;
     imageRecognitionService!: ImageRecognitionService;
+
+    constructor(options: ClientOptions) {
+        super(options);
+        Client.instance = this;
+    }
 
     async boot({ commands = true, events = true }: { commands?: boolean; events?: boolean } = {}) {
         await this.serviceManager.loadServices();

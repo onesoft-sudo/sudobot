@@ -20,6 +20,7 @@
 import { InfractionType } from "@prisma/client";
 import { EmbedBuilder, PermissionsBitField } from "discord.js";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { safeUserFetch } from "../../utils/fetch";
 
 export default class NoteViewCommand extends Command {
     public readonly name = "note__view";
@@ -59,7 +60,7 @@ export default class NoteViewCommand extends Command {
             return;
         }
 
-        const user = await this.client.fetchUserSafe(note.userId);
+        const user = await safeUserFetch(this.client, note.userId);
 
         await this.deferredReply(message, {
             embeds: [

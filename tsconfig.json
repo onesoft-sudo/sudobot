@@ -1,8 +1,7 @@
 {
     "compilerOptions": {
         "incremental": true,
-        "target": "ES2021",
-        "experimentalDecorators": true,
+        "target": "ES2022",
         "module": "CommonJS",
         "rootDir": "./src",
         "types": ["node", "bun"],

@@ -110,7 +110,7 @@ export default class KeypressHandlerService extends Service {
 
         logWithLevel(LogLevel.EVENT, "Hot reloading commands");
 
-        await this.client.loadCommands(undefined, undefined, async filePath => {
+        await this.client.dynamicLoader.loadCommands(undefined, false, async filePath => {
             if (failed) {
                 return false;
             }

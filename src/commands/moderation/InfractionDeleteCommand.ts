@@ -19,6 +19,7 @@
 
 import { PermissionsBitField } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { safeUserFetch } from "../../utils/fetch";
 
 export default class InfractionDeleteCommand extends Command {
     public readonly name = "infraction__delete";
@@ -55,7 +56,7 @@ export default class InfractionDeleteCommand extends Command {
             where: { id, guildId: message.guildId! }
         });
 
-        const user = await this.client.fetchUserSafe(infraction.userId);
+        const user = await safeUserFetch(this.client, infraction.userId);
 
         await this.deferredReply(message, {
             embeds: [

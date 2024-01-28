@@ -21,6 +21,7 @@ import { InfractionType } from "@prisma/client";
 import { EmbedBuilder, PermissionsBitField, User, escapeCodeBlock } from "discord.js";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import Pagination from "../../utils/Pagination";
+import { safeUserFetch } from "../../utils/fetch";
 import { isSnowflake } from "../../utils/utils";
 
 export default class NoteListCommand extends Command {
@@ -40,7 +41,8 @@ export default class NoteListCommand extends Command {
         let user: User | null | undefined = context.isLegacy ? undefined : context.options.getUser("user", true);
 
         if (context.isLegacy) {
-            user = await this.client.fetchUserSafe(
+            user = await safeUserFetch(
+                this.client,
                 isSnowflake(context.args[0])
                     ? context.args[0]
                     : context.args[0].substring(context.args[0].includes("!") ? 3 : 2, context.args[0].length - 1)
