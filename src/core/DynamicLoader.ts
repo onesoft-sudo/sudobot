@@ -100,12 +100,12 @@ class DynamicLoader extends Service {
 
     async loadEventsFromMetadata(object: object, accessConstructor = true) {
         const finalObject = accessConstructor ? object.constructor : object;
-
-        if (!(Symbol.metadata in finalObject)) {
-            return;
-        }
-
-        const metadata = finalObject[Symbol.metadata] as { eventListeners?: EventListenerInfo[] };
+        const metadata =
+            Symbol.metadata in finalObject
+                ? (finalObject[Symbol.metadata] as { eventListeners?: EventListenerInfo[] })
+                : {
+                      eventListeners: Reflect.getMetadata("event_listeners", (finalObject as any).prototype)
+                  };
 
         for (const listenerInfo of metadata.eventListeners ?? []) {
             this.client.addEventListener(

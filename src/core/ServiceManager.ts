@@ -34,7 +34,6 @@ export default class ServiceManager {
 
         const service = new ServiceClass(this.client);
         this.client[name as "startupManager"] = service as any;
-        console.log(service[Symbol.metadata as unknown as keyof typeof service]);
         await this.client.dynamicLoader.loadEventsFromMetadata(service);
         await service.boot();
         logInfo("Loaded Service: ", name);
