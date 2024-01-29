@@ -22,9 +22,8 @@ export default class ServiceManager {
         }
     }
 
-    // FIXME: Decorator based event listeners and lifecycle methods
     async loadService(filepath: string) {
-        const { default: ServiceClass, name }: DefaultExport<Class<Service, [Client]>> & { name?: keyof Client } = await import(
+        const { default: ServiceClass, name }: DefaultExport<Class<Service, [Client]>> & { name?: string } = await import(
             filepath
         );
 
@@ -32,11 +31,20 @@ export default class ServiceManager {
             throw new Error(`Name is empty for service ${filepath}`);
         }
 
+        const previousServiceInstance = this.client[name as "startupManager"];
         const service = new ServiceClass(this.client);
+
+        if (previousServiceInstance) {
+            logInfo(`Previous instance of service ${name} found. Deactivating`);
+            await this.client.dynamicLoader.unloadEventsFromMetadata(previousServiceInstance);
+            await previousServiceInstance.deactivate();
+        }
+
         this.client[name as "startupManager"] = service as any;
         await this.client.dynamicLoader.loadEventsFromMetadata(service);
         await service.boot();
-        logInfo("Loaded Service: ", name);
+
+        logInfo(`${previousServiceInstance ? "Rel" : "L"}oaded Service: `, name);
     }
 
     loadServiceFromDirectory(servicesDirectory: string) {

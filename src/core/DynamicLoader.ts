@@ -11,7 +11,9 @@ import EventListener from "./EventListener";
 import Service from "./Service";
 
 class DynamicLoader extends Service {
-    async iterateDirectoryRecursively(root: string, rootArray?: string[]) {
+    protected readonly eventHandlers = new WeakMap<object, Record<keyof ClientEvents, Function[]>>();
+
+    private async iterateDirectoryRecursively(root: string, rootArray?: string[]) {
         const filesAndDirectories = await readdir(root);
         const files: string[] = [];
 
@@ -84,6 +86,11 @@ class DynamicLoader extends Service {
     async loadCommand(filepath: string, loadMetadata = true) {
         const { default: CommandClass }: DefaultExport<Class<Command, [Client]>> = await import(filepath);
         const command = new CommandClass(this.client);
+        const previousCommand = this.client.commands.get(command.name);
+
+        if (loadMetadata && previousCommand) {
+            await this.unloadEventsFromMetadata(previousCommand);
+        }
 
         this.client.commands.set(command.name, command);
 
@@ -107,16 +114,40 @@ class DynamicLoader extends Service {
                       eventListeners: Reflect.getMetadata("event_listeners", (finalObject as any).prototype)
                   };
 
+        const handlerData = this.eventHandlers.get(object) ?? ({} as Record<keyof ClientEvents, Function[]>);
+
         for (const listenerInfo of metadata.eventListeners ?? []) {
-            this.client.addEventListener(
-                listenerInfo.event as keyof ClientEvents,
-                (object[listenerInfo.methodName as unknown as keyof typeof object] as Function).bind(object)
-            );
+            const callback = object[listenerInfo.methodName as unknown as keyof typeof object] as Function;
+            const handler = callback.bind(object);
+            handlerData[listenerInfo.event as keyof typeof handlerData] ??= [] as Function[];
+            handlerData[listenerInfo.event as keyof typeof handlerData].push(handler);
+
+            this.client.addEventListener(listenerInfo.event as keyof ClientEvents, handler);
         }
+
+        this.eventHandlers.set(object, handlerData);
 
         if (metadata.eventListeners) {
             logInfo(`Registered ${metadata.eventListeners?.length ?? 0} event listeners`);
         }
+    }
+
+    async unloadEventsFromMetadata(object: object) {
+        const handlerData = this.eventHandlers.get(object) ?? ({} as Record<keyof ClientEvents, Function[]>);
+        let count = 0;
+
+        for (const event in handlerData) {
+            for (const callback of handlerData[event as keyof typeof handlerData]) {
+                this.client.removeEventListener(
+                    event as keyof ClientEvents,
+                    callback as (...args: ClientEvents[keyof ClientEvents]) => any
+                );
+            }
+
+            count += handlerData[event as keyof typeof handlerData].length;
+        }
+
+        logInfo(`Unloaded ${count} event listeners`);
     }
 }
 
