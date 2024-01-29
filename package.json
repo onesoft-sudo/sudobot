@@ -31,7 +31,7 @@
         "email": "sudobot@onesoftnet.eu.org"
     },
     "dependencies": {
-        "@prisma/client": "^5.7.1",
+        "@prisma/client": "^5.8.1",
         "@types/uuid": "^9.0.2",
         "ascii-table3": "^0.8.2",
         "async-mutex": "^0.4.0",
@@ -76,7 +76,7 @@
         "@types/node": "^20.4.0",
         "@types/semver": "^7.5.4",
         "husky": "^8.0.3",
-        "prisma": "^5.7.1",
+        "prisma": "^5.8.1",
         "ts-node": "^10.9.1",
         "typescript": "^5.2.2",
         "zod-to-json-schema": "^3.21.4"

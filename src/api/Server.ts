@@ -19,24 +19,34 @@
 
 import cors from "cors";
 import express, { Request as ExpressRequest, Response as ExpressResponse, NextFunction } from "express";
-import rateLimit from "express-rate-limit";
-import fs from "fs/promises";
+import ratelimiter from "express-rate-limit";
+import { Router } from "express-serve-static-core";
 import { Server as HttpServer } from "http";
-import { join, resolve } from "path";
 import Client from "../core/Client";
-import { RouteMetadata } from "../types/RouteMetadata";
-import { log, logError, logInfo, logWarn } from "../utils/logger";
+import { RouteMetadata, RouteMetadataEntry } from "../types/RouteMetadata";
+import { log, logInfo, logWarn } from "../utils/logger";
 import Controller from "./Controller";
 import Response from "./Response";
 
 // FIXME: Support new decorators
 export default class Server {
-    protected expressApp = express();
+    protected readonly expressApp = express();
+    protected readonly rateLimiter = ratelimiter({
+        windowMs: 30 * 1000,
+        max: 28,
+        standardHeaders: true,
+        legacyHeaders: false
+    });
+    protected readonly configRateLimiter = ratelimiter({
+        windowMs: 10 * 1000,
+        max: 7,
+        standardHeaders: true,
+        legacyHeaders: false
+    });
     public readonly port = process.env.PORT ?? 4000;
-    protected controllersDirectory = resolve(__dirname, "controllers");
-    expressServer?: HttpServer;
+    public expressServer?: HttpServer;
 
-    constructor(protected client: Client) {}
+    constructor(protected readonly client: Client) {}
 
     async onReady() {
         if (this.client.configManager.systemConfig.api.enabled) {
@@ -45,143 +55,134 @@ export default class Server {
     }
 
     async boot() {
-        const router = express.Router();
-        await this.loadControllers(undefined, router);
-
-        this.expressApp.use((err: unknown, req: ExpressRequest, res: ExpressResponse, next: NextFunction) => {
-            if (err instanceof SyntaxError && "status" in err && err.status === 400 && "body" in err) {
-                res.status(400).json({
-                    error: "Invalid JSON payload"
-                });
-
-                return;
-            }
-        });
-
+        this.expressApp.use(this.onError);
         this.expressApp.use(cors());
-
-        const limiter = rateLimit({
-            windowMs: 30 * 1000,
-            max: 28,
-            standardHeaders: true,
-            legacyHeaders: false
-        });
-
-        const configLimiter = rateLimit({
-            windowMs: 10 * 1000,
-            max: 7,
-            standardHeaders: true,
-            legacyHeaders: false
-        });
 
         if (this.client.configManager.systemConfig.trust_proxies !== undefined) {
             logInfo("Set express trust proxy option value to ", this.client.configManager.systemConfig.trust_proxies);
             this.expressApp.set("trust proxy", this.client.configManager.systemConfig.trust_proxies);
         }
 
-        this.expressApp.use(limiter);
-        this.expressApp.use("/config", configLimiter);
+        this.expressApp.use(this.rateLimiter);
+        this.expressApp.use("/config", this.configRateLimiter);
         this.expressApp.use(express.json());
+
+        const router = await this.createRouter();
         this.expressApp.use("/", router);
     }
 
-    async loadControllers(directory = this.controllersDirectory, router: express.Router) {
-        const files = await fs.readdir(directory);
+    async createRouter() {
+        const router = express.Router();
+        await this.client.dynamicLoader.loadControllers(router);
+        return router;
+    }
 
-        for (const file of files) {
-            const filePath = join(directory, file);
-            const isDirectory = (await fs.lstat(filePath)).isDirectory();
+    loadController(controller: Controller, controllerClass: typeof Controller, router: Router) {
+        const actions = (
+            Symbol.metadata in controllerClass && controllerClass[Symbol.metadata]
+                ? controllerClass[Symbol.metadata]?.actionMethods
+                : Reflect.getMetadata("action_methods", controllerClass.prototype)
+        ) as Record<string, RouteMetadata> | null;
+        const aacMiddlewareList = (
+            Symbol.metadata in controllerClass && controllerClass[Symbol.metadata]
+                ? controllerClass[Symbol.metadata]?.adminAccessControlMiddleware
+                : Reflect.getMetadata("aac_middleware", controllerClass.prototype)
+        ) as Record<string, Function> | null;
+        const gacMiddlewareList = (
+            Symbol.metadata in controllerClass && controllerClass[Symbol.metadata]
+                ? controllerClass[Symbol.metadata]?.guildAccessControlMiddleware
+                : Reflect.getMetadata("gac_middleware", controllerClass.prototype)
+        ) as Record<string, Function> | null;
+        const requireAuthMiddlewareList = (
+            Symbol.metadata in controllerClass && controllerClass[Symbol.metadata]
+                ? controllerClass[Symbol.metadata]?.authMiddleware
+                : Reflect.getMetadata("auth_middleware", controllerClass.prototype)
+        ) as Record<string, Function> | null;
+        const validationMiddlewareList = (
+            Symbol.metadata in controllerClass && controllerClass[Symbol.metadata]
+                ? controllerClass[Symbol.metadata]?.validationMiddleware
+                : Reflect.getMetadata("validation_middleware", controllerClass.prototype)
+        ) as Record<string, Function> | null;
 
-            if (isDirectory) {
-                await this.loadControllers(filePath, router);
-                continue;
+        if (!actions) {
+            return;
+        }
+
+        for (const callbackName in actions) {
+            for (const method in actions[callbackName]) {
+                const data = actions[callbackName][
+                    method as keyof (typeof actions)[keyof typeof actions]
+                ] as RouteMetadataEntry | null;
+
+                if (!data) {
+                    continue;
+                }
+
+                const middleware = [];
+
+                if (requireAuthMiddlewareList?.[callbackName]) {
+                    middleware.push(requireAuthMiddlewareList?.[callbackName]);
+                }
+
+                if (aacMiddlewareList?.[callbackName]) {
+                    middleware.push(aacMiddlewareList?.[callbackName]);
+                }
+
+                if (gacMiddlewareList?.[callbackName]) {
+                    middleware.push(gacMiddlewareList?.[callbackName]);
+                }
+
+                if (validationMiddlewareList?.[callbackName]) {
+                    middleware.push(validationMiddlewareList?.[callbackName]);
+                }
+
+                middleware.push(...(data.middleware ?? []));
+
+                const wrappedMiddleware = middleware.map(
+                    m => (request: ExpressRequest, response: ExpressResponse, next: NextFunction) =>
+                        m(this.client, request, response, next)
+                );
+
+                router[data.method.toLowerCase() as "head"].call(
+                    router,
+                    data.path,
+                    ...(wrappedMiddleware as []),
+                    <any>this.wrapControllerAction(controller, callbackName)
+                );
+
+                log(`Discovered API Route: ${data.method} ${data.path} -- in ${controllerClass.name}`);
             }
+        }
+    }
 
-            if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
-                continue;
-            }
+    wrapControllerAction(controller: Controller, callbackName: string) {
+        return async (request: ExpressRequest, response: ExpressResponse) => {
+            const callback = controller[callbackName as keyof typeof controller] as Function;
+            const controllerResponse = await callback.call(controller, request, response);
 
-            const { default: ControllerClass } = await import(filePath);
-            const controller: Controller = new ControllerClass(this.client);
-
-            const metadata: Record<string, RouteMetadata> | undefined = Reflect.getMetadata(
-                "action_methods",
-                ControllerClass.prototype
-            );
-
-            const authMiddleware = Reflect.getMetadata("auth_middleware", ControllerClass.prototype) ?? {};
-            const gacMiddleware = Reflect.getMetadata("gac_middleware", ControllerClass.prototype) ?? {};
-            const aacMiddleware = Reflect.getMetadata("aac_middleware", ControllerClass.prototype) ?? {};
-            const validatonMiddleware = Reflect.getMetadata("validation_middleware", ControllerClass.prototype) ?? {};
-
-            if (metadata) {
-                for (const methodName in metadata) {
-                    if (!metadata[methodName]) {
-                        continue;
-                    }
-
-                    for (const method in metadata[methodName]!) {
-                        const data = metadata[methodName][method as keyof RouteMetadata]!;
-
-                        if (!data) {
-                            continue;
-                        }
-
-                        const { middleware, handler, path } = data;
-
-                        if (!handler) {
-                            continue;
-                        }
-
-                        if (!path) {
-                            logError(`[Server] No path specified at function ${handler.name} in controller ${file}. Skipping.`);
-                            continue;
-                        }
-
-                        if (method && !["GET", "POST", "HEAD", "PUT", "PATCH", "DELETE"].includes(method)) {
-                            logError(
-                                `[Server] Invalid method '${method}' specified at function ${handler.name} in controller ${file}. Skipping.`
-                            );
-                            continue;
-                        }
-
-                        log(`Added handler for ${method?.toUpperCase() ?? "GET"} ${path}`);
-
-                        const finalMiddlewareArray = [
-                            ...(authMiddleware[methodName] ? [authMiddleware[methodName]] : []),
-                            ...(gacMiddleware[methodName] ? [gacMiddleware[methodName]] : []),
-                            ...(aacMiddleware[methodName] ? [aacMiddleware[methodName]] : []),
-                            ...(validatonMiddleware[methodName] ? [validatonMiddleware[methodName]] : []),
-                            ...(middleware ?? [])
-                        ];
-
-                        (router[(method?.toLowerCase() ?? "get") as keyof typeof router] as Function)(
-                            path,
-                            ...(finalMiddlewareArray?.map(
-                                fn => (req: ExpressRequest, res: ExpressResponse, next: NextFunction) =>
-                                    fn(this.client, req, res, next)
-                            ) ?? []),
-                            async (req: ExpressRequest, res: ExpressResponse) => {
-                                const userResponse = await handler.bind(controller)(req, res);
-
-                                if (!res.headersSent) {
-                                    if (userResponse instanceof Response) {
-                                        userResponse.send(res);
-                                    } else if (userResponse && typeof userResponse === "object") {
-                                        res.json(userResponse);
-                                    } else if (typeof userResponse === "string") {
-                                        res.send(userResponse);
-                                    } else if (typeof userResponse === "number") {
-                                        res.send(userResponse.toString());
-                                    } else {
-                                        logWarn("Invalid value was returned from the controller. Not sending a response.");
-                                    }
-                                }
-                            }
-                        );
-                    }
+            if (!response.headersSent) {
+                if (controllerResponse instanceof Response) {
+                    controllerResponse.send(response);
+                } else if (controllerResponse && typeof controllerResponse === "object") {
+                    response.json(controllerResponse);
+                } else if (typeof controllerResponse === "string") {
+                    response.send(controllerResponse);
+                } else if (typeof controllerResponse === "number") {
+                    response.send(controllerResponse.toString());
+                } else {
+                    logWarn("Invalid value was returned from the controller. Not sending a response.");
                 }
             }
+        };
+    }
+
+    onError(err: unknown, req: ExpressRequest, res: ExpressResponse, next: NextFunction) {
+        if (err instanceof SyntaxError && "status" in err && err.status === 400 && "body" in err) {
+            res.status(400).json({
+                error: "Invalid JSON payload"
+            });
+
+            return;
         }
     }
 

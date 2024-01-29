@@ -1,10 +1,12 @@
 import { Awaitable } from "discord.js";
+import { Router } from "express";
 import { lstat, readdir } from "node:fs/promises";
 import path from "node:path";
+import Controller from "../api/Controller";
 import { EventListenerInfo } from "../decorators/GatewayEventListener";
 import { ClientEvents } from "../types/ClientEvents";
 import { Class, DefaultExport } from "../types/Utils";
-import { logInfo } from "../utils/logger";
+import { log, logInfo } from "../utils/logger";
 import type Client from "./Client";
 import Command from "./Command";
 import EventListener from "./EventListener";
@@ -30,6 +32,25 @@ class DynamicLoader extends Service {
         }
 
         return files;
+    }
+
+    async loadControllers(router: Router) {
+        const eventListenerFiles = await this.iterateDirectoryRecursively(path.resolve(__dirname, "../api/controllers"));
+
+        for (const file of eventListenerFiles) {
+            if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
+                continue;
+            }
+
+            await this.loadController(file, router);
+        }
+    }
+
+    async loadController(filepath: string, router: Router) {
+        const { default: ControllerClass }: DefaultExport<Class<Controller, [Client]>> = await import(filepath);
+        const controller = new ControllerClass(this.client);
+        this.client.server.loadController(controller, ControllerClass, router);
+        logInfo("Loaded Controller: ", ControllerClass.name);
     }
 
     async loadEvents() {
@@ -128,7 +149,7 @@ class DynamicLoader extends Service {
         this.eventHandlers.set(object, handlerData);
 
         if (metadata.eventListeners) {
-            logInfo(`Registered ${metadata.eventListeners?.length ?? 0} event listeners`);
+            log(`Registered ${metadata.eventListeners?.length ?? 0} event listeners`);
         }
     }
 
@@ -147,7 +168,7 @@ class DynamicLoader extends Service {
             count += handlerData[event as keyof typeof handlerData].length;
         }
 
-        logInfo(`Unloaded ${count} event listeners`);
+        log(`Unloaded ${count} event listeners`);
     }
 }
 
