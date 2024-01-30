@@ -1,3 +1,21 @@
+# [7.26.0](https://github.com/onesoft-sudo/sudobot/compare/v7.25.0...v7.26.0) (2024-01-30)
+
+
+### Bug Fixes
+
+* loading errors ([14dec5a](https://github.com/onesoft-sudo/sudobot/commit/14dec5a9fd559ad4fb118eca082f3b8213b35bee))
+* remove unneeded logging ([eee3cb5](https://github.com/onesoft-sudo/sudobot/commit/eee3cb5bc9b7f11bd5ed9a9aef8add17c8e13d33))
+* **runtime:bun:** decorators not working ([314a9be](https://github.com/onesoft-sudo/sudobot/commit/314a9be3ad33dfe1d784f23b41160491453d97a6))
+
+
+### Features
+
+* dynamic event loading and unloading ([11e6f70](https://github.com/onesoft-sudo/sudobot/commit/11e6f70d3de9d95d9141de98068df52ab993ec02))
+* experimental bun support ([d43f191](https://github.com/onesoft-sudo/sudobot/commit/d43f1910b1b933b9f0c3a57129ee852695e972b6))
+* supporting old and new decorators for best compatibility ([1b707af](https://github.com/onesoft-sudo/sudobot/commit/1b707af75490aaa5cee5e59a7eec949c3cfaa0b2))
+
+
+
 # [7.25.0](https://github.com/onesoft-sudo/sudobot/compare/v7.24.1...v7.25.0) (2024-01-26)
 
 
@@ -31,15 +49,6 @@
 ### Bug Fixes
 
 * system command ([85a1571](https://github.com/onesoft-sudo/sudobot/commit/85a1571685f860879ff14871a5d042948ecf8a01))
-
-
-
-## [7.23.1](https://github.com/onesoft-sudo/sudobot/compare/v7.23.0...v7.23.1) (2024-01-25)
-
-
-### Bug Fixes
-
-* remove unneeded logs ([44494a9](https://github.com/onesoft-sudo/sudobot/commit/44494a9f0c59011bebf8fb8945a0c2a72d9fec3d))
 
 
 
