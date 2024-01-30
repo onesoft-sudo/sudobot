@@ -1,0 +1,15 @@
+.skeleton {
+    animation: skeleton 2.5s linear infinite;
+    border-radius: 5px;
+}
+
+@keyframes skeleton {
+    100%,
+    0% {
+        background: #000;
+    }
+
+    50% {
+        background: #333;
+    }
+}
