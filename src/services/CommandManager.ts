@@ -214,7 +214,7 @@ export default class CommandManager extends Service {
             }
         };
 
-        await this.client.emitWait("command", command.name, handlerObject, command, message, context);
+        await this.client.emitWaitLocal("command", command.name, handlerObject, command, message, context);
         await Promise.resolve();
 
         if (handlerObject._stopped) {

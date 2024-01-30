@@ -328,28 +328,28 @@ export default class ExtensionService extends Service {
                 }
             } else if (services) {
                 for (const servicePath of services) {
-                    await this.client.serviceManager.loadServiceFromFile(servicePath);
+                    await this.client.serviceManager.loadService(servicePath);
                 }
             }
         } else {
             for (const servicePath of servicePaths) {
-                await this.client.serviceManager.loadServiceFromFile(servicePath);
+                await this.client.serviceManager.loadService(servicePath);
             }
         }
 
         if (commandPaths === null) {
             if (commandsDirectory) {
                 if (existsSync(commandsDirectory)) {
-                    await this.client.loadCommands(commandsDirectory);
+                    await this.client.dynamicLoader.loadCommands(commandsDirectory);
                 }
             } else if (commands) {
                 for (const commandPath of commands) {
-                    await this.client.loadCommand(commandPath);
+                    await this.client.dynamicLoader.loadCommand(commandPath);
                 }
             }
         } else {
             for (const commandPath of commandPaths) {
-                await this.client.loadCommand(commandPath);
+                await this.client.dynamicLoader.loadCommand(commandPath);
             }
         }
 

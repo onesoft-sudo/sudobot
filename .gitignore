@@ -22,3 +22,5 @@ setup.sh
 *.traineddata
 /credentials_api
 /.env*
+/bun.lockb
+*.tsbuildinfo

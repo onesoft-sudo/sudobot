@@ -110,7 +110,7 @@ export default class KeypressHandlerService extends Service {
 
         logWithLevel(LogLevel.EVENT, "Hot reloading commands");
 
-        await this.client.loadCommands(undefined, undefined, async filePath => {
+        await this.client.dynamicLoader.loadCommands(undefined, true, async filePath => {
             if (failed) {
                 return false;
             }
@@ -128,7 +128,7 @@ export default class KeypressHandlerService extends Service {
                 return false;
             }
 
-            if (!built) {
+            if (!built && !__filename.endsWith(".ts")) {
                 const currentDirectory = cwd();
                 chdir(path.resolve(__dirname, "../.."));
 

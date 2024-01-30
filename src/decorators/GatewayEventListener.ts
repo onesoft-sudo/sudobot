@@ -19,16 +19,39 @@
 
 import type { ClientEvents } from "../types/ClientEvents";
 
+export type EventListenerInfo = {
+    event: keyof ClientEvents | "raw";
+    methodName: string;
+};
+
 export function GatewayEventListener(event: keyof ClientEvents | "raw") {
-    return (target: Object, methodName: string, descriptor: TypedPropertyDescriptor<any>) => {
-        const metadata = Reflect.getMetadata("event_listeners", target) ?? [];
+    return (
+        originalMethodOrTarget: any,
+        contextOrMethodName: string | ClassMethodDecoratorContext,
+        descriptor?: PropertyDescriptor
+    ) => {
+        if (typeof contextOrMethodName === "string") {
+            const metadata = Reflect.getMetadata("event_listeners", originalMethodOrTarget) ?? [];
 
-        metadata.push({
-            event,
-            handler: descriptor.value,
-            methodName
-        });
+            metadata.push({
+                event,
+                handler: descriptor!.value,
+                methodName: contextOrMethodName
+            });
 
-        Reflect.defineMetadata("event_listeners", metadata, target);
+            Reflect.defineMetadata("event_listeners", metadata, originalMethodOrTarget);
+        } else {
+            const methodName = String(contextOrMethodName.name);
+            const eventListeners = (contextOrMethodName.metadata?.eventListeners as EventListenerInfo[]) ?? [];
+
+            eventListeners.push({
+                event,
+                methodName
+            });
+
+            (contextOrMethodName.metadata as unknown) ??= {};
+            contextOrMethodName.metadata.eventListeners = eventListeners;
+            return originalMethodOrTarget;
+        }
     };
 }

@@ -18,10 +18,14 @@
  */
 
 import { PrismaClient } from "@prisma/client";
-import { Awaitable, ClientOptions, Collection, Client as DiscordClient, GuildEmoji, UserResolvable } from "discord.js";
-import { Stats } from "fs";
-import fs from "fs/promises";
-import path, { basename, dirname } from "path";
+import {
+    ClientOptions,
+    Collection,
+    ClientEvents as DiscordClientEvents,
+    Client as DiscordJSClient,
+    GuildEmoji
+} from "discord.js";
+import path from "node:path";
 import Server from "../api/Server";
 import type AIAutoModService from "../automod/AIAutoModService";
 import type Antijoin from "../automod/Antijoin";
@@ -32,7 +36,6 @@ import type MessageFilter from "../automod/MessageFilter";
 import type MessageRuleService from "../automod/MessageRuleService";
 import type ProfileFilter from "../automod/ProfileFilter";
 import type VerificationService from "../automod/VerificationService";
-import { SuppressErrorsMetadata } from "../decorators/SuppressErrors";
 import type AFKService from "../services/AFKService";
 import type AutoRoleService from "../services/AutoRoleService";
 import type BallotManager from "../services/BallotManager";
@@ -61,19 +64,33 @@ import type StatsService from "../services/StatsService";
 import type TranslationService from "../services/TranslationService";
 import type TriggerService from "../services/TriggerService";
 import type WelcomerService from "../services/WelcomerService";
-import { CustomEvents, type ClientEvents } from "../types/ClientEvents";
-import { log, logError, logInfo } from "../utils/logger";
+import { ClientEvents } from "../types/ClientEvents";
 import { developmentMode } from "../utils/utils";
 import type Command from "./Command";
+import DynamicLoader from "./DynamicLoader";
 import ServiceManager from "./ServiceManager";
 
-export default class Client<Ready extends boolean = boolean> extends DiscordClient<Ready> {
-    aliases = {
-        "@services": path.resolve(__dirname, "../services"),
-        "@automod": path.resolve(__dirname, "../automod")
+class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
+    public static instance: Client;
+    private readonly eventListeners = new Map<string, Function[]>();
+    public readonly commands = new Collection<string, Command>();
+    public readonly emojiMap = new Map<string, GuildEmoji>();
+
+    public readonly prisma = new PrismaClient({
+        errorFormat: "pretty",
+        log: developmentMode() ? ["error", "info", "query", "warn"] : ["error", "info", "warn"]
+    });
+
+    public readonly server = new Server(this);
+    public readonly dynamicLoader = new DynamicLoader(this);
+    public readonly serviceManager = new ServiceManager(this);
+
+    public readonly aliases = {
+        automod: path.resolve(__dirname, "../automod"),
+        services: path.resolve(__dirname, "../services")
     };
 
-    services = [
+    public readonly services = [
         "@services/StartupManager",
         "@services/ConfigManager",
         "@services/CommandManager",
@@ -114,267 +131,109 @@ export default class Client<Ready extends boolean = boolean> extends DiscordClie
         "@automod/VerificationService"
     ];
 
-    commandsDirectory = path.resolve(__dirname, "../commands");
-    eventsDirectory = path.resolve(__dirname, "../events");
+    startupManager!: StartupManager;
+    configManager!: ConfigManager;
+    commandManager!: CommandManager;
+    infractionManager!: InfractionManager;
+    logger!: LoggerService;
+    messageFilter!: MessageFilter;
+    antispam!: Antispam;
+    queueManager!: QueueManager;
+    snippetManager!: SnippetManager;
+    welcomerService!: WelcomerService;
+    antiraid!: Antiraid;
+    channelLockManager!: ChannelLockManager;
+    antijoin!: Antijoin;
+    profileFilter!: ProfileFilter;
+    permissionManager!: PermissionManager;
+    metadata!: MetadataService;
+    quickMute!: QuickMuteService;
+    translator!: TranslationService;
+    autoRoleService!: AutoRoleService;
+    reactionRoleService!: ReactionRoleService;
+    afkService!: AFKService;
+    inviteTracker!: InviteTrackerService;
+    ballotManager!: BallotManager;
+    fileFilter!: FileFilterService;
+    messageRuleService!: MessageRuleService;
+    triggerService!: TriggerService;
+    aiAutoMod!: AIAutoModService;
+    extensionService!: ExtensionService;
+    bumpReminder!: BumpReminderService;
+    logServer!: LogServer;
+    cooldown!: CooldownService;
+    keypressHandler!: KeypressHandlerService;
+    verification!: VerificationService;
+    reportService!: ReportService;
+    commandPermissionOverwriteManager!: CommandPermissionOverwriteManager;
+    statsService!: StatsService;
+    imageRecognitionService!: ImageRecognitionService;
 
-    serviceManager = new ServiceManager(this);
-
-    startupManager: StartupManager = {} as StartupManager;
-    configManager: ConfigManager = {} as ConfigManager;
-    commandManager: CommandManager = {} as CommandManager;
-    infractionManager: InfractionManager = {} as InfractionManager;
-    logger: LoggerService = {} as LoggerService;
-    messageFilter: MessageFilter = {} as MessageFilter;
-    antispam: Antispam = {} as Antispam;
-    queueManager: QueueManager = {} as QueueManager;
-    snippetManager: SnippetManager = {} as SnippetManager;
-    welcomerService: WelcomerService = {} as WelcomerService;
-    antiraid: Antiraid = {} as Antiraid;
-    channelLockManager: ChannelLockManager = {} as ChannelLockManager;
-    antijoin: Antijoin = {} as Antijoin;
-    profileFilter: ProfileFilter = {} as ProfileFilter;
-    permissionManager: PermissionManager = {} as PermissionManager;
-    metadata: MetadataService = {} as MetadataService;
-    quickMute: QuickMuteService = {} as QuickMuteService;
-    translator: TranslationService = {} as TranslationService;
-    autoRoleService: AutoRoleService = {} as AutoRoleService;
-    reactionRoleService: ReactionRoleService = {} as ReactionRoleService;
-    afkService: AFKService = {} as AFKService;
-    inviteTracker: InviteTrackerService = {} as InviteTrackerService;
-    ballotManager: BallotManager = {} as BallotManager;
-    fileFilter: FileFilterService = {} as FileFilterService;
-    messageRuleService: MessageRuleService = {} as MessageRuleService;
-    triggerService: TriggerService = {} as TriggerService;
-    aiAutoMod: AIAutoModService = {} as AIAutoModService;
-    extensionService: ExtensionService = {} as ExtensionService;
-    bumpReminder: BumpReminderService = {} as BumpReminderService;
-    logServer: LogServer = {} as LogServer;
-    cooldown: CooldownService = {} as CooldownService;
-    keypressHandler: KeypressHandlerService = {} as KeypressHandlerService;
-    verification: VerificationService = {} as VerificationService;
-    reportService: ReportService = {} as ReportService;
-    commandPermissionOverwriteManager: CommandPermissionOverwriteManager = {} as CommandPermissionOverwriteManager;
-    statsService: StatsService = {} as StatsService;
-    imageRecognitionService: ImageRecognitionService = {} as ImageRecognitionService;
-
-    prisma = new PrismaClient({
-        errorFormat: "pretty",
-        log: developmentMode() ? ["query", "error", "info", "warn"] : ["error", "info", "warn"]
-    });
-
-    server = new Server(this);
-
-    commands = new Collection<string, Command>();
-    emojiMap = new Collection<string, GuildEmoji>();
-    registeredEvents: string[] = [];
-    eventMap = new Map<keyof ClientEvents, Function[]>();
-
-    private static _instance: Client;
-
-    static get instance() {
-        return this._instance;
-    }
-
-    constructor(options: ClientOptions, { services }: { services?: string[] } = {}) {
+    constructor(options: ClientOptions) {
         super(options);
-        Client._instance = this;
-
-        if (services) {
-            this.services = services;
-        }
+        Client.instance = this;
     }
 
-    async boot() {
+    async boot({ commands = true, events = true }: { commands?: boolean; events?: boolean } = {}) {
         await this.serviceManager.loadServices();
-        await this.extensionService.bootUp();
-    }
 
-    async fetchUserSafe(user: UserResolvable) {
-        try {
-            return await this.users.fetch(user);
-        } catch (e) {
-            logError(e);
-            return null;
-        }
-    }
-
-    async loadCommands(
-        directory = this.commandsDirectory,
-        metadataLoader?: Function,
-        filter?: (path: string, name: string, info: Stats) => Awaitable<boolean>
-    ) {
-        const files = await fs.readdir(directory);
-        const includeOnly = process.env.COMMANDS?.split(",");
-
-        for (const file of files) {
-            const filePath = path.join(directory, file);
-            const info = await fs.lstat(filePath);
-            const isDirectory = info.isDirectory();
-
-            if (isDirectory) {
-                await this.loadCommands(filePath, metadataLoader, filter);
-                continue;
-            }
-
-            if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
-                continue;
-            }
-
-            if (includeOnly && !includeOnly.includes(file.replace(/\.(ts|js)/gi, ""))) {
-                continue;
-            }
-
-            if (filter !== undefined && !(await filter(filePath, file, info))) {
-                continue;
-            }
-
-            await this.loadCommand(filePath, metadataLoader);
-        }
-    }
-
-    async loadCommand(filePath: string, metadataLoader?: Function) {
-        const { default: CommandClass }: { default: new (client: Client) => Command } = await import(filePath);
-        const command = new CommandClass(this);
-        command.group = basename(dirname(filePath));
-        this.commands.set(command.name, command);
-
-        for (const alias of command.aliases) {
-            this.commands.set(alias, command);
+        if (events) {
+            await this.dynamicLoader.loadEvents();
         }
 
-        if (!metadataLoader) {
-            this.loadEventListenersFromMetadata(CommandClass, command);
-        } else {
-            metadataLoader(CommandClass, command);
-            log("Custom metadata loader found");
-        }
-
-        logInfo("Loaded command: ", command.name);
-    }
-
-    async loadEvents(directory = this.eventsDirectory) {
-        const files = await fs.readdir(directory);
-
-        for (const file of files) {
-            const filePath = path.join(directory, file);
-            const isDirectory = (await fs.lstat(filePath)).isDirectory();
-
-            if (isDirectory) {
-                await this.loadEvents(filePath);
-                continue;
-            }
-
-            if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
-                continue;
-            }
-
-            await this.loadEvent(filePath, true);
-        }
-    }
-
-    async loadEvent(filePath: string, addToList = false) {
-        const { default: Event } = await import(filePath);
-        const event = new Event(this);
-        this.on(event.name, event.execute.bind(event));
-
-        if (addToList) {
-            this.registeredEvents.push(event.name);
-        }
-    }
-
-    private supressErrorMessagesHandler(suppressErrors: SuppressErrorsMetadata, e: unknown) {
-        if (suppressErrors.mode === "log") {
-            logError(e);
-        } else if (suppressErrors.mode === "disabled") {
-            throw e;
-        }
-    }
-
-    loadEventListenersFromMetadata<I extends Object = Object>(Class: I["constructor"], instance?: I) {
-        const metadata: { event: keyof ClientEvents; handler: Function; methodName: string }[] | undefined = Reflect.getMetadata(
-            "event_listeners",
-            Class.prototype
-        );
-
-        if (metadata) {
-            for (const data of metadata) {
-                const callback = instance ? data.handler.bind(instance) : data.handler;
-                const suppressErrors: SuppressErrorsMetadata | undefined = Reflect.getMetadata(
-                    "supress_errors",
-                    Class.prototype,
-                    data.methodName
-                );
-
-                this.addEventListener(
-                    data.event,
-                    suppressErrors
-                        ? (...args: any[]) => {
-                              try {
-                                  const ret = callback(...args);
-
-                                  if (ret instanceof Promise) ret.catch(e => this.supressErrorMessagesHandler(suppressErrors, e));
-
-                                  return ret;
-                              } catch (e) {
-                                  this.supressErrorMessagesHandler(suppressErrors, e);
-                              }
-                          }
-                        : callback
-                );
-            }
-        }
-    }
-
-    addEventListener<K extends keyof ClientEvents>(event: K, callback: (...args: ClientEvents[K]) => any) {
-        const handlers = this.eventMap.get(event) ?? [];
-
-        if (!this.eventMap.has(event) && !CustomEvents.includes(event)) {
-            this.on(event as any, (...args: any[]) => this.fireEvent(event, ...args));
-            log("Registered parent handler for event: ", event);
-        }
-
-        handlers.push(callback);
-        this.eventMap.set(event, handlers);
-
-        log("Added event listener for event: ", event);
-    }
-
-    async emitWait<K extends keyof ClientEvents>(eventName: K, ...args: ClientEvents[K]) {
-        const handlers = this.eventMap.get(eventName);
-
-        if (handlers) {
-            for (const handler of handlers) {
-                await handler(...args);
-            }
+        if (commands) {
+            await this.dynamicLoader.loadCommands();
         }
     }
 
     async getHomeGuild() {
-        const id = process.env.HOME_GUILD_ID;
-
-        if (!id) {
-            logError(
-                "Environment variable `HOME_GUILD_ID` is not set. The bot can't work without it. Please follow the setup guide in the bot documentation."
-            );
-            process.exit(-1);
-        }
-
-        try {
-            return this.guilds.cache.get(id) || (await this.guilds.fetch(id));
-        } catch (e) {
-            logError(e);
-            logError("Error fetching home guild: make sure the ID inside `HOME_GUILD_ID` environment variable is correct.");
-            process.exit(-1);
-        }
+        return this.guilds.cache.get(process.env.HOME_GUILD_ID) ?? (await this.guilds.fetch(process.env.HOME_GUILD_ID));
     }
 
-    fireEvent(name: keyof ClientEvents, ...args: any[]) {
-        const handlers = this.eventMap.get(name);
+    addEventListener<K extends keyof ClientEvents>(name: K, listener: (...args: ClientEvents[K]) => unknown) {
+        const handlers = this.eventListeners.get(name) ?? [];
 
-        if (handlers) {
-            for (const handler of handlers) {
-                handler(...args);
+        if (!this.eventListeners.has(name)) {
+            this.eventListeners.set(name, handlers);
+        }
+
+        handlers.push(listener);
+        this.on(name as keyof DiscordClientEvents, listener as (...args: DiscordClientEvents[keyof DiscordClientEvents]) => void);
+    }
+
+    removeEventListener<K extends keyof ClientEvents>(name: K, listener?: (...args: ClientEvents[K]) => unknown) {
+        if (!listener) {
+            this.eventListeners.delete(name);
+            this.removeAllListeners(name as keyof DiscordClientEvents);
+            return;
+        }
+
+        const handlers = this.eventListeners.get(name) ?? [];
+        const index = handlers.findIndex(handler => handler === listener);
+
+        if (index === -1) {
+            return;
+        }
+
+        const handler = handlers.splice(index, 1)[0];
+        this.off(name as keyof DiscordClientEvents, handler as (...args: DiscordClientEvents[keyof DiscordClientEvents]) => void);
+    }
+
+    emitWaitLocal<K extends keyof ClientEvents>(name: K, ...args: ClientEvents[K]) {
+        return new Promise<void>(async (resolve, reject) => {
+            for (const listener of this.eventListeners.get(name) ?? []) {
+                await listener(...args);
             }
+
+            resolve();
+        });
+    }
+
+    emitWait<K extends keyof ClientEvents>(name: K, ...args: ClientEvents[K]) {
+        for (const listener of this.eventListeners.get(name) ?? []) {
+            listener(...args);
         }
     }
 }
+
+export default Client;

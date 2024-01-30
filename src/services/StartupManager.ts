@@ -18,13 +18,16 @@
  */
 
 import axios from "axios";
+import chalk from "chalk";
 import { spawnSync } from "child_process";
 import { formatDistanceToNowStrict } from "date-fns";
 import { APIEmbed, ActivityType, Colors, WebhookClient, escapeCodeBlock } from "discord.js";
+import figlet from "figlet";
 import { existsSync, readFileSync } from "fs";
 import { rm } from "fs/promises";
 import path from "path";
 import { gt } from "semver";
+import { version } from "../../package.json";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
@@ -226,5 +229,26 @@ export default class StartupManager extends Service implements HasEventListeners
         } catch (e) {
             logError(e);
         }
+    }
+
+    boot() {
+        return new Promise<void>((resolve, reject) => {
+            figlet.text(
+                "SudoBot",
+                {
+                    font: "Standard"
+                },
+                (error, data) => {
+                    if (error) {
+                        reject(error);
+                        return;
+                    }
+
+                    console.info(chalk.blueBright(data));
+                    console.info(`Version ${chalk.green(version)} -- Booting up`);
+                    resolve();
+                }
+            );
+        });
     }
 }
