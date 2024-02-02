@@ -1,7 +1,7 @@
 import { Awaitable } from "discord.js";
 import { Router } from "express";
 import { lstat, readdir } from "node:fs/promises";
-import path from "node:path";
+import path, { basename, dirname } from "node:path";
 import Controller from "../api/Controller";
 import { EventListenerInfo } from "../decorators/GatewayEventListener";
 import { ClientEvents } from "../types/ClientEvents";
@@ -113,6 +113,7 @@ class DynamicLoader extends Service {
             await this.unloadEventsFromMetadata(previousCommand);
         }
 
+        command.group = basename(dirname(filepath));
         this.client.commands.set(command.name, command);
 
         for (const alias of command.aliases) {
