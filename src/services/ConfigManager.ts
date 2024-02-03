@@ -63,6 +63,21 @@ export default class ConfigManager extends Service {
         logInfo("Successfully loaded the configuration files");
     }
 
+    onReady() {
+        const guildIds = this.client.guilds.cache.keys();
+
+        if (!process.env.PRIVATE_BOT_MODE) {
+            for (const id of guildIds) {
+                if (id in this.config) {
+                    continue;
+                }
+
+                logInfo(`Auto configuring default settings for guild: ${id}`);
+                this.config[id] = GuildConfigSchema.parse({});
+            }
+        }
+    }
+
     async write({ guild = true, system = false } = {}) {
         if (guild) {
             log(`Writing guild configuration to file: ${this.configPath}`);
