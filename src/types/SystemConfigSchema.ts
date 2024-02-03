@@ -51,7 +51,8 @@ export const SystemConfigSchema = z.object({
         .optional(),
     commands: z
         .object({
-            mention_prefix: z.boolean().default(true)
+            mention_prefix: z.boolean().default(true),
+            groups: z.record(z.string(), z.array(z.string())).default({})
         })
         .default({}),
     enable_file_filter: z.boolean().default(false),

@@ -84,12 +84,32 @@ class DynamicLoader extends Service {
         }
     }
 
+    flattenCommandGroups() {
+        const groups = this.client.configManager.systemConfig.commands.groups;
+        const groupNames = Object.keys(groups);
+
+        if (groupNames.length === 0) {
+            return null;
+        }
+
+        const flatten: Record<string, string> = {};
+
+        for (const groupName of groupNames) {
+            for (const commandName of groups[groupName]) {
+                flatten[commandName] = groupName;
+            }
+        }
+
+        return flatten;
+    }
+
     async loadCommands(
         commandsDirectory = path.resolve(__dirname, "../commands"),
         loadMetadata: boolean = true,
         filter?: (path: string, name: string) => Awaitable<boolean>
     ) {
         const commandFiles = await this.iterateDirectoryRecursively(commandsDirectory);
+        const groups = this.flattenCommandGroups();
 
         for (const file of commandFiles) {
             if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
@@ -100,24 +120,33 @@ class DynamicLoader extends Service {
                 continue;
             }
 
-            await this.loadCommand(file, loadMetadata);
+            await this.loadCommand(file, loadMetadata, groups);
         }
     }
 
-    async loadCommand(filepath: string, loadMetadata = true) {
+    async loadCommand(filepath: string, loadMetadata = true, groups: Record<string, string> | null) {
         const { default: CommandClass }: DefaultExport<Class<Command, [Client]>> = await import(filepath);
         const command = new CommandClass(this.client);
         const previousCommand = this.client.commands.get(command.name);
+        let aliasGroupSet = false;
 
         if (loadMetadata && previousCommand) {
             await this.unloadEventsFromMetadata(previousCommand);
         }
 
-        command.group = basename(dirname(filepath));
         this.client.commands.set(command.name, command);
 
         for (const alias of command.aliases) {
             this.client.commands.set(alias, command);
+
+            if (groups?.[alias] && !aliasGroupSet) {
+                command.group = groups?.[alias];
+                aliasGroupSet = true;
+            }
+        }
+
+        if (!aliasGroupSet || groups?.[command.name]) {
+            command.group = groups?.[command.name] ?? basename(dirname(filepath));
         }
 
         if (loadMetadata) {
