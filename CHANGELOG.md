@@ -1,3 +1,18 @@
+# [8.1.0](https://github.com/onesoft-sudo/sudobot/compare/v8.0.0...v8.1.0) (2024-02-03)
+
+
+### Bug Fixes
+
+* missing default argument ([e9908dc](https://github.com/onesoft-sudo/sudobot/commit/e9908dc4626ff5096d17c0a1275eae568e6db15f))
+
+
+### Features
+
+* **configManager:** auto configure and discover guilds ([5ea8b3d](https://github.com/onesoft-sudo/sudobot/commit/5ea8b3d1770c1380adecb1af53f5a9543f952817))
+* **dynamicLoader:commands:** customizable command group names ([34305a6](https://github.com/onesoft-sudo/sudobot/commit/34305a65293d16b3ebd100282dcf2e7972319132))
+
+
+
 # [8.0.0](https://github.com/onesoft-sudo/sudobot/compare/v7.26.0...v8.0.0) (2024-02-02)
 
 
@@ -45,15 +60,6 @@
 ### Bug Fixes
 
 * **commands:update:** registering guild slash commands instead of global ([1ba3467](https://github.com/onesoft-sudo/sudobot/commit/1ba3467f2bfc6a6092ec2c64bc0c056423f0c939))
-
-
-
-# [7.24.0](https://github.com/onesoft-sudo/sudobot/compare/v7.23.2...v7.24.0) (2024-01-26)
-
-
-### Features
-
-* **credentials:** allow the restart command to work as before ([b3eccec](https://github.com/onesoft-sudo/sudobot/commit/b3eccec97d7ca6771e071776c0a1420548c7d5fa))
 
 
 
