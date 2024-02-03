@@ -1,3 +1,17 @@
+# [8.0.0](https://github.com/onesoft-sudo/sudobot/compare/v7.26.0...v8.0.0) (2024-02-02)
+
+
+### Bug Fixes
+
+* **dynamicLoader:** not setting command groups during import ([bb56863](https://github.com/onesoft-sudo/sudobot/commit/bb5686322098e0b843b917473ccbea34a9e587fb))
+
+
+### BREAKING CHANGES
+
+* **dynamicLoader:** No breaking change; this is just to invoke the GH workflow to create release.
+
+
+
 # [7.26.0](https://github.com/onesoft-sudo/sudobot/compare/v7.25.0...v7.26.0) (2024-01-30)
 
 
@@ -40,15 +54,6 @@
 ### Features
 
 * **credentials:** allow the restart command to work as before ([b3eccec](https://github.com/onesoft-sudo/sudobot/commit/b3eccec97d7ca6771e071776c0a1420548c7d5fa))
-
-
-
-## [7.23.2](https://github.com/onesoft-sudo/sudobot/compare/v7.23.1...v7.23.2) (2024-01-25)
-
-
-### Bug Fixes
-
-* system command ([85a1571](https://github.com/onesoft-sudo/sudobot/commit/85a1571685f860879ff14871a5d042948ecf8a01))
 
 
 
