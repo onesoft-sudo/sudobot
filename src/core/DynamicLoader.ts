@@ -124,7 +124,7 @@ class DynamicLoader extends Service {
         }
     }
 
-    async loadCommand(filepath: string, loadMetadata = true, groups: Record<string, string> | null) {
+    async loadCommand(filepath: string, loadMetadata = true, groups: Record<string, string> | null = null) {
         const { default: CommandClass }: DefaultExport<Class<Command, [Client]>> = await import(filepath);
         const command = new CommandClass(this.client);
         const previousCommand = this.client.commands.get(command.name);
