@@ -53,7 +53,7 @@ export default class ModStatsCommand extends Command {
     ];
     public readonly permissionMode = "or";
     public readonly aliases = ["modstat", "moderatorstats", "moderatorstat"];
-    public readonly slashCOmmandBuilder = new SlashCommandBuilder().addUserOption(option =>
+    public readonly slashCommandBuilder = new SlashCommandBuilder().addUserOption(option =>
         option.setName("user").setDescription("The moderator user to view the stats of. Defaults to the command executor.")
     );
     public readonly description = "View the statistics of a moderator.";
