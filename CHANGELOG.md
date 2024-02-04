@@ -1,3 +1,12 @@
+## [8.1.1](https://github.com/onesoft-sudo/sudobot/compare/v8.1.0...v8.1.1) (2024-02-04)
+
+
+### Bug Fixes
+
+* **commands:infraction:create:** `type` field not working ([07ca874](https://github.com/onesoft-sudo/sudobot/commit/07ca874a6e6d9c4fedf42eb2e355bcb9168240ae))
+
+
+
 # [8.1.0](https://github.com/onesoft-sudo/sudobot/compare/v8.0.0...v8.1.0) (2024-02-03)
 
 
@@ -51,15 +60,6 @@
 ### Features
 
 * **commands:update:** support updates via git ([766202e](https://github.com/onesoft-sudo/sudobot/commit/766202e9335b73cfd07ec4f8a40a5e4bae5d6c24))
-
-
-
-## [7.24.1](https://github.com/onesoft-sudo/sudobot/compare/v7.24.0...v7.24.1) (2024-01-26)
-
-
-### Bug Fixes
-
-* **commands:update:** registering guild slash commands instead of global ([1ba3467](https://github.com/onesoft-sudo/sudobot/commit/1ba3467f2bfc6a6092ec2c64bc0c056423f0c939))
 
 
 
