@@ -1,3 +1,15 @@
+## [8.2.1](https://github.com/onesoft-sudo/sudobot/compare/v8.2.0...v8.2.1) (2024-02-04)
+
+
+### Bug Fixes
+
+* **commands:modstats:** missing parameters on slash command ([fd3d647](https://github.com/onesoft-sudo/sudobot/commit/fd3d6477e733669f526f19252421676da6adf6de))
+* **commands:modstats:** missing parameters on slash commanf ([8739fb7](https://github.com/onesoft-sudo/sudobot/commit/8739fb70c29c6fb144f97d6c4f0a0f5d7ced9a9b))
+* **utils:pagination:** undefined references ([f8a2fad](https://github.com/onesoft-sudo/sudobot/commit/f8a2fad1c4ab24c6f66957e7f1ed1d209419d5b0))
+* **utils:paginator:** update data entry count on filter/sort mode change ([ef99f08](https://github.com/onesoft-sudo/sudobot/commit/ef99f082c5de48ef2a08fa83e2c9b9b28bd21372))
+
+
+
 # [8.2.0](https://github.com/onesoft-sudo/sudobot/compare/v8.1.1...v8.2.0) (2024-02-04)
 
 
@@ -47,24 +59,6 @@
 ### BREAKING CHANGES
 
 * **dynamicLoader:** No breaking change; this is just to invoke the GH workflow to create release.
-
-
-
-# [7.26.0](https://github.com/onesoft-sudo/sudobot/compare/v7.25.0...v7.26.0) (2024-01-30)
-
-
-### Bug Fixes
-
-* loading errors ([14dec5a](https://github.com/onesoft-sudo/sudobot/commit/14dec5a9fd559ad4fb118eca082f3b8213b35bee))
-* remove unneeded logging ([eee3cb5](https://github.com/onesoft-sudo/sudobot/commit/eee3cb5bc9b7f11bd5ed9a9aef8add17c8e13d33))
-* **runtime:bun:** decorators not working ([314a9be](https://github.com/onesoft-sudo/sudobot/commit/314a9be3ad33dfe1d784f23b41160491453d97a6))
-
-
-### Features
-
-* dynamic event loading and unloading ([11e6f70](https://github.com/onesoft-sudo/sudobot/commit/11e6f70d3de9d95d9141de98068df52ab993ec02))
-* experimental bun support ([d43f191](https://github.com/onesoft-sudo/sudobot/commit/d43f1910b1b933b9f0c3a57129ee852695e972b6))
-* supporting old and new decorators for best compatibility ([1b707af](https://github.com/onesoft-sudo/sudobot/commit/1b707af75490aaa5cee5e59a7eec949c3cfaa0b2))
 
 
 
