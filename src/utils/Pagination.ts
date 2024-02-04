@@ -19,11 +19,12 @@
 
 import {
     ActionRowBuilder,
+    AnySelectMenuInteraction,
     ButtonBuilder,
     ButtonInteraction,
     ButtonStyle,
-    ComponentType,
     EmbedBuilder,
+    Interaction,
     InteractionCollector,
     InteractionReplyOptions,
     InteractionType,
@@ -42,6 +43,8 @@ export default class Pagination<T> {
     protected maxPage: number = 0;
     protected currentPage: number = 1;
     protected currentData: T[] = [];
+    protected sort: "asc" | "desc" = "desc";
+    protected filter: "all" | "day" | "week" | "month" | "year" = "all";
 
     constructor(protected readonly data: Array<T> | null = [], protected readonly options: PaginationOptions<T>) {
         this.id = uuid.v4();
@@ -50,6 +53,14 @@ export default class Pagination<T> {
 
     getOffset(page: number = 1) {
         return (page - 1) * this.options.limit;
+    }
+
+    getSortMode() {
+        return this.sort;
+    }
+
+    getFilterMode() {
+        return this.filter;
     }
 
     async getPaginatedData(page: number = 1) {
@@ -76,7 +87,8 @@ export default class Pagination<T> {
     async getMessageOptions(
         page: number = 1,
         actionRowOptions: { first: boolean; last: boolean; next: boolean; back: boolean } | undefined = undefined,
-        optionsToMerge: MessageOptions = {}
+        optionsToMerge: MessageOptions = {},
+        interaction?: Interaction
     ) {
         const options = { ...this.options.messageOptions, ...optionsToMerge };
         const actionRowOptionsDup = actionRowOptions
@@ -104,21 +116,28 @@ export default class Pagination<T> {
         options.embeds.push(await this.getEmbed(page));
 
         options.components ??= [];
-        options.components = [this.getActionRow(actionRowOptionsDup), ...options.components];
+        options.components = [
+            this.getActionRow(actionRowOptionsDup),
+            ...(this.options.extraActionRows
+                ? (this.options.extraActionRows(interaction) as ActionRowBuilder<ButtonBuilder>[]) ?? []
+                : []),
+            ...options.components
+        ];
 
         return options;
     }
 
     getActionRow(
-        { first, last, next, back }: { first: boolean; last: boolean; next: boolean; back: boolean } = {
+        { first, last, next, back, custom }: { first: boolean; last: boolean; next: boolean; back: boolean; custom?: boolean } = {
             first: true,
             last: true,
             next: true,
-            back: true
+            back: true,
+            custom: true
         }
     ) {
         if (this.options.actionRowBuilder) {
-            return this.options.actionRowBuilder({ first, last, next, back }, this.id);
+            return this.options.actionRowBuilder({ first, last, next, back, custom }, this.id);
         }
 
         const actionRow = new ActionRowBuilder<ButtonBuilder>();
@@ -158,12 +177,12 @@ export default class Pagination<T> {
             guild: this.options.guildId,
             channel: this.options.channelId,
             interactionType: InteractionType.MessageComponent,
-            componentType: ComponentType.Button,
             message,
             time: this.options.timeout ?? 60_000,
             filter: interaction => {
                 if (interaction.inGuild() && (!this.options.userId || interaction.user.id === this.options.userId)) {
-                    return true;
+                    this.options.onInteraction?.(interaction);
+                    return interaction.isButton() && interaction.customId.startsWith(`pagination_`);
                 }
 
                 if (interaction.isRepliable()) {
@@ -223,32 +242,68 @@ export default class Pagination<T> {
                     {
                         embeds: [],
                         ...(this.options.messageOptions ?? {})
-                    }
+                    },
+                    interaction
                 )
             );
         });
 
         collector.on("end", async () => {
-            const [, ...components] = message.components!; // this.getActionRow({ first: false, last: false, next: false, back: false })
+            const [, ...components] = message.components!;
 
             try {
                 await message.edit({
-                    components: [
-                        this.getActionRow({
-                            back: false,
-                            first: false,
-                            last: false,
-                            next: false
-                        }),
-                        ...components
-                    ]
+                    components: this.options.removeComponentsOnDisable
+                        ? []
+                        : [
+                              this.getActionRow({
+                                  back: false,
+                                  first: false,
+                                  last: false,
+                                  next: false,
+                                  custom: false
+                              }),
+                              ...components
+                          ]
                 });
             } catch (e) {
                 log(e);
             }
+
+            this.options.onDisable?.(message);
         });
     }
+
+    getCurrentPage() {
+        return this.currentPage;
+    }
+
+    async update(interaction: AnySelectMenuInteraction | ButtonInteraction, { filter = "all", sort = "desc" }: UpdateInfo = {}) {
+        this.filter = filter;
+        this.sort = sort;
+
+        return interaction.update(
+            await this.getMessageOptions(
+                this.getCurrentPage(),
+                { first: true, last: true, next: true, back: true },
+                {
+                    embeds: [],
+                    ...(this.options.messageOptions ?? {})
+                },
+                interaction
+            )
+        );
+    }
+
+    extraActionRows(interaction: Interaction) {
+        return this.options.extraActionRows?.(interaction) ?? [];
+    }
 }
+
+type UpdateInfo = {
+    sort?: "asc" | "desc";
+    filter?: "all" | "day" | "week" | "month" | "year";
+};
 
 export interface EmbedBuilderOptions<T> {
     data: Array<T>;
@@ -276,7 +331,11 @@ export interface PaginationOptions<T> {
     messageOptions?: MessageOptions;
     embedBuilder: (options: EmbedBuilderOptions<T>) => EmbedBuilder;
     actionRowBuilder?: (
-        options: { first: boolean; last: boolean; next: boolean; back: boolean },
+        options: { first: boolean; last: boolean; next: boolean; back: boolean; custom?: boolean },
         id: string
     ) => ActionRowBuilder<ButtonBuilder>;
+    onDisable?: (message: Message) => unknown;
+    onInteraction?: (interaction: Interaction) => unknown;
+    removeComponentsOnDisable?: boolean;
+    extraActionRows?: (interaction?: Interaction) => ActionRowBuilder[];
 }
