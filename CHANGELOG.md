@@ -1,3 +1,17 @@
+# [8.2.0](https://github.com/onesoft-sudo/sudobot/compare/v8.1.1...v8.2.0) (2024-02-04)
+
+
+### Bug Fixes
+
+* adjust the page entries limit ([dae03ec](https://github.com/onesoft-sudo/sudobot/commit/dae03ec8f545adb8eb633fe87bcb5dfb71ff2064))
+
+
+### Features
+
+* **commands:moderation:** `modstats` command ([6f92034](https://github.com/onesoft-sudo/sudobot/commit/6f92034be300060b80a0029124696d2d8fa8d8c0))
+
+
+
 ## [8.1.1](https://github.com/onesoft-sudo/sudobot/compare/v8.1.0...v8.1.1) (2024-02-04)
 
 
@@ -51,15 +65,6 @@
 * dynamic event loading and unloading ([11e6f70](https://github.com/onesoft-sudo/sudobot/commit/11e6f70d3de9d95d9141de98068df52ab993ec02))
 * experimental bun support ([d43f191](https://github.com/onesoft-sudo/sudobot/commit/d43f1910b1b933b9f0c3a57129ee852695e972b6))
 * supporting old and new decorators for best compatibility ([1b707af](https://github.com/onesoft-sudo/sudobot/commit/1b707af75490aaa5cee5e59a7eec949c3cfaa0b2))
-
-
-
-# [7.25.0](https://github.com/onesoft-sudo/sudobot/compare/v7.24.1...v7.25.0) (2024-01-26)
-
-
-### Features
-
-* **commands:update:** support updates via git ([766202e](https://github.com/onesoft-sudo/sudobot/commit/766202e9335b73cfd07ec4f8a40a5e4bae5d6c24))
 
 
 
