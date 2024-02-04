@@ -37,7 +37,7 @@ export default class InfractionCreateCommand extends Command {
 
     async execute(interaction: ChatInputCommandInteraction, context: ChatInputCommandContext): Promise<CommandReturn> {
         const user = interaction.options.getUser("user", true);
-        const type = interaction.options.getString("type", true);
+        const type = interaction.options.getString("type", true).toUpperCase();
         const reason = interaction.options.getString("reason");
         const duration = interaction.options.getString("duration");
         const parsedDuration = duration ? stringToTimeInterval(duration) : null;

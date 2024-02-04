@@ -105,5 +105,6 @@ function makeContextMenuCommandBuilder(command) {
         .then(() =>
             console.log("Successfully registered application " + (process.argv.includes("--guild") ? "guild " : "") + "commands.")
         )
-        .catch(console.error);
+        .catch(console.error)
+        .finally(() => process.exit(0));
 })();
