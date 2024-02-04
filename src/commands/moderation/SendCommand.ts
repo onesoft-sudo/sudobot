@@ -96,7 +96,7 @@ export default class EchoCommand extends Command {
             if (message instanceof Message) {
                 deleteReply && message.deletable
                     ? await message.delete().catch(logError)
-                    : await message.react(await getEmojiObject(this.client, "check")).catch(logError);
+                    : await message.react((await getEmojiObject(this.client, "check"))!).catch(logError);
             } else {
                 await this.deferredReply(message, {
                     content: `Message sent.`
