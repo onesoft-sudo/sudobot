@@ -1,3 +1,18 @@
+# [8.3.0](https://github.com/onesoft-sudo/sudobot/compare/v8.2.1...v8.3.0) (2024-02-04)
+
+
+### Bug Fixes
+
+* **commands:update:** backup package.json and tsconfig.json before installation ([53b074b](https://github.com/onesoft-sudo/sudobot/commit/53b074b6c28c511af70a0eec7bebf39349368226))
+* pagination entry count not updating ([2ee0291](https://github.com/onesoft-sudo/sudobot/commit/2ee02916c9871076af81bd849a850a3b8a2f6b9b))
+
+
+### Features
+
+* **utils:pagination:** metadata and update on metadata ([8287d5d](https://github.com/onesoft-sudo/sudobot/commit/8287d5d62c2af040d909a0b149d2c62abb4462e9))
+
+
+
 ## [8.2.1](https://github.com/onesoft-sudo/sudobot/compare/v8.2.0...v8.2.1) (2024-02-04)
 
 
@@ -45,20 +60,6 @@
 
 * **configManager:** auto configure and discover guilds ([5ea8b3d](https://github.com/onesoft-sudo/sudobot/commit/5ea8b3d1770c1380adecb1af53f5a9543f952817))
 * **dynamicLoader:commands:** customizable command group names ([34305a6](https://github.com/onesoft-sudo/sudobot/commit/34305a65293d16b3ebd100282dcf2e7972319132))
-
-
-
-# [8.0.0](https://github.com/onesoft-sudo/sudobot/compare/v7.26.0...v8.0.0) (2024-02-02)
-
-
-### Bug Fixes
-
-* **dynamicLoader:** not setting command groups during import ([bb56863](https://github.com/onesoft-sudo/sudobot/commit/bb5686322098e0b843b917473ccbea34a9e587fb))
-
-
-### BREAKING CHANGES
-
-* **dynamicLoader:** No breaking change; this is just to invoke the GH workflow to create release.
 
 
 
