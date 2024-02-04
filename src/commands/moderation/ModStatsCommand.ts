@@ -29,7 +29,7 @@ import {
 } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import Pagination from "../../utils/Pagination";
-
+ 
 export default class ModStatsCommand extends Command {
     public readonly name = "modstats";
     public readonly validationRules: ValidationRule[] = [
