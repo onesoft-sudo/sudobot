@@ -284,9 +284,9 @@ export default class Pagination<T> {
 
         if (this.options.maxData) {
             this.maxPage = await this.options.maxData({
-                currentPage: page,
+                currentPage: this.currentPage,
                 limit: this.options.limit,
-                offset: this.getOffset(page)
+                offset: this.getOffset(this.currentPage)
             });
         }
 
