@@ -84,9 +84,13 @@ export default class ModStatsCommand extends Command {
             client: this.client,
             timeout: 180_000,
             removeComponentsOnDisable: true,
+            metadata: {
+                sort: "desc",
+                filter: "all"
+            },
             extraActionRows() {
-                const sortMode: string = (pagination as Pagination<Infraction>).getSortMode();
-                const filterMode: string = (pagination as Pagination<Infraction>).getFilterMode();
+                const sortMode: string = (pagination as Pagination<Infraction>).getMetadata("sort");
+                const filterMode: string = (pagination as Pagination<Infraction>).getMetadata("filter");
 
                 return [
                     new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
@@ -171,7 +175,7 @@ export default class ModStatsCommand extends Command {
             },
             fetchData(options): Promise<Infraction[]> {
                 const { limit, offset } = options;
-                const filter = pagination.getFilterMode();
+                const filter: string = (pagination as Pagination<Infraction>).getMetadata("filter");
 
                 return this.client.prisma.infraction.findMany({
                     where: {
@@ -196,12 +200,12 @@ export default class ModStatsCommand extends Command {
                     skip: offset,
                     take: limit,
                     orderBy: {
-                        createdAt: pagination.getSortMode()
+                        createdAt: pagination.getMetadata<"asc" | "desc">("sort")
                     }
                 });
             },
             maxData: (): Promise<number> => {
-                const filter: string = (pagination as Pagination<Infraction>).getFilterMode();
+                const filter: string = (pagination as Pagination<Infraction>).getMetadata("filter");
 
                 return this.client.prisma.infraction.count({
                     where: {
@@ -224,7 +228,7 @@ export default class ModStatsCommand extends Command {
                         }
                     },
                     orderBy: {
-                        createdAt: pagination.getSortMode()
+                        createdAt: pagination.getMetadata("sort")
                     }
                 });
             },
