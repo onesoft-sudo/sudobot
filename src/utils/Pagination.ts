@@ -282,6 +282,14 @@ export default class Pagination<T> {
         this.filter = filter;
         this.sort = sort;
 
+        if (this.options.maxData) {
+            this.maxPage = await this.options.maxData({
+                currentPage: page,
+                limit: this.options.limit,
+                offset: this.getOffset(page)
+            });
+        }
+
         return interaction.update(
             await this.getMessageOptions(
                 this.getCurrentPage(),
