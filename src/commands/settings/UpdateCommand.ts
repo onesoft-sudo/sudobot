@@ -340,7 +340,14 @@ export default class UpdateCommand extends Command {
     }
 
     async installUpdate({ unpackedDirectory, version }: { unpackedDirectory: string; version: string }) {
-        const { error, dirpairs } = await this.backupCurrentSystem(["build", "src", "prisma", "scripts"]);
+        const { error, dirpairs } = await this.backupCurrentSystem([
+            "build",
+            "src",
+            "prisma",
+            "scripts",
+            "package.json",
+            "tsconfig.json"
+        ]);
 
         if (error) {
             return false;
