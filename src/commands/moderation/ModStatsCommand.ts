@@ -29,7 +29,7 @@ import {
 } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import Pagination from "../../utils/Pagination";
- 
+
 export default class ModStatsCommand extends Command {
     public readonly name = "modstats";
     public readonly validationRules: ValidationRule[] = [
@@ -228,7 +228,7 @@ export default class ModStatsCommand extends Command {
                     }
                 });
             },
-            embedBuilder({ data, currentPage, maxPages }) {
+            embedBuilder({ data, currentPage, maxPages }): EmbedBuilder {
                 let description = "";
 
                 for (const infraction of data) {
@@ -254,7 +254,9 @@ export default class ModStatsCommand extends Command {
                     },
                     description,
                     footer: {
-                        text: `Page ${currentPage} of ${maxPages} • ${infractionCount} infractions total`
+                        text: `Page ${currentPage} of ${maxPages} • ${(
+                            pagination as Pagination<Infraction>
+                        ).getEntryCount()} infractions total`
                     },
                     color: 0x007bff
                 }).setTimestamp();

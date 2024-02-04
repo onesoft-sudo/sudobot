@@ -44,7 +44,7 @@ export default class Pagination<T> {
     protected currentPage: number = 1;
     protected currentData: T[] = [];
     protected sort: "asc" | "desc" = "desc";
-    protected filter: "all" | "day" | "week" | "month" | "year" = "all";
+    protected filter: "all" | "day" | "week" | "month" | "year" = "all"; // FIXME
 
     constructor(protected readonly data: Array<T> | null = [], protected readonly options: PaginationOptions<T>) {
         this.id = uuid.v4();
@@ -125,6 +125,10 @@ export default class Pagination<T> {
         ];
 
         return options;
+    }
+
+    getEntryCount() {
+        return this.maxPage;
     }
 
     getActionRow(
