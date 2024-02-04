@@ -43,24 +43,20 @@ export default class Pagination<T> {
     protected maxPage: number = 0;
     protected currentPage: number = 1;
     protected currentData: T[] = [];
-    protected sort: "asc" | "desc" = "desc";
-    protected filter: "all" | "day" | "week" | "month" | "year" = "all"; // FIXME
+    protected metadata: Record<string, unknown>;
 
     constructor(protected readonly data: Array<T> | null = [], protected readonly options: PaginationOptions<T>) {
         this.id = uuid.v4();
         this.client = options.client;
+        this.metadata = this.options.metadata ?? {};
     }
 
     getOffset(page: number = 1) {
         return (page - 1) * this.options.limit;
     }
 
-    getSortMode() {
-        return this.sort;
-    }
-
-    getFilterMode() {
-        return this.filter;
+    getMetadata<T>(key: string) {
+        return this.metadata[key] as T;
     }
 
     async getPaginatedData(page: number = 1) {
@@ -282,9 +278,8 @@ export default class Pagination<T> {
         return this.currentPage;
     }
 
-    async update(interaction: AnySelectMenuInteraction | ButtonInteraction, { filter = "all", sort = "desc" }: UpdateInfo = {}) {
-        this.filter = filter;
-        this.sort = sort;
+    async update(interaction: AnySelectMenuInteraction | ButtonInteraction, metadata: Record<string, unknown> = {}) {
+        this.metadata = { ...this.metadata, ...metadata };
 
         if (this.options.maxData) {
             this.maxPage = await this.options.maxData({
@@ -312,11 +307,6 @@ export default class Pagination<T> {
     }
 }
 
-type UpdateInfo = {
-    sort?: "asc" | "desc";
-    filter?: "all" | "day" | "week" | "month" | "year";
-};
-
 export interface EmbedBuilderOptions<T> {
     data: Array<T>;
     currentPage: number;
@@ -338,6 +328,7 @@ export interface PaginationOptions<T> {
     channelId: string;
     userId?: string;
     timeout?: number;
+    metadata?: Record<string, unknown>;
     maxData?: (options: FetchDataOption) => Promise<number>;
     fetchData?: (options: FetchDataOption) => Promise<T[]>;
     messageOptions?: MessageOptions;
