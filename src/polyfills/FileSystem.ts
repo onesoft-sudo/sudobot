@@ -6,7 +6,16 @@ type ReadFileContentOptions<T extends boolean> = {
 
 type ReadFileResult<T extends boolean, J> = T extends true ? J : string;
 
+/**
+ * A file system utility class, that works with both Node.js and Bun.
+ */
 export default class FileSystem {
+    /**
+     * Reads the contents of a file.
+     * @param path - The path of the file to read.
+     * @param options - The options for reading the file.
+     * @returns A promise that resolves to the contents of the file.
+     */
     static async readFileContents<J = any, T extends boolean = false>(
         path: string,
         { json }: ReadFileContentOptions<T> = {}
