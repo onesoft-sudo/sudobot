@@ -59,7 +59,7 @@ export default class InfractionListCommand extends Command {
         const pagination = new Pagination(infractions, {
             channelId: message.channelId!,
             guildId: message.guildId!,
-            limit: 10,
+            limit: 4,
             userId: message.member!.user.id,
             client: this.client,
             timeout: 180_000,
