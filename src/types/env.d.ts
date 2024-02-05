@@ -25,5 +25,6 @@ namespace NodeJS {
         GOOGLE_MAKERSUIT_KEY?: string;
         OPENAI_API_KEY?: string;
         OPENAI_MODEL_ID?: string;
+        EXTENSIONS_DIRECTORY?: string;
     }
 }

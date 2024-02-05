@@ -212,7 +212,7 @@ function getGuildIdResolversMap() {
 }
 
 export default class ExtensionService extends Service {
-    protected readonly extensionsPath = path.join(__dirname, "../../extensions");
+    protected readonly extensionsPath = process.env.EXTENSIONS_DIRECTORY ?? path.join(__dirname, "../../extensions");
     protected readonly guildIdResolvers = getGuildIdResolversMap();
 
     async bootUp() {
