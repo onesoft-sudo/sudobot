@@ -1,3 +1,12 @@
+## [8.4.1](https://github.com/onesoft-sudo/sudobot/compare/v8.4.0...v8.4.1) (2024-02-05)
+
+
+### Bug Fixes
+
+* **commands:ai:** unresolvable type import ([a810eb5](https://github.com/onesoft-sudo/sudobot/commit/a810eb57fa56cc86dfeb956fc55650011a7c00cc))
+
+
+
 # [8.4.0](https://github.com/onesoft-sudo/sudobot/compare/v8.3.2...v8.4.0) (2024-02-05)
 
 
@@ -38,18 +47,6 @@
 ### Features
 
 * **utils:pagination:** metadata and update on metadata ([8287d5d](https://github.com/onesoft-sudo/sudobot/commit/8287d5d62c2af040d909a0b149d2c62abb4462e9))
-
-
-
-## [8.2.1](https://github.com/onesoft-sudo/sudobot/compare/v8.2.0...v8.2.1) (2024-02-04)
-
-
-### Bug Fixes
-
-* **commands:modstats:** missing parameters on slash command ([fd3d647](https://github.com/onesoft-sudo/sudobot/commit/fd3d6477e733669f526f19252421676da6adf6de))
-* **commands:modstats:** missing parameters on slash commanf ([8739fb7](https://github.com/onesoft-sudo/sudobot/commit/8739fb70c29c6fb144f97d6c4f0a0f5d7ced9a9b))
-* **utils:pagination:** undefined references ([f8a2fad](https://github.com/onesoft-sudo/sudobot/commit/f8a2fad1c4ab24c6f66957e7f1ed1d209419d5b0))
-* **utils:paginator:** update data entry count on filter/sort mode change ([ef99f08](https://github.com/onesoft-sudo/sudobot/commit/ef99f082c5de48ef2a08fa83e2c9b9b28bd21372))
 
 
 
