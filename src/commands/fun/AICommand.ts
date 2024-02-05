@@ -109,7 +109,13 @@ export default class AICommand extends Command {
                 console.log(data);
                 content = data.response;
             } else if (process.env.OPENAI_API_KEY) {
-                const openAIAvailable = existsSync(path.join(__dirname, "../../../node_modules/openai"));
+                let openAIAvailable = false;
+                
+                try {
+                    require.resolve('openai');
+                    openAIAvailable = true;
+                }
+                catch (error) {}
 
                 if (!openAIAvailable) {
                     logError("OpenAI package is not installed.");
