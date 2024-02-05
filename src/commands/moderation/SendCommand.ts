@@ -22,6 +22,7 @@ import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandRetu
 import EmbedSchemaParser from "../../utils/EmbedSchemaParser";
 import { userInfo } from "../../utils/embed";
 import { logError } from "../../utils/logger";
+import { getEmojiObject } from "../../utils/utils";
 
 export default class EchoCommand extends Command {
     public readonly name = "send";
@@ -95,7 +96,7 @@ export default class EchoCommand extends Command {
             if (message instanceof Message) {
                 deleteReply && message.deletable
                     ? await message.delete().catch(logError)
-                    : await message.react(this.emoji("check"));
+                    : await message.react((await getEmojiObject(this.client, "check"))!).catch(logError);
             } else {
                 await this.deferredReply(message, {
                     content: `Message sent.`

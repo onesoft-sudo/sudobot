@@ -1,3 +1,22 @@
+## [8.3.2](https://github.com/onesoft-sudo/sudobot/compare/v8.3.1...v8.3.2) (2024-02-04)
+
+
+### Bug Fixes
+
+* send command emoji resolving issue ([5d7ab25](https://github.com/onesoft-sudo/sudobot/commit/5d7ab259df4ae2350da7d348b0e25d98431b9eb5))
+* send command type errors ([0ab45ae](https://github.com/onesoft-sudo/sudobot/commit/0ab45aed2029bf345f4913fe5d6ba630a76540d0))
+
+
+
+## [8.3.1](https://github.com/onesoft-sudo/sudobot/compare/v8.3.0...v8.3.1) (2024-02-04)
+
+
+### Bug Fixes
+
+* send command does work but gives an error message ([ca121e1](https://github.com/onesoft-sudo/sudobot/commit/ca121e1a898c5f799109bbb83be40b7a2feb826a))
+
+
+
 # [8.3.0](https://github.com/onesoft-sudo/sudobot/compare/v8.2.1...v8.3.0) (2024-02-04)
 
 
@@ -36,30 +55,6 @@
 ### Features
 
 * **commands:moderation:** `modstats` command ([6f92034](https://github.com/onesoft-sudo/sudobot/commit/6f92034be300060b80a0029124696d2d8fa8d8c0))
-
-
-
-## [8.1.1](https://github.com/onesoft-sudo/sudobot/compare/v8.1.0...v8.1.1) (2024-02-04)
-
-
-### Bug Fixes
-
-* **commands:infraction:create:** `type` field not working ([07ca874](https://github.com/onesoft-sudo/sudobot/commit/07ca874a6e6d9c4fedf42eb2e355bcb9168240ae))
-
-
-
-# [8.1.0](https://github.com/onesoft-sudo/sudobot/compare/v8.0.0...v8.1.0) (2024-02-03)
-
-
-### Bug Fixes
-
-* missing default argument ([e9908dc](https://github.com/onesoft-sudo/sudobot/commit/e9908dc4626ff5096d17c0a1275eae568e6db15f))
-
-
-### Features
-
-* **configManager:** auto configure and discover guilds ([5ea8b3d](https://github.com/onesoft-sudo/sudobot/commit/5ea8b3d1770c1380adecb1af53f5a9543f952817))
-* **dynamicLoader:commands:** customizable command group names ([34305a6](https://github.com/onesoft-sudo/sudobot/commit/34305a65293d16b3ebd100282dcf2e7972319132))
 
 
 
