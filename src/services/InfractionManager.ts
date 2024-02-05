@@ -176,14 +176,18 @@ export default class InfractionManager extends Service {
         let metadataString = "";
 
         if (infraction.metadata && typeof infraction.metadata === "object") {
-            metadataString += "```\n";
+            const entries = Object.entries(infraction.metadata as Record<string, string>);
 
-            for (const [key, value] of Object.entries(infraction.metadata as Record<string, string>)) {
-                log(key, value);
-                metadataString += `${key}: ${escapeCodeBlock(`${value}`)}\n`;
+            if (entries.length > 0) {
+                metadataString += "```\n";
+
+                for (const [key, value] of entries) {
+                    log(key, value);
+                    metadataString += `${key}: ${escapeCodeBlock(`${value}`)}\n`;
+                }
+
+                metadataString += "\n```";
             }
-
-            metadataString += "\n```";
         }
 
         return new EmbedBuilder({
