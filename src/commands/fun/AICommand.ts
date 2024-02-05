@@ -39,7 +39,7 @@ export default class AICommand extends Command {
     /**
      * @type {import("openai").OpenAI | null}
      */
-    public openai: import("openai").OpenAI | null = null;
+    public openai: any = null;
 
     async execute(interaction: ChatInputCommandInteraction, context: ChatInputCommandContext): Promise<CommandReturn> {
         await interaction.deferReply();
@@ -109,7 +109,15 @@ export default class AICommand extends Command {
                 console.log(data);
                 content = data.response;
             } else if (process.env.OPENAI_API_KEY) {
-                if (!this.openai) {
+                let openAIAvailable = false;
+                
+                try {
+                    require.resolve('openai');
+                    openAIAvailable = true;
+                }
+                catch (error) {}
+
+                if (!openAIAvailable) {
                     logError("OpenAI package is not installed.");
                     await this.error(interaction, "OpenAI package is not installed. Run `npm install openai` to install it.");
                     return;
@@ -117,7 +125,7 @@ export default class AICommand extends Command {
 
                 const apiKey = process.env.OPENAI_API_KEY;
 
-                if (existsSync(path.join(__dirname, "../../../node_modules/openai")) && !this.openai) {
+                if (openAIAvailable && !this.openai) {
                     this.openai = new (require("openai").OpenAI)({
                         apiKey
                     });
