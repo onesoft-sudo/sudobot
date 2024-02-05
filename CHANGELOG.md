@@ -1,3 +1,12 @@
+# [8.6.0](https://github.com/onesoft-sudo/sudobot/compare/v8.5.0...v8.6.0) (2024-02-05)
+
+
+### Features
+
+* add getService function to client ([f1d9acf](https://github.com/onesoft-sudo/sudobot/commit/f1d9acfae72f0dccf1c98b93291bd77dc1f106c4))
+
+
+
 # [8.5.0](https://github.com/onesoft-sudo/sudobot/compare/v8.4.4...v8.5.0) (2024-02-05)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * **commands:ai:** ensure the logic to check for openai installation is correct ([a8a2316](https://github.com/onesoft-sudo/sudobot/commit/a8a23163be2b47281fbb7911fe989085fb0cb614))
-
-
-
-## [8.4.1](https://github.com/onesoft-sudo/sudobot/compare/v8.4.0...v8.4.1) (2024-02-05)
-
-
-### Bug Fixes
-
-* **commands:ai:** unresolvable type import ([a810eb5](https://github.com/onesoft-sudo/sudobot/commit/a810eb57fa56cc86dfeb956fc55650011a7c00cc))
 
 
 
