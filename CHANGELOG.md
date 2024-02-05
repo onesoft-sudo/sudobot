@@ -1,3 +1,12 @@
+# [8.5.0](https://github.com/onesoft-sudo/sudobot/compare/v8.4.4...v8.5.0) (2024-02-05)
+
+
+### Features
+
+* **services:extensions:** support `EXTENSIONS_DIRECTORY` environment variable ([2c11b4f](https://github.com/onesoft-sudo/sudobot/commit/2c11b4f75ae2d30ce36b9f436ddc7d23fed237f0))
+
+
+
 ## [8.4.4](https://github.com/onesoft-sudo/sudobot/compare/v8.4.3...v8.4.4) (2024-02-05)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * **commands:ai:** unresolvable type import ([a810eb5](https://github.com/onesoft-sudo/sudobot/commit/a810eb57fa56cc86dfeb956fc55650011a7c00cc))
-
-
-
-# [8.4.0](https://github.com/onesoft-sudo/sudobot/compare/v8.3.2...v8.4.0) (2024-02-05)
-
-
-### Features
-
-* **commands:ai:** support OpenAI ([a87b04b](https://github.com/onesoft-sudo/sudobot/commit/a87b04b09d3bf08a7c1095046942597772df2e29))
 
 
 
