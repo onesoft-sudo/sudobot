@@ -1,3 +1,12 @@
+## [8.4.3](https://github.com/onesoft-sudo/sudobot/compare/v8.4.2...v8.4.3) (2024-02-05)
+
+
+### Bug Fixes
+
+* **commands:ai:** change the way of checking for packages ([c7fc60f](https://github.com/onesoft-sudo/sudobot/commit/c7fc60fbbb77e98530948fa71cddc2a3c5ecea4c))
+
+
+
 ## [8.4.2](https://github.com/onesoft-sudo/sudobot/compare/v8.4.1...v8.4.2) (2024-02-05)
 
 
@@ -32,15 +41,6 @@
 
 * send command emoji resolving issue ([5d7ab25](https://github.com/onesoft-sudo/sudobot/commit/5d7ab259df4ae2350da7d348b0e25d98431b9eb5))
 * send command type errors ([0ab45ae](https://github.com/onesoft-sudo/sudobot/commit/0ab45aed2029bf345f4913fe5d6ba630a76540d0))
-
-
-
-## [8.3.1](https://github.com/onesoft-sudo/sudobot/compare/v8.3.0...v8.3.1) (2024-02-04)
-
-
-### Bug Fixes
-
-* send command does work but gives an error message ([ca121e1](https://github.com/onesoft-sudo/sudobot/commit/ca121e1a898c5f799109bbb83be40b7a2feb826a))
 
 
 
