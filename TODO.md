@@ -6,3 +6,7 @@
 -   Level XP system
 -   Message Tracking
 -   Music
+-   An extension to block well known phising/scam/spam messages
+-   An extension that logs DMs 
+-   Extension that scans messages with OpenAI
+-   NSFW.js AI model integration
