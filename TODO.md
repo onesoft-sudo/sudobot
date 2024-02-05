@@ -10,3 +10,4 @@
 -   An extension that logs DMs 
 -   Extension that scans messages with OpenAI
 -   NSFW.js AI model integration
+-   Reply and thread based AI chat conversation support. Storing messages in database, disk (JSON) or caching the last 100 messages in memory to send them to the AI model. Reply context will be limited to the reply and thread context will be limited to thread.
