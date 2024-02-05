@@ -68,6 +68,7 @@ import { ClientEvents } from "../types/ClientEvents";
 import { developmentMode } from "../utils/utils";
 import type Command from "./Command";
 import DynamicLoader from "./DynamicLoader";
+import Service from "./Service";
 import ServiceManager from "./ServiceManager";
 
 class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
@@ -172,6 +173,10 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
     constructor(options: ClientOptions) {
         super(options);
         Client.instance = this;
+    }
+
+    getService<S extends Service = Service>(name: string): S {
+        return this[name as keyof typeof this] as S;
     }
 
     async boot({ commands = true, events = true }: { commands?: boolean; events?: boolean } = {}) {
