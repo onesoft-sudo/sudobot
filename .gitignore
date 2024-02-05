@@ -17,10 +17,10 @@ setup.sh
 /.env.docker
 /.idea
 /storage
-/extensions
 *.bak
 *.traineddata
 /credentials_api
 /.env*
 /bun.lockb
 *.tsbuildinfo
+.extbuild

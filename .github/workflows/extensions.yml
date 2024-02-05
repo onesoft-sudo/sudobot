@@ -1,0 +1,36 @@
+name: Build Extensions
+
+on: [push]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        if: startsWith(github.event.head_commit.message, 'chore(extensions') || startsWith(github.event.head_commit.message, 'build(extensions')
+
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  submodules: "true"
+
+            - name: Use Node.js 21.x
+              uses: actions/setup-node@v3
+              with:
+              node-version: 21.x
+
+            - name: Install Tools
+              run: |
+                  sudo apt-get update;
+                  sudo apt-get install -y jq;
+
+            - name: Build Extensions
+              run: |
+                  cd extensions;
+                  bash ../../scripts/build-extensions.sh;
+
+            - name: Commit and Push Changes
+              run: |
+                  git config --global user.email "rakinar2@onesoftnet.eu.org"
+                  git config --global user.name "Ar Rakin [Extension Build]"
+                  git add .
+                  git commit -m "chore(extensions): build extensions [skip ci]"
+                  git push origin HEAD:main
