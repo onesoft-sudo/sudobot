@@ -39,7 +39,7 @@ export default class AICommand extends Command {
     /**
      * @type {import("openai").OpenAI | null}
      */
-    public openai: import("openai").OpenAI | null = null;
+    public openai: any = null;
 
     async execute(interaction: ChatInputCommandInteraction, context: ChatInputCommandContext): Promise<CommandReturn> {
         await interaction.deferReply();
