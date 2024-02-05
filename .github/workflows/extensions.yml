@@ -25,7 +25,7 @@ jobs:
             - name: Build Extensions
               run: |
                   cd extensions;
-                  bash ../../scripts/build-extensions.sh;
+                  bash ../scripts/build-extensions.sh;
 
             - name: Commit and Push Changes
               run: |
