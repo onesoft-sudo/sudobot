@@ -1,3 +1,12 @@
+## [8.4.2](https://github.com/onesoft-sudo/sudobot/compare/v8.4.1...v8.4.2) (2024-02-05)
+
+
+### Bug Fixes
+
+* **commands:ai:** ensure the logic to check for openai installation is correct ([a8a2316](https://github.com/onesoft-sudo/sudobot/commit/a8a23163be2b47281fbb7911fe989085fb0cb614))
+
+
+
 ## [8.4.1](https://github.com/onesoft-sudo/sudobot/compare/v8.4.0...v8.4.1) (2024-02-05)
 
 
@@ -32,21 +41,6 @@
 ### Bug Fixes
 
 * send command does work but gives an error message ([ca121e1](https://github.com/onesoft-sudo/sudobot/commit/ca121e1a898c5f799109bbb83be40b7a2feb826a))
-
-
-
-# [8.3.0](https://github.com/onesoft-sudo/sudobot/compare/v8.2.1...v8.3.0) (2024-02-04)
-
-
-### Bug Fixes
-
-* **commands:update:** backup package.json and tsconfig.json before installation ([53b074b](https://github.com/onesoft-sudo/sudobot/commit/53b074b6c28c511af70a0eec7bebf39349368226))
-* pagination entry count not updating ([2ee0291](https://github.com/onesoft-sudo/sudobot/commit/2ee02916c9871076af81bd849a850a3b8a2f6b9b))
-
-
-### Features
-
-* **utils:pagination:** metadata and update on metadata ([8287d5d](https://github.com/onesoft-sudo/sudobot/commit/8287d5d62c2af040d909a0b149d2c62abb4462e9))
 
 
 
