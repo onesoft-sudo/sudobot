@@ -1,3 +1,12 @@
+# [8.4.0](https://github.com/onesoft-sudo/sudobot/compare/v8.3.2...v8.4.0) (2024-02-05)
+
+
+### Features
+
+* **commands:ai:** support OpenAI ([a87b04b](https://github.com/onesoft-sudo/sudobot/commit/a87b04b09d3bf08a7c1095046942597772df2e29))
+
+
+
 ## [8.3.2](https://github.com/onesoft-sudo/sudobot/compare/v8.3.1...v8.3.2) (2024-02-04)
 
 
@@ -41,20 +50,6 @@
 * **commands:modstats:** missing parameters on slash commanf ([8739fb7](https://github.com/onesoft-sudo/sudobot/commit/8739fb70c29c6fb144f97d6c4f0a0f5d7ced9a9b))
 * **utils:pagination:** undefined references ([f8a2fad](https://github.com/onesoft-sudo/sudobot/commit/f8a2fad1c4ab24c6f66957e7f1ed1d209419d5b0))
 * **utils:paginator:** update data entry count on filter/sort mode change ([ef99f08](https://github.com/onesoft-sudo/sudobot/commit/ef99f082c5de48ef2a08fa83e2c9b9b28bd21372))
-
-
-
-# [8.2.0](https://github.com/onesoft-sudo/sudobot/compare/v8.1.1...v8.2.0) (2024-02-04)
-
-
-### Bug Fixes
-
-* adjust the page entries limit ([dae03ec](https://github.com/onesoft-sudo/sudobot/commit/dae03ec8f545adb8eb633fe87bcb5dfb71ff2064))
-
-
-### Features
-
-* **commands:moderation:** `modstats` command ([6f92034](https://github.com/onesoft-sudo/sudobot/commit/6f92034be300060b80a0029124696d2d8fa8d8c0))
 
 
 
