@@ -81,6 +81,9 @@
         "typescript": "^5.2.2",
         "zod-to-json-schema": "^3.21.4"
     },
+    "optionalDependencies": {
+        "openai": "^4.26.0"
+    },
     "scripts": {
         "start": "node build/index.js",
         "start:bun": "bun build/bun.js",

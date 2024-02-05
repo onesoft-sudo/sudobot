@@ -22,5 +22,8 @@ namespace NodeJS {
         FRONTEND_AUTH_KEY: string;
         CREDENTIAL_SERVER?: string;
         PRIVATE_BOT_MODE?: string;
+        GOOGLE_MAKERSUIT_KEY?: string;
+        OPENAI_API_KEY?: string;
+        OPENAI_MODEL_ID?: string;
     }
 }

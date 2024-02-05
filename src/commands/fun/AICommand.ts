@@ -19,6 +19,8 @@
 
 import axios from "axios";
 import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from "discord.js";
+import { existsSync } from "fs";
+import path from "path";
 import Command, { CommandReturn } from "../../core/Command";
 import { ChatInputCommandContext } from "../../services/CommandManager";
 import Pagination from "../../utils/Pagination";
@@ -34,6 +36,10 @@ export default class AICommand extends Command {
         option.setName("prompt").setDescription("Ask something").setMaxLength(1000).setRequired(true)
     );
     public readonly description = "Ask something to the AI.";
+    /**
+     * @type {import("openai").OpenAI | null}
+     */
+    public openai: import("openai").OpenAI | null = null;
 
     async execute(interaction: ChatInputCommandInteraction, context: ChatInputCommandContext): Promise<CommandReturn> {
         await interaction.deferReply();
@@ -102,6 +108,43 @@ export default class AICommand extends Command {
 
                 console.log(data);
                 content = data.response;
+            } else if (process.env.OPENAI_API_KEY) {
+                if (!this.openai) {
+                    logError("OpenAI package is not installed.");
+                    await this.error(interaction, "OpenAI package is not installed. Run `npm install openai` to install it.");
+                    return;
+                }
+
+                const apiKey = process.env.OPENAI_API_KEY;
+
+                if (existsSync(path.join(__dirname, "../../../node_modules/openai")) && !this.openai) {
+                    this.openai = new (require("openai").OpenAI)({
+                        apiKey
+                    });
+                }
+
+                const completion = await this.openai!.chat.completions.create({
+                    messages: [
+                        { role: "system", content: "You're SudoBot, a Discord Moderation Bot." },
+                        {
+                            role: "user",
+                            content: prompt,
+                            name: interaction.user.displayName
+                        }
+                    ],
+                    model: process.env.OPENAI_MODEL_ID ?? "gpt-3.5-turbo",
+                    user: interaction.user.id
+                });
+
+                if (!completion.choices[0]?.message.content) {
+                    await interaction.editReply({
+                        content: "No response was received from the AI model."
+                    });
+
+                    return;
+                }
+
+                content = completion.choices[0].message.content;
             } else {
                 await interaction.editReply({
                     content: "No suitable AI service provider was configured."
