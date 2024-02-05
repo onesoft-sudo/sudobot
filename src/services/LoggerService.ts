@@ -1101,10 +1101,11 @@ export default class LoggerService extends Service {
         member,
         reason,
         guild,
-        id
-    }: CommonUserActionOptions & { member: GuildMember; reason?: string }) {
+        id,
+        user
+    }: CommonUserActionOptions & { member?: GuildMember; user?: User; reason?: string }) {
         this.sendLogEmbed(guild, {
-            user: member.user,
+            user: user ?? member!.user,
             title: "A member was kicked",
             footerText: "Kicked",
             reason: reason ?? null,
