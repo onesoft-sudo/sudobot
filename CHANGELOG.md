@@ -1,3 +1,12 @@
+## [8.6.1](https://github.com/onesoft-sudo/sudobot/compare/v8.6.0...v8.6.1) (2024-02-06)
+
+
+### Bug Fixes
+
+* remove build directory before system updates ([41f219d](https://github.com/onesoft-sudo/sudobot/commit/41f219d40912f89206b934d06a5bba3a0ecd587a))
+
+
+
 # [8.6.0](https://github.com/onesoft-sudo/sudobot/compare/v8.5.0...v8.6.0) (2024-02-05)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * **commands:ai:** change the way of checking for packages ([c7fc60f](https://github.com/onesoft-sudo/sudobot/commit/c7fc60fbbb77e98530948fa71cddc2a3c5ecea4c))
-
-
-
-## [8.4.2](https://github.com/onesoft-sudo/sudobot/compare/v8.4.1...v8.4.2) (2024-02-05)
-
-
-### Bug Fixes
-
-* **commands:ai:** ensure the logic to check for openai installation is correct ([a8a2316](https://github.com/onesoft-sudo/sudobot/commit/a8a23163be2b47281fbb7911fe989085fb0cb614))
 
 
 
