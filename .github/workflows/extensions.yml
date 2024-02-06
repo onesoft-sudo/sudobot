@@ -25,6 +25,9 @@ jobs:
             - name: Install Main Dependencies
               run: npm install -D
 
+            - name: Build Main Project
+              run: npm run build
+
             - name: Build Extensions
               run: |
                   cd extensions;
