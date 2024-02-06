@@ -9,6 +9,7 @@ for extension in $extensions; do
     echo "BUILD $name"
 
     cd $extension
+    echo "PWD $(pwd)"
 
     if [ ! -f extension.json ]; then
         echo "No metadata found for extension: $name"
