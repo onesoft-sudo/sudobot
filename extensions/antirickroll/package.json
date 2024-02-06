@@ -11,7 +11,7 @@
     "license": "AGPL-3.0-or-later",
     "dependencies": {
         "module-alias": "^2.2.3",
-        "sudobot": "file:../.."
+        "sudobot": "file:../../build"
     },
     "devDependencies": {
         "typescript": "^5.3.3"
