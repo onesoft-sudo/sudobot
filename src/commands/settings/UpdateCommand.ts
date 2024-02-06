@@ -453,6 +453,18 @@ export default class UpdateCommand extends Command {
     }
 
     buildNewInstallation(dirpairs: Array<readonly [string, string]>) {
+        const { status: rmStatus } = spawnSync(`rm -fr build`, {
+            stdio: "inherit",
+            cwd: path.join(__dirname, "../../.."),
+            encoding: "utf-8",
+            shell: true
+        });
+
+        if (rmStatus !== 0) {
+            logError("Failed to remove the old build directory. Rolling back");
+            return this.rollbackUpdate(dirpairs);
+        }
+        
         const { status: buildStatus } = spawnSync(`npm run build`, {
             stdio: "inherit",
             cwd: path.join(__dirname, "../../.."),
