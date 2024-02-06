@@ -453,7 +453,7 @@ export default class UpdateCommand extends Command {
     }
 
     buildNewInstallation(dirpairs: Array<readonly [string, string]>) {
-        const { status: rmStatus } = spawnSync(`rm -fr build`, {
+        const { status: rmStatus } = spawnSync(`rm -fr build tsconfig.tsbuildinfo`, {
             stdio: "inherit",
             cwd: path.join(__dirname, "../../.."),
             encoding: "utf-8",
