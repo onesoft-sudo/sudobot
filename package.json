@@ -75,7 +75,7 @@
     "@types/node": "^20.4.0",
     "@types/semver": "^7.5.4",
     "@types/uuid": "^9.0.2",
-    "husky": "^8.0.3",
+    "husky": "latest",
     "prisma": "^5.8.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2",
@@ -87,7 +87,7 @@
   "scripts": {
     "start": "node build/index.js",
     "start:bun": "bun build/bun.js",
-    "prepare": "husky install",
+    "prepare": "husky",
     "dev": "bun run src/bun.ts",
     "lint": "eslint src/ --ext .ts",
     "lint:fix": "eslint src/ --ext .ts --fix",
