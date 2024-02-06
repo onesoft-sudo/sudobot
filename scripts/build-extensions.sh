@@ -76,8 +76,30 @@ for extension in $extensions; do
         else
             echo "SUCCESS $name"
             mkdir -p "$extbuilds_final_dir/$name"
-            mv "$root.tar.gz" "$extbuilds_final_dir/$name"
-            echo "SAVE $root.tar.gz"
+            count=1
+
+            if [ -e "$extbuilds_final_dir/$name/$root.tar.gz" ]; then
+                while [ -e "$extbuilds_final_dir/$name/$root-$count.tar.gz" ]; do
+                    ((count++))
+                done
+
+                prevcount=((count-1))
+    
+                if [ -e "$extbuilds_final_dir/$name/$root-$prevcount.tar.gz" ] && cmp -s "$root.tar,gz" "$extbuilds_final_dir/$name/$root-$prevcount.tar.gz"; then
+                    ((count--))
+                fi
+
+                if [ $count -eq 1 ] && cmp -s "$root.tar.gz" "$extbuilds_final_dir/$name/$root.tar.gz"; then
+                    count=""
+                else
+                    count="-$count"
+                fi                 
+            else
+                count=""
+            fi
+
+            mv "$root.tar.gz" "$extbuilds_final_dir/$name/$root$count.tar.gz"
+            echo "SAVE $root$count.tar.gz"
         fi
     fi
 
