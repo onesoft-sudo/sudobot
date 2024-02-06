@@ -83,7 +83,7 @@ for extension in $extensions; do
                     ((count++))
                 done
 
-                prevcount=((count-1))
+                prevcount=$((count-1))
     
                 if [ -e "$extbuilds_final_dir/$name/$root-$prevcount.tar.gz" ] && cmp -s "$root.tar,gz" "$extbuilds_final_dir/$name/$root-$prevcount.tar.gz"; then
                     ((count--))
