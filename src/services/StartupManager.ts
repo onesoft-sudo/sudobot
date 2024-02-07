@@ -40,7 +40,7 @@ export const name = "startupManager";
 const { BACKUP_CHANNEL_ID, ERROR_WEKHOOK_URL } = process.env;
 
 export default class StartupManager extends Service implements HasEventListeners {
-    interval: NodeJS.Timer | undefined = undefined;
+    interval: Timer | undefined = undefined;
     readonly packageJsonUrl = "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/package.json";
 
     @GatewayEventListener("ready")

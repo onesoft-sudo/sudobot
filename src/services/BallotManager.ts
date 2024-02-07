@@ -22,7 +22,6 @@ import { CacheType, EmbedBuilder, Interaction, Snowflake } from "discord.js";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { Timeout } from "../types/builtins";
 import { log, logError } from "../utils/logger";
 import { getEmoji } from "../utils/utils";
 
@@ -33,8 +32,8 @@ export default class BallotManager extends Service implements HasEventListeners 
     protected readonly recentUsers = new Map<Snowflake, number>();
     protected readonly cooldown = 3000;
     protected readonly updateInterval = 10_000;
-    protected timeout: Timeout | null = null;
-    protected updateTimeout: Timeout | null = null;
+    protected timeout: Timer | null = null;
+    protected updateTimeout: Timer | null = null;
 
     @GatewayEventListener("interactionCreate")
     async onInteractionCreate(interaction: Interaction<CacheType>) {

@@ -20,19 +20,18 @@
 import { GuildMember, Message, PermissionFlagsBits, Snowflake, TextChannel } from "discord.js";
 import Service from "../core/Service";
 import { GuildConfig } from "../types/GuildConfigSchema";
-import { Timeout } from "../types/builtins";
 import { log, logError } from "../utils/logger";
 import { isImmuneToAutoMod, isTextableChannel } from "../utils/utils";
 
 interface SpamUserInfo {
     timestamps: number[];
-    timeout?: Timeout;
+    timeout?: Timer;
 }
 
 interface SimilarMessageSpamInfo {
     content?: string;
     count: number;
-    timeout?: Timeout;
+    timeout?: Timer;
 }
 
 export const name = "antispam";

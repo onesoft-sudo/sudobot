@@ -18,12 +18,11 @@
  */
 
 import path from "path";
-import { Timeout } from "../types/builtins";
 import Queue, { QueueConstructorOptions } from "./Queue";
 import { log, logError } from "./logger";
 
 export default class QueueEntry {
-    timeout: Timeout | undefined = undefined;
+    timeout: Timer | undefined = undefined;
     public id: number = 0;
     public readonly creatingRecord: Promise<void> | undefined;
 

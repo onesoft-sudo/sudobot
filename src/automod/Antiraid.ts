@@ -22,13 +22,12 @@ import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { GuildConfig } from "../types/GuildConfigSchema";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { Timeout } from "../types/builtins";
 import { logError } from "../utils/logger";
 
 export const name = "antiraid";
 
 export default class Antiraid extends Service implements HasEventListeners {
-    map: Map<string, { count: number; locked: boolean; timer?: Timeout }> = new Map();
+    map: Map<string, { count: number; locked: boolean; timer?: Timer }> = new Map();
 
     @GatewayEventListener("ready")
     async onReady() {

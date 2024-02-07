@@ -22,7 +22,6 @@ import { Client, GuildMember, PermissionsString, Routes, Snowflake } from "disco
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { Timeout } from "../types/builtins";
 import { safeMemberFetch } from "../utils/fetch";
 import { log, logError } from "../utils/logger";
 
@@ -30,7 +29,7 @@ export const name = "reactionRoleService";
 
 interface UserRequestInfo {
     timestamps: number[];
-    timeout?: Timeout;
+    timeout?: Timer;
 }
 
 export default class ReactionRoleService extends Service implements HasEventListeners {
