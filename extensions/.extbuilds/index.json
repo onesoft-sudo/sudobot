@@ -1,0 +1,22 @@
+{
+    "org.onesoftnet.sbext.antirickroll": {
+        "name": "antirickroll",
+        "id": "org.onesoftnet.sbext.antirickroll",
+        "description": "A SudoBot extension to prevent rickroll links from being sent in chat.",
+        "commands": 0,
+        "events": 2,
+        "buildCommand": "npm run build",
+        "language": "typescript",
+        "services": 1,
+        "main": "./build/index.js",
+        "iconURL": null,
+        "author": {
+            "name": "Ar Rakin"
+        },
+        "license": "AGPL-3.0-or-later",
+        "licenseURL": "https://spdx.org/licenses/AGPL-3.0-or-later.html",
+        "lastUpdated": "2024-02-07T06:37:39.739Z",
+        "readmeFileName": "README.md",
+        "readmeFileURL": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/antirickroll/README.md"
+    }
+}
