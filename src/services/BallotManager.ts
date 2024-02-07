@@ -22,6 +22,7 @@ import { CacheType, EmbedBuilder, Interaction, Snowflake } from "discord.js";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
+import { Timeout } from "../types/builtins";
 import { log, logError } from "../utils/logger";
 import { getEmoji } from "../utils/utils";
 
@@ -32,8 +33,8 @@ export default class BallotManager extends Service implements HasEventListeners 
     protected readonly recentUsers = new Map<Snowflake, number>();
     protected readonly cooldown = 3000;
     protected readonly updateInterval = 10_000;
-    protected timeout: NodeJS.Timeout | null = null;
-    protected updateTimeout: NodeJS.Timeout | null = null;
+    protected timeout: Timeout | null = null;
+    protected updateTimeout: Timeout | null = null;
 
     @GatewayEventListener("interactionCreate")
     async onInteractionCreate(interaction: Interaction<CacheType>) {
@@ -137,9 +138,9 @@ export default class BallotManager extends Service implements HasEventListeners 
         }
 
         await interaction.editReply({
-            content: `Successfully ${
-                added === null ? "changed" : added ? "added" : "removed"
-            } your vote! If you want to ${added === false ? "add" : "remove"} your vote${added === false ? " back" : ""}, press the same button again.`
+            content: `Successfully ${added === null ? "changed" : added ? "added" : "removed"} your vote! If you want to ${
+                added === false ? "add" : "remove"
+            } your vote${added === false ? " back" : ""}, press the same button again.`
         });
     }
 

@@ -23,6 +23,7 @@ import { ChannelType, Collection, GuildMember, Message, Snowflake, escapeMarkdow
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
+import { Timeout } from "../types/builtins";
 import { log, logError } from "../utils/logger";
 
 export const name = "afkService";
@@ -30,7 +31,7 @@ export const name = "afkService";
 export default class AFKService extends Service implements HasEventListeners {
     protected readonly entries = new Collection<`${Snowflake | "global"}_${Snowflake}`, AfkEntry>();
     protected readonly syncTimeoutDelay = 15_000;
-    protected syncTimeout: NodeJS.Timeout | null = null;
+    protected syncTimeout: Timeout | null = null;
     protected readonly modifiedIds = new Set<`${Snowflake | "global"}_${Snowflake}`>();
 
     @GatewayEventListener("ready")

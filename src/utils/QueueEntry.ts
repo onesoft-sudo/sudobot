@@ -18,11 +18,12 @@
  */
 
 import path from "path";
+import { Timeout } from "../types/builtins";
 import Queue, { QueueConstructorOptions } from "./Queue";
 import { log, logError } from "./logger";
 
 export default class QueueEntry {
-    timeout: NodeJS.Timeout | undefined = undefined;
+    timeout: Timeout | undefined = undefined;
     public id: number = 0;
     public readonly creatingRecord: Promise<void> | undefined;
 
@@ -81,7 +82,9 @@ export default class QueueEntry {
     async run(): Promise<any> {
         try {
             log("Running queue: ", this.options.filePath);
-            const { default: QueueClass }: { default: new (options: QueueConstructorOptions) => Queue } = await import(this.options.filePath);
+            const { default: QueueClass }: { default: new (options: QueueConstructorOptions) => Queue } = await import(
+                this.options.filePath
+            );
             const queue = new QueueClass(this.options);
             await queue.run(...this.options.args);
         } catch (e) {

@@ -19,13 +19,14 @@
 
 import Tesseract, { createWorker } from "tesseract.js";
 import Service from "../core/Service";
+import { Timeout } from "../types/builtins";
 import { log } from "../utils/logger";
 
 export const name = "imageRecognitionService";
 
 export default class ImageRecognitionService extends Service {
     protected worker: Tesseract.Worker | null = null;
-    protected timeout: NodeJS.Timeout | null = null;
+    protected timeout: Timeout | null = null;
 
     protected async createWorkerIfNeeded() {
         if (!this.worker && !this.timeout) {
