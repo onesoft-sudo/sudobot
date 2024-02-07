@@ -210,8 +210,12 @@ const extensionMetadataSchema = z.object({
     language: z.enum(["typescript", "javascript"]).optional(),
     main_directory: z.string().optional(),
     build_command: z.string().optional(),
+    resources: z.string().optional(),
     name: z.string().optional(),
-    description: z.string().optional()
+    description: z.string().optional(),
+    id: z.string({ required_error: "Extension ID is required" }),
+    icon: z.string().optional(),
+    readmeFileName: z.string().default("README.md")
 });
 
 export default class ExtensionService extends Service {
@@ -237,7 +241,7 @@ export default class ExtensionService extends Service {
     async loadExtensionsFromIndex(extensionsIndex: string) {
         const { extensions } = JSON.parse(await fs.readFile(extensionsIndex, "utf-8"));
 
-        for (const { entry, commands, events, name, services } of extensions) {
+        for (const { entry, commands, events, name, services, id } of extensions) {
             logInfo("Loading extension (cached): ", name);
 
             await this.loadExtension({
@@ -245,7 +249,8 @@ export default class ExtensionService extends Service {
                 commands,
                 events,
                 extensionName: name,
-                services
+                services,
+                extensionId: id
             });
         }
     }
@@ -284,11 +289,13 @@ export default class ExtensionService extends Service {
                 commands = `./${main_directory}/commands`,
                 events = `./${main_directory}/events`,
                 services = `./${main_directory}/services`,
-                main = `./${main_directory}/index.js`
+                main = `./${main_directory}/index.js`,
+                id
             } = parseResult.data;
 
             await this.loadExtension({
                 extensionName,
+                extensionId: id,
                 extensionPath: path.join(extensionDirectory, main),
                 commandsDirectory: path.join(extensionDirectory, commands),
                 eventsDirectory: path.join(extensionDirectory, events),
@@ -305,7 +312,8 @@ export default class ExtensionService extends Service {
         events,
         extensionName,
         services,
-        servicesDirectory
+        servicesDirectory,
+        extensionId
     }:
         | {
               extensionPath: string;
@@ -313,6 +321,7 @@ export default class ExtensionService extends Service {
               eventsDirectory: string;
               servicesDirectory: string;
               extensionName: string;
+              extensionId: string;
               commands?: never;
               events?: never;
               services?: never;
@@ -326,7 +335,10 @@ export default class ExtensionService extends Service {
               events: string[];
               services: string[];
               extensionName: string;
+              extensionId: string;
           }) {
+        log("Attempting to load extension: ", extensionName, extensionId);
+
         const { default: ExtensionClass }: { default: new (client: Client) => Extension } = await import(extensionPath);
         const extension = new ExtensionClass(this.client);
         const commandPaths = await extension.commands();
