@@ -21,6 +21,7 @@ import { Snowflake } from "discord.js";
 import { existsSync } from "fs";
 import fs from "fs/promises";
 import path from "path";
+import { z } from "zod";
 import Client from "../core/Client";
 import EventListener from "../core/EventListener";
 import { Extension } from "../core/Extension";
@@ -29,16 +30,6 @@ import type { ClientEvents } from "../types/ClientEvents";
 import { log, logError, logInfo, logWarn } from "../utils/logger";
 
 export const name = "extensionService";
-
-type Metadata = {
-    main?: string;
-    commands?: string;
-    services?: string;
-    events?: string;
-    language?: "typescript" | "javascript";
-    main_directory?: string;
-    build_command?: string;
-};
 
 const guildIdResolvers: Array<{
     events: ReadonlyArray<keyof ClientEvents>;
@@ -211,6 +202,18 @@ function getGuildIdResolversMap() {
     return map;
 }
 
+const extensionMetadataSchema = z.object({
+    main: z.string().optional(),
+    commands: z.string().optional(),
+    services: z.string().optional(),
+    events: z.string().optional(),
+    language: z.enum(["typescript", "javascript"]).optional(),
+    main_directory: z.string().optional(),
+    build_command: z.string().optional(),
+    name: z.string().optional(),
+    description: z.string().optional()
+});
+
 export default class ExtensionService extends Service {
     protected readonly extensionsPath = process.env.EXTENSIONS_DIRECTORY ?? path.join(__dirname, "../../extensions");
     protected readonly guildIdResolvers = getGuildIdResolversMap();
@@ -266,14 +269,23 @@ export default class ExtensionService extends Service {
                 process.exit(-1);
             }
 
-            const metadata: Metadata = JSON.parse(await fs.readFile(metadataFile, { encoding: "utf-8" }));
+            const parseResult = extensionMetadataSchema.safeParse(
+                JSON.parse(await fs.readFile(metadataFile, { encoding: "utf-8" }))
+            );
+
+            if (!parseResult.success) {
+                logError(`Error parsing extension metadata for extension ${extensionName}`);
+                logError(parseResult.error);
+                continue;
+            }
+
             const {
                 main_directory = "./build",
                 commands = `./${main_directory}/commands`,
                 events = `./${main_directory}/events`,
                 services = `./${main_directory}/services`,
                 main = `./${main_directory}/index.js`
-            } = metadata;
+            } = parseResult.data;
 
             await this.loadExtension({
                 extensionName,
