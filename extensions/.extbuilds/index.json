@@ -9,13 +9,13 @@
         "language": "typescript",
         "services": 1,
         "main": "./build/index.js",
-        "iconURL": null,
+        "iconURL": "https:/raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/antirickroll/icon.png",
         "author": {
             "name": "Ar Rakin"
         },
         "license": "AGPL-3.0-or-later",
         "licenseURL": "https://spdx.org/licenses/AGPL-3.0-or-later.html",
-        "lastUpdated": "2024-02-07T19:43:35.743Z",
+        "lastUpdated": "2024-02-07T19:50:11.985Z",
         "readmeFileName": "README.md",
         "readmeFileURL": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/antirickroll/README.md"
     }
