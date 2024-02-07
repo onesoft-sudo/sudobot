@@ -39,6 +39,9 @@ jobs:
                   cd extensions;
                   bash ../scripts/build-extensions.sh;
 
+            - name: Build Index
+              run: node scripts/extensions.js --mkindex
+
             - name: Commit and Push Changes
               run: |
                   git config --global user.email "rakinar2@onesoftnet.eu.org"
