@@ -1,5 +1,5 @@
 {
-    "name": "antirickroll",
+    "name": "Anti RickRoll",
     "id": "org.onesoftnet.sbext.antirickroll",
     "main": "./build/index.js",
     "commands": "./build/commands",
