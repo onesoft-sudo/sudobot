@@ -1,5 +1,6 @@
 {
     "name": "Anti RickRoll",
+    "icon": "./icon.png",
     "id": "org.onesoftnet.sbext.antirickroll",
     "main": "./build/index.js",
     "commands": "./build/commands",
