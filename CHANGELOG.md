@@ -1,3 +1,12 @@
+# [8.8.0](https://github.com/onesoft-sudo/sudobot/compare/v8.7.0...v8.8.0) (2024-02-07)
+
+
+### Features
+
+* **services:extensions:** schema validation for extension.json files ([94d05d4](https://github.com/onesoft-sudo/sudobot/commit/94d05d4db7c0d223680a47c8bb3dfc7f82350a12))
+
+
+
 # [8.7.0](https://github.com/onesoft-sudo/sudobot/compare/v8.6.2...v8.7.0) (2024-02-07)
 
 
@@ -33,15 +42,6 @@
 ### Features
 
 * add getService function to client ([f1d9acf](https://github.com/onesoft-sudo/sudobot/commit/f1d9acfae72f0dccf1c98b93291bd77dc1f106c4))
-
-
-
-# [8.5.0](https://github.com/onesoft-sudo/sudobot/compare/v8.4.4...v8.5.0) (2024-02-05)
-
-
-### Features
-
-* **services:extensions:** support `EXTENSIONS_DIRECTORY` environment variable ([2c11b4f](https://github.com/onesoft-sudo/sudobot/commit/2c11b4f75ae2d30ce36b9f436ddc7d23fed237f0))
 
 
 
