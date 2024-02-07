@@ -325,7 +325,7 @@ async function writeExtensionIndex() {
             services: servicePaths.length,
             main,
             iconURL: icon
-                ? path.join("https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/", extensionName, icon)
+                ? new URL(path.join(extensionName, icon), "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions").toString()
                 : null,
             author:
                 typeof packageJson.author === "string"
