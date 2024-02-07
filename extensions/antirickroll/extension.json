@@ -1,4 +1,6 @@
 {
+    "name": "antirickroll",
+    "id": "org.onesoftnet.sbext.antirickroll",
     "main": "./build/index.js",
     "commands": "./build/commands",
     "events": "./build/events",
