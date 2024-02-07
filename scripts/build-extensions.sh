@@ -85,12 +85,17 @@ for extension in $extensions; do
                 done
 
                 prevcount=$((count - 1))
-    
-                if [ -e "$extbuilds_final_dir/$name/$root-$prevcount.tar.gz" ] && cmp -s "$root.tar.gz" "$extbuilds_final_dir/$name/$root-$prevcount.tar.gz"; then
+
+                sum1=$(tarsum "$root.tar.gz")
+                sum2=$(tarsum "$extbuilds_final_dir/$name/$root-$prevcount.tar.gz")
+
+                if [ -e "$extbuilds_final_dir/$name/$root-$prevcount.tar.gz" ] && test "$sum1" = "$sum2"; then
                     ((count--))
                 fi
 
-                if [ $count -eq 1 ] && cmp -s "$root.tar.gz" "$extbuilds_final_dir/$name/$root.tar.gz"; then
+                sum2=$(tarsum "$extbuilds_final_dir/$name/$root.tar.gz")
+
+                if [ $count -eq 1 ] && test "$sum1" = "$sum2"; then
                     count=""
                 else
                     count="-$count"
@@ -99,8 +104,13 @@ for extension in $extensions; do
                 count=""
             fi
 
-            mv "$root.tar.gz" "$extbuilds_final_dir/$name/$root$count.tar.gz"
-            echo "SAVE $root$count.tar.gz"
+            if [ ! -e "$extbuilds_final_dir/$name/$root$count.tar.gz" ]; then
+                mv "$root.tar.gz" "$extbuilds_final_dir/$name/$root$count.tar.gz"
+                echo "SAVE $root$count.tar.gz"
+            else
+                echo "SKIP $root$count.tar.gz"
+                rm "$root.tar.gz"
+            fi
         fi
     fi
 
