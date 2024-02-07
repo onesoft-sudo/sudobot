@@ -1,3 +1,12 @@
+# [8.7.0](https://github.com/onesoft-sudo/sudobot/compare/v8.6.2...v8.7.0) (2024-02-07)
+
+
+### Features
+
+* **services:extensions:** add other metadata properties ([9940fcb](https://github.com/onesoft-sudo/sudobot/commit/9940fcb4ec77c456373b09b466398c4c013ef4c4))
+
+
+
 ## [8.6.2](https://github.com/onesoft-sudo/sudobot/compare/v8.6.1...v8.6.2) (2024-02-07)
 
 
@@ -33,16 +42,6 @@
 ### Features
 
 * **services:extensions:** support `EXTENSIONS_DIRECTORY` environment variable ([2c11b4f](https://github.com/onesoft-sudo/sudobot/commit/2c11b4f75ae2d30ce36b9f436ddc7d23fed237f0))
-
-
-
-## [8.4.4](https://github.com/onesoft-sudo/sudobot/compare/v8.4.3...v8.4.4) (2024-02-05)
-
-
-### Bug Fixes
-
-* **logging:** bans/kicks are not always being logged ([167490a](https://github.com/onesoft-sudo/sudobot/commit/167490a329f73d9315fc82085520cfecc9d67d26))
-* **services:infractionManager:** infraction metadata format ([2be922a](https://github.com/onesoft-sudo/sudobot/commit/2be922a8ab8c2004cd6d5447170da100ad5b4761))
 
 
 
