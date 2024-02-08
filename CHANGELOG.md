@@ -1,3 +1,12 @@
+## [8.8.2](https://github.com/onesoft-sudo/sudobot/compare/v8.8.1...v8.8.2) (2024-02-08)
+
+
+### Bug Fixes
+
+* **commands:ai:** moderate the prompt before sending to OpenAI API ([07d5149](https://github.com/onesoft-sudo/sudobot/commit/07d5149fb790039f371eef1251fef4239de8f668))
+
+
+
 ## [8.8.1](https://github.com/onesoft-sudo/sudobot/compare/v8.8.0...v8.8.1) (2024-02-08)
 
 
@@ -33,15 +42,6 @@
 * **types:** typescript type errors with NodeJS.Timeout ([e4e7551](https://github.com/onesoft-sudo/sudobot/commit/e4e75512667c985eb32a665e9ec852632c074651))
 * **types:** typescript type errors with NodeJS.Timeout ([4ba8bbe](https://github.com/onesoft-sudo/sudobot/commit/4ba8bbe07f2e1c25595a6a3e291915de71c82ea3))
 * update command should remove tsbuildinfo ([5cc281d](https://github.com/onesoft-sudo/sudobot/commit/5cc281dec6338ed52e0e7a097658187c5eff8a6f))
-
-
-
-## [8.6.1](https://github.com/onesoft-sudo/sudobot/compare/v8.6.0...v8.6.1) (2024-02-06)
-
-
-### Bug Fixes
-
-* remove build directory before system updates ([41f219d](https://github.com/onesoft-sudo/sudobot/commit/41f219d40912f89206b934d06a5bba3a0ecd587a))
 
 
 
