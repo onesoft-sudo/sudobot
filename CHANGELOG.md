@@ -1,3 +1,12 @@
+## [8.8.1](https://github.com/onesoft-sudo/sudobot/compare/v8.8.0...v8.8.1) (2024-02-08)
+
+
+### Bug Fixes
+
+* **extensions:build-script:** sorting versions ([ee9360c](https://github.com/onesoft-sudo/sudobot/commit/ee9360cdbc1d014c8b442248965f2e15b265d7a1))
+
+
+
 # [8.8.0](https://github.com/onesoft-sudo/sudobot/compare/v8.7.0...v8.8.0) (2024-02-07)
 
 
@@ -33,15 +42,6 @@
 ### Bug Fixes
 
 * remove build directory before system updates ([41f219d](https://github.com/onesoft-sudo/sudobot/commit/41f219d40912f89206b934d06a5bba3a0ecd587a))
-
-
-
-# [8.6.0](https://github.com/onesoft-sudo/sudobot/compare/v8.5.0...v8.6.0) (2024-02-05)
-
-
-### Features
-
-* add getService function to client ([f1d9acf](https://github.com/onesoft-sudo/sudobot/commit/f1d9acfae72f0dccf1c98b93291bd77dc1f106c4))
 
 
 
