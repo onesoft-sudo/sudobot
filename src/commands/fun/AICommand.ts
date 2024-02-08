@@ -160,7 +160,6 @@ export default class AICommand extends Command {
                         {
                             role: "user",
                             content: prompt,
-                            name: interaction.user.displayName
                         }
                     ],
                     model: process.env.OPENAI_MODEL_ID ?? "gpt-3.5-turbo",
