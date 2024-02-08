@@ -1,3 +1,12 @@
+## [8.8.3](https://github.com/onesoft-sudo/sudobot/compare/v8.8.2...v8.8.3) (2024-02-08)
+
+
+### Bug Fixes
+
+* ai command with openai ([ab0ca61](https://github.com/onesoft-sudo/sudobot/commit/ab0ca612d9d8e498702355e15a6da15abc7e8cec))
+
+
+
 ## [8.8.2](https://github.com/onesoft-sudo/sudobot/compare/v8.8.1...v8.8.2) (2024-02-08)
 
 
@@ -31,17 +40,6 @@
 ### Features
 
 * **services:extensions:** add other metadata properties ([9940fcb](https://github.com/onesoft-sudo/sudobot/commit/9940fcb4ec77c456373b09b466398c4c013ef4c4))
-
-
-
-## [8.6.2](https://github.com/onesoft-sudo/sudobot/compare/v8.6.1...v8.6.2) (2024-02-07)
-
-
-### Bug Fixes
-
-* **types:** typescript type errors with NodeJS.Timeout ([e4e7551](https://github.com/onesoft-sudo/sudobot/commit/e4e75512667c985eb32a665e9ec852632c074651))
-* **types:** typescript type errors with NodeJS.Timeout ([4ba8bbe](https://github.com/onesoft-sudo/sudobot/commit/4ba8bbe07f2e1c25595a6a3e291915de71c82ea3))
-* update command should remove tsbuildinfo ([5cc281d](https://github.com/onesoft-sudo/sudobot/commit/5cc281dec6338ed52e0e7a097658187c5eff8a6f))
 
 
 
