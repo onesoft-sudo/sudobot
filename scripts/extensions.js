@@ -346,7 +346,7 @@ async function writeExtensionIndex() {
             const { stdout } = spawnSync(`sha512sum`, [filePath], {
                 encoding: "utf-8",
             });
-            const { size } = lstatSync(filePath);
+            const { size, birthtime } = lstatSync(filePath);
             const checksum = stdout.split(' ')[0];
                 
             return {
@@ -354,7 +354,8 @@ async function writeExtensionIndex() {
                 basename,
                 version: basename.replace(`${extensionName}-`, '').replace(/\.tar\.gz$/ig, ''),
                 checksum,
-                size
+                size,
+                createdAt: birthtime
             };
         });
 
