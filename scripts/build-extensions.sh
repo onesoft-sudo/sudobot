@@ -62,6 +62,11 @@ for extension in $extensions; do
             echo "COPY README.md $extbuild_dir"
             cp README.md $extbuild_dir
         fi
+        
+        if [ -f README ]; then
+            echo "COPY README $extbuild_dir"
+            cp README $extbuild_dir
+        fi
 
         if [ -f LICENSE ]; then
             echo "COPY LICENSE $extbuild_dir"
@@ -69,7 +74,10 @@ for extension in $extensions; do
         fi
 
         echo "TAR $root.tar.gz"
-        tar -czf $root.tar.gz $extbuild_dir
+        cd .extbuild
+        tar -czvf $root.tar.gz $root
+        mv $root.tar.gz ..
+        cd ..
 
         if [ $? -ne 0 ]; then
             echo "FAIL $name"
