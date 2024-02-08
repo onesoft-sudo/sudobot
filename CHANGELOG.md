@@ -1,3 +1,12 @@
+## [8.8.5](https://github.com/onesoft-sudo/sudobot/compare/v8.8.4...v8.8.5) (2024-02-08)
+
+
+### Bug Fixes
+
+* **services:afk:** message content formatting ([8a88b41](https://github.com/onesoft-sudo/sudobot/commit/8a88b412953b82b9623c64571b545219c6252a45))
+
+
+
 ## [8.8.4](https://github.com/onesoft-sudo/sudobot/compare/v8.8.3...v8.8.4) (2024-02-08)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **extensions:build-script:** sorting versions ([ee9360c](https://github.com/onesoft-sudo/sudobot/commit/ee9360cdbc1d014c8b442248965f2e15b265d7a1))
-
-
-
-# [8.8.0](https://github.com/onesoft-sudo/sudobot/compare/v8.7.0...v8.8.0) (2024-02-07)
-
-
-### Features
-
-* **services:extensions:** schema validation for extension.json files ([94d05d4](https://github.com/onesoft-sudo/sudobot/commit/94d05d4db7c0d223680a47c8bb3dfc7f82350a12))
 
 
 
