@@ -26,5 +26,6 @@ namespace NodeJS {
         OPENAI_API_KEY?: string;
         OPENAI_MODEL_ID?: string;
         EXTENSIONS_DIRECTORY?: string;
+        OPENAI_MODERATION?: string;
     }
 }

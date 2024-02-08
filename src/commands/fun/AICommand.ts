@@ -19,8 +19,6 @@
 
 import axios from "axios";
 import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from "discord.js";
-import { existsSync } from "fs";
-import path from "path";
 import Command, { CommandReturn } from "../../core/Command";
 import { ChatInputCommandContext } from "../../services/CommandManager";
 import Pagination from "../../utils/Pagination";
@@ -110,12 +108,11 @@ export default class AICommand extends Command {
                 content = data.response;
             } else if (process.env.OPENAI_API_KEY) {
                 let openAIAvailable = false;
-                
+
                 try {
-                    require.resolve('openai');
+                    require.resolve("openai");
                     openAIAvailable = true;
-                }
-                catch (error) {}
+                } catch (error) {}
 
                 if (!openAIAvailable) {
                     logError("OpenAI package is not installed.");
@@ -129,6 +126,32 @@ export default class AICommand extends Command {
                     this.openai = new (require("openai").OpenAI)({
                         apiKey
                     });
+                }
+
+                if (process.env.OPENAI_MODERATION !== "none") {
+                    try {
+                        const response = await axios.post(
+                            "https://api.openai.com/v1/moderations",
+                            {
+                                input: prompt
+                            },
+                            {
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    Authorization: `Bearer ${apiKey}`
+                                }
+                            }
+                        );
+
+                        if (!!response.data?.results.find((r: any) => r.flagged)) {
+                            await this.error(interaction, "Sorry, your prompt was flagged by the OpenAI moderation system.");
+                            return;
+                        }
+                    } catch (error) {
+                        logError(error);
+                        await this.error(interaction, "An error occurred while trying to moderate the input.");
+                        return;
+                    }
                 }
 
                 const completion = await this.openai!.chat.completions.create({
