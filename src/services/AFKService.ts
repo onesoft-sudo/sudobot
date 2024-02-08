@@ -202,7 +202,7 @@ export default class AFKService extends Service implements HasEventListeners {
             const entry = this.entries.get(`${message.guildId!}_${users.at(0)!.id}`);
             description = `<@${users.at(0)!.id}> is AFK right now${
                 entry?.reason ? `, for reason: **${escapeMarkdown(entry?.reason)}**` : ""
-            } ${time(entry?.createdAt ?? new Date(), "R")}`;
+            }, for ${formatDistanceToNowStrict(entry?.createdAt ?? new Date())}`;
         } else {
             description = "The following users are AFK right now: \n\n";
 
@@ -211,7 +211,7 @@ export default class AFKService extends Service implements HasEventListeners {
                     const entry = this.entries.get(`${message.guildId!}_${id}`);
                     description += `* <@${id}>: ${entry?.reason ?? "*No reason provided*"} ${
                         entry?.createdAt ? `(${time(entry?.createdAt!)})` : ""
-                    } ${time(entry?.createdAt ?? new Date(), "R")}\n`;
+                    } - ${time(entry?.createdAt ?? new Date(), "R")}\n`;
                 }
             }
         }
