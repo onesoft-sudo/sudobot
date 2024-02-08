@@ -343,7 +343,7 @@ async function writeExtensionIndex() {
         const tarballList = tarballs.map(file => {
             const basename = path.basename(file);
             const filePath = path.join(extensionsPath, '.extbuilds', extensionName, basename);
-            const { stdout } = spawnSyncCatchExit(`sha512sum`, [filePath], {
+            const { stdout } = spawnSync(`sha512sum`, [filePath], {
                 encoding: "utf-8",
                 stdio: "inherit"
             });
