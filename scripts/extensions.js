@@ -19,8 +19,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-require("module-alias/register");
+require("module-alias/register"); 
 require("dotenv/config");
+
 const chalk = require("chalk");
 const { spawnSync } = require("child_process");
 const { existsSync, lstatSync, readdirSync, readFileSync, writeFileSync, rmSync } = require("fs");
@@ -28,6 +29,7 @@ const { readFile } = require("fs/promises");
 const path = require("path");
 const { chdir, cwd } = require("process");
 const { z } = require("zod");
+const semver = require('semver');
 
 const extensionsPath = process.env.EXTENSIONS_DIRECTORY ?? path.resolve(__dirname, "../extensions");
 
@@ -314,6 +316,49 @@ async function writeExtensionIndex() {
         const eventPaths = getRecuriveJavaScriptFiles(path.join(extensionDirectory, events));
         const servicePaths = getRecuriveJavaScriptFiles(path.join(extensionDirectory, services));
 
+        const tarballs = readdirSync(path.resolve(extensionsPath, ".extbuilds", extensionName));
+        
+        tarballs.sort((a, b) => {
+            const vA = path.basename(a).replace(`${extensionName}-`, '').replace(/\.tar\.gz$/ig, '');
+            const vB = path.basename(b).replace(`${extensionName}-`, '').replace(/\.tar\.gz$/ig, '');
+            const splitA = vA.split('-');
+            const splitB = vB.split('-');
+            const dashVA = splitA[1];
+            const dashVB = splitB[1];
+            const revA = isNaN(dashVA) ? 0 : parseInt(dashVA);
+            const revB = isNaN(dashVB) ? 0 : parseInt(dashVB);
+            const result = semver.rcompare(vA, vB);
+            
+            if (splitA[0] === splitB[0] && vA.includes('-') && !isNaN(dashVA) && (!vB.includes('-') || isNaN(dashVB))) {
+                return -1;
+            }
+            
+            if (splitA[0] === splitB[0] && vB.includes('-') && !isNaN(dashVB) && (!vA.includes('-') || isNaN(dashVA))) {
+                return 1;
+            }
+            
+            return result === 0 ? revB - revA : result;
+        });
+        
+        const tarballList = tarballs.map(file => {
+            const basename = path.basename(file);
+            const filePath = path.join(extensionsPath, '.extbuilds', extensionName, basename);
+            const { stdout } = spawnSync(`sha512sum`, [filePath], {
+                encoding: "utf-8",
+            });
+            const { size, birthtime } = lstatSync(filePath);
+            const checksum = stdout.split(' ')[0];
+                
+            return {
+                url: "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions" + path.join('/.extbuilds/', extensionName, basename),
+                basename,
+                version: basename.replace(`${extensionName}-`, '').replace(/\.tar\.gz$/ig, ''),
+                checksum,
+                size,
+                createdAt: birthtime
+            };
+        });
+
         extensionsOutputRecord[id] = {
             name,
             id,
@@ -325,7 +370,7 @@ async function writeExtensionIndex() {
             services: servicePaths.length,
             main,
             iconURL: icon
-                ? new URL(path.join(extensionName, icon), "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions").toString()
+                ? "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions" + path.join('/', extensionName, icon)
                 : null,
             author:
                 typeof packageJson.author === "string"
@@ -340,7 +385,8 @@ async function writeExtensionIndex() {
             issues: typeof packageJson.bugs === "string" ? packageJson.bugs : packageJson.bugs?.url,
             lastUpdated: new Date(),
             readmeFileName: readmeFileName,
-            readmeFileURL: `https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/${extensionName}/${readmeFileName}`
+            readmeFileURL: `https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/${extensionName}/${readmeFileName}`,
+            tarballs: tarballList
         };
     }
 
