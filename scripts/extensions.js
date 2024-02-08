@@ -342,17 +342,20 @@ async function writeExtensionIndex() {
         
         const tarballList = tarballs.map(file => {
             const basename = path.basename(file);
-            const { stdout } = spawnSyncCatchExit(`sha512sum`, [path.join(extensionsPath, '.extbuilds', extensionName, basename)], {
+            const filePath = path.join(extensionsPath, '.extbuilds', extensionName, basename);
+            const { stdout } = spawnSyncCatchExit(`sha512sum`, [filePath], {
                 encoding: "utf-8",
                 stdio: "inherit"
             });
+            const { size } = lstatSync(filePath);
             const checksum = stdout.split(' ')[0];
                 
             return {
                 url: "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions" + path.join('/.extbuilds/', extensionName, basename),
                 basename,
                 version: basename.replace(`${extensionName}-`, '').replace(/\.tar\.gz$/ig, ''),
-                checksum
+                checksum,
+                size
             };
         });
 
