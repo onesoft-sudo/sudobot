@@ -345,7 +345,6 @@ async function writeExtensionIndex() {
             const filePath = path.join(extensionsPath, '.extbuilds', extensionName, basename);
             const { stdout } = spawnSync(`sha512sum`, [filePath], {
                 encoding: "utf-8",
-                stdio: "inherit"
             });
             const { size } = lstatSync(filePath);
             const checksum = stdout.split(' ')[0];
