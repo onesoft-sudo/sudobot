@@ -19,7 +19,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-require("module-alias/register");
+require("module-alias/register"); 
 require("dotenv/config");
 
 const chalk = require("chalk");
