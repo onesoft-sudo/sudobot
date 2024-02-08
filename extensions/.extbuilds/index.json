@@ -15,15 +15,10 @@
         },
         "license": "AGPL-3.0-or-later",
         "licenseURL": "https://spdx.org/licenses/AGPL-3.0-or-later.html",
-        "lastUpdated": "2024-02-08T10:01:21.077Z",
+        "lastUpdated": "2024-02-08T10:16:01.529Z",
         "readmeFileName": "README.md",
         "readmeFileURL": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/antirickroll/README.md",
         "tarballs": [
-            {
-                "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/antirickroll/antirickroll-1.0.0.tar.gz",
-                "basename": "antirickroll-1.0.0.tar.gz",
-                "version": "1.0.0"
-            },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/antirickroll/antirickroll-1.0.0-4.tar.gz",
                 "basename": "antirickroll-1.0.0-4.tar.gz",
@@ -43,6 +38,11 @@
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/antirickroll/antirickroll-1.0.0-1.tar.gz",
                 "basename": "antirickroll-1.0.0-1.tar.gz",
                 "version": "1.0.0-1"
+            },
+            {
+                "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/antirickroll/antirickroll-1.0.0.tar.gz",
+                "basename": "antirickroll-1.0.0.tar.gz",
+                "version": "1.0.0"
             }
         ]
     }
