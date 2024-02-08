@@ -1,3 +1,12 @@
+## [8.8.4](https://github.com/onesoft-sudo/sudobot/compare/v8.8.3...v8.8.4) (2024-02-08)
+
+
+### Bug Fixes
+
+* **services:PermissionManager:** do not log messages unnecessarily ([3ce2e98](https://github.com/onesoft-sudo/sudobot/commit/3ce2e98546875d3e2cb10879bf3de14eabe81b19))
+
+
+
 ## [8.8.3](https://github.com/onesoft-sudo/sudobot/compare/v8.8.2...v8.8.3) (2024-02-08)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **services:extensions:** schema validation for extension.json files ([94d05d4](https://github.com/onesoft-sudo/sudobot/commit/94d05d4db7c0d223680a47c8bb3dfc7f82350a12))
-
-
-
-# [8.7.0](https://github.com/onesoft-sudo/sudobot/compare/v8.6.2...v8.7.0) (2024-02-07)
-
-
-### Features
-
-* **services:extensions:** add other metadata properties ([9940fcb](https://github.com/onesoft-sudo/sudobot/commit/9940fcb4ec77c456373b09b466398c4c013ef4c4))
 
 
 
