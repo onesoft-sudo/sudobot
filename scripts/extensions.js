@@ -321,17 +321,20 @@ async function writeExtensionIndex() {
         tarballs.sort((a, b) => {
             const vA = path.basename(a).replace(`${extensionName}-`, '').replace(/\.tar\.gz$/ig, '');
             const vB = path.basename(b).replace(`${extensionName}-`, '').replace(/\.tar\.gz$/ig, '');
-            const dashVA = vA.split('-')[1];
-            const dashVB = vB.split('-')[1];
+            const splitA = vA.split('-');
+            const splitB = vB.split('-');
+            const dashVA = splitA[1];
+            const dashVB = splitB[1];
             const revA = isNaN(dashVA) ? 0 : parseInt(dashVA);
             const revB = isNaN(dashVB) ? 0 : parseInt(dashVB);
             const result = semver.rcompare(vA, vB);
             
-            if (result === 0 && vA.includes('-') && !isNaN(dashVA) && (!vB.includes('-') || isNaN(dashVB))) {
-                return 1;
-            }
-            if (result === 0 && vB.includes('-') && !isNaN(dashVB) && (!vA.includes('-') || isNaN(dashVA))) {
+            if (splitA[0] === splitB[0] && vA.includes('-') && !isNaN(dashVA) && (!vB.includes('-') || isNaN(dashVB))) {
                 return -1;
+            }
+            
+            if (splitA[0] === splitB[0] && vB.includes('-') && !isNaN(dashVB) && (!vA.includes('-') || isNaN(dashVA))) {
+                return 1;
             }
             
             return result === 0 ? revB - revA : result;
