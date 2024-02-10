@@ -1,3 +1,12 @@
+## [8.8.6](https://github.com/onesoft-sudo/sudobot/compare/v8.8.5...v8.8.6) (2024-02-10)
+
+
+### Bug Fixes
+
+* **commands:blockedmessage:** crashing during list command execution ([9fbddbc](https://github.com/onesoft-sudo/sudobot/commit/9fbddbcb7a275838117df7a3d5d166feb7865e2b))
+
+
+
 ## [8.8.5](https://github.com/onesoft-sudo/sudobot/compare/v8.8.4...v8.8.5) (2024-02-08)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **commands:ai:** moderate the prompt before sending to OpenAI API ([07d5149](https://github.com/onesoft-sudo/sudobot/commit/07d5149fb790039f371eef1251fef4239de8f668))
-
-
-
-## [8.8.1](https://github.com/onesoft-sudo/sudobot/compare/v8.8.0...v8.8.1) (2024-02-08)
-
-
-### Bug Fixes
-
-* **extensions:build-script:** sorting versions ([ee9360c](https://github.com/onesoft-sudo/sudobot/commit/ee9360cdbc1d014c8b442248965f2e15b265d7a1))
 
 
 
