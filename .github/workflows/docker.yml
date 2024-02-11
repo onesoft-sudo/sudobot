@@ -12,24 +12,16 @@ jobs:
       - name: Prepare environment
         run: echo "DEBUG=1" > .env.docker
 
+      - name: Set Tag
+        run: echo "sudobot:$(date +%s)" > TAG
+
       - name: Build the Docker image
-        id: build
-        run: |
-          TAG="sudobot:$(date +%s)";
-          docker build . --file Dockerfile --tag $TAG;
-          echo "tag=${TAG}" >> $GITHUB_OUTPUT
-    outputs:
-      tag: ${{ steps.build.outputs.tag }}
-
-  publish:
-    needs: build
-    runs-on: ubuntu-latest
-
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-    steps:
+        run: docker build . --file Dockerfile --tag $(cat TAG)
+          
       - name: Login to GitHub Container Registry
         run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u virtual-designer --password-stdin
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
       - name: Push the Docker image
-        run: docker push ${{ needs.build.outputs.tag }}
+        run: docker push $(cat TAG)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
