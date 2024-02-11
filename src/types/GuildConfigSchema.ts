@@ -105,6 +105,20 @@ export const GuildConfigSchema = z.object({
                 })
         })
         .optional(),
+    tickets: z
+        .object({
+            enabled: z.boolean().optional().default(false),
+            mode: z.enum(["thread", "channel"]).optional().default("thread"),
+            channel_category: zSnowflake.optional(),
+            thread_channel: zSnowflake.optional(),
+            initial_message: z
+                .string()
+                .nullable()
+                .default(
+                    "Hello {user}, your this is your conversation thread with the staff members. Any messages sent here will be visible to the staff members."
+                )
+        })
+        .optional(),
     message_reporting: z
         .object({
             enabled: z.boolean().default(false),
