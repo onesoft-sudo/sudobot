@@ -1,3 +1,14 @@
+## [8.8.7](https://github.com/onesoft-sudo/sudobot/compare/v8.8.6...v8.8.7) (2024-02-11)
+
+
+### Bug Fixes
+
+* **commands:emoji:** deprecated Emoji.url getter warning from discord.js ([dd1608a](https://github.com/onesoft-sudo/sudobot/commit/dd1608a9f4c6099eb9e99ebe0ab48fd8e8b04214))
+* **commands:emoji:** deprecated Emoji.url getter warning from discord.js ([19831b8](https://github.com/onesoft-sudo/sudobot/commit/19831b879189e7b00ffc4465aebe7aef3d6d7d1b))
+* **types:** typo ([aee9c31](https://github.com/onesoft-sudo/sudobot/commit/aee9c31da565e0f25868186a16c4d3f230b93989))
+
+
+
 ## [8.8.6](https://github.com/onesoft-sudo/sudobot/compare/v8.8.5...v8.8.6) (2024-02-10)
 
 
@@ -31,15 +42,6 @@
 ### Bug Fixes
 
 * ai command with openai ([ab0ca61](https://github.com/onesoft-sudo/sudobot/commit/ab0ca612d9d8e498702355e15a6da15abc7e8cec))
-
-
-
-## [8.8.2](https://github.com/onesoft-sudo/sudobot/compare/v8.8.1...v8.8.2) (2024-02-08)
-
-
-### Bug Fixes
-
-* **commands:ai:** moderate the prompt before sending to OpenAI API ([07d5149](https://github.com/onesoft-sudo/sudobot/commit/07d5149fb790039f371eef1251fef4239de8f668))
 
 
 
