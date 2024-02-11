@@ -61,6 +61,7 @@ import type ReportService from "../services/ReportService";
 import type SnippetManager from "../services/SnippetManager";
 import type StartupManager from "../services/StartupManager";
 import type StatsService from "../services/StatsService";
+import type TicketService from "../services/TicketService";
 import type TranslationService from "../services/TranslationService";
 import type TriggerService from "../services/TriggerService";
 import type WelcomerService from "../services/WelcomerService";
@@ -120,6 +121,7 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
         "@services/ReportService",
         "@services/StatsService",
         "@services/ImageRecognitionService",
+        "@services/TicketService",
 
         "@automod/MessageFilter",
         "@automod/Antispam",
@@ -169,6 +171,7 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
     commandPermissionOverwriteManager!: CommandPermissionOverwriteManager;
     statsService!: StatsService;
     imageRecognitionService!: ImageRecognitionService;
+    ticketService!: TicketService;
 
     constructor(options: ClientOptions) {
         super(options);
