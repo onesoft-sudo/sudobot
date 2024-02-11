@@ -280,3 +280,27 @@ model UserStatistics {
 
     @@map("user_statistics")
 }
+
+enum TicketStatus {
+    OPEN
+    CLOSED
+    DELETED
+    RESOLVED
+    PENDING
+    WAITING
+    IN_PROGRESS
+    CANCELLED
+    REJECTED
+}
+
+model Ticket {
+    id        Int          @id @default(autoincrement())
+    guildId   String
+    channelId String
+    userId    String
+    status    TicketStatus @default(OPEN)
+    createdAt DateTime     @default(now())
+    updatedAt DateTime     @default(now()) @updatedAt
+
+    @@map("tickets")
+}
