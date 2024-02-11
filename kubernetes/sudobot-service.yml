@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sudobot
+spec:
+  type: LoadBalancer
+  selector:
+    app: sudobot
+  ports:
+    - port: 80
+      targetPort: 4000
