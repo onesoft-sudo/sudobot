@@ -113,7 +113,7 @@ export default class EmojiCommand extends Command {
                         { name: "Identifier", value: emoji.identifier ?? "*No identifier set*" },
                         { name: "Available", value: emoji.available ? "Yes" : "No" },
                         { name: "Created", value: formatDistanceToNowStrict(emoji.createdAt, { addSuffix: true }) },
-                        { name: "Download", value: `[Click here](${emoji.url})` }
+                        { name: "Download", value: `[Click here](${emoji.imageURL})` }
                     )
                     .setThumbnail(emoji.url)
                     .setFooter({
