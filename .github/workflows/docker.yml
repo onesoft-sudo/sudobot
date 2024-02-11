@@ -5,8 +5,6 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
 
     steps:
       - uses: actions/checkout@v3
@@ -21,7 +19,7 @@ jobs:
         run: docker build . --file Dockerfile --tag $(cat TAG)
           
       - name: Login to GitHub Container Registry
-        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u virtual-designer --password-stdin
+        run: echo ${{ secrets.PAT_TOKEN }} | docker login ghcr.io -u virtual-designer --password-stdin
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
       - name: Push the Docker image
