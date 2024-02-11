@@ -13,7 +13,13 @@ jobs:
         run: echo "DEBUG=1" > .env.docker
 
       - name: Build the Docker image
-        run: echo "sudobot:$(date +%s)" > TAG && docker build . --file Dockerfile --tag sudobot:$(date +%s)
+        id: build
+        run: |
+          TAG="sudobot:$(date +%s)";
+          docker build . --file Dockerfile --tag sudobot:$TAG;
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+    outputs:
+      tag: ${{ steps.build.outputs.tag }}
 
   publish:
     needs: build
@@ -26,4 +32,4 @@ jobs:
         run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u virtual-designer --password-stdin
 
       - name: Push the Docker image
-        run: docker push sudobot:$(cat TAG)
+        run: docker push sudobot:${{ needs.build.outputs.tag }}
