@@ -108,15 +108,26 @@ export const GuildConfigSchema = z.object({
     tickets: z
         .object({
             enabled: z.boolean().optional().default(false),
-            mode: z.enum(["thread", "channel"]).optional().default("thread"),
-            channel_category: zSnowflake.optional(),
-            thread_channel: zSnowflake.optional(),
-            initial_message: z
-                .string()
-                .nullable()
-                .default(
-                    "Hello {user}, your this is your conversation thread with the staff members. Any messages sent here will be visible to the staff members."
+            channels: z
+                .record(
+                    zSnowflake,
+                    z.object({
+                        mode: z.enum(["thread", "channel"]).optional().default("thread"),
+                        channel_category: zSnowflake.optional(),
+                        thread_channel: zSnowflake.optional(),
+                        initial_message: z
+                            .string()
+                            .nullable()
+                            .default(
+                                "Hello {user}, your this is your conversation thread with the staff members. Any messages sent here will be visible to the staff members."
+                            ),
+                        color: z.number().int().optional().default(0x007bff),
+                        title: z.string().optional().default("Create a ticket"),
+                        footer: z.string().optional(),
+                        description: z.string().optional().default("Press the button below to create a ticket")
+                    })
                 )
+                .default({})
         })
         .optional(),
     message_reporting: z

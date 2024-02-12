@@ -294,13 +294,14 @@ enum TicketStatus {
 }
 
 model Ticket {
-    id        Int          @id @default(autoincrement())
-    guildId   String
-    channelId String
-    userId    String
-    status    TicketStatus @default(OPEN)
-    createdAt DateTime     @default(now())
-    updatedAt DateTime     @default(now()) @updatedAt
+    id                  Int          @id @default(autoincrement())
+    guildId             String
+    channelId           String
+    userId              String
+    initiationChannelId String
+    status              TicketStatus @default(OPEN)
+    createdAt           DateTime     @default(now())
+    updatedAt           DateTime     @default(now()) @updatedAt
 
     @@map("tickets")
 }

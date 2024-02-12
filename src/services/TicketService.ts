@@ -22,6 +22,7 @@ import {
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
+    Channel,
     ChannelType,
     Guild,
     GuildTextThreadManager,
@@ -35,6 +36,7 @@ import {
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { Events } from "../types/ClientEvents";
+import { RecordValue } from "../types/Utils";
 import { userInfo } from "../utils/embed";
 import { safeChannelFetch } from "../utils/fetch";
 import { logError, logWarn } from "../utils/logger";
@@ -51,11 +53,12 @@ export default class TicketService extends Service {
         }
 
         const config = this.client.configManager.config[interaction.guildId!]?.tickets;
+        const channelConfig = config?.channels![interaction.channelId];
 
         if (
             !config?.enabled ||
-            (config.mode === "channel" && !config.channel_category) ||
-            (config.mode === "thread" && !config.thread_channel)
+            (channelConfig?.mode === "channel" && !channelConfig?.channel_category) ||
+            (channelConfig?.mode === "thread" && !channelConfig?.thread_channel)
         ) {
             return;
         }
@@ -66,7 +69,7 @@ export default class TicketService extends Service {
             await interaction.deferUpdate();
 
             try {
-                const { channel, ticket } = await this.createTicket(interaction.guild!, interaction.user);
+                const { channel, ticket } = await this.createTicket(interaction.guild!, interaction.user, interaction.channel!);
                 await this.sendInitialMessage(ticket, channel, interaction.user);
                 await interaction.followUp({
                     ephemeral: true,
@@ -85,9 +88,9 @@ export default class TicketService extends Service {
     }
 
     async sendInitialMessage(ticket: Ticket, channel: TextChannel | ThreadChannel<boolean>, user: User) {
-        const config = this.client.configManager.config[ticket.guildId]?.tickets!;
+        const config = this.client.configManager.config[ticket.guildId]?.tickets!.channels![ticket.initiationChannelId];
 
-        if (config.initial_message) {
+        if (config?.initial_message) {
             await channel.send({
                 content: user.toString(),
                 embeds: [
@@ -154,7 +157,7 @@ export default class TicketService extends Service {
         }
     }
 
-    async createTicket(guild: Guild, user: User) {
+    async createTicket(guild: Guild, user: User, { id }: Channel) {
         const config = this.client.configManager.config[guild.id]?.tickets!;
 
         return await this.client.prisma.$transaction(async prisma => {
@@ -163,11 +166,12 @@ export default class TicketService extends Service {
                     guildId: guild.id,
                     userId: user.id,
                     channelId: "[updating in a moment]",
-                    status: TicketStatus.OPEN
+                    status: TicketStatus.OPEN,
+                    initiationChannelId: id
                 }
             });
 
-            const channel = await this.createTicketChannel(ticket.id, guild, user, config);
+            const channel = await this.createTicketChannel(ticket.id, guild, user, config.channels![id]!);
 
             if (!channel) {
                 throw new Error("Failed to create ticket channel");
@@ -187,7 +191,7 @@ export default class TicketService extends Service {
         });
     }
 
-    async createTicketChannel(id: string | number, guild: Guild, user: User, config: NonNullable<GuildConfig["tickets"]>) {
+    async createTicketChannel(id: string | number, guild: Guild, user: User, config: TicketChannelConfig) {
         const name = `ticket-${id}`;
         let channel;
 
@@ -224,4 +228,41 @@ export default class TicketService extends Service {
 
         return channel;
     }
+
+    async sendCreateTicketMessage(initChannel: TextChannel) {
+        const config = this.client.configManager.config[initChannel.guild.id]?.tickets!.channels![initChannel.id]!;
+
+        if (!config) {
+            return false;
+        }
+
+        await initChannel.send({
+            components: [
+                new ActionRowBuilder<ButtonBuilder>().addComponents(
+                    new ButtonBuilder()
+                        .setCustomId("ticket__create")
+                        .setLabel("Create Ticket")
+                        .setStyle(ButtonStyle.Primary)
+                        .setEmoji(getComponentEmojiResolvable(this.client, "ticket") ?? "🎫")
+                )
+            ],
+            embeds: [
+                {
+                    title: config.title ?? "Create a Ticket",
+                    description: config.description ?? "Click the button below to create a ticket.",
+                    color: config.color ?? 0x007bff,
+                    footer: config.footer
+                        ? {
+                              text: config.footer,
+                              icon_url: initChannel.guild.iconURL() ?? undefined
+                          }
+                        : undefined
+                }
+            ]
+        });
+
+        return true;
+    }
 }
+
+type TicketChannelConfig = RecordValue<NonNullable<NonNullable<GuildConfig["tickets"]>["channels"]>>;
