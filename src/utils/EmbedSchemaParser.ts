@@ -133,7 +133,7 @@ export default class EmbedSchemaParser {
 
                 let jsonStream = "";
 
-                while (string.substring(i, i + 3) !== "}::") {
+                while (string.substring(i, i + 3) !== "}::" && i < length) {
                     if (string[i] === "\n") {
                         i = pos;
                         break;
