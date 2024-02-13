@@ -93,7 +93,22 @@ export function logStringWithLevel(level: LogLevel = LogLevel.DEBUG, ...message:
     }
 }
 
+/**
+ * Logs a message to the console, with debug mode.
+ *
+ * @deprecated Use logDebug instead
+ * @param message The message to log
+ */
 export function log(...message: any[]) {
+    return logWithLevel(LogLevel.DEBUG, ...message);
+}
+
+/**
+ * Logs a message to the console, with debug mode.
+ *
+ * @param message The message to log
+ */
+export function logDebug(...message: any[]) {
     return logWithLevel(LogLevel.DEBUG, ...message);
 }
 
