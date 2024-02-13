@@ -1,3 +1,12 @@
+## [8.8.8](https://github.com/onesoft-sudo/sudobot/compare/v8.8.7...v8.8.8) (2024-02-13)
+
+
+### Bug Fixes
+
+* **utils:EmbedSchemaParser:** infinite loop if the schema does not end with two colons `::` ([b57e716](https://github.com/onesoft-sudo/sudobot/commit/b57e7161d5e7249fa51b18e1dcf2315cf6831012))
+
+
+
 ## [8.8.7](https://github.com/onesoft-sudo/sudobot/compare/v8.8.6...v8.8.7) (2024-02-11)
 
 
@@ -33,15 +42,6 @@
 ### Bug Fixes
 
 * **services:PermissionManager:** do not log messages unnecessarily ([3ce2e98](https://github.com/onesoft-sudo/sudobot/commit/3ce2e98546875d3e2cb10879bf3de14eabe81b19))
-
-
-
-## [8.8.3](https://github.com/onesoft-sudo/sudobot/compare/v8.8.2...v8.8.3) (2024-02-08)
-
-
-### Bug Fixes
-
-* ai command with openai ([ab0ca61](https://github.com/onesoft-sudo/sudobot/commit/ab0ca612d9d8e498702355e15a6da15abc7e8cec))
 
 
 
