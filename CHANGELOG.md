@@ -1,3 +1,12 @@
+# [8.9.0](https://github.com/onesoft-sudo/sudobot/compare/v8.8.8...v8.9.0) (2024-02-15)
+
+
+### Features
+
+* **polyfills:** add FileSystem.exists() method ([98ba6f9](https://github.com/onesoft-sudo/sudobot/commit/98ba6f9cc41dfa2d89867f5f0322928cbe3140b5))
+
+
+
 ## [8.8.8](https://github.com/onesoft-sudo/sudobot/compare/v8.8.7...v8.8.8) (2024-02-13)
 
 
@@ -33,15 +42,6 @@
 ### Bug Fixes
 
 * **services:afk:** message content formatting ([8a88b41](https://github.com/onesoft-sudo/sudobot/commit/8a88b412953b82b9623c64571b545219c6252a45))
-
-
-
-## [8.8.4](https://github.com/onesoft-sudo/sudobot/compare/v8.8.3...v8.8.4) (2024-02-08)
-
-
-### Bug Fixes
-
-* **services:PermissionManager:** do not log messages unnecessarily ([3ce2e98](https://github.com/onesoft-sudo/sudobot/commit/3ce2e98546875d3e2cb10879bf3de14eabe81b19))
 
 
 
