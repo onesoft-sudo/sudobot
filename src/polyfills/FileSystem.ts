@@ -1,5 +1,5 @@
 import { existsSync } from "fs";
-import { readFile } from "fs/promises";
+import { readFile, writeFile } from "fs/promises";
 
 type ReadFileContentOptions<T extends boolean> = {
     json?: T;
@@ -24,13 +24,14 @@ export default class FileSystem {
         let contents = "";
 
         if (process.versions.bun) {
-            contents = await Bun.file(path).text();
+            const file = Bun.file(path);
+            contents = await (json ? file.json() : file.text());
         } else {
             contents = await readFile(path, { encoding: "utf-8" });
-        }
 
-        if (json) {
-            return JSON.parse(contents);
+            if (json) {
+                return JSON.parse(contents);
+            }
         }
 
         return contents as ReadFileResult<T, J>;
@@ -49,4 +50,23 @@ export default class FileSystem {
             return existsSync(filePath);
         }
     }
+
+    /**
+     * Writes the contents to a file.
+     * 
+     * @param path - The path of the file to write to.
+     * @param contents - The contents to write to the file.
+     * @returns A promise that resolves when the file is written.
+     * @throws An error if the file cannot be written.
+     */
+    static async writeFileContents(path: string, contents: Stringable, json: boolean = false): Promise<void> {
+        if (process.versions.bun) {
+            await Bun.write(path, json ? JSON.stringify(contents) : contents.toString());
+        }
+        else {
+            await writeFile(path, json ? JSON.stringify(contents) : contents.toString(), { encoding: "utf-8" });
+        }
+    }
 }
+
+type Stringable = { toString: () => string } | string;

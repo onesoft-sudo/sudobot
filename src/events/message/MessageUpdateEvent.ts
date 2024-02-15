@@ -25,6 +25,10 @@ import { logError } from "../../utils/logger";
 
 export default class MessageUpdateEvent extends EventListener<Events.MessageUpdate> {
     public readonly name = Events.MessageUpdate;
+    public readonly listeners = [
+        (message: Message) => this.client.messageFilter.onMessageCreate(message),
+        (message: Message) => this.client.messageRuleService.onMessageCreate(message),
+    ];
 
     async execute(oldMessage: Message, newMessage: Message) {
         if (newMessage.author.bot) {
@@ -35,18 +39,14 @@ export default class MessageUpdateEvent extends EventListener<Events.MessageUpda
 
         if (oldMessage.content === newMessage.content) return;
 
+        this.client.emit(Events.NormalMessageUpdate, oldMessage, newMessage);
+
         this.client.statsService.onMessageUpdate(oldMessage, newMessage);
-
-        let deleted = await this.client.messageFilter.scanMessage(newMessage).catch(logError);
-
-        if (deleted) {
-            return;
-        }
-
-        deleted = await this.client.messageRuleService.onMessageCreate(newMessage).catch(logError);
-
-        if (deleted) {
-            return;
+        
+        for (const listener of this.listeners) {
+            if (await listener(newMessage)) {
+                return;
+            }
         }
 
         await this.client.logger.logMessageEdit(oldMessage, newMessage);

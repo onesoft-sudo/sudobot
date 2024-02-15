@@ -53,8 +53,8 @@ const guildIdResolvers: Array<{
             | "autoModerationRuleUpdate"]) => data?.guild.id ?? undefined
     },
     {
-        events: ["messageCreate", "messageDelete", "messageUpdate", "interactionCreate"],
-        resolver: ([data]: ClientEvents["messageCreate" | "messageDelete" | "messageUpdate" | "interactionCreate"]) =>
+        events: ["messageCreate", "normalMessageCreate", "normalMessageDelete", "normalMessageUpdate", "messageDelete", "messageUpdate", "interactionCreate"],
+        resolver: ([data]: ClientEvents["messageCreate" | "messageDelete" | "messageUpdate" | "interactionCreate" | "normalMessageCreate" | "normalMessageUpdate" | "normalMessageDelete"]) =>
             data?.guild?.id ?? data?.guildId ?? undefined
     },
     {
@@ -222,7 +222,7 @@ export default class ExtensionService extends Service {
     protected readonly extensionsPath = process.env.EXTENSIONS_DIRECTORY ?? path.join(__dirname, "../../extensions");
     protected readonly guildIdResolvers = getGuildIdResolversMap();
 
-    async bootUp() {
+    async boot() {
         if (!existsSync(this.extensionsPath)) {
             log("No extensions found");
             return;
@@ -262,7 +262,7 @@ export default class ExtensionService extends Service {
             const extensionDirectory = path.resolve(this.extensionsPath, extensionName);
             const isDirectory = (await fs.lstat(extensionDirectory)).isDirectory();
 
-            if (!isDirectory) {
+            if (!isDirectory || extensionName === '.extbuilds') {
                 continue;
             }
 

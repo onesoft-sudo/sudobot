@@ -29,6 +29,7 @@ export default class MessageDeleteEvent extends EventListener<Events.MessageDele
 
         if (message.author.bot) return;
 
+        this.client.emit(Events.NormalMessageDelete, message);
         await this.client.logger.logMessageDelete(message);
         this.client.statsService.onMessageDelete(message);
     }

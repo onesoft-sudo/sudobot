@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { ClientEvents as DiscordClientEvents } from "discord.js";
+import type { ClientEvents as DiscordClientEvents, Message } from "discord.js";
 import type Command from "../core/Command";
 import type { CommandMessage } from "../core/Command";
 import type { CommandContext } from "../services/CommandManager";
@@ -25,6 +25,9 @@ import { CommandEventHandle } from "./CommandEventHandle";
 
 export type ClientEvents = DiscordClientEvents & {
     command: [name: string, handle: CommandEventHandle, command: Command, message: CommandMessage, context: CommandContext];
+    normalMessageCreate: [message: Message];
+    normalMessageUpdate: [oldMessage: Message, newMessage: Message];
+    normalMessageDelete: [message: Message];
 };
 
 export const CustomEvents: ReadonlyArray<keyof ClientEvents> = ["command"];
@@ -105,5 +108,8 @@ export enum Events {
     WebhooksUpdate = "webhooksUpdate",
     WebhookUpdate = "webhookUpdate",
 
+    NormalMessageCreate = "normalMessageCreate",
+    NormalMessageUpdate = "normalMessageUpdate",
+    NormalMessageDelete = "normalMessageDelete",
     Command = "command"
 }

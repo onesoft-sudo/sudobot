@@ -183,6 +183,7 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
         await this.serviceManager.loadServices();
 
         if (events) {
+            this.setMaxListeners(50);
             await this.dynamicLoader.loadEvents();
         }
 

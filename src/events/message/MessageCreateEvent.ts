@@ -26,6 +26,12 @@ import { log, logError } from "../../utils/logger";
 export default class MessageCreateEvent extends EventListener<Events.MessageCreate> {
     public readonly name = Events.MessageCreate;
     public readonly types = [MessageType.Default, MessageType.Reply];
+    public readonly listeners = [
+        (message: Message) => this.client.messageFilter.onMessageCreate(message),
+        (message: Message) => this.client.messageRuleService.onMessageCreate(message),
+        (message: Message) => this.client.fileFilter.onMessageCreate(message),
+        (message: Message) => this.client.aiAutoMod.onMessageCreate(message),
+    ];
 
     constructor(protected client: Client) {
         super(client);
@@ -58,24 +64,15 @@ export default class MessageCreateEvent extends EventListener<Events.MessageCrea
             }
         }
 
-        let deleted = await this.client.messageFilter.onMessageCreate(message).catch(logError);
+        this.client.emit(Events.NormalMessageCreate, message);
 
-        if (deleted) return;
-
-        deleted = await this.client.messageRuleService.onMessageCreate(message).catch(logError);
-
-        if (deleted) return;
-
-        deleted = await this.client.fileFilter.onMessageCreate(message).catch(logError);
-
-        if (deleted) return;
-
-        deleted = await this.client.aiAutoMod.onMessageCreate(message).catch(logError);
-
-        if (deleted) return;
+        for (const listener of this.listeners) {
+            if (await listener(message)) {
+                return;
+            }
+        }
 
         await this.client.antispam.onMessageCreate(message).catch(logError);
-
         this.client.statsService.onMessageCreate(message);
         this.client.triggerService.onMessageCreate(message);
 
