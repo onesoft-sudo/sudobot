@@ -1,3 +1,12 @@
+# [8.10.0](https://github.com/onesoft-sudo/sudobot/compare/v8.9.0...v8.10.0) (2024-02-15)
+
+
+### Features
+
+* add `normalMessage*` events for better extension DX ([93e5328](https://github.com/onesoft-sudo/sudobot/commit/93e532860bb9a3672773cb6d3fb82f28cef2ec2c))
+
+
+
 # [8.9.0](https://github.com/onesoft-sudo/sudobot/compare/v8.8.8...v8.9.0) (2024-02-15)
 
 
@@ -33,15 +42,6 @@
 ### Bug Fixes
 
 * **commands:blockedmessage:** crashing during list command execution ([9fbddbc](https://github.com/onesoft-sudo/sudobot/commit/9fbddbcb7a275838117df7a3d5d166feb7865e2b))
-
-
-
-## [8.8.5](https://github.com/onesoft-sudo/sudobot/compare/v8.8.4...v8.8.5) (2024-02-08)
-
-
-### Bug Fixes
-
-* **services:afk:** message content formatting ([8a88b41](https://github.com/onesoft-sudo/sudobot/commit/8a88b412953b82b9623c64571b545219c6252a45))
 
 
 
