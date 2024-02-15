@@ -1,0 +1,12 @@
+{
+    "$schema": "https://www.sudobot.org/schemas/extension.json",
+    "name": "urlfish",
+    "id": "com.example.extesion",
+    "main": "./build/index.js",
+    "commands": "./build/commands",
+    "events": "./build/events",
+    "services": "./build/services",
+    "language": "typescript",
+    "main_directory": "./build",
+    "build_command": "npm run build"
+}

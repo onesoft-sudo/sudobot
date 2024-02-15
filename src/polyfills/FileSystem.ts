@@ -1,3 +1,4 @@
+import { existsSync } from "fs";
 import { readFile } from "fs/promises";
 
 type ReadFileContentOptions<T extends boolean> = {
@@ -33,5 +34,19 @@ export default class FileSystem {
         }
 
         return contents as ReadFileResult<T, J>;
+    }
+
+    /**
+     * Checks if a file exists.
+     *
+     * @param filePath - The path of the file to check.
+     * @returns A promise that resolves to a boolean indicating if the file exists.
+     */
+    static async exists(filePath: string) {
+        if (process.versions.bun) {
+            return Bun.file(filePath).exists();
+        } else {
+            return existsSync(filePath);
+        }
     }
 }
