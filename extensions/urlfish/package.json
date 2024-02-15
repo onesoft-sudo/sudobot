@@ -2,6 +2,7 @@
     "name": "urlfish",
     "version": "1.0.0",
     "main": "build/index.js",
+    "license": "AGPL-3.0-or-later",
     "dependencies": {
         "sudobot": "file:../.."
     },

@@ -1,12 +1,13 @@
 {
     "$schema": "https://www.sudobot.org/schemas/extension.json",
     "name": "urlfish",
-    "id": "com.example.extesion",
+    "id": "org.onesoftnet.sbext.urlfish",
     "main": "./build/index.js",
     "commands": "./build/commands",
     "events": "./build/events",
     "services": "./build/services",
     "language": "typescript",
     "main_directory": "./build",
-    "build_command": "npm run build"
+    "build_command": "npm run build",
+    "description": "A simple extension that can delete phishing messages."
 }
