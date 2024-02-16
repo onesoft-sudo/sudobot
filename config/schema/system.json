@@ -92,6 +92,16 @@
                 "mention_prefix": {
                     "type": "boolean",
                     "default": true
+                },
+                "groups": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "default": {}
                 }
             },
             "additionalProperties": false,
@@ -150,7 +160,7 @@
                             "format": "date-time"
                         }
                     ],
-                    "default": "2024-01-19T11:29:34.886Z"
+                    "default": "2024-02-16T12:22:21.626Z"
                 }
             },
             "additionalProperties": false,
