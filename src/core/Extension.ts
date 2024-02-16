@@ -17,6 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { Awaitable } from "discord.js";
+import { ZodSchema } from "zod";
 import Client from "./Client";
 
 export abstract class Extension {
@@ -24,15 +26,33 @@ export abstract class Extension {
 
     constructor(protected readonly client: Client) {}
 
-    async commands(): Promise<string[] | null> {
+    commands(): Awaitable<string[] | null> {
         return null;
     }
 
-    async events(): Promise<string[] | null> {
+    events(): Awaitable<string[] | null> {
         return null;
     }
 
-    async services(): Promise<string[] | null> {
+    services(): Awaitable<string[] | null> {
+        return null;
+    }
+
+    guildConfig(): Awaitable<
+        | {
+              [K in PropertyKey]: ZodSchema<unknown>;
+          }
+        | null
+    > {
+        return null;
+    }
+
+    systemConfig(): Awaitable<
+        | {
+              [K in PropertyKey]: ZodSchema<unknown>;
+          }
+        | null
+    > {
         return null;
     }
 }

@@ -27,7 +27,7 @@ import EventListener from "../core/EventListener";
 import { Extension } from "../core/Extension";
 import Service from "../core/Service";
 import type { ClientEvents } from "../types/ClientEvents";
-import { log, logError, logInfo, logWarn } from "../utils/logger";
+import { log, logDebug, logError, logInfo, logWarn } from "../utils/logger";
 
 export const name = "extensionService";
 
@@ -53,9 +53,23 @@ const guildIdResolvers: Array<{
             | "autoModerationRuleUpdate"]) => data?.guild.id ?? undefined
     },
     {
-        events: ["messageCreate", "normalMessageCreate", "normalMessageDelete", "normalMessageUpdate", "messageDelete", "messageUpdate", "interactionCreate"],
-        resolver: ([data]: ClientEvents["messageCreate" | "messageDelete" | "messageUpdate" | "interactionCreate" | "normalMessageCreate" | "normalMessageUpdate" | "normalMessageDelete"]) =>
-            data?.guild?.id ?? data?.guildId ?? undefined
+        events: [
+            "messageCreate",
+            "normalMessageCreate",
+            "normalMessageDelete",
+            "normalMessageUpdate",
+            "messageDelete",
+            "messageUpdate",
+            "interactionCreate"
+        ],
+        resolver: ([data]: ClientEvents[
+            | "messageCreate"
+            | "messageDelete"
+            | "messageUpdate"
+            | "interactionCreate"
+            | "normalMessageCreate"
+            | "normalMessageUpdate"
+            | "normalMessageDelete"]) => data?.guild?.id ?? data?.guildId ?? undefined
     },
     {
         events: ["messageDeleteBulk"],
@@ -224,7 +238,8 @@ export default class ExtensionService extends Service {
 
     async boot() {
         if (!existsSync(this.extensionsPath)) {
-            log("No extensions found");
+            logDebug("No extensions found");
+            await this.initializeConfigService();
             return;
         }
 
@@ -238,31 +253,54 @@ export default class ExtensionService extends Service {
         await this.loadExtensions();
     }
 
+    async onInitializationComplete(extensions: Extension[]) {
+        await this.client.configManager.registerExtensionConfig(extensions);
+        return this.initializeConfigService();
+    }
+
+    initializeConfigService() {
+        return this.client.configManager.manualBoot();
+    }
+
     async loadExtensionsFromIndex(extensionsIndex: string) {
         const { extensions } = JSON.parse(await fs.readFile(extensionsIndex, "utf-8"));
+        const loadInfoList = [];
+        const extensionInitializers = [];
 
         for (const { entry, commands, events, name, services, id } of extensions) {
-            logInfo("Loading extension (cached): ", name);
-
-            await this.loadExtension({
+            logInfo("Loading extension initializer (cached): ", name);
+            const loadInfo = {
                 extensionPath: entry,
                 commands,
                 events,
                 extensionName: name,
                 services,
-                extensionId: id
-            });
+                extensionId: id,
+                extension: null as unknown as Extension
+            };
+
+            loadInfoList.push(loadInfo);
+            loadInfo.extension = await this.loadExtensionInitializer(loadInfo);
+            extensionInitializers.push(loadInfo.extension);
+        }
+
+        await this.onInitializationComplete(extensionInitializers);
+
+        for (const loadInfo of loadInfoList) {
+            await this.loadExtension(loadInfo);
         }
     }
 
     async loadExtensions() {
         const extensions = await fs.readdir(this.extensionsPath);
+        const loadInfoList = [];
+        const extensionInitializers = [];
 
         for (const extensionName of extensions) {
             const extensionDirectory = path.resolve(this.extensionsPath, extensionName);
             const isDirectory = (await fs.lstat(extensionDirectory)).isDirectory();
 
-            if (!isDirectory || extensionName === '.extbuilds') {
+            if (!isDirectory || extensionName === ".extbuilds") {
                 continue;
             }
 
@@ -293,19 +331,43 @@ export default class ExtensionService extends Service {
                 id
             } = parseResult.data;
 
-            await this.loadExtension({
+            const loadInfo = {
                 extensionName,
                 extensionId: id,
                 extensionPath: path.join(extensionDirectory, main),
                 commandsDirectory: path.join(extensionDirectory, commands),
                 eventsDirectory: path.join(extensionDirectory, events),
-                servicesDirectory: path.join(extensionDirectory, services)
-            });
+                servicesDirectory: path.join(extensionDirectory, services),
+                extension: null as unknown as Extension
+            };
+
+            loadInfo.extension = await this.loadExtensionInitializer(loadInfo);
+            loadInfoList.push(loadInfo);
+            extensionInitializers.push(loadInfo.extension);
+        }
+
+        await this.onInitializationComplete(extensionInitializers);
+
+        for (const loadInfo of loadInfoList) {
+            await this.loadExtension(loadInfo);
         }
     }
 
+    async loadExtensionInitializer({
+        extensionName,
+        extensionId,
+        extensionPath
+    }: {
+        extensionPath: string;
+        extensionName: string;
+        extensionId: string;
+    }) {
+        logDebug("Attempting to load extension initializer: ", extensionName, extensionId);
+        const { default: ExtensionClass }: { default: new (client: Client) => Extension } = await import(extensionPath);
+        return new ExtensionClass(this.client);
+    }
+
     async loadExtension({
-        extensionPath,
         commandsDirectory,
         eventsDirectory,
         commands,
@@ -313,34 +375,11 @@ export default class ExtensionService extends Service {
         extensionName,
         services,
         servicesDirectory,
-        extensionId
-    }:
-        | {
-              extensionPath: string;
-              commandsDirectory: string;
-              eventsDirectory: string;
-              servicesDirectory: string;
-              extensionName: string;
-              extensionId: string;
-              commands?: never;
-              events?: never;
-              services?: never;
-          }
-        | {
-              extensionPath: string;
-              commandsDirectory?: never;
-              eventsDirectory?: never;
-              servicesDirectory?: never;
-              commands: string[];
-              events: string[];
-              services: string[];
-              extensionName: string;
-              extensionId: string;
-          }) {
-        log("Attempting to load extension: ", extensionName, extensionId);
+        extensionId,
+        extension
+    }: LoadInfo) {
+        logDebug("Attempting to load extension: ", extensionName, extensionId);
 
-        const { default: ExtensionClass }: { default: new (client: Client) => Extension } = await import(extensionPath);
-        const extension = new ExtensionClass(this.client);
         const commandPaths = await extension.commands();
         const eventPaths = await extension.events();
         const servicePaths = await extension.services();
@@ -456,3 +495,30 @@ export default class ExtensionService extends Service {
         return (enabled === undefined ? default_mode === "enable_all" : enabled) && !disabled_extensions?.includes(extensionName);
     }
 }
+
+type LoadInfo = (
+    | {
+          extensionPath: string;
+          commandsDirectory: string;
+          eventsDirectory: string;
+          servicesDirectory: string;
+          extensionName: string;
+          extensionId: string;
+          commands?: never;
+          events?: never;
+          services?: never;
+      }
+    | {
+          extensionPath: string;
+          commandsDirectory?: never;
+          eventsDirectory?: never;
+          servicesDirectory?: never;
+          commands: string[];
+          events: string[];
+          services: string[];
+          extensionName: string;
+          extensionId: string;
+      }
+) & {
+    extension: Extension;
+};

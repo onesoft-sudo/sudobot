@@ -53,7 +53,7 @@ export default class FileSystem {
 
     /**
      * Writes the contents to a file.
-     * 
+     *
      * @param path - The path of the file to write to.
      * @param contents - The contents to write to the file.
      * @returns A promise that resolves when the file is written.
@@ -62,8 +62,7 @@ export default class FileSystem {
     static async writeFileContents(path: string, contents: Stringable, json: boolean = false): Promise<void> {
         if (process.versions.bun) {
             await Bun.write(path, json ? JSON.stringify(contents) : contents.toString());
-        }
-        else {
+        } else {
             await writeFile(path, json ? JSON.stringify(contents) : contents.toString(), { encoding: "utf-8" });
         }
     }

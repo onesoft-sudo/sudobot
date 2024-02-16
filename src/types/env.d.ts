@@ -27,5 +27,6 @@ namespace NodeJS {
         OPENAI_MODEL_ID?: string;
         EXTENSIONS_DIRECTORY?: string;
         OPENAI_MODERATION?: string;
+        NO_GENERATE_CONFIG_SCHEMA?: string;
     }
 }

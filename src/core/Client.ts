@@ -93,7 +93,8 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
 
     public readonly services = [
         "@services/StartupManager",
-        "@services/ConfigManager",
+        "@services/ConfigManager" /* This service is manually booted by the Extension Service. */,
+        "@services/ExtensionService",
         "@services/CommandManager",
         "@services/InfractionManager",
         "@services/LoggerService",
@@ -111,7 +112,6 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
         "@services/InviteTrackerService",
         "@services/BallotManager",
         "@services/TriggerService",
-        "@services/ExtensionService",
         "@services/BumpReminderService",
         "@services/LogServer",
         "@services/CooldownService",
