@@ -19,7 +19,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-require("module-alias/register"); 
+require("module-alias/register");
 require("dotenv/config");
 
 const chalk = require("chalk");
@@ -29,7 +29,7 @@ const { readFile } = require("fs/promises");
 const path = require("path");
 const { chdir, cwd } = require("process");
 const { z } = require("zod");
-const semver = require('semver');
+const semver = require("semver");
 
 const extensionsPath = process.env.EXTENSIONS_DIRECTORY ?? path.resolve(__dirname, "../extensions");
 
@@ -235,6 +235,7 @@ async function buildExtensions() {
     const startTime = Date.now();
     const extensions = readdirSync(extensionsPath);
     const workingDirectory = cwd();
+    let count = 0;
 
     for await (const extensionName of extensions) {
         const extensionDirectory = path.resolve(extensionsPath, extensionName);
@@ -246,19 +247,21 @@ async function buildExtensions() {
 
         chdir(path.join(extensionsPath, extensionName));
 
-        actionLog("DEPS", extensionName);
-        spawnSyncCatchExit("npm install -D", {
-            encoding: "utf-8",
-            shell: true,
-            stdio: "inherit"
-        });
+        if (!process.argv.includes("--tsc")) {
+            actionLog("DEPS", extensionName);
+            spawnSyncCatchExit("npm install -D", {
+                encoding: "utf-8",
+                shell: true,
+                stdio: "inherit"
+            });
 
-        actionLog("RELINK", extensionName);
-        spawnSyncCatchExit(`npm install --save ${path.relative(cwd(), path.resolve(__dirname, ".."))}`, {
-            encoding: "utf-8",
-            shell: true,
-            stdio: "inherit"
-        });
+            actionLog("RELINK", extensionName);
+            spawnSyncCatchExit(`npm install --save ${path.relative(cwd(), path.resolve(__dirname, ".."))}`, {
+                encoding: "utf-8",
+                shell: true,
+                stdio: "inherit"
+            });
+        }
 
         actionLog("BUILD", extensionName);
         const { build_command } = readMeta(extensionName, extensionDirectory);
@@ -273,9 +276,11 @@ async function buildExtensions() {
             shell: true,
             stdio: "inherit"
         });
+
+        count++;
     }
 
-    actionLog("SUCCESS", `in ${((Date.now() - startTime) / 1000).toFixed(2)}s, built ${extensions.length} extensions`);
+    actionLog("SUCCESS", `in ${((Date.now() - startTime) / 1000).toFixed(2)}s, built ${count} extensions`);
     chdir(workingDirectory);
 }
 
@@ -317,42 +322,50 @@ async function writeExtensionIndex() {
         const servicePaths = getRecuriveJavaScriptFiles(path.join(extensionDirectory, services));
 
         const tarballs = readdirSync(path.resolve(extensionsPath, ".extbuilds", extensionName));
-        
+
         tarballs.sort((a, b) => {
-            const vA = path.basename(a).replace(`${extensionName}-`, '').replace(/\.tar\.gz$/ig, '');
-            const vB = path.basename(b).replace(`${extensionName}-`, '').replace(/\.tar\.gz$/ig, '');
-            const splitA = vA.split('-');
-            const splitB = vB.split('-');
+            const vA = path
+                .basename(a)
+                .replace(`${extensionName}-`, "")
+                .replace(/\.tar\.gz$/gi, "");
+            const vB = path
+                .basename(b)
+                .replace(`${extensionName}-`, "")
+                .replace(/\.tar\.gz$/gi, "");
+            const splitA = vA.split("-");
+            const splitB = vB.split("-");
             const dashVA = splitA[1];
             const dashVB = splitB[1];
             const revA = isNaN(dashVA) ? 0 : parseInt(dashVA);
             const revB = isNaN(dashVB) ? 0 : parseInt(dashVB);
             const result = semver.rcompare(vA, vB);
-            
-            if (splitA[0] === splitB[0] && vA.includes('-') && !isNaN(dashVA) && (!vB.includes('-') || isNaN(dashVB))) {
+
+            if (splitA[0] === splitB[0] && vA.includes("-") && !isNaN(dashVA) && (!vB.includes("-") || isNaN(dashVB))) {
                 return -1;
             }
-            
-            if (splitA[0] === splitB[0] && vB.includes('-') && !isNaN(dashVB) && (!vA.includes('-') || isNaN(dashVA))) {
+
+            if (splitA[0] === splitB[0] && vB.includes("-") && !isNaN(dashVB) && (!vA.includes("-") || isNaN(dashVA))) {
                 return 1;
             }
-            
+
             return result === 0 ? revB - revA : result;
         });
-        
+
         const tarballList = tarballs.map(file => {
             const basename = path.basename(file);
-            const filePath = path.join(extensionsPath, '.extbuilds', extensionName, basename);
+            const filePath = path.join(extensionsPath, ".extbuilds", extensionName, basename);
             const { stdout } = spawnSync(`sha512sum`, [filePath], {
-                encoding: "utf-8",
+                encoding: "utf-8"
             });
             const { size, birthtime } = lstatSync(filePath);
-            const checksum = stdout.split(' ')[0];
-                
+            const checksum = stdout.split(" ")[0];
+
             return {
-                url: "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions" + path.join('/.extbuilds/', extensionName, basename),
+                url:
+                    "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions" +
+                    path.join("/.extbuilds/", extensionName, basename),
                 basename,
-                version: basename.replace(`${extensionName}-`, '').replace(/\.tar\.gz$/ig, ''),
+                version: basename.replace(`${extensionName}-`, "").replace(/\.tar\.gz$/gi, ""),
                 checksum,
                 size,
                 createdAt: birthtime
@@ -370,7 +383,7 @@ async function writeExtensionIndex() {
             services: servicePaths.length,
             main,
             iconURL: icon
-                ? "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions" + path.join('/', extensionName, icon)
+                ? "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions" + path.join("/", extensionName, icon)
                 : null,
             author:
                 typeof packageJson.author === "string"
@@ -441,9 +454,12 @@ if (process.argv.includes("--clear-cache") || process.argv.includes("--clean") |
     console.log("Usage:");
     console.log("  node extensions.js <options>\n");
     console.log("Options:");
-    console.log("  --build    |  Builds all the installed extensions, if needed.");
-    console.log("  --cache    |  Creates cache indexes for installed extensions, to improve the startup time.");
-    console.log("  --clean    |  Clears all installed extension cache.");
-    console.log("  --mkindex  |  Creates indexes for all the available extensions, in the extensions/ top level directory.");
+    console.log("  --build [--tsc]    |  Builds all the installed extensions, if needed.");
+    console.log("                     |  The `--tsc` flag will only run the typescript compiler.");
+    console.log("  --cache            |  Creates cache indexes for installed extensions, to improve the startup time.");
+    console.log("  --clean            |  Clears all installed extension cache.");
+    console.log(
+        "  --mkindex          |  Creates indexes for all the available extensions, in the extensions/ top level directory."
+    );
     process.exit(-1);
 }
