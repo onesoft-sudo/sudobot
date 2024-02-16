@@ -1,3 +1,12 @@
+# [8.11.0](https://github.com/onesoft-sudo/sudobot/compare/v8.10.0...v8.11.0) (2024-02-16)
+
+
+### Features
+
+* **extensions:** elegant extension configuration support ([d0344a2](https://github.com/onesoft-sudo/sudobot/commit/d0344a2565417853784edb5c03c675ff45e07e6d))
+
+
+
 # [8.10.0](https://github.com/onesoft-sudo/sudobot/compare/v8.9.0...v8.10.0) (2024-02-15)
 
 
@@ -33,15 +42,6 @@
 * **commands:emoji:** deprecated Emoji.url getter warning from discord.js ([dd1608a](https://github.com/onesoft-sudo/sudobot/commit/dd1608a9f4c6099eb9e99ebe0ab48fd8e8b04214))
 * **commands:emoji:** deprecated Emoji.url getter warning from discord.js ([19831b8](https://github.com/onesoft-sudo/sudobot/commit/19831b879189e7b00ffc4465aebe7aef3d6d7d1b))
 * **types:** typo ([aee9c31](https://github.com/onesoft-sudo/sudobot/commit/aee9c31da565e0f25868186a16c4d3f230b93989))
-
-
-
-## [8.8.6](https://github.com/onesoft-sudo/sudobot/compare/v8.8.5...v8.8.6) (2024-02-10)
-
-
-### Bug Fixes
-
-* **commands:blockedmessage:** crashing during list command execution ([9fbddbc](https://github.com/onesoft-sudo/sudobot/commit/9fbddbcb7a275838117df7a3d5d166feb7865e2b))
 
 
 
