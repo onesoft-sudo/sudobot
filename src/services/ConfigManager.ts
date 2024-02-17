@@ -45,8 +45,8 @@ export default class ConfigManager extends Service {
     public readonly configSchemaPath = path.join(this.schemaDirectory, "config.json");
     public readonly systemConfigSchemaPath = path.join(this.schemaDirectory, "system.json");
 
-    protected configSchemaInfo = "";
-    protected systemConfigSchemaInfo = "";
+    protected configSchemaInfo = "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/config/schema/config.json";
+    protected systemConfigSchemaInfo = "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/config/schema/system.json";
     protected loaded = false;
     protected guildConfigSchema = GuildConfigSchema;
     protected systemConfigSchema = SystemConfigSchema;
@@ -117,6 +117,22 @@ export default class ConfigManager extends Service {
         if (!process.env.NO_GENERATE_CONFIG_SCHEMA) {
             this.generateSchema();
         }
+    }
+
+    testConfig() {
+        const guildResult = this.guildConfigContainerSchema.safeParse(this.config);
+
+        if (!guildResult.success) {
+            return { error: guildResult.error, type: "guild" as const };
+        }
+
+        const systemResult = this.systemConfigSchema.safeParse(this.systemConfig);
+
+        if (!systemResult.success) {
+            return { error: systemResult.error, type: "system" as const };
+        }
+
+        return null;
     }
 
     async write({ guild = true, system = false } = {}) {
