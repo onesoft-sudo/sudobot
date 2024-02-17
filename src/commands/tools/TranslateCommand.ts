@@ -76,7 +76,7 @@ export default class TranslateCommand extends Command implements HasEventListene
 
     @GatewayEventListener("interactionCreate")
     onInteractionCreate(interaction: Interaction<CacheType>) {
-        if (!interaction.isAutocomplete()) {
+        if (!interaction.isAutocomplete() || interaction.commandName !== this.name) {
             return;
         }
 
