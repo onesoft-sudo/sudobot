@@ -19,6 +19,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+require("module-alias/register");
 require("reflect-metadata");
 
 const { REST } = require("@discordjs/rest");
