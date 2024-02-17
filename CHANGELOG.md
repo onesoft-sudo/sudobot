@@ -1,3 +1,17 @@
+# [8.12.0](https://github.com/onesoft-sudo/sudobot/compare/v8.11.0...v8.12.0) (2024-02-17)
+
+
+### Bug Fixes
+
+* **commands:translate:** do not interfere with other commands during autocompletion ([ca56268](https://github.com/onesoft-sudo/sudobot/commit/ca56268508213ae05d76621106326009ba4dba2f))
+
+
+### Features
+
+* **commands:settings:** add `config` command for better configuration management ([6936ef8](https://github.com/onesoft-sudo/sudobot/commit/6936ef842eb324cd6ea3e265b67926897f7026cf))
+
+
+
 # [8.11.0](https://github.com/onesoft-sudo/sudobot/compare/v8.10.0...v8.11.0) (2024-02-16)
 
 
@@ -31,17 +45,6 @@
 ### Bug Fixes
 
 * **utils:EmbedSchemaParser:** infinite loop if the schema does not end with two colons `::` ([b57e716](https://github.com/onesoft-sudo/sudobot/commit/b57e7161d5e7249fa51b18e1dcf2315cf6831012))
-
-
-
-## [8.8.7](https://github.com/onesoft-sudo/sudobot/compare/v8.8.6...v8.8.7) (2024-02-11)
-
-
-### Bug Fixes
-
-* **commands:emoji:** deprecated Emoji.url getter warning from discord.js ([dd1608a](https://github.com/onesoft-sudo/sudobot/commit/dd1608a9f4c6099eb9e99ebe0ab48fd8e8b04214))
-* **commands:emoji:** deprecated Emoji.url getter warning from discord.js ([19831b8](https://github.com/onesoft-sudo/sudobot/commit/19831b879189e7b00ffc4465aebe7aef3d6d7d1b))
-* **types:** typo ([aee9c31](https://github.com/onesoft-sudo/sudobot/commit/aee9c31da565e0f25868186a16c4d3f230b93989))
 
 
 
