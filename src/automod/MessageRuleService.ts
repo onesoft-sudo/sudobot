@@ -325,8 +325,6 @@ export default class MessageRuleService extends Service implements HasEventListe
                     ? "gif"
                     : attachment.contentType.startsWith("image/png")
                     ? "png"
-                    : attachment.contentType.startsWith("image/webp")
-                    ? "webp"
                     : attachment.contentType.startsWith("image/jpeg")
                     ? "jpeg"
                     : "unknown";
