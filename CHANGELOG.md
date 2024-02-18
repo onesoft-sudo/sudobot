@@ -1,3 +1,12 @@
+## [8.13.2](https://github.com/onesoft-sudo/sudobot/compare/v8.13.1...v8.13.2) (2024-02-18)
+
+
+### Bug Fixes
+
+* **commands:update:** should install deps automatically ([62e8623](https://github.com/onesoft-sudo/sudobot/commit/62e862342cd7c8050d2b7c6c685b8101b262551d))
+
+
+
 ## [8.13.1](https://github.com/onesoft-sudo/sudobot/compare/v8.13.0...v8.13.1) (2024-02-18)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * **extensions:** elegant extension configuration support ([d0344a2](https://github.com/onesoft-sudo/sudobot/commit/d0344a2565417853784edb5c03c675ff45e07e6d))
-
-
-
-# [8.10.0](https://github.com/onesoft-sudo/sudobot/compare/v8.9.0...v8.10.0) (2024-02-15)
-
-
-### Features
-
-* add `normalMessage*` events for better extension DX ([93e5328](https://github.com/onesoft-sudo/sudobot/commit/93e532860bb9a3672773cb6d3fb82f28cef2ec2c))
 
 
 
