@@ -1,3 +1,12 @@
+# [8.13.0](https://github.com/onesoft-sudo/sudobot/compare/v8.12.0...v8.13.0) (2024-02-18)
+
+
+### Features
+
+* **automod:message_rules:nsfw:** powerful AI NSFW image detection ([43eb34e](https://github.com/onesoft-sudo/sudobot/commit/43eb34e7d8a3b7d02b9341992e88678ee28b1141))
+
+
+
 # [8.12.0](https://github.com/onesoft-sudo/sudobot/compare/v8.11.0...v8.12.0) (2024-02-17)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * **polyfills:** add FileSystem.exists() method ([98ba6f9](https://github.com/onesoft-sudo/sudobot/commit/98ba6f9cc41dfa2d89867f5f0322928cbe3140b5))
-
-
-
-## [8.8.8](https://github.com/onesoft-sudo/sudobot/compare/v8.8.7...v8.8.8) (2024-02-13)
-
-
-### Bug Fixes
-
-* **utils:EmbedSchemaParser:** infinite loop if the schema does not end with two colons `::` ([b57e716](https://github.com/onesoft-sudo/sudobot/commit/b57e7161d5e7249fa51b18e1dcf2315cf6831012))
 
 
 
