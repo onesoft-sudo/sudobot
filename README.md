@@ -46,7 +46,7 @@ Alternatively, you can create your own Discord API application and then host Sud
 
 Please look at [this page](https://docs.sudobot.org/getting-started) of the documentation.
 
-### Contributors
+### Contributors [A-Z]
 
 Thanks to all the active and indirect contributors!
 
@@ -56,6 +56,7 @@ Thanks to all the active and indirect contributors!
 -   [killerclaws12](https://github.com/killerclaws12)
 -   [MonzterDev](https://github.com/MonzterDev)
 -   [GuynnR](https://github.com/GuynnR)
+-   [Ryanmello07](https://github.com/Ryanmello07) (Contributed by giving away a hosting server and by giving a lot of suggestions/ideas to us)
 
 ### Support
 
