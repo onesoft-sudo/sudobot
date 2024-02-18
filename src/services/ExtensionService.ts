@@ -233,11 +233,11 @@ const extensionMetadataSchema = z.object({
 });
 
 export default class ExtensionService extends Service {
-    protected readonly extensionsPath = process.env.EXTENSIONS_DIRECTORY ?? path.join(__dirname, "../../extensions");
+    protected readonly extensionsPath = process.env.EXTENSIONS_DIRECTORY;
     protected readonly guildIdResolvers = getGuildIdResolversMap();
 
     async boot() {
-        if (!existsSync(this.extensionsPath)) {
+        if (!this.extensionsPath || !existsSync(this.extensionsPath)) {
             logDebug("No extensions found");
             await this.initializeConfigService();
             return;
@@ -292,6 +292,10 @@ export default class ExtensionService extends Service {
     }
 
     async loadExtensions() {
+        if (!this.extensionsPath) {
+            return;
+        }
+
         const extensions = await fs.readdir(this.extensionsPath);
         const loadInfoList = [];
         const extensionInitializers = [];
