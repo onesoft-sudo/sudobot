@@ -51,11 +51,11 @@ Please look at [this page](https://docs.sudobot.org/getting-started) of the docu
 Thanks to all the active and indirect contributors!
 
 -   [Ar Rakin](https://github.com/virtual-designer) (Maintainer)
+-   [GuynnR](https://github.com/GuynnR)
 -   Hana (A Discord User)
 -   [Kars](https://github.com/kars1996) (Contributed by giving away a domain and a hosting server to us)
 -   [killerclaws12](https://github.com/killerclaws12)
 -   [MonzterDev](https://github.com/MonzterDev)
--   [GuynnR](https://github.com/GuynnR)
 -   [Ryanmello07](https://github.com/Ryanmello07) (Contributed by giving away a hosting server and by giving a lot of suggestions/ideas to us)
 
 ### Support
