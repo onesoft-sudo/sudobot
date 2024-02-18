@@ -19,13 +19,36 @@
 
 import Tesseract, { createWorker } from "tesseract.js";
 import Service from "../core/Service";
-import { log } from "../utils/logger";
+import { log, logInfo } from "../utils/logger";
+import { NSFWJS, load } from "nsfwjs";
+import * as tf from "@tensorflow/tfjs-node";
+import { developmentMode } from "../utils/utils";
+import sharp from "sharp";
 
 export const name = "imageRecognitionService";
 
+if (!developmentMode()) {
+    tf.enableProdMode();
+}
+
 export default class ImageRecognitionService extends Service {
     protected worker: Tesseract.Worker | null = null;
+    protected nsfwJsModel: NSFWJS | null = null;
     protected timeout: Timer | null = null;
+
+    async boot() {
+        for (const guild in this.client.configManager.config) {
+            if (
+                this.client.configManager.config[guild]?.message_rules?.rules.some(
+                    rule => rule.type === "EXPERIMENTAL_nsfw_filter"
+                )
+            ) {
+                logInfo("Loading NSFWJS model for NSFW image recognition");
+                this.nsfwJsModel = await load(process.env.NSFWJS_MODEL_URL || undefined);
+                break;
+            }
+        }
+    }
 
     protected async createWorkerIfNeeded() {
         if (!this.worker && !this.timeout) {
@@ -50,5 +73,17 @@ export default class ImageRecognitionService extends Service {
     async recognize(image: Tesseract.ImageLike) {
         await this.createWorkerIfNeeded();
         return this.worker!.recognize(image);
+    }
+
+    async detectNSFW(image: Buffer) {
+        const tensor = tf.node.decodeImage(image, 3);
+        const predictions = await this.nsfwJsModel!.classify(tensor as tf.Tensor3D);
+        const result: Record<string, number> = {};
+
+        for (const prediction of predictions) {
+            result[prediction.className.toLowerCase()] = prediction.probability;
+        }
+
+        return result;
     }
 }

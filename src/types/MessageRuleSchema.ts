@@ -122,6 +122,20 @@ export const URLCrawlRule = z
     })
     .describe("Experimental. Use at your own risk.");
 
+export const NSFWFilter = z
+    .object({
+        ...Common,
+        type: z.literal("EXPERIMENTAL_nsfw_filter"),
+        score_thresholds: z
+            .object({
+                hentai: z.number().min(0).max(1).default(0.35),
+                porn: z.number().min(0).max(1).default(0.35),
+                sexy: z.number().min(0).max(1).default(0.8)
+            })
+            .default({})
+    })
+    .describe("Experimental. Use at your own risk.");
+
 export const MessageRuleSchema = z.union([
     DomainRule,
     BlockedMimeTypeRule,
@@ -133,7 +147,8 @@ export const MessageRuleSchema = z.union([
     RegexMustMatchRule,
     ImageRule,
     EmbedRule,
-    URLCrawlRule
+    URLCrawlRule,
+    NSFWFilter
 ]);
 
 export type MessageRuleType = z.infer<typeof MessageRuleSchema>;

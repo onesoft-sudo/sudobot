@@ -34,8 +34,9 @@ import Service from "../core/Service";
 import { CreateLogEmbedOptions } from "../services/LoggerService";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { MessageRuleType } from "../types/MessageRuleSchema";
-import { log, logError, logWarn } from "../utils/logger";
+import { log, logDebug, logError, logWarn } from "../utils/logger";
 import { escapeRegex, getEmoji, request } from "../utils/utils";
+import sharp from "sharp";
 
 export const name = "messageRuleService";
 
@@ -62,7 +63,8 @@ const handlers: Record<MessageRuleType["type"], RuleInfo> = {
     regex_must_match: "ruleRegexMustMatch",
     image: "ruleImage",
     embed: "ruleEmbed",
-    EXPERIMENTAL_url_crawl: "ruleURLCrawl"
+    EXPERIMENTAL_url_crawl: "ruleURLCrawl",
+    EXPERIMENTAL_nsfw_filter: "ruleNSFWFilter"
 };
 
 type MessageRuleAction = MessageRuleType["actions"][number];
@@ -290,6 +292,78 @@ export default class MessageRuleService extends Service implements HasEventListe
         }
 
         return { includes: false };
+    }
+
+    async ruleNSFWFilter(message: Message, rule: Extract<MessageRuleType, { type: "EXPERIMENTAL_nsfw_filter" }>) {
+        logDebug("Scanning for NSFW content");
+
+        if (message.attachments.size === 0) {
+            return null;
+        }
+
+        const { score_thresholds } = rule;
+
+        for (const attachment of message.attachments.values()) {
+            logDebug("Scanning attachment", attachment.id);
+
+            if (attachment instanceof Attachment && attachment.contentType?.startsWith("image/")) {
+                logDebug("Scanning image attachment", attachment.id);
+
+                const [response, error] = await request({
+                    url: attachment.proxyURL,
+                    method: "GET",
+                    responseType: "arraybuffer"
+                });
+
+                if (error || !response) {
+                    logError(error);
+                    return;
+                }
+
+                const imageData = Buffer.from(response.data, "binary");
+                const sharpMethodName = attachment.contentType.startsWith("image/gif")
+                    ? "gif"
+                    : attachment.contentType.startsWith("image/png")
+                    ? "png"
+                    : attachment.contentType.startsWith("image/webp")
+                    ? "webp"
+                    : attachment.contentType.startsWith("image/jpeg")
+                    ? "jpeg"
+                    : "unknown";
+
+                if (sharpMethodName === "unknown") {
+                    logWarn("Unknown image type");
+                    continue;
+                }
+
+                const sharpInfo = sharp(imageData);
+                const sharpMethod = sharpInfo[sharpMethodName].bind(sharpInfo);
+                const convertedImageBuffer = await sharpMethod().toBuffer();
+                const result = await this.client.imageRecognitionService.detectNSFW(convertedImageBuffer);
+                const isNSFW =
+                    result.hentai >= score_thresholds.hentai ||
+                    result.porn >= score_thresholds.porn ||
+                    result.sexy >= score_thresholds.sexy;
+
+                logDebug("NSFW result", result);
+
+                if (isNSFW) {
+                    return {
+                        title: "NSFW content detected in image",
+                        fields: [
+                            {
+                                name: "Scores",
+                                value: `Hentai: ${Math.round(result.hentai * 100)}%\nPorn: ${Math.round(
+                                    result.porn * 100
+                                )}%\nSexy: ${Math.round(result.sexy * 100)}%\nNeutral: ${Math.round(result.neutral * 100)}%`
+                            }
+                        ]
+                    } as CreateLogEmbedOptions;
+                }
+            }
+        }
+
+        return null;
     }
 
     async ruleEmbed(message: Message, rule: Extract<MessageRuleType, { type: "embed" }>) {
