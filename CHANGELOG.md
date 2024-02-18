@@ -1,3 +1,12 @@
+## [8.13.3](https://github.com/onesoft-sudo/sudobot/compare/v8.13.2...v8.13.3) (2024-02-18)
+
+
+### Bug Fixes
+
+* **automod:rules:nsfw:** remove \`webp\` support check ([0877766](https://github.com/onesoft-sudo/sudobot/commit/0877766cb60d74f9ff30638a7d35a41554e1873b))
+
+
+
 ## [8.13.2](https://github.com/onesoft-sudo/sudobot/compare/v8.13.1...v8.13.2) (2024-02-18)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * **commands:settings:** add `config` command for better configuration management ([6936ef8](https://github.com/onesoft-sudo/sudobot/commit/6936ef842eb324cd6ea3e265b67926897f7026cf))
-
-
-
-# [8.11.0](https://github.com/onesoft-sudo/sudobot/compare/v8.10.0...v8.11.0) (2024-02-16)
-
-
-### Features
-
-* **extensions:** elegant extension configuration support ([d0344a2](https://github.com/onesoft-sudo/sudobot/commit/d0344a2565417853784edb5c03c675ff45e07e6d))
 
 
 
