@@ -464,7 +464,19 @@ export default class UpdateCommand extends Command {
             logError("Failed to remove the old build directory. Rolling back");
             return this.rollbackUpdate(dirpairs);
         }
-        
+
+        const { status: installStatus } = spawnSync(`npm install -D`, {
+            stdio: "inherit",
+            cwd: path.join(__dirname, "../../.."),
+            encoding: "utf-8",
+            shell: true
+        });
+
+        if (installStatus !== 0) {
+            logError("Failed to install the new dependencies. Rolling back");
+            return this.rollbackUpdate(dirpairs);
+        }
+
         const { status: buildStatus } = spawnSync(`npm run build`, {
             stdio: "inherit",
             cwd: path.join(__dirname, "../../.."),
