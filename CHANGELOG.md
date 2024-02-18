@@ -1,3 +1,12 @@
+## [8.13.1](https://github.com/onesoft-sudo/sudobot/compare/v8.13.0...v8.13.1) (2024-02-18)
+
+
+### Bug Fixes
+
+* **extensions:** do not load all extensions automatically ([2dd498f](https://github.com/onesoft-sudo/sudobot/commit/2dd498f6974ada593d8948f892e2f56c07e6cf80))
+
+
+
 # [8.13.0](https://github.com/onesoft-sudo/sudobot/compare/v8.12.0...v8.13.0) (2024-02-18)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * add `normalMessage*` events for better extension DX ([93e5328](https://github.com/onesoft-sudo/sudobot/commit/93e532860bb9a3672773cb6d3fb82f28cef2ec2c))
-
-
-
-# [8.9.0](https://github.com/onesoft-sudo/sudobot/compare/v8.8.8...v8.9.0) (2024-02-15)
-
-
-### Features
-
-* **polyfills:** add FileSystem.exists() method ([98ba6f9](https://github.com/onesoft-sudo/sudobot/commit/98ba6f9cc41dfa2d89867f5f0322928cbe3140b5))
 
 
 
