@@ -49,6 +49,7 @@
     "express-rate-limit": "^6.9.0",
     "figlet": "^1.7.0",
     "googleapis": "^126.0.1",
+    "jpeg-js": "^0.4.4",
     "json5": "^2.2.3",
     "jsonwebtoken": "^9.0.1",
     "module-alias": "^2.2.3",

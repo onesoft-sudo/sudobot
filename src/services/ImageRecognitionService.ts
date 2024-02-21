@@ -23,7 +23,7 @@ import { log, logInfo } from "../utils/logger";
 import { NSFWJS, load } from "nsfwjs";
 import * as tf from "@tensorflow/tfjs-node";
 import { developmentMode } from "../utils/utils";
-import sharp from "sharp";
+import jpeg from "jpeg-js";
 
 export const name = "imageRecognitionService";
 
@@ -44,7 +44,16 @@ export default class ImageRecognitionService extends Service {
                 )
             ) {
                 logInfo("Loading NSFWJS model for NSFW image recognition");
-                this.nsfwJsModel = await load(process.env.NSFWJS_MODEL_URL || undefined);
+
+                this.nsfwJsModel = await load(
+                    process.env.NSFWJS_MODEL_URL || undefined,
+                    process.env.NSFWJS_MODEL_IMAGE_SIZE
+                        ? {
+                              size: parseInt(process.env.NSFWJS_MODEL_IMAGE_SIZE)
+                          }
+                        : undefined
+                );
+
                 break;
             }
         }
@@ -75,8 +84,8 @@ export default class ImageRecognitionService extends Service {
         return this.worker!.recognize(image);
     }
 
-    async detectNSFW(image: Buffer) {
-        const tensor = tf.node.decodeImage(image, 3);
+    async detectNSFW(image: Uint8Array | Buffer) {
+        const tensor = tf.node.decodeImage(image, 3, undefined, false);
         const predictions = await this.nsfwJsModel!.classify(tensor as tf.Tensor3D);
         const result: Record<string, number> = {};
 
@@ -84,6 +93,7 @@ export default class ImageRecognitionService extends Service {
             result[prediction.className.toLowerCase()] = prediction.probability;
         }
 
+        tensor.dispose();
         return result;
     }
 }
