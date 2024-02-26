@@ -1,3 +1,12 @@
+# [8.14.0](https://github.com/onesoft-sudo/sudobot/compare/v8.13.4...v8.14.0) (2024-02-26)
+
+
+### Features
+
+* **loggging:** voice channel events ([0de8ed7](https://github.com/onesoft-sudo/sudobot/commit/0de8ed7cef97d9825c3e3645f9cdb76644a89ad4))
+
+
+
 ## [8.13.4](https://github.com/onesoft-sudo/sudobot/compare/v8.13.3...v8.13.4) (2024-02-21)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **extensions:** do not load all extensions automatically ([2dd498f](https://github.com/onesoft-sudo/sudobot/commit/2dd498f6974ada593d8948f892e2f56c07e6cf80))
-
-
-
-# [8.13.0](https://github.com/onesoft-sudo/sudobot/compare/v8.12.0...v8.13.0) (2024-02-18)
-
-
-### Features
-
-* **automod:message_rules:nsfw:** powerful AI NSFW image detection ([43eb34e](https://github.com/onesoft-sudo/sudobot/commit/43eb34e7d8a3b7d02b9341992e88678ee28b1141))
 
 
 
