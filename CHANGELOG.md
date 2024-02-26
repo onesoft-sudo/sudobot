@@ -1,3 +1,12 @@
+# [8.15.0](https://github.com/onesoft-sudo/sudobot/compare/v8.14.0...v8.15.0) (2024-02-26)
+
+
+### Features
+
+* auto storage backup ([9225693](https://github.com/onesoft-sudo/sudobot/commit/92256932e872e68a34464b766288551d3a44d380))
+
+
+
 # [8.14.0](https://github.com/onesoft-sudo/sudobot/compare/v8.13.4...v8.14.0) (2024-02-26)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **commands:update:** should install deps automatically ([62e8623](https://github.com/onesoft-sudo/sudobot/commit/62e862342cd7c8050d2b7c6c685b8101b262551d))
-
-
-
-## [8.13.1](https://github.com/onesoft-sudo/sudobot/compare/v8.13.0...v8.13.1) (2024-02-18)
-
-
-### Bug Fixes
-
-* **extensions:** do not load all extensions automatically ([2dd498f](https://github.com/onesoft-sudo/sudobot/commit/2dd498f6974ada593d8948f892e2f56c07e6cf80))
 
 
 
