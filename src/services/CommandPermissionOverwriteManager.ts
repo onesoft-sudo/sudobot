@@ -22,7 +22,7 @@ import { GuildMember, PermissionsString, Snowflake } from "discord.js";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { log } from "../utils/logger";
+import { log } from "../utils/Logger";
 import { GetMemberPermissionInGuildResult } from "./PermissionManager";
 
 export const name = "commandPermissionOverwriteManager";

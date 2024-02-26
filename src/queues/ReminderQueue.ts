@@ -20,7 +20,7 @@
 import { formatDistanceToNowStrict } from "date-fns";
 import { EmbedBuilder } from "discord.js";
 import Queue from "../utils/Queue";
-import { log, logError } from "../utils/logger";
+import { log, logError } from "../utils/Logger";
 
 export default class ReminderQueue extends Queue {
     async run(userId: string, message: string) {

@@ -19,7 +19,7 @@
 
 import axios from "axios";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 
 export default class EncourageCommand extends Command {
     public readonly name = "encourage";
@@ -46,7 +46,10 @@ export default class EncourageCommand extends Command {
             await this.deferredReply(message, `> ${quote.q.replace(/\n/gi, "\n> ")}\n\n — *${quote.a}*`);
         } catch (e) {
             logError(e);
-            await this.error(message, "The API did not return a valid status code. This is a possible error in the API or you got ratelimited.");
+            await this.error(
+                message,
+                "The API did not return a valid status code. This is a possible error in the API or you got ratelimited."
+            );
         }
     }
 }

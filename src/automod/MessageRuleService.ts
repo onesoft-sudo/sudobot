@@ -34,7 +34,7 @@ import Service from "../core/Service";
 import { CreateLogEmbedOptions } from "../services/LoggerService";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { MessageRuleType } from "../types/MessageRuleSchema";
-import { log, logDebug, logError, logWarn } from "../utils/logger";
+import { log, logDebug, logError, logWarn } from "../utils/Logger";
 import { escapeRegex, getEmoji, request } from "../utils/utils";
 import sharp from "sharp";
 
@@ -174,7 +174,7 @@ export default class MessageRuleService extends Service implements HasEventListe
 
                         log(embedOptions);
 
-                        await this.client.logger
+                        await this.client.loggerService
                             .logMessageRuleAction({
                                 message,
                                 actions: rule.actions,

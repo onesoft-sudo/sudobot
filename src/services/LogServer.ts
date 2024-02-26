@@ -22,7 +22,7 @@ import chalk from "chalk";
 import { Server, Socket } from "socket.io";
 import Client from "../core/Client";
 import Service from "../core/Service";
-import { LogLevel, logInfo, logStringWithLevel, logWarn } from "../utils/logger";
+import { LogLevel, logInfo, logWarn } from "../utils/Logger";
 
 export const name = "logServer";
 
@@ -31,7 +31,6 @@ export default class LogServer extends Service {
     protected connections = 0;
     private _io?: Server;
     public readonly sockets: Array<Socket> = [];
-    public readonly attributes: Array<{ colorize?: boolean }> = [];
 
     constructor(client: Client) {
         super(client);
@@ -98,7 +97,6 @@ export default class LogServer extends Service {
 
                 if (index !== -1) {
                     this.sockets.splice(index, 1);
-                    this.attributes.splice(index, 1);
                 }
             });
 
@@ -107,14 +105,9 @@ export default class LogServer extends Service {
                 return;
             }
 
-            const colorize = socket.request.headers["x-colorize"] === "Yes";
-
-            socket.write(`${colorize ? chalk.cyan("[info]") : "[info]"} Connection Accepted`);
+            socket.write(`chalk.cyan("[info]")} Connection Accepted`);
 
             this.sockets.push(socket);
-            this.attributes.push({
-                colorize
-            });
         });
     }
 
@@ -124,15 +117,9 @@ export default class LogServer extends Service {
         }
     }
 
-    log(level: LogLevel, message: string) {
+    log(message: string) {
         this.sockets.forEach((socket, index) => {
-            const { colorize } = this.attributes[index] ?? {};
-
-            if (colorize) {
-                socket.send(logStringWithLevel(level, message));
-            } else {
-                socket.send(`[system:${LogLevel[level].toLowerCase()}] ${message}`);
-            }
+            socket.send(`${message}`);
         });
     }
 

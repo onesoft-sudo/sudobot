@@ -32,7 +32,7 @@ import {
 } from "discord.js";
 import JSON5 from "json5";
 import { z } from "zod";
-import { log } from "./logger";
+import { log } from "./Logger";
 
 type EmbedType = Embed | APIEmbed;
 type GetMessageOptions = MessageCreateOptions | APIMessage | MessageEditOptions;

@@ -23,7 +23,7 @@ import path from "node:path";
 import { chdir, cwd } from "node:process";
 import readline from "node:readline";
 import Service from "../core/Service";
-import { LogLevel, logError, logInfo, logWarn, logWithLevel } from "../utils/logger";
+import { LogLevel, logError, logInfo, logWarn, logWithLevel } from "../utils/Logger";
 import { developmentMode } from "../utils/utils";
 
 export const name = "keypressHandler";
@@ -83,23 +83,23 @@ export default class KeypressHandlerService extends Service {
     };
 
     quit() {
-        logWithLevel(LogLevel.EVENT, "Quit");
+        logWithLevel(LogLevel.Event, "Quit");
         process.exit(0);
     }
 
     interrupt() {
-        logWithLevel(LogLevel.EVENT, "SIGINT signal received. Exiting");
+        logWithLevel(LogLevel.Event, "SIGINT signal received. Exiting");
         process.exit(1);
     }
 
     async reloadConfig() {
         await this.client.configManager.load();
-        logWithLevel(LogLevel.EVENT, "Successfully reloaded configuration files");
+        logWithLevel(LogLevel.Event, "Successfully reloaded configuration files");
     }
 
     async writeConfig() {
         await this.client.configManager.write({ guild: true, system: true });
-        logWithLevel(LogLevel.EVENT, "Successfully saved configuration files to disk");
+        logWithLevel(LogLevel.Event, "Successfully saved configuration files to disk");
     }
 
     async reloadCommands(force = false) {
@@ -108,7 +108,7 @@ export default class KeypressHandlerService extends Service {
         let built = false,
             failed = false;
 
-        logWithLevel(LogLevel.EVENT, "Hot reloading commands");
+        logWithLevel(LogLevel.Event, "Hot reloading commands");
 
         await this.client.dynamicLoader.loadCommands(undefined, true, async filePath => {
             if (failed) {
@@ -158,7 +158,7 @@ export default class KeypressHandlerService extends Service {
         if (failed) {
             logError("Build failed. Aborting hot reload");
         } else {
-            logWithLevel(LogLevel.EVENT, "Successfully hot reloaded commands");
+            logWithLevel(LogLevel.Event, "Successfully hot reloaded commands");
         }
     }
 

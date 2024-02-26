@@ -32,7 +32,7 @@ import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { safeChannelFetch, safeMessageFetch } from "../utils/fetch";
-import { log, logError, logInfo, logSuccess } from "../utils/logger";
+import { log, logError, logInfo, logSuccess } from "../utils/Logger";
 import { chunkedString, getEmoji, sudoPrefix } from "../utils/utils";
 import archiver from "archiver";
 

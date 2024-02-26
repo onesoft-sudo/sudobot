@@ -70,6 +70,7 @@ import type Command from "./Command";
 import DynamicLoader from "./DynamicLoader";
 import Service from "./Service";
 import ServiceManager from "./ServiceManager";
+import { Logger } from "../utils/Logger";
 
 class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
     public static instance: Client;
@@ -91,6 +92,7 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
         services: path.resolve(__dirname, "../services")
     };
 
+    public readonly logger = new Logger("system", !process.env.NO_DATETIME_LOGGING);
     public readonly services = [
         "@services/StartupManager",
         "@services/ConfigManager" /* This service is manually booted by the Extension Service. */,
@@ -136,7 +138,7 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
     configManager!: ConfigManager;
     commandManager!: CommandManager;
     infractionManager!: InfractionManager;
-    logger!: LoggerService;
+    loggerService!: LoggerService;
     messageFilter!: MessageFilter;
     antispam!: Antispam;
     queueManager!: QueueManager;

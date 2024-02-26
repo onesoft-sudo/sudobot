@@ -30,7 +30,7 @@ import {
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import EmbedSchemaParser from "../../utils/EmbedSchemaParser";
 import { messageInfo } from "../../utils/embed";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 import { getEmojiObject, isTextableChannel } from "../../utils/utils";
 
 export default class EchoCommand extends Command {

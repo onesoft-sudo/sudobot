@@ -21,7 +21,7 @@ import path from "path";
 import Queue from "../utils/Queue";
 import QueueEntry from "../utils/QueueEntry";
 import { safeChannelFetch } from "../utils/fetch";
-import { logError } from "../utils/logger";
+import { logError } from "../utils/Logger";
 
 export default class ScheduleAndExpireMessageQueue extends Queue {
     async run(channelId: string, timeIntervalString: string, content: string) {

@@ -19,7 +19,7 @@
 
 import axios from "axios";
 import Service from "../core/Service";
-import { log, logError } from "../utils/logger";
+import { log, logError } from "../utils/Logger";
 
 export const name = "translator";
 

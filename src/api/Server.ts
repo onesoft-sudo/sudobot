@@ -24,7 +24,7 @@ import { Router } from "express-serve-static-core";
 import { Server as HttpServer } from "http";
 import Client from "../core/Client";
 import { RouteMetadata, RouteMetadataEntry } from "../types/RouteMetadata";
-import { log, logInfo, logWarn } from "../utils/logger";
+import { log, logInfo, logWarn } from "../utils/Logger";
 import Controller from "./Controller";
 import Response from "./Response";
 

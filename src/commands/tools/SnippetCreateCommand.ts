@@ -19,7 +19,7 @@
 
 import { Message, PermissionsBitField, escapeCodeBlock, escapeInlineCode } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { log } from "../../utils/logger";
+import { log } from "../../utils/Logger";
 
 export default class SnippetCreateCommand extends Command {
     public readonly name = "snippet__create";

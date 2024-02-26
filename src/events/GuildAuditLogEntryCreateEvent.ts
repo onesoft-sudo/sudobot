@@ -30,7 +30,7 @@ import {
 } from "discord.js";
 import EventListener from "../core/EventListener";
 import { safeUserFetch } from "../utils/fetch";
-import { logDebug } from "../utils/logger";
+import { logDebug } from "../utils/Logger";
 
 export default class GuildAuditLogEntryCreateEventListener extends EventListener<"guildAuditLogEntryCreate"> {
     public readonly name = "guildAuditLogEntryCreate";
@@ -61,7 +61,7 @@ export default class GuildAuditLogEntryCreateEventListener extends EventListener
                     }
                 });
 
-                await this.client.logger.logUserBan({
+                await this.client.loggerService.logUserBan({
                     moderator:
                         executor ??
                         (await safeUserFetch(this.client, executorId)) ??
@@ -96,7 +96,7 @@ export default class GuildAuditLogEntryCreateEventListener extends EventListener
                     }
                 });
 
-                await this.client.logger.logMemberKick({
+                await this.client.loggerService.logMemberKick({
                     moderator:
                         executor ??
                         (await safeUserFetch(this.client, executorId)) ??
@@ -108,14 +108,14 @@ export default class GuildAuditLogEntryCreateEventListener extends EventListener
                 });
             }
         } else if (auditLogEntry.action === AuditLogEvent.MemberDisconnect) {
-            await this.client.logger.logMemberDisconnect({
+            await this.client.loggerService.logMemberDisconnect({
                 user: auditLogEntry.target as User,
                 guild,
                 moderator: auditLogEntry.executor ?? undefined,
                 reason: auditLogEntry.reason ?? undefined
             });
         } else if (auditLogEntry.action === AuditLogEvent.MemberMove) {
-            await this.client.logger.logMemberVoiceMove({
+            await this.client.loggerService.logMemberVoiceMove({
                 user: auditLogEntry.target as User,
                 guild,
                 moderator: auditLogEntry.executor ?? undefined,
@@ -131,14 +131,14 @@ export default class GuildAuditLogEntryCreateEventListener extends EventListener
 
             if (lastChange.key === "mute") {
                 if (lastChange.old === false && lastChange.new === true) {
-                    await this.client.logger.logMemberVoiceMute({
+                    await this.client.loggerService.logMemberVoiceMute({
                         user: auditLogEntry.target as User,
                         guild,
                         moderator: auditLogEntry.executor ?? undefined,
                         reason: auditLogEntry.reason ?? undefined
                     });
                 } else if (lastChange.old === true && lastChange.new === false) {
-                    await this.client.logger.logMemberVoiceUnmute({
+                    await this.client.loggerService.logMemberVoiceUnmute({
                         user: auditLogEntry.target as User,
                         guild,
                         moderator: auditLogEntry.executor ?? undefined,
@@ -149,14 +149,14 @@ export default class GuildAuditLogEntryCreateEventListener extends EventListener
 
             if (lastChange.key === "deaf") {
                 if (lastChange.old === false && lastChange.new === true) {
-                    await this.client.logger.logMemberDeaf({
+                    await this.client.loggerService.logMemberDeaf({
                         user: auditLogEntry.target as User,
                         guild,
                         moderator: auditLogEntry.executor ?? undefined,
                         reason: auditLogEntry.reason ?? undefined
                     });
                 } else if (lastChange.old === true && lastChange.new === false) {
-                    await this.client.logger.logMemberUndeaf({
+                    await this.client.loggerService.logMemberUndeaf({
                         user: auditLogEntry.target as User,
                         guild,
                         moderator: auditLogEntry.executor ?? undefined,

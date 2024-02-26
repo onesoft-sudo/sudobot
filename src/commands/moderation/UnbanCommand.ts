@@ -19,7 +19,7 @@
 
 import { GuildMember, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 import { createModerationEmbed } from "../../utils/utils";
 
 export default class UnbanCommand extends Command {

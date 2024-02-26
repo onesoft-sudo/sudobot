@@ -24,7 +24,7 @@ import AbstractPermissionManager from "../utils/AbstractPermissionManager";
 import DiscordBasedPermissionManager from "../utils/DiscordBasedPermissionManager";
 import LayerBasedPermissionManager from "../utils/LayerBasedPermissionManager";
 import LevelBasedPermissionManager from "../utils/LevelBasedPermissionManager";
-import { logInfo, log } from "../utils/logger";
+import { logInfo, log } from "../utils/Logger";
 import { GuildConfig } from "./ConfigManager";
 
 export const name = "permissionManager";

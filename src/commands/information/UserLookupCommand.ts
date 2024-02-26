@@ -20,7 +20,7 @@
 import { formatDistanceStrict, formatDistanceToNowStrict } from "date-fns";
 import { EmbedBuilder, GuildMember, PermissionFlagsBits, SlashCommandBuilder, User, userMention } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 import { flagsToString } from "../../utils/userflags";
 
 export default class UserLookupCommand extends Command {

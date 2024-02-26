@@ -21,7 +21,7 @@ import { GlobalUserBan } from "@prisma/client";
 import { ChatInputCommandInteraction, Collection, ContextMenuCommandInteraction, Message, Snowflake, User } from "discord.js";
 import { CommandMessage } from "../core/Command";
 import Service from "../core/Service";
-import { log, logError, logWarn } from "../utils/logger";
+import { log, logError, logWarn } from "../utils/Logger";
 import { GuildConfig } from "./ConfigManager";
 
 export const name = "commandManager";

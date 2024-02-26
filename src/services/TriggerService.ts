@@ -32,7 +32,7 @@ import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { TriggerType } from "../types/TriggerSchema";
-import { logError } from "../utils/logger";
+import { logError } from "../utils/Logger";
 
 export const name = "triggerService";
 

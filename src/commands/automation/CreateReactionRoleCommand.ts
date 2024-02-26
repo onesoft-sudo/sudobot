@@ -20,7 +20,7 @@
 import { PermissionFlagsBits, SlashCommandBuilder, Snowflake, TextBasedChannel, parseEmoji } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { safeChannelFetch, safeMessageFetch, safeRoleFetch } from "../../utils/fetch";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 import { isSnowflake } from "../../utils/utils";
 
 export default class CreateReactionRoleCommand extends Command {

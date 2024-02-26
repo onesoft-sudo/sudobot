@@ -28,7 +28,7 @@ import {
 } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { stringToTimeInterval } from "../../utils/datetime";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 import { createModerationEmbed } from "../../utils/utils";
 
 export default class BanCommand extends Command {

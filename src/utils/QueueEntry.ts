@@ -19,7 +19,7 @@
 
 import path from "path";
 import Queue, { QueueConstructorOptions } from "./Queue";
-import { log, logError } from "./logger";
+import { log, logError } from "./Logger";
 
 export default class QueueEntry {
     timeout: Timer | undefined = undefined;

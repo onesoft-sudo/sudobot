@@ -20,7 +20,7 @@
 import { GuildMember, PermissionsBitField, SlashCommandBuilder, User } from "discord.js";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { stringToTimeInterval } from "../../utils/datetime";
-import { log, logError } from "../../utils/logger";
+import { log, logError } from "../../utils/Logger";
 import { isSnowflake } from "../../utils/utils";
 
 export default class MassBanCommand extends Command {

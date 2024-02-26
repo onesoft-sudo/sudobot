@@ -32,7 +32,7 @@ import path from "path";
 import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import { HasEventListeners } from "../../types/HasEventListeners";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 import { sudoPrefix } from "../../utils/utils";
 
 export default class RestartCommand extends Command implements HasEventListeners {

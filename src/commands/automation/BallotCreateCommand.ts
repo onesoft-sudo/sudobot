@@ -19,7 +19,7 @@
 
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, Message, User } from "discord.js";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn } from "../../core/Command";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 import { getComponentEmojiResolvable, isTextableChannel } from "../../utils/utils";
 
 export default class BallotCreateCommand extends Command {

@@ -28,7 +28,7 @@ import {
     User
 } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 import { isTextableChannel } from "../../utils/utils";
 
 const THREE_DAYS = 1000 * 60 * 60 * 24 * 3;

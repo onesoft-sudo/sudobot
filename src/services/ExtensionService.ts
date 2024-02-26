@@ -27,7 +27,7 @@ import EventListener from "../core/EventListener";
 import { Extension } from "../core/Extension";
 import Service from "../core/Service";
 import type { ClientEvents } from "../types/ClientEvents";
-import { log, logDebug, logError, logInfo, logWarn } from "../utils/logger";
+import { log, logDebug, logError, logInfo, logWarn } from "../utils/Logger";
 
 export const name = "extensionService";
 

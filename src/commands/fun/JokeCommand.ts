@@ -21,7 +21,7 @@ import axios, { AxiosRequestConfig } from "axios";
 import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { GuildConfig } from "../../types/GuildConfigSchema";
-import { log, logError } from "../../utils/logger";
+import { log, logError } from "../../utils/Logger";
 
 type JokeType = GuildConfig["commands"]["default_joke_type"];
 

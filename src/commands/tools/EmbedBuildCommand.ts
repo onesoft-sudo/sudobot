@@ -20,7 +20,7 @@
 import { Message, PermissionsBitField } from "discord.js";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import EmbedSchemaParser from "../../utils/EmbedSchemaParser";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 
 export default class EmbedBuildCommand extends Command {
     public readonly name = "embed__build";

@@ -20,7 +20,7 @@
 import { Message, PermissionsBitField } from "discord.js";
 import Service from "../core/Service";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { logError } from "../utils/logger";
+import { logError } from "../utils/Logger";
 import { isImmuneToAutoMod } from "../utils/utils";
 
 export const name = "messageFilter";
@@ -65,7 +65,7 @@ export default class MessageFilter extends Service implements HasEventListeners 
                     (config.send_logs === true || (typeof config.send_logs === "object" && config.send_logs.blocked_messages))))
         ) {
             const blockType = !tokenSafe ? "token" : !wordSafe ? "word" : "message";
-            this.client.logger
+            this.client.loggerService
                 .logBlockedWordOrToken({
                     guild: message.guild!,
                     content: message.content,

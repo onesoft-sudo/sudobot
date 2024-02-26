@@ -27,7 +27,7 @@ import Service from "../core/Service";
 import FileSystem from "../polyfills/FileSystem";
 import { GuildConfig, GuildConfigSchema } from "../types/GuildConfigSchema";
 import { SystemConfig, SystemConfigSchema } from "../types/SystemConfigSchema";
-import { log, logDebug, logInfo } from "../utils/logger";
+import { log, logDebug, logInfo } from "../utils/Logger";
 import { sudoPrefix } from "../utils/utils";
 
 export * from "../types/GuildConfigSchema";

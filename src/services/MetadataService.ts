@@ -20,7 +20,7 @@
 import path from "node:path";
 import Service from "../core/Service";
 import FileSystem from "../polyfills/FileSystem";
-import { log } from "../utils/logger";
+import { log } from "../utils/Logger";
 
 export const name = "metadata";
 

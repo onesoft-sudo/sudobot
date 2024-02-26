@@ -23,7 +23,7 @@
 import { Message, type Snowflake } from "discord.js";
 import type Client from "../core/Client";
 import { CommandMessage } from "../core/Command";
-import { logError } from "./logger";
+import { logError } from "./Logger";
 
 export async function protectSystemAdminsFromCommands(
     client: Client,

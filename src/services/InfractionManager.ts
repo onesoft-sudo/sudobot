@@ -48,7 +48,7 @@ import path from "path";
 import Service from "../core/Service";
 import QueueEntry from "../utils/QueueEntry";
 import { safeChannelFetch } from "../utils/fetch";
-import { log, logError } from "../utils/logger";
+import { log, logError } from "../utils/Logger";
 import { getEmoji, wait } from "../utils/utils";
 
 export const name = "infractionManager";
@@ -345,7 +345,7 @@ export default class InfractionManager extends Service {
         });
 
         if (sendLog)
-            this.client.logger.logUserSoftBan({
+            this.client.loggerService.logUserSoftBan({
                 moderator,
                 guild,
                 id: `${id}`,
@@ -403,7 +403,7 @@ export default class InfractionManager extends Service {
         }
 
         if (sendLog)
-            this.client.logger.logUserBan({
+            this.client.loggerService.logUserBan({
                 moderator,
                 guild,
                 id: `${id}`,
@@ -558,7 +558,7 @@ export default class InfractionManager extends Service {
         });
 
         if (sendLog)
-            this.client.logger.logUserUnban({
+            this.client.loggerService.logUserUnban({
                 moderator,
                 guild,
                 id: `${id}`,
@@ -582,7 +582,7 @@ export default class InfractionManager extends Service {
             }
         });
 
-        this.client.logger.logMemberKick({
+        this.client.loggerService.logMemberKick({
             moderator,
             guild,
             id: `${id}`,
@@ -619,7 +619,7 @@ export default class InfractionManager extends Service {
         });
         const { id } = infraction;
 
-        this.client.logger.logMemberWarning({
+        this.client.loggerService.logMemberWarning({
             moderator,
             member,
             guild,
@@ -724,7 +724,7 @@ export default class InfractionManager extends Service {
                 this.client.configManager.config[messageChannel.guildId!]?.logging?.enabled &&
                 this.client.configManager.config[messageChannel.guildId!]?.logging?.events.message_bulk_delete
             ) {
-                this.client.logger
+                this.client.loggerService
                     .logBulkDeleteMessages({
                         channel: messageChannel,
                         count,
@@ -847,7 +847,7 @@ export default class InfractionManager extends Service {
         const { id } = infraction;
 
         if (sendLog) {
-            this.client.logger.logMemberMute({
+            this.client.loggerService.logMemberMute({
                 moderator,
                 member,
                 guild,
@@ -934,7 +934,7 @@ export default class InfractionManager extends Service {
         });
 
         if (sendLog) {
-            this.client.logger.logMemberUnmute({
+            this.client.loggerService.logMemberUnmute({
                 moderator,
                 member,
                 guild,
@@ -1056,7 +1056,7 @@ export default class InfractionManager extends Service {
         });
 
         if (sendLog)
-            await this.client.logger.logUserMassBan({
+            await this.client.loggerService.logUserMassBan({
                 users: completedUsers,
                 reason,
                 guild,
@@ -1145,7 +1145,7 @@ export default class InfractionManager extends Service {
         });
 
         if (sendLog)
-            await this.client.logger.logUserMassBan({
+            await this.client.loggerService.logUserMassBan({
                 users: completedUsers,
                 reason,
                 guild,

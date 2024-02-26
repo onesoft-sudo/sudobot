@@ -24,7 +24,7 @@ import { z } from "zod";
 import { Action } from "../../decorators/Action";
 import { Validate } from "../../decorators/Validate";
 import { zSnowflake } from "../../types/SnowflakeSchema";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 import Controller from "../Controller";
 import Request from "../Request";
 import Response from "../Response";

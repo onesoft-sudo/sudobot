@@ -21,7 +21,7 @@ import { formatDistanceToNow } from "date-fns";
 import { ChatInputCommandInteraction, Message, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { stringToTimeInterval } from "../../utils/datetime";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 import { protectSystemAdminsFromCommands } from "../../utils/troll";
 import { createModerationEmbed } from "../../utils/utils";
 

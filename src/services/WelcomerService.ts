@@ -36,7 +36,7 @@ import JSON5 from "json5";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { NotUndefined } from "../types/NotUndefined";
-import { log, logError, logWarn } from "../utils/logger";
+import { log, logError, logWarn } from "../utils/Logger";
 import { pick, sudoPrefix } from "../utils/utils";
 import { GuildConfig } from "./ConfigManager";
 

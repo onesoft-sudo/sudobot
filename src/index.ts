@@ -27,7 +27,7 @@ import { existsSync, readFileSync } from "fs";
 import { createInterface } from "node:readline/promises";
 import path from "path";
 import Client from "./core/Client";
-import { logError, logInfo, logSuccess } from "./utils/logger";
+import { logError, logInfo, logSuccess } from "./utils/Logger";
 import { sudoPrefix } from "./utils/utils";
 
 global.bootDate = Date.now();

@@ -34,7 +34,7 @@ import {
 } from "discord.js";
 import * as uuid from "uuid";
 import Client from "../core/Client";
-import { log } from "./logger";
+import { log } from "./Logger";
 import { getComponentEmojiResolvable } from "./utils";
 
 export default class Pagination<T> {

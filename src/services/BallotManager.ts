@@ -22,7 +22,7 @@ import { CacheType, EmbedBuilder, Interaction, Snowflake } from "discord.js";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { log, logError } from "../utils/logger";
+import { log, logError } from "../utils/Logger";
 import { getEmoji } from "../utils/utils";
 
 export const name = "ballotManager";

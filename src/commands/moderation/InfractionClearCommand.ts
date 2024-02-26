@@ -20,7 +20,7 @@
 import { InfractionType } from "@prisma/client";
 import { PermissionsBitField, User } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { log } from "../../utils/logger";
+import { log } from "../../utils/Logger";
 
 export default class InfractionClearCommand extends Command {
     public readonly name = "infraction__clear";

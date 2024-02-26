@@ -19,7 +19,7 @@
 
 import { Guild, TextChannel } from "discord.js";
 import Client from "../core/Client";
-import { logError } from "./logger";
+import { logError } from "./Logger";
 import { isTextableChannel } from "./utils";
 
 export interface QueueConstructorOptions {

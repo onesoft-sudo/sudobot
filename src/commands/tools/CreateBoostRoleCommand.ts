@@ -21,7 +21,7 @@ import { ChatInputCommandInteraction, ColorResolvable, GuildMember, SlashCommand
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 import { ChatInputCommandContext } from "../../services/CommandManager";
 import { safeRoleFetch } from "../../utils/fetch";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 
 export default class CreateBoostRoleCommand extends Command {
     public readonly name = "createboostrole";

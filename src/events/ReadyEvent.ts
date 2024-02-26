@@ -20,7 +20,7 @@
 import type Client from "../core/Client";
 import EventListener from "../core/EventListener";
 import { Events } from "../types/ClientEvents";
-import { logError, logInfo, logWarn } from "../utils/logger";
+import { logError, logInfo, logWarn } from "../utils/Logger";
 
 export default class ReadyEvent extends EventListener<Events.Ready> {
     public readonly name = Events.Ready;

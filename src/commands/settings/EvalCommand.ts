@@ -19,7 +19,7 @@
 
 import { SlashCommandBuilder, escapeCodeBlock, escapeMarkdown } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 
 export default class EvalCommand extends Command {
     public readonly name = "eval";

@@ -22,7 +22,7 @@ import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 import { ContextMenuCommandContext } from "../../services/CommandManager";
 import { channelInfo, messageInfo, userInfo } from "../../utils/embed";
 import { safeChannelFetch } from "../../utils/fetch";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 
 export default class SaveMessageCommand extends Command {
     public readonly name = "Save Message";

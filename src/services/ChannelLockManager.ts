@@ -19,7 +19,7 @@
 
 import { ChannelType, Guild, GuildBasedChannel, PermissionFlagsBits, Snowflake, TextChannel, User } from "discord.js";
 import Service from "../core/Service";
-import { log, logError } from "../utils/logger";
+import { log, logError } from "../utils/Logger";
 import { getChannelPermissionOverride } from "../utils/utils";
 
 export const name = "channelLockManager";
@@ -126,7 +126,7 @@ export default class ChannelLockManager extends Service {
             data: originalPermissions
         });
 
-        await this.client.logger.logServerLockOrUnlock({
+        await this.client.loggerService.logServerLockOrUnlock({
             guild,
             action: "Locked",
             moderator,
@@ -228,7 +228,7 @@ export default class ChannelLockManager extends Service {
                 }
             });
 
-        await this.client.logger.logServerLockOrUnlock({
+        await this.client.loggerService.logServerLockOrUnlock({
             guild,
             action: "Unlocked",
             moderator,
@@ -276,7 +276,7 @@ export default class ChannelLockManager extends Service {
             if (permissionOverwrites) await channel.permissionOverwrites?.edit(channel.guild.id, options);
             else await channel.permissionOverwrites?.create(channel.guild.id, options);
 
-            this.client.logger
+            this.client.loggerService
                 .logChannelLockOrUnlock({
                     guild: channel.guild,
                     action: "Locked",
@@ -322,7 +322,7 @@ export default class ChannelLockManager extends Service {
             if (permissionOverwrites) await channel.permissionOverwrites?.edit(channel.guild.id, options);
             else await channel.permissionOverwrites?.create(channel.guild.id, options);
 
-            this.client.logger
+            this.client.loggerService
                 .logChannelLockOrUnlock({
                     guild: channel.guild,
                     action: "Unlocked",

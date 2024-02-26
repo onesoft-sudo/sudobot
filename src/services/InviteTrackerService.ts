@@ -21,7 +21,7 @@ import { Collection, Guild, GuildMember, GuildPremiumTier, Invite, Snowflake, Va
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { log, logError } from "../utils/logger";
+import { log, logError } from "../utils/Logger";
 import { wait } from "../utils/utils";
 
 export const name = "inviteTracker";

@@ -21,7 +21,7 @@ import { Collection } from "discord.js";
 import path from "path";
 import Service from "../core/Service";
 import QueueEntry from "../utils/QueueEntry";
-import { log, logError } from "../utils/logger";
+import { log, logError } from "../utils/Logger";
 
 export const name = "queueManager";
 

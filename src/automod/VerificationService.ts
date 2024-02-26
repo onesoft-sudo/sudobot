@@ -37,7 +37,7 @@ import Service from "../core/Service";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { userInfo } from "../utils/embed";
 import { safeChannelFetch, safeMemberFetch } from "../utils/fetch";
-import { logError } from "../utils/logger";
+import { logError } from "../utils/Logger";
 
 export const name = "verification";
 

@@ -19,7 +19,7 @@
 
 import Tesseract, { createWorker } from "tesseract.js";
 import Service from "../core/Service";
-import { log, logInfo } from "../utils/logger";
+import { log, logInfo } from "../utils/Logger";
 import { NSFWJS, load } from "nsfwjs";
 import * as tf from "@tensorflow/tfjs-node";
 import { developmentMode } from "../utils/utils";

@@ -6,6 +6,6 @@ export default class VoiceStateUpdateEventListener extends EventListener<Events.
     public readonly name = Events.VoiceStateUpdate;
 
     async execute(oldState: VoiceState, newState: VoiceState) {
-        await this.client.logger.logVoiceStateUpdate(oldState, newState);
+        await this.client.loggerService.logVoiceStateUpdate(oldState, newState);
     }
 }

@@ -23,7 +23,7 @@ import { readFile, rm } from "node:fs/promises";
 import Service from "../core/Service";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { downloadFile } from "../utils/download";
-import { logError, logInfo, logWarn } from "../utils/logger";
+import { logError, logInfo, logWarn } from "../utils/Logger";
 import { sudoPrefix } from "../utils/utils";
 
 export const name = "fileFilter";
@@ -61,7 +61,7 @@ export default class FileFilterService extends Service implements HasEventListen
         const info = await this.handle(message);
 
         if (info) {
-            await this.client.logger.logFileFilterDeletedMessage(message, {
+            await this.client.loggerService.logFileFilterDeletedMessage(message, {
                 contentType: info.attachment ? info.attachment.contentType : undefined,
                 hash: info.hash,
                 url: info.attachment ? info.attachment.url : info.url!,

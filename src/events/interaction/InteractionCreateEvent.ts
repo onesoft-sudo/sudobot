@@ -20,7 +20,7 @@
 import { Interaction } from "discord.js";
 import EventListener from "../../core/EventListener";
 import { Events } from "../../types/ClientEvents";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 
 export default class InteractionCreateEvent extends EventListener<Events.InteractionCreate> {
     public readonly name = Events.InteractionCreate;

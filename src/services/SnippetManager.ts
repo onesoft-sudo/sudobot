@@ -36,7 +36,7 @@ import Command, { CommandMessage } from "../core/Command";
 import Service from "../core/Service";
 import EmbedSchemaParser from "../utils/EmbedSchemaParser";
 import { downloadFile } from "../utils/download";
-import { LogLevel, log, logError, logInfo, logWithLevel } from "../utils/logger";
+import { LogLevel, log, logError, logInfo, logWithLevel } from "../utils/Logger";
 import { getEmoji, sudoPrefix } from "../utils/utils";
 
 export const name = "snippetManager";
@@ -271,7 +271,7 @@ export default class SnippetManager extends Service {
             const file = sudoPrefix(`storage/snippet_attachments/${guildId}/${randomAttachment}`, false);
 
             if (!existsSync(file)) {
-                logWithLevel(LogLevel.CRITICAL, `Could find attachment: ${file}`);
+                logWithLevel(LogLevel.Critical, `Could find attachment: ${file}`);
             } else {
                 files.push(file);
             }
@@ -280,7 +280,7 @@ export default class SnippetManager extends Service {
                 const file = sudoPrefix(`storage/snippet_attachments/${guildId}/${attachment}`, false);
 
                 if (!existsSync(file)) {
-                    logWithLevel(LogLevel.CRITICAL, `Could find attachment: ${file}`);
+                    logWithLevel(LogLevel.Critical, `Could find attachment: ${file}`);
                     continue;
                 }
 

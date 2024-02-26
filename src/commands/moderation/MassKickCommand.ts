@@ -19,7 +19,7 @@
 
 import { PermissionsBitField, SlashCommandBuilder, User } from "discord.js";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { log, logError } from "../../utils/logger";
+import { log, logError } from "../../utils/Logger";
 import { isSnowflake } from "../../utils/utils";
 
 export default class MassKickCommand extends Command {
@@ -29,7 +29,8 @@ export default class MassKickCommand extends Command {
     public readonly aliases = ["mkick"];
 
     public readonly description = "Kick multiple users at the same time.";
-    public readonly detailedDescription = "This command can kick multiple users. This is helpful if you want to quickly kick server raiders.";
+    public readonly detailedDescription =
+        "This command can kick multiple users. This is helpful if you want to quickly kick server raiders.";
     public readonly argumentSyntaxes = ["<...UserIDs|UserMentions> [Reason]"];
 
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.Administrator];
@@ -110,9 +111,11 @@ export default class MassKickCommand extends Command {
 
                 await reply
                     .edit({
-                        content: `${this.emoji(completedUsers.length === users.length && completedIn ? "check" : "loading")} Kicked ${
-                            completedUsers.length
-                        } out of ${users.length} users (${completedIn ? `Completed in ${completedIn}s, ` : ""}${skippedUsers.length} failures)`
+                        content: `${this.emoji(
+                            completedUsers.length === users.length && completedIn ? "check" : "loading"
+                        )} Kicked ${completedUsers.length} out of ${users.length} users (${
+                            completedIn ? `Completed in ${completedIn}s, ` : ""
+                        }${skippedUsers.length} failures)`
                     })
                     .catch(logError);
             }

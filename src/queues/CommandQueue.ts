@@ -20,7 +20,7 @@
 import { Collection, GuildMember, Snowflake, TextChannel } from "discord.js";
 import Queue from "../utils/Queue";
 import { safeChannelFetch, safeMemberFetch, safeMessageFetch } from "../utils/fetch";
-import { log, logError } from "../utils/logger";
+import { log, logError } from "../utils/Logger";
 
 export default class CommandQueue extends Queue {
     cloneObject(obj: object) {

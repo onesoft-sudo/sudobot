@@ -22,7 +22,7 @@ import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { GuildConfig } from "../types/GuildConfigSchema";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { log } from "../utils/logger";
+import { log } from "../utils/Logger";
 import { isImmuneToAutoMod } from "../utils/utils";
 
 export const name = "profileFilter";

@@ -20,7 +20,7 @@
 import { GuildMember, Message, PermissionFlagsBits, Snowflake, TextChannel } from "discord.js";
 import Service from "../core/Service";
 import { GuildConfig } from "../types/GuildConfigSchema";
-import { log, logError } from "../utils/logger";
+import { log, logError } from "../utils/Logger";
 import { isImmuneToAutoMod, isTextableChannel } from "../utils/utils";
 
 interface SpamUserInfo {

@@ -22,7 +22,7 @@ import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { GuildConfig } from "../types/GuildConfigSchema";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { logError } from "../utils/logger";
+import { logError } from "../utils/Logger";
 
 export const name = "antiraid";
 
@@ -51,7 +51,7 @@ export default class Antiraid extends Service implements HasEventListeners {
 
         if (!locked && count > config.max_joins) {
             if (config.send_log)
-                this.client.logger.logRaid({
+                this.client.loggerService.logRaid({
                     guild: member.guild,
                     action:
                         config.action === "lock"

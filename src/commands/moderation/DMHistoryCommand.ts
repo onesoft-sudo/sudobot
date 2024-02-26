@@ -19,7 +19,7 @@
 
 import { User } from "discord.js";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 
 export default class DMHistoryCommand extends Command {
     public readonly name = "dmhistory";
@@ -32,7 +32,10 @@ export default class DMHistoryCommand extends Command {
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
-        const { buffer, count } = await this.client.infractionManager.createInfractionHistoryBuffer(message.member!.user, message.guild!);
+        const { buffer, count } = await this.client.infractionManager.createInfractionHistoryBuffer(
+            message.member!.user,
+            message.guild!
+        );
 
         if (!buffer) {
             await this.deferredReply(message, "You don't have any infractions.");
@@ -51,7 +54,10 @@ export default class DMHistoryCommand extends Command {
             });
         } catch (e) {
             logError(e);
-            await this.error(message, "The system could not deliver a DM to you. Maybe you're not accepting DMs from me or this server?");
+            await this.error(
+                message,
+                "The system could not deliver a DM to you. Maybe you're not accepting DMs from me or this server?"
+            );
             return;
         }
 

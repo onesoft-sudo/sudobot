@@ -20,7 +20,7 @@
 import axios from "axios";
 import { SlashCommandBuilder } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 
 export default class MixEmojiCommand extends Command {
     public readonly name = "mixemoji";

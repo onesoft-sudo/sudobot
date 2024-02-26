@@ -19,7 +19,7 @@
 
 import Queue from "../utils/Queue";
 import { safeChannelFetch } from "../utils/fetch";
-import { logError } from "../utils/logger";
+import { logError } from "../utils/Logger";
 
 export default class ScheduleMessageQueue extends Queue {
     async run(channelId: string, content: string) {

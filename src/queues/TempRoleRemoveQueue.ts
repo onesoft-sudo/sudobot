@@ -18,7 +18,7 @@
  */
 
 import Queue from "../utils/Queue";
-import { logError } from "../utils/logger";
+import { logError } from "../utils/Logger";
 
 export default class TempRoleRemoveQueue extends Queue {
     async run(userId: string, roleId: string) {

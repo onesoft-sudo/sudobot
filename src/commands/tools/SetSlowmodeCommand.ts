@@ -21,7 +21,7 @@ import { formatDistanceToNowStrict } from "date-fns";
 import { GuildChannel, PermissionsBitField, SlashCommandBuilder } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { stringToTimeInterval } from "../../utils/datetime";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 
 export default class SetSlowmodeCommand extends Command {
     public readonly name = "setslowmode";

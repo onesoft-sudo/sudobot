@@ -21,7 +21,7 @@ import { ChannelType, GuildMember, MessageReaction, PartialMessageReaction, Part
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { log, logError, logInfo, logWarn } from "../utils/logger";
+import { log, logError, logInfo, logWarn } from "../utils/Logger";
 
 export const name = "quickmute";
 

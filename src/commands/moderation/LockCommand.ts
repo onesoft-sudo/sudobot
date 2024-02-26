@@ -19,7 +19,7 @@
 
 import { PermissionsBitField, SlashCommandBuilder, TextChannel, User } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 import { isTextableChannel } from "../../utils/utils";
 
 export default class LockCommand extends Command {

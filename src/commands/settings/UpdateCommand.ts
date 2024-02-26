@@ -36,7 +36,7 @@ import path, { basename, join } from "path";
 import semver from "semver";
 import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { downloadFile } from "../../utils/download";
-import { log, logError, logInfo, logWarn } from "../../utils/logger";
+import { log, logError, logInfo, logWarn } from "../../utils/Logger";
 import { sudoPrefix } from "../../utils/utils";
 
 export default class UpdateCommand extends Command {

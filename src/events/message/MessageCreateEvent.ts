@@ -21,7 +21,7 @@ import { ChannelType, GuildMember, Message, MessageType } from "discord.js";
 import Client from "../../core/Client";
 import EventListener from "../../core/EventListener";
 import { Events } from "../../types/ClientEvents";
-import { log, logError } from "../../utils/logger";
+import { log, logError } from "../../utils/Logger";
 
 export default class MessageCreateEvent extends EventListener<Events.MessageCreate> {
     public readonly name = Events.MessageCreate;
@@ -30,7 +30,7 @@ export default class MessageCreateEvent extends EventListener<Events.MessageCrea
         (message: Message) => this.client.messageFilter.onMessageCreate(message),
         (message: Message) => this.client.messageRuleService.onMessageCreate(message),
         (message: Message) => this.client.fileFilter.onMessageCreate(message),
-        (message: Message) => this.client.aiAutoMod.onMessageCreate(message),
+        (message: Message) => this.client.aiAutoMod.onMessageCreate(message)
     ];
 
     constructor(protected client: Client) {

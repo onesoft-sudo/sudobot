@@ -33,7 +33,7 @@ import {
 } from "discord.js";
 import Client from "../../core/Client";
 import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { log, logError } from "../../utils/logger";
+import { log, logError } from "../../utils/Logger";
 import { getUserBadges } from "../../utils/user";
 import { getEmoji } from "../../utils/utils";
 
@@ -104,11 +104,11 @@ export default class ProfileCommand extends Command {
             optional: true,
             errors: {
                 "type:invalid": "Invalid user given!",
-                "entity:null": "That user could not be found!",
+                "entity:null": "That user could not be found!"
             },
             entity: {
                 notNull: true
-            },
+            }
         }
     ];
     public readonly aliases = ["userprofile", "userinfo"];

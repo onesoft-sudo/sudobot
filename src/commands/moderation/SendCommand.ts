@@ -21,7 +21,7 @@ import { APIEmbed, AttachmentPayload, Message, PermissionsBitField, SlashCommand
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import EmbedSchemaParser from "../../utils/EmbedSchemaParser";
 import { userInfo } from "../../utils/embed";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 import { getEmojiObject } from "../../utils/utils";
 
 export default class EchoCommand extends Command {

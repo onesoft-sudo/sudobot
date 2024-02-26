@@ -22,7 +22,7 @@ import path from "path";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import QueueEntry from "../../utils/QueueEntry";
 import { stringToTimeInterval } from "../../utils/datetime";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 import { getEmojiObject, isTextableChannel } from "../../utils/utils";
 
 export default class ExpireCommand extends Command {

@@ -22,7 +22,7 @@ import { ChatInputCommandInteraction, GuildMember, PermissionsBitField } from "d
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 import { ChatInputCommandContext } from "../../services/CommandManager";
 import { stringToTimeInterval } from "../../utils/datetime";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 
 export default class InfractionCreateCommand extends Command {
     public readonly name = "infraction__create";

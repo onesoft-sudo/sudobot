@@ -30,6 +30,6 @@ export default class RoleUpdateEvent extends EventListener<Events.RoleUpdate> {
         if (oldRole.name === newRole.name && oldRole.icon === newRole.icon && oldRole.permissions.equals(newRole.permissions))
             return;
 
-        await this.client.logger.logRoleUpdate(oldRole, newRole);
+        await this.client.loggerService.logRoleUpdate(oldRole, newRole);
     }
 }

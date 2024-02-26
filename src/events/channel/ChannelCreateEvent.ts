@@ -25,7 +25,7 @@ export default class ChannelCreateEvent extends EventListener<Events.ChannelCrea
     public readonly name = Events.ChannelCreate;
 
     async execute(channel: NonThreadGuildBasedChannel) {
-        await this.client.logger.logChannelCreate(channel);
+        await this.client.loggerService.logChannelCreate(channel);
         super.execute(channel);
     }
 }

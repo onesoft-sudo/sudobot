@@ -20,7 +20,7 @@
 import { EmbedBuilder, PermissionsBitField } from "discord.js";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import Pagination from "../../utils/Pagination";
-import { log } from "../../utils/logger";
+import { log } from "../../utils/Logger";
 
 export default class SnippetListCommand extends Command {
     public readonly name = "snippet__list";

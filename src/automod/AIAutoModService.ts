@@ -21,7 +21,7 @@ import { Message, PermissionFlagsBits } from "discord.js";
 import { google } from "googleapis";
 import Service from "../core/Service";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { log, logError } from "../utils/logger";
+import { log, logError } from "../utils/Logger";
 import { isImmuneToAutoMod } from "../utils/utils";
 
 export const name = "aiAutoMod";
@@ -118,7 +118,7 @@ export default class AIAutoModService extends Service implements HasEventListene
 
             if (isThreat || isToxic || isSeverelyToxic || isExplicit || isFlirty || isAttack || isInsult || isProfanity) {
                 await message.delete();
-                await this.client.logger.logAIAutoModMessageDelete({
+                await this.client.loggerService.logAIAutoModMessageDelete({
                     message,
                     toxicityScore,
                     severeToxicityScore,

@@ -21,13 +21,13 @@ import { log } from "console";
 import { Message } from "discord.js";
 import EventListener from "../../core/EventListener";
 import { Events } from "../../types/ClientEvents";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 
 export default class MessageUpdateEvent extends EventListener<Events.MessageUpdate> {
     public readonly name = Events.MessageUpdate;
     public readonly listeners = [
         (message: Message) => this.client.messageFilter.onMessageCreate(message),
-        (message: Message) => this.client.messageRuleService.onMessageCreate(message),
+        (message: Message) => this.client.messageRuleService.onMessageCreate(message)
     ];
 
     async execute(oldMessage: Message, newMessage: Message) {
@@ -42,14 +42,14 @@ export default class MessageUpdateEvent extends EventListener<Events.MessageUpda
         this.client.emit(Events.NormalMessageUpdate, oldMessage, newMessage);
 
         this.client.statsService.onMessageUpdate(oldMessage, newMessage);
-        
+
         for (const listener of this.listeners) {
             if (await listener(newMessage)) {
                 return;
             }
         }
 
-        await this.client.logger.logMessageEdit(oldMessage, newMessage);
+        await this.client.loggerService.logMessageEdit(oldMessage, newMessage);
 
         if (this.client.configManager.config[newMessage.guildId!]?.commands.rerun_on_edit) {
             const value = await this.client.commandManager.runCommandFromMessage(newMessage).catch(logError);

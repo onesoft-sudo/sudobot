@@ -20,14 +20,14 @@
 import { GuildMember } from "discord.js";
 import EventListener from "../../core/EventListener";
 import { Events } from "../../types/ClientEvents";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 
 export default class GuildMemberRemoveEvent extends EventListener<Events.GuildMemberRemove> {
     public readonly name = Events.GuildMemberRemove;
 
     async execute(member: GuildMember) {
         super.execute(member);
-        await this.client.logger.logGuildMemberRemove(member);
+        await this.client.loggerService.logGuildMemberRemove(member);
         this.client.verification.onGuildMemberRemove(member).catch(logError);
     }
 }

@@ -21,7 +21,7 @@ import { InfractionType } from "@prisma/client";
 import { AuditLogEvent, GuildBan } from "discord.js";
 import EventListener from "../../core/EventListener";
 import { Events } from "../../types/ClientEvents";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 
 export default class GuildBanRemoveEvent extends EventListener<Events.GuildBanRemove> {
     public readonly name = Events.GuildBanRemove;
@@ -49,7 +49,7 @@ export default class GuildBanRemoveEvent extends EventListener<Events.GuildBanRe
                         }
                     });
 
-                    await this.client.logger.logUserUnban({
+                    await this.client.loggerService.logUserUnban({
                         moderator: auditLog.executor,
                         user: ban.user,
                         guild: ban.guild,

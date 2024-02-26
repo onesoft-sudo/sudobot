@@ -20,7 +20,7 @@
 import { Message, PermissionsBitField, PermissionsString } from "discord.js";
 import Command, { ArgumentType, CommandReturn, ValidationRule } from "../../core/Command";
 import { LegacyCommandContext } from "../../services/CommandManager";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 
 export default class SnippetEditCommand extends Command {
     public readonly name = "snippet__edit";

@@ -45,7 +45,7 @@ import { ChatInputCommandContext, ContextMenuCommandContext, LegacyCommandContex
 import EmbedSchemaParser from "../utils/EmbedSchemaParser";
 import { channelInfo, guildInfo, userInfo } from "../utils/embed";
 import { safeChannelFetch } from "../utils/fetch";
-import { logError } from "../utils/logger";
+import { logError } from "../utils/Logger";
 import { getEmoji } from "../utils/utils";
 import Client from "./Client";
 import CommandArgumentParser from "./CommandArgumentParser";

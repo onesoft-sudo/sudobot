@@ -45,7 +45,7 @@ import LevelBasedPermissionManager from "../utils/LevelBasedPermissionManager";
 import { stringToTimeInterval } from "../utils/datetime";
 import { userInfo } from "../utils/embed";
 import { safeChannelFetch, safeMemberFetch } from "../utils/fetch";
-import { logError } from "../utils/logger";
+import { logError } from "../utils/Logger";
 import { TODO } from "../utils/utils";
 
 export const name = "reportService";

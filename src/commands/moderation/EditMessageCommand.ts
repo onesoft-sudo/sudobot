@@ -33,7 +33,7 @@ import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import { HasEventListeners } from "../../types/HasEventListeners";
 import EmbedSchemaParser from "../../utils/EmbedSchemaParser";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 
 export default class EditMessageCommand extends Command implements HasEventListeners {
     public readonly name = "Edit Message";

@@ -19,7 +19,7 @@
 
 import axios, { AxiosError } from "axios";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 
 export default class DogCommand extends Command {
     public readonly name = "dog";

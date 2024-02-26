@@ -19,7 +19,7 @@
 
 import Queue from "../utils/Queue";
 import { safeChannelFetch } from "../utils/fetch";
-import { logError } from "../utils/logger";
+import { logError } from "../utils/Logger";
 
 export default class ChannelDeleteQueue extends Queue {
     async run(channelId: string) {

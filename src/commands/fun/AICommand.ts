@@ -22,7 +22,7 @@ import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from "
 import Command, { CommandReturn } from "../../core/Command";
 import { ChatInputCommandContext } from "../../services/CommandManager";
 import Pagination from "../../utils/Pagination";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 import { chunkedString } from "../../utils/utils";
 
 export default class AICommand extends Command {
@@ -159,7 +159,7 @@ export default class AICommand extends Command {
                         { role: "system", content: "You're SudoBot, a Discord Moderation Bot." },
                         {
                             role: "user",
-                            content: prompt,
+                            content: prompt
                         }
                     ],
                     model: process.env.OPENAI_MODEL_ID ?? "gpt-3.5-turbo",

@@ -50,12 +50,12 @@ import {
 import Service from "../core/Service";
 import { MessageRuleType } from "../types/MessageRuleSchema";
 import { NotUndefined } from "../types/NotUndefined";
-import { log, logDebug, logError } from "../utils/logger";
+import { log, logDebug, logError } from "../utils/Logger";
 import { isTextableChannel } from "../utils/utils";
 import { GuildConfig } from "./ConfigManager";
 import { userInfo } from "../utils/embed";
 
-export const name = "logger";
+export const name = "loggerService";
 
 type LoggingChannelType = Exclude<keyof NotUndefined<GuildConfig["logging"]>, "enabled">;
 

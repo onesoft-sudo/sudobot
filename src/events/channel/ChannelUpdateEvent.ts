@@ -29,6 +29,6 @@ export default class ChannelUpdateEvent extends EventListener<Events.ChannelUpda
 
         if (oldChannel.name === newChannel.name) return;
 
-        await this.client.logger.logChannelUpdate(oldChannel, newChannel);
+        await this.client.loggerService.logChannelUpdate(oldChannel, newChannel);
     }
 }

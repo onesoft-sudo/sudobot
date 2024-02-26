@@ -20,7 +20,7 @@
 import { InfractionType } from "@prisma/client";
 import { AuditLogEvent, Events, GuildMember } from "discord.js";
 import EventListener from "../../core/EventListener";
-import { logError } from "../../utils/logger";
+import { logError } from "../../utils/Logger";
 
 export default class GuildMemberUpdateEvent extends EventListener<Events.GuildMemberUpdate> {
     public readonly name = Events.GuildMemberUpdate;
@@ -29,11 +29,11 @@ export default class GuildMemberUpdateEvent extends EventListener<Events.GuildMe
         super.execute(oldMember, newMember);
 
         if (oldMember.nickname !== newMember.nickname) {
-            await this.client.logger.logNicknameUpdate(oldMember, newMember);
+            await this.client.loggerService.logNicknameUpdate(oldMember, newMember);
         }
 
         if (!oldMember.roles.cache.equals(newMember.roles.cache)) {
-            await this.client.logger.logMemberRoleUpdate(oldMember, newMember);
+            await this.client.loggerService.logMemberRoleUpdate(oldMember, newMember);
         }
 
         if (!oldMember.communicationDisabledUntil && newMember.communicationDisabledUntil) {
@@ -61,7 +61,7 @@ export default class GuildMemberUpdateEvent extends EventListener<Events.GuildMe
                             }
                         });
 
-                        await this.client.logger.logMemberTimeout(newMember, {
+                        await this.client.loggerService.logMemberTimeout(newMember, {
                             moderator: auditLog.executor,
                             id: infraction.id.toString(),
                             reason: auditLog.reason ?? undefined
@@ -91,7 +91,7 @@ export default class GuildMemberUpdateEvent extends EventListener<Events.GuildMe
                             }
                         });
 
-                        await this.client.logger.logMemberTimeoutRemove(newMember, {
+                        await this.client.loggerService.logMemberTimeoutRemove(newMember, {
                             moderator: auditLog.executor,
                             id: infraction.id.toString()
                         });

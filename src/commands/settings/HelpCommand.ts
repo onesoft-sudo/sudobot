@@ -32,7 +32,7 @@ import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandRetu
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import Pagination from "../../utils/Pagination";
 import { DOCS_URL, GITHUB_URL, WEBSITE_URL } from "../../utils/links";
-import { log } from "../../utils/logger";
+import { log } from "../../utils/Logger";
 import { forceGetPermissionNames, getComponentEmojiResolvable } from "../../utils/utils";
 
 export interface CommandInfo {
