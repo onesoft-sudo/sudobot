@@ -21,12 +21,12 @@ import axios from "axios";
 import chalk from "chalk";
 import { spawnSync } from "child_process";
 import { formatDistanceToNowStrict } from "date-fns";
-import { APIEmbed, ActivityType, Colors, WebhookClient, escapeCodeBlock } from "discord.js";
+import { APIEmbed, ActivityType, Attachment, AttachmentBuilder, Colors, WebhookClient, escapeCodeBlock } from "discord.js";
 import figlet from "figlet";
-import { existsSync, readFileSync } from "fs";
+import { WriteStream, createWriteStream, existsSync, readFileSync } from "fs";
 import { rm } from "fs/promises";
 import path from "path";
-import { gt } from "semver";
+import { gt, satisfies } from "semver";
 import { version } from "../../package.json";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
@@ -34,10 +34,11 @@ import { HasEventListeners } from "../types/HasEventListeners";
 import { safeChannelFetch, safeMessageFetch } from "../utils/fetch";
 import { log, logError, logInfo, logSuccess } from "../utils/logger";
 import { chunkedString, getEmoji, sudoPrefix } from "../utils/utils";
+import archiver from "archiver";
 
 export const name = "startupManager";
 
-const { BACKUP_CHANNEL_ID, ERROR_WEKHOOK_URL } = process.env;
+const { BACKUP_CHANNEL_ID, ERROR_WEKHOOK_URL, BACKUP_STORAGE } = process.env;
 
 export default class StartupManager extends Service implements HasEventListeners {
     interval: Timer | undefined = undefined;
@@ -184,12 +185,63 @@ export default class StartupManager extends Service implements HasEventListeners
             return;
         }
 
+        const files: Array<string | AttachmentBuilder | Attachment> = [
+            this.client.configManager.configPath,
+            this.client.configManager.systemConfigPath
+        ];
+
+        console.log(BACKUP_STORAGE);
+
+        if (BACKUP_STORAGE) {
+            const buffer = await this.makeStorageBackup();
+
+            // check for discord max attachment size limit
+            if (buffer.byteLength > 80 * 1024 * 1024) {
+                logError("Storage backup is too large to send to Discord");
+                return;
+            }
+
+            files.push(
+                new AttachmentBuilder(buffer, {
+                    name: "storage.zip"
+                })
+            );
+
+            logInfo("Storage backup created");
+        }
+
         await channel
             ?.send({
                 content: "# Configuration Backup",
-                files: [this.client.configManager.configPath, this.client.configManager.systemConfigPath]
+                files
             })
             .catch(logError);
+    }
+
+    makeStorageBackup() {
+        return new Promise<Buffer>((resolve, reject) => {
+            const archive = archiver("zip", {
+                zlib: { level: 9 }
+            });
+
+            const bufferList: Buffer[] = [];
+
+            archive.on("data", data => {
+                bufferList.push(data);
+            });
+
+            archive.on("end", () => {
+                const resultBuffer = Buffer.concat(bufferList);
+                resolve(resultBuffer);
+            });
+
+            archive.on("error", err => {
+                reject(err);
+            });
+
+            archive.directory(sudoPrefix("storage", true), false);
+            archive.finalize();
+        });
     }
 
     setBackupQueue() {

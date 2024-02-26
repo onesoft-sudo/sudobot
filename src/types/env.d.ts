@@ -49,5 +49,6 @@ namespace NodeJS {
         NO_GENERATE_CONFIG_SCHEMA?: string;
         NSFWJS_MODEL_URL?: string;
         NSFWJS_MODEL_IMAGE_SIZE?: string;
+        BACKUP_STORAGE?: string;
     }
 }

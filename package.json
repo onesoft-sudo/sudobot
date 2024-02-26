@@ -33,6 +33,7 @@
   "dependencies": {
     "@prisma/client": "^5.8.1",
     "@tensorflow/tfjs-node": "^4.17.0",
+    "archiver": "^6.0.1",
     "ascii-table3": "^0.8.2",
     "async-mutex": "^0.4.0",
     "axios": "^1.4.0",
@@ -68,6 +69,7 @@
   "devDependencies": {
     "@commitlint/cli": "^17.6.6",
     "@commitlint/config-conventional": "^17.6.6",
+    "@types/archiver": "^6.0.2",
     "@types/bcrypt": "^5.0.0",
     "@types/bun": "^1.0.5",
     "@types/cors": "^2.8.13",
