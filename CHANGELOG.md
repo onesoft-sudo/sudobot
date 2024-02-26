@@ -1,3 +1,12 @@
+## [8.15.1](https://github.com/onesoft-sudo/sudobot/compare/v8.15.0...v8.15.1) (2024-02-26)
+
+
+### Bug Fixes
+
+* runtime crashes ([57abaf0](https://github.com/onesoft-sudo/sudobot/commit/57abaf01644731624aaed0035e18731b8fec198f))
+
+
+
 # [8.15.0](https://github.com/onesoft-sudo/sudobot/compare/v8.14.0...v8.15.0) (2024-02-26)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **automod:rules:nsfw:** remove \`webp\` support check ([0877766](https://github.com/onesoft-sudo/sudobot/commit/0877766cb60d74f9ff30638a7d35a41554e1873b))
-
-
-
-## [8.13.2](https://github.com/onesoft-sudo/sudobot/compare/v8.13.1...v8.13.2) (2024-02-18)
-
-
-### Bug Fixes
-
-* **commands:update:** should install deps automatically ([62e8623](https://github.com/onesoft-sudo/sudobot/commit/62e862342cd7c8050d2b7c6c685b8101b262551d))
 
 
 
