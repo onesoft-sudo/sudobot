@@ -4,7 +4,7 @@ metadata:
   name: sudobot-pv
 spec:
   capacity:
-    storage: 2Gi
+    storage: 5Gi
   volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
