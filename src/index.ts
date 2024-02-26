@@ -45,7 +45,8 @@ const intents = [
     GatewayIntentBits.GuildModeration,
     GatewayIntentBits.GuildEmojisAndStickers,
     GatewayIntentBits.GuildPresences,
-    GatewayIntentBits.GuildInvites
+    GatewayIntentBits.GuildInvites,
+    GatewayIntentBits.GuildVoiceStates
 ];
 
 const partials = [Partials.Channel];

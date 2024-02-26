@@ -43,15 +43,17 @@ import {
     Role,
     TextChannel,
     User,
+    VoiceState,
     escapeMarkdown,
     roleMention
 } from "discord.js";
 import Service from "../core/Service";
 import { MessageRuleType } from "../types/MessageRuleSchema";
 import { NotUndefined } from "../types/NotUndefined";
-import { log, logError } from "../utils/logger";
+import { log, logDebug, logError } from "../utils/logger";
 import { isTextableChannel } from "../utils/utils";
 import { GuildConfig } from "./ConfigManager";
+import { userInfo } from "../utils/embed";
 
 export const name = "logger";
 
@@ -282,6 +284,159 @@ export default class LoggerService extends Service {
             ],
             footerText: "Flagged",
             moderator: this.client.user!
+        });
+    }
+
+    async logVoiceStateUpdate(oldState: VoiceState, newState: VoiceState) {
+        const oldChannel = oldState.channel;
+        const newChannel = newState.channel;
+
+        if (newChannel?.id === oldChannel?.id) {
+            return;
+        }
+
+        if (oldChannel) {
+            await this.sendLogEmbed(oldChannel.guild, {
+                title: "Member left voice channel",
+                color: Colors.Red,
+                user: oldState.member?.user,
+                fields: [
+                    {
+                        name: "Channel",
+                        value: oldChannel.toString()
+                    }
+                ],
+                footerText: "Left"
+            });
+        }
+
+        if (newChannel) {
+            await this.sendLogEmbed(newChannel.guild, {
+                title: "Member joined voice channel",
+                color: Colors.Green,
+                user: newState.member?.user,
+                fields: [
+                    {
+                        name: "Channel",
+                        value: newChannel.toString()
+                    }
+                ],
+                footerText: "Joined"
+            });
+        }
+    }
+
+    async logMemberDisconnect({
+        user,
+        guild,
+        moderator,
+        reason
+    }: {
+        reason?: string;
+        user: User;
+        guild: Guild;
+        moderator?: User;
+    }) {
+        await this.sendLogEmbed(guild, {
+            title: "Member disconnected",
+            color: Colors.Red,
+            user,
+            reason,
+            footerText: "Disconnected",
+            moderator
+        });
+    }
+
+    async logMemberDeaf({ user, guild, moderator, reason }: { reason?: string; user: User; guild: Guild; moderator?: User }) {
+        await this.sendLogEmbed(guild, {
+            title: "Member deafened",
+            color: Colors.Red,
+            user,
+            reason,
+            footerText: "Deafened",
+            moderator
+        });
+    }
+
+    async logMemberUndeaf({ user, guild, moderator, reason }: { reason?: string; user: User; guild: Guild; moderator?: User }) {
+        await this.sendLogEmbed(guild, {
+            title: "Member undeafened",
+            color: Colors.Green,
+            user,
+            reason,
+            footerText: "Undeafened",
+            moderator
+        });
+    }
+
+    async logMemberVoiceMute({
+        user,
+        guild,
+        moderator,
+        reason
+    }: {
+        reason?: string;
+        user: User;
+        guild: Guild;
+        moderator?: User;
+    }) {
+        await this.sendLogEmbed(guild, {
+            title: "Member muted",
+            color: Colors.Red,
+            user,
+            reason,
+            footerText: "Muted",
+            moderator
+        });
+    }
+
+    async logMemberVoiceUnmute({
+        user,
+        guild,
+        moderator,
+        reason
+    }: {
+        reason?: string;
+        user: User;
+        guild: Guild;
+        moderator?: User;
+    }) {
+        await this.sendLogEmbed(guild, {
+            title: "Member unmuted",
+            color: Colors.Green,
+            user,
+            reason,
+            footerText: "Unmuted",
+            moderator
+        });
+    }
+
+    async logMemberVoiceMove({
+        user,
+        guild,
+        moderator,
+        reason,
+        newChannel
+    }: {
+        reason?: string;
+        user: User;
+        guild: Guild;
+        moderator?: User;
+        newChannel: VoiceState["channel"];
+    }) {
+        await this.sendLogEmbed(guild, {
+            title: "Member moved to a new voice channel",
+            color: Colors.Blurple,
+            user,
+            reason,
+            footerText: "Moved",
+            moderator,
+            fields: [
+                {
+                    name: "To",
+                    value: newChannel?.toString() ?? "None"
+                }
+            ]
         });
     }
 
