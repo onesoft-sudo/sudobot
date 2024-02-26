@@ -142,7 +142,7 @@ export class Logger {
  *
  * @deprecated Use the logger instance instead.
  */
-export const logDebug = (...args: unknown[]) => Client.instance.logger.debug(...args);
+export const logDebug = (...args: unknown[]) => Client.getLogger().debug(...args);
 
 /**
  * Alias of logDebug.
@@ -156,14 +156,14 @@ export const log = logDebug;
  *
  * @deprecated Use the logger instance instead.
  */
-export const logInfo = (...args: unknown[]) => Client.instance.logger.info(...args);
+export const logInfo = (...args: unknown[]) => Client.getLogger().info(...args);
 
 /**
  * Logs a warning to the console.
  *
  * @deprecated Use the logger instance instead.
  */
-export const logWarn = (...args: unknown[]) => Client.instance.logger.warn(...args);
+export const logWarn = (...args: unknown[]) => Client.getLogger().warn(...args);
 
 /**
  * Logs an error to the console.
@@ -171,7 +171,7 @@ export const logWarn = (...args: unknown[]) => Client.instance.logger.warn(...ar
  * @deprecated Use the logger instance instead.
  */
 
-export const logError = (...args: unknown[]) => Client.instance.logger.error(...args);
+export const logError = (...args: unknown[]) => Client.getLogger().error(...args);
 
 /**
  * Logs a fatal error to the console and exits the process.
@@ -179,7 +179,7 @@ export const logError = (...args: unknown[]) => Client.instance.logger.error(...
  * @deprecated Use the logger instance instead.
  */
 
-export const logFatal = (...args: unknown[]) => Client.instance.logger.fatal(...args);
+export const logFatal = (...args: unknown[]) => Client.getLogger().fatal(...args);
 
 /**
  * Logs a critical error to the console.
@@ -187,7 +187,7 @@ export const logFatal = (...args: unknown[]) => Client.instance.logger.fatal(...
  * @deprecated Use the logger instance instead.
  */
 
-export const logCritical = (...args: unknown[]) => Client.instance.logger.critical(...args);
+export const logCritical = (...args: unknown[]) => Client.getLogger().critical(...args);
 
 /**
  * Logs a success message to the console.
@@ -195,7 +195,7 @@ export const logCritical = (...args: unknown[]) => Client.instance.logger.critic
  * @deprecated Use the logger instance instead.
  */
 
-export const logSuccess = (...args: unknown[]) => Client.instance.logger.success(...args);
+export const logSuccess = (...args: unknown[]) => Client.getLogger().success(...args);
 
 /**
  * Logs an event message to the console.
@@ -203,7 +203,7 @@ export const logSuccess = (...args: unknown[]) => Client.instance.logger.success
  * @deprecated Use the logger instance instead.
  */
 
-export const logEvent = (...args: unknown[]) => Client.instance.logger.event(...args);
+export const logEvent = (...args: unknown[]) => Client.getLogger().event(...args);
 
 /**
  * Logs a message to the console with a specified log level.
@@ -211,4 +211,4 @@ export const logEvent = (...args: unknown[]) => Client.instance.logger.event(...
  * @deprecated Use the logger instance instead.
  */
 
-export const logWithLevel = (level: LogLevel, ...args: unknown[]) => Client.instance.logger.log(level, ...args);
+export const logWithLevel = (level: LogLevel, ...args: unknown[]) => Client.getLogger().log(level, ...args);

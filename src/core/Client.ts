@@ -92,7 +92,9 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
         services: path.resolve(__dirname, "../services")
     };
 
-    public readonly logger = new Logger("system", !process.env.NO_DATETIME_LOGGING);
+    private static readonly _logger = new Logger("system", !process.env.NO_DATETIME_LOGGING);
+    public readonly logger = Client._logger;
+
     public readonly services = [
         "@services/StartupManager",
         "@services/ConfigManager" /* This service is manually booted by the Extension Service. */,
@@ -175,6 +177,10 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
     constructor(options: ClientOptions) {
         super(options);
         Client.instance = this;
+    }
+
+    public static getLogger() {
+        return this._logger;
     }
 
     getService<S extends Service = Service>(name: string): S {
