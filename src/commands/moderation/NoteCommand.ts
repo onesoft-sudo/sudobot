@@ -34,11 +34,14 @@ export default class NoteCreateCommand extends Command {
                 required: "Please specify a user to take note for!",
                 "entity:null": "Invalid user specified!",
                 "type:invalid": "Invalid user specified!"
+            },
+            entity: {
+                notNull: true
             }
         },
         {
             types: [ArgumentType.StringRest],
-            name: "content",
+            name: "reason",
             optional: true,
             errors: {
                 required: "Please specify the note contents!"

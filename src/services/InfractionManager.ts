@@ -239,19 +239,19 @@ export default class InfractionManager extends Service {
 
                 {
                     name: "Created At",
-                    value: `${infraction.createdAt.toLocaleString()} (${time(infraction.createdAt)})`,
+                    value: `${time(infraction.createdAt, "F")} (${time(infraction.createdAt, "R")})`,
                     inline: true
                 },
                 {
                     name: "Updated At",
-                    value: `${infraction.updatedAt.toLocaleString()} (${time(infraction.updatedAt)})`,
+                    value: `${time(infraction.updatedAt, "F")} (${time(infraction.updatedAt, "R")})`,
                     inline: true
                 },
                 ...(infraction.expiresAt
                     ? [
                           {
                               name: `Expire${infraction.expiresAt.getTime() <= Date.now() ? "d" : "s"} At`,
-                              value: `${infraction.expiresAt.toLocaleString()} (${time(infraction.expiresAt)})`,
+                              value: `${time(infraction.expiresAt, "F")} (${time(infraction.expiresAt, "R")})`,
                               inline: true
                           }
                       ]
@@ -1401,7 +1401,16 @@ export type BulkDeleteMessagesOptions = CommonOptions & {
     filters?: Function[];
 };
 
-export type ActionDoneName = "banned" | "muted" | "kicked" | "warned" | "unbanned" | "unmuted" | "softbanned" | "beaned" | "noted";
+export type ActionDoneName =
+    | "banned"
+    | "muted"
+    | "kicked"
+    | "warned"
+    | "unbanned"
+    | "unmuted"
+    | "softbanned"
+    | "beaned"
+    | "noted";
 
 export type SendDMOptions = {
     fields?: APIEmbedField[] | ((internalFields: APIEmbedField[]) => Promise<APIEmbedField[]> | APIEmbedField[]);

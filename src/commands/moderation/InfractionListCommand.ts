@@ -19,7 +19,7 @@
 
 import { InfractionType } from "@prisma/client";
 import { formatDistanceToNowStrict } from "date-fns";
-import { EmbedBuilder, PermissionsBitField, User } from "discord.js";
+import { EmbedBuilder, PermissionsBitField, User, codeBlock, time } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import Pagination from "../../utils/Pagination";
 
@@ -39,7 +39,7 @@ export default class InfractionListCommand extends Command {
     ];
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
     public readonly permissionMode = "or";
-    public readonly aliases: string[] = ["l", "history"];
+    public readonly aliases: string[] = ["l", "history", "infraction__s", "infraction__l"];
 
     public readonly description = "View infractions of a user.";
     public readonly argumentSyntaxes = ["<UserID|UserMention>"];
@@ -56,6 +56,7 @@ export default class InfractionListCommand extends Command {
             return;
         }
 
+        const timestamp = new Date().toISOString();
         const pagination = new Pagination(infractions, {
             channelId: message.channelId!,
             guildId: message.guildId!,
@@ -67,29 +68,17 @@ export default class InfractionListCommand extends Command {
                 let description = "";
 
                 for (const infraction of data) {
-                    description += `**ID**: \`${infraction.id}\`\n`;
-                    description += `**Type**: ${
+                    description += `### Infraction #${infraction.id}\n`;
+                    description += `**Type:** ${
                         infraction.type === InfractionType.BULK_DELETE_MESSAGE
                             ? "Bulk message delete"
                             : infraction.type[0] + infraction.type.substring(1).toLowerCase().replace(/_/g, " ")
                     }\n`;
-                    description += `Responsible Moderator: <@${infraction.moderatorId}>\n`;
-                    description += `Reason:\n${
-                        infraction.reason ? `\`\`\`\n${infraction.reason}\n\`\`\`` : "*No reason provided*"
+                    description += `**Responsible Moderator:** <@${infraction.moderatorId}>\n`;
+                    description += `**Reason:**${
+                        infraction.reason ? "\n" + codeBlock(infraction.reason) : "*No reason provided*"
                     }\n`;
-                    description += `Created at: ${infraction.createdAt.toLocaleString()} (${formatDistanceToNowStrict(
-                        infraction.createdAt,
-                        {
-                            addSuffix: true
-                        }
-                    )})\n`;
-                    description += `Updated at: ${infraction.updatedAt.toLocaleString()} (${formatDistanceToNowStrict(
-                        infraction.updatedAt,
-                        {
-                            addSuffix: true
-                        }
-                    )})\n`;
-                    description += `\n`;
+                    description += `**Created At:** ${time(infraction.createdAt, "F")} (${time(infraction.createdAt, "R")})\n`;
                 }
 
                 return new EmbedBuilder({
@@ -101,8 +90,9 @@ export default class InfractionListCommand extends Command {
                     footer: {
                         text: `Page ${currentPage} of ${maxPages} • ${infractions.length} infractions total`
                     },
-                    color: 0x007bff
-                }).setTimestamp();
+                    color: 0x007bff,
+                    timestamp
+                });
             }
         });
 

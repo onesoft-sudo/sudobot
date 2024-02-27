@@ -181,6 +181,10 @@ export default class CommandManager extends Service {
         const commandText = message.content.substring(foundPrefix.length).trimStart();
         const [commandName, ...commandArguments] = commandText.split(/ +/);
 
+        if (commandName.includes("__")) {
+            return;
+        }
+
         const command = this.client.commands.get(commandName);
 
         if (!command) {

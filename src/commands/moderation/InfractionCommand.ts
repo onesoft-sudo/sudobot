@@ -67,19 +67,24 @@ const infractionTypes = [
     {
         name: "Timeout remove",
         value: InfractionType.TIMEOUT_REMOVE
+    },
+    {
+        name: "Note",
+        value: InfractionType.TIMEOUT_REMOVE
     }
 ].map(o => ({ ...o, value: o.value.toLowerCase() }));
 
 export default class InfractionCommand extends Command {
     public readonly name = "infraction";
-    public readonly subcommands = ["view", "create", "edit", "delete", "list", "clear"];
+    public readonly subcommands = ["view", "create", "edit", "delete", "list", "clear", "s", "l"];
+    public readonly subcommandShortList = ["view", "create", "edit", "delete", "list", "clear"];
     public readonly subCommandCheck = true;
     public readonly validationRules: ValidationRule[] = [
         {
             types: [ArgumentType.String],
             name: "subcommand",
             errors: {
-                required: `Please provide a valid subcommand! The available subcommands are: \`${this.subcommands.join(
+                required: `Please provide a valid subcommand! The available subcommands are: \`${this.subcommandShortList.join(
                     "`, `"
                 )}\`.`
             }
@@ -90,6 +95,7 @@ export default class InfractionCommand extends Command {
     public readonly description = "Manage infractions.";
     public readonly detailedDescription = "Use this command to manage infractions.";
     public readonly argumentSyntaxes = ["<subcommand> [...args]"];
+    public readonly aliases = ["i", "inf", "infs"];
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
         .addSubcommand(subcommand =>
@@ -163,7 +169,7 @@ export default class InfractionCommand extends Command {
             return;
         }
 
-        if (["clear", "list"].includes(subcommand)) {
+        if (["clear", "list", "s", "l"].includes(subcommand)) {
             if (context.isLegacy && !context.args[1]) {
                 await message.reply(`${this.emoji("error")} Please provide a user to perform this action!`);
                 return;

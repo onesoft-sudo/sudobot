@@ -58,10 +58,6 @@ export default class InfractionDeleteCommand extends Command {
 
         const user = await safeUserFetch(this.client, infraction.userId);
 
-        await this.deferredReply(message, {
-            embeds: [
-                this.client.infractionManager.generateInfractionDetailsEmbed(user, infraction).setTitle("Infraction Deleted")
-            ]
-        });
+        await this.success(message, `Successfully deleted infraction with ID \`${infraction.id}\`.`);
     }
 }
