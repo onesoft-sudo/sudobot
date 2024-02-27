@@ -56,8 +56,6 @@ export default class InfractionDeleteCommand extends Command {
             where: { id, guildId: message.guildId! }
         });
 
-        const user = await safeUserFetch(this.client, infraction.userId);
-
         await this.success(message, `Successfully deleted infraction with ID \`${infraction.id}\`.`);
     }
 }
