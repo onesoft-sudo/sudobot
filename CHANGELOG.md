@@ -1,3 +1,19 @@
+# [8.16.0](https://github.com/onesoft-sudo/sudobot/compare/v8.15.1...v8.16.0) (2024-02-27)
+
+
+### Bug Fixes
+
+* remove unneeded fetch requests ([8d69356](https://github.com/onesoft-sudo/sudobot/commit/8d693568abc338e126f0b1422c49528160c2f407))
+* spacing in infraction list command embed ([2449785](https://github.com/onesoft-sudo/sudobot/commit/2449785992d10aaffac8a2b3cd5a470084259411))
+
+
+### Features
+
+* **commands:moderation:** add a better note command ([a318abd](https://github.com/onesoft-sudo/sudobot/commit/a318abd2ed5663ad86021107c2c2fbfb729a2831))
+* improved infraction management commands ([e115287](https://github.com/onesoft-sudo/sudobot/commit/e11528717d3716b09fb4c446bd8066136f5af228))
+
+
+
 ## [8.15.1](https://github.com/onesoft-sudo/sudobot/compare/v8.15.0...v8.15.1) (2024-02-26)
 
 
@@ -31,15 +47,6 @@
 ### Bug Fixes
 
 * **automod:rules:nsfw:** better accuracy ([e9ecce5](https://github.com/onesoft-sudo/sudobot/commit/e9ecce5a721b2766b59f53b3d2d73495347b363d))
-
-
-
-## [8.13.3](https://github.com/onesoft-sudo/sudobot/compare/v8.13.2...v8.13.3) (2024-02-18)
-
-
-### Bug Fixes
-
-* **automod:rules:nsfw:** remove \`webp\` support check ([0877766](https://github.com/onesoft-sudo/sudobot/commit/0877766cb60d74f9ff30638a7d35a41554e1873b))
 
 
 
