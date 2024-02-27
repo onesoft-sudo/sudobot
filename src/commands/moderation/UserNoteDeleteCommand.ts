@@ -18,17 +18,16 @@
  */
 
 import { InfractionType } from "@prisma/client";
-import { EmbedBuilder, PermissionsBitField } from "discord.js";
-import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { safeUserFetch } from "../../utils/fetch";
+import { PermissionsBitField } from "discord.js";
+import Command, { BasicCommandContext, CommandMessage, CommandReturn } from "../../core/Command";
 
-export default class NoteViewCommand extends Command {
-    public readonly name = "note__view";
-    public readonly validationRules: ValidationRule[] = [];
+export default class UserNoteDeleteCommand extends Command {
+    public readonly name = "unote__delete";
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
     public readonly permissionMode = "or";
-    public readonly description = "Show a note";
+    public readonly description = "Delete a note";
     public readonly argumentSyntaxes = ["<id>"];
+    public readonly aliases = ["unote__remove"];
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (context.isLegacy && context.args[0] === undefined) {
@@ -47,7 +46,7 @@ export default class NoteViewCommand extends Command {
             }
         }
 
-        const note = await this.client.prisma.infraction.findFirst({
+        const { count } = await this.client.prisma.infraction.deleteMany({
             where: {
                 id,
                 guildId: message.guildId!,
@@ -55,40 +54,11 @@ export default class NoteViewCommand extends Command {
             }
         });
 
-        if (!note) {
+        if (count === 0) {
             await this.error(message, "No such note found with that ID!");
             return;
         }
 
-        const user = await safeUserFetch(this.client, note.userId);
-
-        await this.deferredReply(message, {
-            embeds: [
-                new EmbedBuilder({
-                    author: {
-                        name: user?.username ?? "*Unknown*",
-                        iconURL: user?.displayAvatarURL()
-                    },
-                    color: 0x007bff,
-                    description: note.reason ?? "*No content*",
-                    fields: [
-                        {
-                            name: "Created by",
-                            value: `<@${note.moderatorId}> (${note.moderatorId})`,
-                            inline: true
-                        },
-                        {
-                            name: "User",
-                            value: `<@${note.userId}> (${note.userId})`,
-                            inline: true
-                        },
-                        {
-                            name: "ID",
-                            value: `${id}`
-                        }
-                    ]
-                }).setTimestamp()
-            ]
-        });
+        await this.deferredReply(message, `${this.emoji("check")} Successfully deleted the note.`);
     }
 }

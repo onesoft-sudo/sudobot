@@ -18,16 +18,16 @@
  */
 
 import { InfractionType } from "@prisma/client";
-import { PermissionsBitField } from "discord.js";
-import Command, { BasicCommandContext, CommandMessage, CommandReturn } from "../../core/Command";
+import { Message, PermissionsBitField } from "discord.js";
+import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
-export default class NoteDeleteCommand extends Command {
-    public readonly name = "note__delete";
+export default class UserNoteEditCommand extends Command {
+    public readonly name = "unote__edit";
+    public readonly validationRules: ValidationRule[] = [];
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
     public readonly permissionMode = "or";
-    public readonly description = "Delete a note";
-    public readonly argumentSyntaxes = ["<id>"];
-    public readonly aliases = ["note__remove"];
+    public readonly description = "Edit a note";
+    public readonly argumentSyntaxes = ["<id> <new_content>"];
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (context.isLegacy && context.args[0] === undefined) {
@@ -46,11 +46,26 @@ export default class NoteDeleteCommand extends Command {
             }
         }
 
-        const { count } = await this.client.prisma.infraction.deleteMany({
+        const content = context.isLegacy
+            ? (message as Message).content
+                  .substring(this.client.configManager.config[message.guildId!]?.prefix?.length ?? 1)
+                  .trimStart()
+                  .substring("note".length)
+                  .trimStart()
+                  .substring(this.name.replace("note__", "").length)
+                  .trimStart()
+                  .substring(context.args[0].length)
+                  .trimEnd()
+            : context.options.getString("content", true);
+
+        const { count } = await this.client.prisma.infraction.updateMany({
             where: {
                 id,
                 guildId: message.guildId!,
                 type: InfractionType.NOTE
+            },
+            data: {
+                reason: content
             }
         });
 
@@ -59,6 +74,6 @@ export default class NoteDeleteCommand extends Command {
             return;
         }
 
-        await this.deferredReply(message, `${this.emoji("check")} Successfully deleted the note.`);
+        await this.deferredReply(message, `${this.emoji("check")} Note updated successfully.`);
     }
 }

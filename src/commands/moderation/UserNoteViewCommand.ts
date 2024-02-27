@@ -18,16 +18,17 @@
  */
 
 import { InfractionType } from "@prisma/client";
-import { Message, PermissionsBitField } from "discord.js";
+import { EmbedBuilder, PermissionsBitField } from "discord.js";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { safeUserFetch } from "../../utils/fetch";
 
-export default class NoteEditCommand extends Command {
-    public readonly name = "note__edit";
+export default class UserNoteViewCommand extends Command {
+    public readonly name = "unote__view";
     public readonly validationRules: ValidationRule[] = [];
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
     public readonly permissionMode = "or";
-    public readonly description = "Edit a note";
-    public readonly argumentSyntaxes = ["<id> <new_content>"];
+    public readonly description = "Show a note";
+    public readonly argumentSyntaxes = ["<id>"];
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (context.isLegacy && context.args[0] === undefined) {
@@ -46,34 +47,48 @@ export default class NoteEditCommand extends Command {
             }
         }
 
-        const content = context.isLegacy
-            ? (message as Message).content
-                  .substring(this.client.configManager.config[message.guildId!]?.prefix?.length ?? 1)
-                  .trimStart()
-                  .substring("note".length)
-                  .trimStart()
-                  .substring(this.name.replace("note__", "").length)
-                  .trimStart()
-                  .substring(context.args[0].length)
-                  .trimEnd()
-            : context.options.getString("content", true);
-
-        const { count } = await this.client.prisma.infraction.updateMany({
+        const note = await this.client.prisma.infraction.findFirst({
             where: {
                 id,
                 guildId: message.guildId!,
                 type: InfractionType.NOTE
-            },
-            data: {
-                reason: content
             }
         });
 
-        if (count === 0) {
+        if (!note) {
             await this.error(message, "No such note found with that ID!");
             return;
         }
 
-        await this.deferredReply(message, `${this.emoji("check")} Note updated successfully.`);
+        const user = await safeUserFetch(this.client, note.userId);
+
+        await this.deferredReply(message, {
+            embeds: [
+                new EmbedBuilder({
+                    author: {
+                        name: user?.username ?? "*Unknown*",
+                        iconURL: user?.displayAvatarURL()
+                    },
+                    color: 0x007bff,
+                    description: note.reason ?? "*No content*",
+                    fields: [
+                        {
+                            name: "Created by",
+                            value: `<@${note.moderatorId}> (${note.moderatorId})`,
+                            inline: true
+                        },
+                        {
+                            name: "User",
+                            value: `<@${note.userId}> (${note.userId})`,
+                            inline: true
+                        },
+                        {
+                            name: "ID",
+                            value: `${id}`
+                        }
+                    ]
+                }).setTimestamp()
+            ]
+        });
     }
 }

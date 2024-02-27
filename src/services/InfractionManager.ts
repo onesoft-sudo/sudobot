@@ -1401,7 +1401,7 @@ export type BulkDeleteMessagesOptions = CommonOptions & {
     filters?: Function[];
 };
 
-export type ActionDoneName = "banned" | "muted" | "kicked" | "warned" | "unbanned" | "unmuted" | "softbanned" | "beaned";
+export type ActionDoneName = "banned" | "muted" | "kicked" | "warned" | "unbanned" | "unmuted" | "softbanned" | "beaned" | "noted";
 
 export type SendDMOptions = {
     fields?: APIEmbedField[] | ((internalFields: APIEmbedField[]) => Promise<APIEmbedField[]> | APIEmbedField[]);

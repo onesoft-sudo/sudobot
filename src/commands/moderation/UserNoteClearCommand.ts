@@ -23,8 +23,8 @@ import Command, { BasicCommandContext, CommandMessage, CommandReturn, Validation
 import { safeUserFetch } from "../../utils/fetch";
 import { isSnowflake } from "../../utils/utils";
 
-export default class NoteClearCommand extends Command {
-    public readonly name = "note__clear";
+export default class UserNoteClearCommand extends Command {
+    public readonly name = "unote__clear";
     public readonly validationRules: ValidationRule[] = [];
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
     public readonly permissionMode = "or";

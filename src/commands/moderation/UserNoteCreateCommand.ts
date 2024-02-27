@@ -18,23 +18,27 @@
  */
 
 import { InfractionType } from "@prisma/client";
-import { EmbedBuilder, PermissionsBitField, User, escapeCodeBlock } from "discord.js";
+import { Message, PermissionsBitField, User } from "discord.js";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import Pagination from "../../utils/Pagination";
 import { safeUserFetch } from "../../utils/fetch";
 import { isSnowflake } from "../../utils/utils";
 
-export default class NoteListCommand extends Command {
-    public readonly name = "note__list";
+export default class UserNoteCreateCommand extends Command {
+    public readonly name = "unote__create";
     public readonly validationRules: ValidationRule[] = [];
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
     public readonly permissionMode = "or";
-    public readonly description = "List notes of a user";
-    public readonly argumentSyntaxes = ["<UserID|UserMention>"];
+    public readonly description = "Create a note";
+    public readonly argumentSyntaxes = ["<user> <content>"];
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (context.isLegacy && context.args[0] === undefined) {
-            await this.error(message, "Please specify a user to list notes!");
+            await this.error(message, "Please specify a user to take note for!");
+            return;
+        }
+
+        if (context.isLegacy && context.args[1] === undefined) {
+            await this.error(message, "Please specify the note contents!");
             return;
         }
 
@@ -54,50 +58,31 @@ export default class NoteListCommand extends Command {
             return;
         }
 
-        const notes = await this.client.prisma.infraction.findMany({
-            where: {
-                userId: user.id,
+        const content = context.isLegacy
+            ? (message as Message).content
+                  .substring(this.client.configManager.config[message.guildId!]?.prefix?.length ?? 1)
+                  .trimStart()
+                  .substring("note".length)
+                  .trimStart()
+                  .substring(this.name.replace("note__", "").length)
+                  .trimStart()
+                  .substring(context.args[0].length)
+                  .trimEnd()
+            : context.options.getString("content", true);
+
+        const { id } = await this.client.prisma.infraction.create({
+            data: {
                 guildId: message.guildId!,
-                type: InfractionType.NOTE
+                moderatorId: message.member!.user.id,
+                userId: user.id,
+                type: InfractionType.NOTE,
+                reason: content
             }
         });
 
-        if (notes.length === 0) {
-            await this.deferredReply(message, "No notes were found for this user.");
-            return;
-        }
-
-        const pagination = new Pagination(notes, {
-            channelId: message.channelId!,
-            client: this.client,
-            guildId: message.guildId!,
-            limit: 10,
-            timeout: 180_000,
-            userId: message.member!.user.id,
-            embedBuilder({ currentPage, data, maxPages }) {
-                let description = "";
-
-                for (const note of data) {
-                    description += `ID: ${note.id}\nCreated by: <@${note.moderatorId}> (${note.moderatorId})\n`;
-                    description += `\`\`\`\n${escapeCodeBlock(note.reason ?? "*No content*")}\n\`\`\`\n`;
-                    description += "\n";
-                }
-
-                return new EmbedBuilder({
-                    author: {
-                        name: user!.username,
-                        icon_url: user!.displayAvatarURL()
-                    },
-                    color: 0x007bff,
-                    description,
-                    footer: {
-                        text: `Page ${currentPage} of ${maxPages}`
-                    }
-                });
-            }
-        });
-
-        const reply = await this.deferredReply(message, await pagination.getMessageOptions(1));
-        await pagination.start(reply);
+        await this.deferredReply(
+            message,
+            `${this.emoji("check")} Successfully created note for user **${user.tag}**. The note ID is \`${id}\`.`
+        );
     }
 }
