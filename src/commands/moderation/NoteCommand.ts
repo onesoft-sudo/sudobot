@@ -17,81 +17,66 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { PermissionsBitField, SlashCommandBuilder } from "discord.js";
+import { InfractionType } from "@prisma/client";
+import { Message, PermissionsBitField, User } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { safeUserFetch } from "../../utils/fetch";
+import { createModerationEmbed, isSnowflake } from "../../utils/utils";
 
-export default class NoteCommand extends Command {
+export default class NoteCreateCommand extends Command {
     public readonly name = "note";
-    public readonly subcommands = ["view", "create", "edit", "delete", "list", "clear", "remove"];
-    public readonly subCommandCheck = true;
     public readonly validationRules: ValidationRule[] = [
         {
-            types: [ArgumentType.String],
-            name: "subcommand",
+            types: [ArgumentType.User],
+            name: "user",
+            optional: false,
             errors: {
-                required: `Please provide a valid subcommand! The available subcommands are: \`${this.subcommands.join(
-                    "`, `"
-                )}\`.`
+                required: "Please specify a user to take note for!",
+                "entity:null": "Invalid user specified!",
+                "type:invalid": "Invalid user specified!"
+            }
+        },
+        {
+            types: [ArgumentType.StringRest],
+            name: "content",
+            optional: true,
+            errors: {
+                required: "Please specify the note contents!"
             }
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
     public readonly permissionMode = "or";
-    public readonly description = "Manage notes.";
-    public readonly detailedDescription = "Use this command to manage notes about users.";
-    public readonly argumentSyntaxes = ["<subcommand> [...args]"];
-
-    public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName("view")
-                .setDescription("View a note")
-                .addIntegerOption(option => option.setName("id").setDescription("The note ID").setRequired(true))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName("edit")
-                .setDescription("Update a note")
-                .addIntegerOption(option => option.setName("id").setDescription("The note ID").setRequired(true))
-                .addStringOption(option => option.setName("content").setDescription("New content"))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName("delete")
-                .setDescription("Delete a note")
-                .addIntegerOption(option => option.setName("id").setDescription("The note ID").setRequired(true))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName("clear")
-                .setDescription("Clear notes for a user")
-                .addUserOption(option => option.setName("user").setDescription("The target user").setRequired(true))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName("list")
-                .setDescription("List notes for a user")
-                .addUserOption(option => option.setName("user").setDescription("The target user").setRequired(true))
-        )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName("create")
-                .setDescription("Add a note to a user")
-                .addUserOption(option => option.setName("user").setDescription("The target user").setRequired(true))
-                .addStringOption(option => option.setName("content").setDescription("The content of this note"))
-        );
+    public readonly description = "Take a note about a user.";
+    public readonly argumentSyntaxes = ["<user> <reason>"];
+    public readonly aliases = ["notecreate", "createnote"];
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
-        const subcommand = context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true);
-
         await this.deferIfInteraction(message);
 
-        const command = this.client.commands.get(`note__${subcommand}`);
+        const user: User = context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user", true);
+        const reason: string | null = context.isLegacy ? context.parsedNamedArgs.reason : context.options.getString("reason");
 
-        if (context.isLegacy) context.args.shift();
+        const { id } = await this.client.prisma.infraction.create({
+            data: {
+                guildId: message.guildId!,
+                moderatorId: message.member!.user.id,
+                userId: user.id,
+                type: InfractionType.NOTE,
+                reason: reason ?? null
+            }
+        });
 
-        if (command) {
-            return await command.execute(message, context);
-        }
+        await this.deferredReply(message, {
+            embeds: [
+                await createModerationEmbed({
+                    user,
+                    moderator: message.member!.user as User,
+                    id,
+                    reason: reason ?? undefined,
+                    actionDoneName: "noted"
+                })
+            ]
+        });
     }
 }
