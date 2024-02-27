@@ -75,7 +75,7 @@ export default class InfractionListCommand extends Command {
                             : infraction.type[0] + infraction.type.substring(1).toLowerCase().replace(/_/g, " ")
                     }\n`;
                     description += `**Responsible Moderator:** <@${infraction.moderatorId}>\n`;
-                    description += `**Reason:**${
+                    description += `**Reason:** ${
                         infraction.reason ? "\n" + codeBlock(infraction.reason) : "*No reason provided*"
                     }\n`;
                     description += `**Created At:** ${time(infraction.createdAt, "F")} (${time(infraction.createdAt, "R")})\n`;
