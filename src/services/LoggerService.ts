@@ -522,7 +522,7 @@ export default class LoggerService extends Service {
             reason,
             id: id?.toString(),
             moderator
-        });
+        }, undefined, 'infraction_logging_channel');
     }
 
     async logMemberTimeoutRemove(
@@ -543,7 +543,7 @@ export default class LoggerService extends Service {
             reason,
             id: id?.toString(),
             moderator
-        });
+        }, undefined, 'infraction_logging_channel');
     }
 
     async logChannelCreate(channel: NonThreadGuildBasedChannel) {
@@ -1216,7 +1216,7 @@ export default class LoggerService extends Service {
                       ]
                     : [])
             ]
-        });
+        }, undefined, 'infraction_logging_channel');
     }
 
     async logUserSoftBan({ moderator, user, deleteMessageSeconds, reason, guild, id }: LogUserBanOptions) {
@@ -1236,7 +1236,7 @@ export default class LoggerService extends Service {
                         : "*No timeframe provided*"
                 }
             ]
-        });
+        }, undefined, 'infraction_logging_channel');
     }
 
     async logUserUnban({ moderator, user, reason, guild, id }: LogUserUnbanOptions) {
@@ -1248,7 +1248,7 @@ export default class LoggerService extends Service {
             moderator,
             id,
             color: Colors.Green
-        });
+        }, undefined, 'infraction_logging_channel');
     }
 
     async logMemberKick({
@@ -1267,7 +1267,7 @@ export default class LoggerService extends Service {
             moderator,
             id,
             color: Colors.Orange
-        });
+        }, undefined, 'infraction_logging_channel');
     }
 
     async logMemberMute({
@@ -1292,7 +1292,7 @@ export default class LoggerService extends Service {
                     value: duration ? formatDistanceToNowStrict(new Date(Date.now() - duration)) : "*No duration was specified*"
                 }
             ]
-        });
+        }, undefined, 'infraction_logging_channel');
     }
 
     async logMemberWarning({
@@ -1310,7 +1310,7 @@ export default class LoggerService extends Service {
             moderator,
             id,
             color: Colors.Gold
-        });
+        }, undefined, 'infraction_logging_channel');
     }
 
     async logBulkDeleteMessages({ messages, moderator, user, reason, guild, id, count, channel }: LogMessageBulkDelete) {
@@ -1346,7 +1346,7 @@ export default class LoggerService extends Service {
                           }
                       ]
                   }
-                : undefined
+                : undefined,'infraction_logging_channel'
         );
 
         if (messages.length > 0 && sendJSON) {
@@ -1386,7 +1386,7 @@ export default class LoggerService extends Service {
             moderator,
             id,
             color: Colors.Green
-        });
+        }, undefined, 'infraction_logging_channel');
     }
 
     async logBlockedWordOrToken({ guild, user, blockType, token, word, message, content }: BlockedTokenOrWordOptions) {
@@ -1448,7 +1448,7 @@ export default class LoggerService extends Service {
                     ""
                 )}`
             }
-        });
+        }, undefined, 'infraction_logging_channel');
     }
 
     async logMemberMassKick({ users, reason, guild, moderator }: Omit<LogUserMassBanOptions, "deleteMessageSeconds">) {
@@ -1464,7 +1464,7 @@ export default class LoggerService extends Service {
                     ""
                 )}`
             }
-        });
+        }, undefined, 'infraction_logging_channel');
     }
 
     generateBulkDeleteJSON(messages: MessageResolvable[]) {
