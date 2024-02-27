@@ -1,3 +1,12 @@
+# [8.17.0](https://github.com/onesoft-sudo/sudobot/compare/v8.16.0...v8.17.0) (2024-02-27)
+
+
+### Features
+
+* introduce new config option: `infraction_logging_channel` ([07a0fde](https://github.com/onesoft-sudo/sudobot/commit/07a0fdecefd962e9043fd9702fd041ce8335a3d7))
+
+
+
 # [8.16.0](https://github.com/onesoft-sudo/sudobot/compare/v8.15.1...v8.16.0) (2024-02-27)
 
 
@@ -38,15 +47,6 @@
 ### Features
 
 * **loggging:** voice channel events ([0de8ed7](https://github.com/onesoft-sudo/sudobot/commit/0de8ed7cef97d9825c3e3645f9cdb76644a89ad4))
-
-
-
-## [8.13.4](https://github.com/onesoft-sudo/sudobot/compare/v8.13.3...v8.13.4) (2024-02-21)
-
-
-### Bug Fixes
-
-* **automod:rules:nsfw:** better accuracy ([e9ecce5](https://github.com/onesoft-sudo/sudobot/commit/e9ecce5a721b2766b59f53b3d2d73495347b363d))
 
 
 
