@@ -1,3 +1,12 @@
+## [8.17.1](https://github.com/onesoft-sudo/sudobot/compare/v8.17.0...v8.17.1) (2024-03-01)
+
+
+### Bug Fixes
+
+* **logging:** voice event handling issue ([39b81a3](https://github.com/onesoft-sudo/sudobot/commit/39b81a37ccf043b0dc089256d281221265dda73d))
+
+
+
 # [8.17.0](https://github.com/onesoft-sudo/sudobot/compare/v8.16.0...v8.17.0) (2024-02-27)
 
 
@@ -38,15 +47,6 @@
 ### Features
 
 * auto storage backup ([9225693](https://github.com/onesoft-sudo/sudobot/commit/92256932e872e68a34464b766288551d3a44d380))
-
-
-
-# [8.14.0](https://github.com/onesoft-sudo/sudobot/compare/v8.13.4...v8.14.0) (2024-02-26)
-
-
-### Features
-
-* **loggging:** voice channel events ([0de8ed7](https://github.com/onesoft-sudo/sudobot/commit/0de8ed7cef97d9825c3e3645f9cdb76644a89ad4))
 
 
 
