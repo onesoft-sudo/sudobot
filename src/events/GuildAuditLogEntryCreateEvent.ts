@@ -29,7 +29,7 @@ import {
     VoiceChannel
 } from "discord.js";
 import EventListener from "../core/EventListener";
-import { safeUserFetch } from "../utils/fetch";
+import { safeMemberFetch, safeUserFetch } from "../utils/fetch";
 import { logDebug } from "../utils/Logger";
 
 export default class GuildAuditLogEntryCreateEventListener extends EventListener<"guildAuditLogEntryCreate"> {
@@ -107,13 +107,6 @@ export default class GuildAuditLogEntryCreateEventListener extends EventListener
                     reason: reason ?? undefined
                 });
             }
-        } else if (auditLogEntry.action === AuditLogEvent.MemberDisconnect) {
-            await this.client.loggerService.logMemberDisconnect({
-                user: auditLogEntry.target as User,
-                guild,
-                moderator: auditLogEntry.executor ?? undefined,
-                reason: auditLogEntry.reason ?? undefined
-            });
         } else if (auditLogEntry.action === AuditLogEvent.MemberMove) {
             await this.client.loggerService.logMemberVoiceMove({
                 user: auditLogEntry.target as User,
@@ -124,8 +117,9 @@ export default class GuildAuditLogEntryCreateEventListener extends EventListener
             });
         } else if (auditLogEntry.action === AuditLogEvent.MemberUpdate) {
             const lastChange = auditLogEntry.changes.at(-1);
+            const channel = (await safeMemberFetch(guild, auditLogEntry.targetId!))?.voice?.channel as VoiceChannel | null;
 
-            if (!lastChange) {
+            if (!lastChange || !channel) {
                 return;
             }
 
@@ -135,14 +129,16 @@ export default class GuildAuditLogEntryCreateEventListener extends EventListener
                         user: auditLogEntry.target as User,
                         guild,
                         moderator: auditLogEntry.executor ?? undefined,
-                        reason: auditLogEntry.reason ?? undefined
+                        reason: auditLogEntry.reason ?? undefined,
+                        channel
                     });
                 } else if (lastChange.old === true && lastChange.new === false) {
                     await this.client.loggerService.logMemberVoiceUnmute({
                         user: auditLogEntry.target as User,
                         guild,
                         moderator: auditLogEntry.executor ?? undefined,
-                        reason: auditLogEntry.reason ?? undefined
+                        reason: auditLogEntry.reason ?? undefined,
+                        channel
                     });
                 }
             }
@@ -153,14 +149,16 @@ export default class GuildAuditLogEntryCreateEventListener extends EventListener
                         user: auditLogEntry.target as User,
                         guild,
                         moderator: auditLogEntry.executor ?? undefined,
-                        reason: auditLogEntry.reason ?? undefined
+                        reason: auditLogEntry.reason ?? undefined,
+                        channel
                     });
                 } else if (lastChange.old === true && lastChange.new === false) {
                     await this.client.loggerService.logMemberUndeaf({
                         user: auditLogEntry.target as User,
                         guild,
                         moderator: auditLogEntry.executor ?? undefined,
-                        reason: auditLogEntry.reason ?? undefined
+                        reason: auditLogEntry.reason ?? undefined,
+                        channel
                     });
                 }
             }

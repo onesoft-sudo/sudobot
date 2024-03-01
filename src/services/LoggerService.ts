@@ -43,6 +43,7 @@ import {
     Role,
     TextChannel,
     User,
+    VoiceChannel,
     VoiceState,
     escapeMarkdown,
     roleMention
@@ -330,12 +331,14 @@ export default class LoggerService extends Service {
         user,
         guild,
         moderator,
-        reason
+        reason,
+        channel
     }: {
         reason?: string;
         user: User;
         guild: Guild;
         moderator?: User;
+        channel: VoiceChannel;
     }) {
         await this.sendLogEmbed(guild, {
             title: "Member disconnected",
@@ -343,29 +346,62 @@ export default class LoggerService extends Service {
             user,
             reason,
             footerText: "Disconnected",
-            moderator
+            moderator,
+            fields: [
+                {
+                    name: "Channel",
+                    value: channel?.toString() ?? "None"
+                },
+
+                {
+                    name: "User",
+                    value: userInfo(user)
+                }
+            ]
         });
     }
 
-    async logMemberDeaf({ user, guild, moderator, reason }: { reason?: string; user: User; guild: Guild; moderator?: User }) {
+    async logMemberDeaf({ user, guild, moderator, reason, channel }: { reason?: string; user: User; guild: Guild; moderator?: User, channel: VoiceChannel }) {
         await this.sendLogEmbed(guild, {
             title: "Member deafened",
             color: Colors.Red,
             user,
             reason,
             footerText: "Deafened",
-            moderator
+            moderator,
+            fields: [
+                {
+                    name: "Channel",
+                    value: channel?.toString() ?? "None"
+                },
+
+                {
+                    name: "User",
+                    value: userInfo(user)
+                }
+            ]
         });
     }
 
-    async logMemberUndeaf({ user, guild, moderator, reason }: { reason?: string; user: User; guild: Guild; moderator?: User }) {
+    async logMemberUndeaf({ user, guild, moderator, reason, channel }: { reason?: string; user: User; guild: Guild; moderator?: User, channel: VoiceChannel}) {
         await this.sendLogEmbed(guild, {
             title: "Member undeafened",
             color: Colors.Green,
             user,
             reason,
             footerText: "Undeafened",
-            moderator
+            moderator,
+            fields: [
+                {
+                    name: "Channel",
+                    value: channel?.toString() ?? "None"
+                },
+
+                {
+                    name: "User",
+                    value: userInfo(user)
+                }
+            ]
         });
     }
 
@@ -373,20 +409,33 @@ export default class LoggerService extends Service {
         user,
         guild,
         moderator,
-        reason
+        reason,
+        channel
     }: {
         reason?: string;
         user: User;
         guild: Guild;
         moderator?: User;
+        channel: VoiceChannel;
     }) {
         await this.sendLogEmbed(guild, {
-            title: "Member muted",
+            title: "Member voice muted",
             color: Colors.Red,
             user,
             reason,
-            footerText: "Muted",
-            moderator
+            footerText: "Voice Muted",
+            moderator,
+            fields: [
+                {
+                    name: "Channel",
+                    value: channel?.toString() ?? "None"
+                },
+
+                {
+                    name: "User",
+                    value: userInfo(user)
+                }
+            ]
         });
     }
 
@@ -394,12 +443,14 @@ export default class LoggerService extends Service {
         user,
         guild,
         moderator,
-        reason
+        reason,
+        channel
     }: {
         reason?: string;
         user: User;
         guild: Guild;
         moderator?: User;
+        channel: VoiceChannel;
     }) {
         await this.sendLogEmbed(guild, {
             title: "Member unmuted",
@@ -407,7 +458,18 @@ export default class LoggerService extends Service {
             user,
             reason,
             footerText: "Unmuted",
-            moderator
+            moderator,
+            fields: [
+                {
+                    name: "Channel",
+                    value: channel?.toString() ?? "None"
+                },
+
+                {
+                    name: "User",
+                    value: userInfo(user)
+                }
+            ]
         });
     }
 
@@ -435,6 +497,10 @@ export default class LoggerService extends Service {
                 {
                     name: "To",
                     value: newChannel?.toString() ?? "None"
+                },
+                {
+                    name: "User",
+                    value: userInfo(user)
                 }
             ]
         });
@@ -504,46 +570,56 @@ export default class LoggerService extends Service {
         member: GuildMember,
         { reason, id, moderator }: Omit<CommonUserActionOptions, "guild" | "id"> & { reason?: string; id?: string | number }
     ) {
-        await this.sendLogEmbed(member.guild, {
-            title: "Member timed-out",
-            color: Colors.Red,
-            user: member.user,
-            fields: [
-                {
-                    name: "Duration",
-                    value: formatDistanceToNowStrict(member.communicationDisabledUntil!)
-                },
-                {
-                    name: "User Information",
-                    value: `Username: ${member.user.username}\nMention: ${member.user.toString()}\nID: ${member.user.id}`
-                }
-            ],
-            footerText: "Timed-out",
-            reason,
-            id: id?.toString(),
-            moderator
-        }, undefined, 'infraction_logging_channel');
+        await this.sendLogEmbed(
+            member.guild,
+            {
+                title: "Member timed-out",
+                color: Colors.Red,
+                user: member.user,
+                fields: [
+                    {
+                        name: "Duration",
+                        value: formatDistanceToNowStrict(member.communicationDisabledUntil!)
+                    },
+                    {
+                        name: "User Information",
+                        value: `Username: ${member.user.username}\nMention: ${member.user.toString()}\nID: ${member.user.id}`
+                    }
+                ],
+                footerText: "Timed-out",
+                reason,
+                id: id?.toString(),
+                moderator
+            },
+            undefined,
+            "infraction_logging_channel"
+        );
     }
 
     async logMemberTimeoutRemove(
         member: GuildMember,
         { reason, id, moderator }: Omit<CommonUserActionOptions, "guild" | "id"> & { reason?: string; id?: string | number }
     ) {
-        await this.sendLogEmbed(member.guild, {
-            title: "Member timeout removed",
-            color: Colors.Green,
-            user: member.user,
-            fields: [
-                {
-                    name: "User Information",
-                    value: `Username: ${member.user.username}\nMention: ${member.user.toString()}\nID: ${member.user.id}`
-                }
-            ],
-            footerText: "Timed-out removed",
-            reason,
-            id: id?.toString(),
-            moderator
-        }, undefined, 'infraction_logging_channel');
+        await this.sendLogEmbed(
+            member.guild,
+            {
+                title: "Member timeout removed",
+                color: Colors.Green,
+                user: member.user,
+                fields: [
+                    {
+                        name: "User Information",
+                        value: `Username: ${member.user.username}\nMention: ${member.user.toString()}\nID: ${member.user.id}`
+                    }
+                ],
+                footerText: "Timed-out removed",
+                reason,
+                id: id?.toString(),
+                moderator
+            },
+            undefined,
+            "infraction_logging_channel"
+        );
     }
 
     async logChannelCreate(channel: NonThreadGuildBasedChannel) {
@@ -1188,67 +1264,82 @@ export default class LoggerService extends Service {
         duration,
         includeDeleteMessageSeconds = true
     }: LogUserBanOptions) {
-        await this.sendLogEmbed(guild, {
-            user,
-            title: "A user was banned",
-            footerText: (duration ? "Temporarily " : "") + "Banned",
-            reason: reason ?? null,
-            moderator,
-            id,
-            color: Colors.Red,
-            fields: [
-                ...(includeDeleteMessageSeconds
-                    ? [
-                          {
-                              name: "Message Deletion Timeframe",
-                              value: deleteMessageSeconds
-                                  ? formatDistanceToNowStrict(new Date(Date.now() - deleteMessageSeconds * 1000))
-                                  : "*No timeframe provided*"
-                          }
-                      ]
-                    : []),
-                ...(duration
-                    ? [
-                          {
-                              name: "Duration",
-                              value: formatDistanceToNowStrict(new Date(Date.now() - duration))
-                          }
-                      ]
-                    : [])
-            ]
-        }, undefined, 'infraction_logging_channel');
+        await this.sendLogEmbed(
+            guild,
+            {
+                user,
+                title: "A user was banned",
+                footerText: (duration ? "Temporarily " : "") + "Banned",
+                reason: reason ?? null,
+                moderator,
+                id,
+                color: Colors.Red,
+                fields: [
+                    ...(includeDeleteMessageSeconds
+                        ? [
+                              {
+                                  name: "Message Deletion Timeframe",
+                                  value: deleteMessageSeconds
+                                      ? formatDistanceToNowStrict(new Date(Date.now() - deleteMessageSeconds * 1000))
+                                      : "*No timeframe provided*"
+                              }
+                          ]
+                        : []),
+                    ...(duration
+                        ? [
+                              {
+                                  name: "Duration",
+                                  value: formatDistanceToNowStrict(new Date(Date.now() - duration))
+                              }
+                          ]
+                        : [])
+                ]
+            },
+            undefined,
+            "infraction_logging_channel"
+        );
     }
 
     async logUserSoftBan({ moderator, user, deleteMessageSeconds, reason, guild, id }: LogUserBanOptions) {
-        await this.sendLogEmbed(guild, {
-            user,
-            title: "A user was softbanned",
-            footerText: "Softbanned",
-            reason: reason ?? null,
-            moderator,
-            id,
-            color: Colors.Red,
-            fields: [
-                {
-                    name: "Message Deletion Timeframe",
-                    value: deleteMessageSeconds
-                        ? formatDistanceToNowStrict(new Date(Date.now() - deleteMessageSeconds * 1000))
-                        : "*No timeframe provided*"
-                }
-            ]
-        }, undefined, 'infraction_logging_channel');
+        await this.sendLogEmbed(
+            guild,
+            {
+                user,
+                title: "A user was softbanned",
+                footerText: "Softbanned",
+                reason: reason ?? null,
+                moderator,
+                id,
+                color: Colors.Red,
+                fields: [
+                    {
+                        name: "Message Deletion Timeframe",
+                        value: deleteMessageSeconds
+                            ? formatDistanceToNowStrict(new Date(Date.now() - deleteMessageSeconds * 1000))
+                            : "*No timeframe provided*"
+                    }
+                ]
+            },
+            undefined,
+            "infraction_logging_channel"
+        );
     }
 
     async logUserUnban({ moderator, user, reason, guild, id }: LogUserUnbanOptions) {
-        this.sendLogEmbed(guild, {
-            user,
-            title: "A user was unbanned",
-            footerText: "Unbanned",
-            reason: reason ?? null,
-            moderator,
-            id,
-            color: Colors.Green
-        }, undefined, 'infraction_logging_channel');
+        this.sendLogEmbed(
+            guild,
+            {
+                user,
+                title: "A user was unbanned",
+                footerText: "Unbanned",
+                reason: reason ?? null,
+                moderator,
+                id,
+                color: Colors.Green
+            },
+            undefined,
+            "infraction_logging_channel"
+        );
     }
 
     async logMemberKick({
@@ -1259,15 +1350,20 @@ export default class LoggerService extends Service {
         id,
         user
     }: CommonUserActionOptions & { member?: GuildMember; user?: User; reason?: string }) {
-        this.sendLogEmbed(guild, {
-            user: user ?? member!.user,
-            title: "A member was kicked",
-            footerText: "Kicked",
-            reason: reason ?? null,
-            moderator,
-            id,
-            color: Colors.Orange
-        }, undefined, 'infraction_logging_channel');
+        this.sendLogEmbed(
+            guild,
+            {
+                user: user ?? member!.user,
+                title: "A member was kicked",
+                footerText: "Kicked",
+                reason: reason ?? null,
+                moderator,
+                id,
+                color: Colors.Orange
+            },
+            undefined,
+            "infraction_logging_channel"
+        );
     }
 
     async logMemberMute({
@@ -1278,21 +1374,28 @@ export default class LoggerService extends Service {
         id,
         duration
     }: CommonUserActionOptions & { member: GuildMember; reason?: string; duration?: number }) {
-        this.sendLogEmbed(guild, {
-            user: member.user,
-            title: "A member was muted",
-            footerText: "Muted",
-            reason: reason ?? null,
-            moderator,
-            id,
-            color: Colors.DarkGold,
-            fields: [
-                {
-                    name: "Duration",
-                    value: duration ? formatDistanceToNowStrict(new Date(Date.now() - duration)) : "*No duration was specified*"
-                }
-            ]
-        }, undefined, 'infraction_logging_channel');
+        this.sendLogEmbed(
+            guild,
+            {
+                user: member.user,
+                title: "A member was muted",
+                footerText: "Muted",
+                reason: reason ?? null,
+                moderator,
+                id,
+                color: Colors.DarkGold,
+                fields: [
+                    {
+                        name: "Duration",
+                        value: duration
+                            ? formatDistanceToNowStrict(new Date(Date.now() - duration))
+                            : "*No duration was specified*"
+                    }
+                ]
+            },
+            undefined,
+            "infraction_logging_channel"
+        );
     }
 
     async logMemberWarning({
@@ -1302,15 +1405,20 @@ export default class LoggerService extends Service {
         guild,
         id
     }: CommonUserActionOptions & { member: GuildMember; reason?: string }) {
-        this.sendLogEmbed(guild, {
-            user: member.user,
-            title: "A member was warned",
-            footerText: "Warned",
-            reason: reason ?? null,
-            moderator,
-            id,
-            color: Colors.Gold
-        }, undefined, 'infraction_logging_channel');
+        this.sendLogEmbed(
+            guild,
+            {
+                user: member.user,
+                title: "A member was warned",
+                footerText: "Warned",
+                reason: reason ?? null,
+                moderator,
+                id,
+                color: Colors.Gold
+            },
+            undefined,
+            "infraction_logging_channel"
+        );
     }
 
     async logBulkDeleteMessages({ messages, moderator, user, reason, guild, id, count, channel }: LogMessageBulkDelete) {
@@ -1346,7 +1454,8 @@ export default class LoggerService extends Service {
                           }
                       ]
                   }
-                : undefined,'infraction_logging_channel'
+                : undefined,
+            "infraction_logging_channel"
         );
 
         if (messages.length > 0 && sendJSON) {
@@ -1378,15 +1487,20 @@ export default class LoggerService extends Service {
         guild,
         id
     }: CommonUserActionOptions & { member: GuildMember; reason?: string }) {
-        this.sendLogEmbed(guild, {
-            user: member.user,
-            title: "A member was unmuted",
-            footerText: "Unmuted",
-            reason: reason ?? null,
-            moderator,
-            id,
-            color: Colors.Green
-        }, undefined, 'infraction_logging_channel');
+        this.sendLogEmbed(
+            guild,
+            {
+                user: member.user,
+                title: "A member was unmuted",
+                footerText: "Unmuted",
+                reason: reason ?? null,
+                moderator,
+                id,
+                color: Colors.Green
+            },
+            undefined,
+            "infraction_logging_channel"
+        );
     }
 
     async logBlockedWordOrToken({ guild, user, blockType, token, word, message, content }: BlockedTokenOrWordOptions) {
@@ -1428,43 +1542,53 @@ export default class LoggerService extends Service {
     }
 
     async logUserMassBan({ users, reason, guild, moderator, deleteMessageSeconds }: LogUserMassBanOptions) {
-        await this.sendLogEmbed(guild, {
-            title: "A massban was executed",
-            footerText: "Banned",
-            reason: reason ?? null,
-            moderator,
-            color: Colors.Red,
-            fields: [
-                {
-                    name: "Message Deletion Timeframe",
-                    value: deleteMessageSeconds
-                        ? formatDistanceToNowStrict(new Date(Date.now() - deleteMessageSeconds * 1000))
-                        : "*No timeframe provided*"
+        await this.sendLogEmbed(
+            guild,
+            {
+                title: "A massban was executed",
+                footerText: "Banned",
+                reason: reason ?? null,
+                moderator,
+                color: Colors.Red,
+                fields: [
+                    {
+                        name: "Message Deletion Timeframe",
+                        value: deleteMessageSeconds
+                            ? formatDistanceToNowStrict(new Date(Date.now() - deleteMessageSeconds * 1000))
+                            : "*No timeframe provided*"
+                    }
+                ],
+                options: {
+                    description: `The following users were banned:\n\n${users.reduce(
+                        (acc, user) => acc + (acc === "" ? "" : "\n") + "<@" + user + "> (`" + user + "`)",
+                        ""
+                    )}`
                 }
-            ],
-            options: {
-                description: `The following users were banned:\n\n${users.reduce(
-                    (acc, user) => acc + (acc === "" ? "" : "\n") + "<@" + user + "> (`" + user + "`)",
-                    ""
-                )}`
-            }
-        }, undefined, 'infraction_logging_channel');
+            },
+            undefined,
+            "infraction_logging_channel"
+        );
     }
 
     async logMemberMassKick({ users, reason, guild, moderator }: Omit<LogUserMassBanOptions, "deleteMessageSeconds">) {
-        await this.sendLogEmbed(guild, {
-            title: "A masskick was executed",
-            footerText: "Kicked",
-            reason: reason ?? null,
-            moderator,
-            color: Colors.Orange,
-            options: {
-                description: `The following users were kicked:\n\n${users.reduce(
-                    (acc, user) => acc + (acc === "" ? "" : "\n") + "<@" + user + "> (`" + user + "`)",
-                    ""
-                )}`
-            }
-        }, undefined, 'infraction_logging_channel');
+        await this.sendLogEmbed(
+            guild,
+            {
+                title: "A masskick was executed",
+                footerText: "Kicked",
+                reason: reason ?? null,
+                moderator,
+                color: Colors.Orange,
+                options: {
+                    description: `The following users were kicked:\n\n${users.reduce(
+                        (acc, user) => acc + (acc === "" ? "" : "\n") + "<@" + user + "> (`" + user + "`)",
+                        ""
+                    )}`
+                }
+            },
+            undefined,
+            "infraction_logging_channel"
+        );
     }
 
     generateBulkDeleteJSON(messages: MessageResolvable[]) {
