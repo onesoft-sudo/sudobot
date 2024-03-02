@@ -28,12 +28,12 @@ export default class BeanCommand extends Command {
         {
             types: [ArgumentType.User],
             entity: {
-                notNull: true,
+                notNull: true
             },
             errors: {
                 required: "You must specify a user to bean!",
                 "type:invalid": "You have specified an invalid user mention or ID.",
-                "entity:null": "The given user does not exist!",
+                "entity:null": "The given user does not exist!"
             },
             name: "user"
         },
@@ -76,7 +76,7 @@ export default class BeanCommand extends Command {
 
         const reason = context.isLegacy ? context.parsedNamedArgs.reason : context.options.getString("reason");
 
-        const id = await this.client.infractionManager.createUserBean(user, {
+        const { id, reason: finalReason } = await this.client.infractionManager.createUserBean(user, {
             reason,
             guild: message.guild!,
             moderator: message.member!.user as User
@@ -92,7 +92,7 @@ export default class BeanCommand extends Command {
                         actionDoneName: "beaned",
                         id,
                         color: 0x007bff,
-                        reason
+                        reason: finalReason
                     })
                 ]
             },

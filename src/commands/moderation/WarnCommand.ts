@@ -88,7 +88,7 @@ export default class WarnCommand extends Command {
 
         const reason = (context.isLegacy ? context.parsedNamedArgs.reason : context.options.getString("reason")) ?? undefined;
 
-        const { id, result } = await this.client.infractionManager.createMemberWarn(member, {
+        const { id, result, infraction } = await this.client.infractionManager.createMemberWarn(member, {
             guild: message.guild!,
             moderator: message.member!.user as User,
             notifyUser: true,
@@ -112,7 +112,7 @@ export default class WarnCommand extends Command {
                         }`,
                         actionDoneName: "warned",
                         id,
-                        reason
+                        reason: infraction.reason
                     })
                 ]
             },

@@ -60,7 +60,7 @@ export default class NoteCreateCommand extends Command {
         const user: User = context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user", true);
         const reason: string | null = context.isLegacy ? context.parsedNamedArgs.reason : context.options.getString("reason");
 
-        const { id } = await this.client.prisma.infraction.create({
+        const { id, reason: finalReason } = await this.client.prisma.infraction.create({
             data: {
                 guildId: message.guildId!,
                 moderatorId: message.member!.user.id,
@@ -76,7 +76,7 @@ export default class NoteCreateCommand extends Command {
                     user,
                     moderator: message.member!.user as User,
                     id,
-                    reason: reason ?? undefined,
+                    reason: finalReason,
                     actionDoneName: "noted"
                 })
             ]

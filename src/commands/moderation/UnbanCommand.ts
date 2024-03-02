@@ -77,7 +77,7 @@ export default class UnbanCommand extends Command {
             logError(e);
         }
 
-        const { id, noSuchBan } = await this.client.infractionManager.removeUserBan(user, {
+        const { infraction, noSuchBan } = await this.client.infractionManager.removeUserBan(user, {
             guild: message.guild!,
             moderator: message.member!.user! as User,
             reason,
@@ -89,7 +89,7 @@ export default class UnbanCommand extends Command {
             return;
         }
 
-        if (!id) {
+        if (!infraction) {
             await this.error(message);
             return;
         }
@@ -103,8 +103,8 @@ export default class UnbanCommand extends Command {
                         user,
                         actionDoneName: "unbanned",
                         description: `**${escapeMarkdown(user.tag)}** has been unbanned.`,
-                        id: `${id}`,
-                        reason,
+                        id: `${infraction.id}`,
+                        reason: infraction.reason,
                         color: "Green"
                     })
                 ]

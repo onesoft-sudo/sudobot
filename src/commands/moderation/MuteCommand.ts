@@ -144,7 +144,12 @@ export default class MuteCommand extends Command {
             return;
         }
 
-        const { id, result, error } = await this.client.infractionManager.createMemberMute(member, {
+        const {
+            id,
+            result,
+            error,
+            reason: finalReason
+        } = await this.client.infractionManager.createMemberMute(member, {
             guild: message.guild!,
             moderator: message.member!.user as User,
             notifyUser: !context.isLegacy ? !context.options.getBoolean("silent") ?? true : true,
@@ -178,7 +183,7 @@ export default class MuteCommand extends Command {
                         }`,
                         actionDoneName: "muted",
                         id,
-                        reason,
+                        reason: finalReason,
                         fields: [
                             {
                                 name: "Duration",

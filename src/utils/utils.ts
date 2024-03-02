@@ -65,7 +65,7 @@ export interface CreateModerationEmbedOptions {
     user: User;
     moderator: User;
     actionDoneName?: ActionDoneName;
-    reason?: string;
+    reason?: string | null;
     description?: string;
     fields?:
         | APIEmbedField[]
@@ -112,7 +112,7 @@ export async function createModerationEmbed({
                           }
                       ],
                       `${id}`,
-                      reason
+                      reason ?? undefined
                   )
                 : [
                       {

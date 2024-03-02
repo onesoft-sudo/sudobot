@@ -174,7 +174,7 @@ export default class TempBanCommand extends Command {
             logError(e);
         }
 
-        const id = await this.client.infractionManager.createUserBan(user, {
+        const infraction = await this.client.infractionManager.createUserBan(user, {
             guild: message.guild!,
             moderator: message.member!.user as User,
             deleteMessageSeconds: messageDeletionTimeframe,
@@ -185,7 +185,7 @@ export default class TempBanCommand extends Command {
             autoRemoveQueue: true
         });
 
-        if (!id) {
+        if (!infraction) {
             await this.error(message);
             return;
         }
@@ -213,8 +213,8 @@ export default class TempBanCommand extends Command {
                                 value: formatDistanceToNowStrict(new Date(Date.now() - duration!))
                             }
                         ],
-                        id: `${id}`,
-                        reason
+                        id: `${infraction.id}`,
+                        reason: infraction.reason
                     })
                 ]
             },

@@ -36,6 +36,7 @@ import {
     OverwriteData,
     PermissionFlagsBits,
     PrivateThreadChannel,
+    Snowflake,
     TextBasedChannel,
     TextChannel,
     ThreadAutoArchiveDuration,
@@ -260,6 +261,24 @@ export default class InfractionManager extends Service {
         }).setTimestamp();
     }
 
+    public processInfractionReason(guildId: Snowflake, reason?: string | null) {
+        if (!reason?.length) {
+            return null;
+        }
+
+        let finalReason = reason;
+        const templates = this.client.configManager.config[guildId]?.infractions?.reason_templates ?? {};
+        const templateWrapper =
+            this.client.configManager.config[guildId]?.infractions?.reason_template_placeholder_wrapper ?? "{{%name%}}";
+
+        for (const key in templates) {
+            const placeholder = templateWrapper.replace("%name%", `( *)${key}( *)`);
+            finalReason = finalReason.replace(new RegExp(placeholder, "gi"), templates[key]);
+        }
+
+        return finalReason;
+    }
+
     private async sendDMBuildEmbed(guild: Guild, options: SendDMOptions) {
         const { fields, description, actionDoneName, id, reason, color, title } = options;
 
@@ -331,7 +350,9 @@ export default class InfractionManager extends Service {
             sendLog
         }: CreateUserBanOptions & { deleteMessageSeconds: number }
     ) {
-        const { id } = await this.client.prisma.infraction.create({
+        reason = this.processInfractionReason(guild.id, reason) ?? reason;
+
+        const infraction = await this.client.prisma.infraction.create({
             data: {
                 type: InfractionType.SOFTBAN,
                 userId: user.id,
@@ -343,6 +364,7 @@ export default class InfractionManager extends Service {
                 }
             }
         });
+        const { id } = infraction;
 
         if (sendLog)
             this.client.loggerService.logUserSoftBan({
@@ -372,7 +394,7 @@ export default class InfractionManager extends Service {
 
             await wait(1500);
             await guild.bans.remove(user, `Softban remove: ${reason}`);
-            return id;
+            return infraction;
         } catch (e) {
             logError(e);
             return null;
@@ -383,7 +405,9 @@ export default class InfractionManager extends Service {
         user: User,
         { guild, moderator, reason, deleteMessageSeconds, notifyUser, duration, sendLog, autoRemoveQueue }: CreateUserBanOptions
     ) {
-        const { id } = await this.client.prisma.infraction.create({
+        reason = this.processInfractionReason(guild.id, reason) ?? reason;
+
+        const infraction = await this.client.prisma.infraction.create({
             data: {
                 type: duration ? InfractionType.TEMPBAN : InfractionType.BAN,
                 userId: user.id,
@@ -406,7 +430,7 @@ export default class InfractionManager extends Service {
             this.client.loggerService.logUserBan({
                 moderator,
                 guild,
-                id: `${id}`,
+                id: `${infraction.id}`,
                 user,
                 deleteMessageSeconds,
                 reason,
@@ -415,7 +439,7 @@ export default class InfractionManager extends Service {
 
         if (notifyUser) {
             await this.sendDM(user, guild, {
-                id,
+                id: infraction.id,
                 actionDoneName: "banned",
                 reason,
                 fields: duration
@@ -454,7 +478,7 @@ export default class InfractionManager extends Service {
                 );
             }
 
-            return id;
+            return infraction;
         } catch (e) {
             logError(e);
             await this.autoRemoveUnbanQueue(guild, user).catch(logError);
@@ -463,6 +487,7 @@ export default class InfractionManager extends Service {
     }
 
     async createUserFakeBan(user: User, { guild, reason, notifyUser, duration }: CreateUserBanOptions) {
+        reason = this.processInfractionReason(guild.id, reason) ?? reason;
         const id = Math.round(Math.random() * 1000);
 
         if (notifyUser) {
@@ -481,10 +506,11 @@ export default class InfractionManager extends Service {
             });
         }
 
-        return id;
+        return { id, reason };
     }
 
     async createUserShot(user: User, { guild, reason, moderator }: Omit<CommonOptions, "notifyUser" | "sendLog">) {
+        reason = this.processInfractionReason(guild.id, reason) ?? reason;
         const id = Math.round(Math.random() * 1000);
 
         await this.sendDM(user, guild, {
@@ -500,11 +526,12 @@ export default class InfractionManager extends Service {
             color: 0x007bff
         });
 
-        return id;
+        return { id, reason };
     }
 
     async createUserBean(user: User, { guild, moderator, reason }: Pick<CreateUserBanOptions, "guild" | "moderator" | "reason">) {
-        const { id } = await this.client.prisma.infraction.create({
+        reason = this.processInfractionReason(guild.id, reason) ?? reason;
+        const infraction = await this.client.prisma.infraction.create({
             data: {
                 type: InfractionType.BEAN,
                 userId: user.id,
@@ -515,13 +542,13 @@ export default class InfractionManager extends Service {
         });
 
         await this.sendDM(user, guild, {
-            id,
+            id: infraction.id,
             actionDoneName: "beaned",
             reason,
             color: 0x007bff
         });
 
-        return id;
+        return infraction;
     }
 
     private async autoRemoveUnbanQueue(guild: Guild, user: User) {
@@ -538,16 +565,21 @@ export default class InfractionManager extends Service {
         user: User,
         { guild, moderator, reason, autoRemoveQueue = true, sendLog }: CommonOptions & { autoRemoveQueue?: boolean }
     ) {
+        reason = this.processInfractionReason(guild.id, reason) ?? reason;
         if (autoRemoveQueue) await this.autoRemoveUnbanQueue(guild, user);
 
         try {
-            await guild.bans.remove(user);
+            await guild.bans.remove(user, reason);
         } catch (error) {
             logError(error);
-            return { error, noSuchBan: error instanceof DiscordAPIError && error.code === 10026 && error.status === 404 };
+            return {
+                error,
+                noSuchBan: error instanceof DiscordAPIError && error.code === 10026 && error.status === 404,
+                infraction: null
+            };
         }
 
-        const { id } = await this.client.prisma.infraction.create({
+        const infraction = await this.client.prisma.infraction.create({
             data: {
                 type: InfractionType.UNBAN,
                 userId: user.id,
@@ -561,18 +593,19 @@ export default class InfractionManager extends Service {
             this.client.loggerService.logUserUnban({
                 moderator,
                 guild,
-                id: `${id}`,
+                id: `${infraction.id}`,
                 user,
                 reason
             });
 
-        return { id };
+        return { infraction };
     }
 
     async createMemberKick(member: GuildMember, { guild, moderator, reason, notifyUser }: CommonOptions) {
         if (!member.kickable) return null;
 
-        const { id } = await this.client.prisma.infraction.create({
+        reason = this.processInfractionReason(guild.id, reason) ?? reason;
+        const infraction = await this.client.prisma.infraction.create({
             data: {
                 type: InfractionType.KICK,
                 userId: member.user.id,
@@ -585,14 +618,14 @@ export default class InfractionManager extends Service {
         this.client.loggerService.logMemberKick({
             moderator,
             guild,
-            id: `${id}`,
+            id: `${infraction.id}`,
             member,
             reason
         });
 
         if (notifyUser) {
             await this.sendDM(member.user, guild, {
-                id,
+                id: infraction.id,
                 actionDoneName: "kicked",
                 reason
             });
@@ -600,7 +633,7 @@ export default class InfractionManager extends Service {
 
         try {
             await member.kick(reason);
-            return id;
+            return infraction;
         } catch (e) {
             logError(e);
             return null;
@@ -608,6 +641,8 @@ export default class InfractionManager extends Service {
     }
 
     async createMemberWarn(member: GuildMember, { guild, moderator, reason, notifyUser }: CommonOptions) {
+        reason = this.processInfractionReason(guild.id, reason) ?? reason;
+
         const infraction = await this.client.prisma.infraction.create({
             data: {
                 type: InfractionType.WARNING,
@@ -617,13 +652,12 @@ export default class InfractionManager extends Service {
                 moderatorId: moderator.id
             }
         });
-        const { id } = infraction;
 
         this.client.loggerService.logMemberWarning({
             moderator,
             member,
             guild,
-            id: `${id}`,
+            id: `${infraction.id}`,
             reason
         });
 
@@ -631,7 +665,7 @@ export default class InfractionManager extends Service {
 
         if (notifyUser) {
             result = await this.sendDM(member.user, guild, {
-                id,
+                id: infraction.id,
                 actionDoneName: "warned",
                 reason,
                 fallback: true,
@@ -639,7 +673,7 @@ export default class InfractionManager extends Service {
             });
         }
 
-        return { id, result };
+        return { id: infraction.id, result, reason, infraction };
     }
 
     bulkDeleteMessagesApplyFilters(message: Message, filters: Function[]) {
@@ -666,6 +700,8 @@ export default class InfractionManager extends Service {
         offset = 0
     }: BulkDeleteMessagesOptions) {
         if (messageChannel && !(messagesToDelete && messagesToDelete.length === 0)) {
+            reason = this.processInfractionReason(guild.id, reason) ?? reason;
+
             let messages: MessageResolvable[] | null = messagesToDelete ?? null;
 
             if (!logOnly && messages === null) {
@@ -704,7 +740,7 @@ export default class InfractionManager extends Service {
 
             const count = messages ? messages.length : 0;
 
-            const { id } = user
+            const infraction = user
                 ? await this.client.prisma.infraction.create({
                       data: {
                           type: InfractionType.BULK_DELETE_MESSAGE,
@@ -717,7 +753,7 @@ export default class InfractionManager extends Service {
                           reason
                       }
                   })
-                : { id: 0 };
+                : null;
 
             if (
                 sendLog &&
@@ -729,7 +765,7 @@ export default class InfractionManager extends Service {
                         channel: messageChannel,
                         count,
                         guild,
-                        id: id === 0 ? undefined : `${id}`,
+                        id: !infraction ? undefined : `${infraction.id}`,
                         user,
                         moderator,
                         reason,
@@ -775,6 +811,10 @@ export default class InfractionManager extends Service {
     ) {
         const mutedRole = this.client.configManager.config[guild.id]?.muting?.role;
 
+        if (mutedRole || duration) {
+            reason = this.processInfractionReason(guild.id, reason) ?? reason;
+        }
+
         if (!mutedRole) {
             if (!duration) {
                 return {
@@ -790,7 +830,7 @@ export default class InfractionManager extends Service {
             }
         } else {
             try {
-                await member.roles.add(mutedRole);
+                await member.roles.add(mutedRole, reason);
             } catch (e) {
                 logError(e);
                 return {
@@ -892,13 +932,15 @@ export default class InfractionManager extends Service {
             });
         }
 
-        return { id, result };
+        return { id, result, reason, infraction };
     }
 
     async removeMemberMute(
         member: GuildMember,
         { guild, moderator, reason, notifyUser, sendLog, autoRemoveQueue = true }: CommonOptions & { autoRemoveQueue?: boolean }
-    ): Promise<{ error?: string; result?: boolean | null; id?: number }> {
+    ): Promise<{ error?: string; result?: boolean | null; id?: number; reason?: string | null; infraction?: Infraction | null }> {
+        reason = this.processInfractionReason(guild.id, reason) ?? reason;
+
         const mutedRole = this.client.configManager.config[guild.id]?.muting?.role;
 
         if (!mutedRole) {
@@ -923,7 +965,7 @@ export default class InfractionManager extends Service {
             }
         }
 
-        const { id } = await this.client.prisma.infraction.create({
+        const infraction = await this.client.prisma.infraction.create({
             data: {
                 type: InfractionType.UNMUTE,
                 userId: member.user.id,
@@ -938,7 +980,7 @@ export default class InfractionManager extends Service {
                 moderator,
                 member,
                 guild,
-                id: `${id}`,
+                id: `${infraction.id}`,
                 reason
             });
         }
@@ -947,7 +989,7 @@ export default class InfractionManager extends Service {
 
         if (notifyUser) {
             result = await this.sendDM(member.user, guild, {
-                id,
+                id: infraction.id,
                 actionDoneName: "unmuted",
                 reason,
                 color: "Green"
@@ -969,7 +1011,7 @@ export default class InfractionManager extends Service {
             }
         }
 
-        return { id, result };
+        return { id: infraction.id, result, reason, infraction };
     }
 
     async createUserMassBan({
@@ -986,6 +1028,7 @@ export default class InfractionManager extends Service {
             return { error: "Cannot perform this operation on more than 20 users" };
         }
 
+        reason = this.processInfractionReason(guild.id, reason) ?? reason;
         const startTime = Date.now();
 
         const createInfractionData = [];
@@ -999,7 +1042,8 @@ export default class InfractionManager extends Service {
                 count,
                 users,
                 completedUsers,
-                skippedUsers
+                skippedUsers,
+                reason
             }).catch(logError);
         }
 
@@ -1009,7 +1053,8 @@ export default class InfractionManager extends Service {
                     count,
                     users,
                     completedUsers,
-                    skippedUsers
+                    skippedUsers,
+                    reason
                 }).catch(logError);
 
                 calledJustNow = true;
@@ -1047,7 +1092,8 @@ export default class InfractionManager extends Service {
                 users,
                 completedUsers,
                 skippedUsers,
-                completedIn: Math.round((Date.now() - startTime) / 1000)
+                completedIn: Math.round((Date.now() - startTime) / 1000),
+                reason
             }).catch(logError);
         }
 
@@ -1080,6 +1126,7 @@ export default class InfractionManager extends Service {
             return { error: "Cannot perform this operation on more than 10 users" };
         }
 
+        reason = this.processInfractionReason(guild.id, reason) ?? reason;
         const startTime = Date.now();
 
         const createInfractionData = [];
@@ -1093,7 +1140,8 @@ export default class InfractionManager extends Service {
                 count,
                 users,
                 completedUsers,
-                skippedUsers
+                skippedUsers,
+                reason
             }).catch(logError);
         }
 
@@ -1103,7 +1151,8 @@ export default class InfractionManager extends Service {
                     count,
                     users,
                     completedUsers,
-                    skippedUsers
+                    skippedUsers,
+                    reason
                 }).catch(logError);
 
                 calledJustNow = true;
@@ -1136,7 +1185,8 @@ export default class InfractionManager extends Service {
                 users,
                 completedUsers,
                 skippedUsers,
-                completedIn: Math.round((Date.now() - startTime) / 1000)
+                completedIn: Math.round((Date.now() - startTime) / 1000),
+                reason
             }).catch(logError);
         }
 
@@ -1363,6 +1413,7 @@ export type CreateUserMassBanOptions = Omit<
             completedUsers: readonly string[];
             skippedUsers: readonly string[];
             completedIn?: number;
+            reason?: string;
         }) => Promise<any> | any;
         callAfterEach?: number;
     },

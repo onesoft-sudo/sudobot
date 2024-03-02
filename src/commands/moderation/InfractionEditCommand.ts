@@ -37,7 +37,7 @@ export default class InfractionEditCommand extends Command {
 
     async execute(interaction: ChatInputCommandInteraction, context: ChatInputCommandContext): Promise<CommandReturn> {
         const id = interaction.options.getInteger("id", true);
-        const newReason = interaction.options.getString("new_reason");
+        let newReason = interaction.options.getString("new_reason");
         const newDuration = interaction.options.getString("new_duration");
 
         if (!newReason && !newDuration) {
@@ -134,6 +134,10 @@ export default class InfractionEditCommand extends Command {
                     }).setTimestamp()
                 ]
             });
+        }
+
+        if (newReason) {
+            newReason = this.client.infractionManager.processInfractionReason(interaction.guildId!, newReason);
         }
 
         await this.client.prisma.infraction.update({

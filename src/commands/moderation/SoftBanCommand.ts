@@ -147,7 +147,7 @@ export default class SoftBanCommand extends Command {
             logError(e);
         }
 
-        const id = await this.client.infractionManager.createUserSoftban(user, {
+        const infraction = await this.client.infractionManager.createUserSoftban(user, {
             guild: message.guild!,
             moderator: message.member!.user as User,
             deleteMessageSeconds: messageDeletionTimeframe,
@@ -156,7 +156,7 @@ export default class SoftBanCommand extends Command {
             sendLog: true
         });
 
-        if (!id) {
+        if (!infraction) {
             await this.error(message);
             return;
         }
@@ -180,8 +180,8 @@ export default class SoftBanCommand extends Command {
                                     : "*No message will be deleted*"
                             }
                         ],
-                        id: `${id}`,
-                        reason
+                        id: `${infraction.id}`,
+                        reason: infraction.reason
                     })
                 ]
             },

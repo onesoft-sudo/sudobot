@@ -167,7 +167,7 @@ export default class BanCommand extends Command {
             logError(e);
         }
 
-        const id = await this.client.infractionManager.createUserBan(user, {
+        const infraction = await this.client.infractionManager.createUserBan(user, {
             guild: message.guild!,
             moderator: message.member!.user as User,
             deleteMessageSeconds,
@@ -178,7 +178,7 @@ export default class BanCommand extends Command {
             autoRemoveQueue: true
         });
 
-        if (!id) {
+        if (!infraction) {
             await this.error(message);
             return;
         }
@@ -202,8 +202,8 @@ export default class BanCommand extends Command {
                                     : "*No message will be deleted*"
                             }
                         ],
-                        id: `${id}`,
-                        reason
+                        id: `${infraction.id}`,
+                        reason: infraction.reason
                     })
                 ]
             },

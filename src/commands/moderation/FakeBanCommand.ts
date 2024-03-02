@@ -165,7 +165,7 @@ export default class FakeBanCommand extends Command {
             await message.delete().catch(logError);
         }
 
-        const id = await this.client.infractionManager.createUserFakeBan(user, {
+        const infraction = await this.client.infractionManager.createUserFakeBan(user, {
             guild: message.guild!,
             moderator: message.member!.user as User,
             deleteMessageSeconds,
@@ -176,7 +176,7 @@ export default class FakeBanCommand extends Command {
             autoRemoveQueue: true
         });
 
-        if (!id) {
+        if (!infraction) {
             await this.error(message, undefined, "channel");
             return;
         }
@@ -200,8 +200,8 @@ export default class FakeBanCommand extends Command {
                                     : "*No message will be deleted*"
                             }
                         ],
-                        id: `${id}`,
-                        reason,
+                        id: `${infraction.id}`,
+                        reason: infraction.reason,
                         color: 0x007bff
                     })
                 ]

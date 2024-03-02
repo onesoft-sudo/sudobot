@@ -74,7 +74,7 @@ export default class ShotCommand extends Command {
         const deleteResponse = moderation_command_behaviour === "delete";
         const reason = context.isLegacy ? context.parsedNamedArgs.reason : context.options.getString("reason");
 
-        const id = await this.client.infractionManager.createUserShot(user, {
+        const { id, reason: finalReason } = await this.client.infractionManager.createUserShot(user, {
             reason,
             guild: message.guild!,
             moderator: message.member!.user as User
@@ -89,7 +89,7 @@ export default class ShotCommand extends Command {
                         user,
                         id,
                         color: 0x007bff,
-                        reason,
+                        reason: finalReason,
                         description: `**${escapeMarkdown(user.username)}** has been given a shot.`,
                         fields: [
                             {

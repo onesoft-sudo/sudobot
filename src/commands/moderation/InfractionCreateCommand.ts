@@ -38,7 +38,7 @@ export default class InfractionCreateCommand extends Command {
     async execute(interaction: ChatInputCommandInteraction, context: ChatInputCommandContext): Promise<CommandReturn> {
         const user = interaction.options.getUser("user", true);
         const type = interaction.options.getString("type", true).toUpperCase();
-        const reason = interaction.options.getString("reason");
+        let reason = interaction.options.getString("reason");
         const duration = interaction.options.getString("duration");
         const parsedDuration = duration ? stringToTimeInterval(duration) : null;
 
@@ -61,6 +61,10 @@ export default class InfractionCreateCommand extends Command {
             }
         } catch (e) {
             logError(e);
+        }
+
+        if (reason) {
+            reason = this.client.infractionManager.processInfractionReason(interaction.guildId!, reason);
         }
 
         const infraction = await this.client.prisma.infraction.create({

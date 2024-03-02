@@ -94,7 +94,7 @@ export default class KickCommand extends Command {
             return;
         }
 
-        const id = await this.client.infractionManager.createMemberKick(member, {
+        const infraction = await this.client.infractionManager.createMemberKick(member, {
             guild: message.guild!,
             moderator: message.member!.user as User,
             reason,
@@ -102,7 +102,7 @@ export default class KickCommand extends Command {
             sendLog: true
         });
 
-        if (!id) {
+        if (!infraction) {
             await this.error(message);
             return;
         }
@@ -115,9 +115,9 @@ export default class KickCommand extends Command {
                         moderator: message.member!.user as User,
                         user: member.user,
                         actionDoneName: "kicked",
-                        id,
-                        description: `**${escapeMarkdown(member.user.tag)}** has been kicked from this server.`,
-                        reason
+                        id: infraction.id,
+                        reason: infraction.reason,
+                        description: `**${escapeMarkdown(member.user.tag)}** has been kicked from this server.`
                     })
                 ]
             },

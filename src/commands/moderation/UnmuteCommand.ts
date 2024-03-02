@@ -86,7 +86,7 @@ export default class UnmuteCommand extends Command {
             return;
         }
 
-        const { id } = <any>await this.client.infractionManager
+        const { id, infraction } = <any>await this.client.infractionManager
             .removeMemberMute(member, {
                 guild: message.guild!,
                 moderator: message.member!.user as User,
@@ -111,7 +111,7 @@ export default class UnmuteCommand extends Command {
                         actionDoneName: "unmuted",
                         description: `**${escapeMarkdown(member.user.tag)}** has been unmuted.`,
                         id: `${id}`,
-                        reason,
+                        reason: infraction.reason,
                         color: "Green"
                     })
                 ]
