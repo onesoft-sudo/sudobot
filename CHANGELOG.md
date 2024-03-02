@@ -1,3 +1,12 @@
+## [8.18.1](https://github.com/onesoft-sudo/sudobot/compare/v8.18.0...v8.18.1) (2024-03-02)
+
+
+### Bug Fixes
+
+* restart command with 2FA code not working ([f89a836](https://github.com/onesoft-sudo/sudobot/commit/f89a836c384ce39fd76a9c15cecc3912ad92668c))
+
+
+
 # [8.18.0](https://github.com/onesoft-sudo/sudobot/compare/v8.17.1...v8.18.0) (2024-03-02)
 
 
@@ -38,15 +47,6 @@
 
 * **commands:moderation:** add a better note command ([a318abd](https://github.com/onesoft-sudo/sudobot/commit/a318abd2ed5663ad86021107c2c2fbfb729a2831))
 * improved infraction management commands ([e115287](https://github.com/onesoft-sudo/sudobot/commit/e11528717d3716b09fb4c446bd8066136f5af228))
-
-
-
-## [8.15.1](https://github.com/onesoft-sudo/sudobot/compare/v8.15.0...v8.15.1) (2024-02-26)
-
-
-### Bug Fixes
-
-* runtime crashes ([57abaf0](https://github.com/onesoft-sudo/sudobot/commit/57abaf01644731624aaed0035e18731b8fec198f))
 
 
 
