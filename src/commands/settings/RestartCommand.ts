@@ -43,6 +43,7 @@ export default class RestartCommand extends Command implements HasEventListeners
     public readonly slashCommandBuilder = new SlashCommandBuilder().addStringOption(option =>
         option.setName("credential_key").setDescription("The key to authenticate with the credentials server, if needed")
     );
+    public readonly keys: string[] = [];
 
     public readonly description = "Restarts the bot.";
 
@@ -58,8 +59,14 @@ export default class RestartCommand extends Command implements HasEventListeners
             return;
         }
 
-        const [, , guildId, channelId, userId, ...keyParts] = customId.split("__");
-        const key = keyParts?.join("__") ?? "";
+        const [, , guildId, channelId, userId, keyId] = customId.split("__");
+        const numericKeyId = keyId ? parseInt(keyId) : NaN;
+        const isNaN = Number.isNaN(numericKeyId);
+        const key = !isNaN ? this.keys.at(parseInt(keyId)) : null;
+
+        if (!isNaN && !key) {
+            return;
+        }
 
         if (!guildId || !channelId || !userId) {
             return;
@@ -87,7 +94,7 @@ export default class RestartCommand extends Command implements HasEventListeners
                     {
                         color: 0x007bff,
                         title: "System Restart",
-                        description: `${this.emoji("loading")} Restarting...`
+                        description: `${this.emoji("loading")} Restarting${key ? " (with one time 2FA code)" : ""}...`
                     }
                 ],
                 components: [new ActionRowBuilder<ButtonBuilder>().addComponents(...buttons)]
@@ -130,12 +137,13 @@ export default class RestartCommand extends Command implements HasEventListeners
             process.env.CREDENTIAL_SERVER &&
             (!(message instanceof ChatInputCommandInteraction) || !message.options.getString("credential_key"))
         ) {
-            await this.error(message, "Please enter the credentials server key to restart the bot!");
+            await this.error(message, "Please enter the credential server 2FA code to restart the bot!");
             return;
         }
 
-        return {
-            __reply: true,
+        const mfaKey = message instanceof ChatInputCommandInteraction ? message.options.getString("credential_key") : "";
+
+        const reply = await this.deferredReply(message, {
             embeds: [
                 {
                     color: 0x007bff,
@@ -145,27 +153,50 @@ export default class RestartCommand extends Command implements HasEventListeners
             ],
             components: [
                 new ActionRowBuilder<ButtonBuilder>().addComponents(
-                    ...this.buildButtons(
-                        message.guildId!,
-                        message.channelId!,
-                        message.member!.user.id,
-                        message instanceof ChatInputCommandInteraction ? message.options.getString("credential_key") : ""
-                    )
+                    ...this.buildButtons(message.guildId!, message.channelId!, message.member!.user.id, mfaKey)
                 )
             ]
-        };
+        });
+
+        if (reply) {
+            setTimeout(() => {
+                reply.edit({
+                    embeds: [
+                        {
+                            color: 0xf14a60,
+                            title: "System Restart",
+                            description: "Operation cancelled due to inactivity."
+                        }
+                    ],
+                    components: [
+                        new ActionRowBuilder<ButtonBuilder>().addComponents(
+                            ...this.buildButtons(message.guildId!, message.channelId!, message.member!.user.id, mfaKey, true)
+                        )
+                    ]
+                });
+            }, 180_000); // 3 minutes
+        }
     }
 
-    buildButtons(guildId: Snowflake, channelId: Snowflake, userId: Snowflake, key?: string | null) {
+    buildButtons(guildId: Snowflake, channelId: Snowflake, userId: Snowflake, key?: string | null, disable?: boolean) {
+        let keyId = key ? this.keys.indexOf(key) : null;
+
+        if (keyId === -1 && key) {
+            this.keys.push(key);
+            keyId = this.keys.length - 1;
+        }
+
         return [
             new ButtonBuilder()
-                .setCustomId(`restart__yes__${guildId}__${channelId}__${userId}__${key}`)
+                .setCustomId(`restart__yes__${guildId}__${channelId}__${userId}__${keyId}`)
                 .setLabel("Restart")
-                .setStyle(ButtonStyle.Success),
+                .setStyle(ButtonStyle.Success)
+                .setDisabled(disable ?? false),
             new ButtonBuilder()
-                .setCustomId(`restart__no__${guildId}__${channelId}__${userId}__${key}`)
+                .setCustomId(`restart__no__${guildId}__${channelId}__${userId}__${keyId}`)
                 .setLabel("Cancel")
                 .setStyle(ButtonStyle.Danger)
+                .setDisabled(disable ?? false)
         ];
     }
 }
