@@ -1,3 +1,12 @@
+# [8.18.0](https://github.com/onesoft-sudo/sudobot/compare/v8.17.1...v8.18.0) (2024-03-02)
+
+
+### Features
+
+* **logging:** log who deleted the message ([90ae131](https://github.com/onesoft-sudo/sudobot/commit/90ae1313b7f099df7f06b74b977df8be506e2bfd))
+
+
+
 ## [8.17.1](https://github.com/onesoft-sudo/sudobot/compare/v8.17.0...v8.17.1) (2024-03-01)
 
 
@@ -38,15 +47,6 @@
 ### Bug Fixes
 
 * runtime crashes ([57abaf0](https://github.com/onesoft-sudo/sudobot/commit/57abaf01644731624aaed0035e18731b8fec198f))
-
-
-
-# [8.15.0](https://github.com/onesoft-sudo/sudobot/compare/v8.14.0...v8.15.0) (2024-02-26)
-
-
-### Features
-
-* auto storage backup ([9225693](https://github.com/onesoft-sudo/sudobot/commit/92256932e872e68a34464b766288551d3a44d380))
 
 
 
