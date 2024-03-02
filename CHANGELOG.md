@@ -1,3 +1,12 @@
+# [8.19.0](https://github.com/onesoft-sudo/sudobot/compare/v8.18.1...v8.19.0) (2024-03-02)
+
+
+### Features
+
+* infraction reason templates ([643f2f5](https://github.com/onesoft-sudo/sudobot/commit/643f2f50dca638448ba1bc9e988ca056249b4fbf))
+
+
+
 ## [8.18.1](https://github.com/onesoft-sudo/sudobot/compare/v8.18.0...v8.18.1) (2024-03-02)
 
 
@@ -31,22 +40,6 @@
 ### Features
 
 * introduce new config option: `infraction_logging_channel` ([07a0fde](https://github.com/onesoft-sudo/sudobot/commit/07a0fdecefd962e9043fd9702fd041ce8335a3d7))
-
-
-
-# [8.16.0](https://github.com/onesoft-sudo/sudobot/compare/v8.15.1...v8.16.0) (2024-02-27)
-
-
-### Bug Fixes
-
-* remove unneeded fetch requests ([8d69356](https://github.com/onesoft-sudo/sudobot/commit/8d693568abc338e126f0b1422c49528160c2f407))
-* spacing in infraction list command embed ([2449785](https://github.com/onesoft-sudo/sudobot/commit/2449785992d10aaffac8a2b3cd5a470084259411))
-
-
-### Features
-
-* **commands:moderation:** add a better note command ([a318abd](https://github.com/onesoft-sudo/sudobot/commit/a318abd2ed5663ad86021107c2c2fbfb729a2831))
-* improved infraction management commands ([e115287](https://github.com/onesoft-sudo/sudobot/commit/e11528717d3716b09fb4c446bd8066136f5af228))
 
 
 
