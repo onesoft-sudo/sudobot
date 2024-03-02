@@ -1,3 +1,12 @@
+# [8.20.0](https://github.com/onesoft-sudo/sudobot/compare/v8.19.0...v8.20.0) (2024-03-02)
+
+
+### Features
+
+* **moderation:** infraction create command logging ([3b997da](https://github.com/onesoft-sudo/sudobot/commit/3b997daea8638f4e41d6d0950c7bdfe812db76a2))
+
+
+
 # [8.19.0](https://github.com/onesoft-sudo/sudobot/compare/v8.18.1...v8.19.0) (2024-03-02)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **logging:** voice event handling issue ([39b81a3](https://github.com/onesoft-sudo/sudobot/commit/39b81a37ccf043b0dc089256d281221265dda73d))
-
-
-
-# [8.17.0](https://github.com/onesoft-sudo/sudobot/compare/v8.16.0...v8.17.0) (2024-02-27)
-
-
-### Features
-
-* introduce new config option: `infraction_logging_channel` ([07a0fde](https://github.com/onesoft-sudo/sudobot/commit/07a0fdecefd962e9043fd9702fd041ce8335a3d7))
 
 
 
