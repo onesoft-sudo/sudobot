@@ -83,6 +83,8 @@ export default class InfractionCreateCommand extends Command {
             }
         });
 
+        await this.client.loggerService.logInfractionCreate(infraction, user, interaction.user);
+
         await interaction.editReply({
             embeds: [
                 this.client.infractionManager.generateInfractionDetailsEmbed(user, infraction).setTitle("Infraction Created")

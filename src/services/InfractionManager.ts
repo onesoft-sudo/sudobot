@@ -173,6 +173,10 @@ export default class InfractionManager extends Service {
         };
     }
 
+    public typeToString(type: InfractionType) {
+        return type === InfractionType.BULK_DELETE_MESSAGE ? "Bulk message delete" : type[0] + type.substring(1).toLowerCase();
+    }
+
     generateInfractionDetailsEmbed(user: User | null, infraction: Infraction) {
         let metadataString = "";
 
@@ -205,10 +209,7 @@ export default class InfractionManager extends Service {
                 },
                 {
                     name: "Action Type",
-                    value:
-                        infraction.type === InfractionType.BULK_DELETE_MESSAGE
-                            ? "Bulk message delete"
-                            : infraction.type[0] + infraction.type.substring(1).toLowerCase(),
+                    value: this.typeToString(infraction.type),
                     inline: true
                 },
                 ...(infraction.queueId

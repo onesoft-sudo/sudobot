@@ -46,7 +46,8 @@ import {
     VoiceChannel,
     VoiceState,
     escapeMarkdown,
-    roleMention
+    roleMention,
+    time
 } from "discord.js";
 import Service from "../core/Service";
 import { MessageRuleType } from "../types/MessageRuleSchema";
@@ -55,6 +56,7 @@ import { log, logDebug, logError } from "../utils/Logger";
 import { isTextableChannel } from "../utils/utils";
 import { GuildConfig } from "./ConfigManager";
 import { userInfo } from "../utils/embed";
+import { Infraction } from "@prisma/client";
 
 export const name = "loggerService";
 
@@ -286,6 +288,37 @@ export default class LoggerService extends Service {
             footerText: "Flagged",
             moderator: this.client.user!
         });
+    }
+
+    async logInfractionCreate(infraction: Infraction, user: User, moderator: User) {
+        await this.sendLogEmbed(
+            this.client.guilds.cache.get(infraction.guildId)!,
+            {
+                title: "Infraction Created",
+                color: Colors.Red,
+                user,
+                fields: [
+                    {
+                        name: "Type",
+                        value: this.client.infractionManager.typeToString(infraction.type)
+                    },
+                    ...(infraction.expiresAt
+                        ? [
+                              {
+                                  name: "Expiry",
+                                  value: `${time(infraction.expiresAt, "R")}`
+                              }
+                          ]
+                        : [])
+                ],
+                reason: infraction.reason,
+                id: infraction.id.toString(),
+                moderator,
+                footerText: "Created"
+            },
+            undefined,
+            "infraction_logging_channel"
+        );
     }
 
     async logVoiceStateUpdate(oldState: VoiceState, newState: VoiceState) {
