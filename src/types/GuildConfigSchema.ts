@@ -56,10 +56,20 @@ export const GuildConfigSchema = z.object({
         .default({}),
     infractions: z
         .object({
-            send_ids_to_user: z.boolean().default(true),
+            send_ids_to_user: z.boolean().default(false),
             dm_fallback: z.enum(["none", "create_channel", "create_thread"]).default("none"),
             dm_fallback_parent_channel: zSnowflake.optional(),
-            dm_fallback_channel_expires_in: z.number().int().optional().default(604800000) // 1 week
+            dm_fallback_channel_expires_in: z.number().int().optional().default(604800000), // 1 week
+            reason_templates: z
+                .record(
+                    z.string().regex(/^[A-Za-z0-9_-]+$/i),
+                    z.string().min(1, "Reason template must be at least 1 character long")
+                )
+                .describe(
+                    "A record of reason templates. The key is the name of the template, and the value is the template itself."
+                )
+                .default({}),
+            reason_template_placeholder_wrapper: z.string().default("{{%name%}}")
         })
         .optional(),
     muting: z
