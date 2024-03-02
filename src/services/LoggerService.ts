@@ -361,7 +361,19 @@ export default class LoggerService extends Service {
         });
     }
 
-    async logMemberDeaf({ user, guild, moderator, reason, channel }: { reason?: string; user: User; guild: Guild; moderator?: User, channel: VoiceChannel }) {
+    async logMemberDeaf({
+        user,
+        guild,
+        moderator,
+        reason,
+        channel
+    }: {
+        reason?: string;
+        user: User;
+        guild: Guild;
+        moderator?: User;
+        channel: VoiceChannel;
+    }) {
         await this.sendLogEmbed(guild, {
             title: "Member deafened",
             color: Colors.Red,
@@ -383,7 +395,19 @@ export default class LoggerService extends Service {
         });
     }
 
-    async logMemberUndeaf({ user, guild, moderator, reason, channel }: { reason?: string; user: User; guild: Guild; moderator?: User, channel: VoiceChannel}) {
+    async logMemberUndeaf({
+        user,
+        guild,
+        moderator,
+        reason,
+        channel
+    }: {
+        reason?: string;
+        user: User;
+        guild: Guild;
+        moderator?: User;
+        channel: VoiceChannel;
+    }) {
         await this.sendLogEmbed(guild, {
             title: "Member undeafened",
             color: Colors.Green,
@@ -1058,7 +1082,7 @@ export default class LoggerService extends Service {
                 user: newMessage.author,
                 color: 0x007bff,
                 options: {
-                    description: `**-+-+Before**\n${oldMessage.content}\n\n**-+-+After**\n${newMessage.content}`
+                    description: `### Before\n${oldMessage.content}\n\n### After\n${newMessage.content}`
                 },
                 fields: [
                     {
@@ -1071,13 +1095,15 @@ export default class LoggerService extends Service {
                         name: "Channel",
                         value: `${newMessage.channel.toString()}\nName: ${(newMessage.channel as TextChannel).name}\nID: ${
                             newMessage.channel.id
-                        }`
+                        }`,
+                        inline: true
                     },
                     {
                         name: "Message",
                         value: `Link: [Click here](${`https://discord.com/channels/${newMessage.guildId!}/${newMessage.channelId!}/${
                             newMessage.id
-                        }`})\nID: ${newMessage.id}`
+                        }`})\nID: ${newMessage.id}`,
+                        inline: true
                     },
                     ...(changedEmbeds.length > 0
                         ? [
@@ -1106,7 +1132,7 @@ export default class LoggerService extends Service {
         );
     }
 
-    async logMessageDelete(message: Message) {
+    async logMessageDelete(message: Message, moderator?: User | null) {
         if (!this.client.configManager.config[message.guildId!]?.logging?.events.message_delete) {
             return;
         }
@@ -1128,6 +1154,37 @@ export default class LoggerService extends Service {
                     )
             );
 
+        const fields = [
+            {
+                name: "User",
+                value: `${message.author.toString()}\nUsername: ${message.author.username}\nID: ${message.author.id}`,
+                inline: !!moderator
+            }
+        ];
+
+        if (moderator) {
+            fields.push({
+                name: "Responsible Moderator",
+                value: userInfo(moderator),
+                inline: true
+            });
+        }
+
+        fields.push(
+            {
+                name: "Channel",
+                value: `${message.channel.toString()}\nName: ${(message.channel as TextChannel).name}\nID: ${message.channel.id}`,
+                inline: !moderator
+            },
+            {
+                name: "Message",
+                value: `Link: [Click here](${`https://discord.com/channels/${message.guildId!}/${message.channelId!}/${
+                    message.id
+                }`})\nID: ${message.id}`,
+                inline: true
+            }
+        );
+
         await this.sendLogEmbed(
             message.guild!,
             {
@@ -1137,24 +1194,7 @@ export default class LoggerService extends Service {
                 options: {
                     description: message.content
                 },
-                fields: [
-                    {
-                        name: "User",
-                        value: `${message.author.toString()}\nUsername: ${message.author.username}\nID: ${message.author.id}`
-                    },
-                    {
-                        name: "Channel",
-                        value: `${message.channel.toString()}\nName: ${(message.channel as TextChannel).name}\nID: ${
-                            message.channel.id
-                        }`
-                    },
-                    {
-                        name: "Message",
-                        value: `Link: [Click here](${`https://discord.com/channels/${message.guildId!}/${message.channelId!}/${
-                            message.id
-                        }`})\nID: ${message.id}`
-                    }
-                ],
+                fields,
                 footerText: "Deleted"
             },
             {

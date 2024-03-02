@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Message } from "discord.js";
+import { AuditLogEvent, ChannelType, Message, User } from "discord.js";
 import EventListener from "../../core/EventListener";
 import { Events } from "../../types/ClientEvents";
 
@@ -25,12 +25,37 @@ export default class MessageDeleteEvent extends EventListener<Events.MessageDele
     public readonly name = Events.MessageDelete;
 
     async execute(message: Message) {
+        const deletedTimestamp = Date.now();
+
         super.execute(message);
 
-        if (message.author.bot) return;
+        if (message.author.bot || !message.guild || !message.inGuild()) return;
 
         this.client.emit(Events.NormalMessageDelete, message);
-        await this.client.loggerService.logMessageDelete(message);
         this.client.statsService.onMessageDelete(message);
+
+        setTimeout(async () => {
+            const auditLogEntries = await message.guild
+                .fetchAuditLogs({
+                    type: AuditLogEvent.MessageDelete,
+                    limit: 10
+                })
+                .catch(() => null);
+
+            const auditLogEntry = auditLogEntries?.entries.find(
+                e =>
+                    e.createdAt.getTime() - deletedTimestamp <= 2_000 &&
+                    e.targetId === message.author.id &&
+                    e.executorId !== message.author.id
+            );
+
+            let moderator: User | null = null;
+
+            if (auditLogEntry) {
+                moderator = auditLogEntry.executor;
+            }
+
+            await this.client.loggerService.logMessageDelete(message, moderator);
+        }, 1000);
     }
 }

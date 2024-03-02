@@ -96,8 +96,12 @@ export function generateEmbed(options: ChatInputCommandContext["options"]) {
     return { embed };
 }
 
-export function userInfo(user: User) {
-    return `ID: ${user.id}\nUsername: ${user.username}\nMention: ${user.toString()}`;
+export function userInfo(user: User, shortType = false) {
+    return user.id === user.client.user.id
+        ? shortType
+            ? "System"
+            : `Type: __System__\nMention: ${user.toString()}`
+        : `ID: ${user.id}\nUsername: ${user.username}\nMention: ${user.toString()}`;
 }
 
 export function messageInfo(message: Message) {

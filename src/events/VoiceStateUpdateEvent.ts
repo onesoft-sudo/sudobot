@@ -7,15 +7,14 @@ export default class VoiceStateUpdateEventListener extends EventListener<Events.
 
     async execute(oldState: VoiceState, newState: VoiceState) {
         setTimeout(async () => {
-            const auditLogEntries = await newState.guild.fetchAuditLogs({
-                type: AuditLogEvent.MemberDisconnect,
-                limit: 1
-            });
+            const auditLogEntries = await newState.guild
+                .fetchAuditLogs({
+                    type: AuditLogEvent.MemberDisconnect,
+                    limit: 1
+                })
+                .catch(() => null);
 
-            const auditLogEntry = auditLogEntries.entries.find(e => {
-                console.log(e.createdAt, Date.now());
-                return e.createdAt.getTime() > Date.now() - 5_000;
-            });
+            const auditLogEntry = auditLogEntries?.entries.find(e => e.createdAt.getTime() > Date.now() - 5_000);
 
             if (auditLogEntry && oldState.channel) {
                 await this.client.loggerService.logMemberDisconnect({
