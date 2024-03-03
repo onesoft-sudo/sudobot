@@ -1,3 +1,13 @@
+# [8.21.0](https://github.com/onesoft-sudo/sudobot/compare/v8.20.3...v8.21.0) (2024-03-03)
+
+
+### Features
+
+* **api:** extension controller ([9386bad](https://github.com/onesoft-sudo/sudobot/commit/9386bad6455fa2169d61915c7e4343f445f71ece))
+* better caching support ([f4031fb](https://github.com/onesoft-sudo/sudobot/commit/f4031fbfe167b8df48317cf93a26ba05fbed1156))
+
+
+
 ## [8.20.3](https://github.com/onesoft-sudo/sudobot/compare/v8.20.2...v8.20.3) (2024-03-03)
 
 
@@ -31,15 +41,6 @@
 ### Features
 
 * **moderation:** infraction create command logging ([3b997da](https://github.com/onesoft-sudo/sudobot/commit/3b997daea8638f4e41d6d0950c7bdfe812db76a2))
-
-
-
-# [8.19.0](https://github.com/onesoft-sudo/sudobot/compare/v8.18.1...v8.19.0) (2024-03-02)
-
-
-### Features
-
-* infraction reason templates ([643f2f5](https://github.com/onesoft-sudo/sudobot/commit/643f2f50dca638448ba1bc9e988ca056249b4fbf))
 
 
 
