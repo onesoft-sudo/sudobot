@@ -43,6 +43,7 @@ import {
     Role,
     TextChannel,
     User,
+    VoiceBasedChannel,
     VoiceChannel,
     VoiceState,
     escapeMarkdown,
@@ -57,6 +58,7 @@ import { isTextableChannel } from "../utils/utils";
 import { GuildConfig } from "./ConfigManager";
 import { userInfo } from "../utils/embed";
 import { Infraction } from "@prisma/client";
+import assert from "node:assert";
 
 export const name = "loggerService";
 
@@ -321,10 +323,7 @@ export default class LoggerService extends Service {
         );
     }
 
-    async logVoiceStateUpdate(oldState: VoiceState, newState: VoiceState) {
-        const oldChannel = oldState.channel;
-        const newChannel = newState.channel;
-
+    async logVoiceChannelStateUpdate(user: User, oldChannel?: VoiceBasedChannel | null, newChannel?: VoiceBasedChannel | null) {
         if (newChannel?.id === oldChannel?.id) {
             return;
         }
@@ -333,7 +332,7 @@ export default class LoggerService extends Service {
             await this.sendLogEmbed(oldChannel.guild, {
                 title: "Member left voice channel",
                 color: Colors.Red,
-                user: oldState.member?.user,
+                user,
                 fields: [
                     {
                         name: "Channel",
@@ -342,13 +341,11 @@ export default class LoggerService extends Service {
                 ],
                 footerText: "Left"
             });
-        }
-
-        if (newChannel) {
+        } else if (newChannel) {
             await this.sendLogEmbed(newChannel.guild, {
                 title: "Member joined voice channel",
                 color: Colors.Green,
-                user: newState.member?.user,
+                user,
                 fields: [
                     {
                         name: "Channel",
@@ -535,13 +532,15 @@ export default class LoggerService extends Service {
         guild,
         moderator,
         reason,
-        newChannel
+        newChannel,
+        oldChannel
     }: {
         reason?: string;
         user: User;
         guild: Guild;
         moderator?: User;
         newChannel: VoiceState["channel"];
+        oldChannel: VoiceState["channel"];
     }) {
         await this.sendLogEmbed(guild, {
             title: "Member moved to a new voice channel",
@@ -552,8 +551,14 @@ export default class LoggerService extends Service {
             moderator,
             fields: [
                 {
+                    name: "From",
+                    value: oldChannel?.toString() ?? "None",
+                    inline: true
+                },
+                {
                     name: "To",
-                    value: newChannel?.toString() ?? "None"
+                    value: newChannel?.toString() ?? "None",
+                    inline: true
                 },
                 {
                     name: "User",
