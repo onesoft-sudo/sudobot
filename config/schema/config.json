@@ -118,7 +118,7 @@
                         "properties": {
                             "send_ids_to_user": {
                                 "type": "boolean",
-                                "default": true
+                                "default": false
                             },
                             "dm_fallback": {
                                 "type": "string",
@@ -135,6 +135,22 @@
                             "dm_fallback_channel_expires_in": {
                                 "type": "integer",
                                 "default": 604800000
+                            },
+                            "reason_templates": {
+                                "type": "object",
+                                "additionalProperties": {
+                                    "type": "string",
+                                    "minLength": 1
+                                },
+                                "propertyNames": {
+                                    "pattern": "^[A-Za-z0-9_-]+$"
+                                },
+                                "description": "A record of reason templates. The key is the name of the template, and the value is the template itself.",
+                                "default": {}
+                            },
+                            "reason_template_placeholder_wrapper": {
+                                "type": "string",
+                                "default": "{{%name%}}"
                             }
                         },
                         "additionalProperties": false
@@ -187,6 +203,9 @@
                                 "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                             },
                             "message_logging_channel": {
+                                "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
+                            },
+                            "infraction_logging_channel": {
                                 "$ref": "#/additionalProperties/anyOf/0/properties/commands/properties/bean_safe/items"
                             },
                             "join_leave_channel": {
