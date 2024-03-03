@@ -1,3 +1,12 @@
+## [8.20.1](https://github.com/onesoft-sudo/sudobot/compare/v8.20.0...v8.20.1) (2024-03-03)
+
+
+### Bug Fixes
+
+* **logging:** member disconnect event causes the system to crash ([58325af](https://github.com/onesoft-sudo/sudobot/commit/58325afb3221b14427e4e4a7f0313c3394ddd086))
+
+
+
 # [8.20.0](https://github.com/onesoft-sudo/sudobot/compare/v8.19.0...v8.20.0) (2024-03-02)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * **logging:** log who deleted the message ([90ae131](https://github.com/onesoft-sudo/sudobot/commit/90ae1313b7f099df7f06b74b977df8be506e2bfd))
-
-
-
-## [8.17.1](https://github.com/onesoft-sudo/sudobot/compare/v8.17.0...v8.17.1) (2024-03-01)
-
-
-### Bug Fixes
-
-* **logging:** voice event handling issue ([39b81a3](https://github.com/onesoft-sudo/sudobot/commit/39b81a37ccf043b0dc089256d281221265dda73d))
 
 
 
