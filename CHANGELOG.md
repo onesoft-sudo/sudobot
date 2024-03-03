@@ -1,3 +1,12 @@
+## [8.20.3](https://github.com/onesoft-sudo/sudobot/compare/v8.20.2...v8.20.3) (2024-03-03)
+
+
+### Bug Fixes
+
+* **scripts:extensions.js:** emit 'version' property in extension index ([37fc90b](https://github.com/onesoft-sudo/sudobot/commit/37fc90b09872622cd89da294845faeff3a24090b))
+
+
+
 ## [8.20.2](https://github.com/onesoft-sudo/sudobot/compare/v8.20.1...v8.20.2) (2024-03-03)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * infraction reason templates ([643f2f5](https://github.com/onesoft-sudo/sudobot/commit/643f2f50dca638448ba1bc9e988ca056249b4fbf))
-
-
-
-## [8.18.1](https://github.com/onesoft-sudo/sudobot/compare/v8.18.0...v8.18.1) (2024-03-02)
-
-
-### Bug Fixes
-
-* restart command with 2FA code not working ([f89a836](https://github.com/onesoft-sudo/sudobot/commit/f89a836c384ce39fd76a9c15cecc3912ad92668c))
 
 
 
