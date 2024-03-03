@@ -24,6 +24,8 @@ const fs = require("fs/promises");
 const path = require("path");
 const { z } = require("zod");
 const { zodToJsonSchema } = require("zod-to-json-schema");
+
+require("../build/core/Client");
 const { GuildConfigSchema } = require("../build/services/ConfigManager");
 const { SystemConfigSchema } = require("../build/types/SystemConfigSchema");
 
