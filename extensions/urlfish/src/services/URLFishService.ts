@@ -3,7 +3,6 @@ import FileSystem from "@sudobot/polyfills/FileSystem";
 import { downloadFile } from "@sudobot/utils/download";
 import { channelInfo, userInfo } from "@sudobot/utils/embed";
 import { safeChannelFetch } from "@sudobot/utils/fetch";
-import { logDebug } from "@sudobot/utils/logger";
 import { sudoPrefix } from "@sudobot/utils/utils";
 import { Colors, Message } from "discord.js";
 import { ActionToTake, Config, GuildConfigWithExtension } from "src/types/config";
@@ -20,10 +19,10 @@ export default class URLFishService extends Service {
         const dataFile = sudoPrefix("tmp/urlfish/LIST", false);
 
         if (await FileSystem.exists(dataFile)) {
-            logDebug("URLFishService", "Phishing domain list already exists", dataFile);
+            this.client.logger.debug("URLFishService", "Phishing domain list already exists", dataFile);
         } else {
-            logDebug("URLFishService", "Phishing domain list not found", dataFile);
-            logDebug("URLFishService", "Downloading list", dataFile);
+            this.client.logger.debug("URLFishService", "Phishing domain list not found", dataFile);
+            this.client.logger.debug("URLFishService", "Downloading list", dataFile);
 
             const url = this.domainListURL;
             await downloadFile({
@@ -34,7 +33,7 @@ export default class URLFishService extends Service {
         }
 
         const data = (await FileSystem.readFileContents<string>(dataFile)).split("\n");
-        logDebug("URLFishService", `Loaded ${data.length} entries from file`);
+        this.client.logger.debug("URLFishService", `Loaded ${data.length} entries from file`);
         this._list = data;
     }
 
