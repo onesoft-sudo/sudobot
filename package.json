@@ -69,6 +69,7 @@
   "devDependencies": {
     "@commitlint/cli": "^17.6.6",
     "@commitlint/config-conventional": "^17.6.6",
+    "@onesoftnet/pm2-config": "^0.0.7",
     "@types/archiver": "^6.0.2",
     "@types/bcrypt": "^5.0.0",
     "@types/bun": "^1.0.5",
