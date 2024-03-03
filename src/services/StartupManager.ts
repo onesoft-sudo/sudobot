@@ -193,6 +193,11 @@ export default class StartupManager extends Service implements HasEventListeners
         console.log(BACKUP_STORAGE);
 
         if (BACKUP_STORAGE) {
+            if (process.isBun) {
+                logError("Cannot create storage backup in a Bun environment");
+                return;
+            }
+
             const buffer = await this.makeStorageBackup();
 
             // check for discord max attachment size limit
