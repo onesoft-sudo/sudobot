@@ -1,3 +1,12 @@
+## [8.20.2](https://github.com/onesoft-sudo/sudobot/compare/v8.20.1...v8.20.2) (2024-03-03)
+
+
+### Bug Fixes
+
+* **bun:** skip generation of archives if bun is used ([32b04ce](https://github.com/onesoft-sudo/sudobot/commit/32b04ceca4a9b5c1f1288f9a46fe19c7bdb0f174))
+
+
+
 ## [8.20.1](https://github.com/onesoft-sudo/sudobot/compare/v8.20.0...v8.20.1) (2024-03-03)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * restart command with 2FA code not working ([f89a836](https://github.com/onesoft-sudo/sudobot/commit/f89a836c384ce39fd76a9c15cecc3912ad92668c))
-
-
-
-# [8.18.0](https://github.com/onesoft-sudo/sudobot/compare/v8.17.1...v8.18.0) (2024-03-02)
-
-
-### Features
-
-* **logging:** log who deleted the message ([90ae131](https://github.com/onesoft-sudo/sudobot/commit/90ae1313b7f099df7f06b74b977df8be506e2bfd))
 
 
 
