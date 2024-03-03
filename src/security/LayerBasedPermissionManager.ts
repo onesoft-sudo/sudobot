@@ -21,7 +21,7 @@ import { PermissionOverwrite } from "@prisma/client";
 import { GuildMember, PermissionsBitField, PermissionsString, Role, Snowflake } from "discord.js";
 import { GetMemberPermissionInGuildResult } from "../services/PermissionManager";
 import AbstractPermissionManager from "./AbstractPermissionManager";
-import { logInfo } from "./Logger";
+import { logInfo } from "../utils/Logger";
 
 export default class LayerBasedPermissionManager extends AbstractPermissionManager {
     protected cache: Record<`${Snowflake}_${"r" | "u"}_${Snowflake}`, PermissionOverwrite> = {};

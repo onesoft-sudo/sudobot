@@ -21,8 +21,8 @@ import { PermissionLevel } from "@prisma/client";
 import { GuildMember, PermissionsBitField, PermissionsString, Snowflake } from "discord.js";
 import { GetMemberPermissionInGuildResult } from "../services/PermissionManager";
 import AbstractPermissionManager from "./AbstractPermissionManager";
-import { log, logInfo } from "./Logger";
-import { isSystemAdmin } from "./utils";
+import { log, logInfo } from "../utils/Logger";
+import { isSystemAdmin } from "../utils/utils";
 
 export default class LevelBasedPermissionManager extends AbstractPermissionManager {
     protected cache: Record<`${Snowflake}_${"r" | "u"}_${Snowflake}`, PermissionLevel> = {};

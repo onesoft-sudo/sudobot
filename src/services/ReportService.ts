@@ -41,7 +41,7 @@ import {
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
-import LevelBasedPermissionManager from "../utils/LevelBasedPermissionManager";
+import LevelBasedPermissionManager from "../security/LevelBasedPermissionManager";
 import { stringToTimeInterval } from "../utils/datetime";
 import { userInfo } from "../utils/embed";
 import { safeChannelFetch, safeMemberFetch } from "../utils/fetch";

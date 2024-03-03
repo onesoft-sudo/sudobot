@@ -20,10 +20,10 @@
 import { PermissionOverwrite } from "@prisma/client";
 import { GuildMember, PermissionFlagsBits, PermissionResolvable, PermissionsBitField, Role, Snowflake } from "discord.js";
 import Service from "../core/Service";
-import AbstractPermissionManager from "../utils/AbstractPermissionManager";
-import DiscordBasedPermissionManager from "../utils/DiscordBasedPermissionManager";
-import LayerBasedPermissionManager from "../utils/LayerBasedPermissionManager";
-import LevelBasedPermissionManager from "../utils/LevelBasedPermissionManager";
+import AbstractPermissionManager from "../security/AbstractPermissionManager";
+import DiscordBasedPermissionManager from "../security/DiscordBasedPermissionManager";
+import LayerBasedPermissionManager from "../security/LayerBasedPermissionManager";
+import LevelBasedPermissionManager from "../security/LevelBasedPermissionManager";
 import { logInfo, log } from "../utils/Logger";
 import { GuildConfig } from "./ConfigManager";
 
