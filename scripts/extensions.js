@@ -376,6 +376,7 @@ async function writeExtensionIndex() {
             name,
             id,
             description,
+            version: packageJson.version,
             commands: commandPaths.length,
             events: eventPaths.length,
             buildCommand: build_command,
