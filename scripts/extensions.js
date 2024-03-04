@@ -375,6 +375,7 @@ async function writeExtensionIndex() {
         extensionsOutputRecord[id] = {
             name,
             id,
+            shortName: packageJson.name ?? extensionName,
             description,
             version: packageJson.version,
             commands: commandPaths.length,
