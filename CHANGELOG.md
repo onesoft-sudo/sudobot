@@ -1,3 +1,12 @@
+# [8.22.0](https://github.com/onesoft-sudo/sudobot/compare/v8.21.0...v8.22.0) (2024-03-04)
+
+
+### Features
+
+* **api:** extension installation endpoint ([9c97e17](https://github.com/onesoft-sudo/sudobot/commit/9c97e178929422eba1ff094aa7708d9d773c5af9))
+
+
+
 # [8.21.0](https://github.com/onesoft-sudo/sudobot/compare/v8.20.3...v8.21.0) (2024-03-03)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * **logging:** member disconnect event causes the system to crash ([58325af](https://github.com/onesoft-sudo/sudobot/commit/58325afb3221b14427e4e4a7f0313c3394ddd086))
-
-
-
-# [8.20.0](https://github.com/onesoft-sudo/sudobot/compare/v8.19.0...v8.20.0) (2024-03-02)
-
-
-### Features
-
-* **moderation:** infraction create command logging ([3b997da](https://github.com/onesoft-sudo/sudobot/commit/3b997daea8638f4e41d6d0950c7bdfe812db76a2))
 
 
 
