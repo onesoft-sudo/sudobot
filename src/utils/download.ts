@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import { createWriteStream } from "fs";
 import { basename, join } from "path";
 import stream from "stream";
@@ -25,15 +25,19 @@ import { promisify } from "util";
 import { logInfo } from "./Logger";
 import { sudoPrefix } from "./utils";
 
-export async function downloadFile({ url, path, name }: DownloadFileOptions) {
+export const finished = promisify(stream.finished);
+
+export async function downloadFile({ url, path, name, axiosOptions }: DownloadFileOptions) {
     logInfo("Attempting to download file: " + url);
 
-    const finished = promisify(stream.finished);
     const storagePath = path ?? sudoPrefix("storage");
     const filePath = join(storagePath, name ?? basename(url));
     const writer = createWriteStream(filePath);
-    const response = await axios.get(url, {
-        responseType: "stream"
+    const response = await axios.request({
+        method: "GET",
+        url,
+        responseType: "stream",
+        ...axiosOptions
     });
 
     if (response.status < 200 || response.status >= 300) {
@@ -58,4 +62,5 @@ interface DownloadFileOptions {
     url: string;
     path?: string;
     name?: string;
+    axiosOptions?: AxiosRequestConfig;
 }

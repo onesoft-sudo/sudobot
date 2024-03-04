@@ -18,8 +18,8 @@
  */
 
 import { Snowflake } from "discord.js";
-import { existsSync } from "fs";
-import fs from "fs/promises";
+import { WriteStream, createWriteStream, existsSync } from "fs";
+import fs, { rm } from "fs/promises";
 import path from "path";
 import { z } from "zod";
 import Client from "../core/Client";
@@ -28,6 +28,12 @@ import { Extension } from "../core/Extension";
 import Service from "../core/Service";
 import type { ClientEvents } from "../types/ClientEvents";
 import { log, logDebug, logError, logInfo, logWarn } from "../utils/Logger";
+import { request, sudoPrefix, wait } from "../utils/utils";
+import { ExtensionInfo } from "../types/ExtensionInfo";
+import { cache } from "../utils/cache";
+import { downloadFile, finished } from "../utils/download";
+import tar from "tar";
+import { Response } from "express";
 
 export const name = "extensionService";
 
@@ -233,8 +239,12 @@ const extensionMetadataSchema = z.object({
 });
 
 export default class ExtensionService extends Service {
+    private readonly extensionIndexURL =
+        "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/index.json";
     protected readonly extensionsPath = process.env.EXTENSIONS_DIRECTORY;
     protected readonly guildIdResolvers = getGuildIdResolversMap();
+
+    private readonly downloadProgressStreamEOF = `%`;
 
     async boot() {
         if (!this.extensionsPath || !existsSync(this.extensionsPath)) {
@@ -498,6 +508,152 @@ export default class ExtensionService extends Service {
         log(default_mode, enabled);
         return (enabled === undefined ? default_mode === "enable_all" : enabled) && !disabled_extensions?.includes(extensionName);
     }
+
+    private async fetchExtensionMetadata() {
+        this.client.logger.debug("Fetching extension list metadata");
+
+        const [response, error] = await request({
+            method: "GET",
+            url: this.extensionIndexURL
+        });
+
+        if (error || !response || response.status !== 200) {
+            return [null, error] as const;
+        }
+
+        return [response.data as Record<string, ExtensionInfo | undefined>, null] as const;
+    }
+
+    public async getExtensionMetadata(id: string) {
+        const [data, error] = await cache(`extension-index`, () => this.fetchExtensionMetadata(), {
+            ttl: 120_000,
+            invoke: true
+        });
+
+        return error ? ([null, error] as const) : ([data?.[id], null] as const);
+    }
+
+    private writeStream(stream: Response | undefined | null, data: string) {
+        if (!stream) {
+            return;
+        }
+
+        return new Promise<void>((resolve, reject) => {
+            if (!stream.write(data)) {
+                stream.once("drain", resolve);
+            } else {
+                process.nextTick(resolve);
+            }
+        });
+    }
+
+    async fetchAndInstallExtension(id: string, stream?: Response) {
+        if (!this.extensionsPath) {
+            const errorMessage = `E: Extensions directory is not set. Please set the EXTENSIONS_DIRECTORY environment variable.\n`;
+            await this.writeStream(stream, errorMessage);
+            return [null, errorMessage];
+        }
+
+        await this.writeStream(stream, `Fetching metadata for extension ${id}...\n`);
+        const [extension, metadataError] = await this.getExtensionMetadata(id);
+
+        if (metadataError || !extension) {
+            await this.writeStream(stream, `E: Failed to fetch metadata of extension: ${id}\n`);
+            return [null, metadataError] as const;
+        }
+
+        await this.writeStream(
+            stream,
+            `Retrieving ${extension.name} (${extension.version}) from the SudoBot Extension Repository (SER)...\n`
+        );
+        await wait(100);
+        await this.writeStream(stream, this.downloadProgressStreamEOF);
+        await wait(100);
+        await this.writeStream(stream, `\n`);
+
+        try {
+            const { filePath } = await downloadFile({
+                url: extension.tarballs[0].url,
+                path: sudoPrefix("tmp", true),
+                name: `${extension.id}-${extension.version}.tar.gz`,
+                axiosOptions: {
+                    method: "GET",
+                    responseType: "stream",
+                    onDownloadProgress: async progressEvent => {
+                        if (!progressEvent.total) {
+                            return;
+                        }
+
+                        const percentCompleted = Math.floor((progressEvent.loaded / progressEvent.total) * 100);
+                        await this.writeStream(stream, `${percentCompleted}\n`);
+                    }
+                }
+            });
+
+            await wait(100);
+            await this.writeStream(stream, this.downloadProgressStreamEOF);
+            await wait(100);
+            await this.writeStream(stream, `\n`);
+
+            await this.installExtension(filePath, extension, stream);
+
+            try {
+                await rm(filePath, { force: true });
+            } catch (error) {
+                this.client.logger.error(error);
+                await this.writeStream(stream, `W: Failed to clean download caches for extension: ${id}\n`);
+            }
+        } catch (error) {
+            this.client.logger.error(error);
+
+            await this.writeStream(stream, this.downloadProgressStreamEOF);
+            await this.writeStream(stream, `\n`);
+            await this.writeStream(stream, `E: Failed to retrieve extension: ${id}\n`);
+        }
+    }
+
+    private async installExtension(filePath: string, extension: ExtensionInfo, stream?: Response) {
+        if (!this.extensionsPath) {
+            return;
+        }
+
+        await this.writeStream(stream, `Preparing to unpack ${extension.name} (${extension.version})...\n`);
+        const extensionTmpDirectory = sudoPrefix(`tmp/${extension.id}-${extension.version}`, true);
+        await this.writeStream(stream, `Unpacking ${extension.name} (${extension.version})...\n`);
+
+        try {
+            await tar.x({
+                file: filePath,
+                cwd: extensionTmpDirectory
+            });
+        } catch (error) {
+            this.client.logger.error(error);
+            await this.writeStream(stream, `E: Unable to unpack extension: ${extension.id}\n`);
+            return;
+        }
+
+        await this.writeStream(stream, `Setting up ${extension.name} (${extension.version})...\n`);
+        const extensionDirectory = path.join(this.extensionsPath, extension.shortName);
+
+        try {
+            await fs.rename(path.join(extensionTmpDirectory, `${extension.shortName}-${extension.version}`), extensionDirectory);
+        } catch (error) {
+            this.client.logger.error(error);
+            await this.writeStream(stream, `E: Failed to set up extension: ${extension.id}\n`);
+            return;
+        }
+
+        await this.writeStream(stream, `Cleaning up caches and temporary files...\n`);
+
+        try {
+            await rm(extensionTmpDirectory, { force: true, recursive: true });
+        } catch (error) {
+            this.client.logger.error(error);
+            await this.writeStream(stream, `W: Failed to clean up temporary files for extension: ${extension.id}\n`);
+        }
+
+        // TODO: Load extension automatically
+    }
 }
 
 type LoadInfo = (
@@ -525,4 +681,8 @@ type LoadInfo = (
       }
 ) & {
     extension: Extension;
+};
+
+type Writable = {
+    write(data: string): void;
 };
