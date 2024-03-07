@@ -40,12 +40,12 @@ import {
 } from "discord.js";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
-import { HasEventListeners } from "../types/HasEventListeners";
 import LevelBasedPermissionManager from "../security/LevelBasedPermissionManager";
+import { HasEventListeners } from "../types/HasEventListeners";
+import { logError } from "../utils/Logger";
 import { stringToTimeInterval } from "../utils/datetime";
 import { userInfo } from "../utils/embed";
 import { safeChannelFetch, safeMemberFetch } from "../utils/fetch";
-import { logError } from "../utils/Logger";
 import { TODO } from "../utils/utils";
 
 export const name = "reportService";
@@ -79,7 +79,7 @@ export default class ReportService extends Service implements HasEventListeners 
         warn: "Warned"
     };
 
-    async check(guildId: string, moderator: GuildMember, member: GuildMember) {
+    async check(guildId: string, moderator: GuildMember, member?: GuildMember) {
         const config = this.client.configManager.config[guildId!]?.message_reporting;
         const manager = await this.client.permissionManager.getManager(guildId!);
 
@@ -103,7 +103,7 @@ export default class ReportService extends Service implements HasEventListeners 
             };
         }
 
-        if (!this.client.permissionManager.shouldModerate(member!, moderator)) {
+        if (member && !this.client.permissionManager.shouldModerate(member, moderator)) {
             return {
                 error: "You're missing permissions to moderate this user!"
             };
@@ -116,7 +116,7 @@ export default class ReportService extends Service implements HasEventListeners 
 
     async report({ reason, moderator, guildId, member, message }: ReportOptions) {
         const config = this.client.configManager.config[guildId!]?.message_reporting;
-        const { error } = await this.check(guildId, moderator, member ?? message?.member!);
+        const { error } = await this.check(guildId, moderator, member ?? message?.member ?? undefined);
 
         if (error) {
             return { error };
@@ -489,7 +489,7 @@ export default class ReportService extends Service implements HasEventListeners 
             return;
         }
 
-        if (interaction.isModalSubmit() && interaction.customId.startsWith(`report_action_info_`)) {
+        if (interaction.isModalSubmit() && interaction.customId.startsWith("report_action_info_")) {
             await this.onModalSubmit(interaction);
             return;
         }

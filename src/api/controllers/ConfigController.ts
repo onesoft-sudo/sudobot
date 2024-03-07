@@ -87,7 +87,7 @@ export default class ConfigController extends Controller {
 
         if (request.parsedBody) {
             this.client.configManager.config[request.params.id] = deepmerge(oldConfig as object, request.parsedBody.data ?? {}, {
-                arrayMerge: (target, source, options) => {
+                arrayMerge: (target, source) => {
                     return source;
                 }
             });

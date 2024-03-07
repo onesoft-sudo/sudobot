@@ -143,7 +143,7 @@ export default class AICommand extends Command {
                             }
                         );
 
-                        if (!!response.data?.results.find((r: any) => r.flagged)) {
+                        if (response.data?.results.find((r: any) => r.flagged)) {
                             await this.error(interaction, "Sorry, your prompt was flagged by the OpenAI moderation system.");
                             return;
                         }
@@ -193,7 +193,7 @@ export default class AICommand extends Command {
                             color: 0x007bff,
                             description: chunks[0],
                             footer: {
-                                text: `Responses will not always be complete or correct`
+                                text: "Responses will not always be complete or correct"
                             },
                             timestamp: new Date().toISOString()
                         })

@@ -17,10 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { EmbedBuilder, PermissionsBitField } from "discord.js";
-import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import Pagination from "../../utils/Pagination";
+import { ChatInputCommandInteraction, EmbedBuilder, Message, PermissionsBitField } from "discord.js";
+import Command, { CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { log } from "../../utils/Logger";
+import Pagination from "../../utils/Pagination";
 
 export default class SnippetListCommand extends Command {
     public readonly name = "snippet__list";
@@ -35,7 +35,7 @@ export default class SnippetListCommand extends Command {
     public readonly aliases: string[] = ["listtags", "taglist", "listsnippets", "snippetlist"];
     public readonly permissionMode = "or";
 
-    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage): Promise<CommandReturn> {
         const snippets = [];
         const iterator = this.client.snippetManager.snippets.keys();
 
@@ -72,8 +72,13 @@ export default class SnippetListCommand extends Command {
             limit: 40
         });
 
-        const reply = await this.deferredReply(message, await paginator.getMessageOptions());
+        let reply = await this.deferredReply(message, await paginator.getMessageOptions());
         log(reply);
-        await paginator.start(reply);
+
+        if (!(reply instanceof Message)) {
+            reply = await (message as ChatInputCommandInteraction).fetchReply();
+        }
+
+        await paginator.start(reply as Message);
     }
 }

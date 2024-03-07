@@ -124,7 +124,7 @@ export default class RestartCommand extends Command implements HasEventListeners
                     {
                         color: 0xf14a60,
                         title: "System Restart",
-                        description: `Operation cancelled.`
+                        description: "Operation cancelled."
                     }
                 ],
                 components: [new ActionRowBuilder<ButtonBuilder>().addComponents(...buttons)]

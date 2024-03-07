@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Response as ExpressResponse } from 'express';
+import { Response as ExpressResponse } from "express";
 
 export interface CreateResponseOptions {
     status?: number;
@@ -32,7 +32,7 @@ export default class Response {
 
     constructor({ status, body, headers }: CreateResponseOptions) {
         this.status = status ?? 200;
-        this.body = body ?? '';
+        this.body = body ?? "";
         this.headers = headers ?? {};
     }
 

@@ -120,7 +120,7 @@ export default class ExtractEmojiCommand extends Command {
         const emojis: typeof parsedEmojis = [];
 
         for (const emoji of parsedEmojis) {
-            if (!!emojis.find(e => e.id === emoji.id)) {
+            if (emojis.find(e => e.id === emoji.id)) {
                 continue;
             }
 

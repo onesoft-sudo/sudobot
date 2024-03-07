@@ -25,8 +25,6 @@ export default class RoleUpdateEvent extends EventListener<Events.RoleUpdate> {
     public readonly name = Events.RoleUpdate;
 
     async execute(oldRole: Role, newRole: Role) {
-        super.execute(oldRole, newRole);
-
         if (oldRole.name === newRole.name && oldRole.icon === newRole.icon && oldRole.permissions.equals(newRole.permissions))
             return;
 

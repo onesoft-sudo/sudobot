@@ -233,7 +233,7 @@ export default class ConfigCommand extends Command implements HasEventListeners 
                     JSON5.stringify(configValue, {
                         space: 2,
                         replacer: null,
-                        quote: '"'
+                        quote: "\""
                     })
                 )}`
             )
@@ -347,7 +347,7 @@ export default class ConfigCommand extends Command implements HasEventListeners 
             ? JSON5.stringify(error.error.format(), {
                   space: 2,
                   replacer: null,
-                  quote: '"'
+                  quote: "\""
               })
             : null;
 
@@ -377,7 +377,7 @@ export default class ConfigCommand extends Command implements HasEventListeners 
                     JSON5.stringify(finalValue, {
                         space: 2,
                         replacer: null,
-                        quote: '"'
+                        quote: "\""
                     })
                 )}`
             )

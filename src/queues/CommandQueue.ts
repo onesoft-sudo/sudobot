@@ -17,10 +17,18 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Collection, GuildMember, Snowflake, TextChannel } from "discord.js";
+import {
+    Collection,
+    GuildMember,
+    MessageCreateOptions,
+    MessagePayload,
+    MessageReplyOptions,
+    Snowflake,
+    TextChannel
+} from "discord.js";
+import { log, logError } from "../utils/Logger";
 import Queue from "../utils/Queue";
 import { safeChannelFetch, safeMemberFetch, safeMessageFetch } from "../utils/fetch";
-import { log, logError } from "../utils/Logger";
 
 export default class CommandQueue extends Queue {
     cloneObject(obj: object) {
@@ -64,9 +72,10 @@ export default class CommandQueue extends Queue {
                 if (message) {
                     message = this.cloneObject(message);
 
-                    message!.reply = (...args: [any]) => channel.send(...args);
-                    message!.delete = (...args: any[]) => Promise.resolve(message!);
-                    message!.react = (...args: any[]) => Promise.resolve(null as any);
+                    message!.reply = (...args: [MessagePayload | MessageReplyOptions | string]) =>
+                        channel.send(...(args as [MessageCreateOptions | string]));
+                    message!.delete = () => Promise.resolve(message!);
+                    message!.react = () => Promise.resolve(null as unknown as ReturnType<NonNullable<typeof message>["react"]>);
                 }
             } else {
                 message = this.cloneObject(message);

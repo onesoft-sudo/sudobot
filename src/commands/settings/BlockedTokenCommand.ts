@@ -151,7 +151,7 @@ export default class BlockedTokenCommand extends Command {
                         await this.client.configManager.write();
                     }
 
-                    await this.success(message, `The given token(s) have been blocked.`);
+                    await this.success(message, "The given token(s) have been blocked.");
                 }
                 break;
 
@@ -159,9 +159,9 @@ export default class BlockedTokenCommand extends Command {
                 const token = this.getToken(message, subcommand, context);
 
                 if (this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_tokens.includes(token)) {
-                    await this.success(message, `This token is in the blocklist.`);
+                    await this.success(message, "This token is in the blocklist.");
                 } else {
-                    await this.error(message, `This token is not in the blocklist.`);
+                    await this.error(message, "This token is not in the blocklist.");
                 }
 
                 return;
@@ -177,7 +177,7 @@ export default class BlockedTokenCommand extends Command {
                     await this.client.configManager.write();
                 }
 
-                await this.success(message, `The given token(s) have been unblocked.`);
+                await this.success(message, "The given token(s) have been unblocked.");
                 break;
 
             case "list":
@@ -226,7 +226,7 @@ export default class BlockedTokenCommand extends Command {
                         }
                     });
 
-                    let reply = await this.deferredReply(message, await pagination.getMessageOptions());
+                    const reply = await this.deferredReply(message, await pagination.getMessageOptions());
                     await pagination.start(reply);
                 }
 

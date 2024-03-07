@@ -78,7 +78,7 @@ export default class QueueEntry {
             .catch(logError);
     }
 
-    async run(): Promise<any> {
+    async run(): Promise<void> {
         try {
             log("Running queue: ", this.options.filePath);
             const { default: QueueClass }: { default: new (options: QueueConstructorOptions) => Queue } = await import(

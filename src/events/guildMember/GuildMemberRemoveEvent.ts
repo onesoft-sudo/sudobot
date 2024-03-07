@@ -26,7 +26,6 @@ export default class GuildMemberRemoveEvent extends EventListener<Events.GuildMe
     public readonly name = Events.GuildMemberRemove;
 
     async execute(member: GuildMember) {
-        super.execute(member);
         await this.client.loggerService.logGuildMemberRemove(member);
         this.client.verification.onGuildMemberRemove(member).catch(logError);
     }

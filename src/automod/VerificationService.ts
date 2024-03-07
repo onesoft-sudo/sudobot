@@ -200,7 +200,7 @@ export default class VerificationService extends Service implements HasEventList
             process.env.JWT_SECRET!,
             {
                 expiresIn: config?.max_time === 0 ? undefined : config?.max_time,
-                issuer: `SudoBot`,
+                issuer: "SudoBot",
                 subject: "Verification Token"
             }
         );
@@ -295,7 +295,7 @@ export default class VerificationService extends Service implements HasEventList
                         **The Staff of ${member.guild.name}**
                     `.replace(/(\r\n|\n)\t+/, "\n"),
                     footer: {
-                        text: `Completed`
+                        text: "Completed"
                     },
                     timestamp: new Date().toISOString()
                 }
@@ -382,7 +382,7 @@ export default class VerificationService extends Service implements HasEventList
                                 ? "Session expired"
                                 : Number.isFinite(remainingTime)
                                 ? `${formatDistanceToNowStrict(new Date(Date.now() - remainingTime))} remaining`
-                                : `Session never expires`
+                                : "Session never expires"
                         })`
                     },
                     {

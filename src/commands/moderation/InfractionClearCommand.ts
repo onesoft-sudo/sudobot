@@ -29,8 +29,8 @@ export default class InfractionClearCommand extends Command {
             types: [ArgumentType.User],
             name: "user",
             errors: {
-                required: `Please provide a user to clear their infractions!`,
-                "type:invalid": `Please provide a __valid__ user!`,
+                required: "Please provide a user to clear their infractions!",
+                "type:invalid": "Please provide a __valid__ user!",
                 "entity:null": "This user does not exist!"
             },
             entity: {

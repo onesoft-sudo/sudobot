@@ -30,8 +30,8 @@ export default class InfractionListCommand extends Command {
             types: [ArgumentType.User],
             name: "user",
             errors: {
-                required: `Please provide a user to view their infractions!`,
-                "type:invalid": `Please provide a __valid__ user!`,
+                required: "Please provide a user to view their infractions!",
+                "type:invalid": "Please provide a __valid__ user!",
                 "entity:null": "This user does not exist!"
             },
             entity: true

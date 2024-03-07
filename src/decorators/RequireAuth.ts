@@ -20,30 +20,31 @@
 import { NextFunction, Request, Response } from "express";
 import RequireAuthMiddleware from "../api/middleware/RequireAuthMiddleware";
 import type Client from "../core/Client";
+import { Middleware } from "./Action";
 
 export function RequireAuth(fetchUser = true) {
     return (
-        originalMethodOrTarget: any,
+        originalMethodOrTarget: unknown,
         contextOrMethodName: string | ClassMethodDecoratorContext,
-        descriptor?: PropertyDescriptor
+        _descriptor?: PropertyDescriptor
     ) => {
         if (typeof contextOrMethodName === "string") {
-            const metadata = Reflect.getMetadata("auth_middleware", originalMethodOrTarget) ?? {};
+            const metadata = Reflect.getMetadata("auth_middleware", originalMethodOrTarget as object) ?? {};
             const middleware = (client: Client, req: Request, res: Response, next: NextFunction) =>
                 RequireAuthMiddleware(client, fetchUser, req, res, next);
 
             metadata[contextOrMethodName] ??= middleware;
 
-            Reflect.defineMetadata("auth_middleware", metadata, originalMethodOrTarget);
+            Reflect.defineMetadata("auth_middleware", metadata, originalMethodOrTarget as object);
         } else {
-            const metadata = (contextOrMethodName.metadata?.authMiddleware ?? {}) as Record<string | symbol, Function>;
+            const metadata = (contextOrMethodName.metadata?.authMiddleware ?? {}) as Record<string | symbol, Middleware>;
             const middleware = (client: Client, req: Request, res: Response, next: NextFunction) =>
                 RequireAuthMiddleware(client, fetchUser, req, res, next);
 
             metadata[contextOrMethodName.name] ??= middleware;
             (contextOrMethodName.metadata as unknown) ??= {};
             contextOrMethodName.metadata.authMiddleware = metadata;
-            return originalMethodOrTarget;
+            return originalMethodOrTarget as void;
         }
     };
 }

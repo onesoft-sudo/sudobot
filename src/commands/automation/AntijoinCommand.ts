@@ -35,7 +35,7 @@ export default class AntijoinCommand extends Command {
             __reply: true,
             content:
                 `${this.emoji("check")} Turned ${enabled ? "on" : "off"} anti-join system.` +
-                (enabled ? ` New users will automatically be kicked.` : "")
+                (enabled ? " New users will automatically be kicked." : "")
         };
     }
 }

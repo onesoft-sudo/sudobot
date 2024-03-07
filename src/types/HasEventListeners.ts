@@ -20,103 +20,103 @@
 import type { ClientEvents } from "discord.js";
 
 export interface HasEventListeners {
-    onRaw?(data: any): any;
-    onReady?(...args: ClientEvents["ready"]): any;
+    onRaw?(data: unknown): unknown;
+    onReady?(...args: ClientEvents["ready"]): unknown;
 
-    onMessageCreate?(...args: ClientEvents["messageCreate"]): any;
-    onMessageUpdate?(...args: ClientEvents["messageUpdate"]): any;
-    onMessageDelete?(...args: ClientEvents["messageDelete"]): any;
-    onMessageDeleteBulk?(...args: ClientEvents["messageDeleteBulk"]): any;
+    onMessageCreate?(...args: ClientEvents["messageCreate"]): unknown;
+    onMessageUpdate?(...args: ClientEvents["messageUpdate"]): unknown;
+    onMessageDelete?(...args: ClientEvents["messageDelete"]): unknown;
+    onMessageDeleteBulk?(...args: ClientEvents["messageDeleteBulk"]): unknown;
 
-    onMessageReactionAdd?(...args: ClientEvents["messageReactionAdd"]): any;
-    onMessageReactionRemove?(...args: ClientEvents["messageReactionRemove"]): any;
-    onMessageReactionRemoveAll?(...args: ClientEvents["messageReactionRemoveAll"]): any;
-    onMessageReactionRemoveEmoji?(...args: ClientEvents["messageReactionRemoveEmoji"]): any;
+    onMessageReactionAdd?(...args: ClientEvents["messageReactionAdd"]): unknown;
+    onMessageReactionRemove?(...args: ClientEvents["messageReactionRemove"]): unknown;
+    onMessageReactionRemoveAll?(...args: ClientEvents["messageReactionRemoveAll"]): unknown;
+    onMessageReactionRemoveEmoji?(...args: ClientEvents["messageReactionRemoveEmoji"]): unknown;
 
-    onGuildCreate?(...args: ClientEvents["guildCreate"]): any;
-    onGuildDelete?(...args: ClientEvents["guildDelete"]): any;
-    onGuildUpdate?(...args: ClientEvents["guildUpdate"]): any;
-    onGuildUnavailable?(...args: ClientEvents["guildUnavailable"]): any;
+    onGuildCreate?(...args: ClientEvents["guildCreate"]): unknown;
+    onGuildDelete?(...args: ClientEvents["guildDelete"]): unknown;
+    onGuildUpdate?(...args: ClientEvents["guildUpdate"]): unknown;
+    onGuildUnavailable?(...args: ClientEvents["guildUnavailable"]): unknown;
 
-    onGuildMemberAdd?(...args: ClientEvents["guildMemberAdd"]): any;
-    onGuildMemberRemove?(...args: ClientEvents["guildMemberRemove"]): any;
-    onGuildMemberAvailable?(...args: ClientEvents["guildMemberAvailable"]): any;
-    onGuildMemberUpdate?(...args: ClientEvents["guildMemberUpdate"]): any;
-    onGuildMembersChunk?(...args: ClientEvents["guildMembersChunk"]): any;
+    onGuildMemberAdd?(...args: ClientEvents["guildMemberAdd"]): unknown;
+    onGuildMemberRemove?(...args: ClientEvents["guildMemberRemove"]): unknown;
+    onGuildMemberAvailable?(...args: ClientEvents["guildMemberAvailable"]): unknown;
+    onGuildMemberUpdate?(...args: ClientEvents["guildMemberUpdate"]): unknown;
+    onGuildMembersChunk?(...args: ClientEvents["guildMembersChunk"]): unknown;
 
-    onGuildBanAdd?(...args: ClientEvents["guildBanAdd"]): any;
-    onGuildBanRemove?(...args: ClientEvents["guildBanRemove"]): any;
+    onGuildBanAdd?(...args: ClientEvents["guildBanAdd"]): unknown;
+    onGuildBanRemove?(...args: ClientEvents["guildBanRemove"]): unknown;
 
-    onGuildAuditLogEntryCreate?(...args: ClientEvents["guildAuditLogEntryCreate"]): any;
+    onGuildAuditLogEntryCreate?(...args: ClientEvents["guildAuditLogEntryCreate"]): unknown;
 
-    onGuildIntegrationsUpdate?(...args: ClientEvents["guildIntegrationsUpdate"]): any;
-    onGuildScheduledEventCreate?(...args: ClientEvents["guildScheduledEventCreate"]): any;
-    onGuildScheduledEventDelete?(...args: ClientEvents["guildScheduledEventDelete"]): any;
-    onGuildScheduledEventUpdate?(...args: ClientEvents["guildScheduledEventUpdate"]): any;
-    onGuildScheduledEventUserAdd?(...args: ClientEvents["guildScheduledEventUserAdd"]): any;
-    onGuildScheduledEventUserRemove?(...args: ClientEvents["guildScheduledEventUserRemove"]): any;
+    onGuildIntegrationsUpdate?(...args: ClientEvents["guildIntegrationsUpdate"]): unknown;
+    onGuildScheduledEventCreate?(...args: ClientEvents["guildScheduledEventCreate"]): unknown;
+    onGuildScheduledEventDelete?(...args: ClientEvents["guildScheduledEventDelete"]): unknown;
+    onGuildScheduledEventUpdate?(...args: ClientEvents["guildScheduledEventUpdate"]): unknown;
+    onGuildScheduledEventUserAdd?(...args: ClientEvents["guildScheduledEventUserAdd"]): unknown;
+    onGuildScheduledEventUserRemove?(...args: ClientEvents["guildScheduledEventUserRemove"]): unknown;
 
-    onChannelCreate?(...args: ClientEvents["channelCreate"]): any;
-    onChannelDelete?(...args: ClientEvents["channelDelete"]): any;
-    onChannelPinsUpdate?(...args: ClientEvents["channelPinsUpdate"]): any;
-    onChannelUpdate?(...args: ClientEvents["channelUpdate"]): any;
+    onChannelCreate?(...args: ClientEvents["channelCreate"]): unknown;
+    onChannelDelete?(...args: ClientEvents["channelDelete"]): unknown;
+    onChannelPinsUpdate?(...args: ClientEvents["channelPinsUpdate"]): unknown;
+    onChannelUpdate?(...args: ClientEvents["channelUpdate"]): unknown;
 
-    onApplicationCommandPermissionsUpdate?(...args: ClientEvents["applicationCommandPermissionsUpdate"]): any;
+    onApplicationCommandPermissionsUpdate?(...args: ClientEvents["applicationCommandPermissionsUpdate"]): unknown;
 
-    onAutoModerationActionExecution?(...args: ClientEvents["autoModerationActionExecution"]): any;
-    onAutoModerationRuleCreate?(...args: ClientEvents["autoModerationRuleCreate"]): any;
-    onAutoModerationRuleDelete?(...args: ClientEvents["autoModerationRuleDelete"]): any;
-    onAutoModerationRuleUpdate?(...args: ClientEvents["autoModerationRuleUpdate"]): any;
+    onAutoModerationActionExecution?(...args: ClientEvents["autoModerationActionExecution"]): unknown;
+    onAutoModerationRuleCreate?(...args: ClientEvents["autoModerationRuleCreate"]): unknown;
+    onAutoModerationRuleDelete?(...args: ClientEvents["autoModerationRuleDelete"]): unknown;
+    onAutoModerationRuleUpdate?(...args: ClientEvents["autoModerationRuleUpdate"]): unknown;
 
-    onCacheSweep?(...args: ClientEvents["cacheSweep"]): any;
+    onCacheSweep?(...args: ClientEvents["cacheSweep"]): unknown;
 
-    onEmojiCreate?(...args: ClientEvents["emojiCreate"]): any;
-    onEmojiDelete?(...args: ClientEvents["emojiDelete"]): any;
-    onEmojiUpdate?(...args: ClientEvents["emojiUpdate"]): any;
+    onEmojiCreate?(...args: ClientEvents["emojiCreate"]): unknown;
+    onEmojiDelete?(...args: ClientEvents["emojiDelete"]): unknown;
+    onEmojiUpdate?(...args: ClientEvents["emojiUpdate"]): unknown;
 
-    onError?(...args: ClientEvents["error"]): any;
-    onWarn?(...args: ClientEvents["warn"]): any;
-    onDebug?(...args: ClientEvents["debug"]): any;
+    onError?(...args: ClientEvents["error"]): unknown;
+    onWarn?(...args: ClientEvents["warn"]): unknown;
+    onDebug?(...args: ClientEvents["debug"]): unknown;
 
-    onInteractionCreate?(...args: ClientEvents["interactionCreate"]): any;
+    onInteractionCreate?(...args: ClientEvents["interactionCreate"]): unknown;
 
-    onInvalidated?(...args: ClientEvents["invalidated"]): any;
+    onInvalidated?(...args: ClientEvents["invalidated"]): unknown;
 
-    onInviteCreate?(...args: ClientEvents["inviteCreate"]): any;
-    onInviteDelete?(...args: ClientEvents["inviteDelete"]): any;
+    onInviteCreate?(...args: ClientEvents["inviteCreate"]): unknown;
+    onInviteDelete?(...args: ClientEvents["inviteDelete"]): unknown;
 
-    onPresenceUpdate?(...args: ClientEvents["presenceUpdate"]): any;
+    onPresenceUpdate?(...args: ClientEvents["presenceUpdate"]): unknown;
 
-    onRoleCreate?(...args: ClientEvents["roleCreate"]): any;
-    onRoleDelete?(...args: ClientEvents["roleDelete"]): any;
-    onRoleUpdate?(...args: ClientEvents["roleUpdate"]): any;
+    onRoleCreate?(...args: ClientEvents["roleCreate"]): unknown;
+    onRoleDelete?(...args: ClientEvents["roleDelete"]): unknown;
+    onRoleUpdate?(...args: ClientEvents["roleUpdate"]): unknown;
 
-    onShardDisconnect?(...args: ClientEvents["shardDisconnect"]): any;
-    onShardError?(...args: ClientEvents["shardError"]): any;
-    onShardReady?(...args: ClientEvents["shardReady"]): any;
-    onShardReconnecting?(...args: ClientEvents["shardReconnecting"]): any;
-    onShardResume?(...args: ClientEvents["shardResume"]): any;
+    onShardDisconnect?(...args: ClientEvents["shardDisconnect"]): unknown;
+    onShardError?(...args: ClientEvents["shardError"]): unknown;
+    onShardReady?(...args: ClientEvents["shardReady"]): unknown;
+    onShardReconnecting?(...args: ClientEvents["shardReconnecting"]): unknown;
+    onShardResume?(...args: ClientEvents["shardResume"]): unknown;
 
-    onStageInstanceCreate?(...args: ClientEvents["stageInstanceCreate"]): any;
-    onStageInstanceDelete?(...args: ClientEvents["stageInstanceDelete"]): any;
-    onStageInstanceUpdate?(...args: ClientEvents["stageInstanceUpdate"]): any;
+    onStageInstanceCreate?(...args: ClientEvents["stageInstanceCreate"]): unknown;
+    onStageInstanceDelete?(...args: ClientEvents["stageInstanceDelete"]): unknown;
+    onStageInstanceUpdate?(...args: ClientEvents["stageInstanceUpdate"]): unknown;
 
-    onStickerCreate?(...args: ClientEvents["stickerCreate"]): any;
-    onStickerDelete?(...args: ClientEvents["stickerDelete"]): any;
-    onStickerDelete?(...args: ClientEvents["stickerUpdate"]): any;
+    onStickerCreate?(...args: ClientEvents["stickerCreate"]): unknown;
+    onStickerDelete?(...args: ClientEvents["stickerDelete"]): unknown;
+    onStickerDelete?(...args: ClientEvents["stickerUpdate"]): unknown;
 
-    onThreadCreate?(...args: ClientEvents["threadCreate"]): any;
-    onThreadDelete?(...args: ClientEvents["threadDelete"]): any;
-    onThreadListSync?(...args: ClientEvents["threadListSync"]): any;
-    onThreadMemberUpdate?(...args: ClientEvents["threadMemberUpdate"]): any;
-    onThreadMembersUpdate?(...args: ClientEvents["threadMembersUpdate"]): any;
-    onThreadUpdate?(...args: ClientEvents["threadUpdate"]): any;
+    onThreadCreate?(...args: ClientEvents["threadCreate"]): unknown;
+    onThreadDelete?(...args: ClientEvents["threadDelete"]): unknown;
+    onThreadListSync?(...args: ClientEvents["threadListSync"]): unknown;
+    onThreadMemberUpdate?(...args: ClientEvents["threadMemberUpdate"]): unknown;
+    onThreadMembersUpdate?(...args: ClientEvents["threadMembersUpdate"]): unknown;
+    onThreadUpdate?(...args: ClientEvents["threadUpdate"]): unknown;
 
-    onTypingStart?(...args: ClientEvents["typingStart"]): any;
+    onTypingStart?(...args: ClientEvents["typingStart"]): unknown;
 
-    onUserUpdate?(...args: ClientEvents["userUpdate"]): any;
+    onUserUpdate?(...args: ClientEvents["userUpdate"]): unknown;
 
-    onVoiceStateUpdate?(...args: ClientEvents["voiceStateUpdate"]): any;
+    onVoiceStateUpdate?(...args: ClientEvents["voiceStateUpdate"]): unknown;
 
-    onWebhookUpdate?(...args: ClientEvents["webhookUpdate"]): any;
+    onWebhookUpdate?(...args: ClientEvents["webhookUpdate"]): unknown;
 }

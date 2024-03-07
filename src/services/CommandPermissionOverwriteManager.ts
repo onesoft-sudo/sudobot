@@ -18,7 +18,7 @@
  */
 
 import { CommandPermissionOverwrite } from "@prisma/client";
-import { GuildMember, PermissionsString, Snowflake } from "discord.js";
+import { Awaitable, GuildMember, PermissionsString, Snowflake } from "discord.js";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
@@ -141,7 +141,7 @@ export default class CommandPermissionOverwriteManager extends Service implement
 
         outerLoop: for (const permissionOverwrite of permissionOverwrites) {
             for (const validator of this.validators) {
-                const method = this[validator] as Function | undefined;
+                const method = this[validator] as PermissionValidatorFunction | undefined;
                 const validationResult = !!(await method?.call(this, permissionOverwrite, options, memberPermissions));
 
                 if (permissionOverwrite.mode === "AND" && !validationResult) {
@@ -171,3 +171,9 @@ type ValidatePermissionOverwritesOptions = {
     member: GuildMember;
     channelId: Snowflake;
 };
+
+type PermissionValidatorFunction = (
+    permissionOverwrite: CommandPermissionOverwrite,
+    { member }: ValidatePermissionOverwritesOptions,
+    permissions?: GetMemberPermissionInGuildResult
+) => Awaitable<boolean>;

@@ -17,20 +17,22 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import path from "node:path";
+import packageJson from "../../package.json";
 import Service from "../core/Service";
-import FileSystem from "../polyfills/FileSystem";
 import { log } from "../utils/Logger";
 
 export const name = "metadata";
 
 export default class MetadataService extends Service {
-    public data: any = null;
+    public data: typeof packageJson = packageJson;
 
     async boot() {
-        this.data = await FileSystem.readFileContents<any, true>(path.resolve(__dirname, "../../package.json"), {
-            json: true
-        });
+        // this.data = await FileSystem.readFileContents<(typeof this)["data"], true>(
+        //     path.resolve(__dirname, "../../package.json"),
+        //     {
+        //         json: true
+        //     }
+        // );
 
         log("Successfully loaded system metadata from package.json file");
     }

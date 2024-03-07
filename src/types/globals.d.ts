@@ -17,6 +17,6 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-declare var global: {
+declare let global: {
     bootDate: number;
 };

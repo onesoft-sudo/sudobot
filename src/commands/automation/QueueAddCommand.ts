@@ -97,7 +97,7 @@ export default class QueueAddCommand extends Command {
         }
 
         if (result === false) {
-            await this.error(message, `The command you've specified could not be found. Please check for spelling errors.`);
+            await this.error(message, "The command you've specified could not be found. Please check for spelling errors.");
             return;
         }
 

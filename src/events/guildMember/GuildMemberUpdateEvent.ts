@@ -26,8 +26,6 @@ export default class GuildMemberUpdateEvent extends EventListener<Events.GuildMe
     public readonly name = Events.GuildMemberUpdate;
 
     async execute(oldMember: GuildMember, newMember: GuildMember) {
-        super.execute(oldMember, newMember);
-
         if (oldMember.nickname !== newMember.nickname) {
             await this.client.loggerService.logNicknameUpdate(oldMember, newMember);
         }

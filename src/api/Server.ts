@@ -18,7 +18,7 @@
  */
 
 import cors from "cors";
-import express, { Request as ExpressRequest, Response as ExpressResponse, NextFunction } from "express";
+import express, { Application, Request as ExpressRequest, Response as ExpressResponse, NextFunction } from "express";
 import ratelimiter from "express-rate-limit";
 import { Router } from "express-serve-static-core";
 import { Server as HttpServer } from "http";
@@ -28,7 +28,6 @@ import { log, logInfo, logWarn } from "../utils/Logger";
 import Controller from "./Controller";
 import Response from "./Response";
 
-// FIXME: Support new decorators
 export default class Server {
     protected readonly expressApp = express();
     protected readonly rateLimiter = ratelimiter({
@@ -87,22 +86,22 @@ export default class Server {
             Symbol.metadata in controllerClass && controllerClass[Symbol.metadata]
                 ? controllerClass[Symbol.metadata]?.adminAccessControlMiddleware
                 : Reflect.getMetadata("aac_middleware", controllerClass.prototype)
-        ) as Record<string, Function> | null;
+        ) as Record<string, (...args: unknown[]) => unknown> | null;
         const gacMiddlewareList = (
             Symbol.metadata in controllerClass && controllerClass[Symbol.metadata]
                 ? controllerClass[Symbol.metadata]?.guildAccessControlMiddleware
                 : Reflect.getMetadata("gac_middleware", controllerClass.prototype)
-        ) as Record<string, Function> | null;
+        ) as Record<string, (...args: unknown[]) => unknown> | null;
         const requireAuthMiddlewareList = (
             Symbol.metadata in controllerClass && controllerClass[Symbol.metadata]
                 ? controllerClass[Symbol.metadata]?.authMiddleware
                 : Reflect.getMetadata("auth_middleware", controllerClass.prototype)
-        ) as Record<string, Function> | null;
+        ) as Record<string, (...args: unknown[]) => unknown> | null;
         const validationMiddlewareList = (
             Symbol.metadata in controllerClass && controllerClass[Symbol.metadata]
                 ? controllerClass[Symbol.metadata]?.validationMiddleware
                 : Reflect.getMetadata("validation_middleware", controllerClass.prototype)
-        ) as Record<string, Function> | null;
+        ) as Record<string, (...args: unknown[]) => unknown> | null;
 
         if (!actions) {
             return;
@@ -147,7 +146,7 @@ export default class Server {
                     router,
                     data.path,
                     ...(wrappedMiddleware as []),
-                    <any>this.wrapControllerAction(controller, callbackName)
+                    <Application>this.wrapControllerAction(controller, callbackName)
                 );
 
                 log(`Discovered API Route: ${data.method} ${data.path} -- in ${controllerClass.name}`);
@@ -157,7 +156,10 @@ export default class Server {
 
     wrapControllerAction(controller: Controller, callbackName: string) {
         return async (request: ExpressRequest, response: ExpressResponse) => {
-            const callback = controller[callbackName as keyof typeof controller] as Function;
+            const callback = controller[callbackName as keyof typeof controller] as (
+                request: ExpressRequest,
+                response: ExpressResponse
+            ) => unknown;
             const controllerResponse = await callback.call(controller, request, response);
 
             if (!response.headersSent) {
@@ -176,7 +178,7 @@ export default class Server {
         };
     }
 
-    onError(err: unknown, req: ExpressRequest, res: ExpressResponse, next: NextFunction) {
+    onError(err: unknown, _: ExpressRequest, res: ExpressResponse) {
         if (err instanceof SyntaxError && "status" in err && err.status === 400 && "body" in err) {
             res.status(400).json({
                 error: "Invalid JSON payload"

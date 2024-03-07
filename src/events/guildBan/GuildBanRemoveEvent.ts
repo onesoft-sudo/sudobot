@@ -27,8 +27,6 @@ export default class GuildBanRemoveEvent extends EventListener<Events.GuildBanRe
     public readonly name = Events.GuildBanRemove;
 
     async execute(ban: GuildBan) {
-        super.execute(ban);
-
         setTimeout(async () => {
             try {
                 const auditLog = (

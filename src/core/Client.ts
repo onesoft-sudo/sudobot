@@ -65,16 +65,16 @@ import type TranslationService from "../services/TranslationService";
 import type TriggerService from "../services/TriggerService";
 import type WelcomerService from "../services/WelcomerService";
 import { ClientEvents } from "../types/ClientEvents";
+import { Logger } from "../utils/Logger";
 import { developmentMode } from "../utils/utils";
 import type Command from "./Command";
 import DynamicLoader from "./DynamicLoader";
 import Service from "./Service";
 import ServiceManager from "./ServiceManager";
-import { Logger } from "../utils/Logger";
 
 class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
     public static instance: Client;
-    private readonly eventListeners = new Map<string, Function[]>();
+    private readonly eventListeners = new Map<string, ((...args: unknown[]) => unknown)[]>();
     public readonly commands = new Collection<string, Command>();
     public readonly emojiMap = new Map<string, GuildEmoji>();
 
@@ -205,14 +205,15 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
     }
 
     addEventListener<K extends keyof ClientEvents>(name: K, listener: (...args: ClientEvents[K]) => unknown) {
+        type Listener = (...args: DiscordClientEvents[keyof DiscordClientEvents]) => void;
         const handlers = this.eventListeners.get(name) ?? [];
 
         if (!this.eventListeners.has(name)) {
             this.eventListeners.set(name, handlers);
         }
 
-        handlers.push(listener);
-        this.on(name as keyof DiscordClientEvents, listener as (...args: DiscordClientEvents[keyof DiscordClientEvents]) => void);
+        handlers.push(listener as (...args: unknown[]) => unknown);
+        this.on(name as keyof DiscordClientEvents, listener as Listener);
     }
 
     removeEventListener<K extends keyof ClientEvents>(name: K, listener?: (...args: ClientEvents[K]) => unknown) {
@@ -233,19 +234,15 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
         this.off(name as keyof DiscordClientEvents, handler as (...args: DiscordClientEvents[keyof DiscordClientEvents]) => void);
     }
 
-    emitWaitLocal<K extends keyof ClientEvents>(name: K, ...args: ClientEvents[K]) {
-        return new Promise<void>(async (resolve, reject) => {
-            for (const listener of this.eventListeners.get(name) ?? []) {
-                await listener(...args);
-            }
-
-            resolve();
-        });
+    async emitWaitLocal<K extends keyof ClientEvents>(name: K, ...args: ClientEvents[K]) {
+        for (const listener of this.eventListeners.get(name) ?? []) {
+            await listener(...(args as unknown[]));
+        }
     }
 
     emitWait<K extends keyof ClientEvents>(name: K, ...args: ClientEvents[K]) {
         for (const listener of this.eventListeners.get(name) ?? []) {
-            listener(...args);
+            listener(...(args as unknown[]));
         }
     }
 }

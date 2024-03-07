@@ -99,14 +99,14 @@ export default class EchoCommand extends Command {
                     : await message.react((await getEmojiObject(this.client, "check"))!).catch(logError);
             } else {
                 await this.deferredReply(message, {
-                    content: `Message sent.`
+                    content: "Message sent."
                 });
             }
         } catch (e) {
             logError(e);
             await this.error(
                 message,
-                `Could not deliver DM. Maybe the user does not share any server with me or has blocked me or disabled DMs?`
+                "Could not deliver DM. Maybe the user does not share any server with me or has blocked me or disabled DMs?"
             );
         }
 

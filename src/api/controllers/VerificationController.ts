@@ -69,7 +69,7 @@ export default class VerificationController extends Controller {
             }
         });
 
-        const guild = this.client.guilds.cache.get(info?.guildId!);
+        const guild = info ? this.client.guilds.cache.get(info.guildId) : null;
 
         if (!info || !guild || !this.checkExpiry(info)) {
             return new Response({

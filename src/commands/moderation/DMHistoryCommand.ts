@@ -44,7 +44,7 @@ export default class DMHistoryCommand extends Command {
 
         try {
             await (message.member!.user as User).send({
-                content: `We've generated your moderation history. The attached text file contains your moderation history.\nDownload the attached text file below to see your infractions.`,
+                content: "We've generated your moderation history. The attached text file contains your moderation history.\nDownload the attached text file below to see your infractions.",
                 files: [
                     {
                         attachment: buffer,

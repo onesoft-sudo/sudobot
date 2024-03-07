@@ -59,7 +59,7 @@ export default class ServiceManager {
             await previousServiceInstance.deactivate();
         }
 
-        this.client[name as "startupManager"] = service as any;
+        this.client[name as "startupManager"] = service as (typeof this.client)["startupManager"];
         await this.client.dynamicLoader.loadEventsFromMetadata(service);
         await service.boot();
 

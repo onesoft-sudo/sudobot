@@ -38,7 +38,7 @@ export default class RemindCommand extends Command {
                 "type:invalid": "Please specify a valid time interval!",
             },
             time: {
-                unit: 'ms'
+                unit: "ms"
             },
             name: "time_interval"
         },

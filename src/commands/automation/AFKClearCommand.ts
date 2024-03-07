@@ -37,7 +37,7 @@ export default class AFKClearCommand extends Command {
             embeds: [
                 {
                     author: {
-                        name: `Clear AFK statuses`,
+                        name: "Clear AFK statuses",
                         icon_url: message.guild?.iconURL() ?? undefined
                     },
                     description: `Are you sure you want to perform this action? This will affect **${entryCount}** user(s).`,
@@ -68,7 +68,7 @@ export default class AFKClearCommand extends Command {
                 embeds: [
                     {
                         author: {
-                            name: `Clear AFK statuses`,
+                            name: "Clear AFK statuses",
                             icon_url: message.guild?.iconURL() ?? undefined
                         },
                         description: `${this.emoji(
@@ -92,7 +92,7 @@ export default class AFKClearCommand extends Command {
                 embeds: [
                     {
                         author: {
-                            name: `Clear AFK statuses`,
+                            name: "Clear AFK statuses",
                             icon_url: message.guild?.iconURL() ?? undefined
                         },
                         description: `Operation Cancelled${collector.endReason === "cancelled" ? "" : " due to inactivity"}.`,

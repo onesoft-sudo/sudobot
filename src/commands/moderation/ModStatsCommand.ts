@@ -248,7 +248,7 @@ export default class ModStatsCommand extends Command {
                     }\n`;
                     description += `**Created At**: ${time(infraction.createdAt, "D")} (${time(infraction.createdAt, "R")})\n`;
                     description += `**Updated At**: ${time(infraction.updatedAt, "D")} (${time(infraction.updatedAt, "R")})\n`;
-                    description += `\n`;
+                    description += "\n";
                 }
 
                 return new EmbedBuilder({

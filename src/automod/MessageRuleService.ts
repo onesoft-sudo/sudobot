@@ -651,7 +651,7 @@ export default class MessageRuleService extends Service implements HasEventListe
 
         const { domains, scan_links_only, mode } = rule;
 
-        const prefix = scan_links_only ? `(https?://)` : `(https?://)?`;
+        const prefix = scan_links_only ? "(https?://)" : "(https?://)?";
         let specificRegex = `${prefix}(`;
         const genericRegex = `${prefix}([a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})`;
 
@@ -842,7 +842,7 @@ export default class MessageRuleService extends Service implements HasEventListe
                 fields: [
                     {
                         name: "Description",
-                        value: `Too many repetitive characters were found`
+                        value: "Too many repetitive characters were found"
                     }
                 ]
             };
@@ -852,7 +852,7 @@ export default class MessageRuleService extends Service implements HasEventListe
                 fields: [
                     {
                         name: "Description",
-                        value: `Too many repetitive words were found`
+                        value: "Too many repetitive words were found"
                     }
                 ]
             };
@@ -866,7 +866,7 @@ export default class MessageRuleService extends Service implements HasEventListe
             return null;
         }
 
-        let data = [...message.content.matchAll(new RegExp(`\<\@[0-9]+\>`, "gm"))];
+        let data = [...message.content.matchAll(new RegExp("\<\@[0-9]+\>", "gm"))];
 
         console.log("users", data);
 
@@ -876,13 +876,13 @@ export default class MessageRuleService extends Service implements HasEventListe
                 fields: [
                     {
                         name: "Description",
-                        value: `Too many users were mentioned`
+                        value: "Too many users were mentioned"
                     }
                 ]
             };
         }
 
-        data = [...message.content.matchAll(new RegExp(`\<\@\&[0-9]+\>`, "gm"))];
+        data = [...message.content.matchAll(new RegExp("\<\@\&[0-9]+\>", "gm"))];
 
         if (data.length >= rule.max_mentions || (rule.max_role_mentions > 0 && data.length >= rule.max_role_mentions)) {
             return {
@@ -890,7 +890,7 @@ export default class MessageRuleService extends Service implements HasEventListe
                 fields: [
                     {
                         name: "Description",
-                        value: `Too many roles were mentioned`
+                        value: "Too many roles were mentioned"
                     }
                 ]
             };

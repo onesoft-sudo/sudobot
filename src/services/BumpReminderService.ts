@@ -74,7 +74,7 @@ export default class BumpReminderService extends Service implements HasEventList
 
         await message.channel.send(
             await this.replacePlaceholders(
-                on_bump_content ?? `:mention:\nThanks for bumping the server! We'll remind you again :time:.`,
+                on_bump_content ?? ":mention:\nThanks for bumping the server! We'll remind you again :time:.",
                 {
                     remindAfter,
                     user: message.interaction!.user

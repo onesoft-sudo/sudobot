@@ -17,7 +17,17 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ChannelType, Guild, GuildBasedChannel, PermissionFlagsBits, Snowflake, TextChannel, User } from "discord.js";
+import {
+    ChannelType,
+    Guild,
+    GuildBasedChannel,
+    PermissionFlags,
+    PermissionFlagsBits,
+    PermissionOverwriteOptions,
+    Snowflake,
+    TextChannel,
+    User
+} from "discord.js";
 import Service from "../core/Service";
 import { log, logError } from "../utils/Logger";
 import { getChannelPermissionOverride } from "../utils/utils";
@@ -191,10 +201,12 @@ export default class ChannelLockManager extends Service {
 
             try {
                 const options = {
-                    Connect: force ? true : (originalPermission.permissions! as any).Connect,
-                    SendMessages: force ? true : (originalPermission.permissions! as any).SendMessages,
-                    SendMessagesInThreads: force ? true : (originalPermission.permissions! as any).SendMessagesInThreads,
-                    AddReactions: force ? true : (originalPermission.permissions! as any).AddReactions
+                    Connect: force ? true : (originalPermission.permissions! as PermissionFlags).Connect,
+                    SendMessages: force ? true : (originalPermission.permissions! as PermissionFlags).SendMessages,
+                    SendMessagesInThreads: force
+                        ? true
+                        : (originalPermission.permissions! as PermissionFlags).SendMessagesInThreads,
+                    AddReactions: force ? true : (originalPermission.permissions! as PermissionFlags).AddReactions
                 };
 
                 const permissionOverwrites = (channel as TextChannel).permissionOverwrites?.cache.get(guild.id);
@@ -207,8 +219,9 @@ export default class ChannelLockManager extends Service {
                     }
                 }
 
-                if (permissionOverwrites) await (channel as TextChannel).permissionOverwrites?.edit(guild.id, options);
-                else await (channel as TextChannel).permissionOverwrites?.create(guild.id, options);
+                if (permissionOverwrites)
+                    await (channel as TextChannel).permissionOverwrites?.edit(guild.id, options as PermissionOverwriteOptions);
+                else await (channel as TextChannel).permissionOverwrites?.create(guild.id, options as PermissionOverwriteOptions);
 
                 countSuccess++;
             } catch (e) {
@@ -311,16 +324,19 @@ export default class ChannelLockManager extends Service {
             if (!channelLock) return null;
 
             const options = {
-                Connect: force ? true : (channelLock.permissions as any).Connect,
-                SendMessages: force ? true : (channelLock.permissions as any).SendMessages,
-                SendMessagesInThreads: force ? true : (channelLock.permissions as any).SendMessagesInThreads,
-                AddReactions: force ? true : (channelLock.permissions as any).AddReactions
+                Connect: force ? true : (channelLock.permissions as unknown as PermissionFlags).Connect,
+                SendMessages: force ? true : (channelLock.permissions as unknown as PermissionFlags).SendMessages,
+                SendMessagesInThreads: force
+                    ? true
+                    : (channelLock.permissions as unknown as PermissionFlags).SendMessagesInThreads,
+                AddReactions: force ? true : (channelLock.permissions as unknown as PermissionFlags).AddReactions
             };
 
             const permissionOverwrites = channel.permissionOverwrites?.cache.get(channel.guild.id);
 
-            if (permissionOverwrites) await channel.permissionOverwrites?.edit(channel.guild.id, options);
-            else await channel.permissionOverwrites?.create(channel.guild.id, options);
+            if (permissionOverwrites)
+                await channel.permissionOverwrites?.edit(channel.guild.id, options as PermissionOverwriteOptions);
+            else await channel.permissionOverwrites?.create(channel.guild.id, options as PermissionOverwriteOptions);
 
             this.client.loggerService
                 .logChannelLockOrUnlock({

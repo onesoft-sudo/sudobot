@@ -140,16 +140,16 @@ export default class BlockedWordCommand extends Command {
                 }
 
                 await this.client.configManager.write();
-                await this.success(message, `The given word(s) have been blocked.`);
+                await this.success(message, "The given word(s) have been blocked.");
                 break;
 
             case "has":
                 const word = context.isLegacy ? context.args[0] : context.options.getString("word", true);
 
                 if (this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_words.includes(word)) {
-                    await this.success(message, `This word is in the blocklist.`);
+                    await this.success(message, "This word is in the blocklist.");
                 } else {
-                    await this.error(message, `This word is not in the blocklist.`);
+                    await this.error(message, "This word is not in the blocklist.");
                 }
 
                 return;
@@ -169,7 +169,7 @@ export default class BlockedWordCommand extends Command {
                 }
 
                 await this.client.configManager.write();
-                await this.success(message, `The given word(s) have been unblocked.`);
+                await this.success(message, "The given word(s) have been unblocked.");
                 break;
 
             case "list":
@@ -218,7 +218,7 @@ export default class BlockedWordCommand extends Command {
                         }
                     });
 
-                    let reply = await this.deferredReply(message, await pagination.getMessageOptions());
+                    const reply = await this.deferredReply(message, await pagination.getMessageOptions());
                     await pagination.start(reply);
                 }
 

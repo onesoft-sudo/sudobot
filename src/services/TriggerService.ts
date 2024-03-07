@@ -111,7 +111,7 @@ export default class TriggerService extends Service implements HasEventListeners
         loop: for (const trigger of triggers) {
             if (triggerEvents !== undefined) {
                 for (const triggerEvent of triggerEvents) {
-                    if (!(events[trigger.type] as any).includes(triggerEvent)) {
+                    if (!(events[trigger.type] as string[]).includes(triggerEvent)) {
                         continue loop;
                     }
                 }
@@ -123,7 +123,7 @@ export default class TriggerService extends Service implements HasEventListeners
 
     processMessageTriggers(message: Message, triggers: TriggerType[]) {
         for (const trigger of triggers) {
-            if (!(events[trigger.type] as any).includes("messageCreate")) {
+            if (!(events[trigger.type] as string[]).includes("messageCreate")) {
                 continue;
             }
 
@@ -168,7 +168,10 @@ export default class TriggerService extends Service implements HasEventListeners
             }
         }
 
-        const callback = this[handlers[trigger.type]].bind(this);
+        const callback = this[handlers[trigger.type]].bind(this) as (
+            trigger: TriggerType,
+            context: TriggerHandlerContext<boolean>
+        ) => Promise<unknown>;
 
         if (handlers[trigger.type].startsWith("triggerMessage")) {
             if (!context.message) {
@@ -179,7 +182,7 @@ export default class TriggerService extends Service implements HasEventListeners
         }
 
         if (handlers[trigger.type].startsWith("trigger")) {
-            await callback(trigger as any, context as any);
+            await callback(trigger, context);
         }
     }
 

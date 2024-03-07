@@ -35,6 +35,7 @@ import {
     Message,
     MessageCreateOptions,
     MessagePayload,
+    MessageReplyOptions,
     ModalSubmitInteraction,
     PermissionResolvable,
     SlashCommandBuilder,
@@ -43,9 +44,9 @@ import {
 } from "discord.js";
 import { ChatInputCommandContext, ContextMenuCommandContext, LegacyCommandContext } from "../services/CommandManager";
 import EmbedSchemaParser from "../utils/EmbedSchemaParser";
+import { logError } from "../utils/Logger";
 import { channelInfo, guildInfo, userInfo } from "../utils/embed";
 import { safeChannelFetch } from "../utils/fetch";
-import { logError } from "../utils/Logger";
 import { getEmoji } from "../utils/utils";
 import Client from "./Client";
 import CommandArgumentParser from "./CommandArgumentParser";
@@ -136,7 +137,12 @@ export default abstract class Command {
 
     public async deferredReply(message: CommandMessage, options: DeferReplyOptions, mode: DeferReplyMode = "default") {
         if (message instanceof ChatInputCommandInteraction || message instanceof ContextMenuCommandInteraction) {
-            return message.deferred ? await message.editReply(options) : await message.reply(options as any);
+            if (message.deferred) {
+                return message.editReply(options);
+            }
+
+            const response = await message.reply(options as InteractionReplyOptions);
+            return response.fetch();
         }
 
         const behaviour = this.client.configManager.config[message.guildId!]?.commands.moderation_command_behaviour;
@@ -146,8 +152,8 @@ export default abstract class Command {
         }
 
         return mode === "delete" || (mode === "auto" && behaviour === "delete") || mode === "channel"
-            ? message.channel.send(options as any)
-            : message.reply(options as any);
+            ? message.channel.send(options as MessageCreateOptions)
+            : message.reply(options as MessageReplyOptions);
     }
 
     protected async error(message: CommandMessage, errorMessage?: string, mode: DeferReplyMode = "default") {
@@ -155,7 +161,7 @@ export default abstract class Command {
             message,
             errorMessage
                 ? `${this.emoji("error")} ${errorMessage}`
-                : `⚠️ An error has occurred while performing this action. Please make sure that the bot has the required permissions to perform this action.`,
+                : "⚠️ An error has occurred while performing this action. Please make sure that the bot has the required permissions to perform this action.",
             mode
         );
     }
@@ -163,7 +169,7 @@ export default abstract class Command {
     protected async success(message: CommandMessage, successMessage?: string, mode: DeferReplyMode = "default") {
         return await this.deferredReply(
             message,
-            successMessage ? `${this.emoji("check")} ${successMessage}` : `Successfully completed the given task.`,
+            successMessage ? `${this.emoji("check")} ${successMessage}` : "Successfully completed the given task.",
             mode
         );
     }
@@ -185,7 +191,7 @@ export default abstract class Command {
         options: APIEmbed,
         params: {
             fields?: (fields: APIEmbedField[]) => Awaitable<APIEmbedField[]>;
-            before?: (channel: TextBasedChannel, sentMessages: Array<Message | null>) => any;
+            before?: (channel: TextBasedChannel, sentMessages: Array<Message | null>) => Awaitable<void>;
             previews?: Array<MessageCreateOptions | MessagePayload>;
             url?: string | null;
         } = {}
@@ -218,7 +224,7 @@ export default abstract class Command {
                 sentMessages.push(sentMessage ?? null);
             }
 
-            (await params.before?.(channel, sentMessages))?.catch?.(logError);
+            await params.before?.(channel, sentMessages);
 
             const embedFields = [
                 {

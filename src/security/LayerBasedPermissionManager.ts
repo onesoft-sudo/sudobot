@@ -20,8 +20,8 @@
 import { PermissionOverwrite } from "@prisma/client";
 import { GuildMember, PermissionsBitField, PermissionsString, Role, Snowflake } from "discord.js";
 import { GetMemberPermissionInGuildResult } from "../services/PermissionManager";
-import AbstractPermissionManager from "./AbstractPermissionManager";
 import { logInfo } from "../utils/Logger";
+import AbstractPermissionManager from "./AbstractPermissionManager";
 
 export default class LayerBasedPermissionManager extends AbstractPermissionManager {
     protected cache: Record<`${Snowflake}_${"r" | "u"}_${Snowflake}`, PermissionOverwrite> = {};
@@ -44,13 +44,13 @@ export default class LayerBasedPermissionManager extends AbstractPermissionManag
         logInfo(`[${this.constructor.name}] Synchronized permission overwrites`);
     }
 
-    isImmuneToAutoMod(member: GuildMember) {
+    override isImmuneToAutoMod(member: GuildMember) {
         const { permissions } = this.getMemberPermissions(member);
         return permissions.has("ManageGuild", true);
     }
 
     // FIXME: This is not implemented yet
-    shouldModerate(member: GuildMember, moderator: GuildMember) {
+    override shouldModerate() {
         return true;
     }
 

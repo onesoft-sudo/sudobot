@@ -49,8 +49,8 @@ export default class TranslationService extends Service {
             }
 
             const translation = response.data.sentences
-                .filter((s: any) => !!s.trans)
-                .map((s: any) => s.trans.trim())
+                .filter((s: Record<string, string>) => !!s.trans)
+                .map((s: Record<string, string>) => s.trans.trim())
                 .join(" ");
 
             return { translation, response };

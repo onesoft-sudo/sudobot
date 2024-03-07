@@ -210,7 +210,7 @@ export default class AFKService extends Service implements HasEventListeners {
                 if (this.isAFK(message.guildId!, id)) {
                     const entry = this.entries.get(`${message.guildId!}_${id}`);
                     description += `* <@${id}>: ${entry?.reason ?? "*No reason provided*"} ${
-                        entry?.createdAt ? `(${time(entry?.createdAt!)})` : ""
+                        entry?.createdAt ? `(${time(entry.createdAt)})` : ""
                     } - ${time(entry?.createdAt ?? new Date(), "R")}\n`;
                 }
             }

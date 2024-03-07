@@ -142,7 +142,7 @@ export default class BlockedMessageCommand extends Command {
                 }
 
                 await this.client.configManager.write();
-                await this.success(message, `The given message has been blocked.`);
+                await this.success(message, "The given message has been blocked.");
                 break;
 
             case "has":
@@ -153,9 +153,9 @@ export default class BlockedMessageCommand extends Command {
                         messageToCheck
                     )
                 ) {
-                    await this.success(message, `This message is in the blocklist.`);
+                    await this.success(message, "This message is in the blocklist.");
                 } else {
-                    await this.error(message, `This message is not in the blocklist.`);
+                    await this.error(message, "This message is not in the blocklist.");
                 }
 
                 return;
@@ -175,7 +175,7 @@ export default class BlockedMessageCommand extends Command {
                 this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_messages.splice(index, 1);
 
                 await this.client.configManager.write();
-                await this.success(message, `The given message has been unblocked.`);
+                await this.success(message, "The given message has been unblocked.");
                 break;
 
             case "list":
@@ -216,7 +216,7 @@ export default class BlockedMessageCommand extends Command {
                                     iconURL: message.guild!.iconURL() ?? undefined
                                 },
                                 color: 0x007bff,
-                                description: data.length === 0 ? '*No blocked message.*' : ("`" + data[0].join("`, `") + "`"),
+                                description: data.length === 0 ? "*No blocked message.*" : ("`" + data[0].join("`, `") + "`"),
                                 footer: {
                                     text: `Page ${currentPage} of ${maxPages}`
                                 }
@@ -224,7 +224,7 @@ export default class BlockedMessageCommand extends Command {
                         }
                     });
 
-                    let reply = await this.deferredReply(message, await pagination.getMessageOptions());
+                    const reply = await this.deferredReply(message, await pagination.getMessageOptions());
                     await pagination.start(reply);
                 }
 

@@ -68,14 +68,14 @@ export default class SnippetEditCommand extends Command {
         const index = name !== context.args[0] ? 1 : 0;
 
         if (!context.args[index + 1]) {
-            await this.error(message, this.validationRules[1].errors?.required!);
+            await this.error(message, this.validationRules[1].errors?.required);
             return;
         }
 
         const attrs = ["level", "permission", "perm", "content"] as const;
 
         if (!attrs.includes(context.args[index + 1]?.toLowerCase() as (typeof attrs)[number])) {
-            await this.error(message, this.validationRules[1].errors?.["type:invalid"]!);
+            await this.error(message, this.validationRules[1].errors?.["type:invalid"]);
             return;
         }
 

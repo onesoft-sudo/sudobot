@@ -23,6 +23,7 @@ import path from "node:path";
 import { chdir, cwd } from "node:process";
 import readline from "node:readline";
 import Service from "../core/Service";
+import { AnyFunction } from "../types/Utils";
 import { LogLevel, logError, logInfo, logWarn, logWithLevel } from "../utils/Logger";
 import { developmentMode } from "../utils/utils";
 
@@ -37,7 +38,7 @@ enum CommandKey {
 }
 
 export default class KeypressHandlerService extends Service {
-    readonly keyHandlers: Record<CommandKey, Function> = {
+    readonly keyHandlers: Record<CommandKey, AnyFunction<[], unknown>> = {
         [CommandKey.ReloadCommands]: this.reloadCommands.bind(this),
         [CommandKey.ForceReloadCommands]: () => this.reloadCommands(true),
         [CommandKey.Quit]: this.quit.bind(this),
@@ -134,7 +135,7 @@ export default class KeypressHandlerService extends Service {
 
                 logInfo("Rebuilding project source files");
 
-                const { status } = spawnSync(`npm run build`, {
+                const { status } = spawnSync("npm run build", {
                     encoding: "utf-8",
                     shell: true,
                     stdio: "inherit"

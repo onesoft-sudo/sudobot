@@ -52,7 +52,7 @@ export default class EmojiCommand extends Command {
 
         if (!emoji) {
             if ((emojiString.startsWith("<:") && emojiString.endsWith(">")) || /\d+/g.test(emojiString)) {
-                let parsedEmoji =
+                const parsedEmoji =
                     emojiString.startsWith("<:") && emojiString.endsWith(">")
                         ? parseEmoji(emojiString)
                         : { animated: undefined, id: emojiString, name: undefined };

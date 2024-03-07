@@ -26,8 +26,6 @@ export default class InteractionCreateEvent extends EventListener<Events.Interac
     public readonly name = Events.InteractionCreate;
 
     async execute(interaction: Interaction) {
-        super.execute(interaction);
-
         if (interaction.isCommand()) {
             this.client.commandManager.runCommandFromCommandInteraction(interaction).catch(logError);
             return;

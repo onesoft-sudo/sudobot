@@ -25,7 +25,6 @@ export default class RoleCreateEvent extends EventListener<Events.RoleCreate> {
     public readonly name = Events.RoleCreate;
 
     async execute(role: Role) {
-        super.execute(role);
         await this.client.loggerService.logRoleCreate(role);
     }
 }

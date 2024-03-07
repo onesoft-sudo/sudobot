@@ -28,8 +28,8 @@ export default class InfractionDeleteCommand extends Command {
             types: [ArgumentType.Integer],
             name: "id",
             errors: {
-                required: `Please provide an infraction ID!`,
-                "type:invalid": `Please provide a __valid__ infraction ID!`
+                required: "Please provide an infraction ID!",
+                "type:invalid": "Please provide a __valid__ infraction ID!"
             }
         }
     ];

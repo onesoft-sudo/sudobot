@@ -25,5 +25,5 @@ export default abstract class EventListener<K extends keyof ClientEvents = keyof
 
     constructor(protected client: Client) {}
 
-    async execute(...args: ClientEvents[K]): Promise<any> {}
+    abstract execute(...args: ClientEvents[K]): Promise<unknown> | void;
 }

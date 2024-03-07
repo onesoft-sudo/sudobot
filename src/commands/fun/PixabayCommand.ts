@@ -27,10 +27,10 @@ function url() {
 
 export async function image(cmd: Command & { hitError: Function }, message: CommandMessage, options: BasicCommandContext, type: "photo" | "all" | "illustration" | "vector") {
     let genurl = `${url()}&image_type=${type}`;
-    let query = !options.isLegacy ? options.options.getString("query") : options.parsedNamedArgs.query;
+    const query = !options.isLegacy ? options.options.getString("query") : options.parsedNamedArgs.query;
 
     if (query && query.trim() !== "") {
-        let q = new URLSearchParams({ q: query }).toString();
+        const q = new URLSearchParams({ q: query }).toString();
         console.log(q);
         genurl += `&${q}`;
     }

@@ -43,14 +43,12 @@ export default class MessageCreateEvent extends EventListener<Events.MessageCrea
          */
         if (message.author.bot) return;
 
-        super.execute(message);
-
         if (!this.types.includes(message.type)) return;
         if (message.channel.type === ChannelType.DM) return;
 
-        let member: GuildMember = <any>message.member!;
+        let member = message.member as GuildMember;
 
-        if (!(member.permissions as any)?.has) {
+        if (!("has" in (member.permissions as GuildMember["permissions"]))) {
             try {
                 member = await message.guild!.members.fetch(member.user.id);
 
@@ -58,7 +56,7 @@ export default class MessageCreateEvent extends EventListener<Events.MessageCrea
                     throw new Error("Invalid member");
                 }
 
-                (message.member as any) = member;
+                (message.member as GuildMember) = member;
             } catch (e) {
                 logError(e);
             }
