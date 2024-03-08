@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { Infraction } from "@prisma/client";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
     APIEmbedField,
@@ -53,12 +54,10 @@ import {
 import Service from "../core/Service";
 import { MessageRuleType } from "../types/MessageRuleSchema";
 import { NotUndefined } from "../types/NotUndefined";
-import { log, logDebug, logError } from "../utils/Logger";
+import { log, logError } from "../utils/Logger";
+import { userInfo } from "../utils/embed";
 import { isTextableChannel } from "../utils/utils";
 import { GuildConfig } from "./ConfigManager";
-import { userInfo } from "../utils/embed";
-import { Infraction } from "@prisma/client";
-import assert from "node:assert";
 
 export const name = "loggerService";
 
@@ -166,12 +165,12 @@ export default class LoggerService extends Service {
         return await this.send(
             guild,
             {
-                ...((extraOptions as any) ?? {}),
+                ...((extraOptions) ?? {}),
                 embeds: [
                     this.createLogEmbed(options),
                     ...(extraOptions && "embeds" in extraOptions ? extraOptions.embeds ?? [] : [])
                 ]
-            },
+            } as unknown as MessageCreateOptions | MessagePayload,
             channel
         );
     }
@@ -1005,7 +1004,7 @@ export default class LoggerService extends Service {
                                             (inviteOrVanity.invite.channelId
                                                 ? `\nChannel: <#${inviteOrVanity.invite.channelId}> (${inviteOrVanity.invite.channelId})`
                                                 : "") +
-                                            (inviteOrVanity.invite.temporary ? `\n\n__This is a temporary invite.__` : "")
+                                            (inviteOrVanity.invite.temporary ? "\n\n__This is a temporary invite.__" : "")
                                           : "")
                               }
                           ]

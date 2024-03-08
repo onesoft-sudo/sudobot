@@ -35,8 +35,6 @@ export default class MessageUpdateEvent extends EventListener<Events.MessageUpda
             return;
         }
 
-        super.execute(oldMessage, newMessage);
-
         if (oldMessage.content === newMessage.content) return;
 
         this.client.emit(Events.NormalMessageUpdate, oldMessage, newMessage);

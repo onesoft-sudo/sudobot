@@ -79,7 +79,7 @@ export default class KickCommand extends Command {
             return {
                 __reply: true,
                 ephemeral: true,
-                content: `Invalid member given. Probably that user isn't a member of this server?`
+                content: "Invalid member given. Probably that user isn't a member of this server?"
             };
         }
 

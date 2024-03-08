@@ -20,29 +20,30 @@
 import { NextFunction, Request, Response } from "express";
 import GuildAccessControl from "../api/middleware/GuildAccessControl";
 import type Client from "../core/Client";
+import { Middleware } from "./Action";
 
 export function EnableGuildAccessControl() {
     return (
-        originalMethodOrTarget: any,
+        originalMethodOrTarget: unknown,
         contextOrMethodName: string | ClassMethodDecoratorContext,
-        descriptor?: PropertyDescriptor
+        _descriptor?: PropertyDescriptor
     ) => {
         if (typeof contextOrMethodName === "string") {
-            const metadata = Reflect.getMetadata("gac_middleware", originalMethodOrTarget) ?? {};
+            const metadata = Reflect.getMetadata("gac_middleware", originalMethodOrTarget as object) ?? {};
             const middleware = (client: Client, req: Request, res: Response, next: NextFunction) =>
                 GuildAccessControl(req, res, next);
 
             metadata[contextOrMethodName] ??= middleware;
-            Reflect.defineMetadata("gac_middleware", metadata, originalMethodOrTarget);
+            Reflect.defineMetadata("gac_middleware", metadata, originalMethodOrTarget as object);
         } else {
-            const metadata = (contextOrMethodName.metadata?.guildAccessControlMiddleware ?? {}) as Record<string, Function>;
+            const metadata = (contextOrMethodName.metadata?.guildAccessControlMiddleware ?? {}) as Record<string, Middleware>;
             const middleware = (client: Client, req: Request, res: Response, next: NextFunction) =>
                 GuildAccessControl(req, res, next);
 
             metadata[contextOrMethodName.name as keyof typeof metadata] ??= middleware;
             (contextOrMethodName.metadata as unknown) ??= {};
             contextOrMethodName.metadata.guildAccessControlMiddleware = metadata;
-            return originalMethodOrTarget;
+            return originalMethodOrTarget as void;
         }
     };
 }

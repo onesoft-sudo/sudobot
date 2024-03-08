@@ -18,7 +18,7 @@
  */
 
 import { Message, escapeMarkdown } from "discord.js";
-import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class BlockedFileAddCommand extends Command {
     public readonly name = "blockedfile__add";
@@ -28,7 +28,7 @@ export default class BlockedFileAddCommand extends Command {
     public readonly supportsLegacy = false;
     public readonly description = "Add a file hash to the blocklist";
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
         const attachments =
             message instanceof Message ? [...message.attachments.values()] : [message.options.getAttachment("file", true)];

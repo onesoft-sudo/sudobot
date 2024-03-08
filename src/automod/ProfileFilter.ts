@@ -60,7 +60,7 @@ export default class ProfileFilter extends Service implements HasEventListeners 
                 messageFilterConfig?.enabled &&
                 messageFilterConfig?.data?.blocked_tokens
             ) {
-                tokens.push(...messageFilterConfig?.data?.blocked_tokens);
+                tokens.push(...(messageFilterConfig?.data?.blocked_tokens ?? []));
             }
 
             if (
@@ -68,7 +68,7 @@ export default class ProfileFilter extends Service implements HasEventListeners 
                 messageFilterConfig?.enabled &&
                 messageFilterConfig?.data?.blocked_words
             ) {
-                words.push(...messageFilterConfig?.data?.blocked_words);
+                words.push(...(messageFilterConfig?.data?.blocked_words ?? []));
             }
 
             if (

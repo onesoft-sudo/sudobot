@@ -18,7 +18,7 @@
  */
 
 import { PermissionsBitField } from "discord.js";
-import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class WarningCommand extends Command {
     public readonly name = "warning";
@@ -28,7 +28,7 @@ export default class WarningCommand extends Command {
     public readonly supportsInteractions: boolean = false;
     public readonly description = "Deprecated. Please use `infraction` command instead.";
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(): Promise<CommandReturn> {
         return {
             __reply: true,
             content:

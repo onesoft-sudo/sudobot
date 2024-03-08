@@ -17,13 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import * as tf from "@tensorflow/tfjs-node";
+import { NSFWJS, load } from "nsfwjs";
 import Tesseract, { createWorker } from "tesseract.js";
 import Service from "../core/Service";
 import { log, logInfo } from "../utils/Logger";
-import { NSFWJS, load } from "nsfwjs";
-import * as tf from "@tensorflow/tfjs-node";
 import { developmentMode } from "../utils/utils";
-import jpeg from "jpeg-js";
 
 export const name = "imageRecognitionService";
 

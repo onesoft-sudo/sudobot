@@ -22,7 +22,7 @@ import chalk from "chalk";
 import { Server, Socket } from "socket.io";
 import Client from "../core/Client";
 import Service from "../core/Service";
-import { LogLevel, logInfo, logWarn } from "../utils/Logger";
+import { logInfo, logWarn } from "../utils/Logger";
 
 export const name = "logServer";
 
@@ -92,7 +92,7 @@ export default class LogServer extends Service {
 
             socket.on("disconnect", reason => {
                 this.connections--;
-                logInfo("Client Disonnected from log server: ", socket.id, reason);
+                logInfo("Client Disconnected from log server: ", socket.id, reason);
                 const index = this.sockets.findIndex(s => s.id === socket.id);
 
                 if (index !== -1) {
@@ -105,7 +105,7 @@ export default class LogServer extends Service {
                 return;
             }
 
-            socket.write(`chalk.cyan("[info]")} Connection Accepted`);
+            socket.write(`${chalk.cyan("[info]")} Connection Accepted`);
 
             this.sockets.push(socket);
         });
@@ -118,7 +118,7 @@ export default class LogServer extends Service {
     }
 
     log(message: string) {
-        this.sockets.forEach((socket, index) => {
+        this.sockets.forEach(socket => {
             socket.send(`${message}`);
         });
     }

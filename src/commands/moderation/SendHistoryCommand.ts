@@ -18,7 +18,7 @@
  */
 
 import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class SendHistoryCommand extends Command {
     public readonly name = "sendhistory";
@@ -44,7 +44,7 @@ export default class SendHistoryCommand extends Command {
         option.setName("user").setDescription("The target user").setRequired(true)
     );
 
-    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage): Promise<CommandReturn> {
         await this.deferIfInteraction(message, { ephemeral: true });
 
         const { buffer, count } = await this.client.infractionManager.createInfractionHistoryBuffer(

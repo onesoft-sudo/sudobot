@@ -77,7 +77,7 @@ export default class LockCommand extends Command {
 
         const result = await this.client.channelLockManager.lock(channel, message.member!.user as User);
 
-        if (!result) await this.error(message, `Failed to lock this channel.`);
+        if (!result) await this.error(message, "Failed to lock this channel.");
         else await this.deferredReply(message, `${this.emoji("check")} This channel has been locked.`).catch(logError);
     }
 }

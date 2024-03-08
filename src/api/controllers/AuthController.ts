@@ -27,8 +27,8 @@ import { request as undiciRequest } from "undici";
 import { z } from "zod";
 import { Action } from "../../decorators/Action";
 import { Validate } from "../../decorators/Validate";
-import { safeUserFetch } from "../../utils/fetch";
 import { logError } from "../../utils/Logger";
+import { safeUserFetch } from "../../utils/fetch";
 import Controller from "../Controller";
 import Request from "../Request";
 import Response from "../Response";
@@ -463,7 +463,7 @@ export default class AuthController extends Controller {
                 body: new URLSearchParams({
                     client_id: process.env.CLIENT_ID!,
                     client_secret: process.env.CLIENT_SECRET!,
-                    code: parsedBody.code,
+                    code: parsedBody!.code,
                     grant_type: "authorization_code",
                     redirect_uri: `${process.env.DISCORD_OAUTH2_REDIRECT_URI}`,
                     scope: "identify"
@@ -473,7 +473,7 @@ export default class AuthController extends Controller {
                 }
             });
 
-            const oauthData = <any>await tokenResponseData.body.json();
+            const oauthData = <Record<string, string>>await tokenResponseData.body.json();
             console.log(oauthData);
 
             if (oauthData?.error) {
@@ -486,7 +486,7 @@ export default class AuthController extends Controller {
                 }
             });
 
-            const userData = <any>await userResponse.body.json();
+            const userData = <Record<string, string>>await userResponse.body.json();
 
             if (userData?.error) {
                 throw new Error(`${userData?.error}: ${userData?.error_description}`);

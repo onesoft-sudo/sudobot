@@ -17,24 +17,23 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import archiver from "archiver";
 import axios from "axios";
 import chalk from "chalk";
 import { spawnSync } from "child_process";
 import { formatDistanceToNowStrict } from "date-fns";
 import { APIEmbed, ActivityType, Attachment, AttachmentBuilder, Colors, WebhookClient, escapeCodeBlock } from "discord.js";
 import figlet from "figlet";
-import { WriteStream, createWriteStream, existsSync, readFileSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { rm } from "fs/promises";
 import path from "path";
-import { gt, satisfies } from "semver";
+import { gt } from "semver";
 import { version } from "../../package.json";
 import Service from "../core/Service";
-import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { safeChannelFetch, safeMessageFetch } from "../utils/fetch";
 import { log, logError, logInfo, logSuccess } from "../utils/Logger";
+import { safeChannelFetch, safeMessageFetch } from "../utils/fetch";
 import { chunkedString, getEmoji, sudoPrefix } from "../utils/utils";
-import archiver from "archiver";
 
 export const name = "startupManager";
 
@@ -44,7 +43,6 @@ export default class StartupManager extends Service implements HasEventListeners
     interval: Timer | undefined = undefined;
     readonly packageJsonUrl = "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/package.json";
 
-    @GatewayEventListener("ready")
     async onReady() {
         if (BACKUP_CHANNEL_ID) {
             this.setBackupQueue();
@@ -158,8 +156,10 @@ export default class StartupManager extends Service implements HasEventListeners
             logError(reason);
             this.sendErrorLog(
                 `Unhandled promise rejection: ${
-                    typeof reason === "string" || typeof (reason as any)?.toString === "function"
-                        ? escapeCodeBlock((reason as any)?.toString ? (reason as any).toString() : (reason as any))
+                    typeof reason === "string" || typeof (reason as string | undefined)?.toString === "function"
+                        ? escapeCodeBlock(
+                              (reason as string | undefined)?.toString ? (reason as string).toString() : (reason as string)
+                          )
                         : reason
                 }`
             ).finally(() => process.exit(-1));
@@ -254,7 +254,7 @@ export default class StartupManager extends Service implements HasEventListeners
         const finalTime = isNaN(time) ? 1000 * 60 * 60 * 2 : time;
         this.interval = setInterval(this.sendConfigBackupCopy.bind(this), finalTime);
         logInfo(`Configuration backups will be sent in each ${formatDistanceToNowStrict(new Date(Date.now() - finalTime))}`);
-        logInfo(`Sending initial backup`);
+        logInfo("Sending initial backup");
         this.sendConfigBackupCopy();
     }
 
@@ -264,7 +264,7 @@ export default class StartupManager extends Service implements HasEventListeners
             return false;
         }
 
-        if (spawnSync(`npm run build`).error) {
+        if (spawnSync("npm run build").error) {
             logError("Cannot perform an automatic update - failed to build the project");
             return false;
         }

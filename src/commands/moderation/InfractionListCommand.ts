@@ -18,7 +18,6 @@
  */
 
 import { InfractionType } from "@prisma/client";
-import { formatDistanceToNowStrict } from "date-fns";
 import { EmbedBuilder, PermissionsBitField, User, codeBlock, time } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import Pagination from "../../utils/Pagination";
@@ -30,8 +29,8 @@ export default class InfractionListCommand extends Command {
             types: [ArgumentType.User],
             name: "user",
             errors: {
-                required: `Please provide a user to view their infractions!`,
-                "type:invalid": `Please provide a __valid__ user!`,
+                required: "Please provide a user to view their infractions!",
+                "type:invalid": "Please provide a __valid__ user!",
                 "entity:null": "This user does not exist!"
             },
             entity: true

@@ -86,7 +86,7 @@ export default class UnmuteCommand extends Command {
             return;
         }
 
-        const { id, infraction } = <any>await this.client.infractionManager
+        const { id, infraction } = await this.client.infractionManager
             .removeMemberMute(member, {
                 guild: message.guild!,
                 moderator: message.member!.user as User,
@@ -94,7 +94,10 @@ export default class UnmuteCommand extends Command {
                 reason,
                 sendLog: true
             })
-            .catch(logError);
+            .catch(e => {
+                logError(e);
+                return { id: null, infraction: null };
+            });
 
         if (!id) {
             await this.error(message, "Failed to unmute this user or I'm missing permissions to mute this user!");
@@ -111,7 +114,7 @@ export default class UnmuteCommand extends Command {
                         actionDoneName: "unmuted",
                         description: `**${escapeMarkdown(member.user.tag)}** has been unmuted.`,
                         id: `${id}`,
-                        reason: infraction.reason,
+                        reason: infraction?.reason,
                         color: "Green"
                     })
                 ]

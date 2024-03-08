@@ -1,28 +1,28 @@
 /*
-* This file is part of SudoBot.
-*
-* Copyright (C) 2021-2023 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2023 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 import { Awaitable, Message } from "discord.js";
 
 export type ParsingState = {
     argv: string[];
     args: string[];
-    parsedArgs: Record<string | number, any>;
+    parsedArgs: Record<string | number, unknown>;
     index: number;
     currentArg: string | undefined;
     rule: ValidationRule;
@@ -65,7 +65,7 @@ export type ValidationRuleErrorMessages = { [K in ValidationErrorType]?: string 
 export type ValidationRule = {
     types: readonly ArgumentType[];
     optional?: boolean;
-    default?: any;
+    default?: unknown | null | undefined;
     name?: string;
     errors?: ValidationRuleErrorMessages;
     number?: {
@@ -105,12 +105,14 @@ export enum ParserJump {
     Steps
 }
 
-export type ParseResult<T = any> = {
+export type ParseResult<T = unknown> = {
     jump?: ParserJump;
     steps?: number;
     result?: T;
 };
 
-export default interface CommandArgumentParserInterface {
-    parse(options: ParseOptions): Awaitable<Record<string | number, any>>;
+interface CommandArgumentParserInterface {
+    parse(options: ParseOptions): Awaitable<Record<string | number, unknown>>;
 }
+
+export default CommandArgumentParserInterface;

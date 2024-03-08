@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { NextFunction } from "express";
+import { NextFunction, Response } from "express";
 import { rateLimit } from "express-rate-limit";
 import { z } from "zod";
 import { Action } from "../../decorators/Action";
@@ -60,7 +60,7 @@ export default class ReviewController extends Controller {
         });
     }
 
-    @Action("POST", "/reviews", [(_: any, req: any, res: any, next: NextFunction) => ratelimiter(req, res, next)])
+    @Action("POST", "/reviews", [(_: unknown, req: Request, res: Response, next: NextFunction) => ratelimiter(req, res, next)])
     @Validate(
         z.object({
             rating: z.number().int().min(0).max(5),
@@ -83,7 +83,7 @@ export default class ReviewController extends Controller {
 
         await this.client.prisma.review.create({
             data: {
-                rating,
+                rating: rating as unknown as number,
                 content,
                 approved: false,
                 aboutReviewer,
@@ -113,7 +113,7 @@ export default class ReviewController extends Controller {
                     id: parseInt(request.params.id)
                 },
                 data: {
-                    approved
+                    approved: approved as unknown as boolean
                 }
             })
             .catch(logError);

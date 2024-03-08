@@ -29,6 +29,7 @@ export default class ReadyEvent extends EventListener<Events.Ready> {
         logInfo("The bot has logged in.");
 
         this.client.configManager.onReady();
+        this.client.startupManager.onReady();
         await this.client.server.onReady();
         this.client.server.start().catch(logError);
         this.client.queueManager.onReady().catch(logError);
@@ -55,7 +56,5 @@ export default class ReadyEvent extends EventListener<Events.Ready> {
         if (client.configManager.systemConfig.log_server?.auto_start) {
             this.client.logServer.listen();
         }
-
-        super.execute(client);
     }
 }

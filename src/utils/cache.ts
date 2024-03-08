@@ -25,7 +25,7 @@ export type CacheOptions<T extends boolean = true> = {
     onHit?: () => void;
 };
 
-type AnyFunction = (...args: any[]) => any;
+type AnyFunction = (...args: unknown[]) => unknown;
 type ReturnValue<I extends boolean, F extends AnyFunction> = I extends true ? ReturnType<F> : F;
 
 export const cache = <F extends AnyFunction, I extends boolean>(
@@ -33,7 +33,7 @@ export const cache = <F extends AnyFunction, I extends boolean>(
     fn: F,
     options?: CacheOptions<I>
 ): ReturnValue<I, F> => {
-    const callback = ((...args: any[]) => {
+    const callback = ((...args: unknown[]) => {
         const finalId = [...args, id];
 
         if (!data.has(finalId)) {

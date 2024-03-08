@@ -35,9 +35,9 @@ import {
 import jwt from "jsonwebtoken";
 import Service from "../core/Service";
 import { HasEventListeners } from "../types/HasEventListeners";
+import { logError } from "../utils/Logger";
 import { userInfo } from "../utils/embed";
 import { safeChannelFetch, safeMemberFetch } from "../utils/fetch";
-import { logError } from "../utils/Logger";
 
 export const name = "verification";
 
@@ -119,7 +119,11 @@ export default class VerificationService extends Service implements HasEventList
     }
 
     async onMemberVerificationFail(member: GuildMember, { attempts, guildId }: VerificationEntry, remainingTime: number) {
-        const config = this.client.configManager.config[guildId]?.verification!;
+        const config = this.client.configManager.config[guildId]?.verification;
+
+        if (!config) {
+            return;
+        }
 
         if ((config.max_attempts === 0 || attempts < config.max_attempts) && remainingTime > 0) {
             return;
@@ -200,7 +204,7 @@ export default class VerificationService extends Service implements HasEventList
             process.env.JWT_SECRET!,
             {
                 expiresIn: config?.max_time === 0 ? undefined : config?.max_time,
-                issuer: `SudoBot`,
+                issuer: "SudoBot",
                 subject: "Verification Token"
             }
         );
@@ -295,7 +299,7 @@ export default class VerificationService extends Service implements HasEventList
                         **The Staff of ${member.guild.name}**
                     `.replace(/(\r\n|\n)\t+/, "\n"),
                     footer: {
-                        text: `Completed`
+                        text: "Completed"
                     },
                     timestamp: new Date().toISOString()
                 }
@@ -382,7 +386,7 @@ export default class VerificationService extends Service implements HasEventList
                                 ? "Session expired"
                                 : Number.isFinite(remainingTime)
                                 ? `${formatDistanceToNowStrict(new Date(Date.now() - remainingTime))} remaining`
-                                : `Session never expires`
+                                : "Session never expires"
                         })`
                     },
                     {

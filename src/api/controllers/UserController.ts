@@ -37,7 +37,7 @@ export default class UserController extends Controller {
         })
     )
     async update(request: Request) {
-        if (Object.keys(request.parsedBody).length === 0) {
+        if (Object.keys(request.parsedBody!).length === 0) {
             return new Response({ status: 422, body: { error: "Nothing to update!" } });
         }
 

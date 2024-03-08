@@ -49,7 +49,7 @@ export default class WelcomerService extends Service {
     @GatewayEventListener("ready")
     async onReady() {
         log("Loading welcome messages...");
-        this.welcomeMessages = JSON5.parse(await readFile(sudoPrefix(`resources/welcome_messages.json`), { encoding: "utf-8" }));
+        this.welcomeMessages = JSON5.parse(await readFile(sudoPrefix("resources/welcome_messages.json"), { encoding: "utf-8" }));
     }
 
     @GatewayEventListener("guildMemberAdd")
@@ -132,7 +132,7 @@ export default class WelcomerService extends Service {
 
         if (!config) return;
 
-        if (!interaction.guild?.id || !config.welcomer?.say_hi_button || !interaction.customId.startsWith(`welcomer_say_hi__`))
+        if (!interaction.guild?.id || !config.welcomer?.say_hi_button || !interaction.customId.startsWith("welcomer_say_hi__"))
             return;
 
         this.mutexes[interaction.guildId!] ??= new Mutex();
@@ -143,7 +143,7 @@ export default class WelcomerService extends Service {
         }
 
         const release = await this.mutexes[interaction.guildId!]!.acquire();
-        const saysHiToYou = ` says hi to you!`;
+        const saysHiToYou = " says hi to you!";
 
         if (wasLocked) {
             try {
@@ -178,8 +178,8 @@ export default class WelcomerService extends Service {
                 const newCustomId = `welcomer_say_hi__${memberId}__${reply.id}`;
 
                 const actionRow = this.generateActionRow(memberId, {
-                    say_hi_emoji: config.welcomer?.say_hi_emoji!,
-                    say_hi_label: config.welcomer?.say_hi_label!
+                    say_hi_emoji: config.welcomer?.say_hi_emoji,
+                    say_hi_label: config.welcomer?.say_hi_label
                 });
 
                 actionRow.components[0].setCustomId(newCustomId);
@@ -306,7 +306,7 @@ export default class WelcomerService extends Service {
             .replace(/:guild:/gi, member.guild.name);
     }
 
-    generateContent(member: GuildMember, { custom_message, randomize, mention }: NotUndefined<GuildConfig["welcomer"]>) {
+    generateContent(member: GuildMember, { custom_message, randomize }: NotUndefined<GuildConfig["welcomer"]>) {
         const message = `${randomize ? `${this.pickRandomWelcomeMessage()}\n` : ""}${custom_message ? custom_message : ""}`;
         return this.replacePlaceholders(member, message);
     }

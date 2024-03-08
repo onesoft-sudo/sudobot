@@ -19,11 +19,10 @@
 
 import { Action } from "../../decorators/Action";
 import Controller from "../Controller";
-import Request from "../Request";
 
 export default class AnnouncementController extends Controller {
     @Action("GET", "/announcements")
-    public async index(request: Request) {
+    public async index() {
         return {
             announcements: [
                 {

@@ -22,8 +22,8 @@ import { Client, GuildMember, PermissionsString, Routes, Snowflake } from "disco
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { safeMemberFetch } from "../utils/fetch";
 import { log, logError } from "../utils/Logger";
+import { safeMemberFetch } from "../utils/fetch";
 
 export const name = "reactionRoleService";
 
@@ -31,6 +31,25 @@ interface UserRequestInfo {
     timestamps: number[];
     timeout?: Timer;
 }
+
+type RawMessageReactionData = {
+    t: "MESSAGE_REACTION_ADD" | "MESSAGE_REACTION_REMOVE";
+    d: {
+        user_id: string;
+        message_id: string;
+        channel_id: string;
+        guild_id: string;
+        emoji: {
+            name: string;
+            id?: string;
+        };
+        member?: {
+            user: {
+                bot: boolean;
+            };
+        };
+    };
+};
 
 export default class ReactionRoleService extends Service implements HasEventListeners {
     readonly reactionRoleEntries = new Map<string, ReactionRole | undefined>();
@@ -60,7 +79,7 @@ export default class ReactionRoleService extends Service implements HasEventList
     }
 
     @GatewayEventListener("raw")
-    async onRaw(data: any) {
+    async onRaw(data: RawMessageReactionData) {
         if (data.t !== "MESSAGE_REACTION_ADD" && data.t !== "MESSAGE_REACTION_REMOVE") {
             return;
         }
@@ -137,7 +156,7 @@ export default class ReactionRoleService extends Service implements HasEventList
     }
 
     async processRequest(
-        data: any,
+        data: RawMessageReactionData,
         permissionChecks = true
     ): Promise<{
         aborted: boolean;
@@ -258,12 +277,12 @@ export default class ReactionRoleService extends Service implements HasEventList
                     ...data,
                     d: {
                         ...data.d,
-                        emoji: isBuiltIn
+                        emoji: (isBuiltIn
                             ? reaction
                             : {
                                   id: emoji!.id,
                                   name: emoji!.name
-                              }
+                              }) as RawMessageReactionData["d"]["emoji"]
                     }
                 }).catch(logError);
             }
@@ -272,7 +291,7 @@ export default class ReactionRoleService extends Service implements HasEventList
         return { aborted: false, member, reactionRole: entry, removedPreviousRoles };
     }
 
-    async removeReactionAndAbort(data: any) {
+    async removeReactionAndAbort(data: RawMessageReactionData) {
         await this.client.rest
             .delete(
                 Routes.channelMessageUserReaction(

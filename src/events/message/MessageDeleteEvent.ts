@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { AuditLogEvent, ChannelType, Message, User } from "discord.js";
+import { AuditLogEvent, Message, User } from "discord.js";
 import EventListener from "../../core/EventListener";
 import { Events } from "../../types/ClientEvents";
 
@@ -26,8 +26,6 @@ export default class MessageDeleteEvent extends EventListener<Events.MessageDele
 
     async execute(message: Message) {
         const deletedTimestamp = Date.now();
-
-        super.execute(message);
 
         if (message.author.bot || !message.guild || !message.inGuild()) return;
 

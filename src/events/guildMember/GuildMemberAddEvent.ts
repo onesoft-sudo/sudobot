@@ -26,7 +26,6 @@ export default class GuildMemberAddEvent extends EventListener<Events.GuildMembe
     public readonly name = Events.GuildMemberAdd;
 
     async execute(member: GuildMember) {
-        super.execute(member);
         await this.client.loggerService.logGuildMemberAdd(member);
 
         if (this.client.antijoin.map.get(member.guild.id)) {

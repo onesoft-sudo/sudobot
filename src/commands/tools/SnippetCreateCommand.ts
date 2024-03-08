@@ -95,7 +95,7 @@ export default class SnippetCreateCommand extends Command {
                 !this.client.configManager.systemConfig.snippets?.save_attachments &&
                 message instanceof Message &&
                 message.attachments.size > 0
-                    ? `\nYour message attachments were not saved. Please use links instead.`
+                    ? "\nYour message attachments were not saved. Please use links instead."
                     : ""
             }`
         );

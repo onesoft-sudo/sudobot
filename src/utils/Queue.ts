@@ -85,5 +85,5 @@ export default abstract class Queue {
         }
     }
 
-    abstract run(...args: string[]): Promise<any> | any;
+    abstract run(...args: string[]): Promise<unknown> | unknown;
 }

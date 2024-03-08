@@ -175,7 +175,7 @@ export default class ClearCommand extends Command {
 
         if (message instanceof ChatInputCommandInteraction) {
             if (message.options.getString("filter_pattern_flags") && !message.options.getString("filter_pattern")) {
-                await this.error(message, `Option \`filter_pattern\` must be present when \`filter_pattern_flags\` is set.`);
+                await this.error(message, "Option `filter_pattern` must be present when `filter_pattern_flags` is set.");
                 return;
             }
         }

@@ -17,16 +17,24 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { NextFunction, Request, Response } from "express";
+import Client from "../core/Client";
 import { RouteMetadata } from "../types/RouteMetadata";
+import { AnyFunction } from "../types/Utils";
 
-export function Action(method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE", uri: string, middleware: Function[] = []) {
+export type Middleware = (client: Client, request: Request, response: Response, next: NextFunction) => unknown;
+
+export function Action(method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE", uri: string, middleware: Middleware[] = []) {
     return (
-        originalMethodOrTarget: any,
+        originalMethodOrTarget: unknown,
         contextOrMethodName: string | ClassMethodDecoratorContext,
         descriptor?: PropertyDescriptor
     ) => {
         if (typeof contextOrMethodName === "string") {
-            const metadata: Record<string, RouteMetadata> = Reflect.getMetadata("action_methods", originalMethodOrTarget) ?? {
+            const metadata: Record<string, RouteMetadata> = Reflect.getMetadata(
+                "action_methods",
+                originalMethodOrTarget as object
+            ) ?? {
                 [contextOrMethodName]: {
                     GET: null,
                     DELETE: null,
@@ -44,7 +52,7 @@ export function Action(method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE", uri:
                 PUT: null
             } as RouteMetadata;
 
-            const data = { handler: descriptor!.value, method, path: uri, middleware };
+            const data = { handler: descriptor!.value, method, path: uri, middleware: middleware as AnyFunction[] };
 
             metadata[contextOrMethodName]![method] ??= data;
             metadata[contextOrMethodName]![method]!.handler ??= data.handler;
@@ -56,7 +64,7 @@ export function Action(method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE", uri:
                 metadata[contextOrMethodName]![method]!.middleware = data.middleware;
             }
 
-            Reflect.defineMetadata("action_methods", metadata, originalMethodOrTarget);
+            Reflect.defineMetadata("action_methods", metadata, originalMethodOrTarget as object);
         } else {
             const metadata = (contextOrMethodName.metadata?.actionMethods ?? {
                 [contextOrMethodName.name]: {
@@ -78,7 +86,12 @@ export function Action(method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE", uri:
                 PUT: null
             } as RouteMetadata;
 
-            const data = { handler: originalMethodOrTarget, method, path: uri, middleware };
+            const data = {
+                handler: originalMethodOrTarget as AnyFunction,
+                method,
+                path: uri,
+                middleware: middleware as AnyFunction[]
+            };
 
             metadata[key]![method] ??= data;
             metadata[key]![method]!.handler ??= data.handler;
@@ -92,7 +105,7 @@ export function Action(method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE", uri:
 
             (contextOrMethodName.metadata as unknown) ??= {};
             contextOrMethodName.metadata.actionMethods = metadata;
-            return originalMethodOrTarget;
+            return originalMethodOrTarget as void;
         }
     };
 }

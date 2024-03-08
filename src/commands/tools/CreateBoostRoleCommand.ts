@@ -20,8 +20,8 @@
 import { ChatInputCommandInteraction, ColorResolvable, GuildMember, SlashCommandBuilder, resolveColor } from "discord.js";
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 import { ChatInputCommandContext } from "../../services/CommandManager";
-import { safeRoleFetch } from "../../utils/fetch";
 import { logError } from "../../utils/Logger";
+import { safeRoleFetch } from "../../utils/fetch";
 
 export default class CreateBoostRoleCommand extends Command {
     public readonly name = "createboostrole";
@@ -52,7 +52,8 @@ export default class CreateBoostRoleCommand extends Command {
             return;
         }
 
-        let colorCode: any = context.options.getString("color");
+        let colorCode = context.options.getString("color");
+        let colorCodeHex: number | null = null;
         const name: string = context.options.getString("name") ?? member!.displayName ?? message.user.username;
 
         if (colorCode && colorCode.startsWith("0x")) {
@@ -63,7 +64,7 @@ export default class CreateBoostRoleCommand extends Command {
 
         if (typeof colorCode === "string") {
             try {
-                colorCode = resolveColor(colorCode as ColorResolvable);
+                colorCodeHex = resolveColor(colorCode as ColorResolvable);
             } catch (e) {
                 logError(e);
                 await this.error(message, "Invalid color code specified");
@@ -93,7 +94,7 @@ export default class CreateBoostRoleCommand extends Command {
 
         try {
             const role = await message.guild!.roles.create({
-                color: colorCode ?? undefined,
+                color: colorCodeHex ?? undefined,
                 hoist: false,
                 mentionable: false,
                 permissions: [],

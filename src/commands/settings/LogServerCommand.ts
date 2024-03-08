@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class LogServerCommand extends Command {
     public readonly name = "logserver";
@@ -27,7 +27,7 @@ export default class LogServerCommand extends Command {
     public readonly supportsInteractions = false;
     public readonly description = "Start/stop the real-time log streaming server.";
 
-    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage): Promise<CommandReturn> {
         if (!this.client.configManager.systemConfig.log_server?.enabled) {
             await this.error(message, "Log server is disabled in the system configuration.");
             return;

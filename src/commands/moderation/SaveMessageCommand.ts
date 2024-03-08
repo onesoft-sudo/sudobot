@@ -19,10 +19,9 @@
 
 import { ApplicationCommandType, EmbedBuilder, MessageContextMenuCommandInteraction, PermissionsBitField } from "discord.js";
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
-import { ContextMenuCommandContext } from "../../services/CommandManager";
+import { logError } from "../../utils/Logger";
 import { channelInfo, messageInfo, userInfo } from "../../utils/embed";
 import { safeChannelFetch } from "../../utils/fetch";
-import { logError } from "../../utils/Logger";
 
 export default class SaveMessageCommand extends Command {
     public readonly name = "Save Message";
@@ -33,7 +32,7 @@ export default class SaveMessageCommand extends Command {
     public readonly supportsLegacy = false;
     public readonly description = "Saves the target message to the message log channel";
 
-    async execute(interaction: MessageContextMenuCommandInteraction, context: ContextMenuCommandContext): Promise<CommandReturn> {
+    async execute(interaction: MessageContextMenuCommandInteraction): Promise<CommandReturn> {
         const { targetMessage } = interaction;
 
         await interaction.deferReply({ ephemeral: true });

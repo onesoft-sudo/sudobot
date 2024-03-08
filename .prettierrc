@@ -3,5 +3,7 @@
     "printWidth": 130,
     "trailingComma": "none",
     "jsxBracketSameLine": false,
-    "arrowParens": "avoid"
+    "arrowParens": "avoid",
+    "singleQuote": false,
+    "jsxSingleQuote": false
 }

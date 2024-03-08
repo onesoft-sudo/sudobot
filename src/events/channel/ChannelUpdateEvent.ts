@@ -25,8 +25,6 @@ export default class ChannelUpdateEvent extends EventListener<Events.ChannelUpda
     public readonly name = Events.ChannelUpdate;
 
     async execute(oldChannel: NonThreadGuildBasedChannel, newChannel: NonThreadGuildBasedChannel) {
-        super.execute(oldChannel, newChannel);
-
         if (oldChannel.name === newChannel.name) return;
 
         await this.client.loggerService.logChannelUpdate(oldChannel, newChannel);

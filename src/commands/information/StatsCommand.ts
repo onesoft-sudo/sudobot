@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class StatsCommand extends Command {
     public readonly name = "statistics";
@@ -26,7 +26,7 @@ export default class StatsCommand extends Command {
 
     public readonly description = "Show server statistics.";
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage): Promise<CommandReturn> {
         const memberCount =
             message.guild!.members.cache.size > message.guild!.memberCount
                 ? message.guild!.members.cache.size

@@ -104,7 +104,7 @@ export default class EmbedCommand extends Command {
 
         if (command) {
             if (!command.supportsLegacy && context.isLegacy) {
-                await this.error(message, `This command doesn't support legacy commands, please try the slash command.`);
+                await this.error(message, "This command doesn't support legacy commands, please try the slash command.");
                 return;
             }
 

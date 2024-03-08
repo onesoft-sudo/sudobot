@@ -69,7 +69,7 @@ export default class BallotCreateCommand extends Command {
                         color: 0x007bff,
                         description: content,
                         footer: {
-                            text: `0 Votes • React to vote!`
+                            text: "0 Votes • React to vote!"
                         }
                     }
                 ],

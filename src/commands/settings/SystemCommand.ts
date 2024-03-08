@@ -19,7 +19,7 @@
 
 import { formatDistanceToNow } from "date-fns";
 import { ChatInputCommandInteraction, Colors, EmbedBuilder, Message } from "discord.js";
-import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 const emoji = (ms: number) => {
     let emoji = "🟢";
@@ -41,7 +41,7 @@ export default class SystemCommand extends Command {
     public readonly permissions = [];
     public readonly description = "Shows the bot system status.";
 
-    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage): Promise<CommandReturn> {
         let reply = <Message>await message
             .reply({
                 embeds: [

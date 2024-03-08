@@ -47,9 +47,9 @@ import {
 } from "discord.js";
 import path from "path";
 import Service from "../core/Service";
+import { log, logError } from "../utils/Logger";
 import QueueEntry from "../utils/QueueEntry";
 import { safeChannelFetch } from "../utils/fetch";
-import { log, logError } from "../utils/Logger";
 import { getEmoji, wait } from "../utils/utils";
 
 export const name = "infractionManager";
@@ -115,9 +115,9 @@ export default class InfractionManager extends Service {
         } else if (points >= 50 && points < 60) {
             return { action: `Temporary Ban for **${points - 50 + 1}** days`, points };
         } else if (points >= 45 && points < 50) {
-            return { action: `Softban`, points };
+            return { action: "Softban", points };
         } else if (points >= 40 && points < 45) {
-            return { action: `Kick`, points };
+            return { action: "Kick", points };
         } else if (points >= 20 && points < 40) {
             return {
                 action: `Mute for ${
@@ -520,7 +520,7 @@ export default class InfractionManager extends Service {
             reason,
             fields: [
                 {
-                    name: `💉 Doctor`,
+                    name: "💉 Doctor",
                     value: `${moderator.username}`
                 }
             ],
@@ -677,7 +677,7 @@ export default class InfractionManager extends Service {
         return { id: infraction.id, result, reason, infraction };
     }
 
-    bulkDeleteMessagesApplyFilters(message: Message, filters: Function[]) {
+    bulkDeleteMessagesApplyFilters(message: Message, filters: BulkDeleteFilter[]) {
         for (const filter of filters) {
             if (!filter(message)) {
                 return false;
@@ -1045,7 +1045,7 @@ export default class InfractionManager extends Service {
                 completedUsers,
                 skippedUsers,
                 reason
-            }).catch(logError);
+            })?.catch(logError);
         }
 
         for (const user of users) {
@@ -1056,7 +1056,7 @@ export default class InfractionManager extends Service {
                     completedUsers,
                     skippedUsers,
                     reason
-                }).catch(logError);
+                })?.catch(logError);
 
                 calledJustNow = true;
             } else calledJustNow = false;
@@ -1095,7 +1095,7 @@ export default class InfractionManager extends Service {
                 skippedUsers,
                 completedIn: Math.round((Date.now() - startTime) / 1000),
                 reason
-            }).catch(logError);
+            })?.catch(logError);
         }
 
         await this.client.prisma.infraction.createMany({
@@ -1143,7 +1143,7 @@ export default class InfractionManager extends Service {
                 completedUsers,
                 skippedUsers,
                 reason
-            }).catch(logError);
+            })?.catch(logError);
         }
 
         for (const user of users) {
@@ -1154,7 +1154,7 @@ export default class InfractionManager extends Service {
                     completedUsers,
                     skippedUsers,
                     reason
-                }).catch(logError);
+                })?.catch(logError);
 
                 calledJustNow = true;
             } else calledJustNow = false;
@@ -1188,7 +1188,7 @@ export default class InfractionManager extends Service {
                 skippedUsers,
                 completedIn: Math.round((Date.now() - startTime) / 1000),
                 reason
-            }).catch(logError);
+            })?.catch(logError);
         }
 
         await this.client.prisma.infraction.createMany({
@@ -1234,14 +1234,16 @@ export default class InfractionManager extends Service {
         table.setAlign(3, AlignmentEnum.CENTER);
         table.addRowMatrix(
             infractions.map(infraction => {
-                const row: any[] = [
+                const row: unknown[] = [
                     infraction.type,
                     infraction.reason ?? "*No reason provided*",
                     `${infraction.createdAt.toUTCString()} (${formatDistanceToNowStrict(infraction.createdAt, {
                         addSuffix: true
                     })})    `,
-                    (infraction.metadata as any)?.duration
-                        ? formatDistanceToNowStrict(new Date(Date.now() - (infraction.metadata as any)?.duration))
+                    (infraction.metadata as Record<string, number>)?.duration
+                        ? formatDistanceToNowStrict(
+                              new Date(Date.now() - (infraction.metadata as Record<string, number>)?.duration)
+                          )
                         : "*None*"
                 ];
 
@@ -1415,7 +1417,7 @@ export type CreateUserMassBanOptions = Omit<
             skippedUsers: readonly string[];
             completedIn?: number;
             reason?: string;
-        }) => Promise<any> | any;
+        }) => Promise<unknown> | undefined | void | null;
         callAfterEach?: number;
     },
     "duration" | "autoRemoveQueue" | "notifyUser"
@@ -1450,7 +1452,7 @@ export type BulkDeleteMessagesOptions = CommonOptions & {
     count?: number;
     offset?: number;
     logOnly?: boolean;
-    filters?: Function[];
+    filters?: BulkDeleteFilter[];
 };
 
 export type ActionDoneName =
@@ -1475,3 +1477,5 @@ export type SendDMOptions = {
     fallback?: boolean;
     infraction?: Infraction;
 };
+
+type BulkDeleteFilter = (message: Message) => boolean;

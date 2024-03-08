@@ -161,7 +161,7 @@ export default class MuteCommand extends Command {
 
         if (error || !id) {
             await this.deferredReply(message, {
-                content: error ?? `An error has occurred during role assignment. Please double check the bot permissions.`
+                content: error ?? "An error has occurred during role assignment. Please double check the bot permissions."
             });
 
             return;

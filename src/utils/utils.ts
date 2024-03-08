@@ -195,8 +195,8 @@ export function isTextableChannel(
 
 export function developmentMode() {
     return (
-        ["dev", "development"].includes(process.env.NODE_ENV?.toLowerCase()!) ||
-        ["dev", "development"].includes(process.env.SUDO_ENV?.toLowerCase()!)
+        ["dev", "development"].includes(process.env.NODE_ENV?.toLowerCase() ?? "production") ||
+        ["dev", "development"].includes(process.env.SUDO_ENV?.toLowerCase() ?? "production")
     );
 }
 
@@ -256,7 +256,7 @@ export function getChannelPermissionOverride(permission: PermissionResolvable, p
 }
 
 export function chunkedString(str: string, chunkSize = 4000) {
-    let output = [];
+    const output = [];
     let chunk = "";
 
     for (let i = 0; i < str.length; i++) {
@@ -295,6 +295,7 @@ export function isSystemAdmin(client: Client, userId: string) {
     return client.configManager.systemConfig.system_admins.includes(userId);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function assertUnreachable(_value: never): never {
     throw new Error("This statement should be unreachable");
 }
@@ -303,7 +304,7 @@ export function TODO(message?: string): never {
     throw new Error(message ?? "Not implemented");
 }
 
-export async function request<D = any>(options: AxiosRequestConfig<D>) {
+export async function request<D = unknown>(options: AxiosRequestConfig<D>) {
     try {
         return [await axios(options), null] as const;
     } catch (error) {

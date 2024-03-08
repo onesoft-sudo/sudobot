@@ -18,29 +18,26 @@
  */
 
 import { Snowflake } from "discord.js";
-import { WriteStream, createWriteStream, existsSync } from "fs";
+import { Response } from "express";
+import { existsSync } from "fs";
 import fs, { rm } from "fs/promises";
 import path from "path";
+import tar from "tar";
 import { z } from "zod";
 import Client from "../core/Client";
 import EventListener from "../core/EventListener";
 import { Extension } from "../core/Extension";
 import Service from "../core/Service";
 import type { ClientEvents } from "../types/ClientEvents";
-import { log, logDebug, logError, logInfo, logWarn } from "../utils/Logger";
-import { request, sudoPrefix, wait } from "../utils/utils";
 import { ExtensionInfo } from "../types/ExtensionInfo";
+import { log, logDebug, logError, logInfo, logWarn } from "../utils/Logger";
 import { cache } from "../utils/cache";
-import { downloadFile, finished } from "../utils/download";
-import tar from "tar";
-import { Response } from "express";
+import { downloadFile } from "../utils/download";
+import { request, sudoPrefix, wait } from "../utils/utils";
 
 export const name = "extensionService";
 
-const guildIdResolvers: Array<{
-    events: ReadonlyArray<keyof ClientEvents>;
-    resolver: (args: any) => Snowflake | null | undefined;
-}> = [
+const guildIdResolvers = [
     {
         events: ["applicationCommandPermissionsUpdate"],
         resolver: ([data]: ClientEvents["applicationCommandPermissionsUpdate"]) => data.guildId
@@ -203,15 +200,20 @@ const guildIdResolvers: Array<{
         ],
         resolver: () => null
     }
-];
+] as Array<{
+    events: ReadonlyArray<keyof ClientEvents>;
+    resolver: Resolver;
+}>;
+
+type Resolver = (args: ClientEvents[keyof ClientEvents]) => Snowflake | null | undefined;
 
 function getGuildIdResolversMap() {
-    const map = new Map<keyof ClientEvents, Function>();
+    const map = new Map<keyof ClientEvents, Resolver>();
 
     for (const guildIdResolver of guildIdResolvers) {
         for (const event of guildIdResolver.events) {
             if (map.has(event)) {
-                logWarn(`Overlapping Guild ID Resolvers detected: `, event);
+                logWarn("Overlapping Guild ID Resolvers detected: ", event);
                 logWarn("This seems to be an internal bug. Please report this issue to the developers.");
             }
 
@@ -244,7 +246,7 @@ export default class ExtensionService extends Service {
     protected readonly extensionsPath = process.env.EXTENSIONS_DIRECTORY;
     protected readonly guildIdResolvers = getGuildIdResolversMap();
 
-    private readonly downloadProgressStreamEOF = `%`;
+    private readonly downloadProgressStreamEOF = "%";
 
     async boot() {
         if (!this.extensionsPath || !existsSync(this.extensionsPath)) {
@@ -473,7 +475,12 @@ export default class ExtensionService extends Service {
         this.client.addEventListener(event.name, this.wrapHandler(extensionName, event.name, event.execute.bind(event)));
     }
 
-    wrapHandler<K extends keyof ClientEvents>(extensionName: string, eventName: K, handler: Function, bail?: boolean) {
+    wrapHandler<K extends keyof ClientEvents>(
+        extensionName: string,
+        eventName: K,
+        handler: (...args: ClientEvents[K]) => unknown,
+        bail?: boolean
+    ) {
         return async (...args: ClientEvents[K]) => {
             const guildId: Snowflake | null | undefined = this.guildIdResolvers.get(eventName)?.(args);
 
@@ -525,7 +532,7 @@ export default class ExtensionService extends Service {
     }
 
     public async getExtensionMetadata(id: string) {
-        const [data, error] = await cache(`extension-index`, () => this.fetchExtensionMetadata(), {
+        const [data, error] = await cache("extension-index", () => this.fetchExtensionMetadata(), {
             ttl: 120_000,
             invoke: true
         });
@@ -538,7 +545,7 @@ export default class ExtensionService extends Service {
             return;
         }
 
-        return new Promise<void>((resolve, reject) => {
+        return new Promise<void>(resolve => {
             if (!stream.write(data)) {
                 stream.once("drain", resolve);
             } else {
@@ -549,7 +556,8 @@ export default class ExtensionService extends Service {
 
     async fetchAndInstallExtension(id: string, stream?: Response) {
         if (!this.extensionsPath) {
-            const errorMessage = `E: Extensions directory is not set. Please set the EXTENSIONS_DIRECTORY environment variable.\n`;
+            const errorMessage =
+                "E: Extensions directory is not set. Please set the EXTENSIONS_DIRECTORY environment variable.\n";
             await this.writeStream(stream, errorMessage);
             return [null, errorMessage];
         }
@@ -569,7 +577,7 @@ export default class ExtensionService extends Service {
         await wait(100);
         await this.writeStream(stream, this.downloadProgressStreamEOF);
         await wait(100);
-        await this.writeStream(stream, `\n`);
+        await this.writeStream(stream, "\n");
 
         try {
             const { filePath } = await downloadFile({
@@ -593,7 +601,7 @@ export default class ExtensionService extends Service {
             await wait(100);
             await this.writeStream(stream, this.downloadProgressStreamEOF);
             await wait(100);
-            await this.writeStream(stream, `\n`);
+            await this.writeStream(stream, "\n");
 
             await this.installExtension(filePath, extension, stream);
 
@@ -607,7 +615,7 @@ export default class ExtensionService extends Service {
             this.client.logger.error(error);
 
             await this.writeStream(stream, this.downloadProgressStreamEOF);
-            await this.writeStream(stream, `\n`);
+            await this.writeStream(stream, "\n");
             await this.writeStream(stream, `E: Failed to retrieve extension: ${id}\n`);
         }
     }
@@ -643,7 +651,7 @@ export default class ExtensionService extends Service {
             return;
         }
 
-        await this.writeStream(stream, `Cleaning up caches and temporary files...\n`);
+        await this.writeStream(stream, "Cleaning up caches and temporary files...\n");
 
         try {
             await rm(extensionTmpDirectory, { force: true, recursive: true });
@@ -681,8 +689,4 @@ type LoadInfo = (
       }
 ) & {
     extension: Extension;
-};
-
-type Writable = {
-    write(data: string): void;
 };

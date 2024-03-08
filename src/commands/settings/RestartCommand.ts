@@ -29,7 +29,7 @@ import {
 } from "discord.js";
 import { writeFile } from "fs/promises";
 import path from "path";
-import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import { HasEventListeners } from "../../types/HasEventListeners";
 import { logError } from "../../utils/Logger";
@@ -124,7 +124,7 @@ export default class RestartCommand extends Command implements HasEventListeners
                     {
                         color: 0xf14a60,
                         title: "System Restart",
-                        description: `Operation cancelled.`
+                        description: "Operation cancelled."
                     }
                 ],
                 components: [new ActionRowBuilder<ButtonBuilder>().addComponents(...buttons)]
@@ -132,7 +132,7 @@ export default class RestartCommand extends Command implements HasEventListeners
         }
     }
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage): Promise<CommandReturn> {
         if (
             process.env.CREDENTIAL_SERVER &&
             (!(message instanceof ChatInputCommandInteraction) || !message.options.getString("credential_key"))

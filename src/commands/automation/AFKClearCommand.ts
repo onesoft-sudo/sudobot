@@ -18,14 +18,14 @@
  */
 
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Colors, ComponentType, PermissionsBitField } from "discord.js";
-import Command, { BasicCommandContext, CommandMessage, CommandReturn } from "../../core/Command";
+import Command, { CommandMessage, CommandReturn } from "../../core/Command";
 
 export default class AFKClearCommand extends Command {
     public readonly name = "afks__clear";
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers];
     public readonly description = "Removes AFK status for everyone in this server.";
 
-    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage): Promise<CommandReturn> {
         const entryCount = this.client.afkService.getGuildAFKs(message.guildId!).size;
 
         if (entryCount === 0) {
@@ -37,7 +37,7 @@ export default class AFKClearCommand extends Command {
             embeds: [
                 {
                     author: {
-                        name: `Clear AFK statuses`,
+                        name: "Clear AFK statuses",
                         icon_url: message.guild?.iconURL() ?? undefined
                     },
                     description: `Are you sure you want to perform this action? This will affect **${entryCount}** user(s).`,
@@ -68,7 +68,7 @@ export default class AFKClearCommand extends Command {
                 embeds: [
                     {
                         author: {
-                            name: `Clear AFK statuses`,
+                            name: "Clear AFK statuses",
                             icon_url: message.guild?.iconURL() ?? undefined
                         },
                         description: `${this.emoji(
@@ -92,7 +92,7 @@ export default class AFKClearCommand extends Command {
                 embeds: [
                     {
                         author: {
-                            name: `Clear AFK statuses`,
+                            name: "Clear AFK statuses",
                             icon_url: message.guild?.iconURL() ?? undefined
                         },
                         description: `Operation Cancelled${collector.endReason === "cancelled" ? "" : " due to inactivity"}.`,

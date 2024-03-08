@@ -17,26 +17,20 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Awaitable, GuildMember, PermissionResolvable } from "discord.js";
+import { Awaitable, GuildMember } from "discord.js";
 import { GetMemberPermissionInGuildResult } from "../services/PermissionManager";
 import AbstractPermissionManager from "./AbstractPermissionManager";
 
 export default class DiscordBasedPermissionManager extends AbstractPermissionManager {
-    shouldModerate(member: GuildMember, moderator: GuildMember) {
+    public override shouldModerate() {
         return true;
     }
 
-    isImmuneToAutoMod(
-        member: GuildMember,
-        permission?: PermissionResolvable | PermissionResolvable[] | undefined
-    ): Awaitable<boolean> {
+    public override isImmuneToAutoMod(): Awaitable<boolean> {
         return false;
     }
 
-    getMemberPermissions(
-        member: GuildMember,
-        mergeWithDiscordPermissions?: boolean | undefined
-    ): GetMemberPermissionInGuildResult {
+    public override getMemberPermissions(member: GuildMember): GetMemberPermissionInGuildResult {
         return {
             type: "discord",
             permissions: member.permissions

@@ -18,7 +18,15 @@
  */
 
 import { GlobalUserBan } from "@prisma/client";
-import { ChatInputCommandInteraction, Collection, ContextMenuCommandInteraction, Message, Snowflake, User } from "discord.js";
+import {
+    ChatInputCommandInteraction,
+    Collection,
+    ContextMenuCommandInteraction,
+    InteractionReplyOptions,
+    Message,
+    Snowflake,
+    User
+} from "discord.js";
 import { CommandMessage } from "../core/Command";
 import Service from "../core/Service";
 import { log, logError, logWarn } from "../utils/Logger";
@@ -36,7 +44,9 @@ export interface LegacyCommandContext extends CommandContext {
     isContextMenu: false;
     argv: string[];
     args: string[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parsedArgs: any[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parsedNamedArgs: Record<string, any>;
     prefix: string;
     has(arg: string): boolean;
@@ -132,7 +142,8 @@ export default class CommandManager extends Service {
                                 icon_url: this.client.user?.displayAvatarURL(),
                                 name: "You have been banned from using SudoBot"
                             },
-                            description: `You won't be able to use SudoBot anymore, and your SudoBot account will be terminated. Please try not to violate the SudoBot [Terms of Service](https://docs.sudobot.org/legal/terms) before we take action on your account.`,
+                            description:
+                                "You won't be able to use SudoBot anymore, and your SudoBot account will be terminated. Please try not to violate the SudoBot [Terms of Service](https://docs.sudobot.org/legal/terms) before we take action on your account.",
                             fields: [
                                 {
                                     name: "Reason",
@@ -235,7 +246,7 @@ export default class CommandManager extends Service {
                 })
                 .then(result => {
                     if (result && typeof result === "object" && "__reply" in result && result.__reply === true) {
-                        message.reply(result as any).catch(console.error);
+                        message.reply(result as Parameters<typeof message.reply>[0]).catch(console.error);
                     }
                     if (wait) {
                         resolve(true);
@@ -302,7 +313,7 @@ export default class CommandManager extends Service {
             })
             .then(result => {
                 if (result && typeof result === "object" && "__reply" in result && result.__reply === true) {
-                    interaction.reply(result as any).catch(console.error);
+                    interaction.reply(result as InteractionReplyOptions).catch(console.error);
                 }
             })
             .catch(logError);

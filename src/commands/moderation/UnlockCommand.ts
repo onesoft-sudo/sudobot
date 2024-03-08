@@ -80,7 +80,7 @@ export default class UnlockCommand extends Command {
 
         const result = await this.client.channelLockManager.unlock(channel, message.member!.user as User);
 
-        if (result === false) await this.error(message, `Failed to unlock this channel.`);
+        if (result === false) await this.error(message, "Failed to unlock this channel.");
         else await this.deferredReply(message, `${this.emoji("check")} This channel has been unlocked.`).catch(logError);
     }
 }

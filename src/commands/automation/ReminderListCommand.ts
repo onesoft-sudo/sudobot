@@ -18,7 +18,7 @@
  */
 
 import { EmbedBuilder, User, time } from "discord.js";
-import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import Pagination from "../../utils/Pagination";
 
 export default class ReminderListCommand extends Command {
@@ -28,7 +28,7 @@ export default class ReminderListCommand extends Command {
 
     public readonly description = "Lists the queued reminders for the user who runs this command.";
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
         const queues = this.client.queueManager.queues

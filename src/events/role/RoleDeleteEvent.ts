@@ -25,7 +25,6 @@ export default class RoleDeleteEvent extends EventListener<Events.RoleDelete> {
     public readonly name = Events.RoleDelete;
 
     async execute(role: Role) {
-        super.execute(role);
         await this.client.loggerService.logRoleDelete(role);
     }
 }

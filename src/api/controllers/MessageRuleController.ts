@@ -24,7 +24,7 @@ import { Action } from "../../decorators/Action";
 import { EnableGuildAccessControl } from "../../decorators/EnableGuildAccessControl";
 import { RequireAuth } from "../../decorators/RequireAuth";
 import { Validate } from "../../decorators/Validate";
-import { MessageRuleSchema } from "../../types/MessageRuleSchema";
+import { MessageRuleSchema, MessageRuleType } from "../../types/MessageRuleSchema";
 import Controller from "../Controller";
 import Request from "../Request";
 import Response from "../Response";
@@ -51,18 +51,20 @@ export default class MessageRuleController extends Controller {
         })
     )
     public async update(request: Request) {
-        if (Object.keys(request.parsedBody).length === 0) {
+        if (Object.keys(request.parsedBody!).length === 0) {
             return new Response({ status: 422, body: { error: "Nothing to update!" } });
         }
 
-        this.client.configManager.config[request.params.guild]?.message_rules?.rules.push(request.parsedBody.rule);
+        this.client.configManager.config[request.params.guild]?.message_rules?.rules.push(
+            request.parsedBody!.rule as unknown as MessageRuleType
+        );
 
         await this.client.configManager.write();
         await this.client.configManager.load();
 
         return {
             success: true,
-            rule: request.parsedBody.rule
+            rule: request.parsedBody!.rule
         };
     }
 }

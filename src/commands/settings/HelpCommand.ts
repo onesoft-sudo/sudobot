@@ -180,7 +180,7 @@ export default class HelpCommand extends Command {
             await this.deferredReply(message, {
                 embeds: [
                     new EmbedBuilder({
-                        title: `${config.prefix}${name}${command.beta ? ` [BETA]` : ""}`,
+                        title: `${config.prefix}${name}${command.beta ? " [BETA]" : ""}`,
                         color: 0x007bff,
                         fields: [
                             {

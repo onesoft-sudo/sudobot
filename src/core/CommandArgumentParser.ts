@@ -18,8 +18,9 @@
  */
 
 import { Awaitable, Client, GuildBasedChannel, GuildMember, Role, SnowflakeUtil, User } from "discord.js";
-import { stringToTimeInterval } from "../utils/datetime";
+import { AnyFunction } from "../types/Utils";
 import { logWarn } from "../utils/Logger";
+import { stringToTimeInterval } from "../utils/datetime";
 import CommandArgumentParserInterface, {
     ArgumentType,
     ParseOptions,
@@ -212,7 +213,7 @@ export default class CommandArgumentParser implements CommandArgumentParserInter
         )
             throw new ArgumentParseError(
                 "The string must not be empty",
-                !state.rule.optional ? `required` : `${prefixes[0] as "string"}:empty`
+                !state.rule.optional ? "required" : `${prefixes[0] as "string"}:empty`
             );
         else if (state.rule.string?.minLength !== undefined && (state.currentArg?.length ?? 0) < state.rule.string.minLength)
             throw new ArgumentParseError(
@@ -228,7 +229,7 @@ export default class CommandArgumentParser implements CommandArgumentParserInter
 
     async parse(parseOptions: ParseOptions) {
         const { input, rules, prefix } = parseOptions;
-        const parsedArgs: Record<string | number, any> = {};
+        const parsedArgs: Record<string | number, unknown> = {};
         const argv = input.trim().substring(prefix.length).trim().split(/\s+/);
         const args = [...argv];
 
@@ -269,7 +270,7 @@ export default class CommandArgumentParser implements CommandArgumentParserInter
 
             for (const type of rule.types) {
                 const parser = this.parsers[type];
-                const handler = this[parser] as Function;
+                const handler = this[parser] as AnyFunction;
 
                 if (!parser || !handler) {
                     throw new Error(`Parser for type "${ArgumentType[type]}" is not implemented.`);
@@ -278,7 +279,7 @@ export default class CommandArgumentParser implements CommandArgumentParserInter
                 state.type = type;
 
                 try {
-                    result = await handler.call(this, state);
+                    result = <ParseResult>await handler.call(this, state);
                     lastError = null;
                 } catch (error) {
                     if (error instanceof ArgumentParseError) {
@@ -320,7 +321,7 @@ export default class CommandArgumentParser implements CommandArgumentParserInter
                 return { error: `Failed to parse argument #${state.index}` };
             }
 
-            state.parsedArgs[rule.name ?? counter++] = result.result;
+            state.parsedArgs[rule.name ?? counter++] = (result as { result: unknown }).result;
         }
 
         return {

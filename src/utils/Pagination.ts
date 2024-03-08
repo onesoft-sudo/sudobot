@@ -182,7 +182,7 @@ export default class Pagination<T> {
             filter: interaction => {
                 if (interaction.inGuild() && (!this.options.userId || interaction.user.id === this.options.userId)) {
                     this.options.onInteraction?.(interaction);
-                    return interaction.isButton() && interaction.customId.startsWith(`pagination_`);
+                    return interaction.isButton() && interaction.customId.startsWith("pagination_");
                 }
 
                 if (interaction.isRepliable()) {

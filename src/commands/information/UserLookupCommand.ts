@@ -154,7 +154,7 @@ export default class UserLookupCommand extends Command {
                     fields,
                     footer: { text: user.id }
                 })
-                    .setColor(member?.user!.hexAccentColor ? member?.user!.hexAccentColor! : "#007bff")
+                    .setColor(member?.user!.hexAccentColor ? member.user.hexAccentColor : "#007bff")
                     .setTimestamp()
             ]
         });

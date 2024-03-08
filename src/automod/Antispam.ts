@@ -227,10 +227,10 @@ export default class Antispam extends Service {
             info.timeout = setTimeout(() => {
                 const delayedInfo = this.map[`${message.guildId!}_${message.author.id}`] ?? ({} as SpamUserInfo);
                 const timestamps = delayedInfo.timestamps.filter(
-                    timestamp => config.antispam?.timeframe! + timestamp >= Date.now()
+                    timestamp => (config.antispam?.timeframe ?? 0) + timestamp >= Date.now()
                 );
 
-                if (timestamps.length >= config.antispam?.limit!) {
+                if (timestamps.length >= (config.antispam?.limit ?? 0)) {
                     this.takeAction(message).catch(console.error);
                 }
 

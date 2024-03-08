@@ -55,7 +55,7 @@ export default class AboutCommand extends Command {
                         },
                         {
                             name: "Licensed Under",
-                            value: `[GNU Affero General Public License v3](https://www.gnu.org/licenses/agpl-3.0.en.html)`,
+                            value: "[GNU Affero General Public License v3](https://www.gnu.org/licenses/agpl-3.0.en.html)",
                             inline: true
                         },
                         {
@@ -65,7 +65,7 @@ export default class AboutCommand extends Command {
                         },
                         {
                             name: "Support",
-                            value: `rakinar2@onesoftnet.eu.org`,
+                            value: "rakinar2@onesoftnet.eu.org",
                             inline: true
                         }
                     ],

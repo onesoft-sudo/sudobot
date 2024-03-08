@@ -77,11 +77,13 @@ export default class BlockedWordCommand extends Command {
     public readonly aliases = ["blockedwords"];
 
     createConfigIfNotExists(guildId: Snowflake) {
+        type RecordType = NonNullable<(typeof this.client.configManager.config)[string]>["message_filter"];
+
         this.client.configManager.config[guildId!]!.message_filter ??= {
             enabled: true,
             delete_message: true,
             send_logs: true
-        } as any;
+        } as RecordType;
 
         this.client.configManager.config[guildId!]!.message_filter!.data ??= {
             blocked_tokens: [],
@@ -129,47 +131,55 @@ export default class BlockedWordCommand extends Command {
 
         switch (subcommand) {
             case "add":
-                const words = context.isLegacy ? context.args : context.options.getString("words", true).split(/ +/);
+                {
+                    const words = context.isLegacy ? context.args : context.options.getString("words", true).split(/ +/);
 
-                for await (const word of words) {
-                    if (this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_words.includes(word)) {
-                        continue;
+                    for await (const word of words) {
+                        if (
+                            this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_words.includes(word)
+                        ) {
+                            continue;
+                        }
+
+                        this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_words.push(word);
                     }
 
-                    this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_words.push(word);
+                    await this.client.configManager.write();
+                    await this.success(message, "The given word(s) have been blocked.");
                 }
-
-                await this.client.configManager.write();
-                await this.success(message, `The given word(s) have been blocked.`);
                 break;
 
             case "has":
-                const word = context.isLegacy ? context.args[0] : context.options.getString("word", true);
+                {
+                    const word = context.isLegacy ? context.args[0] : context.options.getString("word", true);
 
-                if (this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_words.includes(word)) {
-                    await this.success(message, `This word is in the blocklist.`);
-                } else {
-                    await this.error(message, `This word is not in the blocklist.`);
+                    if (this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_words.includes(word)) {
+                        await this.success(message, "This word is in the blocklist.");
+                    } else {
+                        await this.error(message, "This word is not in the blocklist.");
+                    }
                 }
 
                 return;
 
             case "remove":
-                const wordsToRemove = context.isLegacy ? context.args : context.options.getString("words", true).split(/ +/);
+                {
+                    const wordsToRemove = context.isLegacy ? context.args : context.options.getString("words", true).split(/ +/);
 
-                for await (const word of wordsToRemove) {
-                    const index =
-                        this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_words.indexOf(word);
+                    for await (const word of wordsToRemove) {
+                        const index =
+                            this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_words.indexOf(word);
 
-                    if (!index || index === -1) {
-                        continue;
+                        if (!index || index === -1) {
+                            continue;
+                        }
+
+                        this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_words.splice(index, 1);
                     }
 
-                    this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_words.splice(index, 1);
+                    await this.client.configManager.write();
+                    await this.success(message, "The given word(s) have been unblocked.");
                 }
-
-                await this.client.configManager.write();
-                await this.success(message, `The given word(s) have been unblocked.`);
                 break;
 
             case "list":
@@ -218,7 +228,7 @@ export default class BlockedWordCommand extends Command {
                         }
                     });
 
-                    let reply = await this.deferredReply(message, await pagination.getMessageOptions());
+                    const reply = await this.deferredReply(message, await pagination.getMessageOptions());
                     await pagination.start(reply);
                 }
 

@@ -24,19 +24,22 @@ import type Client from "../core/Client";
 
 export function Validate(schema: ZodSchema) {
     return (
-        originalMethodOrTarget: any,
+        originalMethodOrTarget: unknown,
         contextOrMethodName: string | ClassMethodDecoratorContext,
-        descriptor?: PropertyDescriptor
+        _descriptor?: PropertyDescriptor
     ) => {
         if (typeof contextOrMethodName === "string") {
-            const metadata = Reflect.getMetadata("validation_middleware", originalMethodOrTarget) ?? {};
+            const metadata = Reflect.getMetadata("validation_middleware", originalMethodOrTarget as object) ?? {};
             const middleware = (client: Client, req: Request, res: Response, next: NextFunction) =>
                 ValidateMiddleware(schema, req, res, next);
 
             metadata[contextOrMethodName] ??= middleware;
-            Reflect.defineMetadata("validation_middleware", metadata, originalMethodOrTarget);
+            Reflect.defineMetadata("validation_middleware", metadata, originalMethodOrTarget as object);
         } else {
-            const metadata = (contextOrMethodName.metadata?.validationMiddleware ?? {}) as Record<string | symbol, Function>;
+            const metadata = (contextOrMethodName.metadata?.validationMiddleware ?? {}) as Record<
+                string | symbol,
+                (client: Client, req: Request, res: Response, next: NextFunction) => ReturnType<typeof ValidateMiddleware>
+            >;
 
             const middleware = (client: Client, req: Request, res: Response, next: NextFunction) =>
                 ValidateMiddleware(schema, req, res, next);
@@ -44,7 +47,7 @@ export function Validate(schema: ZodSchema) {
             metadata[contextOrMethodName.name] ??= middleware;
             (contextOrMethodName.metadata as unknown) ??= {};
             contextOrMethodName.metadata.validationMiddleware = metadata;
-            return originalMethodOrTarget;
+            return originalMethodOrTarget as void;
         }
     };
 }

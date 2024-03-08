@@ -17,9 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { logError } from "../utils/Logger";
 import Queue from "../utils/Queue";
 import { safeChannelFetch } from "../utils/fetch";
-import { logError } from "../utils/Logger";
 
 export default class BumpReminderQueue extends Queue {
     async run(userId: string, channelId: string) {
@@ -31,7 +31,7 @@ export default class BumpReminderQueue extends Queue {
             }
 
             const config = this.client.configManager.config[this.guild.id]?.bump_reminder;
-            const { disabled_channels, remind_after: remindAfter, enabled, on_bump_content, reminder_content } = config ?? {};
+            const { disabled_channels, remind_after: remindAfter, enabled, reminder_content } = config ?? {};
 
             if (!enabled || disabled_channels?.includes(channelId)) {
                 return;

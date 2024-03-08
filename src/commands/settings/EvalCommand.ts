@@ -73,8 +73,8 @@ export default class EvalCommand extends Command {
                 embeds: [
                     {
                         description: `${this.emoji("error")} **Unhandled promise rejection**\n\n\`\`\`\n${
-                            typeof e === "string" || typeof (e as any)?.toString === "function"
-                                ? escapeCodeBlock((e as any)?.toString ? (e as any).toString() : (e as any))
+                            typeof e === "string" || typeof (e as string)?.toString === "function"
+                                ? escapeCodeBlock((e as string)?.toString ? (e as string).toString() : (e as string))
                                 : e
                         }\n\`\`\``,
                         color: 0xf14a60
@@ -100,7 +100,7 @@ export default class EvalCommand extends Command {
             const result = eval(code);
             const string = `${
                 typeof result === "string" || typeof result?.toString === "function"
-                    ? escapeCodeBlock((result as any)?.toString ? (result as any).toString() : (result as any))
+                    ? escapeCodeBlock((result as string)?.toString ? (result as string).toString() : (result as string))
                     : result
             }`;
 
@@ -118,7 +118,7 @@ export default class EvalCommand extends Command {
             }
         } catch (e) {
             logError("Evaluation failed");
-            if ("stack" in (e as any) && "message" in (e as any)) exceptionHandler(e as any);
+            if ("stack" in (e as Error) && "message" in (e as Error)) exceptionHandler(e as Error);
             else rejectionHandler(e);
         }
 

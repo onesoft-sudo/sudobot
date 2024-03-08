@@ -122,7 +122,7 @@ export default class EchoCommand extends Command {
                 ? await message.delete().catch(logError)
                 : await message.react(getEmojiObject(this.client, "check") ?? "✅");
         } else {
-            await this.deferredReply(message, `Message sent.`);
+            await this.deferredReply(message, "Message sent.");
         }
 
         const embed: APIEmbed = {};

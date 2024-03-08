@@ -20,8 +20,8 @@
 import { APIEmbed, AttachmentPayload, Message, PermissionsBitField, SlashCommandBuilder } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import EmbedSchemaParser from "../../utils/EmbedSchemaParser";
-import { userInfo } from "../../utils/embed";
 import { logError } from "../../utils/Logger";
+import { userInfo } from "../../utils/embed";
 import { getEmojiObject } from "../../utils/utils";
 
 export default class EchoCommand extends Command {
@@ -86,11 +86,9 @@ export default class EchoCommand extends Command {
                     : undefined
         };
 
-        let sentMessage: Message<boolean> | undefined = undefined;
-
         try {
             if (user) {
-                sentMessage = await EmbedSchemaParser.sendMessage(user, options);
+                await EmbedSchemaParser.sendMessage(user, options);
             }
 
             if (message instanceof Message) {
@@ -99,14 +97,14 @@ export default class EchoCommand extends Command {
                     : await message.react((await getEmojiObject(this.client, "check"))!).catch(logError);
             } else {
                 await this.deferredReply(message, {
-                    content: `Message sent.`
+                    content: "Message sent."
                 });
             }
         } catch (e) {
             logError(e);
             await this.error(
                 message,
-                `Could not deliver DM. Maybe the user does not share any server with me or has blocked me or disabled DMs?`
+                "Could not deliver DM. Maybe the user does not share any server with me or has blocked me or disabled DMs?"
             );
         }
 

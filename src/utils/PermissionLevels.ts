@@ -51,7 +51,7 @@ export const RawDefaultPermissionLevels: readonly (readonly PermissionsString[])
 
 export function getDefaultPermissionLevelArray() {
     const permissionLevels = [];
-    let lastPermissionLevel = [];
+    const lastPermissionLevel = [];
 
     for (const level of RawDefaultPermissionLevels) {
         lastPermissionLevel.push(...level);
@@ -64,7 +64,7 @@ export function getDefaultPermissionLevelArray() {
 export function getDefaultPermissionLevels() {
     const record: PermissionLevelsRecord = {};
 
-    let lastPermissionLevel: PermissionsString[] = [];
+    const lastPermissionLevel: PermissionsString[] = [];
     let level = 0;
 
     for (const rawPermissionlevel of RawDefaultPermissionLevels) {

@@ -19,7 +19,6 @@
 
 import { ApplicationCommandType, GuildMember, MessageContextMenuCommandInteraction, PermissionsString } from "discord.js";
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
-import { ContextMenuCommandContext } from "../../services/CommandManager";
 
 export default class ReportMessageCommand extends Command {
     public readonly name = "Report Message";
@@ -60,13 +59,13 @@ export default class ReportMessageCommand extends Command {
         return false;
     }
 
-    async execute(interaction: MessageContextMenuCommandInteraction, context: ContextMenuCommandContext): Promise<CommandReturn> {
+    async execute(interaction: MessageContextMenuCommandInteraction): Promise<CommandReturn> {
         const { targetMessage } = interaction;
 
         await interaction.deferReply({ ephemeral: true });
 
         if (!(await this.client.permissionManager.shouldModerate(targetMessage.member!, interaction.member as GuildMember))) {
-            await this.error(interaction, "You don't have permission to report messsages from this user!");
+            await this.error(interaction, "You don't have permission to report messages from this user!");
             return;
         }
 

@@ -18,10 +18,9 @@
  */
 
 import { InfractionType } from "@prisma/client";
-import { Message, PermissionsBitField, User } from "discord.js";
+import { PermissionsBitField, User } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { safeUserFetch } from "../../utils/fetch";
-import { createModerationEmbed, isSnowflake } from "../../utils/utils";
+import { createModerationEmbed } from "../../utils/utils";
 
 export default class NoteCreateCommand extends Command {
     public readonly name = "note";

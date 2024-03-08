@@ -19,9 +19,9 @@
 
 export function SuppressErrors() {
     return (
-        originalMethodOrTarget: any,
+        originalMethodOrTarget: unknown,
         contextOrMethodName: string | ClassMethodDecoratorContext,
-        descriptor?: PropertyDescriptor
+        _descriptor?: PropertyDescriptor
     ) => {
         if (typeof contextOrMethodName === "string") {
             Reflect.defineMetadata(
@@ -29,7 +29,7 @@ export function SuppressErrors() {
                 {
                     mode: "suppress"
                 } satisfies SuppressErrorsMetadata,
-                originalMethodOrTarget,
+                originalMethodOrTarget as object,
                 contextOrMethodName
             );
         } else {
@@ -37,7 +37,7 @@ export function SuppressErrors() {
             contextOrMethodName.metadata.suppressErrors = {
                 mode: "suppress"
             } satisfies SuppressErrorsMetadata;
-            return originalMethodOrTarget;
+            return originalMethodOrTarget as void;
         }
     };
 }

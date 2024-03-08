@@ -26,6 +26,5 @@ export default class ChannelDeleteEvent extends EventListener<Events.ChannelDele
 
     async execute(channel: NonThreadGuildBasedChannel) {
         await this.client.loggerService.logChannelDelete(channel);
-        super.execute(channel);
     }
 }
