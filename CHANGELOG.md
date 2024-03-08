@@ -1,3 +1,12 @@
+# [8.23.0](https://github.com/onesoft-sudo/sudobot/compare/v8.22.1...v8.23.0) (2024-03-08)
+
+
+### Features
+
+* **auth:** time based one-time passcodes to authenticate with credserv ([9e61a11](https://github.com/onesoft-sudo/sudobot/commit/9e61a11e8da803da1929e27868a74dfb9ff21d79))
+
+
+
 ## [8.22.1](https://github.com/onesoft-sudo/sudobot/compare/v8.22.0...v8.22.1) (2024-03-08)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * **scripts:extensions.js:** emit 'version' property in extension index ([37fc90b](https://github.com/onesoft-sudo/sudobot/commit/37fc90b09872622cd89da294845faeff3a24090b))
-
-
-
-## [8.20.2](https://github.com/onesoft-sudo/sudobot/compare/v8.20.1...v8.20.2) (2024-03-03)
-
-
-### Bug Fixes
-
-* **bun:** skip generation of archives if bun is used ([32b04ce](https://github.com/onesoft-sudo/sudobot/commit/32b04ceca4a9b5c1f1288f9a46fe19c7bdb0f174))
 
 
 
