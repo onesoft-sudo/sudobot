@@ -90,25 +90,36 @@ async function fetchCredentials() {
 
     if (!key) {
         const readline = createInterface(process.stdin, process.stdout);
-        key = await readline.question("Enter key to authenticate with the credentials server: ");
+        key = await readline.question("Enter the one-time 2FA code: ");
         readline.close();
     } else if (restartKey) {
-        logInfo("Accepted key during last restart command");
+        logInfo("Accepted 2FA code during last restart command");
     } else {
-        logInfo("Accepted key from command-line arguments");
+        logInfo("Accepted 2FA code from command-line arguments");
     }
 
     logInfo("Authenticating with the server...");
 
+    const is2FACode = key.length === 6 && !isNaN(Number(key));
+
     try {
         const response = await axios.get(process.env.CREDENTIAL_SERVER, {
             headers: {
-                Authorization: `Bearer ${key}`
+                Authorization: is2FACode ? undefined : `Bearer ${key}`,
+                "X-2FA-code": is2FACode ? key : undefined
             }
         });
 
-        if (response.data?.success && response.data?.config && typeof response.data?.config === "object") {
-            logSuccess("Successfully authenticated with the credentials server");
+        if (
+            response.data?.success &&
+            response.data?.config &&
+            typeof response.data?.config === "object"
+        ) {
+            logSuccess(
+                "Successfully authenticated with the credentials server (Method: " +
+                    (is2FACode ? "2FA" : "Key") +
+                    ")"
+            );
 
             for (const key in response.data.config) {
                 process.env[key] = response.data.config[key];

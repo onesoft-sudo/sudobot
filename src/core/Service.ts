@@ -19,9 +19,14 @@
 
 import Client from "./Client";
 
-export default abstract class Service {
+export default abstract class Service implements ServiceInterface {
     constructor(protected client: Client) {}
 
     boot(): void {}
     deactivate(): void {}
+}
+
+export interface ServiceInterface {
+    boot(): void;
+    deactivate(): void;
 }
