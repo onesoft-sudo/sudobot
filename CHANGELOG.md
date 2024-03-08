@@ -1,3 +1,12 @@
+## [8.22.1](https://github.com/onesoft-sudo/sudobot/compare/v8.22.0...v8.22.1) (2024-03-08)
+
+
+### Bug Fixes
+
+* eslint/typescript errors ([d3413a6](https://github.com/onesoft-sudo/sudobot/commit/d3413a6de09c682e4375bf9126f7bc362aa1cb17))
+
+
+
 # [8.22.0](https://github.com/onesoft-sudo/sudobot/compare/v8.21.0...v8.22.0) (2024-03-04)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * **bun:** skip generation of archives if bun is used ([32b04ce](https://github.com/onesoft-sudo/sudobot/commit/32b04ceca4a9b5c1f1288f9a46fe19c7bdb0f174))
-
-
-
-## [8.20.1](https://github.com/onesoft-sudo/sudobot/compare/v8.20.0...v8.20.1) (2024-03-03)
-
-
-### Bug Fixes
-
-* **logging:** member disconnect event causes the system to crash ([58325af](https://github.com/onesoft-sudo/sudobot/commit/58325afb3221b14427e4e4a7f0313c3394ddd086))
 
 
 
