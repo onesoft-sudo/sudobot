@@ -18,7 +18,7 @@
  */
 
 import { PermissionsBitField } from "discord.js";
-import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class AntijoinCommand extends Command {
     public readonly name = "antijoin";
@@ -28,7 +28,7 @@ export default class AntijoinCommand extends Command {
 
     public readonly description = "Turn anti join mode on or off";
 
-    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage): Promise<CommandReturn> {
         const enabled = this.client.antijoin.toggle(message.guild!);
 
         return {

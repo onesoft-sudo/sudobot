@@ -153,7 +153,7 @@ export default class ProfileCommand extends Command {
         const activities: string[] = [];
 
         if (isMember && member?.presence) {
-            for (const a of member?.presence?.activities.values()!) {
+            for (const a of member?.presence?.activities.values() ?? []) {
                 log(a);
 
                 if (a.type === ActivityType.Custom) {
@@ -166,7 +166,7 @@ export default class ProfileCommand extends Command {
                     if (a.name === "Spotify") {
                         const url = a.url ? `${a.url}` : null;
                         activities.push(
-                            `${this.emoji("spotify")} Listening to **Spotify**: ${url ? "[" : "__"}${a.state?.split(/\;/)[0]} - ${
+                            `${this.emoji("spotify")} Listening to **Spotify**: ${url ? "[" : "__"}${a.state?.split(/;/)[0]} - ${
                                 a.details
                             }${url ? "](" + url + ")" : "__"}`
                         );
@@ -204,13 +204,13 @@ export default class ProfileCommand extends Command {
                 ? [
                       {
                           name: "Nickname",
-                          value: `${member!.nickname?.replace(/\*\<\>\@\_\~\|/g, "") ?? "*Nickname is not set*"}`
+                          value: `${member!.nickname?.replace(/\*<>@_~\|/g, "") ?? "*Nickname is not set*"}`
                       }
                   ]
                 : []),
             {
                 name: "Display Name",
-                value: `${user!.displayName?.replace(/\*\<\>\@\_\~\|/g, "") ?? "*Display name is not set*"}`
+                value: `${user!.displayName?.replace(/\*<>@_~\|/g, "") ?? "*Display name is not set*"}`
             },
             {
                 name: "Account Created",

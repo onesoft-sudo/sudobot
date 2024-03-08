@@ -29,24 +29,77 @@ const discoveryURL = "https://commentanalyzer.googleapis.com/$discovery/rest?ver
 
 // TODO: Add support for other type of message attributes
 
-export default class AIAutoModService extends Service implements HasEventListeners {
-    protected googleClient: any = undefined;
+type GoogleClient = {
+    comments: {
+        analyze: (params: unknown, callback: (error: Error | null, response: unknown) => void) => void;
+    };
+};
 
-    analyze(client: any, params: any) {
-        return new Promise<any>((resolve, reject) => {
-            client.comments.analyze(params, (error: any, response: any) => {
+type GoogleResponse = {
+    data: {
+        attributeScores: {
+            TOXICITY: {
+                summaryScore: {
+                    value: number;
+                };
+            };
+            THREAT: {
+                summaryScore: {
+                    value: number;
+                };
+            };
+            SEVERE_TOXICITY: {
+                summaryScore: {
+                    value: number;
+                };
+            };
+            IDENTITY_ATTACK: {
+                summaryScore: {
+                    value: number;
+                };
+            };
+            INSULT: {
+                summaryScore: {
+                    value: number;
+                };
+            };
+            PROFANITY: {
+                summaryScore: {
+                    value: number;
+                };
+            };
+            SEXUALLY_EXPLICIT: {
+                summaryScore: {
+                    value: number;
+                };
+            };
+            FLIRTATION: {
+                summaryScore: {
+                    value: number;
+                };
+            };
+        };
+    };
+};
+
+export default class AIAutoModService extends Service implements HasEventListeners {
+    protected googleClient: GoogleClient | undefined = undefined;
+
+    analyze(client: GoogleClient, params: unknown) {
+        return new Promise<GoogleResponse>((resolve, reject) => {
+            client.comments.analyze(params, (error: Error | null, response: unknown) => {
                 if (error) {
                     reject(error);
                     return;
                 }
 
-                resolve(response);
+                resolve(response as GoogleResponse);
             });
         });
     }
 
     async boot() {
-        this.googleClient = await google.discoverAPI<any>(discoveryURL);
+        this.googleClient = await google.discoverAPI(discoveryURL);
     }
 
     async onMessageCreate(message: Message<boolean>) {
@@ -76,7 +129,7 @@ export default class AIAutoModService extends Service implements HasEventListene
         } = config.parameters;
 
         try {
-            const response = await this.analyze(this.googleClient, {
+            const response = await this.analyze(this.googleClient!, {
                 key: process.env.PERSPECTIVE_API_TOKEN,
                 resource: {
                     requestedAttributes: {

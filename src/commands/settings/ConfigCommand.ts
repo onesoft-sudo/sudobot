@@ -29,12 +29,12 @@ import {
     escapeInlineCode,
     inlineCode
 } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { get, has, set, toDotted } from "../../utils/objects";
 import JSON5 from "json5";
-import { HasEventListeners } from "../../types/HasEventListeners";
-import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import Client from "../../core/Client";
+import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { GatewayEventListener } from "../../decorators/GatewayEventListener";
+import { HasEventListeners } from "../../types/HasEventListeners";
+import { get, has, set, toDotted } from "../../utils/objects";
 
 export default class ConfigCommand extends Command implements HasEventListeners {
     public readonly name = "config";
@@ -233,7 +233,7 @@ export default class ConfigCommand extends Command implements HasEventListeners 
                     JSON5.stringify(configValue, {
                         space: 2,
                         replacer: null,
-                        quote: "\""
+                        quote: '"'
                     })
                 )}`
             )
@@ -303,14 +303,16 @@ export default class ConfigCommand extends Command implements HasEventListeners 
 
                 break;
             case "boolean":
-                const lowerCased = value.toLowerCase();
+                {
+                    const lowerCased = value.toLowerCase();
 
-                if (lowerCased !== "true" && lowerCased !== "false") {
-                    await this.error(message, `The value \`${escapeInlineCode(value)}\` is not a valid boolean.`);
-                    return;
+                    if (lowerCased !== "true" && lowerCased !== "false") {
+                        await this.error(message, `The value \`${escapeInlineCode(value)}\` is not a valid boolean.`);
+                        return;
+                    }
+
+                    finalValue = lowerCased === "true";
                 }
-
-                finalValue = lowerCased === "true";
                 break;
             case "json":
                 try {
@@ -347,7 +349,7 @@ export default class ConfigCommand extends Command implements HasEventListeners 
             ? JSON5.stringify(error.error.format(), {
                   space: 2,
                   replacer: null,
-                  quote: "\""
+                  quote: '"'
               })
             : null;
 
@@ -377,7 +379,7 @@ export default class ConfigCommand extends Command implements HasEventListeners 
                     JSON5.stringify(finalValue, {
                         space: 2,
                         replacer: null,
-                        quote: "\""
+                        quote: '"'
                     })
                 )}`
             )

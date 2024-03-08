@@ -20,10 +20,37 @@
 import axios from "axios";
 import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 import Command, { CommandReturn } from "../../core/Command";
-import { ChatInputCommandContext } from "../../services/CommandManager";
-import Pagination from "../../utils/Pagination";
 import { logError } from "../../utils/Logger";
+import Pagination from "../../utils/Pagination";
 import { chunkedString } from "../../utils/utils";
+
+type OpenAI = {
+    chat: {
+        completions: {
+            create: (data: {
+                messages: Array<{
+                    role: "system" | "user";
+                    content: string;
+                }>;
+                model: string;
+                user: string;
+            }) => Promise<{
+                id: string;
+                object: string;
+                model: string;
+                choices: Array<{
+                    message: {
+                        role: "system" | "user";
+                        content: string;
+                    };
+                    index: number;
+                    finish_reason: string;
+                }>;
+                created: number;
+            }>;
+        };
+    };
+};
 
 export default class AICommand extends Command {
     public readonly name = "ai";
@@ -34,12 +61,9 @@ export default class AICommand extends Command {
         option.setName("prompt").setDescription("Ask something").setMaxLength(1000).setRequired(true)
     );
     public readonly description = "Ask something to the AI.";
-    /**
-     * @type {import("openai").OpenAI | null}
-     */
-    public openai: any = null;
+    public openai: OpenAI | null = null;
 
-    async execute(interaction: ChatInputCommandInteraction, context: ChatInputCommandContext): Promise<CommandReturn> {
+    async execute(interaction: ChatInputCommandInteraction): Promise<CommandReturn> {
         await interaction.deferReply();
 
         const prompt = interaction.options.getString("prompt", true);
@@ -112,7 +136,9 @@ export default class AICommand extends Command {
                 try {
                     require.resolve("openai");
                     openAIAvailable = true;
-                } catch (error) {}
+                } catch (error) {
+                    this.client.logger.error(error);
+                }
 
                 if (!openAIAvailable) {
                     logError("OpenAI package is not installed.");
@@ -143,7 +169,7 @@ export default class AICommand extends Command {
                             }
                         );
 
-                        if (response.data?.results.find((r: any) => r.flagged)) {
+                        if (response.data?.results.find((r: Record<string, boolean>) => r.flagged)) {
                             await this.error(interaction, "Sorry, your prompt was flagged by the OpenAI moderation system.");
                             return;
                         }

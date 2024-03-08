@@ -17,15 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Action } from "../../decorators/Action";
-import { RequireAuth } from "../../decorators/RequireAuth";
-import { request, wait } from "../../utils/utils";
-import Controller from "../Controller";
 import { Response as ExpressResponse } from "express";
-import Request from "../Request";
-import { cache } from "../../utils/cache";
-import { ExtensionInfo } from "../../types/ExtensionInfo";
+import { Action } from "../../decorators/Action";
 import { EnableAdminAccessControl } from "../../decorators/EnableAdminAccessControl";
+import { RequireAuth } from "../../decorators/RequireAuth";
+import Controller from "../Controller";
+import Request from "../Request";
 
 // TODO: Add a proper implementation for this controller
 class ExtensionController extends Controller {

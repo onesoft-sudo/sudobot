@@ -83,7 +83,7 @@ export default class ReviewController extends Controller {
 
         await this.client.prisma.review.create({
             data: {
-                rating,
+                rating: rating as unknown as number,
                 content,
                 approved: false,
                 aboutReviewer,
@@ -113,7 +113,7 @@ export default class ReviewController extends Controller {
                     id: parseInt(request.params.id)
                 },
                 data: {
-                    approved
+                    approved: approved as unknown as boolean
                 }
             })
             .catch(logError);

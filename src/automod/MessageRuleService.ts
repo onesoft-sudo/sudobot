@@ -30,13 +30,13 @@ import {
     escapeInlineCode,
     escapeMarkdown
 } from "discord.js";
+import sharp from "sharp";
 import Service from "../core/Service";
 import { CreateLogEmbedOptions } from "../services/LoggerService";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { MessageRuleType } from "../types/MessageRuleSchema";
 import { log, logDebug, logError, logWarn } from "../utils/Logger";
 import { escapeRegex, getEmoji, request } from "../utils/utils";
-import sharp from "sharp";
 
 export const name = "messageRuleService";
 
@@ -140,7 +140,7 @@ export default class MessageRuleService extends Service implements HasEventListe
             }
 
             const handler = this[handlerFunctionName] as (
-                ...args: any[]
+                ...args: unknown[]
             ) => Promise<boolean | null | undefined | CreateLogEmbedOptions>;
 
             if (typeof handler !== "function") {
@@ -453,7 +453,7 @@ export default class MessageRuleService extends Service implements HasEventListe
 
                 if (embed.author?.proxyIconURL ?? embed.author?.iconURL) {
                     attachments.push({
-                        url: embed.author?.proxyIconURL ?? embed.author?.iconURL!
+                        url: embed.author?.proxyIconURL ?? embed.author?.iconURL ?? ""
                     });
                 }
             }
@@ -549,11 +549,10 @@ export default class MessageRuleService extends Service implements HasEventListe
             return null;
         }
 
-        const { excluded_domains_regex, excluded_link_regex, excluded_links, words, tokens, inherit_from_word_filter, mode } =
-            rule;
+        const { excluded_domains_regex, excluded_link_regex, excluded_links, words, tokens, inherit_from_word_filter } = rule;
         const config = this.client.configManager.config[message.guildId!]?.message_filter;
 
-        const matches = message.content.matchAll(/https?:\/\/([A-Za-z0-9-\.]*[A-Za-z0-9-])[\S]*/gim);
+        const matches = message.content.matchAll(/https?:\/\/([A-Za-z0-9-.]*[A-Za-z0-9-])[\S]*/gim);
 
         for (const match of matches) {
             const url = match[0].toLowerCase();
@@ -866,7 +865,7 @@ export default class MessageRuleService extends Service implements HasEventListe
             return null;
         }
 
-        let data = [...message.content.matchAll(new RegExp("\<\@[0-9]+\>", "gm"))];
+        let data = [...message.content.matchAll(new RegExp("<@[0-9]+>", "gm"))];
 
         console.log("users", data);
 
@@ -882,7 +881,7 @@ export default class MessageRuleService extends Service implements HasEventListe
             };
         }
 
-        data = [...message.content.matchAll(new RegExp("\<\@\&[0-9]+\>", "gm"))];
+        data = [...message.content.matchAll(new RegExp("<@&[0-9]+>", "gm"))];
 
         if (data.length >= rule.max_mentions || (rule.max_role_mentions > 0 && data.length >= rule.max_role_mentions)) {
             return {

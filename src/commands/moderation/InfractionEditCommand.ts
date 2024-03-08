@@ -20,7 +20,6 @@
 import { formatDistanceToNowStrict } from "date-fns";
 import { ChatInputCommandInteraction, EmbedBuilder, PermissionsBitField } from "discord.js";
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
-import { ChatInputCommandContext } from "../../services/CommandManager";
 import { stringToTimeInterval } from "../../utils/datetime";
 import { safeUserFetch } from "../../utils/fetch";
 
@@ -35,7 +34,7 @@ export default class InfractionEditCommand extends Command {
     public readonly detailedDescription = "Update an infraction with a new reason or duration or both.";
     public readonly argumentSyntaxes = ["<infraction_id> [new_reason] [new_duration]"];
 
-    async execute(interaction: ChatInputCommandInteraction, context: ChatInputCommandContext): Promise<CommandReturn> {
+    async execute(interaction: ChatInputCommandInteraction): Promise<CommandReturn> {
         const id = interaction.options.getInteger("id", true);
         let newReason = interaction.options.getString("new_reason");
         const newDuration = interaction.options.getString("new_duration");

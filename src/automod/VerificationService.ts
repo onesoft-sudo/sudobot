@@ -35,9 +35,9 @@ import {
 import jwt from "jsonwebtoken";
 import Service from "../core/Service";
 import { HasEventListeners } from "../types/HasEventListeners";
+import { logError } from "../utils/Logger";
 import { userInfo } from "../utils/embed";
 import { safeChannelFetch, safeMemberFetch } from "../utils/fetch";
-import { logError } from "../utils/Logger";
 
 export const name = "verification";
 
@@ -119,7 +119,11 @@ export default class VerificationService extends Service implements HasEventList
     }
 
     async onMemberVerificationFail(member: GuildMember, { attempts, guildId }: VerificationEntry, remainingTime: number) {
-        const config = this.client.configManager.config[guildId]?.verification!;
+        const config = this.client.configManager.config[guildId]?.verification;
+
+        if (!config) {
+            return;
+        }
 
         if ((config.max_attempts === 0 || attempts < config.max_attempts) && remainingTime > 0) {
             return;

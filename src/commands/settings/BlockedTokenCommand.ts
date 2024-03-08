@@ -77,11 +77,13 @@ export default class BlockedTokenCommand extends Command {
     public readonly aliases = ["blockedtokens"];
 
     createConfigIfNotExists(guildId: Snowflake) {
+        type RecordType = NonNullable<(typeof this.client.configManager.config)[string]>["message_filter"];
+
         this.client.configManager.config[guildId!]!.message_filter ??= {
             enabled: true,
             delete_message: true,
             send_logs: true
-        } as any;
+        } as RecordType;
 
         this.client.configManager.config[guildId!]!.message_filter!.data ??= {
             blocked_tokens: [],
@@ -168,16 +170,18 @@ export default class BlockedTokenCommand extends Command {
             }
 
             case "remove":
-                const token = this.getToken(message, subcommand, context);
-                const index =
-                    this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_tokens.indexOf(token);
+                {
+                    const token = this.getToken(message, subcommand, context);
+                    const index =
+                        this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_tokens.indexOf(token);
 
-                if (index && index !== -1) {
-                    this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_tokens.splice(index, 1);
-                    await this.client.configManager.write();
+                    if (index && index !== -1) {
+                        this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_tokens.splice(index, 1);
+                        await this.client.configManager.write();
+                    }
+
+                    await this.success(message, "The given token(s) have been unblocked.");
                 }
-
-                await this.success(message, "The given token(s) have been unblocked.");
                 break;
 
             case "list":

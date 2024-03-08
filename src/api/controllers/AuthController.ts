@@ -463,7 +463,7 @@ export default class AuthController extends Controller {
                 body: new URLSearchParams({
                     client_id: process.env.CLIENT_ID!,
                     client_secret: process.env.CLIENT_SECRET!,
-                    code: parsedBody.code,
+                    code: parsedBody!.code,
                     grant_type: "authorization_code",
                     redirect_uri: `${process.env.DISCORD_OAUTH2_REDIRECT_URI}`,
                     scope: "identify"

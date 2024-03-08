@@ -18,7 +18,7 @@
  */
 
 import { User } from "discord.js";
-import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { logError } from "../../utils/Logger";
 
 export default class DMHistoryCommand extends Command {
@@ -29,7 +29,7 @@ export default class DMHistoryCommand extends Command {
     public readonly aliases = ["sendmodhistory", "sendmodlogs", "dmmodlogs"];
     public readonly description = "Generates a file that contains your infraction history, and sends it to you via DM.";
 
-    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
         const { buffer, count } = await this.client.infractionManager.createInfractionHistoryBuffer(
@@ -44,7 +44,8 @@ export default class DMHistoryCommand extends Command {
 
         try {
             await (message.member!.user as User).send({
-                content: "We've generated your moderation history. The attached text file contains your moderation history.\nDownload the attached text file below to see your infractions.",
+                content:
+                    "We've generated your moderation history. The attached text file contains your moderation history.\nDownload the attached text file below to see your infractions.",
                 files: [
                     {
                         attachment: buffer,

@@ -34,9 +34,9 @@ import { existsSync } from "fs";
 import { cp, mkdir, rename, rm } from "fs/promises";
 import path, { basename, join } from "path";
 import semver from "semver";
-import Command, { AnyCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { downloadFile } from "../../utils/download";
+import Command, { CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { log, logError, logInfo, logWarn } from "../../utils/Logger";
+import { downloadFile } from "../../utils/download";
 import { sudoPrefix } from "../../utils/utils";
 
 export default class UpdateCommand extends Command {
@@ -50,7 +50,7 @@ export default class UpdateCommand extends Command {
     public updateChannel?: "stable" | "unstable";
     public readonly beta = true;
 
-    async execute(message: CommandMessage, context: AnyCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage): Promise<CommandReturn> {
         const unsatisfiedRequirement = this.checkRequirements();
 
         if (unsatisfiedRequirement) {
@@ -172,14 +172,16 @@ export default class UpdateCommand extends Command {
                     components: this.actionRow({ updateAvailable, version, disabled: true })
                 });
 
-                let success = false;
+                let success;
 
                 try {
                     success = await this.update({
                         stableDownloadURL,
                         version
                     });
-                } catch (e) {}
+                } catch {
+                    success = false;
+                }
 
                 await interaction.message.edit({
                     embeds: [

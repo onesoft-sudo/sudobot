@@ -77,11 +77,13 @@ export default class BlockedMessageCommand extends Command {
     public readonly aliases = ["blockedmessages"];
 
     createConfigIfNotExists(guildId: Snowflake) {
+        type RecordType = NonNullable<(typeof this.client.configManager.config)[string]>["message_filter"];
+
         this.client.configManager.config[guildId!]!.message_filter ??= {
             enabled: true,
             delete_message: true,
             send_logs: true
-        } as any;
+        } as RecordType;
 
         this.client.configManager.config[guildId!]!.message_filter!.data ??= {
             blocked_tokens: [],
@@ -129,53 +131,59 @@ export default class BlockedMessageCommand extends Command {
 
         switch (subcommand) {
             case "add":
-                const messageToBlock = context.isLegacy ? context.args[0] : context.options.getString("message", true);
+                {
+                    const messageToBlock = context.isLegacy ? context.args[0] : context.options.getString("message", true);
 
-                if (
-                    !this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_messages.includes(
-                        messageToBlock
-                    )
-                ) {
-                    this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_messages.push(
-                        messageToBlock
-                    );
+                    if (
+                        !this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_messages.includes(
+                            messageToBlock
+                        )
+                    ) {
+                        this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_messages.push(
+                            messageToBlock
+                        );
+                    }
+
+                    await this.client.configManager.write();
+                    await this.success(message, "The given message has been blocked.");
                 }
-
-                await this.client.configManager.write();
-                await this.success(message, "The given message has been blocked.");
                 break;
 
             case "has":
-                const messageToCheck = context.isLegacy ? context.args[0] : context.options.getString("message", true);
+                {
+                    const messageToCheck = context.isLegacy ? context.args[0] : context.options.getString("message", true);
 
-                if (
-                    this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_messages.includes(
-                        messageToCheck
-                    )
-                ) {
-                    await this.success(message, "This message is in the blocklist.");
-                } else {
-                    await this.error(message, "This message is not in the blocklist.");
+                    if (
+                        this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_messages.includes(
+                            messageToCheck
+                        )
+                    ) {
+                        await this.success(message, "This message is in the blocklist.");
+                    } else {
+                        await this.error(message, "This message is not in the blocklist.");
+                    }
                 }
 
                 return;
 
             case "remove":
-                const messageToRemove = context.isLegacy ? context.args[0] : context.options.getString("message", true);
+                {
+                    const messageToRemove = context.isLegacy ? context.args[0] : context.options.getString("message", true);
 
-                const index =
-                    this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_messages.indexOf(
-                        messageToRemove
-                    );
+                    const index =
+                        this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_messages.indexOf(
+                            messageToRemove
+                        );
 
-                if (!index || index === -1) {
-                    return;
+                    if (!index || index === -1) {
+                        return;
+                    }
+
+                    this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_messages.splice(index, 1);
+
+                    await this.client.configManager.write();
+                    await this.success(message, "The given message has been unblocked.");
                 }
-
-                this.client.configManager.config[message.guildId!]?.message_filter?.data?.blocked_messages.splice(index, 1);
-
-                await this.client.configManager.write();
-                await this.success(message, "The given message has been unblocked.");
                 break;
 
             case "list":
@@ -216,7 +224,7 @@ export default class BlockedMessageCommand extends Command {
                                     iconURL: message.guild!.iconURL() ?? undefined
                                 },
                                 color: 0x007bff,
-                                description: data.length === 0 ? "*No blocked message.*" : ("`" + data[0].join("`, `") + "`"),
+                                description: data.length === 0 ? "*No blocked message.*" : "`" + data[0].join("`, `") + "`",
                                 footer: {
                                     text: `Page ${currentPage} of ${maxPages}`
                                 }

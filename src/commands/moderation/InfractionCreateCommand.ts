@@ -20,9 +20,8 @@
 import { InfractionType } from "@prisma/client";
 import { ChatInputCommandInteraction, GuildMember, PermissionsBitField } from "discord.js";
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
-import { ChatInputCommandContext } from "../../services/CommandManager";
-import { stringToTimeInterval } from "../../utils/datetime";
 import { logError } from "../../utils/Logger";
+import { stringToTimeInterval } from "../../utils/datetime";
 
 export default class InfractionCreateCommand extends Command {
     public readonly name = "infraction__create";
@@ -35,7 +34,7 @@ export default class InfractionCreateCommand extends Command {
     public readonly detailedDescription = "Create and assign an infraction to someone.";
     public readonly argumentSyntaxes = ["<user> <type> [reason] [duration]"];
 
-    async execute(interaction: ChatInputCommandInteraction, context: ChatInputCommandContext): Promise<CommandReturn> {
+    async execute(interaction: ChatInputCommandInteraction): Promise<CommandReturn> {
         const user = interaction.options.getUser("user", true);
         const type = interaction.options.getString("type", true).toUpperCase();
         let reason = interaction.options.getString("reason");

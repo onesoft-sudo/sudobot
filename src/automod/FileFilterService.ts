@@ -22,8 +22,8 @@ import crypto from "node:crypto";
 import { readFile, rm } from "node:fs/promises";
 import Service from "../core/Service";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { downloadFile } from "../utils/download";
 import { logError, logInfo, logWarn } from "../utils/Logger";
+import { downloadFile } from "../utils/download";
 import { sudoPrefix } from "../utils/utils";
 
 export const name = "fileFilter";
@@ -143,6 +143,8 @@ export default class FileFilterService extends Service implements HasEventListen
         return null;
     }
 
+    // TODO: Implement this
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     private async checkAttachmentLinks(message: Message): Promise<{ hash: string; url: string; attachment?: Attachment } | null> {
         return null;
     }

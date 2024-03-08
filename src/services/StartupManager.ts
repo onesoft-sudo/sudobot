@@ -30,7 +30,6 @@ import path from "path";
 import { gt } from "semver";
 import { version } from "../../package.json";
 import Service from "../core/Service";
-import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { log, logError, logInfo, logSuccess } from "../utils/Logger";
 import { safeChannelFetch, safeMessageFetch } from "../utils/fetch";
@@ -44,7 +43,6 @@ export default class StartupManager extends Service implements HasEventListeners
     interval: Timer | undefined = undefined;
     readonly packageJsonUrl = "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/package.json";
 
-    @GatewayEventListener("ready")
     async onReady() {
         if (BACKUP_CHANNEL_ID) {
             this.setBackupQueue();

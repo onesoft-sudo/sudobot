@@ -19,7 +19,7 @@
 
 import { formatDistanceStrict } from "date-fns";
 import { EmbedBuilder, PermissionsBitField } from "discord.js";
-import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, { CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import Pagination from "../../utils/Pagination";
 
 export default class QueueListCommand extends Command {
@@ -30,7 +30,7 @@ export default class QueueListCommand extends Command {
     public readonly description = "Lists all the queued jobs";
     public readonly since = "5.57.0";
 
-    async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
+    async execute(message: CommandMessage): Promise<CommandReturn> {
         const queues = this.client.queueManager.queues.filter(queue => queue.options.guild.id === message.guildId!);
 
         const pagination = new Pagination(queues.toJSON(), {

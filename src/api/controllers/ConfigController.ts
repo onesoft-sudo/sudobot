@@ -90,7 +90,7 @@ export default class ConfigController extends Controller {
                 arrayMerge: (target, source) => {
                     return source;
                 }
-            });
+            }) as unknown as (typeof this.client.configManager.config)[string];
             console.log(oldConfig?.prefix, this.client.configManager.config[request.params.id]?.prefix);
         }
 
@@ -130,7 +130,7 @@ export default class ConfigController extends Controller {
 
         if (request.parsedBody) {
             const { parsedBody } = request;
-            const configObject = dot.object(parsedBody.data);
+            const configObject = dot.object(parsedBody.data as unknown as object);
             const result = GuildConfigSchema.safeParse(configObject);
 
             if (result.success) {

@@ -18,7 +18,6 @@
  */
 
 import { InfractionType } from "@prisma/client";
-import { formatDistanceToNowStrict } from "date-fns";
 import { EmbedBuilder, PermissionsBitField, User, codeBlock, time } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import Pagination from "../../utils/Pagination";

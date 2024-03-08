@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { SlashCommandBuilder } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { logError } from "../../utils/Logger";
@@ -107,7 +107,7 @@ export default class MixEmojiCommand extends Command {
         } catch (error) {
             logError(error);
 
-            if ((error as any)?.response?.status === 404) {
+            if ((error as AxiosError)?.response?.status === 404) {
                 await this.error(message, "No combination found for the given emojis.");
                 return;
             }

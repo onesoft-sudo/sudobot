@@ -96,7 +96,7 @@ export default class VerificationController extends Controller {
         })
     )
     async verifyByEmail(request: Request) {
-        const { email, verificationToken, userId } = request.parsedBody;
+        const { email, verificationToken, userId } = request.parsedBody!;
         const key = request.headers["x-frontend-key"];
 
         if (key !== process.env.FRONTEND_AUTH_KEY) {
@@ -154,7 +154,7 @@ export default class VerificationController extends Controller {
     @Action("POST", "/challenge/verify/email/finish")
     @Validate(emailVerificationSchema)
     async verifyByEmailFinish(request: Request) {
-        const { emailVerificationToken, verificationToken, userId } = request.parsedBody;
+        const { emailVerificationToken, verificationToken, userId } = request.parsedBody!;
 
         const entry = await this.client.prisma.verificationEntry.findFirst({
             where: {
@@ -212,7 +212,7 @@ export default class VerificationController extends Controller {
         })
     )
     async verifyByCaptcha(request: Request) {
-        const { responseToken, verificationToken, userId } = request.parsedBody;
+        const { responseToken, verificationToken, userId } = request.parsedBody!;
 
         try {
             const response = await axios.post(

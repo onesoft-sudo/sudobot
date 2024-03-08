@@ -25,7 +25,12 @@ function url() {
     return `https://pixabay.com/api/?key=${process.env.PIXABAY_TOKEN}&safesearch=true&per_page=3`;
 }
 
-export async function image(cmd: Command & { hitError: Function }, message: CommandMessage, options: BasicCommandContext, type: "photo" | "all" | "illustration" | "vector") {
+export async function image(
+    cmd: Command & { hitError: PixabayCommand["hitError"] },
+    message: CommandMessage,
+    options: BasicCommandContext,
+    type: "photo" | "all" | "illustration" | "vector"
+) {
     let genurl = `${url()}&image_type=${type}`;
     const query = !options.isLegacy ? options.options.getString("query") : options.parsedNamedArgs.query;
 
@@ -55,21 +60,35 @@ export async function image(cmd: Command & { hitError: Function }, message: Comm
             console.log(err.message);
             await cmd.deferredReply(message, {
                 embeds: [
-                    new EmbedBuilder().setColor("#f14a60").setDescription("Too many requests at the same time, please try again after some time.")
+                    new EmbedBuilder()
+                        .setColor("#f14a60")
+                        .setDescription("Too many requests at the same time, please try again after some time.")
                 ]
             });
         });
 }
 
-export async function photo(cmd: Command & { hitError: Function }, message: CommandMessage, options: BasicCommandContext) {
+export async function photo(
+    cmd: Command & { hitError: PixabayCommand["hitError"] },
+    message: CommandMessage,
+    options: BasicCommandContext
+) {
     await image(cmd, message, options, "photo");
 }
 
-export async function vector(cmd: Command & { hitError: Function }, message: CommandMessage, options: BasicCommandContext) {
+export async function vector(
+    cmd: Command & { hitError: PixabayCommand["hitError"] },
+    message: CommandMessage,
+    options: BasicCommandContext
+) {
     await image(cmd, message, options, "vector");
 }
 
-export async function illustration(cmd: Command & { hitError: Function }, message: CommandMessage, options: BasicCommandContext) {
+export async function illustration(
+    cmd: Command & { hitError: PixabayCommand["hitError"] },
+    message: CommandMessage,
+    options: BasicCommandContext
+) {
     await image(cmd, message, options, "illustration");
 }
 
@@ -81,7 +100,9 @@ export default class PixabayCommand extends Command {
             types: [ArgumentType.String],
             name: "subcommand",
             errors: {
-                required: `Please provide a valid subcommand! The available subcommands are: \`${this.subcommandsCustom.join("`, `")}\`.`
+                required: `Please provide a valid subcommand! The available subcommands are: \`${this.subcommandsCustom.join(
+                    "`, `"
+                )}\`.`
             }
         },
         {

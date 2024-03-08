@@ -20,8 +20,10 @@
 import { User } from "@prisma/client";
 import { Request as ExpressRequest } from "express";
 
-export default interface Request extends ExpressRequest {
-    parsedBody?: any;
+interface Request extends ExpressRequest {
+    parsedBody?: Record<string, string>;
     user?: User;
     userId?: number;
 }
+
+export default Request;
