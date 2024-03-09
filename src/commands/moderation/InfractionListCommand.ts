@@ -19,7 +19,13 @@
 
 import { InfractionType } from "@prisma/client";
 import { EmbedBuilder, PermissionsBitField, User, codeBlock, time } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import Pagination from "../../utils/Pagination";
 
 export default class InfractionListCommand extends Command {
@@ -36,7 +42,10 @@ export default class InfractionListCommand extends Command {
             entity: true
         }
     ];
-    public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
+    public readonly permissions = [
+        PermissionsBitField.Flags.ModerateMembers,
+        PermissionsBitField.Flags.ViewAuditLog
+    ];
     public readonly permissionMode = "or";
     public readonly aliases: string[] = ["l", "history", "infraction__s", "infraction__l"];
 
@@ -44,10 +53,13 @@ export default class InfractionListCommand extends Command {
     public readonly argumentSyntaxes = ["<UserID|UserMention>"];
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
-        const user: User = context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user", true);
+        const user: User = context.isLegacy
+            ? context.parsedNamedArgs.user
+            : context.options.getUser("user", true);
 
         const infractions = await this.client.prisma.infraction.findMany({
-            where: { userId: user.id, guildId: message.guildId! }
+            where: { userId: user.id, guildId: message.guildId! },
+            orderBy: { createdAt: "desc" }
         });
 
         if (infractions.length === 0) {
@@ -71,13 +83,19 @@ export default class InfractionListCommand extends Command {
                     description += `**Type:** ${
                         infraction.type === InfractionType.BULK_DELETE_MESSAGE
                             ? "Bulk message delete"
-                            : infraction.type[0] + infraction.type.substring(1).toLowerCase().replace(/_/g, " ")
+                            : infraction.type[0] +
+                              infraction.type.substring(1).toLowerCase().replace(/_/g, " ")
                     }\n`;
                     description += `**Responsible Moderator:** <@${infraction.moderatorId}>\n`;
                     description += `**Reason:** ${
-                        infraction.reason ? "\n" + codeBlock(infraction.reason) : "*No reason provided*"
+                        infraction.reason
+                            ? "\n" + codeBlock(infraction.reason)
+                            : "*No reason provided*"
                     }\n`;
-                    description += `**Created At:** ${time(infraction.createdAt, "F")} (${time(infraction.createdAt, "R")})\n`;
+                    description += `**Created At:** ${time(infraction.createdAt, "F")} (${time(
+                        infraction.createdAt,
+                        "R"
+                    )})\n`;
                 }
 
                 return new EmbedBuilder({
