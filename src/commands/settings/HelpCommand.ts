@@ -46,7 +46,7 @@ export interface CommandInfo {
     aliases: string[];
     group: string;
     description?: string;
-    detailedDscription?: string;
+    detailedDescription?: string;
     systemAdminOnly: boolean;
     beta: boolean;
     argumentSyntaxes?: string[];
