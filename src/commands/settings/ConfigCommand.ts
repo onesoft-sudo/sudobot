@@ -53,6 +53,22 @@ export default class ConfigCommand extends Command implements HasEventListeners 
     public readonly aliases = ["setting", "settings"];
     public readonly description = "View or change a configuration setting.";
     public readonly argumentSyntaxes = ["<key> [value]"];
+    public readonly subcommandsMeta = {
+        get: {
+            description: "Get the value of a configuration key",
+            argumentSyntaxes: ["<key>"]
+        },
+        set: {
+            description: "Set the value of a configuration key",
+            argumentSyntaxes: ["<key> <value>"]
+        },
+        save: {
+            description: "Save the current configuration."
+        },
+        restore: {
+            description: "Restore the previously saved configuration."
+        }
+    };
     public readonly slashCommandBuilder = new SlashCommandBuilder()
         .addSubcommand(subcommand =>
             subcommand

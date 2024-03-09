@@ -28,11 +28,17 @@ import {
     escapeCodeBlock,
     escapeInlineCode
 } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
+import { log } from "../../utils/Logger";
 import Pagination from "../../utils/Pagination";
 import { DOCS_URL, GITHUB_URL, WEBSITE_URL } from "../../utils/links";
-import { log } from "../../utils/Logger";
 import { forceGetPermissionNames, getComponentEmojiResolvable } from "../../utils/utils";
 
 export interface CommandInfo {
@@ -75,8 +81,12 @@ export default class HelpCommand extends Command {
 
     public readonly commandInformation = new Collection<string, string[]>();
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addStringOption(option => option.setName("command").setDescription("Shows help for this command"))
-        .addStringOption(option => option.setName("subcommand").setDescription("Shows help for this subcommand"));
+        .addStringOption(option =>
+            option.setName("command").setDescription("Shows help for this command")
+        )
+        .addStringOption(option =>
+            option.setName("subcommand").setDescription("Shows help for this subcommand")
+        );
 
     @GatewayEventListener("ready")
     async onReady() {
@@ -103,8 +113,12 @@ export default class HelpCommand extends Command {
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
-        const commandName = context.isLegacy ? context.parsedNamedArgs.command : context.options.getString("command");
-        const subcommand = context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getString("subcommand");
+        const commandName = context.isLegacy
+            ? context.parsedNamedArgs.command
+            : context.options.getString("command");
+        const subcommand = context.isLegacy
+            ? context.parsedNamedArgs.subcommand
+            : context.options.getString("subcommand");
 
         const config = this.client.configManager.config[message.guildId!];
 
@@ -150,10 +164,16 @@ export default class HelpCommand extends Command {
                                 .setLabel("Documentation"),
                             new ButtonBuilder()
                                 .setStyle(ButtonStyle.Link)
-                                .setEmoji(getComponentEmojiResolvable(this.client, "github") ?? "☄️")
+                                .setEmoji(
+                                    getComponentEmojiResolvable(this.client, "github") ?? "☄️"
+                                )
                                 .setURL(GITHUB_URL)
                                 .setLabel("GitHub"),
-                            new ButtonBuilder().setStyle(ButtonStyle.Link).setEmoji("🌍").setURL(WEBSITE_URL).setLabel("Website")
+                            new ButtonBuilder()
+                                .setStyle(ButtonStyle.Link)
+                                .setEmoji("🌍")
+                                .setURL(WEBSITE_URL)
+                                .setLabel("Website")
                         )
                     ]
                 }
@@ -163,19 +183,32 @@ export default class HelpCommand extends Command {
             await pagination.start(reply);
         } else {
             const name = subcommand ? `${commandName} ${subcommand}` : commandName;
-            const command = this.client.commands.get(subcommand ? `${commandName}__${subcommand}` : commandName);
+            const command =
+                this.client.commands.get(
+                    subcommand ? `${commandName}__${subcommand}` : commandName
+                ) ?? this.client.commands.get(commandName);
+            const hasSubcommand =
+                subcommand && this.client.commands.has(`${commandName}__${subcommand}`);
+            const subcommandMeta = hasSubcommand ? command?.subcommandsMeta[subcommand] : undefined;
 
             if (!command) {
                 await this.error(
                     message,
                     subcommand
                         ? `No command \`${commandName}\` or no subcommand \`${subcommand}\` exists.`
-                        : `No command named \`${escapeInlineCode(escapeCodeBlock(commandName))}\` exists!`
+                        : `No command named \`${escapeInlineCode(
+                              escapeCodeBlock(commandName)
+                          )}\` exists!`
                 );
                 return;
             }
 
-            const options = command.availableOptions ? Object.entries(command.availableOptions) : [];
+            const options =
+                command.availableOptions || subcommandMeta?.availableOptions
+                    ? Object.entries(
+                          subcommandMeta?.availableOptions ?? command.availableOptions ?? {}
+                      )
+                    : [];
 
             await this.deferredReply(message, {
                 embeds: [
@@ -203,13 +236,22 @@ export default class HelpCommand extends Command {
                                 : []),
                             {
                                 name: "Description",
-                                value: command.detailedDescription ?? command.description ?? "*No description available*"
+                                value:
+                                    command.detailedDescription ??
+                                    command.description ??
+                                    "*No description available*"
                             },
                             {
                                 name: "Syntax",
                                 value: `\`\`\`\n${
-                                    command.argumentSyntaxes
-                                        ? command.argumentSyntaxes.map(s => `${config.prefix}${name} ${s}`).join("\n")
+                                    command.argumentSyntaxes || subcommandMeta?.argumentSyntaxes
+                                        ? (
+                                              subcommandMeta?.argumentSyntaxes ??
+                                              command.argumentSyntaxes ??
+                                              []
+                                          )
+                                              .map(s => `${config.prefix}${name} ${s}`)
+                                              .join("\n")
                                         : `${config.prefix}${name}`
                                 }\n\`\`\``
                             },
@@ -225,23 +267,39 @@ export default class HelpCommand extends Command {
                                       }
                                   ]
                                 : []),
-                            ...(command.botRequiredPermissions.length > 0
+                            ...((
+                                subcommandMeta?.botRequiredPermissions ??
+                                command.botRequiredPermissions
+                            ).length > 0
                                 ? [
                                       {
                                           name: "Required Bot Permissions",
-                                          value: "`" + forceGetPermissionNames(command.botRequiredPermissions).join("`\n`") + "`",
+                                          value:
+                                              "`" +
+                                              forceGetPermissionNames(
+                                                  subcommandMeta?.botRequiredPermissions ??
+                                                      command.botRequiredPermissions ??
+                                                      []
+                                              ).join("`\n`") +
+                                              "`",
                                           inline: true
                                       }
                                   ]
                                 : []),
-                            ...(command.permissions.length > 0
+                            ...((subcommandMeta?.permissions ?? command.permissions).length > 0
                                 ? [
                                       {
                                           name: "Required User Permissions",
                                           value:
                                               "`" +
-                                              forceGetPermissionNames(command.permissions).join(
-                                                  `\`\n${command.permissionMode === "or" ? "or, " : ""}\``
+                                              forceGetPermissionNames(
+                                                  subcommandMeta?.permissions ??
+                                                      command.permissions ??
+                                                      []
+                                              ).join(
+                                                  `\`\n${
+                                                      command.permissionMode === "or" ? "or, " : ""
+                                                  }\``
                                               ) +
                                               "`",
                                           inline: true
@@ -252,22 +310,35 @@ export default class HelpCommand extends Command {
                                 ? [
                                       {
                                           name: "Options",
-                                          value: options.map(([name, description]) => `* \`${name}\` - ${description}`).join("\n")
+                                          value: options
+                                              .map(
+                                                  ([name, description]) =>
+                                                      `* \`${name}\` - ${description}`
+                                              )
+                                              .join("\n")
                                       }
                                   ]
                                 : []),
                             {
                                 name: "Mode",
-                                value: `${this.emoji(command.supportsLegacy ? "check" : "error")} Legacy\n${this.emoji(
-                                    command.supportsInteractions ? "check" : "error"
+                                value: `${this.emoji(
+                                    (subcommandMeta ?? command).supportsLegacy ? "check" : "error"
+                                )} Legacy\n${this.emoji(
+                                    (subcommandMeta ?? command).supportsInteractions
+                                        ? "check"
+                                        : "error"
                                 )} Interaction-based`
                             },
                             {
                                 name: "Other Information",
-                                value: `Available since \`${command.since}\`.\n${
-                                    command.beta ? "This command is under beta testing.\n" : ""
+                                value: `Available since \`${
+                                    (subcommandMeta ?? command).since
+                                }\`.\n${
+                                    (subcommandMeta ?? command).beta
+                                        ? "This command is under beta testing.\n"
+                                        : ""
                                 }${
-                                    command.systemAdminOnly
+                                    (subcommandMeta ?? command).systemAdminOnly
                                         ? "This command can only be used by the System Administrators of the bot.\n"
                                         : ""
                                 }`,

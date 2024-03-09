@@ -42,7 +42,11 @@ import {
     TextBasedChannel,
     User
 } from "discord.js";
-import { ChatInputCommandContext, ContextMenuCommandContext, LegacyCommandContext } from "../services/CommandManager";
+import {
+    ChatInputCommandContext,
+    ContextMenuCommandContext,
+    LegacyCommandContext
+} from "../services/CommandManager";
 import EmbedSchemaParser from "../utils/EmbedSchemaParser";
 import { logError } from "../utils/Logger";
 import { channelInfo, guildInfo, userInfo } from "../utils/embed";
@@ -54,7 +58,10 @@ import { ValidationRule } from "./CommandArgumentParserInterface";
 
 export * from "./CommandArgumentParserInterface";
 
-export type CommandMessage = Message<boolean> | ChatInputCommandInteraction<CacheType> | ContextMenuCommandInteraction;
+export type CommandMessage =
+    | Message<boolean>
+    | ChatInputCommandInteraction<CacheType>
+    | ContextMenuCommandInteraction;
 export type BasicCommandContext = LegacyCommandContext | ChatInputCommandContext;
 export type AnyCommandContext = BasicCommandContext | ContextMenuCommandContext;
 export type CommandReturn =
@@ -69,7 +76,9 @@ type CommandSlashCommandBuilder =
 
 type DeferReplyMode = "delete" | "channel" | "default" | "auto";
 type DeferReplyOptions =
-    | ((MessageCreateOptions | MessagePayload | InteractionEditReplyOptions) & { ephemeral?: boolean })
+    | ((MessageCreateOptions | MessagePayload | InteractionEditReplyOptions) & {
+          ephemeral?: boolean;
+      })
     | string;
 type PermissionValidationResult =
     | boolean
@@ -85,6 +94,20 @@ export type RunCommandOptions = {
 };
 
 class PermissionError extends Error {}
+
+type SubcommandMeta = {
+    description?: string;
+    detailedDescription?: string;
+    argumentSyntaxes?: string[];
+    availableOptions?: Record<string, string>;
+    beta?: boolean;
+    since?: string;
+    botRequiredPermissions?: PermissionResolvable[];
+    permissions?: PermissionResolvable[];
+    supportsLegacy?: boolean;
+    supportsInteractions?: boolean;
+    systemAdminOnly?: boolean;
+};
 
 export default abstract class Command {
     public readonly name: string = "";
@@ -108,12 +131,17 @@ export default abstract class Command {
     public readonly botRequiredPermissions: PermissionResolvable[] = [];
     public readonly slashCommandBuilder?: CommandSlashCommandBuilder;
 
-    public readonly applicationCommandType: ApplicationCommandType = ApplicationCommandType.ChatInput;
-    public readonly otherApplicationCommandBuilders: (ContextMenuCommandBuilder | SlashCommandBuilder)[] = [];
+    public readonly applicationCommandType: ApplicationCommandType =
+        ApplicationCommandType.ChatInput;
+    public readonly otherApplicationCommandBuilders: (
+        | ContextMenuCommandBuilder
+        | SlashCommandBuilder
+    )[] = [];
 
     public readonly subcommands: string[] = [];
     public readonly subCommandCheck: boolean = false;
     public readonly cooldown?: number = undefined;
+    public readonly subcommandsMeta: Record<string, SubcommandMeta> = {};
 
     protected message?: CommandMessage;
 
@@ -121,7 +149,11 @@ export default abstract class Command {
 
     protected constructor(protected client: Client<true>) {}
 
-    abstract execute(message: CommandMessage, context: AnyCommandContext, options?: RunCommandOptions): Promise<CommandReturn>;
+    abstract execute(
+        message: CommandMessage,
+        context: AnyCommandContext,
+        options?: RunCommandOptions
+    ): Promise<CommandReturn>;
 
     protected getCommandMessage(): CommandMessage {
         if (!this.message) {
@@ -131,12 +163,23 @@ export default abstract class Command {
         return this.message;
     }
 
-    protected async deferIfInteraction(message: CommandMessage, options?: InteractionDeferReplyOptions) {
-        if (message instanceof ChatInputCommandInteraction) return await message.deferReply(options).catch(logError);
+    protected async deferIfInteraction(
+        message: CommandMessage,
+        options?: InteractionDeferReplyOptions
+    ) {
+        if (message instanceof ChatInputCommandInteraction)
+            return await message.deferReply(options).catch(logError);
     }
 
-    public async deferredReply(message: CommandMessage, options: DeferReplyOptions, mode: DeferReplyMode = "default") {
-        if (message instanceof ChatInputCommandInteraction || message instanceof ContextMenuCommandInteraction) {
+    public async deferredReply(
+        message: CommandMessage,
+        options: DeferReplyOptions,
+        mode: DeferReplyMode = "default"
+    ) {
+        if (
+            message instanceof ChatInputCommandInteraction ||
+            message instanceof ContextMenuCommandInteraction
+        ) {
             if (message.deferred) {
                 return message.editReply(options);
             }
@@ -145,18 +188,26 @@ export default abstract class Command {
             return response.fetch();
         }
 
-        const behaviour = this.client.configManager.config[message.guildId!]?.commands.moderation_command_behaviour;
+        const behaviour =
+            this.client.configManager.config[message.guildId!]?.commands
+                .moderation_command_behaviour;
 
         if (mode === "delete" || (mode === "auto" && behaviour === "delete")) {
             await message.delete().catch(logError);
         }
 
-        return mode === "delete" || (mode === "auto" && behaviour === "delete") || mode === "channel"
+        return mode === "delete" ||
+            (mode === "auto" && behaviour === "delete") ||
+            mode === "channel"
             ? message.channel.send(options as MessageCreateOptions)
             : message.reply(options as MessageReplyOptions);
     }
 
-    protected async error(message: CommandMessage, errorMessage?: string, mode: DeferReplyMode = "default") {
+    protected async error(
+        message: CommandMessage,
+        errorMessage?: string,
+        mode: DeferReplyMode = "default"
+    ) {
         return await this.deferredReply(
             message,
             errorMessage
@@ -166,10 +217,16 @@ export default abstract class Command {
         );
     }
 
-    protected async success(message: CommandMessage, successMessage?: string, mode: DeferReplyMode = "default") {
+    protected async success(
+        message: CommandMessage,
+        successMessage?: string,
+        mode: DeferReplyMode = "default"
+    ) {
         return await this.deferredReply(
             message,
-            successMessage ? `${this.emoji("check")} ${successMessage}` : "Successfully completed the given task.",
+            successMessage
+                ? `${this.emoji("check")} ${successMessage}`
+                : "Successfully completed the given task.",
             mode
         );
     }
@@ -191,7 +248,10 @@ export default abstract class Command {
         options: APIEmbed,
         params: {
             fields?: (fields: APIEmbedField[]) => Awaitable<APIEmbedField[]>;
-            before?: (channel: TextBasedChannel, sentMessages: Array<Message | null>) => Awaitable<void>;
+            before?: (
+                channel: TextBasedChannel,
+                sentMessages: Array<Message | null>
+            ) => Awaitable<void>;
             previews?: Array<MessageCreateOptions | MessagePayload>;
             url?: string | null;
         } = {}
@@ -201,7 +261,8 @@ export default abstract class Command {
         }
 
         const { previews = [] } = params;
-        const logChannelId = this.client.configManager.systemConfig.logging?.channels?.echo_send_logs;
+        const logChannelId =
+            this.client.configManager.systemConfig.logging?.channels?.echo_send_logs;
 
         if (!logChannelId) {
             return;
@@ -254,7 +315,9 @@ export default abstract class Command {
                     ? [
                           {
                               name: "Message URL",
-                              value: params.url ?? (message instanceof Message ? message.url : "*Not available*")
+                              value:
+                                  params.url ??
+                                  (message instanceof Message ? message.url : "*Not available*")
                           }
                       ]
                     : [])
@@ -292,7 +355,11 @@ export default abstract class Command {
             return false;
         }
 
-        const { cooldown, enabled } = this.client.cooldown.lock(message.guildId!, this.name, this.cooldown);
+        const { cooldown, enabled } = this.client.cooldown.lock(
+            message.guildId!,
+            this.name,
+            this.cooldown
+        );
 
         if (enabled) {
             const seconds = Math.max(Math.ceil(((cooldown ?? 0) - Date.now()) / 1000), 1);
@@ -302,7 +369,9 @@ export default abstract class Command {
                     {
                         description: `${this.emoji(
                             "clock_red"
-                        )} You're being rate limited, please wait for **${seconds}** second${seconds === 1 ? "" : "s"}.`,
+                        )} You're being rate limited, please wait for **${seconds}** second${
+                            seconds === 1 ? "" : "s"
+                        }.`,
                         color: 0xf14a60
                     }
                 ],
@@ -315,10 +384,14 @@ export default abstract class Command {
         return false;
     }
 
-    protected async validateCommandBuiltInPermissions(member: GuildMember, hasOverwrite: boolean): Promise<boolean> {
+    protected async validateCommandBuiltInPermissions(
+        member: GuildMember,
+        hasOverwrite: boolean
+    ): Promise<boolean> {
         if (
             this.client.configManager.systemConfig.default_permissions_mode === "ignore" ||
-            (hasOverwrite && this.client.configManager.systemConfig.default_permissions_mode === "overwrite")
+            (hasOverwrite &&
+                this.client.configManager.systemConfig.default_permissions_mode === "overwrite")
         ) {
             return true;
         }
@@ -337,13 +410,18 @@ export default abstract class Command {
             throw new PermissionError("This command is disabled.");
         }
 
-        const { channels, guild } = this.client.configManager.config[message.guildId!]?.disabled_commands ?? {};
+        const { channels, guild } =
+            this.client.configManager.config[message.guildId!]?.disabled_commands ?? {};
 
         if (guild && guild.includes(commandName ?? "")) {
             throw new PermissionError("This command is disabled in this server.");
         }
 
-        if (channels && channels[message.channelId!] && channels[message.channelId!].includes(commandName ?? "")) {
+        if (
+            channels &&
+            channels[message.channelId!] &&
+            channels[message.channelId!].includes(commandName ?? "")
+        ) {
             throw new PermissionError("This command is disabled in this channel.");
         }
 
@@ -351,7 +429,9 @@ export default abstract class Command {
     }
 
     protected validateSystemAdminPermissions(member: GuildMember) {
-        const isSystemAdmin = this.client.configManager.systemConfig.system_admins.includes(member.id);
+        const isSystemAdmin = this.client.configManager.systemConfig.system_admins.includes(
+            member.id
+        );
 
         if (this.systemAdminOnly && !isSystemAdmin) {
             throw new PermissionError("This command is only available to system administrators.");
@@ -368,7 +448,9 @@ export default abstract class Command {
         const { message } = options;
 
         try {
-            const { isSystemAdmin } = this.validateSystemAdminPermissions(message.member as GuildMember);
+            const { isSystemAdmin } = this.validateSystemAdminPermissions(
+                message.member as GuildMember
+            );
 
             if (isSystemAdmin) {
                 return { result: true };
@@ -380,8 +462,9 @@ export default abstract class Command {
 
             const builtInValidationResult = await this.validateCommandBuiltInPermissions(
                 message.member as GuildMember,
-                !!this.client.commandPermissionOverwriteManager.permissionOverwrites.get(`${message.guildId!}____${this.name}`)
-                    ?.length
+                !!this.client.commandPermissionOverwriteManager.permissionOverwrites.get(
+                    `${message.guildId!}____${this.name}`
+                )?.length
             );
 
             if (!builtInValidationResult) {
@@ -422,7 +505,11 @@ export default abstract class Command {
 
     protected async doChecks(options: RunCommandOptions) {
         const { message } = options;
-        const { result: permissionValidationResult, abort, error } = await this.validatePermissions(options);
+        const {
+            result: permissionValidationResult,
+            abort,
+            error
+        } = await this.validatePermissions(options);
 
         if (abort) {
             return;
@@ -430,11 +517,14 @@ export default abstract class Command {
 
         const isPermitted =
             (typeof permissionValidationResult === "boolean" && permissionValidationResult) ||
-            (typeof permissionValidationResult === "object" && permissionValidationResult.isPermitted);
+            (typeof permissionValidationResult === "object" &&
+                permissionValidationResult.isPermitted);
 
         if (!isPermitted || error) {
             const permissionValidationFailureSource =
-                (typeof permissionValidationResult === "object" && permissionValidationResult.source) || undefined;
+                (typeof permissionValidationResult === "object" &&
+                    permissionValidationResult.source) ||
+                undefined;
             const debugMode =
                 (this.client.configManager.systemConfig.debug_mode ||
                     this.client.configManager.config[message.guildId!]?.debug_mode) ??
@@ -443,7 +533,9 @@ export default abstract class Command {
             await this.error(
                 message,
                 `${error ?? "You don't have permission to run this command."}${
-                    debugMode && permissionValidationFailureSource ? `\nSource: \`${permissionValidationFailureSource}\`` : ""
+                    debugMode && permissionValidationFailureSource
+                        ? `\nSource: \`${permissionValidationFailureSource}\``
+                        : ""
                 }`
             );
 
@@ -478,10 +570,16 @@ export default abstract class Command {
             return false;
         }
 
-        if (context.isLegacy && this.subCommandCheck && !this.subcommands.includes(context.args[0])) {
+        if (
+            context.isLegacy &&
+            this.subCommandCheck &&
+            !this.subcommands.includes(context.args[0])
+        ) {
             await this.error(
                 message,
-                `Please provide a valid subcommand! The valid subcommands are \`${this.subcommands.join("`, `")}\`.`
+                `Please provide a valid subcommand! The valid subcommands are \`${this.subcommands.join(
+                    "`, `"
+                )}\`.`
             );
 
             return false;
