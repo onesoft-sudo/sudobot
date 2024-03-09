@@ -45,7 +45,7 @@ import { chunkedString, getEmoji, sudoPrefix } from "../utils/utils";
 
 export const name = "startupManager";
 
-const { BACKUP_CHANNEL_ID, ERROR_WEKHOOK_URL, BACKUP_STORAGE } = process.env;
+const { BACKUP_CHANNEL_ID, ERROR_WEBHOOK_URL, BACKUP_STORAGE } = process.env;
 
 export default class StartupManager extends Service implements HasEventListeners {
     interval: Timer | undefined = undefined;
@@ -57,7 +57,7 @@ export default class StartupManager extends Service implements HasEventListeners
             this.setBackupQueue();
         }
 
-        if (ERROR_WEKHOOK_URL) {
+        if (ERROR_WEBHOOK_URL) {
             log("Error webhook URL found. Setting up error handlers...");
             this.setupErrorHandlers();
         }
@@ -126,7 +126,7 @@ export default class StartupManager extends Service implements HasEventListeners
     }
 
     async sendErrorLog(content: string) {
-        const url = ERROR_WEKHOOK_URL;
+        const url = ERROR_WEBHOOK_URL;
 
         if (!url) {
             return;
