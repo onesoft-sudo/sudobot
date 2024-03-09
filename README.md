@@ -7,22 +7,23 @@
 <br />
 
 <p align="center">
-<a href="https://github.com/onesoft-sudo/sudobot/actions/workflows/build.yml"><img src="https://github.com/onesoft-sudo/sudobot/actions/workflows/build.yml/badge.svg" alt="Build"></a>
-<img src="https://img.shields.io/github/license/onesoft-sudo/sudobot?label=License" alt="GitHub">
-<a href="https://www.codefactor.io/repository/github/onesoft-sudo/sudobot"><img src="https://www.codefactor.io/repository/github/onesoft-sudo/sudobot/badge" alt="CodeFactor" /></a>
-<img src="https://img.shields.io/github/package-json/v/onesoft-sudo/sudobot?label=Version" alt="GitHub package.json version">
-<img src="https://img.shields.io/github/commit-activity/w/onesoft-sudo/sudobot?label=Commit%20Activity" alt="GitHub commit activity">
-<a href="https://discord.gg/892GWhTzgs"><img src="https://img.shields.io/discord/964969362073198652?label=OSN+Support+Chat" alt="Discord"></a>
+<a href="https://github.com/onesoft-sudo/sudobot/actions/workflows/build.yml"><img src="https://img.shields.io/github/actions/workflow/status/onesoft-sudo/sudobot/build.yml?branch=main&event=push&style=flat&logo=github&logoColor=%23fff&label=Build&labelColor=%23000&color=rgb(50%2C%2050%2C%2050)&cacheSeconds=60"></a>
+<a href="https://gnu.org/licenses/agpl-3.0.html"><img src="https://img.shields.io/github/license/onesoft-sudo/sudobot?style=flat&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2C77u%2FPD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiINCgkiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4NCjxzdmcgd2lkdGg9IjE5N3B4IiBoZWlnaHQ9IjE5N3B4IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSI%2BDQoJPGNpcmNsZSBjeD0iOTgiIGN5PSI5OCIgcj0iOTgiIGZpbGw9ImJsYWNrIi8%2BDQoJPGNpcmNsZSBjeD0iOTgiIGN5PSI5OCIgcj0iNzgiIGZpbGw9IndoaXRlIi8%2BDQoJPGNpcmNsZSBjeD0iOTgiIGN5PSI5OCIgcj0iNTUiIGZpbGw9ImJsYWNrIi8%2BDQoJPGNpcmNsZSBjeD0iOTgiIGN5PSI5OCIgcj0iMzAiIGZpbGw9IndoaXRlIi8%2BDQoJPHJlY3QgeD0iMTE1IiB5PSI4NSIgd2lkdGg9IjQ1IiBoZWlnaHQ9IjI1IiBmaWxsPSJ3aGl0ZSIvPg0KPC9zdmc%2B&logoColor=%23fff&label=License&labelColor=%23000&color=rgb(50%2C%2050%2C%2050)&cacheSeconds=60" /></a>
+<a href="https://www.codefactor.io/repository/github/onesoft-sudo/sudobot"><img alt="CodeFactor Grade" src="https://img.shields.io/codefactor/grade/github/onesoft-sudo/sudobot?style=flat&logo=codefactor&logoColor=%23fff&label=Codefactor&labelColor=%23000&cacheSeconds=60&link=https%3A%2F%2Fwww.codefactor.io%2Frepository%2Fgithub%2Fonesoft-sudo%2Fsudobot"></a>
+<a href="https://github.com/onesoft-sudo/sudobot/releases/latest"><img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/v/onesoft-sudo/sudobot?style=flat&logo=npm&logoColor=white&label=Version&labelColor=%23000&color=rgb(50%2C%2050%2C%2050)&cacheSeconds=60"></a>
+<img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/w/onesoft-sudo/sudobot?style=flat&logo=git&logoColor=white&label=Commits&labelColor=%23000&color=rgb(50%2C%2050%2C%2050)&cacheSeconds=60">
+<a href="https://discord.gg/892GWhTzgs"><img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscord.com%2Fapi%2Fguilds%2F964969362073198652%2Fwidget.json&query=presence_count&suffix=%20online&style=flat&logo=discord&logoColor=white&label=Discord&labelColor=%23000&color=rgb(50%2C%2050%2C%2050)&cacheSeconds=60&link=https%3A%2F%2Fdiscord.gg%2F892GWhTzgs" alt="Discord" /></a>
 </p>
 
 <p align="center">
 A free and open source Discord bot for moderation purposes. <a href="https://docs.sudobot.org/features/screenshots/">Click here</a> to see the screenshots.
 </p>
 
+<!--
 <p align="center">
 <a href="https://github.com/onesoft-sudo/sudobot/releases/latest"><img alt="Download from GitHub" src="https://res.cloudinary.com/rakinar2/image/upload/v1702811535/kh7v7c5jb4v3na1e67mg.png" width="276" height="48"></a>
 <a href="https://sourceforge.net/projects/sudobot/files/latest/download"><img alt="Download from SourceForge" src="https://a.fsdn.com/con/app/sf-download-button" width="276" height="48" srcset="https://a.fsdn.com/con/app/sf-download-button?button_size=2x 2x"></a>
-</p>
+</p> -->
 
 ## ❗ Need Contributors
 
