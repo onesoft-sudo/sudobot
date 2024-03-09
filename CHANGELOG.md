@@ -1,3 +1,18 @@
+# [8.24.0](https://github.com/onesoft-sudo/sudobot/compare/v8.23.0...v8.24.0) (2024-03-09)
+
+
+### Bug Fixes
+
+* **commands:help:** not showing correct information for single-file commands/subcommands ([54fead1](https://github.com/onesoft-sudo/sudobot/commit/54fead12c84c352e761a9e667b76a1945f035227))
+* **commands:help:** weird behaviour with subcommands ([6d15437](https://github.com/onesoft-sudo/sudobot/commit/6d1543733b70ce2ca4917cfce4fc5fe913bf0df1))
+
+
+### Features
+
+* support custom statuses ([6a25933](https://github.com/onesoft-sudo/sudobot/commit/6a259338f7b088585cb30803687687c4906ce4f6))
+
+
+
 # [8.23.0](https://github.com/onesoft-sudo/sudobot/compare/v8.22.1...v8.23.0) (2024-03-08)
 
 
@@ -32,15 +47,6 @@
 
 * **api:** extension controller ([9386bad](https://github.com/onesoft-sudo/sudobot/commit/9386bad6455fa2169d61915c7e4343f445f71ece))
 * better caching support ([f4031fb](https://github.com/onesoft-sudo/sudobot/commit/f4031fbfe167b8df48317cf93a26ba05fbed1156))
-
-
-
-## [8.20.3](https://github.com/onesoft-sudo/sudobot/compare/v8.20.2...v8.20.3) (2024-03-03)
-
-
-### Bug Fixes
-
-* **scripts:extensions.js:** emit 'version' property in extension index ([37fc90b](https://github.com/onesoft-sudo/sudobot/commit/37fc90b09872622cd89da294845faeff3a24090b))
 
 
 
