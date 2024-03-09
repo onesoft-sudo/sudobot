@@ -139,7 +139,7 @@ export default class ConfigManager extends Service {
         return null;
     }
 
-    async write({ guild = true, system = false } = {}) {
+    async write({ guild = true, system = true } = {}) {
         if (guild) {
             log(`Writing guild configuration to file: ${this.configPath}`);
 
