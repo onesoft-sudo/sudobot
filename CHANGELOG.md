@@ -1,3 +1,13 @@
+## [8.24.1](https://github.com/onesoft-sudo/sudobot/compare/v8.24.0...v8.24.1) (2024-03-09)
+
+
+### Bug Fixes
+
+* infraction list command sorting ([0c80f06](https://github.com/onesoft-sudo/sudobot/commit/0c80f06f69dbfe116e16509e0ee27b717242bb3f))
+* typo ([2f959c2](https://github.com/onesoft-sudo/sudobot/commit/2f959c2e31198e6f3c9f53b5bfb5427a7cccfec8))
+
+
+
 # [8.24.0](https://github.com/onesoft-sudo/sudobot/compare/v8.23.0...v8.24.0) (2024-03-09)
 
 
@@ -37,16 +47,6 @@
 ### Features
 
 * **api:** extension installation endpoint ([9c97e17](https://github.com/onesoft-sudo/sudobot/commit/9c97e178929422eba1ff094aa7708d9d773c5af9))
-
-
-
-# [8.21.0](https://github.com/onesoft-sudo/sudobot/compare/v8.20.3...v8.21.0) (2024-03-03)
-
-
-### Features
-
-* **api:** extension controller ([9386bad](https://github.com/onesoft-sudo/sudobot/commit/9386bad6455fa2169d61915c7e4343f445f71ece))
-* better caching support ([f4031fb](https://github.com/onesoft-sudo/sudobot/commit/f4031fbfe167b8df48317cf93a26ba05fbed1156))
 
 
 
