@@ -183,15 +183,19 @@ export default class HelpCommand extends Command {
             await pagination.start(reply);
         } else {
             const name = subcommand ? `${commandName} ${subcommand}` : commandName;
+            const rootCommandName = this.client.commands.get(commandName)?.name ?? commandName;
             const command =
                 this.client.commands.get(
-                    subcommand ? `${commandName}__${subcommand}` : commandName
+                    subcommand ? `${rootCommandName}__${subcommand}` : commandName
                 ) ?? this.client.commands.get(commandName);
             const hasSubcommand =
-                subcommand && this.client.commands.has(`${commandName}__${subcommand}`);
-            const subcommandMeta = hasSubcommand ? command?.subcommandsMeta[subcommand] : undefined;
+                subcommand && this.client.commands.has(`${rootCommandName}__${subcommand}`);
+            const subcommandMeta = hasSubcommand ? command : command?.subcommandsMeta[subcommand];
 
-            if (!command) {
+            if (
+                (!subcommand && !command) ||
+                (subcommand && !hasSubcommand && !command?.subcommandsMeta[subcommand])
+            ) {
                 await this.error(
                     message,
                     subcommand
@@ -204,50 +208,57 @@ export default class HelpCommand extends Command {
             }
 
             const options =
-                command.availableOptions || subcommandMeta?.availableOptions
+                command?.availableOptions || subcommandMeta?.availableOptions
                     ? Object.entries(
-                          subcommandMeta?.availableOptions ?? command.availableOptions ?? {}
+                          subcommandMeta?.availableOptions ?? command?.availableOptions ?? {}
                       )
                     : [];
 
             await this.deferredReply(message, {
                 embeds: [
                     new EmbedBuilder({
-                        title: `${config.prefix}${name}${command.beta ? " [BETA]" : ""}`,
+                        title: `${config.prefix}${name}${command?.beta ? " [BETA]" : ""}`,
                         color: 0x007bff,
                         fields: [
                             {
                                 name: "Name",
-                                value: `\`${subcommand ? name : command.name}\``,
+                                value: `\`${(subcommand ? name : command?.name)?.replace(
+                                    "__",
+                                    " "
+                                )}\``,
                                 inline: true
                             },
                             {
                                 name: "Group",
-                                value: `\`${command.group}\``,
+                                value: `\`${command?.group}\``,
                                 inline: true
                             },
-                            ...(command.aliases.length > 0
+                            ...(command?.aliases.length
                                 ? [
                                       {
                                           name: "Aliases",
-                                          value: command.aliases.map(c => `\`${c}\``).join("\n")
+                                          value: command?.aliases
+                                              ?.filter(c => c !== command?.name && c !== name)
+
+                                              .map(c => `\`${c.replace("__", " ")}\``)
+                                              .join("\n")
                                       }
                                   ]
                                 : []),
                             {
                                 name: "Description",
                                 value:
-                                    command.detailedDescription ??
-                                    command.description ??
+                                    command?.detailedDescription ??
+                                    command?.description ??
                                     "*No description available*"
                             },
                             {
                                 name: "Syntax",
                                 value: `\`\`\`\n${
-                                    command.argumentSyntaxes || subcommandMeta?.argumentSyntaxes
+                                    command?.argumentSyntaxes || subcommandMeta?.argumentSyntaxes
                                         ? (
                                               subcommandMeta?.argumentSyntaxes ??
-                                              command.argumentSyntaxes ??
+                                              command?.argumentSyntaxes ??
                                               []
                                           )
                                               .map(s => `${config.prefix}${name} ${s}`)
@@ -255,12 +266,14 @@ export default class HelpCommand extends Command {
                                         : `${config.prefix}${name}`
                                 }\n\`\`\``
                             },
-                            ...(command.subcommands.length > 0
+                            ...(command?.subcommands.length &&
+                            !hasSubcommand &&
+                            !command?.subcommandsMeta[subcommand]
                                 ? [
                                       {
                                           name: "Subcommands",
                                           value: `Run \`${config.prefix}help ${
-                                              command.name
+                                              command?.name
                                           } <subcommand>\` to see information about specific subcommands.\n\n* ${command.subcommands
                                               .map(s => `\`${s}\``)
                                               .join("\n* ")}`
@@ -269,8 +282,8 @@ export default class HelpCommand extends Command {
                                 : []),
                             ...((
                                 subcommandMeta?.botRequiredPermissions ??
-                                command.botRequiredPermissions
-                            ).length > 0
+                                command?.botRequiredPermissions
+                            )?.length
                                 ? [
                                       {
                                           name: "Required Bot Permissions",
@@ -278,7 +291,7 @@ export default class HelpCommand extends Command {
                                               "`" +
                                               forceGetPermissionNames(
                                                   subcommandMeta?.botRequiredPermissions ??
-                                                      command.botRequiredPermissions ??
+                                                      command?.botRequiredPermissions ??
                                                       []
                                               ).join("`\n`") +
                                               "`",
@@ -286,7 +299,7 @@ export default class HelpCommand extends Command {
                                       }
                                   ]
                                 : []),
-                            ...((subcommandMeta?.permissions ?? command.permissions).length > 0
+                            ...((subcommandMeta?.permissions ?? command?.permissions)?.length
                                 ? [
                                       {
                                           name: "Required User Permissions",
@@ -294,11 +307,11 @@ export default class HelpCommand extends Command {
                                               "`" +
                                               forceGetPermissionNames(
                                                   subcommandMeta?.permissions ??
-                                                      command.permissions ??
+                                                      command?.permissions ??
                                                       []
                                               ).join(
                                                   `\`\n${
-                                                      command.permissionMode === "or" ? "or, " : ""
+                                                      command?.permissionMode === "or" ? "or, " : ""
                                                   }\``
                                               ) +
                                               "`",
@@ -322,9 +335,12 @@ export default class HelpCommand extends Command {
                             {
                                 name: "Mode",
                                 value: `${this.emoji(
-                                    (subcommandMeta ?? command).supportsLegacy ? "check" : "error"
+                                    subcommandMeta?.supportsLegacy ?? command?.supportsLegacy
+                                        ? "check"
+                                        : "error"
                                 )} Legacy\n${this.emoji(
-                                    (subcommandMeta ?? command).supportsInteractions
+                                    subcommandMeta?.supportsInteractions ??
+                                        command?.supportsInteractions
                                         ? "check"
                                         : "error"
                                 )} Interaction-based`
@@ -332,13 +348,13 @@ export default class HelpCommand extends Command {
                             {
                                 name: "Other Information",
                                 value: `Available since \`${
-                                    (subcommandMeta ?? command).since
+                                    subcommandMeta?.since ?? command?.since
                                 }\`.\n${
-                                    (subcommandMeta ?? command).beta
+                                    subcommandMeta?.beta ?? command?.beta
                                         ? "This command is under beta testing.\n"
                                         : ""
                                 }${
-                                    (subcommandMeta ?? command).systemAdminOnly
+                                    subcommandMeta?.systemAdminOnly ?? command?.systemAdminOnly
                                         ? "This command can only be used by the System Administrators of the bot.\n"
                                         : ""
                                 }`,
