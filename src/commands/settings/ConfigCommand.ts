@@ -31,7 +31,13 @@ import {
 } from "discord.js";
 import JSON5 from "json5";
 import Client from "../../core/Client";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import { HasEventListeners } from "../../types/HasEventListeners";
 import { get, has, set, toDotted } from "../../utils/objects";
@@ -45,14 +51,16 @@ export default class ConfigCommand extends Command implements HasEventListeners 
             name: "subcommand",
             optional: false,
             errors: {
-                required: `You must provide a subcommand. The valid subcommands are \`${this.subcommands.join("`, `")}\`.`
+                required: `You must provide a subcommand. The valid subcommands are \`${this.subcommands.join(
+                    "`, `"
+                )}\`.`
             }
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.ManageGuild];
     public readonly aliases = ["setting", "settings"];
     public readonly description = "View or change a configuration setting.";
-    public readonly argumentSyntaxes = ["<key> [value]"];
+    public readonly argumentSyntaxes = ["<subcommand> <key> [value]"];
     public readonly subcommandsMeta = {
         get: {
             description: "Get the value of a configuration key",
@@ -82,16 +90,19 @@ export default class ConfigCommand extends Command implements HasEventListeners 
                         .setRequired(true)
                 )
                 .addStringOption(option =>
-                    option.setName("config_type").setDescription("The configuration type").setChoices(
-                        {
-                            name: "Guild",
-                            value: "guild"
-                        },
-                        {
-                            name: "System",
-                            value: "system"
-                        }
-                    )
+                    option
+                        .setName("config_type")
+                        .setDescription("The configuration type")
+                        .setChoices(
+                            {
+                                name: "Guild",
+                                value: "guild"
+                            },
+                            {
+                                name: "System",
+                                value: "system"
+                            }
+                        )
                 )
         )
         .addSubcommand(subcommand =>
@@ -106,47 +117,68 @@ export default class ConfigCommand extends Command implements HasEventListeners 
                         .setRequired(true)
                 )
                 .addStringOption(option =>
-                    option.setName("value").setDescription("The new value to set the configuration key to.").setRequired(true)
+                    option
+                        .setName("value")
+                        .setDescription("The new value to set the configuration key to.")
+                        .setRequired(true)
                 )
                 .addStringOption(option =>
-                    option.setName("cast").setDescription("The type to cast the value to.").setChoices(
-                        {
-                            name: "String",
-                            value: "string"
-                        },
-                        {
-                            name: "Number",
-                            value: "number"
-                        },
-                        {
-                            name: "Boolean",
-                            value: "boolean"
-                        },
-                        {
-                            name: "JSON",
-                            value: "json"
-                        }
-                    )
+                    option
+                        .setName("cast")
+                        .setDescription("The type to cast the value to.")
+                        .setChoices(
+                            {
+                                name: "String",
+                                value: "string"
+                            },
+                            {
+                                name: "Number",
+                                value: "number"
+                            },
+                            {
+                                name: "Boolean",
+                                value: "boolean"
+                            },
+                            {
+                                name: "JSON",
+                                value: "json"
+                            }
+                        )
                 )
-                .addBooleanOption(option => option.setName("save").setDescription("Save the current configuration immediately."))
                 .addBooleanOption(option =>
-                    option.setName("no_create").setDescription("Do not create the key if it does not exist.")
+                    option
+                        .setName("save")
+                        .setDescription("Save the current configuration immediately.")
+                )
+                .addBooleanOption(option =>
+                    option
+                        .setName("no_create")
+                        .setDescription("Do not create the key if it does not exist.")
                 )
                 .addStringOption(option =>
-                    option.setName("config_type").setDescription("The configuration type").setChoices(
-                        {
-                            name: "Guild",
-                            value: "guild"
-                        },
-                        {
-                            name: "System",
-                            value: "system"
-                        }
-                    )
+                    option
+                        .setName("config_type")
+                        .setDescription("The configuration type")
+                        .setChoices(
+                            {
+                                name: "Guild",
+                                value: "guild"
+                            },
+                            {
+                                name: "System",
+                                value: "system"
+                            }
+                        )
                 )
         )
-        .addSubcommand(subcommand => subcommand.setName("save").setDescription("Save the current configuration."))
-        .addSubcommand(subcommand => subcommand.setName("restore").setDescription("Restore the previously saved configuration."));
+        .addSubcommand(subcommand =>
+            subcommand.setName("save").setDescription("Save the current configuration.")
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("restore")
+                .setDescription("Restore the previously saved configuration.")
+        );
     protected readonly dottedConfig = {
         guild: {} as Record<string, string[]>,
         system: [] as string[]
@@ -169,7 +201,9 @@ export default class ConfigCommand extends Command implements HasEventListeners 
         }
 
         if (!configType || configType === "system") {
-            this.dottedConfig.system = Object.keys(toDotted(this.client.configManager.systemConfig));
+            this.dottedConfig.system = Object.keys(
+                toDotted(this.client.configManager.systemConfig)
+            );
         }
     }
 
@@ -180,8 +214,13 @@ export default class ConfigCommand extends Command implements HasEventListeners 
         }
 
         const query = interaction.options.getFocused();
-        const configType = (interaction.options.getString("config_type") ?? "guild") as "guild" | "system";
-        const config = configType === "guild" ? this.dottedConfig.guild[interaction.guildId!] : this.dottedConfig.system;
+        const configType = (interaction.options.getString("config_type") ?? "guild") as
+            | "guild"
+            | "system";
+        const config =
+            configType === "guild"
+                ? this.dottedConfig.guild[interaction.guildId!]
+                : this.dottedConfig.system;
         const keys = [];
 
         for (const key of config) {
@@ -200,7 +239,9 @@ export default class ConfigCommand extends Command implements HasEventListeners 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
-        const subcommand = context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true);
+        const subcommand = context.isLegacy
+            ? context.parsedNamedArgs.subcommand
+            : context.options.getSubcommand(true);
 
         switch (subcommand) {
             case "get":
@@ -216,13 +257,18 @@ export default class ConfigCommand extends Command implements HasEventListeners 
                     message,
                     `The subcommand \`${escapeInlineCode(
                         subcommand
-                    )}\` does not exist. Please use one of the following subcommands: \`${this.subcommands.join("`, `")}\`.`
+                    )}\` does not exist. Please use one of the following subcommands: \`${this.subcommands.join(
+                        "`, `"
+                    )}\`.`
                 );
                 return;
         }
     }
 
-    private async get(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
+    private async get(
+        message: CommandMessage,
+        context: BasicCommandContext
+    ): Promise<CommandReturn> {
         const key = context.isLegacy ? context.args[1] : context.options.getString("key", true);
 
         if (!key) {
@@ -230,13 +276,17 @@ export default class ConfigCommand extends Command implements HasEventListeners 
             return;
         }
 
-        const configType = (context.isLegacy ? "guild" : context.options.getString("config_type") ?? "guild") as
-            | "guild"
-            | "system";
-        const config = configType === "guild" ? context.config : this.client.configManager.systemConfig;
+        const configType = (
+            context.isLegacy ? "guild" : context.options.getString("config_type") ?? "guild"
+        ) as "guild" | "system";
+        const config =
+            configType === "guild" ? context.config : this.client.configManager.systemConfig;
 
         if (!has(config, key)) {
-            await this.error(message, `The configuration key \`${escapeInlineCode(key)}\` does not exist.`);
+            await this.error(
+                message,
+                `The configuration key \`${escapeInlineCode(key)}\` does not exist.`
+            );
             return;
         }
 
@@ -259,7 +309,10 @@ export default class ConfigCommand extends Command implements HasEventListeners 
         await this.deferredReply(message, { embeds: [embed] });
     }
 
-    private async set(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
+    private async set(
+        message: CommandMessage,
+        context: BasicCommandContext
+    ): Promise<CommandReturn> {
         if (context.isLegacy) {
             if (!context.args[1]) {
                 await this.error(message, "You must provide a configuration key to set.");
@@ -267,7 +320,10 @@ export default class ConfigCommand extends Command implements HasEventListeners 
             }
 
             if (!context.args[2]) {
-                await this.error(message, "You must provide a value to set the configuration key to.");
+                await this.error(
+                    message,
+                    "You must provide a value to set the configuration key to."
+                );
                 return;
             }
         }
@@ -285,13 +341,16 @@ export default class ConfigCommand extends Command implements HasEventListeners 
                       .slice(context.argv[2].length)
                       .trim() // FIXME: Extract this into a method
                 : (message as ChatInputCommandInteraction).options.getString("value", true);
-        const cast = (context.isLegacy ? "json" : context.options.getString("cast") ?? "string") as CastType;
+        const cast = (
+            context.isLegacy ? "json" : context.options.getString("cast") ?? "string"
+        ) as CastType;
         const save = context.isLegacy ? false : context.options.getBoolean("save");
         const noCreate = context.isLegacy ? false : context.options.getBoolean("no_create");
-        const configType = (context.isLegacy ? "guild" : context.options.getString("config_type") ?? "guild") as
-            | "guild"
-            | "system";
-        const config = configType === "guild" ? context.config : this.client.configManager.systemConfig;
+        const configType = (
+            context.isLegacy ? "guild" : context.options.getString("config_type") ?? "guild"
+        ) as "guild" | "system";
+        const config =
+            configType === "guild" ? context.config : this.client.configManager.systemConfig;
 
         if (!key) {
             await this.error(message, "You must provide a configuration key to set.");
@@ -299,7 +358,10 @@ export default class ConfigCommand extends Command implements HasEventListeners 
         }
 
         if (noCreate && !has(config, key)) {
-            await this.error(message, `The configuration key \`${escapeInlineCode(key)}\` does not exist.`);
+            await this.error(
+                message,
+                `The configuration key \`${escapeInlineCode(key)}\` does not exist.`
+            );
             return;
         }
 
@@ -313,7 +375,10 @@ export default class ConfigCommand extends Command implements HasEventListeners 
                 finalValue = parseFloat(value);
 
                 if (isNaN(finalValue)) {
-                    await this.error(message, `The value \`${escapeInlineCode(value)}\` is not a valid number.`);
+                    await this.error(
+                        message,
+                        `The value \`${escapeInlineCode(value)}\` is not a valid number.`
+                    );
                     return;
                 }
 
@@ -323,7 +388,10 @@ export default class ConfigCommand extends Command implements HasEventListeners 
                     const lowerCased = value.toLowerCase();
 
                     if (lowerCased !== "true" && lowerCased !== "false") {
-                        await this.error(message, `The value \`${escapeInlineCode(value)}\` is not a valid boolean.`);
+                        await this.error(
+                            message,
+                            `The value \`${escapeInlineCode(value)}\` is not a valid boolean.`
+                        );
                         return;
                     }
 
@@ -334,14 +402,19 @@ export default class ConfigCommand extends Command implements HasEventListeners 
                 try {
                     finalValue = JSON5.parse(value);
                 } catch (e) {
-                    const error = codeBlock(e instanceof Object && "message" in e ? `${e.message}` : `${e}`);
+                    const error = codeBlock(
+                        e instanceof Object && "message" in e ? `${e.message}` : `${e}`
+                    );
                     await this.deferredReply(message, {
                         embeds: [
                             {
-                                description: `### ${this.emoji("error")} Failed to parse the value as JSON\n\n${error.slice(
-                                    0,
-                                    1800
-                                )}${error.length > 1800 ? "\n... The error message is loo long." : ""}`,
+                                description: `### ${this.emoji(
+                                    "error"
+                                )} Failed to parse the value as JSON\n\n${error.slice(0, 1800)}${
+                                    error.length > 1800
+                                        ? "\n... The error message is loo long."
+                                        : ""
+                                }`,
                                 color: Colors.Red,
                                 footer: {
                                     text: "No changes were made to the configuration"

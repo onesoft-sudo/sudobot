@@ -21,7 +21,7 @@ import { ActivityType } from "discord.js";
 import { z } from "zod";
 import { zSnowflake } from "./SnowflakeSchema";
 
-type ApplicationActivityType = Exclude<keyof typeof ActivityType, "Custom">;
+type ApplicationActivityType = keyof typeof ActivityType;
 
 export const SystemConfigSchema = z.object({
     $schema: z.string().optional(),
@@ -41,12 +41,14 @@ export const SystemConfigSchema = z.object({
             name: z.string().optional(),
             status: z.enum(["online", "idle", "dnd", "invisible"]).optional(),
             url: z.string().optional(),
-            type: z.enum(
-                Object.keys(ActivityType).filter(a => typeof a === "string" && a !== "Custom") as [
-                    ApplicationActivityType,
-                    ...ApplicationActivityType[]
-                ]
-            )
+            type: z.enum([
+                "Competing",
+                "Listening",
+                "Playing",
+                "Streaming",
+                "Watching",
+                "Custom"
+            ] satisfies [ApplicationActivityType, ...ApplicationActivityType[]])
         })
         .optional(),
     commands: z
@@ -61,10 +63,21 @@ export const SystemConfigSchema = z.object({
         .object({
             enabled: z.boolean().default(true),
             server_status: z
-                .enum(["operational", "degraded", "partial_outage", "major_outage", "maintenence", "error"])
+                .enum([
+                    "operational",
+                    "degraded",
+                    "partial_outage",
+                    "major_outage",
+                    "maintenance",
+                    "error"
+                ])
                 .default("operational"),
             server_status_description: z.string().optional(),
-            server_status_started_at: z.string().pipe(z.coerce.date()).or(z.date()).default(new Date())
+            server_status_started_at: z
+                .string()
+                .pipe(z.coerce.date())
+                .or(z.date())
+                .default(new Date())
         })
         .default({}),
     extensions: z

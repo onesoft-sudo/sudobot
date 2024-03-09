@@ -24,7 +24,6 @@ import { AnyZodObject, z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import type { Extension } from "../core/Extension";
 import Service from "../core/Service";
-import FileSystem from "../polyfills/FileSystem";
 import { GuildConfig, GuildConfigSchema } from "../types/GuildConfigSchema";
 import { SystemConfig, SystemConfigSchema } from "../types/SystemConfigSchema";
 import { log, logDebug, logInfo } from "../utils/Logger";
@@ -45,8 +44,10 @@ export default class ConfigManager extends Service {
     public readonly configSchemaPath = path.join(this.schemaDirectory, "config.json");
     public readonly systemConfigSchemaPath = path.join(this.schemaDirectory, "system.json");
 
-    protected configSchemaInfo = "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/config/schema/config.json";
-    protected systemConfigSchemaInfo = "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/config/schema/system.json";
+    protected configSchemaInfo =
+        "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/config/schema/config.json";
+    protected systemConfigSchemaInfo =
+        "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/config/schema/system.json";
     protected loaded = false;
     protected guildConfigSchema = GuildConfigSchema;
     protected systemConfigSchema = SystemConfigSchema;
@@ -77,7 +78,9 @@ export default class ConfigManager extends Service {
 
     async load() {
         log(`Loading system configuration from file: ${this.systemConfigPath}`);
-        const systemConfigFileContents = await fs.readFile(this.systemConfigPath, { encoding: "utf-8" });
+        const systemConfigFileContents = await fs.readFile(this.systemConfigPath, {
+            encoding: "utf-8"
+        });
 
         log(`Loading guild configuration from file: ${this.configPath}`);
         const configFileContents = await fs.readFile(this.configPath, { encoding: "utf-8" });
@@ -115,6 +118,7 @@ export default class ConfigManager extends Service {
         }
 
         if (!process.env.NO_GENERATE_CONFIG_SCHEMA) {
+            this.client.logger.info("Generating configuration schema files");
             this.generateSchema();
         }
     }
@@ -206,16 +210,20 @@ export default class ConfigManager extends Service {
     }
 
     async generateSchema() {
-        if (!FileSystem.exists(this.configSchemaPath)) {
-            const configSchema = JSON.stringify(zodToJsonSchema(this.guildConfigContainerSchema), null, 4);
-            await writeFile(this.configSchemaPath, configSchema, { encoding: "utf-8" });
-            logInfo("Successfully generated the guild configuration schema file");
-        }
+        const configSchema = JSON.stringify(
+            zodToJsonSchema(this.guildConfigContainerSchema),
+            null,
+            4
+        );
+        await writeFile(this.configSchemaPath, configSchema, { encoding: "utf-8" });
+        logInfo("Successfully generated the guild configuration schema file");
 
-        if (!FileSystem.exists(this.systemConfigSchemaPath)) {
-            const systemConfigSchema = JSON.stringify(zodToJsonSchema(this.systemConfigSchema), null, 4);
-            await writeFile(this.systemConfigSchemaPath, systemConfigSchema, { encoding: "utf-8" });
-            logInfo("Successfully generated the system configuration schema file");
-        }
+        const systemConfigSchema = JSON.stringify(
+            zodToJsonSchema(this.systemConfigSchema),
+            null,
+            4
+        );
+        await writeFile(this.systemConfigSchemaPath, systemConfigSchema, { encoding: "utf-8" });
+        logInfo("Successfully generated the system configuration schema file");
     }
 }

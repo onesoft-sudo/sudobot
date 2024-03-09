@@ -67,17 +67,12 @@
                 "type": {
                     "type": "string",
                     "enum": [
-                        "0",
-                        "1",
-                        "2",
-                        "3",
-                        "4",
-                        "5",
+                        "Competing",
+                        "Listening",
                         "Playing",
                         "Streaming",
-                        "Listening",
                         "Watching",
-                        "Competing"
+                        "Custom"
                     ]
                 }
             },
@@ -134,7 +129,7 @@
                         "degraded",
                         "partial_outage",
                         "major_outage",
-                        "maintenence",
+                        "maintenance",
                         "error"
                     ],
                     "default": "operational"
@@ -160,7 +155,7 @@
                             "format": "date-time"
                         }
                     ],
-                    "default": "2024-03-03T17:49:08.879Z"
+                    "default": "2024-03-09T16:04:58.705Z"
                 }
             },
             "additionalProperties": false,

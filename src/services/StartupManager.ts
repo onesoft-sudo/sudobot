@@ -22,7 +22,15 @@ import axios from "axios";
 import chalk from "chalk";
 import { spawnSync } from "child_process";
 import { formatDistanceToNowStrict } from "date-fns";
-import { APIEmbed, ActivityType, Attachment, AttachmentBuilder, Colors, WebhookClient, escapeCodeBlock } from "discord.js";
+import {
+    APIEmbed,
+    ActivityType,
+    Attachment,
+    AttachmentBuilder,
+    Colors,
+    WebhookClient,
+    escapeCodeBlock
+} from "discord.js";
 import figlet from "figlet";
 import { existsSync, readFileSync } from "fs";
 import { rm } from "fs/promises";
@@ -41,7 +49,8 @@ const { BACKUP_CHANNEL_ID, ERROR_WEKHOOK_URL, BACKUP_STORAGE } = process.env;
 
 export default class StartupManager extends Service implements HasEventListeners {
     interval: Timer | undefined = undefined;
-    readonly packageJsonUrl = "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/package.json";
+    readonly packageJsonUrl =
+        "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/package.json";
 
     async onReady() {
         if (BACKUP_CHANNEL_ID) {
@@ -59,7 +68,9 @@ export default class StartupManager extends Service implements HasEventListeners
             logInfo("Found restart.json file: ", restartJsonFile);
 
             try {
-                const { guildId, messageId, channelId, time } = JSON.parse(readFileSync(restartJsonFile, { encoding: "utf-8" }));
+                const { guildId, messageId, channelId, time } = JSON.parse(
+                    readFileSync(restartJsonFile, { encoding: "utf-8" })
+                );
 
                 const guild = this.client.guilds.cache.get(guildId);
 
@@ -84,10 +95,12 @@ export default class StartupManager extends Service implements HasEventListeners
                         {
                             color: Colors.Green,
                             title: "System Restart",
-                            description: `${getEmoji(this.client, "check")} Operation completed. (took ${(
-                                (Date.now() - time) /
-                                1000
-                            ).toFixed(2)}s)`
+                            description: `${getEmoji(
+                                this.client,
+                                "check"
+                            )} Operation completed. (took ${((Date.now() - time) / 1000).toFixed(
+                                2
+                            )}s)`
                         }
                     ]
                 });
@@ -156,9 +169,12 @@ export default class StartupManager extends Service implements HasEventListeners
             logError(reason);
             this.sendErrorLog(
                 `Unhandled promise rejection: ${
-                    typeof reason === "string" || typeof (reason as string | undefined)?.toString === "function"
+                    typeof reason === "string" ||
+                    typeof (reason as string | undefined)?.toString === "function"
                         ? escapeCodeBlock(
-                              (reason as string | undefined)?.toString ? (reason as string).toString() : (reason as string)
+                              (reason as string | undefined)?.toString
+                                  ? (reason as string).toString()
+                                  : (reason as string)
                           )
                         : reason
                 }`
@@ -169,7 +185,8 @@ export default class StartupManager extends Service implements HasEventListeners
             process.removeAllListeners("uncaughtException");
             logError(error);
             this.sendErrorLog(
-                error.stack ?? `Uncaught ${error.name.trim() === "" ? "Error" : error.name}: ${error.message}`
+                error.stack ??
+                    `Uncaught ${error.name.trim() === "" ? "Error" : error.name}: ${error.message}`
             ).finally(() => process.exit(-1));
         });
     }
@@ -250,17 +267,25 @@ export default class StartupManager extends Service implements HasEventListeners
     }
 
     setBackupQueue() {
-        const time = process.env.BACKUP_INTERVAL ? parseInt(process.env.BACKUP_INTERVAL) : 1000 * 60 * 60 * 2;
+        const time = process.env.BACKUP_INTERVAL
+            ? parseInt(process.env.BACKUP_INTERVAL)
+            : 1000 * 60 * 60 * 2;
         const finalTime = isNaN(time) ? 1000 * 60 * 60 * 2 : time;
         this.interval = setInterval(this.sendConfigBackupCopy.bind(this), finalTime);
-        logInfo(`Configuration backups will be sent in each ${formatDistanceToNowStrict(new Date(Date.now() - finalTime))}`);
+        logInfo(
+            `Configuration backups will be sent in each ${formatDistanceToNowStrict(
+                new Date(Date.now() - finalTime)
+            )}`
+        );
         logInfo("Sending initial backup");
         this.sendConfigBackupCopy();
     }
 
     systemUpdate(branch = "main") {
         if (spawnSync(`git pull origin ${branch}`).error?.message.endsWith("ENOENT")) {
-            logError("Cannot perform an automatic update - the system does not have Git installed and available in $PATH.");
+            logError(
+                "Cannot perform an automatic update - the system does not have Git installed and available in $PATH."
+            );
             return false;
         }
 
@@ -270,7 +295,9 @@ export default class StartupManager extends Service implements HasEventListeners
         }
 
         const { version } = require("../../package.json");
-        logSuccess(`Successfully completed automatic update - system upgraded to version ${version}`);
+        logSuccess(
+            `Successfully completed automatic update - system upgraded to version ${version}`
+        );
         return true;
     }
 
@@ -279,7 +306,10 @@ export default class StartupManager extends Service implements HasEventListeners
             const response = await axios.get(this.packageJsonUrl);
             const newVersion = response.data?.version;
 
-            if (typeof newVersion === "string" && gt(newVersion, this.client.metadata.data.version)) {
+            if (
+                typeof newVersion === "string" &&
+                gt(newVersion, this.client.metadata.data.version)
+            ) {
                 logInfo("Found update - performing an automatic update");
                 this.systemUpdate();
             }
