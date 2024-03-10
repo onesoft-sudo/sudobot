@@ -26,6 +26,8 @@ export default class BallotVoteListCommand extends Command {
     public readonly name = "ballot__votelist";
     public readonly permissions = [];
     public readonly description = "Shows a list of each vote in a poll/ballot.";
+    public readonly supportsInteractions: boolean = true;
+    public readonly supportsLegacy: boolean = true;
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (context.isLegacy && context.args[0] === undefined) {
@@ -36,11 +38,16 @@ export default class BallotVoteListCommand extends Command {
         await this.deferIfInteraction(message);
 
         type Mode = "all" | "upvotes" | "downvotes";
-        const id = context.isLegacy ? parseInt(context.args[0]) : context.options.getInteger("id", true);
+        const id = context.isLegacy
+            ? parseInt(context.args[0])
+            : context.options.getInteger("id", true);
         const mode = <Mode>((context.isLegacy ? null : context.options.getString("mode")) ?? "all");
 
         if (isNaN(id)) {
-            await this.error(message, "Invalid ballot ID given! Ballot IDs must be numeric values.");
+            await this.error(
+                message,
+                "Invalid ballot ID given! Ballot IDs must be numeric values."
+            );
             return;
         }
 
@@ -55,9 +62,9 @@ export default class BallotVoteListCommand extends Command {
         }
 
         const user = ballot.anonymous ? null : await safeUserFetch(this.client, ballot.userId);
-        const url = `https://discord.com/channels/${encodeURIComponent(ballot.guildId)}/${encodeURIComponent(
-            ballot.channelId
-        )}/${encodeURIComponent(ballot.messageId)}`;
+        const url = `https://discord.com/channels/${encodeURIComponent(
+            ballot.guildId
+        )}/${encodeURIComponent(ballot.channelId)}/${encodeURIComponent(ballot.messageId)}`;
 
         const data = [
             ...(mode === "all" || mode === "upvotes"
@@ -87,7 +94,9 @@ export default class BallotVoteListCommand extends Command {
                     {
                         author: {
                             name: ballot.anonymous ? "Staff" : user?.username ?? "Unknown",
-                            icon_url: ballot.anonymous ? message.guild!.iconURL() ?? undefined : user?.displayAvatarURL(),
+                            icon_url: ballot.anonymous
+                                ? message.guild!.iconURL() ?? undefined
+                                : user?.displayAvatarURL(),
                             url
                         },
                         description: ballot.content,
@@ -113,7 +122,10 @@ export default class BallotVoteListCommand extends Command {
                 ],
                 components: [
                     new ActionRowBuilder<ButtonBuilder>().addComponents(
-                        new ButtonBuilder().setURL(url).setStyle(ButtonStyle.Link).setLabel("Go to ballot message")
+                        new ButtonBuilder()
+                            .setURL(url)
+                            .setStyle(ButtonStyle.Link)
+                            .setLabel("Go to ballot message")
                     )
                 ]
             },
@@ -121,9 +133,9 @@ export default class BallotVoteListCommand extends Command {
                 let description = "";
 
                 for (const vote of data) {
-                    description += ` * **${vote.type[0].toUpperCase()}${vote.type.substring(1)}** - <@${vote.userId}> [${
-                        vote.userId
-                    }]\n`;
+                    description += ` * **${vote.type[0].toUpperCase()}${vote.type.substring(
+                        1
+                    )}** - <@${vote.userId}> [${vote.userId}]\n`;
                 }
 
                 description = description === "" ? "*No vote was recorded*" : description;

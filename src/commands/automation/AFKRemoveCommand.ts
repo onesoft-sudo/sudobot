@@ -50,7 +50,7 @@ export default class AFKRemoveCommand extends Command {
         "-s, --scope=[everywhere|guild|global]":
             "Change the scope of this removal [System Admin Only]"
     };
-    public readonly aliases = ["afks_delete"];
+    public readonly aliases = ["afks__delete"];
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);

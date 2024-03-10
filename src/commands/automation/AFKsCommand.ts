@@ -52,28 +52,43 @@ export default class AFKsCommand extends Command {
             subcommand
                 .setName("remove")
                 .setDescription("Removes AFK status for a user")
-                .addUserOption(option => option.setName("user").setDescription("The user").setRequired(true))
+                .addUserOption(option =>
+                    option.setName("user").setDescription("The user").setRequired(true)
+                )
                 .addStringOption(option =>
-                    option.setName("scope").setDescription("Scope for this removal; defaults to Guild Scope").setChoices(
-                        {
-                            name: "Guild-Scoped",
-                            value: "guild"
-                        },
-                        {
-                            name: "Global",
-                            value: "global"
-                        },
-                        {
-                            name: "Everywhere",
-                            value: "everywhere"
-                        }
-                    )
+                    option
+                        .setName("scope")
+                        .setDescription("Scope for this removal; defaults to Guild Scope")
+                        .setChoices(
+                            {
+                                name: "Guild-Scoped",
+                                value: "guild"
+                            },
+                            {
+                                name: "Global",
+                                value: "global"
+                            },
+                            {
+                                name: "Everywhere",
+                                value: "everywhere"
+                            }
+                        )
                 )
         )
-        .addSubcommand(subcommand => subcommand.setName("clear").setDescription("Removes AFK statuses for all users in a guild"));
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("clear")
+                .setDescription("Removes AFK statuses for all users in a guild")
+        );
 
-    async execute(message: CommandMessage, context: BasicCommandContext, options: RunCommandOptions): Promise<CommandReturn> {
-        const subcommand = context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true);
+    async execute(
+        message: CommandMessage,
+        context: BasicCommandContext,
+        options: RunCommandOptions
+    ): Promise<CommandReturn> {
+        const subcommand = context.isLegacy
+            ? context.parsedNamedArgs.subcommand
+            : context.options.getSubcommand(true);
         const command = this.client.commands.get(`afks__${subcommand}`);
 
         if (!command) {
@@ -85,6 +100,7 @@ export default class AFKsCommand extends Command {
 
         return await command.run({
             ...options,
+            message,
             context
         });
     }

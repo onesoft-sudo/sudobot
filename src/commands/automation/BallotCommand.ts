@@ -18,11 +18,17 @@
  */
 
 import { SlashCommandBuilder } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 
 export default class BallotCommand extends Command {
     public readonly name = "ballot";
-    public readonly subcommands = ["create", "delete", "edit"];
+    public readonly subcommands = ["create", "delete", "view", "votelist"];
     public readonly subCommandCheck = true;
     public readonly validationRules: ValidationRule[] = [
         {
@@ -31,7 +37,7 @@ export default class BallotCommand extends Command {
                 required: `Please provide a valid subcommand! The valid commands are: \`${this.subcommands.join(
                     "`, `"
                 )}\``,
-                "type:invalid": "Please provide a valid subcommand!",
+                "type:invalid": "Please provide a valid subcommand!"
             },
             name: "subcommand"
         }
@@ -44,55 +50,75 @@ export default class BallotCommand extends Command {
             subcommand
                 .setName("create")
                 .setDescription("Sends a poll/ballot embed")
-                .addStringOption(option => option.setName("content").setDescription("The ballot/poll content").setRequired(true))
+                .addStringOption(option =>
+                    option
+                        .setName("content")
+                        .setDescription("The ballot/poll content")
+                        .setRequired(true)
+                )
                 .addBooleanOption(option =>
                     option
                         .setName("anonymous")
-                        .setDescription("Anonymous mode won't show your name in the ballot. Default is true")
+                        .setDescription(
+                            "Anonymous mode won't show your name in the ballot. Default is true"
+                        )
                 )
                 .addChannelOption(option =>
                     option
                         .setName("channel")
-                        .setDescription("The channel where the message will be sent, defaults to the current channel")
+                        .setDescription(
+                            "The channel where the message will be sent, defaults to the current channel"
+                        )
                 )
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName("view")
                 .setDescription("Shows a poll/ballot")
-                .addIntegerOption(option => option.setName("id").setDescription("The ballot ID").setRequired(true))
+                .addIntegerOption(option =>
+                    option.setName("id").setDescription("The ballot ID").setRequired(true)
+                )
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName("votelist")
                 .setDescription("Shows a list of each vote in a poll/ballot")
-                .addIntegerOption(option => option.setName("id").setDescription("The ballot ID").setRequired(true))
+                .addIntegerOption(option =>
+                    option.setName("id").setDescription("The ballot ID").setRequired(true)
+                )
                 .addStringOption(option =>
-                    option.setName("mode").setDescription("Determines what kind of data is shown").setChoices(
-                        {
-                            name: "All Votes",
-                            value: "all"
-                        },
-                        {
-                            name: "Upvotes",
-                            value: "upvotes"
-                        },
-                        {
-                            name: "Downvotes",
-                            value: "downvotes"
-                        }
-                    )
+                    option
+                        .setName("mode")
+                        .setDescription("Determines what kind of data is shown")
+                        .setChoices(
+                            {
+                                name: "All Votes",
+                                value: "all"
+                            },
+                            {
+                                name: "Upvotes",
+                                value: "upvotes"
+                            },
+                            {
+                                name: "Downvotes",
+                                value: "downvotes"
+                            }
+                        )
                 )
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName("delete")
                 .setDescription("Deletes a poll/ballot")
-                .addIntegerOption(option => option.setName("id").setDescription("The ballot ID").setRequired(true))
+                .addIntegerOption(option =>
+                    option.setName("id").setDescription("The ballot ID").setRequired(true)
+                )
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
-        const subcommand = context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true);
+        const subcommand = context.isLegacy
+            ? context.parsedNamedArgs.subcommand
+            : context.options.getSubcommand(true);
         const command = this.client.commands.get(`ballot__${subcommand}`);
 
         if (!command) {

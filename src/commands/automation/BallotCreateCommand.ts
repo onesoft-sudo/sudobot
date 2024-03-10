@@ -17,7 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, Message, User } from "discord.js";
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ChannelType,
+    Message,
+    User
+} from "discord.js";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn } from "../../core/Command";
 import { logError } from "../../utils/Logger";
 import { getComponentEmojiResolvable, isTextableChannel } from "../../utils/utils";
@@ -26,8 +33,8 @@ export default class BallotCreateCommand extends Command {
     public readonly name = "ballot__create";
     public readonly permissions = [];
     public readonly description = "Sends a poll/ballot embed.";
-    public readonly supportsInteractions: boolean = false;
-    public readonly supportsLegacy: boolean = false;
+    public readonly supportsInteractions: boolean = true;
+    public readonly supportsLegacy: boolean = true;
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (context.isLegacy && context.args[0] === undefined) {
@@ -39,17 +46,26 @@ export default class BallotCreateCommand extends Command {
 
         const content = context.isLegacy
             ? (message as Message).content
-                  .substring(this.client.configManager.config[message.guildId!]?.prefix?.length ?? 1)
+                  .substring(
+                      this.client.configManager.config[message.guildId!]?.prefix?.length ?? 1
+                  )
                   .trimStart()
                   .substring(context.argv[0] === "ballot" ? "ballot".length : 0)
                   .trimStart()
-                  .substring(context.argv[0] === "ballot" ? this.name.replace("ballot__", "").length : context.argv[0].length)
+                  .substring(
+                      context.argv[0] === "ballot"
+                          ? this.name.replace("ballot__", "").length
+                          : context.argv[0].length
+                  )
                   .trim()
             : context.options.getString("content", true);
 
-        const anonymous = (context.isLegacy ? null : context.options.getBoolean("anonymous")) ?? false;
+        const anonymous =
+            (context.isLegacy ? null : context.options.getBoolean("anonymous")) ?? false;
         const channel =
-            (context.isLegacy ? null : context.options.getChannel<ChannelType.GuildText>("channel")) ?? message.channel!;
+            (context.isLegacy
+                ? null
+                : context.options.getChannel<ChannelType.GuildText>("channel")) ?? message.channel!;
 
         if (!isTextableChannel(channel)) {
             await this.error(message, "Cannot send messages into a non-text based channel!");
@@ -102,7 +118,10 @@ export default class BallotCreateCommand extends Command {
                     channelId: channel.id,
                     messageId: ballotMessage.id,
                     anonymous,
-                    files: message instanceof Message ? [...message.attachments.map(a => a.proxyURL).values()] : []
+                    files:
+                        message instanceof Message
+                            ? [...message.attachments.map(a => a.proxyURL).values()]
+                            : []
                 });
 
                 await this.success(

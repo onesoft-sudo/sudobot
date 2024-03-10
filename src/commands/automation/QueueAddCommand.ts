@@ -20,7 +20,12 @@
 import { formatDistanceToNowStrict } from "date-fns";
 import { EmbedBuilder, Message, PermissionsBitField, escapeMarkdown } from "discord.js";
 import path from "path";
-import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, {
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import QueueEntry from "../../utils/QueueEntry";
 import { stringToTimeInterval } from "../../utils/datetime";
 
@@ -31,17 +36,23 @@ export default class QueueAddCommand extends Command {
     public readonly permissions = [PermissionsBitField.Flags.ManageMessages];
     public readonly description = "Creates a new command queue";
     public readonly since = "5.57.0";
+    public readonly supportsInteractions: boolean = true;
+    public readonly supportsLegacy: boolean = true;
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         const deferredMessage = await (await this.deferIfInteraction(message))?.fetch();
-        const runAfterString = context.isLegacy ? context.args[0] : context.options.getString("run_after", true);
+        const runAfterString = context.isLegacy
+            ? context.args[0]
+            : context.options.getString("run_after", true);
 
         if (!runAfterString) {
             await this.error(message, "Please specify after how much time the queue should run!");
             return;
         }
 
-        const { error, result: runAfter } = stringToTimeInterval(runAfterString, { milliseconds: true });
+        const { error, result: runAfter } = stringToTimeInterval(runAfterString, {
+            milliseconds: true
+        });
 
         if (error) {
             await this.error(message, error);
@@ -55,11 +66,17 @@ export default class QueueAddCommand extends Command {
 
         const commandString = context.isLegacy
             ? (message as Message).content
-                  .substring(this.client.configManager.config[message.guildId!]?.prefix?.length ?? 1)
+                  .substring(
+                      this.client.configManager.config[message.guildId!]?.prefix?.length ?? 1
+                  )
                   .trimStart()
                   .substring(context.argv[0] === "queue" ? "queue".length : 0)
                   .trimStart()
-                  .substring(context.argv[0] === "queue" ? this.name.replace("queue__", "").length : context.argv[0].length)
+                  .substring(
+                      context.argv[0] === "queue"
+                          ? this.name.replace("queue__", "").length
+                          : context.argv[0].length
+                  )
                   .trimStart()
                   .substring(runAfterString.length)
                   .trim()
@@ -77,14 +94,24 @@ export default class QueueAddCommand extends Command {
             commandName = message.commandName;
             message.commandName = commandString.split(/ +/)[0];
 
-            if (this.client.commands.get(message.commandName) && !this.client.commands.get(message.commandName)?.supportsLegacy) {
+            if (
+                this.client.commands.get(message.commandName) &&
+                !this.client.commands.get(message.commandName)?.supportsLegacy
+            ) {
                 message.commandName = commandName;
-                await this.error(message, "This command doesn't support legacy mode, and only legacy commands can be queued!");
+                await this.error(
+                    message,
+                    "This command doesn't support legacy mode, and only legacy commands can be queued!"
+                );
                 return;
             }
         }
 
-        const result = await this.client.commandManager.runCommandFromMessage(message as Message, true, true);
+        const result = await this.client.commandManager.runCommandFromMessage(
+            message as Message,
+            true,
+            true
+        );
 
         if (message instanceof Message) {
             message.content = content;
@@ -97,13 +124,20 @@ export default class QueueAddCommand extends Command {
         }
 
         if (result === false) {
-            await this.error(message, "The command you've specified could not be found. Please check for spelling errors.");
+            await this.error(
+                message,
+                "The command you've specified could not be found. Please check for spelling errors."
+            );
             return;
         }
 
         const id = await this.client.queueManager.add(
             new QueueEntry({
-                args: [message.channelId!, message instanceof Message ? message.id : deferredMessage!.id, commandString],
+                args: [
+                    message.channelId!,
+                    message instanceof Message ? message.id : deferredMessage!.id,
+                    commandString
+                ],
                 client: this.client,
                 createdAt: new Date(),
                 filePath: path.resolve(__dirname, "../../queues/CommandQueue"),

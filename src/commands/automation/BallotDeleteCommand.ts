@@ -23,8 +23,8 @@ export default class BallotDeleteCommand extends Command {
     public readonly name = "ballot__delete";
     public readonly permissions = [];
     public readonly description = "Deletes a poll/ballot.";
-    public readonly supportsInteractions: boolean = false;
-    public readonly supportsLegacy: boolean = false;
+    public readonly supportsInteractions: boolean = true;
+    public readonly supportsLegacy: boolean = true;
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (context.isLegacy && context.args[0] === undefined) {
@@ -34,10 +34,15 @@ export default class BallotDeleteCommand extends Command {
 
         await this.deferIfInteraction(message);
 
-        const id = context.isLegacy ? parseInt(context.args[0]) : context.options.getInteger("id", true);
+        const id = context.isLegacy
+            ? parseInt(context.args[0])
+            : context.options.getInteger("id", true);
 
         if (isNaN(id)) {
-            await this.error(message, "Invalid ballot ID given! Ballot IDs must be numeric values.");
+            await this.error(
+                message,
+                "Invalid ballot ID given! Ballot IDs must be numeric values."
+            );
             return;
         }
 

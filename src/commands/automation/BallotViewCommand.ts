@@ -27,8 +27,8 @@ export default class BallotViewCommand extends Command {
     public readonly name = "ballot__view";
     public readonly permissions = [];
     public readonly description = "Shows a poll/ballot.";
-    public readonly supportsInteractions: boolean = false;
-    public readonly supportsLegacy: boolean = false;
+    public readonly supportsInteractions: boolean = true;
+    public readonly supportsLegacy: boolean = true;
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (context.isLegacy && context.args[0] === undefined) {
@@ -38,10 +38,15 @@ export default class BallotViewCommand extends Command {
 
         await this.deferIfInteraction(message);
 
-        const id = context.isLegacy ? parseInt(context.args[0]) : context.options.getInteger("id", true);
+        const id = context.isLegacy
+            ? parseInt(context.args[0])
+            : context.options.getInteger("id", true);
 
         if (isNaN(id)) {
-            await this.error(message, "Invalid ballot ID given! Ballot IDs must be numeric values.");
+            await this.error(
+                message,
+                "Invalid ballot ID given! Ballot IDs must be numeric values."
+            );
             return;
         }
 
@@ -56,9 +61,9 @@ export default class BallotViewCommand extends Command {
         }
 
         const user = await safeUserFetch(this.client, ballot.userId);
-        const url = `https://discord.com/channels/${encodeURIComponent(ballot.guildId)}/${encodeURIComponent(
-            ballot.channelId
-        )}/${encodeURIComponent(ballot.messageId)}`;
+        const url = `https://discord.com/channels/${encodeURIComponent(
+            ballot.guildId
+        )}/${encodeURIComponent(ballot.channelId)}/${encodeURIComponent(ballot.messageId)}`;
 
         await this.deferredReply(message, {
             files: ballot.files.map(url => ({ attachment: url })),
@@ -66,7 +71,9 @@ export default class BallotViewCommand extends Command {
                 {
                     author: {
                         name: ballot.anonymous ? "Staff" : user?.username ?? "Unknown",
-                        icon_url: ballot.anonymous ? message.guild!.iconURL() ?? undefined : user?.displayAvatarURL(),
+                        icon_url: ballot.anonymous
+                            ? message.guild!.iconURL() ?? undefined
+                            : user?.displayAvatarURL(),
                         url
                     },
                     description: ballot.content,
@@ -106,7 +113,10 @@ export default class BallotViewCommand extends Command {
             ],
             components: [
                 new ActionRowBuilder<ButtonBuilder>().addComponents(
-                    new ButtonBuilder().setURL(url).setStyle(ButtonStyle.Link).setLabel("Go to ballot message")
+                    new ButtonBuilder()
+                        .setURL(url)
+                        .setStyle(ButtonStyle.Link)
+                        .setLabel("Go to ballot message")
                 )
             ]
         });
