@@ -1,0 +1,36 @@
+---
+title: "Command: `schedule` - SudoBot"
+short_name: schedule
+---
+
+import Modes from "@/components/MDX/Modes";
+
+# `schedule`
+
+Sends a message after the given timeframe.
+
+## Notes
+
+If you don't specify a unit of time like s, m, h, etc, it will default to seconds. So if you put 100 by itself, it will put it down as 100 seconds.
+
+### Syntax
+
+```
+-schedule <time_interval> [content]
+/schedule content: [content] time_interval: [time_interval] channel: [channel] (OPTIONAL)
+```
+
+### Required Permissions
+
+`ManageMessages`
+
+### Modes
+
+<Modes modes={["legacy", "interaction"]} />
+
+### Examples
+
+```
+-schedule 20m Code that one file you need to make!
+/schedule time_interval: 20m content: Code a file! channel: general
+```
