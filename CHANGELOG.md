@@ -1,3 +1,12 @@
+## [8.25.1](https://github.com/onesoft-sudo/sudobot/compare/v8.25.0...v8.25.1) (2024-03-10)
+
+
+### Bug Fixes
+
+* **utils:datetime:** number parsing error ([302d913](https://github.com/onesoft-sudo/sudobot/commit/302d9138fc8d304288f1cf10730392d56384f7c3))
+
+
+
 # [8.25.0](https://github.com/onesoft-sudo/sudobot/compare/v8.24.5...v8.25.0) (2024-03-10)
 
 
@@ -36,16 +45,6 @@
 ### Bug Fixes
 
 * auto configure guilds on join if the system is in public bot mode ([4e27f91](https://github.com/onesoft-sudo/sudobot/commit/4e27f91a3c76786766ea2ef688d9a89206b75764))
-
-
-
-## [8.24.2](https://github.com/onesoft-sudo/sudobot/compare/v8.24.1...v8.24.2) (2024-03-09)
-
-
-### Bug Fixes
-
-* /config save command not working ([d669b69](https://github.com/onesoft-sudo/sudobot/commit/d669b696145ba2a34f9e4022cf908ef21fb63c23))
-* typo ([315f465](https://github.com/onesoft-sudo/sudobot/commit/315f4656cb13353f6a2bb646afa42d9015c7227a))
 
 
 
