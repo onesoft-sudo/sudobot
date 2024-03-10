@@ -1,0 +1,47 @@
+---
+title: "Command: `ballot` - SudoBot"
+short_name: ballot
+---
+
+import Modes from "@/components/MDX/Modes";
+
+# `ballot`
+
+Allows you to manage ballots. Ballots are polls, where you can cast a vote about something.
+
+### Aliases
+`poll`
+
+### Syntax
+
+```
+-ballot create [content]
+-poll create [content]
+-ballot delete [ID]
+-poll delete [ID]
+/ballot create content: [content] anonymous: True/False (OPTIONAL) channel: [channel] (OPTIONAL)
+/ballot delete id: [id]
+/ballot view id: [id]
+/ballot votelist id: [id] mode: All Votes/Upvotes/Downvotes (OPTIONAL)
+```
+
+### Required Permissions
+
+`None`
+
+### Modes
+
+<Modes modes={["legacy", "interaction"]} />
+
+### Examples
+
+```
+-ballot create Does pineapple belong on pizza?
+-poll create Should AI replace our jobs?
+-ballot delete 83
+-poll delete 96
+/ballot create content: Do you want an improvement to this discord server? anonymous: True channel: #general
+/ballot delete id: 83
+/ballot view id: 96
+/ballot votelist id: 96 mode: All Votes=
+```

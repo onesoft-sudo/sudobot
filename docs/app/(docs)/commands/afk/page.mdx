@@ -1,0 +1,34 @@
+---
+title: "Command: `afk` - SudoBot"
+short_name: afk
+---
+
+import Modes from "@/components/MDX/Modes";
+
+# `afk`
+
+Sets your AFK status, and tells others that you're away.
+When you come back, it will tell you if anyone pinged you, and if someone did, it will link you to the message.
+
+### Syntax
+
+```
+-afk [reason]
+/afk reason: [reason] global: [True/False]
+```
+
+### Required Permissions
+
+`NONE`
+
+### Modes
+
+<Modes modes={["legacy", "interaction"]} />
+
+### Examples
+
+```
+-afk Sleeping
+/afk reason: Sleeping global:True
+/afk reason: Sleeping global:False
+```
