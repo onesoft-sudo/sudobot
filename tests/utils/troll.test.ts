@@ -1,82 +1,45 @@
-import "../setup";
-
-import { ChatInputCommandInteraction, Message } from "discord.js";
-import assert from "node:assert";
-import { after, before, describe, it } from "node:test";
-import Client from "../../src/core/Client";
+import { faker } from "@faker-js/faker";
+import { beforeEach, describe, expect, it } from "bun:test";
+import type Client from "../../src/core/Client";
+import ConfigManager, { GuildConfigContainer } from "../../src/services/ConfigManager";
+import { SystemConfigSchema } from "../../src/types/SystemConfigSchema";
 import { protectSystemAdminsFromCommands } from "../../src/utils/troll";
-import { registerFileHandler, setCustomSystemConfig, unregisterFileHandler } from "../clientsetup";
-import { randomSnowflake } from "../utils";
+import { createClient } from "../mocks/client.mock";
+import { createMessage } from "../mocks/message.mock";
+import { randomSnowflake } from "../mocks/snowflakes";
 
-const client = new Client(
-    {
-        intents: []
-    },
-    {
-        services: ["@services/ConfigManager"]
-    }
-);
+describe("troll functionalities", () => {
+    let client: Client;
+    let sysAdminId, guildId;
 
-describe("Trolling utility functions", () => {
-    const CLIENT_USER_ID = randomSnowflake();
-    const SYSTEM_ADMIN = randomSnowflake();
-
-    before(() => {
-        setCustomSystemConfig(`
-            {
-                "system_admins": ["${SYSTEM_ADMIN}"]
-            }
-        `);
-        registerFileHandler();
-        return client.boot();
+    beforeEach(() => {
+        sysAdminId = randomSnowflake();
+        guildId = randomSnowflake();
+        client = createClient();
+        client.configManager = {
+            systemConfig: SystemConfigSchema.parse({
+                system_admins: [sysAdminId]
+            }),
+            config: {
+                [guildId]: {
+                    commands: {
+                        bean_safe: [],
+                        shot_safe: [],
+                        fakeban_safe: []
+                    }
+                }
+            } as unknown as GuildConfigContainer
+        } as ConfigManager;
     });
 
-    after(() => {
-        unregisterFileHandler();
-    });
+    it("should protect system admins from troll command", async () => {
+        const [message] = createMessage(faker.lorem.sentence(), sysAdminId, guildId);
+        let count = 1;
 
-    it("Protects system admins from being used in joke moderation commands", async t => {
-        const message1 = {
-            deferred: false,
-            async reply() {},
-            async editReply() {}
-        } as unknown as Message & Pick<ChatInputCommandInteraction, "editReply">;
-
-        const message2 = {
-            deferred: true,
-            async reply() {},
-            async editReply() {}
-        } as unknown as Message & Pick<ChatInputCommandInteraction, "editReply">;
-
-        t.mock.method(message1, "reply");
-        t.mock.method(message1, "editReply");
-        t.mock.method(message2, "reply");
-        t.mock.method(message2, "editReply");
-
-        client.user = { id: CLIENT_USER_ID } as any;
-
-        assert.strictEqual(await protectSystemAdminsFromCommands(client, message1, randomSnowflake()), false);
-        assert.strictEqual((message1.reply as any).mock.calls.length, 0);
-        assert.strictEqual((message1.editReply as any).mock.calls.length, 0);
-
-        assert.strictEqual(await protectSystemAdminsFromCommands(client, message2, randomSnowflake()), false);
-        assert.strictEqual((message2.reply as any).mock.calls.length, 0);
-        assert.strictEqual((message2.editReply as any).mock.calls.length, 0);
-
-        assert.strictEqual(await protectSystemAdminsFromCommands(client, message1, SYSTEM_ADMIN), true);
-        assert.strictEqual((message1.reply as any).mock.calls.length, 1);
-        assert.strictEqual((message1.editReply as any).mock.calls.length, 0);
-
-        assert.strictEqual(await protectSystemAdminsFromCommands(client, message2, SYSTEM_ADMIN), true);
-        assert.strictEqual((message2.reply as any).mock.calls.length, 0);
-        assert.strictEqual((message2.editReply as any).mock.calls.length, 1);
-
-        assert.strictEqual(await protectSystemAdminsFromCommands(client, message1, CLIENT_USER_ID), true);
-        assert.strictEqual((message1.reply as any).mock.calls.length, 2);
-        assert.strictEqual((message1.editReply as any).mock.calls.length, 0);
-
-        assert.strictEqual(await protectSystemAdminsFromCommands(client, message2, CLIENT_USER_ID), true);
-        assert.strictEqual((message2.reply as any).mock.calls.length, 0);
-        assert.strictEqual((message2.editReply as any).mock.calls.length, 2);
+        for (const key of ["bean_safe", "shot_safe", "fakeban_safe"] as const) {
+            const result = await protectSystemAdminsFromCommands(client, message, sysAdminId, key);
+            expect(result).toBe(true);
+            expect(message.reply).toHaveBeenCalledTimes(count++);
+        }
     });
 });

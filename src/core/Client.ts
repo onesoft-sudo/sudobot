@@ -92,7 +92,10 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
         services: path.resolve(__dirname, "../services")
     };
 
-    private static readonly _logger = new Logger("system", !process.env.NO_DATETIME_LOGGING);
+    static get _logger() {
+        return new Logger("system", !process.env.NO_DATETIME_LOGGING);
+    }
+
     public readonly logger = Client._logger;
 
     public readonly services = [
@@ -201,10 +204,16 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
     }
 
     async getHomeGuild() {
-        return this.guilds.cache.get(process.env.HOME_GUILD_ID) ?? (await this.guilds.fetch(process.env.HOME_GUILD_ID));
+        return (
+            this.guilds.cache.get(process.env.HOME_GUILD_ID) ??
+            (await this.guilds.fetch(process.env.HOME_GUILD_ID))
+        );
     }
 
-    addEventListener<K extends keyof ClientEvents>(name: K, listener: (...args: ClientEvents[K]) => unknown) {
+    addEventListener<K extends keyof ClientEvents>(
+        name: K,
+        listener: (...args: ClientEvents[K]) => unknown
+    ) {
         type Listener = (...args: DiscordClientEvents[keyof DiscordClientEvents]) => void;
         const handlers = this.eventListeners.get(name) ?? [];
 
@@ -216,7 +225,10 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
         this.on(name as keyof DiscordClientEvents, listener as Listener);
     }
 
-    removeEventListener<K extends keyof ClientEvents>(name: K, listener?: (...args: ClientEvents[K]) => unknown) {
+    removeEventListener<K extends keyof ClientEvents>(
+        name: K,
+        listener?: (...args: ClientEvents[K]) => unknown
+    ) {
         if (!listener) {
             this.eventListeners.delete(name);
             this.removeAllListeners(name as keyof DiscordClientEvents);
@@ -231,7 +243,10 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
         }
 
         const handler = handlers.splice(index, 1)[0];
-        this.off(name as keyof DiscordClientEvents, handler as (...args: DiscordClientEvents[keyof DiscordClientEvents]) => void);
+        this.off(
+            name as keyof DiscordClientEvents,
+            handler as (...args: DiscordClientEvents[keyof DiscordClientEvents]) => void
+        );
     }
 
     async emitWaitLocal<K extends keyof ClientEvents>(name: K, ...args: ClientEvents[K]) {

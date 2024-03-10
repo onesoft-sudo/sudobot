@@ -17,8 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 import chalk from "chalk";
-import { developmentMode } from "./utils";
 import Client from "../core/Client";
+import { AnyFunction } from "../types/Utils";
+import { developmentMode } from "./utils";
 
 export enum LogLevel {
     Debug,
@@ -37,7 +38,13 @@ export class Logger {
         timeStyle: "long"
     });
 
-    public constructor(private readonly name: string, private readonly logTime: boolean = false) {}
+    public constructor(private readonly name: string, private readonly logTime: boolean = false) {
+        for (const key in this) {
+            if (typeof this[key] === "function") {
+                (this[key] as AnyFunction) = (this[key] as AnyFunction).bind(this);
+            }
+        }
+    }
 
     public log(level: LogLevel, ...args: unknown[]) {
         const levelName = LogLevel[level].toLowerCase();
@@ -49,10 +56,9 @@ export class Logger {
                 : level === LogLevel.Warn
                 ? "warn"
                 : "error";
-        const beginning = `${this.logTime ? `${chalk.gray(this.formatter.format(new Date()))} ` : ""}${this.colorize(
-            `${this.name}:${levelName}`,
-            level
-        )}`;
+        const beginning = `${
+            this.logTime ? `${chalk.gray(this.formatter.format(new Date()))} ` : ""
+        }${this.colorize(`${this.name}:${levelName}`, level)}`;
         this.print(methodName, beginning, ...args);
 
         if (level === LogLevel.Fatal) {
@@ -69,7 +75,9 @@ export class Logger {
         }
 
         console[methodName].call(console, ...args);
-        const message = args.map(arg => (typeof arg === "string" ? arg : JSON.stringify(arg, null, 2))).join(" ");
+        const message = args
+            .map(arg => (typeof arg === "string" ? arg : JSON.stringify(arg, null, 2)))
+            .join(" ");
 
         if (logServerEnabled) {
             Client.instance.logServer?.log(message);
@@ -211,4 +219,5 @@ export const logEvent = (...args: unknown[]) => Client.getLogger().event(...args
  * @deprecated Use the logger instance instead.
  */
 
-export const logWithLevel = (level: LogLevel, ...args: unknown[]) => Client.getLogger().log(level, ...args);
+export const logWithLevel = (level: LogLevel, ...args: unknown[]) =>
+    Client.getLogger().log(level, ...args);

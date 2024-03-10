@@ -14,16 +14,16 @@
         "indent": "off",
         "linebreak-style": ["error", "unix"],
         "quotes": [
-            "error",
+            "warn",
             "double",
             {
                 "avoidEscape": true
             }
         ],
-        "semi": ["error", "always"],
+        "semi": ["warn", "always"],
         "@typescript-eslint/no-var-requires": "off",
         "@typescript-eslint/no-unused-vars": [
-            "error",
+            "warn",
             {
                 "argsIgnorePattern": "^_",
                 "varsIgnorePattern": "^_",

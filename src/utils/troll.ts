@@ -23,7 +23,6 @@
 import { Message, type Snowflake } from "discord.js";
 import type Client from "../core/Client";
 import { CommandMessage } from "../core/Command";
-import { logError } from "./Logger";
 
 export async function protectSystemAdminsFromCommands(
     client: Client,
@@ -36,7 +35,9 @@ export async function protectSystemAdminsFromCommands(
     if (
         userId === client.user!.id ||
         client.configManager.systemConfig.system_admins.includes(userId) ||
-        (!client.configManager.systemConfig.system_admins.includes(message.member!.user.id) && config && config.includes(userId))
+        (!client.configManager.systemConfig.system_admins.includes(message.member!.user.id) &&
+            config &&
+            config.includes(userId))
     ) {
         const content = [
             "https://tenor.com/view/no-gif-25913746",
@@ -44,12 +45,12 @@ export async function protectSystemAdminsFromCommands(
         ][Math.floor(Math.random() * 2)];
 
         if (message instanceof Message) {
-            await message.reply(content).catch(logError);
+            await message.reply(content).catch(client.logger.error);
         } else {
             if (message.deferred) {
-                await message.editReply(content).catch(logError);
+                await message.editReply(content).catch(client.logger.error);
             } else {
-                await message.reply(content).catch(logError);
+                await message.reply(content).catch(client.logger.error);
             }
         }
 
