@@ -9,9 +9,9 @@ async function main() {
 
     for (const page of pages) {
         let route = page
-            .replace(/\/\([a-z0-9A-Z_-]+\)/gi, "")
-            .replace(/^app\//gi, "")
-            .replace(/\/page\.(ts|md)x/gi, "");
+            .replace(/[\/\\]\([a-z0-9A-Z_-]+\)/gi, "")
+            .replace(/^app[\/\\]/gi, "")
+            .replace(/[\/\\]page\.(ts|md)x/gi, "");
         route =
             route === "" || route === "page.tsx" || route === "page.mdx"
                 ? "/"
