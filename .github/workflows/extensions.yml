@@ -9,7 +9,7 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
-        if: github.event_name == "push" && (startsWith(github.event.head_commit.message, 'chore(extensions') || startsWith(github.event.head_commit.message, 'build(extensions'))
+        if: github.event_name == 'push' && ( startsWith(github.event.head_commit.message, 'chore(extensions') || startsWith(github.event.head_commit.message, 'build(extensions') )
 
         steps:
             - uses: actions/checkout@v3
