@@ -1,3 +1,12 @@
+# [8.25.0](https://github.com/onesoft-sudo/sudobot/compare/v8.24.5...v8.25.0) (2024-03-10)
+
+
+### Features
+
+* **utils:** better time parsing ([edb9fe1](https://github.com/onesoft-sudo/sudobot/commit/edb9fe1e7187e3946d12a4783e2de21cb22a091e))
+
+
+
 ## [8.24.5](https://github.com/onesoft-sudo/sudobot/compare/v8.24.4...v8.24.5) (2024-03-10)
 
 
@@ -37,16 +46,6 @@
 
 * /config save command not working ([d669b69](https://github.com/onesoft-sudo/sudobot/commit/d669b696145ba2a34f9e4022cf908ef21fb63c23))
 * typo ([315f465](https://github.com/onesoft-sudo/sudobot/commit/315f4656cb13353f6a2bb646afa42d9015c7227a))
-
-
-
-## [8.24.1](https://github.com/onesoft-sudo/sudobot/compare/v8.24.0...v8.24.1) (2024-03-09)
-
-
-### Bug Fixes
-
-* infraction list command sorting ([0c80f06](https://github.com/onesoft-sudo/sudobot/commit/0c80f06f69dbfe116e16509e0ee27b717242bb3f))
-* typo ([2f959c2](https://github.com/onesoft-sudo/sudobot/commit/2f959c2e31198e6f3c9f53b5bfb5427a7cccfec8))
 
 
 
