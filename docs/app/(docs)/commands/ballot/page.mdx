@@ -1,0 +1,43 @@
+---
+title: "Command: `ballot` - SudoBot"
+short_name: ballot
+---
+
+import Modes from "@/components/MDX/Modes";
+
+# `ballot`
+
+Turns anti join on or off. Makes it so that if someone joins while it's activated, they get kicked from the server.
+
+## Notes
+
+At the time, the required permissions are unknown, as well as the edit command. This will be updated with it once it is made known.
+
+### Aliases
+`poll`
+
+### Syntax
+
+```
+-ballot create [content]
+-poll create [content]
+-ballot delete [ID]
+-poll delete [ID]
+```
+
+### Required Permissions
+
+`Unknown`
+
+### Modes
+
+<Modes modes={["legacy", "interaction"]} />
+
+### Examples
+
+```
+-ballot create Does pineapple belong on pizza?
+-poll create Should AI replace our jobs?
+-ballot delete 83
+-poll delete 96
+```
