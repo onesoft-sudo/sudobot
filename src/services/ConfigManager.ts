@@ -113,7 +113,7 @@ export default class ConfigManager extends Service {
                 }
 
                 logInfo(`Auto configuring default settings for guild: ${id}`);
-                this.config[id] = this.guildConfigSchema.parse({});
+                this.autoConfigure(id);
             }
         }
 
@@ -121,6 +121,10 @@ export default class ConfigManager extends Service {
             this.client.logger.info("Generating configuration schema files");
             this.generateSchema();
         }
+    }
+
+    autoConfigure(id: Snowflake) {
+        this.config[id] = this.guildConfigSchema.parse({});
     }
 
     testConfig() {
