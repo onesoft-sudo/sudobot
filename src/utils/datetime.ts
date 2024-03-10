@@ -30,7 +30,7 @@ export function stringToTimeInterval(input: string, { milliseconds = false } = {
         for (let i = 0; i < input.length; i++) {
             let num = "";
 
-            while (i < input.length && (!Number.isNaN(input[i]) || input[i] === ".")) {
+            while (i < input.length && (!isNaN(+input[i]) || input[i] === ".")) {
                 num += input[i];
                 i++;
             }
