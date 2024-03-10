@@ -64,7 +64,7 @@ export async function image(
                 });
             }
         })
-        .catch(async err => {
+        .catch(async () => {
             await cmd.deferredReply(message, {
                 embeds: [
                     new EmbedBuilder()
