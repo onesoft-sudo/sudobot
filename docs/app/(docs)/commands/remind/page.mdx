@@ -7,7 +7,7 @@ import Modes from "@/components/MDX/Modes";
 
 # `remind`
 
-Sends a message and deletes it after the given timeframe.
+Sets a reminder. The bot will remind you after the specified time interval.
 
 ## Notes
 
@@ -16,7 +16,7 @@ If you don't specify a unit of time like s, m, h, etc, it will default to second
 ### Syntax
 
 ```
--remind <time_interval> [reaspn]
+-remind <time_interval> [reason]
 /remind time_interval: [time_interval] message: [reason] (OPTIONAL)
 ```
 
@@ -32,5 +32,5 @@ If you don't specify a unit of time like s, m, h, etc, it will default to second
 
 ```
 -remind 10m Start coding again!
-/expire time_interval: 10h content: Remember to sleep!
+/remind time_interval: 10h content: Sleep!
 ```
