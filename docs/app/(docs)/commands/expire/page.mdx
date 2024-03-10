@@ -1,0 +1,36 @@
+---
+title: "Command: `expire` - SudoBot"
+short_name: expire
+---
+
+import Modes from "@/components/MDX/Modes";
+
+# `expire`
+
+Sends a message and deletes it after the given timeframe.
+
+## Notes
+
+If you don't specify a unit of time like s, m, h, etc, it will default to seconds. So if you put 100 by itself, it will put it down as 100 seconds and delete the message after that.
+
+### Syntax
+
+```
+-expire <time_interval> [content]
+/expire content: [content] time_interval: [time] channel: [channel] (OPTIONAL)
+```
+
+### Required Permissions
+
+`ManageMessages`
+
+### Modes
+
+<Modes modes={["legacy", "interaction"]} />
+
+### Examples
+
+```
+-expire 10s Hello world!
+/expire content: Hello World! time_interval: 10h channel: #general
+```

@@ -1,0 +1,47 @@
+---
+title: "Command: `scheduleandexpire` - SudoBot"
+short_name: scheduleandexpire
+---
+
+import Modes from "@/components/MDX/Modes";
+
+# `scheduleandexpire`
+
+Sends a message and deletes it after the given primary and secondary timeframe, respectively.
+
+## Notes
+
+If you don't specify a unit of time like s, m, h, etc, it will default to seconds. So if you put 100 by itself, it will put it down as 100 seconds.
+
+### Aliases
+`expiresc`
+`scex`
+`schedulexp`
+
+### Syntax
+
+```
+-scheduleandexpire <send_after> <expire_after> [content]
+-expiresc <send_after> <expire_after> [content]
+-scex <send_after> <expire_after> [content]
+-schedulexp <send_after> <expire_after> [content]
+/scheduleandexpire content: [content] send_after: [after how long] expire_after: [when do you want to delete it] channel: [channel] (OPTIONAL)
+```
+
+### Required Permissions
+
+`ManageMessages`
+
+### Modes
+
+<Modes modes={["legacy", "interaction"]} />
+
+### Examples
+
+```
+-scheduleandexpire 10m 20m Take a coding break!
+-expiresc 10m 20m Remember to review suggestions!
+-scex 10m 20m Break time!
+-schedulexp 10m 20m Time to stop!
+/schedule send_after: 10m expire_after: 20m content: Code a file! channel: general
+```
