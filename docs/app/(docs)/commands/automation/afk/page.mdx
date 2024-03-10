@@ -1,0 +1,37 @@
+---
+title: "Command: `afk` - SudoBot"
+short_name: afk
+---
+
+import Modes from "@/components/MDX/Modes";
+
+# `ban`
+
+Bans a user from the server. Doesn't matter if the user is in the server or not.
+If the user is in the server, they will receive a DM notice from the bot telling them that they were banned, with the given reason.
+
+### Aliases
+`gafk`
+
+### Syntax
+
+```
+-afk [reason]
+/afk reason: [reason] global: [True/False]
+```
+
+### Required Permissions
+
+`NONE`
+
+### Modes
+
+<Modes modes={["legacy", "interaction"]} />
+
+### Examples
+
+```
+-afk Sleeping
+/afk reason: Sleeping global:True
+/afk reason: Sleeping global:False
+```
