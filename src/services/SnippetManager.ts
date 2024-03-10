@@ -27,7 +27,8 @@ import {
     MessageCreateOptions,
     PermissionFlagsBits,
     PermissionsString,
-    Snowflake
+    Snowflake,
+    userMention
 } from "discord.js";
 import { existsSync } from "fs";
 import fs from "fs/promises";
@@ -35,8 +36,8 @@ import { basename } from "path";
 import Command, { CommandMessage } from "../core/Command";
 import Service from "../core/Service";
 import EmbedSchemaParser from "../utils/EmbedSchemaParser";
-import { downloadFile } from "../utils/download";
 import { LogLevel, log, logError, logInfo, logWithLevel } from "../utils/Logger";
+import { downloadFile } from "../utils/download";
 import { getEmoji, sudoPrefix } from "../utils/utils";
 
 export const name = "snippetManager";
@@ -54,7 +55,10 @@ export default class SnippetManager extends Service {
 
     async removeFiles(fileNames: string[], guildId: string) {
         for (const name of fileNames) {
-            const filePath = `${sudoPrefix(`storage/snippet_attachments/${guildId}`, true)}/${name}`;
+            const filePath = `${sudoPrefix(
+                `storage/snippet_attachments/${guildId}`,
+                true
+            )}/${name}`;
             logInfo("Attempting to remove file: " + filePath);
             await fs.rm(filePath).catch(logError);
         }
@@ -172,7 +176,11 @@ export default class SnippetManager extends Service {
         return { success: true };
     }
 
-    async renameSnippet({ name, guildId, newName }: CommonSnippetActionOptions & { newName: string }) {
+    async renameSnippet({
+        name,
+        guildId,
+        newName
+    }: CommonSnippetActionOptions & { newName: string }) {
         if (!this.snippets.has(`${guildId}_${name}`)) {
             return { error: "No snippet found with that name" };
         }
@@ -199,7 +207,12 @@ export default class SnippetManager extends Service {
         return { success: true, snippet };
     }
 
-    async checkPermissions(snippet: Snippet, member: GuildMember, guildId: string, channelId?: string) {
+    async checkPermissions(
+        snippet: Snippet,
+        member: GuildMember,
+        guildId: string,
+        channelId?: string
+    ) {
         if (member.permissions.has(PermissionFlagsBits.Administrator, true)) return true;
 
         if (
@@ -216,22 +229,33 @@ export default class SnippetManager extends Service {
             return false;
         }
 
-        const { permissions: memberPermissions } = await this.client.permissionManager.getMemberPermissions(member, true);
+        const { permissions: memberPermissions } =
+            await this.client.permissionManager.getMemberPermissions(member, true);
 
-        if (this.client.permissionManager.usesLevelBasedMode(guildId) && typeof snippet.level === "number") {
-            const level = (await this.client.permissionManager.getManager(member.guild.id)).getPermissionLevel(member);
+        if (
+            this.client.permissionManager.usesLevelBasedMode(guildId) &&
+            typeof snippet.level === "number"
+        ) {
+            const level = (
+                await this.client.permissionManager.getManager(member.guild.id)
+            ).getPermissionLevel(member);
 
             if (level < snippet.level) {
-                log("User doesn't have enough permission to run this snippet. (level based permission system)");
+                log(
+                    "User doesn't have enough permission to run this snippet. (level based permission system)"
+                );
                 return false;
             }
         }
 
-        const { permissions: snippetPermissions } = await this.client.permissionManager.getMemberPermissions(member);
+        const { permissions: snippetPermissions } =
+            await this.client.permissionManager.getMemberPermissions(member);
 
         for (const permission of snippetPermissions) {
             if (!memberPermissions.has(permission)) {
-                log("User doesn't have enough permission to run this snippet. (hybrid permission system)");
+                log(
+                    "User doesn't have enough permission to run this snippet. (hybrid permission system)"
+                );
                 return false;
             }
         }
@@ -243,10 +267,14 @@ export default class SnippetManager extends Service {
         name,
         guildId,
         channelId,
-        member
+        member,
+        content: messageContent,
+        prefix
     }: CommonSnippetActionOptions & {
         channelId: string;
         member: GuildMember;
+        prefix: string;
+        content: string;
     }) {
         if (!this.snippets?.has(`${guildId}_${name}`)) {
             return { error: "No snippet found with that name", found: false };
@@ -266,9 +294,13 @@ export default class SnippetManager extends Service {
         const files = [];
 
         if (snippet.randomize && snippet.attachments.length > 0) {
-            const randomAttachment = snippet.attachments[Math.floor(Math.random() * snippet.attachments.length)];
+            const randomAttachment =
+                snippet.attachments[Math.floor(Math.random() * snippet.attachments.length)];
 
-            const file = sudoPrefix(`storage/snippet_attachments/${guildId}/${randomAttachment}`, false);
+            const file = sudoPrefix(
+                `storage/snippet_attachments/${guildId}/${randomAttachment}`,
+                false
+            );
 
             if (!existsSync(file)) {
                 logWithLevel(LogLevel.Critical, `Could find attachment: ${file}`);
@@ -277,7 +309,10 @@ export default class SnippetManager extends Service {
             }
         } else {
             for (const attachment of snippet.attachments) {
-                const file = sudoPrefix(`storage/snippet_attachments/${guildId}/${attachment}`, false);
+                const file = sudoPrefix(
+                    `storage/snippet_attachments/${guildId}/${attachment}`,
+                    false
+                );
 
                 if (!existsSync(file)) {
                     logWithLevel(LogLevel.Critical, `Could find attachment: ${file}`);
@@ -288,7 +323,28 @@ export default class SnippetManager extends Service {
             }
         }
 
-        const content = snippet.content[snippet.randomize ? Math.floor(Math.random() * snippet.content.length) : 0];
+        const mentionOrId = messageContent.slice(prefix.length).trim().split(/ +/).at(1)?.trim();
+        let prepend = "";
+
+        if (mentionOrId) {
+            const id =
+                mentionOrId.startsWith("<@") && mentionOrId.endsWith(">")
+                    ? mentionOrId.substring(
+                          mentionOrId.startsWith("<@!") ? 3 : 2,
+                          mentionOrId.length - 1
+                      )
+                    : mentionOrId;
+
+            if (/^\d+$/.test(id)) {
+                prepend = `${userMention(id)}\n`;
+            }
+        }
+
+        const content =
+            prepend +
+            snippet.content[
+                snippet.randomize ? Math.floor(Math.random() * snippet.content.length) : 0
+            ];
 
         return {
             options: EmbedSchemaParser.getMessageOptions(
@@ -302,12 +358,14 @@ export default class SnippetManager extends Service {
         };
     }
 
-    async onMessageCreate(message: Message, commandName: string) {
+    async onMessageCreate(message: Message, foundPrefix: string, commandName: string) {
         const { options, found } = await this.createMessageOptionsFromSnippet({
             name: commandName,
             guildId: message.guildId!,
             channelId: message.channelId!,
-            member: message.member! as GuildMember
+            member: message.member! as GuildMember,
+            content: message.content,
+            prefix: foundPrefix
         });
 
         if (!found || !options) {
@@ -389,18 +447,34 @@ export default class SnippetManager extends Service {
         return { count };
     }
 
-    async checkPermissionInSnippetCommands(name: string, message: CommandMessage, command: Command) {
+    async checkPermissionInSnippetCommands(
+        name: string,
+        message: CommandMessage,
+        command: Command
+    ) {
         const snippet = this.snippets.get(`${message.guildId!}_${name}`);
 
         if (!snippet) {
-            await command.deferredReply(message, `${getEmoji(this.client, "error")} No snippet found with that name!')}`);
+            await command.deferredReply(
+                message,
+                `${getEmoji(this.client, "error")} No snippet found with that name!')}`
+            );
             return false;
         }
 
-        if (!(await this.client.snippetManager.checkPermissions(snippet, message.member! as GuildMember, message.guildId!))) {
+        if (
+            !(await this.client.snippetManager.checkPermissions(
+                snippet,
+                message.member! as GuildMember,
+                message.guildId!
+            ))
+        ) {
             await command.deferredReply(
                 message,
-                `${getEmoji(this.client, "error")} You don't have permission to modify this snippet!`
+                `${getEmoji(
+                    this.client,
+                    "error"
+                )} You don't have permission to modify this snippet!`
             );
             return false;
         }
@@ -417,7 +491,8 @@ export default class SnippetManager extends Service {
         roles,
         users,
         level
-    }: Partial<Omit<CreateSnippetOptions, "attachments" | "userId">> & CommonSnippetActionOptions & { level?: number }) {
+    }: Partial<Omit<CreateSnippetOptions, "attachments" | "userId">> &
+        CommonSnippetActionOptions & { level?: number }) {
         if (!this.snippets.has(`${guildId}_${name}`)) {
             return { error: "No snippet found with that name" };
         }

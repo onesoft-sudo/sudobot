@@ -200,7 +200,7 @@ export default class CommandManager extends Service {
 
         if (!command) {
             log("Command not found, trying to find a snippet");
-            return await this.client.snippetManager.onMessageCreate(message, commandName);
+            return await this.client.snippetManager.onMessageCreate(message, foundPrefix, commandName);
         }
 
         if (!command.supportsLegacy) {
