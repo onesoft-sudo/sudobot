@@ -1,3 +1,12 @@
+# [8.26.0](https://github.com/onesoft-sudo/sudobot/compare/v8.25.2...v8.26.0) (2024-03-10)
+
+
+### Features
+
+* **snippets:** inline mention users ([e066ef2](https://github.com/onesoft-sudo/sudobot/commit/e066ef2997d6ef4be812e8514486b979a843cadb))
+
+
+
 ## [8.25.2](https://github.com/onesoft-sudo/sudobot/compare/v8.25.1...v8.25.2) (2024-03-10)
 
 
@@ -36,15 +45,6 @@
 ### Performance Improvements
 
 * do not load tensorflow/nsfwjs unless needed ([8037127](https://github.com/onesoft-sudo/sudobot/commit/8037127b96cf69a247f9e31f74b294d4006b273e))
-
-
-
-## [8.24.4](https://github.com/onesoft-sudo/sudobot/compare/v8.24.3...v8.24.4) (2024-03-10)
-
-
-### Bug Fixes
-
-* **commands:afk:remove:** add missing alias ([02705c7](https://github.com/onesoft-sudo/sudobot/commit/02705c771dcebd5690f1d67682bad8ea14430f50))
 
 
 
