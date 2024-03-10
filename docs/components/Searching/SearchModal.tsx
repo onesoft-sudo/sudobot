@@ -30,8 +30,6 @@ export default function SearchModal({ onClose }: SearchModalProps) {
             return;
         }
 
-        console.log(query);
-
         const controller = new AbortController();
 
         if (!isLoading) {

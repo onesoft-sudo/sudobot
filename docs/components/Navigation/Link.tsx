@@ -45,10 +45,6 @@ export default function Link({
                     .replace(/\/+/g, "/")
                     .replace(/\/$/g, "")
         ) {
-            console.log(
-                pathname,
-                stringHref.substring(0, pos === -1 ? undefined : pos),
-            );
             setIsChanging(true);
         }
     };

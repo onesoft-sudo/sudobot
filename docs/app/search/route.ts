@@ -20,8 +20,6 @@ export async function GET(request: NextRequest) {
     const index = getIndex();
     const lowercasedIndex = getIndex(true);
 
-    console.log(query, lowercasedIndex);
-
     const results = [];
 
     if (lowercasedIndex) {
