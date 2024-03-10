@@ -48,7 +48,7 @@ jobs:
               run: npx prisma generate
 
             - name: "ESLint"
-              run: npm run lint || echo "ESLint Failed"
+              run: npm run lint -- --max-warnings=0 
 
             - name: "Build (TypeScript)"
               run: npm run build --if-present
