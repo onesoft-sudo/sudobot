@@ -1,0 +1,47 @@
+---
+title: "Command: `createreactionrole` - SudoBot"
+short_name: createreactionrole
+---
+
+import Modes from "@/components/MDX/Modes";
+
+# `createreactionrole`
+
+Adds a reaction listener to the message, and when a user reacts with the given emoji, it will assign the given role(s).
+
+### Aliases
+`createreactrole`
+`makereactrole`
+`makerr`
+`createrr`
+
+### Syntax
+
+```
+-createreactionrole [messagelink] [emoji] [role]
+-createreactrole [messagelink] [emoji] [role]
+-makereactionrole [messagelink] [emoji] [role]
+-makerr [messagelink] [emoji] [role]
+-createrr [messagelink] [emoji] [role]
+/createreactionrole message_link: [messagelink] emoji: [emoji] roles: [role] (OPTIONAL) mode: Single and unique role/Multiple (Default)
+```
+
+### Required Permissions
+
+`ManageRoles`
+
+### Modes
+
+<Modes modes={["legacy", "interaction"]} />
+
+### Examples
+
+```
+-createreactionrole https://discord.com/channels/1234567891011121314/1234567891011121314/1413121110987654321 🛠️ @role1
+-createreactrole https://discord.com/channels/1234567891011121314/1234567891011121314/1413121110987654321 💼 @role2
+-makereactrole https://discord.com/channels/1234567891011121314/1234567891011121314/1413121110987654321 🎫 @role3
+-makerr https://discord.com/channels/1234567891011121314/1234567891011121314/1413121110987654321 🛡️ @role4
+-createrr https://discord.com/channels/1234567891011121314/1234567891011121314/1413121110987654321 🚀 @role5
+/createreactionrole message_link: https://discord.com/channels/1234567891011121314/1234567891011121314/1413121110987654321 emoji: 🪓 roles: @role 6 mode: mode: Single and unique role
+/createreactionrole message_link: https://discord.com/channels/1234567891011121314/1234567891011121314/1413121110987654321 emoji: 🤖 roles: @role 7 mode: mode: Multiple (Default)
+```
