@@ -1,3 +1,12 @@
+## [8.24.4](https://github.com/onesoft-sudo/sudobot/compare/v8.24.3...v8.24.4) (2024-03-10)
+
+
+### Bug Fixes
+
+* **commands:afk:remove:** add missing alias ([02705c7](https://github.com/onesoft-sudo/sudobot/commit/02705c771dcebd5690f1d67682bad8ea14430f50))
+
+
+
 ## [8.24.3](https://github.com/onesoft-sudo/sudobot/compare/v8.24.2...v8.24.3) (2024-03-10)
 
 
@@ -39,15 +48,6 @@
 ### Features
 
 * support custom statuses ([6a25933](https://github.com/onesoft-sudo/sudobot/commit/6a259338f7b088585cb30803687687c4906ce4f6))
-
-
-
-# [8.23.0](https://github.com/onesoft-sudo/sudobot/compare/v8.22.1...v8.23.0) (2024-03-08)
-
-
-### Features
-
-* **auth:** time based one-time passcodes to authenticate with credserv ([9e61a11](https://github.com/onesoft-sudo/sudobot/commit/9e61a11e8da803da1929e27868a74dfb9ff21d79))
 
 
 
