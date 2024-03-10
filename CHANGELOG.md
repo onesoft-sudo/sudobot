@@ -1,3 +1,12 @@
+## [8.25.2](https://github.com/onesoft-sudo/sudobot/compare/v8.25.1...v8.25.2) (2024-03-10)
+
+
+### Bug Fixes
+
+* lint errors/warnings ([4dfaf3b](https://github.com/onesoft-sudo/sudobot/commit/4dfaf3b92fdefdff43158b91944863923f96e5f7))
+
+
+
 ## [8.25.1](https://github.com/onesoft-sudo/sudobot/compare/v8.25.0...v8.25.1) (2024-03-10)
 
 
@@ -36,15 +45,6 @@
 ### Bug Fixes
 
 * **commands:afk:remove:** add missing alias ([02705c7](https://github.com/onesoft-sudo/sudobot/commit/02705c771dcebd5690f1d67682bad8ea14430f50))
-
-
-
-## [8.24.3](https://github.com/onesoft-sudo/sudobot/compare/v8.24.2...v8.24.3) (2024-03-10)
-
-
-### Bug Fixes
-
-* auto configure guilds on join if the system is in public bot mode ([4e27f91](https://github.com/onesoft-sudo/sudobot/commit/4e27f91a3c76786766ea2ef688d9a89206b75764))
 
 
 
