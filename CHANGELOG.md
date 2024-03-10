@@ -1,3 +1,21 @@
+## [8.24.4](https://github.com/onesoft-sudo/sudobot/compare/v8.24.3...v8.24.4) (2024-03-10)
+
+
+### Bug Fixes
+
+* **commands:afk:remove:** add missing alias ([02705c7](https://github.com/onesoft-sudo/sudobot/commit/02705c771dcebd5690f1d67682bad8ea14430f50))
+
+
+
+## [8.24.3](https://github.com/onesoft-sudo/sudobot/compare/v8.24.2...v8.24.3) (2024-03-10)
+
+
+### Bug Fixes
+
+* auto configure guilds on join if the system is in public bot mode ([4e27f91](https://github.com/onesoft-sudo/sudobot/commit/4e27f91a3c76786766ea2ef688d9a89206b75764))
+
+
+
 ## [8.24.2](https://github.com/onesoft-sudo/sudobot/compare/v8.24.1...v8.24.2) (2024-03-09)
 
 
@@ -30,24 +48,6 @@
 ### Features
 
 * support custom statuses ([6a25933](https://github.com/onesoft-sudo/sudobot/commit/6a259338f7b088585cb30803687687c4906ce4f6))
-
-
-
-# [8.23.0](https://github.com/onesoft-sudo/sudobot/compare/v8.22.1...v8.23.0) (2024-03-08)
-
-
-### Features
-
-* **auth:** time based one-time passcodes to authenticate with credserv ([9e61a11](https://github.com/onesoft-sudo/sudobot/commit/9e61a11e8da803da1929e27868a74dfb9ff21d79))
-
-
-
-## [8.22.1](https://github.com/onesoft-sudo/sudobot/compare/v8.22.0...v8.22.1) (2024-03-08)
-
-
-### Bug Fixes
-
-* eslint/typescript errors ([d3413a6](https://github.com/onesoft-sudo/sudobot/commit/d3413a6de09c682e4375bf9126f7bc362aa1cb17))
 
 
 

@@ -18,7 +18,13 @@
  */
 
 import { EmbedBuilder, PermissionsBitField, User } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { isSystemAdmin } from "../../utils/utils";
 import { AFKsCommandScope } from "./AFKsCommand";
 
@@ -34,20 +40,24 @@ export default class AFKRemoveCommand extends Command {
             errors: {
                 required: "Please provide a user to remove their AFK!",
                 "type:invalid": "Please provide a valid user!",
-                "entity:null": "Please provide a valid user!",
+                "entity:null": "Please provide a valid user!"
             }
         }
     ];
     public readonly permissions = [PermissionsBitField.Flags.ModerateMembers];
     public readonly description = "Removes AFK status for a user.";
     public readonly availableOptions = {
-        "-s, --scope=[everywhere|guild|global]": "Change the scope of this removal [System Admin Only]"
+        "-s, --scope=[everywhere|guild|global]":
+            "Change the scope of this removal [System Admin Only]"
     };
+    public readonly aliases = ["afks_delete"];
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
-        const optionIndex = context.isLegacy ? context.args.findIndex(value => value === "-s" || value === "--scope") : -1;
+        const optionIndex = context.isLegacy
+            ? context.args.findIndex(value => value === "-s" || value === "--scope")
+            : -1;
 
         if (context.isLegacy && optionIndex !== -1 && !context.args[optionIndex + 1]) {
             await this.error(
@@ -71,12 +81,19 @@ export default class AFKRemoveCommand extends Command {
             return;
         }
 
-        const user: User = context.isLegacy ? context.parsedNamedArgs.user : context.options.getString("user", true);
+        const user: User = context.isLegacy
+            ? context.parsedNamedArgs.user
+            : context.options.getString("user", true);
         const result: [guild: boolean, global: boolean] = [false, false];
         let mentions = 0;
 
         if (scope === "everywhere" || scope === "guild") {
-            const entry = await this.client.afkService.removeAFK(message.guildId!, user.id, true, true);
+            const entry = await this.client.afkService.removeAFK(
+                message.guildId!,
+                user.id,
+                true,
+                true
+            );
             result[0] = !!entry;
             mentions += entry?.mentions.length ?? 0;
         }

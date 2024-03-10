@@ -79,10 +79,11 @@ async function generateIndexForMDXPage(page) {
         url:
             "/" +
             page
-                .replace(/\/\([a-z0-9A-Z_-]+\)/gi, "")
-                .replace(/^app\//gi, "")
-                .replace(/page\.(ts|md)x$/gi, ""),
-        path: page,
+                .replace(/[\/\\]\([a-z0-9A-Z_-]+\)/gi, "")
+                .replace(/^app[\/\\]/gi, "")
+                .replace(/page\.(ts|md)x$/gi, "")
+                .replace(/\\/g, '/'),
+        path: page.replace(/\\/g, '/'),
     };
 }
 
