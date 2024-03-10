@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as tf from "@tensorflow/tfjs-node";
-import { NSFWJS, load } from "nsfwjs";
+import type { Tensor3D } from "@tensorflow/tfjs-node";
+import type { NSFWJS } from "nsfwjs";
 import Tesseract, { createWorker } from "tesseract.js";
 import Service from "../core/Service";
 import { log, logInfo } from "../utils/Logger";
@@ -26,14 +26,12 @@ import { developmentMode } from "../utils/utils";
 
 export const name = "imageRecognitionService";
 
-if (!developmentMode()) {
-    tf.enableProdMode();
-}
-
 export default class ImageRecognitionService extends Service {
     protected worker: Tesseract.Worker | null = null;
     protected nsfwJsModel: NSFWJS | null = null;
     protected timeout: Timer | null = null;
+    protected tensorFlow: typeof import("@tensorflow/tfjs-node") | null = null;
+    protected nsfwJs: typeof import("nsfwjs") | null = null;
 
     async boot() {
         for (const guild in this.client.configManager.config) {
@@ -44,7 +42,14 @@ export default class ImageRecognitionService extends Service {
             ) {
                 logInfo("Loading NSFWJS model for NSFW image recognition");
 
-                this.nsfwJsModel = await load(
+                this.tensorFlow = await import("@tensorflow/tfjs-node");
+
+                if (!developmentMode()) {
+                    this.tensorFlow.enableProdMode();
+                }
+
+                this.nsfwJs = await import("nsfwjs");
+                this.nsfwJsModel = await this.nsfwJs.load(
                     process.env.NSFWJS_MODEL_URL || undefined,
                     process.env.NSFWJS_MODEL_IMAGE_SIZE
                         ? {
@@ -84,8 +89,12 @@ export default class ImageRecognitionService extends Service {
     }
 
     async detectNSFW(image: Uint8Array | Buffer) {
-        const tensor = tf.node.decodeImage(image, 3, undefined, false);
-        const predictions = await this.nsfwJsModel!.classify(tensor as tf.Tensor3D);
+        if (!this.tensorFlow) {
+            throw new Error("Tensorflow is not loaded");
+        }
+
+        const tensor = this.tensorFlow.node.decodeImage(image, 3, undefined, false);
+        const predictions = await this.nsfwJsModel!.classify(tensor as Tensor3D);
         const result: Record<string, number> = {};
 
         for (const prediction of predictions) {
