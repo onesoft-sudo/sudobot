@@ -58,6 +58,7 @@ Thanks to all the active and indirect contributors!
 -   [Kars](https://github.com/kars1996) (Contributed by giving away a domain and a hosting server to us)
 -   [killerclaws12](https://github.com/killerclaws12)
 -   [MonzterDev](https://github.com/MonzterDev)
+-   [ninsaccplayzyt](https://github.com/ninsaccplayzyt)
 -   [Ryanmello07](https://github.com/Ryanmello07) (Contributed by giving away a hosting server and by giving a lot of suggestions/ideas to us)
 
 ### Support
