@@ -83,15 +83,17 @@ export default class ConfigController extends Controller {
         }
 
         const oldConfig = this.client.configManager.config[request.params.id];
-        console.log(request.parsedBody);
 
         if (request.parsedBody) {
-            this.client.configManager.config[request.params.id] = deepmerge(oldConfig as object, request.parsedBody.data ?? {}, {
-                arrayMerge: (target, source) => {
-                    return source;
+            this.client.configManager.config[request.params.id] = deepmerge(
+                oldConfig as object,
+                request.parsedBody.data ?? {},
+                {
+                    arrayMerge: (target, source) => {
+                        return source;
+                    }
                 }
-            }) as unknown as (typeof this.client.configManager.config)[string];
-            console.log(oldConfig?.prefix, this.client.configManager.config[request.params.id]?.prefix);
+            ) as unknown as (typeof this.client.configManager.config)[string];
         }
 
         await this.client.configManager.write();
@@ -108,7 +110,9 @@ export default class ConfigController extends Controller {
         return {
             success: true,
             old: request.parsedBody?.returnOld ? oldConfig : undefined,
-            new: request.parsedBody?.returnNew ? this.client.configManager.config[request.params.id] : undefined
+            new: request.parsedBody?.returnNew
+                ? this.client.configManager.config[request.params.id]
+                : undefined
         };
     }
 
@@ -134,7 +138,10 @@ export default class ConfigController extends Controller {
             const result = GuildConfigSchema.safeParse(configObject);
 
             if (result.success) {
-                this.client.configManager.config[request.params.id] = deepmerge(oldConfig as object, result.data);
+                this.client.configManager.config[request.params.id] = deepmerge(
+                    oldConfig as object,
+                    result.data
+                );
             } else {
                 return new Response({
                     status: 400,
@@ -156,7 +163,9 @@ export default class ConfigController extends Controller {
             return {
                 success: true,
                 old: request.parsedBody?.returnOld ? oldConfig : undefined,
-                new: request.parsedBody?.returnNew ? this.client.configManager.config[request.params.id] : undefined
+                new: request.parsedBody?.returnNew
+                    ? this.client.configManager.config[request.params.id]
+                    : undefined
             };
         }
     }

@@ -64,7 +64,11 @@ export const name = "loggerService";
 type LoggingChannelType = Exclude<keyof NotUndefined<GuildConfig["logging"]>, "enabled">;
 
 export default class LoggerService extends Service {
-    private async send(guild: Guild, options: string | MessagePayload | MessageCreateOptions, channel?: LoggingChannelType) {
+    private async send(
+        guild: Guild,
+        options: string | MessagePayload | MessageCreateOptions,
+        channel?: LoggingChannelType
+    ) {
         const channelId =
             this.client.configManager.config[guild.id]?.logging?.[channel ?? "primary_channel"] ??
             this.client.configManager.config[guild.id]?.logging?.primary_channel;
@@ -119,7 +123,10 @@ export default class LoggerService extends Service {
                     ? [
                           {
                               name: "Responsible Moderator",
-                              value: moderator.id === this.client.user?.id ? "System" : `${moderator.tag} (${moderator.id})`
+                              value:
+                                  moderator.id === this.client.user?.id
+                                      ? "System"
+                                      : `${moderator.tag} (${moderator.id})`
                           }
                       ]
                     : []),
@@ -165,7 +172,7 @@ export default class LoggerService extends Service {
         return await this.send(
             guild,
             {
-                ...((extraOptions) ?? {}),
+                ...(extraOptions ?? {}),
                 embeds: [
                     this.createLogEmbed(options),
                     ...(extraOptions && "embeds" in extraOptions ? extraOptions.embeds ?? [] : [])
@@ -238,7 +245,10 @@ export default class LoggerService extends Service {
 
         const threat = isThreat === undefined ? threatScore >= max_threat : isThreat;
         const toxic = isToxic === undefined ? toxicityScore >= max_toxicity : isToxic;
-        const severeToxic = isSeverelyToxic === undefined ? severeToxicityScore >= max_severe_toxicity : isSeverelyToxic;
+        const severeToxic =
+            isSeverelyToxic === undefined
+                ? severeToxicityScore >= max_severe_toxicity
+                : isSeverelyToxic;
 
         const explicit = isExplicit ?? explicitScore >= max_explicit;
         const flirty = isFlirty ?? flirtationScore >= max_flirtation;
@@ -275,11 +285,15 @@ export default class LoggerService extends Service {
                     name: "Score",
                     value: `Toxicity: ${toxicityScore.toFixed(2)}%\nThreat: ${threatScore.toFixed(
                         2
-                    )}%\nSevere Toxicity: ${severeToxicityScore.toFixed(2)}%\nNSFW: ${explicitScore.toFixed(
+                    )}%\nSevere Toxicity: ${severeToxicityScore.toFixed(
                         2
-                    )}%\nFlirtation: ${flirtationScore.toFixed(2)}%\nIdentity Attack: ${identityAttackScore.toFixed(
+                    )}%\nNSFW: ${explicitScore.toFixed(2)}%\nFlirtation: ${flirtationScore.toFixed(
                         2
-                    )}%\nInsult: ${insultScore.toFixed(2)}%\nProfanity: ${profanityScore.toFixed(2)}%`
+                    )}%\nIdentity Attack: ${identityAttackScore.toFixed(
+                        2
+                    )}%\nInsult: ${insultScore.toFixed(2)}%\nProfanity: ${profanityScore.toFixed(
+                        2
+                    )}%`
                 },
                 {
                     name: "Reason",
@@ -322,7 +336,11 @@ export default class LoggerService extends Service {
         );
     }
 
-    async logVoiceChannelStateUpdate(user: User, oldChannel?: VoiceBasedChannel | null, newChannel?: VoiceBasedChannel | null) {
+    async logVoiceChannelStateUpdate(
+        user: User,
+        oldChannel?: VoiceBasedChannel | null,
+        newChannel?: VoiceBasedChannel | null
+    ) {
         if (newChannel?.id === oldChannel?.id) {
             return;
         }
@@ -608,7 +626,11 @@ export default class LoggerService extends Service {
 
     async logFileFilterDeletedMessage(
         message: Message,
-        { contentType, hash, url }: { hash: string; url: string; name?: string; contentType?: string | null }
+        {
+            contentType,
+            hash,
+            url
+        }: { hash: string; url: string; name?: string; contentType?: string | null }
     ) {
         await this.sendLogEmbed(message.guild!, {
             title: "Blocked file detected",
@@ -618,8 +640,9 @@ export default class LoggerService extends Service {
                 {
                     name: "File",
                     value:
-                        `${name ? `[${escapeMarkdown(name)}](${url})` : `[Unnamed](${url})`}: \`${hash}\`` +
-                        (contentType ? ` (\`${contentType}\`)` : "")
+                        `${
+                            name ? `[${escapeMarkdown(name)}](${url})` : `[Unnamed](${url})`
+                        }: \`${hash}\`` + (contentType ? ` (\`${contentType}\`)` : "")
                 }
             ],
             footerText: "Deleted",
@@ -629,7 +652,11 @@ export default class LoggerService extends Service {
 
     async logMemberTimeout(
         member: GuildMember,
-        { reason, id, moderator }: Omit<CommonUserActionOptions, "guild" | "id"> & { reason?: string; id?: string | number }
+        {
+            reason,
+            id,
+            moderator
+        }: Omit<CommonUserActionOptions, "guild" | "id"> & { reason?: string; id?: string | number }
     ) {
         await this.sendLogEmbed(
             member.guild,
@@ -644,7 +671,9 @@ export default class LoggerService extends Service {
                     },
                     {
                         name: "User Information",
-                        value: `Username: ${member.user.username}\nMention: ${member.user.toString()}\nID: ${member.user.id}`
+                        value: `Username: ${
+                            member.user.username
+                        }\nMention: ${member.user.toString()}\nID: ${member.user.id}`
                     }
                 ],
                 footerText: "Timed-out",
@@ -659,7 +688,11 @@ export default class LoggerService extends Service {
 
     async logMemberTimeoutRemove(
         member: GuildMember,
-        { reason, id, moderator }: Omit<CommonUserActionOptions, "guild" | "id"> & { reason?: string; id?: string | number }
+        {
+            reason,
+            id,
+            moderator
+        }: Omit<CommonUserActionOptions, "guild" | "id"> & { reason?: string; id?: string | number }
     ) {
         await this.sendLogEmbed(
             member.guild,
@@ -670,7 +703,9 @@ export default class LoggerService extends Service {
                 fields: [
                     {
                         name: "User Information",
-                        value: `Username: ${member.user.username}\nMention: ${member.user.toString()}\nID: ${member.user.id}`
+                        value: `Username: ${
+                            member.user.username
+                        }\nMention: ${member.user.toString()}\nID: ${member.user.id}`
                     }
                 ],
                 footerText: "Timed-out removed",
@@ -731,7 +766,10 @@ export default class LoggerService extends Service {
         });
     }
 
-    async logChannelUpdate(oldChannel: NonThreadGuildBasedChannel, newChannel: NonThreadGuildBasedChannel) {
+    async logChannelUpdate(
+        oldChannel: NonThreadGuildBasedChannel,
+        newChannel: NonThreadGuildBasedChannel
+    ) {
         await this.sendLogEmbed(newChannel.guild, {
             title: "Channel Updated",
             color: Colors.Green,
@@ -780,7 +818,10 @@ export default class LoggerService extends Service {
                 },
                 {
                     name: "Permissions",
-                    value: permissions.length === 0 ? "*Nothing*" : "`" + permissions.join("`, `") + "`"
+                    value:
+                        permissions.length === 0
+                            ? "*Nothing*"
+                            : "`" + permissions.join("`, `") + "`"
                 }
             ],
             footerText: "Created"
@@ -808,7 +849,10 @@ export default class LoggerService extends Service {
                 },
                 {
                     name: "Permissions",
-                    value: permissions.length === 0 ? "*Nothing*" : "`" + permissions.join("`, `") + "`"
+                    value:
+                        permissions.length === 0
+                            ? "*Nothing*"
+                            : "`" + permissions.join("`, `") + "`"
                 }
             ],
             footerText: "Deleted"
@@ -818,8 +862,12 @@ export default class LoggerService extends Service {
     async logRoleUpdate(oldRole: Role, newRole: Role) {
         const newRolePermissions = newRole.permissions.toArray();
         const oldRolePermissions = oldRole.permissions.toArray();
-        const addedPermissions = newRolePermissions.filter(permission => !oldRolePermissions.includes(permission));
-        const removedPermissions = oldRolePermissions.filter(permission => !newRolePermissions.includes(permission));
+        const addedPermissions = newRolePermissions.filter(
+            permission => !oldRolePermissions.includes(permission)
+        );
+        const removedPermissions = oldRolePermissions.filter(
+            permission => !newRolePermissions.includes(permission)
+        );
 
         await this.sendLogEmbed(newRole.guild, {
             title: "Role Updated",
@@ -845,12 +893,18 @@ export default class LoggerService extends Service {
                 },
                 {
                     name: "Added Permissions",
-                    value: addedPermissions.length === 0 ? "*Nothing*" : "`" + addedPermissions.join("`, `") + "`",
+                    value:
+                        addedPermissions.length === 0
+                            ? "*Nothing*"
+                            : "`" + addedPermissions.join("`, `") + "`",
                     inline: true
                 },
                 {
                     name: "Removed Permissions",
-                    value: removedPermissions.length === 0 ? "*Nothing*" : "`" + removedPermissions.join("`, `") + "`",
+                    value:
+                        removedPermissions.length === 0
+                            ? "*Nothing*"
+                            : "`" + removedPermissions.join("`, `") + "`",
                     inline: true
                 }
             ],
@@ -876,7 +930,9 @@ export default class LoggerService extends Service {
                 },
                 {
                     name: "User Information",
-                    value: `Username: ${newMember.user.username}\nMention: ${newMember.user.toString()}\nID: ${newMember.user.id}`
+                    value: `Username: ${
+                        newMember.user.username
+                    }\nMention: ${newMember.user.toString()}\nID: ${newMember.user.id}`
                 }
             ],
             footerText: "Updated"
@@ -897,7 +953,10 @@ export default class LoggerService extends Service {
                 fields: [
                     {
                         name: "Added",
-                        value: added.size === 0 ? "*Nothing added*" : added.reduce((acc, role) => `${acc} ${role.toString()}`, "")
+                        value:
+                            added.size === 0
+                                ? "*Nothing added*"
+                                : added.reduce((acc, role) => `${acc} ${role.toString()}`, "")
                     },
                     {
                         name: "Removed",
@@ -908,9 +967,9 @@ export default class LoggerService extends Service {
                     },
                     {
                         name: "User Information",
-                        value: `Username: ${newMember.user.username}\nMention: ${newMember.user.toString()}\nID: ${
-                            newMember.user.id
-                        }`
+                        value: `Username: ${
+                            newMember.user.username
+                        }\nMention: ${newMember.user.toString()}\nID: ${newMember.user.id}`
                     }
                 ],
                 footerText: "Roles Updated"
@@ -939,8 +998,6 @@ export default class LoggerService extends Service {
         const createdAt = Math.round((member.user.createdAt?.getTime() ?? Date.now()) / 1000);
         const inviteOrVanity = await this.client.inviteTracker.findNewMemberInviteLink(member);
 
-        console.log(createdAt);
-
         await this.sendLogEmbed(
             member.guild,
             {
@@ -953,7 +1010,10 @@ export default class LoggerService extends Service {
                 fields: [
                     {
                         name: "New Account?",
-                        value: Date.now() - member.user.createdTimestamp < 3 * 24 * 60 * 60 * 1000 ? ":warning: Yes" : "No",
+                        value:
+                            Date.now() - member.user.createdTimestamp < 3 * 24 * 60 * 60 * 1000
+                                ? ":warning: Yes"
+                                : "No",
                         inline: true
                     },
                     {
@@ -967,14 +1027,18 @@ export default class LoggerService extends Service {
                     },
                     {
                         name: "User Information",
-                        value: `Username: ${member.user.username}\nMention: ${member.user.toString()}\nID: ${member.user.id}`,
+                        value: `Username: ${
+                            member.user.username
+                        }\nMention: ${member.user.toString()}\nID: ${member.user.id}`,
                         inline: true
                     },
                     {
                         name: "Positions",
                         value:
                             `Among all members: ${members + bots}th\n` +
-                            (member.user.bot ? `Among the bots: ${bots}th` : `Among the human members: ${members}th`),
+                            (member.user.bot
+                                ? `Among the bots: ${bots}th`
+                                : `Among the human members: ${members}th`),
                         inline: true
                     },
                     ...(inviteOrVanity
@@ -983,8 +1047,12 @@ export default class LoggerService extends Service {
                                   name: "Invite Information",
                                   value:
                                       `Invite Link: https://discord.gg/${
-                                          inviteOrVanity?.vanity?.code ?? inviteOrVanity?.invite?.code
-                                      }\nUses: ${inviteOrVanity?.vanity?.uses ?? inviteOrVanity?.invite?.uses}` +
+                                          inviteOrVanity?.vanity?.code ??
+                                          inviteOrVanity?.invite?.code
+                                      }\nUses: ${
+                                          inviteOrVanity?.vanity?.uses ??
+                                          inviteOrVanity?.invite?.uses
+                                      }` +
                                       (!inviteOrVanity.isVanity
                                           ? `\nInvited By: ${
                                                 inviteOrVanity.invite.inviterId
@@ -993,18 +1061,22 @@ export default class LoggerService extends Service {
                                             }` +
                                             (inviteOrVanity.invite.createdAt
                                                 ? `\nCreated: <t:${Math.round(
-                                                      inviteOrVanity.invite.createdAt.getTime() / 1000
+                                                      inviteOrVanity.invite.createdAt.getTime() /
+                                                          1000
                                                   )}:R>`
                                                 : "") +
                                             (inviteOrVanity.invite.expiresAt
                                                 ? `\nExpires: <t:${Math.round(
-                                                      inviteOrVanity.invite.expiresAt.getTime() / 1000
+                                                      inviteOrVanity.invite.expiresAt.getTime() /
+                                                          1000
                                                   )}:R>`
                                                 : "") +
                                             (inviteOrVanity.invite.channelId
                                                 ? `\nChannel: <#${inviteOrVanity.invite.channelId}> (${inviteOrVanity.invite.channelId})`
                                                 : "") +
-                                            (inviteOrVanity.invite.temporary ? "\n\n__This is a temporary invite.__" : "")
+                                            (inviteOrVanity.invite.temporary
+                                                ? "\n\n__This is a temporary invite.__"
+                                                : "")
                                           : "")
                               }
                           ]
@@ -1051,7 +1123,9 @@ export default class LoggerService extends Service {
                     },
                     {
                         name: "User Information",
-                        value: `Username: ${member.user.username}\nMention: ${member.user.toString()}\nID: ${member.user.id}`
+                        value: `Username: ${
+                            member.user.username
+                        }\nMention: ${member.user.toString()}\nID: ${member.user.id}`
                     },
                     {
                         name: "Bot?",
@@ -1076,9 +1150,16 @@ export default class LoggerService extends Service {
         }
 
         const changedEmbeds = [];
-        const mainArray = oldMessage.embeds.length > newMessage.embeds.length ? oldMessage.embeds : newMessage.embeds;
-        const mainArrayRef = oldMessage.embeds.length > newMessage.embeds.length ? "oldMessage" : "newMessage";
-        const otherArray = oldMessage.embeds.length > newMessage.embeds.length ? newMessage.embeds : oldMessage.embeds;
+        const mainArray =
+            oldMessage.embeds.length > newMessage.embeds.length
+                ? oldMessage.embeds
+                : newMessage.embeds;
+        const mainArrayRef =
+            oldMessage.embeds.length > newMessage.embeds.length ? "oldMessage" : "newMessage";
+        const otherArray =
+            oldMessage.embeds.length > newMessage.embeds.length
+                ? newMessage.embeds
+                : oldMessage.embeds;
 
         outerLoop: for (const embed of mainArray) {
             for (const otherEmbed of otherArray) {
@@ -1097,7 +1178,11 @@ export default class LoggerService extends Service {
             new ButtonBuilder()
                 .setStyle(ButtonStyle.Link)
                 .setLabel("Go to context")
-                .setURL(`https://discord.com/channels/${newMessage.guildId!}/${newMessage.channelId!}/${newMessage.id}`)
+                .setURL(
+                    `https://discord.com/channels/${newMessage.guildId!}/${newMessage.channelId!}/${
+                        newMessage.id
+                    }`
+                )
         );
 
         if (newMessage.type === MessageType.Reply)
@@ -1124,15 +1209,15 @@ export default class LoggerService extends Service {
                 fields: [
                     {
                         name: "User",
-                        value: `${newMessage.author.toString()}\nUsername: ${newMessage.author.username}\nID: ${
-                            newMessage.author.id
-                        }`
+                        value: `${newMessage.author.toString()}\nUsername: ${
+                            newMessage.author.username
+                        }\nID: ${newMessage.author.id}`
                     },
                     {
                         name: "Channel",
-                        value: `${newMessage.channel.toString()}\nName: ${(newMessage.channel as TextChannel).name}\nID: ${
-                            newMessage.channel.id
-                        }`,
+                        value: `${newMessage.channel.toString()}\nName: ${
+                            (newMessage.channel as TextChannel).name
+                        }\nID: ${newMessage.channel.id}`,
                         inline: true
                     },
                     {
@@ -1178,7 +1263,11 @@ export default class LoggerService extends Service {
             new ButtonBuilder()
                 .setStyle(ButtonStyle.Link)
                 .setLabel("Go to context")
-                .setURL(`https://discord.com/channels/${message.guildId!}/${message.channelId!}/${message.id}`)
+                .setURL(
+                    `https://discord.com/channels/${message.guildId!}/${message.channelId!}/${
+                        message.id
+                    }`
+                )
         );
 
         if (message.type === MessageType.Reply)
@@ -1187,14 +1276,18 @@ export default class LoggerService extends Service {
                     .setStyle(ButtonStyle.Link)
                     .setLabel("Go to referenced message")
                     .setURL(
-                        `https://discord.com/channels/${message.guildId!}/${message.channelId!}/${message.reference!.messageId}`
+                        `https://discord.com/channels/${message.guildId!}/${message.channelId!}/${
+                            message.reference!.messageId
+                        }`
                     )
             );
 
         const fields = [
             {
                 name: "User",
-                value: `${message.author.toString()}\nUsername: ${message.author.username}\nID: ${message.author.id}`,
+                value: `${message.author.toString()}\nUsername: ${message.author.username}\nID: ${
+                    message.author.id
+                }`,
                 inline: !!moderator
             }
         ];
@@ -1210,7 +1303,9 @@ export default class LoggerService extends Service {
         fields.push(
             {
                 name: "Channel",
-                value: `${message.channel.toString()}\nName: ${(message.channel as TextChannel).name}\nID: ${message.channel.id}`,
+                value: `${message.channel.toString()}\nName: ${
+                    (message.channel as TextChannel).name
+                }\nID: ${message.channel.id}`,
                 inline: !moderator
             },
             {
@@ -1287,9 +1382,11 @@ export default class LoggerService extends Service {
         countSuccess: number;
         reason?: string;
     }) {
-        const results = `${countInvalidChannel === 0 ? "" : `InvalidChannel: ${countInvalidChannel}\n`}${
-            countSkipped === 0 ? "" : `Skipped: ${countSkipped}\n`
-        }${countSuccess === 0 ? "" : `Success: ${countSuccess}\n`}${countFailed === 0 ? "" : `Failed: ${countFailed}\n`}`;
+        const results = `${
+            countInvalidChannel === 0 ? "" : `InvalidChannel: ${countInvalidChannel}\n`
+        }${countSkipped === 0 ? "" : `Skipped: ${countSkipped}\n`}${
+            countSuccess === 0 ? "" : `Success: ${countSuccess}\n`
+        }${countFailed === 0 ? "" : `Failed: ${countFailed}\n`}`;
 
         await this.sendLogEmbed(guild, {
             title: `Server ${action.toLowerCase()}`,
@@ -1357,7 +1454,9 @@ export default class LoggerService extends Service {
                               {
                                   name: "Message Deletion Timeframe",
                                   value: deleteMessageSeconds
-                                      ? formatDistanceToNowStrict(new Date(Date.now() - deleteMessageSeconds * 1000))
+                                      ? formatDistanceToNowStrict(
+                                            new Date(Date.now() - deleteMessageSeconds * 1000)
+                                        )
                                       : "*No timeframe provided*"
                               }
                           ]
@@ -1377,7 +1476,14 @@ export default class LoggerService extends Service {
         );
     }
 
-    async logUserSoftBan({ moderator, user, deleteMessageSeconds, reason, guild, id }: LogUserBanOptions) {
+    async logUserSoftBan({
+        moderator,
+        user,
+        deleteMessageSeconds,
+        reason,
+        guild,
+        id
+    }: LogUserBanOptions) {
         await this.sendLogEmbed(
             guild,
             {
@@ -1392,7 +1498,9 @@ export default class LoggerService extends Service {
                     {
                         name: "Message Deletion Timeframe",
                         value: deleteMessageSeconds
-                            ? formatDistanceToNowStrict(new Date(Date.now() - deleteMessageSeconds * 1000))
+                            ? formatDistanceToNowStrict(
+                                  new Date(Date.now() - deleteMessageSeconds * 1000)
+                              )
                             : "*No timeframe provided*"
                     }
                 ]
@@ -1498,7 +1606,16 @@ export default class LoggerService extends Service {
         );
     }
 
-    async logBulkDeleteMessages({ messages, moderator, user, reason, guild, id, count, channel }: LogMessageBulkDelete) {
+    async logBulkDeleteMessages({
+        messages,
+        moderator,
+        user,
+        reason,
+        guild,
+        id,
+        count,
+        channel
+    }: LogMessageBulkDelete) {
         const sendJSON = this.client.configManager.config[guild.id]?.logging?.bulk_delete_send_json;
 
         const message = await this.sendLogEmbed(
@@ -1547,7 +1664,9 @@ export default class LoggerService extends Service {
                                     name: "Messages",
                                     value: `[Click here to view the deleted messages](${
                                         process.env.FRONTEND_URL
-                                    }/view_deleted_messages?url=${encodeURIComponent(message.attachments.at(0)!.url)})`
+                                    }/view_deleted_messages?url=${encodeURIComponent(
+                                        message.attachments.at(0)!.url
+                                    )})`
                                 }
                             ]
                         }
@@ -1580,7 +1699,15 @@ export default class LoggerService extends Service {
         );
     }
 
-    async logBlockedWordOrToken({ guild, user, blockType, token, word, message, content }: BlockedTokenOrWordOptions) {
+    async logBlockedWordOrToken({
+        guild,
+        user,
+        blockType,
+        token,
+        word,
+        message,
+        content
+    }: BlockedTokenOrWordOptions) {
         let value: string;
         let title: string;
 
@@ -1618,7 +1745,13 @@ export default class LoggerService extends Service {
         });
     }
 
-    async logUserMassBan({ users, reason, guild, moderator, deleteMessageSeconds }: LogUserMassBanOptions) {
+    async logUserMassBan({
+        users,
+        reason,
+        guild,
+        moderator,
+        deleteMessageSeconds
+    }: LogUserMassBanOptions) {
         await this.sendLogEmbed(
             guild,
             {
@@ -1631,13 +1764,16 @@ export default class LoggerService extends Service {
                     {
                         name: "Message Deletion Timeframe",
                         value: deleteMessageSeconds
-                            ? formatDistanceToNowStrict(new Date(Date.now() - deleteMessageSeconds * 1000))
+                            ? formatDistanceToNowStrict(
+                                  new Date(Date.now() - deleteMessageSeconds * 1000)
+                              )
                             : "*No timeframe provided*"
                     }
                 ],
                 options: {
                     description: `The following users were banned:\n\n${users.reduce(
-                        (acc, user) => acc + (acc === "" ? "" : "\n") + "<@" + user + "> (`" + user + "`)",
+                        (acc, user) =>
+                            acc + (acc === "" ? "" : "\n") + "<@" + user + "> (`" + user + "`)",
                         ""
                     )}`
                 }
@@ -1647,7 +1783,12 @@ export default class LoggerService extends Service {
         );
     }
 
-    async logMemberMassKick({ users, reason, guild, moderator }: Omit<LogUserMassBanOptions, "deleteMessageSeconds">) {
+    async logMemberMassKick({
+        users,
+        reason,
+        guild,
+        moderator
+    }: Omit<LogUserMassBanOptions, "deleteMessageSeconds">) {
         await this.sendLogEmbed(
             guild,
             {
@@ -1658,7 +1799,8 @@ export default class LoggerService extends Service {
                 color: Colors.Orange,
                 options: {
                     description: `The following users were kicked:\n\n${users.reduce(
-                        (acc, user) => acc + (acc === "" ? "" : "\n") + "<@" + user + "> (`" + user + "`)",
+                        (acc, user) =>
+                            acc + (acc === "" ? "" : "\n") + "<@" + user + "> (`" + user + "`)",
                         ""
                     )}`
                 }
@@ -1669,7 +1811,9 @@ export default class LoggerService extends Service {
     }
 
     generateBulkDeleteJSON(messages: MessageResolvable[]) {
-        const mappedMessages = ((messages instanceof Collection ? [...messages.values()] : messages) as Message[]).map(m => ({
+        const mappedMessages = (
+            (messages instanceof Collection ? [...messages.values()] : messages) as Message[]
+        ).map(m => ({
             ...m,
             author: m.author,
             member: m.member,
@@ -1688,7 +1832,9 @@ export default class LoggerService extends Service {
                         nickname: nickname ?? user.username,
                         id: user.id
                     })) ?? [],
-                channels: (m.mentions.channels as Collection<string, GuildChannel>).map(({ id, name }) => ({ id, name })),
+                channels: (m.mentions.channels as Collection<string, GuildChannel>).map(
+                    ({ id, name }) => ({ id, name })
+                ),
                 roles: m.mentions.roles.map(({ id, name }) => ({ id, name }))
             }
         }));

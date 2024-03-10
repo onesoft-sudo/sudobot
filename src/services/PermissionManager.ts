@@ -18,13 +18,20 @@
  */
 
 import { PermissionOverwrite } from "@prisma/client";
-import { GuildMember, PermissionFlagsBits, PermissionResolvable, PermissionsBitField, Role, Snowflake } from "discord.js";
+import {
+    GuildMember,
+    PermissionFlagsBits,
+    PermissionResolvable,
+    PermissionsBitField,
+    Role,
+    Snowflake
+} from "discord.js";
 import Service from "../core/Service";
 import AbstractPermissionManager from "../security/AbstractPermissionManager";
 import DiscordBasedPermissionManager from "../security/DiscordBasedPermissionManager";
 import LayerBasedPermissionManager from "../security/LayerBasedPermissionManager";
 import LevelBasedPermissionManager from "../security/LevelBasedPermissionManager";
-import { logInfo, log } from "../utils/Logger";
+import { log, logInfo } from "../utils/Logger";
 import { GuildConfig } from "./ConfigManager";
 
 export const name = "permissionManager";
@@ -47,14 +54,18 @@ export type GetMemberPermissionInGuildResult = {
       }
 );
 
-export default class PermissionManager<M extends AbstractPermissionManager = AbstractPermissionManager> extends Service {
+export default class PermissionManager<
+    M extends AbstractPermissionManager = AbstractPermissionManager
+> extends Service {
     protected readonly cache: Record<`${Snowflake}_${Snowflake}`, object> = {};
-    protected readonly managers: Record<NonNullable<GuildConfig["permissions"]["mode"]>, AbstractPermissionManager | undefined> =
-        {
-            layered: new LayerBasedPermissionManager(this.client),
-            discord: new DiscordBasedPermissionManager(this.client),
-            levels: new LevelBasedPermissionManager(this.client)
-        };
+    protected readonly managers: Record<
+        NonNullable<GuildConfig["permissions"]["mode"]>,
+        AbstractPermissionManager | undefined
+    > = {
+        layered: new LayerBasedPermissionManager(this.client),
+        discord: new DiscordBasedPermissionManager(this.client),
+        levels: new LevelBasedPermissionManager(this.client)
+    };
 
     boot() {
         if (!this.client.configManager.systemConfig.sync_permission_managers_on_boot) {
@@ -67,14 +78,19 @@ export default class PermissionManager<M extends AbstractPermissionManager = Abs
         }
     }
 
-    async isImmuneToAutoMod(member: GuildMember, permission?: PermissionResolvable[] | PermissionResolvable) {
-        if (this.client.configManager.systemConfig.system_admins.includes(member.user.id)) return true;
+    async isImmuneToAutoMod(
+        member: GuildMember,
+        permission?: PermissionResolvable[] | PermissionResolvable
+    ) {
+        if (this.client.configManager.systemConfig.system_admins.includes(member.user.id))
+            return true;
 
         const config = this.client.configManager.config[member.guild.id];
 
         if (!config) return true;
 
-        const { admin_role, mod_role, staff_role, check_discord_permissions, invincible_roles } = config.permissions ?? {};
+        const { admin_role, mod_role, staff_role, check_discord_permissions, invincible_roles } =
+            config.permissions ?? {};
 
         if (member.roles.cache.hasAny(admin_role ?? "_", mod_role ?? "_", staff_role ?? "_")) {
             log("Member has roles that are immune to automod");
@@ -113,7 +129,8 @@ export default class PermissionManager<M extends AbstractPermissionManager = Abs
 
     // FIXME: Move these permission checks to DiscordBasedPermissionManager
     async shouldModerate(member: GuildMember, moderator: GuildMember) {
-        if (this.client.configManager.systemConfig.system_admins.includes(moderator.user.id)) return true;
+        if (this.client.configManager.systemConfig.system_admins.includes(moderator.user.id))
+            return true;
 
         const config = this.client.configManager.config[member.guild.id];
 
@@ -122,7 +139,8 @@ export default class PermissionManager<M extends AbstractPermissionManager = Abs
         if (member.guild.ownerId === member.user.id) return false;
         if (member.guild.ownerId === moderator.user.id) return true;
 
-        const { admin_role, mod_role, staff_role, invincible_roles, check_discord_permissions } = config.permissions ?? {};
+        const { admin_role, mod_role, staff_role, invincible_roles, check_discord_permissions } =
+            config.permissions ?? {};
 
         if (member.roles.cache.hasAny(admin_role ?? "_", mod_role ?? "_", staff_role ?? "_")) {
             log("Member has roles that are immune to this action");
@@ -137,7 +155,8 @@ export default class PermissionManager<M extends AbstractPermissionManager = Abs
         }
 
         if (
-            (check_discord_permissions === "manual_actions" || check_discord_permissions === "both") &&
+            (check_discord_permissions === "manual_actions" ||
+                check_discord_permissions === "both") &&
             member.roles.highest.position >= moderator.roles.highest.position
         ) {
             log("Member has higher/equal roles than moderator");
@@ -164,9 +183,7 @@ export default class PermissionManager<M extends AbstractPermissionManager = Abs
     }
 
     async getMemberPermissions(member: GuildMember, mergeWithDiscordPermissions?: boolean) {
-        console.log("before Getting member permissions");
         const manager = await this.getManager(member.guild.id);
-        console.log("Getting member permissions");
         return manager.getMemberPermissions(member, mergeWithDiscordPermissions);
     }
 

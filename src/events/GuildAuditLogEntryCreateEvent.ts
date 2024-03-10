@@ -35,7 +35,12 @@ export default class GuildAuditLogEntryCreateEventListener extends EventListener
     public readonly name = "guildAuditLogEntryCreate";
 
     async execute(
-        auditLogEntry: GuildAuditLogsEntry<AuditLogEvent, GuildAuditLogsActionType, GuildAuditLogsTargetType, AuditLogEvent>,
+        auditLogEntry: GuildAuditLogsEntry<
+            AuditLogEvent,
+            GuildAuditLogsActionType,
+            GuildAuditLogsTargetType,
+            AuditLogEvent
+        >,
         guild: Guild
     ): Promise<void> {
         if (auditLogEntry.action === AuditLogEvent.MemberBanAdd) {
@@ -64,7 +69,11 @@ export default class GuildAuditLogEntryCreateEventListener extends EventListener
                     moderator:
                         executor ??
                         (await safeUserFetch(this.client, executorId)) ??
-                        ({ ...this.client.user!, username: "Unknown", id: executorId } as unknown as User),
+                        ({
+                            ...this.client.user!,
+                            username: "Unknown",
+                            id: executorId
+                        } as unknown as User),
                     user,
                     guild,
                     id: infraction.id.toString(),
@@ -74,7 +83,6 @@ export default class GuildAuditLogEntryCreateEventListener extends EventListener
             }
         } else if (auditLogEntry.action === AuditLogEvent.MemberKick) {
             const { executorId, executor, targetId, reason, target } = auditLogEntry;
-            console.log("target instanceof GuildMember", target instanceof GuildMember);
             const user =
                 target instanceof User
                     ? target
@@ -99,7 +107,11 @@ export default class GuildAuditLogEntryCreateEventListener extends EventListener
                     moderator:
                         executor ??
                         (await safeUserFetch(this.client, executorId)) ??
-                        ({ ...this.client.user!, username: "Unknown", id: executorId } as unknown as User),
+                        ({
+                            ...this.client.user!,
+                            username: "Unknown",
+                            id: executorId
+                        } as unknown as User),
                     user,
                     guild,
                     id: infraction.id.toString(),
@@ -108,7 +120,8 @@ export default class GuildAuditLogEntryCreateEventListener extends EventListener
             }
         } else if (auditLogEntry.action === AuditLogEvent.MemberUpdate) {
             const lastChange = auditLogEntry.changes.at(-1);
-            const channel = (await safeMemberFetch(guild, auditLogEntry.targetId!))?.voice?.channel as VoiceChannel | null;
+            const channel = (await safeMemberFetch(guild, auditLogEntry.targetId!))?.voice
+                ?.channel as VoiceChannel | null;
 
             if (!lastChange || !channel) {
                 return;

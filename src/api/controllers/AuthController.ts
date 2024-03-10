@@ -20,7 +20,14 @@
 import { User } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { add } from "date-fns";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Snowflake, escapeMarkdown } from "discord.js";
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    EmbedBuilder,
+    Snowflake,
+    escapeMarkdown
+} from "discord.js";
 import jwt from "jsonwebtoken";
 import { randomInt } from "node:crypto";
 import { request as undiciRequest } from "undici";
@@ -47,7 +54,10 @@ export default class AuthController extends Controller {
     }
 
     private async genToken(user: User) {
-        if (!user.token || (user.token && user.tokenExpiresAt && user.tokenExpiresAt.getTime() <= Date.now())) {
+        if (
+            !user.token ||
+            (user.token && user.tokenExpiresAt && user.tokenExpiresAt.getTime() <= Date.now())
+        ) {
             user.token = jwt.sign(
                 {
                     userId: user.id,
@@ -474,7 +484,6 @@ export default class AuthController extends Controller {
             });
 
             const oauthData = <Record<string, string>>await tokenResponseData.body.json();
-            console.log(oauthData);
 
             if (oauthData?.error) {
                 throw new Error(`${oauthData?.error}: ${oauthData?.error_description}`);
@@ -492,11 +501,11 @@ export default class AuthController extends Controller {
                 throw new Error(`${userData?.error}: ${userData?.error_description}`);
             }
 
-            console.log(userData);
-
-            const avatarURL = `https://cdn.discordapp.com/avatars/${encodeURIComponent(userData.id)}/${encodeURIComponent(
-                userData.avatar
-            )}.${userData.avatar.startsWith("a_") ? "gif" : "webp"}?size=512`;
+            const avatarURL = `https://cdn.discordapp.com/avatars/${encodeURIComponent(
+                userData.id
+            )}/${encodeURIComponent(userData.avatar)}.${
+                userData.avatar.startsWith("a_") ? "gif" : "webp"
+            }?size=512`;
 
             const user = await this.client.prisma.user.findFirst({
                 where: {

@@ -58,7 +58,11 @@ export default class AICommand extends Command {
     public readonly aliases = ["ask"];
     public readonly supportsLegacy = false;
     public readonly slashCommandBuilder = new SlashCommandBuilder().addStringOption(option =>
-        option.setName("prompt").setDescription("Ask something").setMaxLength(1000).setRequired(true)
+        option
+            .setName("prompt")
+            .setDescription("Ask something")
+            .setMaxLength(1000)
+            .setRequired(true)
     );
     public readonly description = "Ask something to the AI.";
     public openai: OpenAI | null = null;
@@ -105,8 +109,6 @@ export default class AICommand extends Command {
                     return;
                 }
 
-                console.log(JSON.stringify(response.data, null, 2));
-
                 content = response.data.candidates?.[0]?.content;
             } else if (process.env.CF_AI_URL) {
                 const { data } = await axios.post(
@@ -128,7 +130,6 @@ export default class AICommand extends Command {
                     }
                 );
 
-                console.log(data);
                 content = data.response;
             } else if (process.env.OPENAI_API_KEY) {
                 let openAIAvailable = false;
@@ -142,7 +143,10 @@ export default class AICommand extends Command {
 
                 if (!openAIAvailable) {
                     logError("OpenAI package is not installed.");
-                    await this.error(interaction, "OpenAI package is not installed. Run `npm install openai` to install it.");
+                    await this.error(
+                        interaction,
+                        "OpenAI package is not installed. Run `npm install openai` to install it."
+                    );
                     return;
                 }
 
@@ -169,13 +173,21 @@ export default class AICommand extends Command {
                             }
                         );
 
-                        if (response.data?.results.find((r: Record<string, boolean>) => r.flagged)) {
-                            await this.error(interaction, "Sorry, your prompt was flagged by the OpenAI moderation system.");
+                        if (
+                            response.data?.results.find((r: Record<string, boolean>) => r.flagged)
+                        ) {
+                            await this.error(
+                                interaction,
+                                "Sorry, your prompt was flagged by the OpenAI moderation system."
+                            );
                             return;
                         }
                     } catch (error) {
                         logError(error);
-                        await this.error(interaction, "An error occurred while trying to moderate the input.");
+                        await this.error(
+                            interaction,
+                            "An error occurred while trying to moderate the input."
+                        );
                         return;
                     }
                 }
@@ -254,7 +266,9 @@ export default class AICommand extends Command {
             logError(error);
 
             await interaction.editReply({
-                content: `${this.emoji("error")} An error has occurred while trying to communicate with the AI model.`
+                content: `${this.emoji(
+                    "error"
+                )} An error has occurred while trying to communicate with the AI model.`
             });
 
             return;

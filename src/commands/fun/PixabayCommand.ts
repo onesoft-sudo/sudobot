@@ -19,7 +19,13 @@
 
 import axios from "axios";
 import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 
 function url() {
     return `https://pixabay.com/api/?key=${process.env.PIXABAY_TOKEN}&safesearch=true&per_page=3`;
@@ -32,11 +38,12 @@ export async function image(
     type: "photo" | "all" | "illustration" | "vector"
 ) {
     let genurl = `${url()}&image_type=${type}`;
-    const query = !options.isLegacy ? options.options.getString("query") : options.parsedNamedArgs.query;
+    const query = !options.isLegacy
+        ? options.options.getString("query")
+        : options.parsedNamedArgs.query;
 
     if (query && query.trim() !== "") {
         const q = new URLSearchParams({ q: query }).toString();
-        console.log(q);
         genurl += `&${q}`;
     }
 
@@ -44,7 +51,6 @@ export async function image(
         .get(genurl)
         .then(async res => {
             if (res && res.status === 200) {
-                //console.log(res.data.hits);
                 if (!res.data.hits || res.data.hits?.length < 1) {
                     await cmd.hitError(message, "No search result found from the API.");
 
@@ -52,17 +58,20 @@ export async function image(
                 }
 
                 await cmd.deferredReply(message, {
-                    content: res.data.hits[Math.floor(Math.random() * res.data.hits.length)].largeImageURL
+                    content:
+                        res.data.hits[Math.floor(Math.random() * res.data.hits.length)]
+                            .largeImageURL
                 });
             }
         })
         .catch(async err => {
-            console.log(err.message);
             await cmd.deferredReply(message, {
                 embeds: [
                     new EmbedBuilder()
                         .setColor("#f14a60")
-                        .setDescription("Too many requests at the same time, please try again after some time.")
+                        .setDescription(
+                            "Too many requests at the same time, please try again after some time."
+                        )
                 ]
             });
         });
@@ -122,25 +131,33 @@ export default class PixabayCommand extends Command {
             subcommand
                 .setName("image")
                 .setDescription("Fetch any type of image")
-                .addStringOption(option => option.setName("query").setDescription("The search query"))
+                .addStringOption(option =>
+                    option.setName("query").setDescription("The search query")
+                )
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName("photo")
                 .setDescription("Fetch captured photos only")
-                .addStringOption(option => option.setName("query").setDescription("The search query"))
+                .addStringOption(option =>
+                    option.setName("query").setDescription("The search query")
+                )
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName("vector")
                 .setDescription("Fetch vector graphics only")
-                .addStringOption(option => option.setName("query").setDescription("The search query"))
+                .addStringOption(option =>
+                    option.setName("query").setDescription("The search query")
+                )
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName("illustration")
                 .setDescription("Fetch illustrations")
-                .addStringOption(option => option.setName("query").setDescription("The search query"))
+                .addStringOption(option =>
+                    option.setName("query").setDescription("The search query")
+                )
         );
 
     public hitError(message: CommandMessage, errorMessage: string) {
@@ -148,7 +165,9 @@ export default class PixabayCommand extends Command {
     }
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
-        const subcmd = context.isLegacy ? context.parsedNamedArgs.subcommand : context.options.getSubcommand(true);
+        const subcmd = context.isLegacy
+            ? context.parsedNamedArgs.subcommand
+            : context.options.getSubcommand(true);
 
         if (subcmd === "photo") {
             await photo(this, message, context);

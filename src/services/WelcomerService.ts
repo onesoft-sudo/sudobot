@@ -49,7 +49,9 @@ export default class WelcomerService extends Service {
     @GatewayEventListener("ready")
     async onReady() {
         log("Loading welcome messages...");
-        this.welcomeMessages = JSON5.parse(await readFile(sudoPrefix("resources/welcome_messages.json"), { encoding: "utf-8" }));
+        this.welcomeMessages = JSON5.parse(
+            await readFile(sudoPrefix("resources/welcome_messages.json"), { encoding: "utf-8" })
+        );
     }
 
     @GatewayEventListener("guildMemberAdd")
@@ -78,7 +80,9 @@ export default class WelcomerService extends Service {
         if (!custom_message && !randomize) return;
 
         try {
-            const channel = member.guild.channels.cache.get(channelId) ?? (await member.guild.channels.fetch(channelId));
+            const channel =
+                member.guild.channels.cache.get(channelId) ??
+                (await member.guild.channels.fetch(channelId));
 
             if (!channel) return;
 
@@ -94,7 +98,9 @@ export default class WelcomerService extends Service {
                 : undefined;
 
             const reply = await channel.send({
-                content: `${mention ? member.user.toString() + "\n" : ""}${!embed ? this.generateContent(member, welcomer) : ""}`,
+                content: `${mention ? member.user.toString() + "\n" : ""}${
+                    !embed ? this.generateContent(member, welcomer) : ""
+                }`,
                 embeds: embed ? [this.generatedEmbed(member, welcomer)] : undefined,
                 components: actionRow
             });
@@ -132,7 +138,11 @@ export default class WelcomerService extends Service {
 
         if (!config) return;
 
-        if (!interaction.guild?.id || !config.welcomer?.say_hi_button || !interaction.customId.startsWith("welcomer_say_hi__"))
+        if (
+            !interaction.guild?.id ||
+            !config.welcomer?.say_hi_button ||
+            !interaction.customId.startsWith("welcomer_say_hi__")
+        )
             return;
 
         this.mutexes[interaction.guildId!] ??= new Mutex();
@@ -147,7 +157,9 @@ export default class WelcomerService extends Service {
 
         if (wasLocked) {
             try {
-                interaction.customId = (await interaction.message.fetch(true)).components[0].components[0].customId!;
+                interaction.customId = (
+                    await interaction.message.fetch(true)
+                ).components[0].components[0].customId!;
                 log("Refetched custom ID: ", interaction.customId);
             } catch (e) {
                 release();
@@ -156,20 +168,29 @@ export default class WelcomerService extends Service {
         }
 
         const [, memberId, messageId] = interaction.customId.split("__");
-        let sayHiReply = this.client.configManager.config[interaction.guildId!]?.welcomer?.say_hi_reply;
+        let sayHiReply =
+            this.client.configManager.config[interaction.guildId!]?.welcomer?.say_hi_reply;
 
         if (typeof sayHiReply === "string" && !sayHiReply?.includes(":mentions:")) {
-            logWarn("config.welcomer.say_hi_reply does not include :mentions: placeholder, defaulting to the built in message");
+            logWarn(
+                "config.welcomer.say_hi_reply does not include :mentions: placeholder, defaulting to the built in message"
+            );
 
             sayHiReply = undefined;
         }
 
         try {
             if (!messageId) {
-                const reply = await interaction[interaction.replied || interaction.deferred ? "followUp" : "reply"]({
+                const reply = await interaction[
+                    interaction.replied || interaction.deferred ? "followUp" : "reply"
+                ]({
                     content:
                         sayHiReply?.replace(/:mentions:/gi, `<@${interaction.user.id}>`) ??
-                        `${interaction.user.id === memberId ? "__You__" : interaction.user.toString()}${
+                        `${
+                            interaction.user.id === memberId
+                                ? "__You__"
+                                : interaction.user.toString()
+                        }${
                             interaction.user.id === memberId ? " said hi to yourself!" : saysHiToYou
                         }`,
                     fetchReply: true
@@ -189,7 +210,10 @@ export default class WelcomerService extends Service {
                 });
 
                 if (config.welcomer.delete_messages) {
-                    const time = interaction.message.createdAt.getTime() + config.welcomer.delete_messages - Date.now();
+                    const time =
+                        interaction.message.createdAt.getTime() +
+                        config.welcomer.delete_messages -
+                        Date.now();
 
                     if (time > 1000) {
                         setTimeout(() => {
@@ -225,9 +249,10 @@ export default class WelcomerService extends Service {
 
                         content = content.trim();
 
-                        const users = content.split(/\s*,\s*/).filter((part, index, array) => array.lastIndexOf(part) === index);
+                        const users = content
+                            .split(/\s*,\s*/)
+                            .filter((part, index, array) => array.lastIndexOf(part) === index);
 
-                        console.log("DEBUG", users);
                         contentOrUsers = [...users];
 
                         if (!users.includes(`<@${interaction.user.id}>`)) {
@@ -242,7 +267,9 @@ export default class WelcomerService extends Service {
                         (interaction.user.id === memberId && contentOrUsers.includes("__You__"))
                     ) {
                         await interaction.followUp({
-                            content: `You've already said hi to ${interaction.user.id === memberId ? "yourself!" : "the user!"}`,
+                            content: `You've already said hi to ${
+                                interaction.user.id === memberId ? "yourself!" : "the user!"
+                            }`,
                             ephemeral: true
                         });
 
@@ -253,8 +280,13 @@ export default class WelcomerService extends Service {
                     await message.edit({
                         content:
                             sayHiReply === undefined
-                                ? `${message.content.replace(saysHiToYou, "").replace(" said hi to yourself!", "").trim()}, ${
-                                      interaction.user.id === memberId ? "__You__" : interaction.user.toString()
+                                ? `${message.content
+                                      .replace(saysHiToYou, "")
+                                      .replace(" said hi to yourself!", "")
+                                      .trim()}, ${
+                                      interaction.user.id === memberId
+                                          ? "__You__"
+                                          : interaction.user.toString()
                                   }${saysHiToYou}`
                                 : sayHiReply.replace(/:mentions:/gi, usersArray!.join(", "))
                     });
@@ -271,12 +303,17 @@ export default class WelcomerService extends Service {
 
     generateActionRow(
         memberId: string,
-        { say_hi_emoji, say_hi_label }: Pick<NotUndefined<GuildConfig["welcomer"]>, "say_hi_emoji" | "say_hi_label">
+        {
+            say_hi_emoji,
+            say_hi_label
+        }: Pick<NotUndefined<GuildConfig["welcomer"]>, "say_hi_emoji" | "say_hi_label">
     ) {
         const emoji =
             !say_hi_emoji || say_hi_emoji === "default"
                 ? "👋"
-                : this.client.emojis.cache.find(e => e.name === say_hi_emoji || e.identifier === say_hi_emoji);
+                : this.client.emojis.cache.find(
+                      e => e.name === say_hi_emoji || e.identifier === say_hi_emoji
+                  );
         const button = new ButtonBuilder()
             .setCustomId(`welcomer_say_hi__${memberId}`)
             .setLabel(say_hi_label ?? "Say Hi!")
@@ -286,7 +323,11 @@ export default class WelcomerService extends Service {
             button.setEmoji(
                 typeof emoji === "string"
                     ? emoji
-                    : pick(emoji as Exclude<ComponentEmojiResolvable, string>, ["id", "name", "animated"])
+                    : pick(emoji as Exclude<ComponentEmojiResolvable, string>, [
+                          "id",
+                          "name",
+                          "animated"
+                      ])
             );
 
         return new ActionRowBuilder<ButtonBuilder>().addComponents(button);
@@ -306,8 +347,13 @@ export default class WelcomerService extends Service {
             .replace(/:guild:/gi, member.guild.name);
     }
 
-    generateContent(member: GuildMember, { custom_message, randomize }: NotUndefined<GuildConfig["welcomer"]>) {
-        const message = `${randomize ? `${this.pickRandomWelcomeMessage()}\n` : ""}${custom_message ? custom_message : ""}`;
+    generateContent(
+        member: GuildMember,
+        { custom_message, randomize }: NotUndefined<GuildConfig["welcomer"]>
+    ) {
+        const message = `${randomize ? `${this.pickRandomWelcomeMessage()}\n` : ""}${
+            custom_message ? custom_message : ""
+        }`;
         return this.replacePlaceholders(member, message);
     }
 

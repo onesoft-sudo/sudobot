@@ -25,10 +25,16 @@ import { generateEmbed } from "../../utils/embed";
 export default class EmbedSendCommand extends Command {
     public readonly name = "embed__send";
     public readonly validationRules: ValidationRule[] = [];
-    public readonly permissions = [PermissionsBitField.Flags.EmbedLinks, PermissionsBitField.Flags.ManageMessages];
+    public readonly permissions = [
+        PermissionsBitField.Flags.EmbedLinks,
+        PermissionsBitField.Flags.ManageMessages
+    ];
     public readonly supportsLegacy = false;
 
-    async execute(interaction: ChatInputCommandInteraction, context: ChatInputCommandContext): Promise<CommandReturn> {
+    async execute(
+        interaction: ChatInputCommandInteraction,
+        context: ChatInputCommandContext
+    ): Promise<CommandReturn> {
         const { embed, error } = generateEmbed(context.options);
 
         if (error) {
@@ -43,7 +49,6 @@ export default class EmbedSendCommand extends Command {
 
             await interaction.editReply({ content: "Message sent." });
         } catch (e) {
-            console.log(e);
             interaction.editReply({ content: "Invalid options given." });
         }
     }
