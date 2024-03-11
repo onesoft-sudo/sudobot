@@ -26,7 +26,13 @@ import {
     User,
     escapeMarkdown
 } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { stringToTimeInterval } from "../../utils/datetime";
 import { createModerationEmbed } from "../../utils/utils";
 
@@ -74,27 +80,40 @@ export default class MuteCommand extends Command {
     public readonly description = "Mutes a server member.";
     public readonly detailedDescription =
         "This command mutes a server member. You can specify a duration or make it indefinite. The muted role needs to be configured for this command to work!";
-    public readonly argumentSyntaxes = ["<UserID|UserMention> [reason]", "<UserID|UserMention> [duration] [reason]"];
+    public readonly argumentSyntaxes = [
+        "<UserID|UserMention> [reason]",
+        "<UserID|UserMention> [duration] [reason]"
+    ];
 
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.ModerateMembers];
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addUserOption(option => option.setName("member").setDescription("The member").setRequired(true))
-        .addStringOption(option => option.setName("reason").setDescription("The reason for muting this user"))
+        .addUserOption(option =>
+            option.setName("member").setDescription("The member").setRequired(true)
+        )
+        .addStringOption(option =>
+            option.setName("reason").setDescription("The reason for muting this user")
+        )
         .addStringOption(option => option.setName("time").setDescription("Mute duration"))
         .addBooleanOption(option =>
             option
                 .setName("hardmute")
-                .setDescription("Specify if the system should take out all roles of the user during the mute")
+                .setDescription(
+                    "Specify if the system should take out all roles of the user during the mute"
+                )
         )
         .addBooleanOption(option =>
             option
                 .setName("silent")
-                .setDescription("Specify if the system should not notify the user about this action. Defaults to false")
+                .setDescription(
+                    "Specify if the system should not notify the user about this action. Defaults to false"
+                )
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
-        const member = context.isLegacy ? context.parsedNamedArgs.member : context.options.getMember("member");
+        const member = context.isLegacy
+            ? context.parsedNamedArgs.member
+            : context.options.getMember("member");
 
         if (!member) {
             await message.reply({
@@ -139,7 +158,12 @@ export default class MuteCommand extends Command {
             await message.deferReply();
         }
 
-        if (!(await this.client.permissionManager.shouldModerate(member, message.member! as GuildMember))) {
+        if (
+            !(await this.client.permissionManager.shouldModerate(
+                member,
+                message.member! as GuildMember
+            ))
+        ) {
             await this.error(message, "You don't have permission to mute this user!");
             return;
         }
@@ -155,13 +179,18 @@ export default class MuteCommand extends Command {
             notifyUser: !context.isLegacy ? !context.options.getBoolean("silent") ?? true : true,
             reason,
             sendLog: true,
-            duration: duration ? duration * 1000 : undefined /* Convert the duration from seconds to milliseconds */,
-            autoRemoveQueue: true
+            duration: duration
+                ? duration * 1000
+                : undefined /* Convert the duration from seconds to milliseconds */,
+            autoRemoveQueue: true,
+            abortOnTemplateNotFound: true
         });
 
         if (error || !id) {
             await this.deferredReply(message, {
-                content: error ?? "An error has occurred during role assignment. Please double check the bot permissions."
+                content:
+                    error ??
+                    "An error has occurred during role assignment. Please double check the bot permissions."
             });
 
             return;
@@ -188,7 +217,9 @@ export default class MuteCommand extends Command {
                             {
                                 name: "Duration",
                                 value: duration
-                                    ? formatDistanceToNowStrict(new Date(Date.now() - duration * 1000))
+                                    ? formatDistanceToNowStrict(
+                                          new Date(Date.now() - duration * 1000)
+                                      )
                                     : "*No duration set*"
                             }
                         ]

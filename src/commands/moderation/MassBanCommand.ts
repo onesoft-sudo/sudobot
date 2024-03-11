@@ -18,9 +18,14 @@
  */
 
 import { GuildMember, PermissionsBitField, SlashCommandBuilder, User } from "discord.js";
-import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { stringToTimeInterval } from "../../utils/datetime";
+import Command, {
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { log, logError } from "../../utils/Logger";
+import { stringToTimeInterval } from "../../utils/datetime";
 import { isSnowflake } from "../../utils/utils";
 
 export default class MassBanCommand extends Command {
@@ -37,10 +42,16 @@ export default class MassBanCommand extends Command {
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.Administrator];
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addUserOption(option => option.setName("users").setDescription("The users to ban").setRequired(true))
-        .addStringOption(option => option.setName("reason").setDescription("The reason for taking this action"))
+        .addUserOption(option =>
+            option.setName("users").setDescription("The users to ban").setRequired(true)
+        )
         .addStringOption(option =>
-            option.setName("deletion_timeframe").setDescription("The message deletion timeframe (must be in range 0-604800)")
+            option.setName("reason").setDescription("The reason for taking this action")
+        )
+        .addStringOption(option =>
+            option
+                .setName("deletion_timeframe")
+                .setDescription("The message deletion timeframe (must be in range 0-604800)")
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
@@ -51,7 +62,9 @@ export default class MassBanCommand extends Command {
             };
         }
 
-        const args = context.isLegacy ? context.args : context.options.getString("users", true).split(/ +/);
+        const args = context.isLegacy
+            ? context.args
+            : context.options.getString("users", true).split(/ +/);
 
         if (args.length > 20) {
             return {
@@ -87,7 +100,9 @@ export default class MassBanCommand extends Command {
 
         await this.deferIfInteraction(message);
 
-        let reason = context.isLegacy ? undefined : context.options.getString("reason") ?? undefined;
+        let reason = context.isLegacy
+            ? undefined
+            : context.options.getString("reason") ?? undefined;
         let deleteMessageSeconds = context.isLegacy ? 604800 : undefined;
 
         ifContextIsNotLegacy: if (!context.isLegacy) {
@@ -99,7 +114,9 @@ export default class MassBanCommand extends Command {
 
             if (error) {
                 await this.deferredReply(message, {
-                    content: `${this.emoji("error")} ${error} provided in the \`deletion_timeframe\` option`
+                    content: `${this.emoji(
+                        "error"
+                    )} ${error} provided in the \`deletion_timeframe\` option`
                 });
 
                 return;
@@ -130,13 +147,22 @@ export default class MassBanCommand extends Command {
 
         for (const user of users) {
             try {
-                const member = message.guild!.members.cache.get(user) ?? (await message.guild!.members.fetch(user));
+                const member =
+                    message.guild!.members.cache.get(user) ??
+                    (await message.guild!.members.fetch(user));
 
                 log("Fetched member to check permissions");
 
-                if (!(await this.client.permissionManager.shouldModerate(member, message.member! as GuildMember))) {
+                if (
+                    !(await this.client.permissionManager.shouldModerate(
+                        member,
+                        message.member! as GuildMember
+                    ))
+                ) {
                     await this.deferredReply(message, {
-                        content: `${this.emoji("error")} You don't have permission to ban ${member.user.toString()}!`,
+                        content: `${this.emoji(
+                            "error"
+                        )} You don't have permission to ban ${member.user.toString()}!`,
                         allowedMentions: {
                             users: []
                         }
@@ -161,13 +187,18 @@ export default class MassBanCommand extends Command {
             guild: message.guild!,
             deleteMessageSeconds,
             callAfterEach: 10,
+            abortOnTemplateNotFound: true,
             callback: async ({ completedUsers, skippedUsers, users, completedIn }) => {
-                log(`Banned ${completedUsers.length} out of ${users.length} users (${skippedUsers.length} failed)`);
+                log(
+                    `Banned ${completedUsers.length} out of ${users.length} users (${skippedUsers.length} failed)`
+                );
 
                 await reply
                     .edit({
                         content: `${this.emoji(
-                            completedUsers.length === users.length && completedIn ? "check" : "loading"
+                            completedUsers.length === users.length && completedIn
+                                ? "check"
+                                : "loading"
                         )} Banned ${completedUsers.length} out of ${users.length} users (${
                             completedIn ? `Completed in ${completedIn}s, ` : ""
                         }${skippedUsers.length} failures)`

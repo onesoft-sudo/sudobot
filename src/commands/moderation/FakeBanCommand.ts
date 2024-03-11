@@ -20,8 +20,8 @@
 import { formatDistanceToNow } from "date-fns";
 import { ChatInputCommandInteraction, Message, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
 import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { stringToTimeInterval } from "../../utils/datetime";
 import { logError } from "../../utils/Logger";
+import { stringToTimeInterval } from "../../utils/datetime";
 import { protectSystemAdminsFromCommands } from "../../utils/troll";
 import { createModerationEmbed } from "../../utils/utils";
 
@@ -173,7 +173,8 @@ export default class FakeBanCommand extends Command {
             notifyUser: context.isLegacy ? true : !context.options.getBoolean("silent"),
             sendLog: true,
             duration: durationMs,
-            autoRemoveQueue: true
+            autoRemoveQueue: true,
+            abortOnTemplateNotFound: true
         });
 
         if (!infraction) {

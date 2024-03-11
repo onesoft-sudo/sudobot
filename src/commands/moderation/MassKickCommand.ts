@@ -18,7 +18,12 @@
  */
 
 import { PermissionsBitField, SlashCommandBuilder, User } from "discord.js";
-import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, {
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { log, logError } from "../../utils/Logger";
 import { isSnowflake } from "../../utils/utils";
 
@@ -36,8 +41,12 @@ export default class MassKickCommand extends Command {
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.Administrator];
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addUserOption(option => option.setName("users").setDescription("The users to kick").setRequired(true))
-        .addStringOption(option => option.setName("reason").setDescription("The reason for taking this action"));
+        .addUserOption(option =>
+            option.setName("users").setDescription("The users to kick").setRequired(true)
+        )
+        .addStringOption(option =>
+            option.setName("reason").setDescription("The reason for taking this action")
+        );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (context.isLegacy && context.args[0] === undefined) {
@@ -47,7 +56,9 @@ export default class MassKickCommand extends Command {
             };
         }
 
-        const args = context.isLegacy ? context.args : context.options.getString("users", true).split(/ +/);
+        const args = context.isLegacy
+            ? context.args
+            : context.options.getString("users", true).split(/ +/);
 
         if (args.length > 10) {
             return {
@@ -83,7 +94,9 @@ export default class MassKickCommand extends Command {
 
         await this.deferIfInteraction(message);
 
-        let reason = context.isLegacy ? undefined : context.options.getString("reason") ?? undefined;
+        let reason = context.isLegacy
+            ? undefined
+            : context.options.getString("reason") ?? undefined;
 
         if (context.isLegacy) {
             reason = "";
@@ -106,13 +119,18 @@ export default class MassKickCommand extends Command {
             sendLog: true,
             guild: message.guild!,
             callAfterEach: 5,
+            abortOnTemplateNotFound: true,
             callback: async ({ completedUsers, skippedUsers, users, completedIn }) => {
-                log(`Kicked ${completedUsers.length} out of ${users.length} users (${skippedUsers.length} failed)`);
+                log(
+                    `Kicked ${completedUsers.length} out of ${users.length} users (${skippedUsers.length} failed)`
+                );
 
                 await reply
                     .edit({
                         content: `${this.emoji(
-                            completedUsers.length === users.length && completedIn ? "check" : "loading"
+                            completedUsers.length === users.length && completedIn
+                                ? "check"
+                                : "loading"
                         )} Kicked ${completedUsers.length} out of ${users.length} users (${
                             completedIn ? `Completed in ${completedIn}s, ` : ""
                         }${skippedUsers.length} failures)`

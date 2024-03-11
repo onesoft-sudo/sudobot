@@ -94,9 +94,33 @@ export type RunCommandOptions = {
 };
 
 export class PermissionError extends Error {}
+type MessageOptions = string | MessageCreateOptions | MessagePayload | InteractionReplyOptions;
+
 export class CommandAbortedError extends Error {
-    constructor(public readonly reason: string, public readonly commandName: string) {
+    public readonly options?: MessageOptions | null;
+
+    constructor(
+        public readonly reason: string,
+        messageOptionsOrCallback?:
+            | MessageOptions
+            | null
+            | (() => MessageOptions | void | undefined | null)
+    ) {
         super(reason);
+        this.options =
+            typeof messageOptionsOrCallback === "function"
+                ? messageOptionsOrCallback() ?? undefined
+                : messageOptionsOrCallback === undefined
+                ? {
+                      content: reason
+                  }
+                : messageOptionsOrCallback;
+    }
+
+    public send(message: CommandMessage) {
+        if (this.options) {
+            return message.reply(this.options as MessagePayload);
+        }
     }
 }
 
@@ -244,8 +268,16 @@ export default abstract class Command {
         return this.success(this.getCommandMessage(), successMessage, mode);
     }
 
-    protected abort() {
-        throw new CommandAbortedError(`Command aborted: ${this.name}`, this.name);
+    protected abort(
+        options:
+            | string
+            | MessageCreateOptions
+            | MessagePayload
+            | InteractionReplyOptions
+            | null
+            | undefined = null
+    ) {
+        throw new CommandAbortedError(`Command aborted: ${this.name}`, options);
     }
 
     protected emoji(name: string) {
@@ -637,6 +669,10 @@ export default abstract class Command {
             return commandReturn;
         } catch (error) {
             if (error instanceof CommandAbortedError) {
+                if (error.options) {
+                    await this.deferredReply(message, error.options);
+                }
+
                 this.message = undefined;
                 onAbort?.();
                 return;

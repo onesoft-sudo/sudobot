@@ -26,12 +26,16 @@ import { safeUserFetch } from "../../utils/fetch";
 export default class InfractionEditCommand extends Command {
     public readonly name = "infraction__edit";
     public readonly validationRules: ValidationRule[] = [];
-    public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
+    public readonly permissions = [
+        PermissionsBitField.Flags.ModerateMembers,
+        PermissionsBitField.Flags.ViewAuditLog
+    ];
     public readonly permissionMode = "or";
     public readonly supportsLegacy: boolean = false;
 
     public readonly description = "Edit infractions.";
-    public readonly detailedDescription = "Update an infraction with a new reason or duration or both.";
+    public readonly detailedDescription =
+        "Update an infraction with a new reason or duration or both.";
     public readonly argumentSyntaxes = ["<infraction_id> [new_reason] [new_duration]"];
 
     async execute(interaction: ChatInputCommandInteraction): Promise<CommandReturn> {
@@ -41,7 +45,9 @@ export default class InfractionEditCommand extends Command {
 
         if (!newReason && !newDuration) {
             await interaction.editReply(
-                `${this.emoji("error")} Either provide a reason or duration or both to update this infraction, if it exists!`
+                `${this.emoji(
+                    "error"
+                )} Either provide a reason or duration or both to update this infraction, if it exists!`
             );
             return;
         }
@@ -51,7 +57,9 @@ export default class InfractionEditCommand extends Command {
 
         if (newDurationSeconds && newDurationSeconds.error) {
             await interaction.editReply(
-                `${this.emoji("error")} ${newDurationSeconds.error} provided in the \`new_duration\` field`
+                `${this.emoji("error")} ${
+                    newDurationSeconds.error
+                } provided in the \`new_duration\` field`
             );
             return;
         }
@@ -61,16 +69,29 @@ export default class InfractionEditCommand extends Command {
         });
 
         if (!infraction) {
-            await interaction.editReply(`${this.emoji("error")} Could not find an infraction with that ID!`);
+            await interaction.editReply(
+                `${this.emoji("error")} Could not find an infraction with that ID!`
+            );
             return;
         }
 
-        if (newDurationSeconds?.result && infraction.expiresAt && infraction.expiresAt.getTime() <= Date.now()) {
-            await interaction.editReply(`${this.emoji("error")} That infraction is expired, so you can't change it's duration!`);
+        if (
+            newDurationSeconds?.result &&
+            infraction.expiresAt &&
+            infraction.expiresAt.getTime() <= Date.now()
+        ) {
+            await interaction.editReply(
+                `${this.emoji(
+                    "error"
+                )} That infraction is expired, so you can't change it's duration!`
+            );
             return;
         }
 
-        if (newDurationSeconds?.result && infraction.createdAt.getTime() + newDurationSeconds?.result * 1000 <= Date.now()) {
+        if (
+            newDurationSeconds?.result &&
+            infraction.createdAt.getTime() + newDurationSeconds?.result * 1000 <= Date.now()
+        ) {
             await interaction.editReply(
                 `${this.emoji(
                     "error"
@@ -81,7 +102,9 @@ export default class InfractionEditCommand extends Command {
 
         if (newDurationSeconds?.result && infraction.expiresAt === null) {
             await interaction.editReply(
-                `${this.emoji("error")} This infraction did not have a duration in the first place, so you can't set one now.`
+                `${this.emoji(
+                    "error"
+                )} This infraction did not have a duration in the first place, so you can't set one now.`
             );
 
             return;
@@ -93,7 +116,9 @@ export default class InfractionEditCommand extends Command {
             const queue = this.client.queueManager.queues.get(`${infraction.queueId}`);
 
             if (queue) {
-                await queue.updateTime(new Date(infraction.createdAt.getTime() + newDurationSeconds.result * 1000));
+                await queue.updateTime(
+                    new Date(infraction.createdAt.getTime() + newDurationSeconds.result * 1000)
+                );
             }
         }
 
@@ -120,7 +145,10 @@ export default class InfractionEditCommand extends Command {
                                       {
                                           name: "Duration",
                                           value: formatDistanceToNowStrict(
-                                              new Date(infraction.createdAt.getTime() + newDurationSeconds.result * 1000)
+                                              new Date(
+                                                  infraction.createdAt.getTime() +
+                                                      newDurationSeconds.result * 1000
+                                              )
                                           )
                                       }
                                   ]
@@ -136,7 +164,11 @@ export default class InfractionEditCommand extends Command {
         }
 
         if (newReason) {
-            newReason = this.client.infractionManager.processInfractionReason(interaction.guildId!, newReason);
+            newReason = this.client.infractionManager.processInfractionReason(
+                interaction.guildId!,
+                newReason,
+                true
+            );
         }
 
         await this.client.prisma.infraction.update({
@@ -169,7 +201,10 @@ export default class InfractionEditCommand extends Command {
                                   {
                                       name: "New Duration",
                                       value: formatDistanceToNowStrict(
-                                          new Date(infraction.createdAt.getTime() + newDurationSeconds.result * 1000)
+                                          new Date(
+                                              infraction.createdAt.getTime() +
+                                                  newDurationSeconds.result * 1000
+                                          )
                                       )
                                   }
                               ]

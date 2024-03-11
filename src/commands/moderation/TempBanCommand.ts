@@ -18,10 +18,22 @@
  */
 
 import { formatDistanceToNow, formatDistanceToNowStrict } from "date-fns";
-import { GuildMember, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { stringToTimeInterval } from "../../utils/datetime";
+import {
+    GuildMember,
+    PermissionsBitField,
+    SlashCommandBuilder,
+    User,
+    escapeMarkdown
+} from "discord.js";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { log, logError } from "../../utils/Logger";
+import { stringToTimeInterval } from "../../utils/datetime";
 import { createModerationEmbed } from "../../utils/utils";
 
 export default class TempBanCommand extends Command {
@@ -40,7 +52,8 @@ export default class TempBanCommand extends Command {
         {
             types: [ArgumentType.TimeInterval],
             errors: {
-                "type:invalid": "You have specified an invalid argument. The system expected you to provide a duration here.",
+                "type:invalid":
+                    "You have specified an invalid argument. The system expected you to provide a duration here.",
                 required: "Please specify a ban duration!"
             },
             name: "duration",
@@ -54,7 +67,8 @@ export default class TempBanCommand extends Command {
             errors: {
                 "type:invalid":
                     "You have specified an invalid argument. The system expected you to provide a ban reason or the message deletion timeframe here.",
-                "time:range": "The message deletion range must be a time interval from 0 second to 604800 seconds (7 days)."
+                "time:range":
+                    "The message deletion range must be a time interval from 0 second to 604800 seconds (7 days)."
             },
             string: {
                 maxLength: 3999
@@ -88,22 +102,32 @@ export default class TempBanCommand extends Command {
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.BanMembers];
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addUserOption(option => option.setName("user").setDescription("The user").setRequired(true))
-        .addStringOption(option => option.setName("reason").setDescription("The reason for banning this user"))
+        .addUserOption(option =>
+            option.setName("user").setDescription("The user").setRequired(true)
+        )
+        .addStringOption(option =>
+            option.setName("reason").setDescription("The reason for banning this user")
+        )
         .addStringOption(option => option.setName("duration").setDescription("Ban duration"))
         .addStringOption(option =>
-            option.setName("deletion_timeframe").setDescription("The message deletion timeframe (must be in range 0-604800)")
+            option
+                .setName("deletion_timeframe")
+                .setDescription("The message deletion timeframe (must be in range 0-604800)")
         )
         .addBooleanOption(option =>
             option
                 .setName("silent")
-                .setDescription("Specify if the system should not notify the user about this action. Defaults to false")
+                .setDescription(
+                    "Specify if the system should not notify the user about this action. Defaults to false"
+                )
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
-        const user: User = context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user", true);
+        const user: User = context.isLegacy
+            ? context.parsedNamedArgs.user
+            : context.options.getUser("user", true);
 
         let duration = !context.isLegacy ? undefined : context.parsedNamedArgs.duration;
         let messageDeletionTimeframe = !context.isLegacy
@@ -144,7 +168,9 @@ export default class TempBanCommand extends Command {
 
             if (error) {
                 await this.deferredReply(message, {
-                    content: `${this.emoji("error")} ${error} provided in the \`deletion_timeframe\` option`
+                    content: `${this.emoji(
+                        "error"
+                    )} ${error} provided in the \`deletion_timeframe\` option`
                 });
 
                 return;
@@ -164,9 +190,16 @@ export default class TempBanCommand extends Command {
         }
 
         try {
-            const member = message.guild!.members.cache.get(user.id) ?? (await message.guild!.members.fetch(user.id));
+            const member =
+                message.guild!.members.cache.get(user.id) ??
+                (await message.guild!.members.fetch(user.id));
 
-            if (!(await this.client.permissionManager.shouldModerate(member, message.member! as GuildMember))) {
+            if (
+                !(await this.client.permissionManager.shouldModerate(
+                    member,
+                    message.member! as GuildMember
+                ))
+            ) {
                 await this.error(message, "You don't have permission to ban this user!");
                 return;
             }
@@ -182,7 +215,8 @@ export default class TempBanCommand extends Command {
             notifyUser: context.isLegacy ? true : !context.options.getBoolean("silent"),
             sendLog: true,
             duration,
-            autoRemoveQueue: true
+            autoRemoveQueue: true,
+            abortOnTemplateNotFound: true
         });
 
         if (!infraction) {
@@ -198,7 +232,9 @@ export default class TempBanCommand extends Command {
                         moderator: message.member!.user as User,
                         user,
                         actionDoneName: "banned",
-                        description: `**${escapeMarkdown(user.tag)}** was temporarily banned from this server.`,
+                        description: `**${escapeMarkdown(
+                            user.tag
+                        )}** was temporarily banned from this server.`,
                         fields: [
                             {
                                 name: "Message Deletion",

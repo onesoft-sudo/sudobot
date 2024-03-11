@@ -26,7 +26,10 @@ import { stringToTimeInterval } from "../../utils/datetime";
 export default class InfractionCreateCommand extends Command {
     public readonly name = "infraction__create";
     public readonly validationRules: ValidationRule[] = [];
-    public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
+    public readonly permissions = [
+        PermissionsBitField.Flags.ModerateMembers,
+        PermissionsBitField.Flags.ViewAuditLog
+    ];
     public readonly supportsLegacy: boolean = false;
     public readonly permissionMode = "or";
 
@@ -42,20 +45,34 @@ export default class InfractionCreateCommand extends Command {
         const parsedDuration = duration ? stringToTimeInterval(duration) : null;
 
         if (parsedDuration && parsedDuration.error) {
-            await interaction.editReply(`${this.emoji("error")} ${parsedDuration.error} provided in the \`duration\` field`);
+            await interaction.editReply(
+                `${this.emoji("error")} ${parsedDuration.error} provided in the \`duration\` field`
+            );
             return;
         }
 
         if (!(type in InfractionType)) {
-            await interaction.editReply(`${this.emoji("error")} Invalid infraction type provided in the \`type\` field`);
+            await interaction.editReply(
+                `${this.emoji("error")} Invalid infraction type provided in the \`type\` field`
+            );
             return;
         }
 
         try {
-            const member = interaction.guild!.members.cache.get(user.id) ?? (await interaction.guild!.members.fetch(user.id));
+            const member =
+                interaction.guild!.members.cache.get(user.id) ??
+                (await interaction.guild!.members.fetch(user.id));
 
-            if (!(await this.client.permissionManager.shouldModerate(member, interaction.member! as GuildMember))) {
-                await this.error(interaction, "You don't have permission to create infractions for this user!");
+            if (
+                !(await this.client.permissionManager.shouldModerate(
+                    member,
+                    interaction.member! as GuildMember
+                ))
+            ) {
+                await this.error(
+                    interaction,
+                    "You don't have permission to create infractions for this user!"
+                );
                 return;
             }
         } catch (e) {
@@ -63,7 +80,11 @@ export default class InfractionCreateCommand extends Command {
         }
 
         if (reason) {
-            reason = this.client.infractionManager.processInfractionReason(interaction.guildId!, reason);
+            reason = this.client.infractionManager.processInfractionReason(
+                interaction.guildId!,
+                reason,
+                true
+            );
         }
 
         const infraction = await this.client.prisma.infraction.create({
@@ -78,7 +99,9 @@ export default class InfractionCreateCommand extends Command {
                           duration: parsedDuration.result * 1000
                       }
                     : undefined,
-                expiresAt: parsedDuration?.result ? new Date(parsedDuration?.result * 1000 + Date.now()) : undefined
+                expiresAt: parsedDuration?.result
+                    ? new Date(parsedDuration?.result * 1000 + Date.now())
+                    : undefined
             }
         });
 
@@ -86,7 +109,9 @@ export default class InfractionCreateCommand extends Command {
 
         await interaction.editReply({
             embeds: [
-                this.client.infractionManager.generateInfractionDetailsEmbed(user, infraction).setTitle("Infraction Created")
+                this.client.infractionManager
+                    .generateInfractionDetailsEmbed(user, infraction)
+                    .setTitle("Infraction Created")
             ]
         });
     }

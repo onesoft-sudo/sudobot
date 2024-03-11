@@ -25,7 +25,13 @@ import {
     User,
     escapeMarkdown
 } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { createModerationEmbed } from "../../utils/utils";
 
 export default class WarnCommand extends Command {
@@ -56,17 +62,24 @@ export default class WarnCommand extends Command {
     public readonly permissions = [PermissionsBitField.Flags.ManageMessages];
 
     public readonly description = "Warns a server member.";
-    public readonly detailedDescription = "This command warns a server member, by sending a DM to them.";
+    public readonly detailedDescription =
+        "This command warns a server member, by sending a DM to them.";
     public readonly argumentSyntaxes = ["<UserID|UserMention> [reason]"];
 
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.ManageMessages];
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addUserOption(option => option.setName("member").setDescription("The member").setRequired(true))
-        .addStringOption(option => option.setName("reason").setDescription("The reason for warning this user"));
+        .addUserOption(option =>
+            option.setName("member").setDescription("The member").setRequired(true)
+        )
+        .addStringOption(option =>
+            option.setName("reason").setDescription("The reason for warning this user")
+        );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
-        const member = context.isLegacy ? context.parsedNamedArgs.member : context.options.getMember("member");
+        const member = context.isLegacy
+            ? context.parsedNamedArgs.member
+            : context.options.getMember("member");
 
         if (!member) {
             await message.reply({
@@ -81,20 +94,32 @@ export default class WarnCommand extends Command {
             await message.deferReply();
         }
 
-        if (!(await this.client.permissionManager.shouldModerate(member, message.member! as GuildMember))) {
+        if (
+            !(await this.client.permissionManager.shouldModerate(
+                member,
+                message.member! as GuildMember
+            ))
+        ) {
             await this.error(message, "You don't have permission to warn this user!");
             return;
         }
 
-        const reason = (context.isLegacy ? context.parsedNamedArgs.reason : context.options.getString("reason")) ?? undefined;
+        const reason =
+            (context.isLegacy
+                ? context.parsedNamedArgs.reason
+                : context.options.getString("reason")) ?? undefined;
 
-        const { id, result, infraction } = await this.client.infractionManager.createMemberWarn(member, {
-            guild: message.guild!,
-            moderator: message.member!.user as User,
-            notifyUser: true,
-            reason,
-            sendLog: true
-        });
+        const { id, result, infraction } = await this.client.infractionManager.createMemberWarn(
+            member,
+            {
+                guild: message.guild!,
+                moderator: message.member!.user as User,
+                notifyUser: true,
+                reason,
+                sendLog: true,
+                abortOnTemplateNotFound: true
+            }
+        );
 
         await this.deferredReply(
             message,

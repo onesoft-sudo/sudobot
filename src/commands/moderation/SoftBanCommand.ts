@@ -18,10 +18,22 @@
  */
 
 import { formatDistanceToNow } from "date-fns";
-import { GuildMember, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { stringToTimeInterval } from "../../utils/datetime";
+import {
+    GuildMember,
+    PermissionsBitField,
+    SlashCommandBuilder,
+    User,
+    escapeMarkdown
+} from "discord.js";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { logError } from "../../utils/Logger";
+import { stringToTimeInterval } from "../../utils/datetime";
 import { createModerationEmbed } from "../../utils/utils";
 
 export default class SoftBanCommand extends Command {
@@ -43,7 +55,8 @@ export default class SoftBanCommand extends Command {
             errors: {
                 "type:invalid":
                     "You have specified an invalid argument. The system expected you to provide a ban reason or the message deletion timeframe here.",
-                "time:range": "The message deletion range must be a time interval from 0 second to 604800 seconds (7 days)."
+                "time:range":
+                    "The message deletion range must be a time interval from 0 second to 604800 seconds (7 days)."
             },
             string: {
                 maxLength: 3999
@@ -72,28 +85,41 @@ export default class SoftBanCommand extends Command {
     public readonly description = "Softbans a user.";
     public readonly detailedDescription =
         "This command bans a user, then unbans immediately. This is helpful if you want to remove the recent messages by a user.";
-    public readonly argumentSyntaxes = ["<UserID|UserMention> [Reason]", "<UserID|UserMention> [MessageDeletionTime] [Reason]"];
+    public readonly argumentSyntaxes = [
+        "<UserID|UserMention> [Reason]",
+        "<UserID|UserMention> [MessageDeletionTime] [Reason]"
+    ];
 
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.BanMembers];
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addUserOption(option => option.setName("user").setDescription("The user").setRequired(true))
-        .addStringOption(option => option.setName("reason").setDescription("The reason for softbanning this user"))
+        .addUserOption(option =>
+            option.setName("user").setDescription("The user").setRequired(true)
+        )
+        .addStringOption(option =>
+            option.setName("reason").setDescription("The reason for softbanning this user")
+        )
         .addStringOption(option =>
             option
                 .setName("deletion_timeframe")
-                .setDescription("The message deletion timeframe, defaults to 7 days (must be in range 0-7 days)")
+                .setDescription(
+                    "The message deletion timeframe, defaults to 7 days (must be in range 0-7 days)"
+                )
         )
         .addBooleanOption(option =>
             option
                 .setName("silent")
-                .setDescription("Specify if the system should not notify the user about this action. Defaults to false")
+                .setDescription(
+                    "Specify if the system should not notify the user about this action. Defaults to false"
+                )
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
-        const user: User = context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user", true);
+        const user: User = context.isLegacy
+            ? context.parsedNamedArgs.user
+            : context.options.getUser("user", true);
 
         let messageDeletionTimeframe = !context.isLegacy
             ? undefined
@@ -115,7 +141,9 @@ export default class SoftBanCommand extends Command {
 
             if (error) {
                 await this.deferredReply(message, {
-                    content: `${this.emoji("error")} ${error} provided in the \`deletion_timeframe\` option`
+                    content: `${this.emoji(
+                        "error"
+                    )} ${error} provided in the \`deletion_timeframe\` option`
                 });
 
                 return;
@@ -137,9 +165,16 @@ export default class SoftBanCommand extends Command {
         messageDeletionTimeframe ??= 604800;
 
         try {
-            const member = message.guild!.members.cache.get(user.id) ?? (await message.guild!.members.fetch(user.id));
+            const member =
+                message.guild!.members.cache.get(user.id) ??
+                (await message.guild!.members.fetch(user.id));
 
-            if (!(await this.client.permissionManager.shouldModerate(member, message.member! as GuildMember))) {
+            if (
+                !(await this.client.permissionManager.shouldModerate(
+                    member,
+                    message.member! as GuildMember
+                ))
+            ) {
                 await this.error(message, "You don't have permission to softban this user!");
                 return;
             }
@@ -153,7 +188,8 @@ export default class SoftBanCommand extends Command {
             deleteMessageSeconds: messageDeletionTimeframe,
             reason,
             notifyUser: context.isLegacy ? true : !context.options.getBoolean("silent"),
-            sendLog: true
+            sendLog: true,
+            abortOnTemplateNotFound: true
         });
 
         if (!infraction) {

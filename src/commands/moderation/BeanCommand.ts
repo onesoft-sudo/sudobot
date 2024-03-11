@@ -18,7 +18,13 @@
  */
 
 import { PermissionsBitField, SlashCommandBuilder, User } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { protectSystemAdminsFromCommands } from "../../utils/troll";
 import { createModerationEmbed } from "../../utils/utils";
 
@@ -50,7 +56,10 @@ export default class BeanCommand extends Command {
             name: "reason"
         }
     ];
-    public readonly permissions = [PermissionsBitField.Flags.ManageMessages, PermissionsBitField.Flags.BanMembers];
+    public readonly permissions = [
+        PermissionsBitField.Flags.ManageMessages,
+        PermissionsBitField.Flags.BanMembers
+    ];
     public readonly permissionMode = "or";
 
     public readonly description = "Beans a user.";
@@ -58,13 +67,19 @@ export default class BeanCommand extends Command {
         "This command doesn't do anything special except DMing the user and telling them that they've been beaned.";
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addUserOption(option => option.setName("user").setDescription("The target user").setRequired(true))
-        .addStringOption(option => option.setName("reason").setDescription("Reason for beaning this user"));
+        .addUserOption(option =>
+            option.setName("user").setDescription("The target user").setRequired(true)
+        )
+        .addStringOption(option =>
+            option.setName("reason").setDescription("Reason for beaning this user")
+        );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
-        const user = context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user", true);
+        const user = context.isLegacy
+            ? context.parsedNamedArgs.user
+            : context.options.getUser("user", true);
         const {
             commands: { moderation_command_behaviour }
         } = context.config;
@@ -74,13 +89,19 @@ export default class BeanCommand extends Command {
             return;
         }
 
-        const reason = context.isLegacy ? context.parsedNamedArgs.reason : context.options.getString("reason");
+        const reason = context.isLegacy
+            ? context.parsedNamedArgs.reason
+            : context.options.getString("reason");
 
-        const { id, reason: finalReason } = await this.client.infractionManager.createUserBean(user, {
-            reason,
-            guild: message.guild!,
-            moderator: message.member!.user as User
-        });
+        const { id, reason: finalReason } = await this.client.infractionManager.createUserBean(
+            user,
+            {
+                reason,
+                guild: message.guild!,
+                moderator: message.member!.user as User,
+                abortOnTemplateNotFound: true
+            }
+        );
 
         await this.deferredReply(
             message,

@@ -46,6 +46,7 @@ import {
     time
 } from "discord.js";
 import path from "path";
+import { CommandAbortedError } from "../core/Command";
 import Service from "../core/Service";
 import { log, logError } from "../utils/Logger";
 import QueueEntry from "../utils/QueueEntry";
@@ -77,7 +78,9 @@ export default class InfractionManager extends Service {
         let points = 0;
 
         for (const type in infractionCounts) {
-            points += (infractionCounts[type as InfractionType] ?? 0) * this.multiplier[type as InfractionType];
+            points +=
+                (infractionCounts[type as InfractionType] ?? 0) *
+                this.multiplier[type as InfractionType];
         }
 
         return points;
@@ -147,7 +150,9 @@ export default class InfractionManager extends Service {
         let totalCount = 0;
 
         for (const { type, _count: count } of infractions) {
-            string += `**${count}** ${type[0]}${type.substring(1).toLowerCase()}${count === 1 ? "" : "s"}, `;
+            string += `**${count}** ${type[0]}${type.substring(1).toLowerCase()}${
+                count === 1 ? "" : "s"
+            }, `;
             totalCount += count;
         }
 
@@ -174,7 +179,9 @@ export default class InfractionManager extends Service {
     }
 
     public typeToString(type: InfractionType) {
-        return type === InfractionType.BULK_DELETE_MESSAGE ? "Bulk message delete" : type[0] + type.substring(1).toLowerCase();
+        return type === InfractionType.BULK_DELETE_MESSAGE
+            ? "Bulk message delete"
+            : type[0] + type.substring(1).toLowerCase();
     }
 
     generateInfractionDetailsEmbed(user: User | null, infraction: Infraction) {
@@ -241,19 +248,30 @@ export default class InfractionManager extends Service {
 
                 {
                     name: "Created At",
-                    value: `${time(infraction.createdAt, "F")} (${time(infraction.createdAt, "R")})`,
+                    value: `${time(infraction.createdAt, "F")} (${time(
+                        infraction.createdAt,
+                        "R"
+                    )})`,
                     inline: true
                 },
                 {
                     name: "Updated At",
-                    value: `${time(infraction.updatedAt, "F")} (${time(infraction.updatedAt, "R")})`,
+                    value: `${time(infraction.updatedAt, "F")} (${time(
+                        infraction.updatedAt,
+                        "R"
+                    )})`,
                     inline: true
                 },
                 ...(infraction.expiresAt
                     ? [
                           {
-                              name: `Expire${infraction.expiresAt.getTime() <= Date.now() ? "d" : "s"} At`,
-                              value: `${time(infraction.expiresAt, "F")} (${time(infraction.expiresAt, "R")})`,
+                              name: `Expire${
+                                  infraction.expiresAt.getTime() <= Date.now() ? "d" : "s"
+                              } At`,
+                              value: `${time(infraction.expiresAt, "F")} (${time(
+                                  infraction.expiresAt,
+                                  "R"
+                              )})`,
                               inline: true
                           }
                       ]
@@ -262,19 +280,40 @@ export default class InfractionManager extends Service {
         }).setTimestamp();
     }
 
-    public processInfractionReason(guildId: Snowflake, reason?: string | null) {
+    public processInfractionReason(
+        guildId: Snowflake,
+        reason?: string | null,
+        abortOnNotFound = false
+    ) {
         if (!reason?.length) {
             return null;
         }
 
         let finalReason = reason;
-        const templates = this.client.configManager.config[guildId]?.infractions?.reason_templates ?? {};
+        const templates =
+            this.client.configManager.config[guildId]?.infractions?.reason_templates ?? {};
         const templateWrapper =
-            this.client.configManager.config[guildId]?.infractions?.reason_template_placeholder_wrapper ?? "{{%name%}}";
+            this.client.configManager.config[guildId]?.infractions
+                ?.reason_template_placeholder_wrapper ?? "{{%name%}}";
 
         for (const key in templates) {
             const placeholder = templateWrapper.replace("%name%", `( *)${key}( *)`);
             finalReason = finalReason.replace(new RegExp(placeholder, "gi"), templates[key]);
+        }
+
+        if (abortOnNotFound) {
+            const matches = [...finalReason.matchAll(/\{\{[A-Za-z0-9_-]+\}\}/gi)];
+
+            if (matches.length > 0) {
+                const abortReason = `${getEmoji(
+                    this.client,
+                    "error"
+                )} The following placeholders were not found in the reason: \`${matches
+                    .map(m => m[0])
+                    .join("`, `")}\`
+                        `;
+                throw new CommandAbortedError(abortReason);
+            }
         }
 
         return finalReason;
@@ -297,7 +336,9 @@ export default class InfractionManager extends Service {
 
         return new EmbedBuilder({
             author: {
-                name: actionDoneName ? `You have been ${actionDoneName} in ${guild.name}` : title ?? "",
+                name: actionDoneName
+                    ? `You have been ${actionDoneName} in ${guild.name}`
+                    : title ?? "",
                 iconURL: guild.iconURL() ?? undefined
             },
             description,
@@ -306,7 +347,11 @@ export default class InfractionManager extends Service {
                     name: "Reason",
                     value: reason ?? "*No reason provided*"
                 },
-                ...(fields ? (typeof fields === "function" ? await fields(internalFields) : fields) : []),
+                ...(fields
+                    ? typeof fields === "function"
+                        ? await fields(internalFields)
+                        : fields
+                    : []),
                 ...(typeof fields === "function" ? [] : internalFields ?? [])
             ]
         })
@@ -332,7 +377,13 @@ export default class InfractionManager extends Service {
             }
 
             try {
-                return await this.notifyUserFallback({ infraction, user, guild, sendDMOptions: options, embed });
+                return await this.notifyUserFallback({
+                    infraction,
+                    user,
+                    guild,
+                    sendDMOptions: options,
+                    embed
+                });
             } catch (e) {
                 logError(e);
                 return false;
@@ -348,10 +399,11 @@ export default class InfractionManager extends Service {
             reason,
             deleteMessageSeconds,
             notifyUser,
-            sendLog
+            sendLog,
+            abortOnTemplateNotFound
         }: CreateUserBanOptions & { deleteMessageSeconds: number }
     ) {
-        reason = this.processInfractionReason(guild.id, reason) ?? reason;
+        reason = this.processInfractionReason(guild.id, reason, abortOnTemplateNotFound) ?? reason;
 
         const infraction = await this.client.prisma.infraction.create({
             data: {
@@ -404,9 +456,19 @@ export default class InfractionManager extends Service {
 
     async createUserBan(
         user: User,
-        { guild, moderator, reason, deleteMessageSeconds, notifyUser, duration, sendLog, autoRemoveQueue }: CreateUserBanOptions
+        {
+            guild,
+            moderator,
+            reason,
+            deleteMessageSeconds,
+            notifyUser,
+            duration,
+            sendLog,
+            autoRemoveQueue,
+            abortOnTemplateNotFound
+        }: CreateUserBanOptions
     ) {
-        reason = this.processInfractionReason(guild.id, reason) ?? reason;
+        reason = this.processInfractionReason(guild.id, reason, abortOnTemplateNotFound) ?? reason;
 
         const infraction = await this.client.prisma.infraction.create({
             data: {
@@ -487,8 +549,11 @@ export default class InfractionManager extends Service {
         }
     }
 
-    async createUserFakeBan(user: User, { guild, reason, notifyUser, duration }: CreateUserBanOptions) {
-        reason = this.processInfractionReason(guild.id, reason) ?? reason;
+    async createUserFakeBan(
+        user: User,
+        { guild, reason, notifyUser, duration, abortOnTemplateNotFound }: CreateUserBanOptions
+    ) {
+        reason = this.processInfractionReason(guild.id, reason, abortOnTemplateNotFound) ?? reason;
         const id = Math.round(Math.random() * 1000);
 
         if (notifyUser) {
@@ -510,8 +575,16 @@ export default class InfractionManager extends Service {
         return { id, reason };
     }
 
-    async createUserShot(user: User, { guild, reason, moderator }: Omit<CommonOptions, "notifyUser" | "sendLog">) {
-        reason = this.processInfractionReason(guild.id, reason) ?? reason;
+    async createUserShot(
+        user: User,
+        {
+            guild,
+            reason,
+            moderator,
+            abortOnTemplateNotFound
+        }: Omit<CommonOptions, "notifyUser" | "sendLog">
+    ) {
+        reason = this.processInfractionReason(guild.id, reason, abortOnTemplateNotFound) ?? reason;
         const id = Math.round(Math.random() * 1000);
 
         await this.sendDM(user, guild, {
@@ -530,8 +603,16 @@ export default class InfractionManager extends Service {
         return { id, reason };
     }
 
-    async createUserBean(user: User, { guild, moderator, reason }: Pick<CreateUserBanOptions, "guild" | "moderator" | "reason">) {
-        reason = this.processInfractionReason(guild.id, reason) ?? reason;
+    async createUserBean(
+        user: User,
+        {
+            guild,
+            moderator,
+            reason,
+            abortOnTemplateNotFound
+        }: Pick<CreateUserBanOptions, "guild" | "moderator" | "reason" | "abortOnTemplateNotFound">
+    ) {
+        reason = this.processInfractionReason(guild.id, reason, abortOnTemplateNotFound) ?? reason;
         const infraction = await this.client.prisma.infraction.create({
             data: {
                 type: InfractionType.BEAN,
@@ -556,7 +637,11 @@ export default class InfractionManager extends Service {
         log("Auto remove", this.client.queueManager.queues);
 
         for (const queue of this.client.queueManager.queues.values()) {
-            if (queue.options.name === "UnbanQueue" && queue.options.guild.id === guild.id && queue.options.args[0] === user.id) {
+            if (
+                queue.options.name === "UnbanQueue" &&
+                queue.options.guild.id === guild.id &&
+                queue.options.args[0] === user.id
+            ) {
                 await this.client.queueManager.remove(queue);
             }
         }
@@ -564,9 +649,16 @@ export default class InfractionManager extends Service {
 
     async removeUserBan(
         user: User,
-        { guild, moderator, reason, autoRemoveQueue = true, sendLog }: CommonOptions & { autoRemoveQueue?: boolean }
+        {
+            guild,
+            moderator,
+            reason,
+            autoRemoveQueue = true,
+            sendLog,
+            abortOnTemplateNotFound
+        }: CommonOptions & { autoRemoveQueue?: boolean }
     ) {
-        reason = this.processInfractionReason(guild.id, reason) ?? reason;
+        reason = this.processInfractionReason(guild.id, reason, abortOnTemplateNotFound) ?? reason;
         if (autoRemoveQueue) await this.autoRemoveUnbanQueue(guild, user);
 
         try {
@@ -575,7 +667,10 @@ export default class InfractionManager extends Service {
             logError(error);
             return {
                 error,
-                noSuchBan: error instanceof DiscordAPIError && error.code === 10026 && error.status === 404,
+                noSuchBan:
+                    error instanceof DiscordAPIError &&
+                    error.code === 10026 &&
+                    error.status === 404,
                 infraction: null
             };
         }
@@ -602,10 +697,13 @@ export default class InfractionManager extends Service {
         return { infraction };
     }
 
-    async createMemberKick(member: GuildMember, { guild, moderator, reason, notifyUser }: CommonOptions) {
+    async createMemberKick(
+        member: GuildMember,
+        { guild, moderator, reason, notifyUser, abortOnTemplateNotFound }: CommonOptions
+    ) {
         if (!member.kickable) return null;
 
-        reason = this.processInfractionReason(guild.id, reason) ?? reason;
+        reason = this.processInfractionReason(guild.id, reason, abortOnTemplateNotFound) ?? reason;
         const infraction = await this.client.prisma.infraction.create({
             data: {
                 type: InfractionType.KICK,
@@ -641,8 +739,11 @@ export default class InfractionManager extends Service {
         }
     }
 
-    async createMemberWarn(member: GuildMember, { guild, moderator, reason, notifyUser }: CommonOptions) {
-        reason = this.processInfractionReason(guild.id, reason) ?? reason;
+    async createMemberWarn(
+        member: GuildMember,
+        { guild, moderator, reason, notifyUser, abortOnTemplateNotFound }: CommonOptions
+    ) {
+        reason = this.processInfractionReason(guild.id, reason, abortOnTemplateNotFound) ?? reason;
 
         const infraction = await this.client.prisma.infraction.create({
             data: {
@@ -698,10 +799,12 @@ export default class InfractionManager extends Service {
         count: messageCount,
         logOnly = false,
         filters = [],
-        offset = 0
+        offset = 0,
+        abortOnTemplateNotFound
     }: BulkDeleteMessagesOptions) {
         if (messageChannel && !(messagesToDelete && messagesToDelete.length === 0)) {
-            reason = this.processInfractionReason(guild.id, reason) ?? reason;
+            reason =
+                this.processInfractionReason(guild.id, reason, abortOnTemplateNotFound) ?? reason;
 
             let messages: MessageResolvable[] | null = messagesToDelete ?? null;
 
@@ -759,7 +862,8 @@ export default class InfractionManager extends Service {
             if (
                 sendLog &&
                 this.client.configManager.config[messageChannel.guildId!]?.logging?.enabled &&
-                this.client.configManager.config[messageChannel.guildId!]?.logging?.events.message_bulk_delete
+                this.client.configManager.config[messageChannel.guildId!]?.logging?.events
+                    .message_bulk_delete
             ) {
                 this.client.loggerService
                     .logBulkDeleteMessages({
@@ -807,13 +911,15 @@ export default class InfractionManager extends Service {
             messageChannel,
             bulkDeleteReason,
             sendLog,
-            autoRemoveQueue
+            autoRemoveQueue,
+            abortOnTemplateNotFound
         }: CreateMemberMuteOptions
     ) {
         const mutedRole = this.client.configManager.config[guild.id]?.muting?.role;
 
         if (mutedRole || duration) {
-            reason = this.processInfractionReason(guild.id, reason) ?? reason;
+            reason =
+                this.processInfractionReason(guild.id, reason, abortOnTemplateNotFound) ?? reason;
         }
 
         if (!mutedRole) {
@@ -925,7 +1031,11 @@ export default class InfractionManager extends Service {
                 fields: [
                     {
                         name: "Duration",
-                        value: `${duration ? formatDistanceToNowStrict(new Date(Date.now() - duration)) : "*No duration set*"}`
+                        value: `${
+                            duration
+                                ? formatDistanceToNowStrict(new Date(Date.now() - duration))
+                                : "*No duration set*"
+                        }`
                     }
                 ],
                 fallback: true,
@@ -938,9 +1048,23 @@ export default class InfractionManager extends Service {
 
     async removeMemberMute(
         member: GuildMember,
-        { guild, moderator, reason, notifyUser, sendLog, autoRemoveQueue = true }: CommonOptions & { autoRemoveQueue?: boolean }
-    ): Promise<{ error?: string; result?: boolean | null; id?: number; reason?: string | null; infraction?: Infraction | null }> {
-        reason = this.processInfractionReason(guild.id, reason) ?? reason;
+        {
+            guild,
+            moderator,
+            reason,
+            notifyUser,
+            sendLog,
+            autoRemoveQueue = true,
+            abortOnTemplateNotFound
+        }: CommonOptions & { autoRemoveQueue?: boolean }
+    ): Promise<{
+        error?: string;
+        result?: boolean | null;
+        id?: number;
+        reason?: string | null;
+        infraction?: Infraction | null;
+    }> {
+        reason = this.processInfractionReason(guild.id, reason, abortOnTemplateNotFound) ?? reason;
 
         const mutedRole = this.client.configManager.config[guild.id]?.muting?.role;
 
@@ -953,7 +1077,9 @@ export default class InfractionManager extends Service {
                 await member.disableCommunicationUntil(null, reason);
             } catch (e) {
                 logError(e);
-                return { error: "Failed to remove timeout from user, make sure I have enough permissions!" };
+                return {
+                    error: "Failed to remove timeout from user, make sure I have enough permissions!"
+                };
             }
         } else {
             try {
@@ -1023,13 +1149,14 @@ export default class InfractionManager extends Service {
         moderator,
         guild,
         callAfterEach,
+        abortOnTemplateNotFound,
         callback
     }: CreateUserMassBanOptions) {
         if (users.length > 20) {
             return { error: "Cannot perform this operation on more than 20 users" };
         }
 
-        reason = this.processInfractionReason(guild.id, reason) ?? reason;
+        reason = this.processInfractionReason(guild.id, reason, abortOnTemplateNotFound) ?? reason;
         const startTime = Date.now();
 
         const createInfractionData = [];
@@ -1121,13 +1248,14 @@ export default class InfractionManager extends Service {
         moderator,
         guild,
         callAfterEach,
-        callback
+        callback,
+        abortOnTemplateNotFound
     }: Omit<CreateUserMassBanOptions, "deleteMessageSeconds">) {
         if (users.length > 10) {
             return { error: "Cannot perform this operation on more than 10 users" };
         }
 
-        reason = this.processInfractionReason(guild.id, reason) ?? reason;
+        reason = this.processInfractionReason(guild.id, reason, abortOnTemplateNotFound) ?? reason;
         const startTime = Date.now();
 
         const createInfractionData = [];
@@ -1237,12 +1365,18 @@ export default class InfractionManager extends Service {
                 const row: unknown[] = [
                     infraction.type,
                     infraction.reason ?? "*No reason provided*",
-                    `${infraction.createdAt.toUTCString()} (${formatDistanceToNowStrict(infraction.createdAt, {
-                        addSuffix: true
-                    })})    `,
+                    `${infraction.createdAt.toUTCString()} (${formatDistanceToNowStrict(
+                        infraction.createdAt,
+                        {
+                            addSuffix: true
+                        }
+                    )})    `,
                     (infraction.metadata as Record<string, number>)?.duration
                         ? formatDistanceToNowStrict(
-                              new Date(Date.now() - (infraction.metadata as Record<string, number>)?.duration)
+                              new Date(
+                                  Date.now() -
+                                      (infraction.metadata as Record<string, number>)?.duration
+                              )
                           )
                         : "*None*"
                 ];
@@ -1262,9 +1396,17 @@ export default class InfractionManager extends Service {
         return { buffer: Buffer.from(fileContents), count: infractions.length };
     }
 
-    private async notifyUserFallback({ infraction, user, guild, sendDMOptions, embed }: NotifyUserFallbackOptions) {
-        const channelId = this.client.configManager.config[guild.id]?.infractions?.dm_fallback_parent_channel;
-        const fallbackMode = this.client.configManager.config[guild.id]?.infractions?.dm_fallback ?? "none";
+    private async notifyUserFallback({
+        infraction,
+        user,
+        guild,
+        sendDMOptions,
+        embed
+    }: NotifyUserFallbackOptions) {
+        const channelId =
+            this.client.configManager.config[guild.id]?.infractions?.dm_fallback_parent_channel;
+        const fallbackMode =
+            this.client.configManager.config[guild.id]?.infractions?.dm_fallback ?? "none";
 
         if (!channelId || fallbackMode === "none") {
             return false;
@@ -1332,7 +1474,8 @@ export default class InfractionManager extends Service {
     }: Omit<NotifyUserFallbackOptions, "guild"> & { parentChannel: TextChannel }) {
         try {
             const expiresIn =
-                this.client.configManager.config[parentChannel.guild.id]?.infractions?.dm_fallback_channel_expires_in;
+                this.client.configManager.config[parentChannel.guild.id]?.infractions
+                    ?.dm_fallback_channel_expires_in;
 
             const channel = await parentChannel.guild.channels.create({
                 name: `infraction-${infraction.id}`,
@@ -1343,7 +1486,10 @@ export default class InfractionManager extends Service {
                     ...parentChannel.permissionOverwrites.cache.values(),
                     {
                         id: user.id,
-                        allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ReadMessageHistory]
+                        allow: [
+                            PermissionFlagsBits.ViewChannel,
+                            PermissionFlagsBits.ReadMessageHistory
+                        ]
                     }
                 ] satisfies OverwriteData[]
             });
@@ -1429,6 +1575,7 @@ export type CommonOptions = {
     moderator: User;
     notifyUser?: boolean;
     sendLog?: boolean;
+    abortOnTemplateNotFound?: boolean;
 };
 
 export type CreateUserBanOptions = CommonOptions & {
@@ -1467,7 +1614,9 @@ export type ActionDoneName =
     | "noted";
 
 export type SendDMOptions = {
-    fields?: APIEmbedField[] | ((internalFields: APIEmbedField[]) => Promise<APIEmbedField[]> | APIEmbedField[]);
+    fields?:
+        | APIEmbedField[]
+        | ((internalFields: APIEmbedField[]) => Promise<APIEmbedField[]> | APIEmbedField[]);
     description?: string;
     actionDoneName?: ActionDoneName;
     id: string | number;

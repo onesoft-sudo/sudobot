@@ -27,7 +27,13 @@ import {
     TextChannel,
     User
 } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { logError } from "../../utils/Logger";
 import { isTextableChannel } from "../../utils/utils";
 
@@ -36,9 +42,11 @@ const THREE_DAYS = 1000 * 60 * 60 * 24 * 3;
 const filters = {
     bots: (message: Message) => message.author.bot,
     mentions: (message: Message) => /<(@!?|#|@&)\d+>/.test(message.content),
-    unverified_bots: (message: Message) => message.author.bot && !message.author.flags?.has("VerifiedBot"),
+    unverified_bots: (message: Message) =>
+        message.author.bot && !message.author.flags?.has("VerifiedBot"),
     users: (message: Message) => !message.author.bot,
-    new_users: (message: Message) => !message.author.bot && message.createdAt.getTime() <= THREE_DAYS,
+    new_users: (message: Message) =>
+        !message.author.bot && message.createdAt.getTime() <= THREE_DAYS,
     embeds: (message: Message) => message.embeds.length > 0
 };
 
@@ -61,7 +69,8 @@ export default class ClearCommand extends Command {
             name: "countOrUser", // TODO: Be sure to support multiple names for the same argument [User, Integer] -> ['user', 'count'] = [User, 10]
             errors: {
                 "entity:null": "This user does not exist! If it's an ID, make sure it's correct!",
-                required: "You must specify the count of messages to delete or a user to delete messages from!",
+                required:
+                    "You must specify the count of messages to delete or a user to delete messages from!",
                 "type:invalid": "Please either specify a message count or user at position 1!",
                 "number:range": "The message count must be a number between 0 to 100"
             },
@@ -91,7 +100,8 @@ export default class ClearCommand extends Command {
                 notNull: true
             },
             errors: {
-                "entity:null": "This channel does not exist! If it's an ID, make sure it's correct!",
+                "entity:null":
+                    "This channel does not exist! If it's an ID, make sure it's correct!",
                 "type:invalid": "Please specify a valid text channel at position 3!"
             },
             name: "channel"
@@ -110,24 +120,53 @@ export default class ClearCommand extends Command {
     public readonly slashCommandBuilder = new SlashCommandBuilder()
         .addUserOption(option => option.setName("user").setDescription("The user"))
         .addIntegerOption(option =>
-            option.setName("count").setDescription("The amount of messages to delete").setMaxValue(100).setMinValue(2)
+            option
+                .setName("count")
+                .setDescription("The amount of messages to delete")
+                .setMaxValue(100)
+                .setMinValue(2)
         )
         .addIntegerOption(option =>
-            option.setName("offset").setDescription("The message count offset").setMaxValue(99).setMinValue(0)
+            option
+                .setName("offset")
+                .setDescription("The message count offset")
+                .setMaxValue(99)
+                .setMinValue(0)
         )
-        .addChannelOption(option => option.setName("channel").setDescription("The channel where the messages will be deleted"))
-        .addBooleanOption(option => option.setName("filter_bots").setDescription("Deletes messages from bots"))
-        .addBooleanOption(option => option.setName("filter_users").setDescription("Deletes messages from human users only"))
-        .addBooleanOption(option => option.setName("filter_new_users").setDescription("Deletes messages from new users"))
-        .addBooleanOption(option => option.setName("filter_embeds").setDescription("Deletes messages that have embeds"))
+        .addChannelOption(option =>
+            option
+                .setName("channel")
+                .setDescription("The channel where the messages will be deleted")
+        )
+        .addStringOption(option =>
+            option.setName("reason").setDescription("The reason for deleting the messages")
+        )
         .addBooleanOption(option =>
-            option.setName("filter_unverifed_bots").setDescription("Deletes messages from unverified bots")
+            option.setName("filter_bots").setDescription("Deletes messages from bots")
+        )
+        .addBooleanOption(option =>
+            option.setName("filter_users").setDescription("Deletes messages from human users only")
+        )
+        .addBooleanOption(option =>
+            option.setName("filter_new_users").setDescription("Deletes messages from new users")
+        )
+        .addBooleanOption(option =>
+            option.setName("filter_embeds").setDescription("Deletes messages that have embeds")
+        )
+        .addBooleanOption(option =>
+            option
+                .setName("filter_unverifed_bots")
+                .setDescription("Deletes messages from unverified bots")
         )
         .addStringOption(option =>
-            option.setName("filter_pattern").setDescription("Deletes messages matching with this regex pattern")
+            option
+                .setName("filter_pattern")
+                .setDescription("Deletes messages matching with this regex pattern")
         )
         .addStringOption(option =>
-            option.setName("filter_pattern_flags").setDescription("Flags for the regex pattern. Defaults to 'g' (global)")
+            option
+                .setName("filter_pattern_flags")
+                .setDescription("Flags for the regex pattern. Defaults to 'g' (global)")
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
@@ -174,18 +213,34 @@ export default class ClearCommand extends Command {
         }
 
         if (message instanceof ChatInputCommandInteraction) {
-            if (message.options.getString("filter_pattern_flags") && !message.options.getString("filter_pattern")) {
-                await this.error(message, "Option `filter_pattern` must be present when `filter_pattern_flags` is set.");
+            if (
+                message.options.getString("filter_pattern_flags") &&
+                !message.options.getString("filter_pattern")
+            ) {
+                await this.error(
+                    message,
+                    "Option `filter_pattern` must be present when `filter_pattern_flags` is set."
+                );
                 return;
             }
         }
 
         if (user) {
             try {
-                const member = message.guild!.members.cache.get(user.id) ?? (await message.guild!.members.fetch(user.id));
+                const member =
+                    message.guild!.members.cache.get(user.id) ??
+                    (await message.guild!.members.fetch(user.id));
 
-                if (!(await this.client.permissionManager.shouldModerate(member, message.member! as GuildMember))) {
-                    await this.error(message, "You don't have permission to clear messages from this user!");
+                if (
+                    !(await this.client.permissionManager.shouldModerate(
+                        member,
+                        message.member! as GuildMember
+                    ))
+                ) {
+                    await this.error(
+                        message,
+                        "You don't have permission to clear messages from this user!"
+                    );
                     return;
                 }
             } catch (e) {
@@ -214,7 +269,10 @@ export default class ClearCommand extends Command {
                 if (filter) {
                     filterHandlers.push(filter);
                 } else {
-                    if (option.name === "filter_pattern" && message.options.getString("filter_pattern")) {
+                    if (
+                        option.name === "filter_pattern" &&
+                        message.options.getString("filter_pattern")
+                    ) {
                         try {
                             const regex = new RegExp(
                                 message.options.getString("filter_pattern", true),
@@ -224,7 +282,10 @@ export default class ClearCommand extends Command {
                             filterHandlers.push((message: Message) => regex.test(message.content));
                         } catch (e) {
                             logError(e);
-                            await this.error(message, "Invalid flag(s) supplied for the regex pattern");
+                            await this.error(
+                                message,
+                                "Invalid flag(s) supplied for the regex pattern"
+                            );
                             return;
                         }
                     }
@@ -245,14 +306,18 @@ export default class ClearCommand extends Command {
         await this.client.infractionManager.bulkDeleteMessages({
             user,
             guild: message.guild!,
-            reason: undefined,
+            reason:
+                message instanceof ChatInputCommandInteraction
+                    ? message.options.getString("reason") ?? undefined
+                    : undefined,
             sendLog: true,
             moderator: message.member!.user as User,
             notifyUser: false,
             messageChannel: message.channel! as TextChannel,
             count,
             offset,
-            filters: filterHandlers
+            filters: filterHandlers,
+            abortOnTemplateNotFound: true
         });
 
         if (message instanceof ChatInputCommandInteraction)

@@ -17,8 +17,20 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { GuildMember, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import {
+    GuildMember,
+    PermissionsBitField,
+    SlashCommandBuilder,
+    User,
+    escapeMarkdown
+} from "discord.js";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { logError } from "../../utils/Logger";
 import { createModerationEmbed } from "../../utils/utils";
 
@@ -40,7 +52,8 @@ export default class UnmuteCommand extends Command {
             optional: true,
             errors: {
                 "type:invalid": "You have specified an invalid unmute reason.",
-                "string:rest:length:max": "The unmute reason must be less than 4000 characters long."
+                "string:rest:length:max":
+                    "The unmute reason must be less than 4000 characters long."
             },
             string: {
                 maxLength: 3999
@@ -58,16 +71,24 @@ export default class UnmuteCommand extends Command {
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.ModerateMembers];
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addUserOption(option => option.setName("member").setDescription("The member").setRequired(true))
-        .addStringOption(option => option.setName("reason").setDescription("The reason for unmuting this user"))
+        .addUserOption(option =>
+            option.setName("member").setDescription("The member").setRequired(true)
+        )
+        .addStringOption(option =>
+            option.setName("reason").setDescription("The reason for unmuting this user")
+        )
         .addBooleanOption(option =>
             option
                 .setName("silent")
-                .setDescription("Specify if the system should not notify the user about this action. Defaults to false")
+                .setDescription(
+                    "Specify if the system should not notify the user about this action. Defaults to false"
+                )
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
-        const member: GuildMember = context.isLegacy ? context.parsedNamedArgs.member : context.options.getMember("member");
+        const member: GuildMember = context.isLegacy
+            ? context.parsedNamedArgs.member
+            : context.options.getMember("member");
 
         if (!member) {
             return {
@@ -79,9 +100,16 @@ export default class UnmuteCommand extends Command {
 
         await this.deferIfInteraction(message);
         const reason: string | undefined =
-            (!context.isLegacy ? context.options.getString("reason") : context.parsedNamedArgs.reason) ?? undefined;
+            (!context.isLegacy
+                ? context.options.getString("reason")
+                : context.parsedNamedArgs.reason) ?? undefined;
 
-        if (!(await this.client.permissionManager.shouldModerate(member, message.member! as GuildMember))) {
+        if (
+            !(await this.client.permissionManager.shouldModerate(
+                member,
+                message.member! as GuildMember
+            ))
+        ) {
             await this.error(message, "You don't have permission to unmute this user!");
             return;
         }
@@ -90,9 +118,12 @@ export default class UnmuteCommand extends Command {
             .removeMemberMute(member, {
                 guild: message.guild!,
                 moderator: message.member!.user as User,
-                notifyUser: !context.isLegacy ? !context.options.getBoolean("silent") ?? true : true,
+                notifyUser: !context.isLegacy
+                    ? !context.options.getBoolean("silent") ?? true
+                    : true,
                 reason,
-                sendLog: true
+                sendLog: true,
+                abortOnTemplateNotFound: true
             })
             .catch(e => {
                 logError(e);
@@ -100,7 +131,10 @@ export default class UnmuteCommand extends Command {
             });
 
         if (!id) {
-            await this.error(message, "Failed to unmute this user or I'm missing permissions to mute this user!");
+            await this.error(
+                message,
+                "Failed to unmute this user or I'm missing permissions to mute this user!"
+            );
             return;
         }
 

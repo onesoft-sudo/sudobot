@@ -17,8 +17,20 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { GuildMember, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import {
+    GuildMember,
+    PermissionsBitField,
+    SlashCommandBuilder,
+    User,
+    escapeMarkdown
+} from "discord.js";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { logError } from "../../utils/Logger";
 import { createModerationEmbed } from "../../utils/utils";
 
@@ -56,20 +68,35 @@ export default class UnbanCommand extends Command {
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.BanMembers];
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addUserOption(option => option.setName("user").setDescription("The user").setRequired(true))
-        .addStringOption(option => option.setName("reason").setDescription("The reason for unbanning this user"));
+        .addUserOption(option =>
+            option.setName("user").setDescription("The user").setRequired(true)
+        )
+        .addStringOption(option =>
+            option.setName("reason").setDescription("The reason for unbanning this user")
+        );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
-        const user: User = context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user", true);
+        const user: User = context.isLegacy
+            ? context.parsedNamedArgs.user
+            : context.options.getUser("user", true);
         const reason: string | undefined =
-            (!context.isLegacy ? context.options.getString("reason") : context.parsedNamedArgs.reason) ?? undefined;
+            (!context.isLegacy
+                ? context.options.getString("reason")
+                : context.parsedNamedArgs.reason) ?? undefined;
 
         try {
-            const member = message.guild!.members.cache.get(user.id) ?? (await message.guild!.members.fetch(user.id));
+            const member =
+                message.guild!.members.cache.get(user.id) ??
+                (await message.guild!.members.fetch(user.id));
 
-            if (!(await this.client.permissionManager.shouldModerate(member, message.member! as GuildMember))) {
+            if (
+                !(await this.client.permissionManager.shouldModerate(
+                    member,
+                    message.member! as GuildMember
+                ))
+            ) {
                 await this.error(message, "You don't have permission to unban this user!");
                 return;
             }
@@ -81,7 +108,8 @@ export default class UnbanCommand extends Command {
             guild: message.guild!,
             moderator: message.member!.user! as User,
             reason,
-            sendLog: true
+            sendLog: true,
+            abortOnTemplateNotFound: true
         });
 
         if (noSuchBan) {

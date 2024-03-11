@@ -18,7 +18,13 @@
  */
 
 import { PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { protectSystemAdminsFromCommands } from "../../utils/troll";
 import { createModerationEmbed } from "../../utils/utils";
 
@@ -56,13 +62,19 @@ export default class ShotCommand extends Command {
         "This command doesn't do anything special except DMing the user and telling them that they've been given a shot.";
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addUserOption(option => option.setName("user").setDescription("The target user").setRequired(true))
-        .addStringOption(option => option.setName("reason").setDescription("Reason for giving shot to this user"));
+        .addUserOption(option =>
+            option.setName("user").setDescription("The target user").setRequired(true)
+        )
+        .addStringOption(option =>
+            option.setName("reason").setDescription("Reason for giving shot to this user")
+        );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
-        const user = context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user", true);
+        const user = context.isLegacy
+            ? context.parsedNamedArgs.user
+            : context.options.getUser("user", true);
 
         if (await protectSystemAdminsFromCommands(this.client, message, user.id, "shot_safe")) {
             return;
@@ -72,13 +84,19 @@ export default class ShotCommand extends Command {
             commands: { moderation_command_behaviour }
         } = context.config;
         const deleteResponse = moderation_command_behaviour === "delete";
-        const reason = context.isLegacy ? context.parsedNamedArgs.reason : context.options.getString("reason");
+        const reason = context.isLegacy
+            ? context.parsedNamedArgs.reason
+            : context.options.getString("reason");
 
-        const { id, reason: finalReason } = await this.client.infractionManager.createUserShot(user, {
-            reason,
-            guild: message.guild!,
-            moderator: message.member!.user as User
-        });
+        const { id, reason: finalReason } = await this.client.infractionManager.createUserShot(
+            user,
+            {
+                reason,
+                guild: message.guild!,
+                moderator: message.member!.user as User,
+                abortOnTemplateNotFound: true
+            }
+        );
 
         await this.deferredReply(
             message,

@@ -25,7 +25,13 @@ import {
     User,
     escapeMarkdown
 } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { createModerationEmbed } from "../../utils/utils";
 
 export default class KickCommand extends Command {
@@ -62,12 +68,18 @@ export default class KickCommand extends Command {
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.KickMembers];
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addUserOption(option => option.setName("member").setDescription("The member").setRequired(true))
-        .addStringOption(option => option.setName("reason").setDescription("The reason for kicking this user"))
+        .addUserOption(option =>
+            option.setName("member").setDescription("The member").setRequired(true)
+        )
+        .addStringOption(option =>
+            option.setName("reason").setDescription("The reason for kicking this user")
+        )
         .addBooleanOption(option =>
             option
                 .setName("silent")
-                .setDescription("Specify if the system should not notify the user about this action. Defaults to false")
+                .setDescription(
+                    "Specify if the system should not notify the user about this action. Defaults to false"
+                )
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
@@ -89,7 +101,12 @@ export default class KickCommand extends Command {
 
         if (message instanceof ChatInputCommandInteraction) await message.deferReply();
 
-        if (!(await this.client.permissionManager.shouldModerate(member, message.member! as GuildMember))) {
+        if (
+            !(await this.client.permissionManager.shouldModerate(
+                member,
+                message.member! as GuildMember
+            ))
+        ) {
             await this.error(message, "You don't have permission to kick this user!");
             return;
         }
@@ -99,7 +116,8 @@ export default class KickCommand extends Command {
             moderator: message.member!.user as User,
             reason,
             notifyUser: context.isLegacy ? true : !context.options.getBoolean("silent"),
-            sendLog: true
+            sendLog: true,
+            abortOnTemplateNotFound: true
         });
 
         if (!infraction) {
@@ -117,7 +135,9 @@ export default class KickCommand extends Command {
                         actionDoneName: "kicked",
                         id: infraction.id,
                         reason: infraction.reason,
-                        description: `**${escapeMarkdown(member.user.tag)}** has been kicked from this server.`
+                        description: `**${escapeMarkdown(
+                            member.user.tag
+                        )}** has been kicked from this server.`
                     })
                 ]
             },

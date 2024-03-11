@@ -19,7 +19,13 @@
 
 import { InfractionType } from "@prisma/client";
 import { PermissionsBitField, User } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { createModerationEmbed } from "../../utils/utils";
 
 export default class NoteCreateCommand extends Command {
@@ -47,7 +53,10 @@ export default class NoteCreateCommand extends Command {
             }
         }
     ];
-    public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
+    public readonly permissions = [
+        PermissionsBitField.Flags.ModerateMembers,
+        PermissionsBitField.Flags.ViewAuditLog
+    ];
     public readonly permissionMode = "or";
     public readonly description = "Take a note about a user.";
     public readonly argumentSyntaxes = ["<user> <reason>"];
@@ -56,8 +65,20 @@ export default class NoteCreateCommand extends Command {
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
-        const user: User = context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user", true);
-        const reason: string | null = context.isLegacy ? context.parsedNamedArgs.reason : context.options.getString("reason");
+        const user: User = context.isLegacy
+            ? context.parsedNamedArgs.user
+            : context.options.getUser("user", true);
+        let reason: string | null = context.isLegacy
+            ? context.parsedNamedArgs.reason
+            : context.options.getString("reason");
+
+        if (reason) {
+            reason = this.client.infractionManager.processInfractionReason(
+                message.guildId!,
+                reason,
+                true
+            );
+        }
 
         const { id, reason: finalReason } = await this.client.prisma.infraction.create({
             data: {

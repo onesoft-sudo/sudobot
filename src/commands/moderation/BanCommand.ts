@@ -26,9 +26,15 @@ import {
     User,
     escapeMarkdown
 } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { stringToTimeInterval } from "../../utils/datetime";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { logError } from "../../utils/Logger";
+import { stringToTimeInterval } from "../../utils/datetime";
 import { createModerationEmbed } from "../../utils/utils";
 
 export default class BanCommand extends Command {
@@ -49,7 +55,8 @@ export default class BanCommand extends Command {
             types: [ArgumentType.TimeInterval, ArgumentType.StringRest],
             optional: true,
             errors: {
-                "time:range": "The message deletion range must be a time interval from 0 second to 604800 seconds (7 days).",
+                "time:range":
+                    "The message deletion range must be a time interval from 0 second to 604800 seconds (7 days).",
                 "type:invalid":
                     "You have specified an invalid argument. The system expected you to provide a ban reason or the message deletion range here."
             },
@@ -78,26 +85,39 @@ export default class BanCommand extends Command {
     public readonly description = "Bans a user.";
     public readonly detailedDescription =
         "This command can ban users in the server or outside of the server. If the user is not in the server, you must specify their ID to ban them.";
-    public readonly argumentSyntaxes = ["<UserID|UserMention> [Reason]", "<UserID|UserMention> [MessageDeletionTime] [Reason]"];
+    public readonly argumentSyntaxes = [
+        "<UserID|UserMention> [Reason]",
+        "<UserID|UserMention> [MessageDeletionTime] [Reason]"
+    ];
 
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.BanMembers];
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addUserOption(option => option.setName("user").setDescription("The user").setRequired(true))
-        .addStringOption(option => option.setName("reason").setDescription("The reason for banning this user"))
+        .addUserOption(option =>
+            option.setName("user").setDescription("The user").setRequired(true)
+        )
         .addStringOption(option =>
-            option.setName("deletion_timeframe").setDescription("The message deletion timeframe (must be in range 0-604800s)")
+            option.setName("reason").setDescription("The reason for banning this user")
+        )
+        .addStringOption(option =>
+            option
+                .setName("deletion_timeframe")
+                .setDescription("The message deletion timeframe (must be in range 0-604800s)")
         )
         .addBooleanOption(option =>
             option
                 .setName("silent")
-                .setDescription("Specify if the system should not notify the user about this action. Defaults to false")
+                .setDescription(
+                    "Specify if the system should not notify the user about this action. Defaults to false"
+                )
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (message instanceof ChatInputCommandInteraction) await message.deferReply();
 
-        const user: User = context.isLegacy ? context.parsedArgs[0] : context.options.getUser("user", true);
+        const user: User = context.isLegacy
+            ? context.parsedArgs[0]
+            : context.options.getUser("user", true);
         let deleteMessageSeconds = !context.isLegacy
             ? undefined
             : typeof context.parsedArgs[1] === "number"
@@ -119,7 +139,9 @@ export default class BanCommand extends Command {
 
             if (error) {
                 await this.deferredReply(message, {
-                    content: `${this.emoji("error")} ${error} provided in the \`deletion_timeframe\` option`
+                    content: `${this.emoji(
+                        "error"
+                    )} ${error} provided in the \`deletion_timeframe\` option`
                 });
 
                 return;
@@ -157,9 +179,16 @@ export default class BanCommand extends Command {
         }
 
         try {
-            const member = message.guild!.members.cache.get(user.id) ?? (await message.guild!.members.fetch(user.id));
+            const member =
+                message.guild!.members.cache.get(user.id) ??
+                (await message.guild!.members.fetch(user.id));
 
-            if (!(await this.client.permissionManager.shouldModerate(member, message.member! as GuildMember))) {
+            if (
+                !(await this.client.permissionManager.shouldModerate(
+                    member,
+                    message.member! as GuildMember
+                ))
+            ) {
                 await this.error(message, "You don't have permission to ban this user!");
                 return;
             }
@@ -175,7 +204,8 @@ export default class BanCommand extends Command {
             notifyUser: context.isLegacy ? true : !context.options.getBoolean("silent"),
             sendLog: true,
             duration: durationMs,
-            autoRemoveQueue: true
+            autoRemoveQueue: true,
+            abortOnTemplateNotFound: true
         });
 
         if (!infraction) {
@@ -191,7 +221,9 @@ export default class BanCommand extends Command {
                         user,
                         moderator: message.member!.user as User,
                         actionDoneName: "banned",
-                        description: `**${escapeMarkdown(user.tag)}** has been banned from this server.`,
+                        description: `**${escapeMarkdown(
+                            user.tag
+                        )}** has been banned from this server.`,
                         fields: [
                             {
                                 name: "Message Deletion",
