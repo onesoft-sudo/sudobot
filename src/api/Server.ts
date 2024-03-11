@@ -18,13 +18,17 @@
  */
 
 import cors from "cors";
-import express, { Application, Request as ExpressRequest, Response as ExpressResponse, NextFunction } from "express";
+import express, {
+    Application,
+    Request as ExpressRequest,
+    Response as ExpressResponse,
+    NextFunction
+} from "express";
 import ratelimiter from "express-rate-limit";
 import { Router } from "express-serve-static-core";
 import { Server as HttpServer } from "http";
 import Client from "../core/Client";
 import { RouteMetadata, RouteMetadataEntry } from "../types/RouteMetadata";
-import { log, logInfo, logWarn } from "../utils/Logger";
 import Controller from "./Controller";
 import Response from "./Response";
 
@@ -50,6 +54,7 @@ export default class Server {
     async onReady() {
         if (this.client.configManager.systemConfig.api.enabled) {
             await this.boot();
+            await this.start();
         }
     }
 
@@ -58,8 +63,15 @@ export default class Server {
         this.expressApp.use(cors());
 
         if (this.client.configManager.systemConfig.trust_proxies !== undefined) {
-            logInfo("Set express trust proxy option value to ", this.client.configManager.systemConfig.trust_proxies);
-            this.expressApp.set("trust proxy", this.client.configManager.systemConfig.trust_proxies);
+            this.client.logger.info(
+                "Set express trust proxy option value to ",
+                this.client.configManager.systemConfig.trust_proxies
+            );
+
+            this.expressApp.set(
+                "trust proxy",
+                this.client.configManager.systemConfig.trust_proxies
+            );
         }
 
         this.expressApp.use(this.rateLimiter);
@@ -149,7 +161,9 @@ export default class Server {
                     <Application>this.wrapControllerAction(controller, callbackName)
                 );
 
-                log(`Discovered API Route: ${data.method} ${data.path} -- in ${controllerClass.name}`);
+                this.client.logger.debug(
+                    `Discovered API Route: ${data.method} ${data.path} -- in ${controllerClass.name}`
+                );
             }
         }
     }
@@ -172,13 +186,15 @@ export default class Server {
                 } else if (typeof controllerResponse === "number") {
                     response.send(controllerResponse.toString());
                 } else {
-                    logWarn("Invalid value was returned from the controller. Not sending a response.");
+                    this.client.logger.warn(
+                        "Invalid value was returned from the controller. Not sending a response."
+                    );
                 }
             }
         };
     }
 
-    onError(err: unknown, _: ExpressRequest, res: ExpressResponse) {
+    onError(err: unknown, _: ExpressRequest, res: ExpressResponse, next: NextFunction) {
         if (err instanceof SyntaxError && "status" in err && err.status === 400 && "body" in err) {
             res.status(400).json({
                 error: "Invalid JSON payload"
@@ -186,9 +202,13 @@ export default class Server {
 
             return;
         }
+
+        next();
     }
 
     async start() {
-        this.expressServer = this.expressApp.listen(this.port, () => logInfo(`API server is listening at port ${this.port}`));
+        this.expressServer = this.expressApp.listen(this.port, () =>
+            this.client.logger.info(`API server is listening at port ${this.port}`)
+        );
     }
 }

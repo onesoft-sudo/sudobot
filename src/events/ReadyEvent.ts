@@ -31,7 +31,6 @@ export default class ReadyEvent extends EventListener<Events.Ready> {
         this.client.configManager.onReady();
         this.client.startupManager.onReady();
         await this.client.server.onReady();
-        this.client.server.start().catch(logError);
         this.client.queueManager.onReady().catch(logError);
         const homeGuild = await this.client.getHomeGuild();
 
@@ -49,7 +48,9 @@ export default class ReadyEvent extends EventListener<Events.Ready> {
                 logInfo("Successfully synced the emojis of home guild.");
             } catch (e) {
                 logError(e);
-                logWarn("Failed to fetch some of the emojis. The bot may not show some of the emojis in it's responses.");
+                logWarn(
+                    "Failed to fetch some of the emojis. The bot may not show some of the emojis in it's responses."
+                );
             }
         }
 
