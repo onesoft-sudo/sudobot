@@ -239,7 +239,6 @@ export default class HelpCommand extends Command {
                                           name: "Aliases",
                                           value: command?.aliases
                                               ?.filter(c => c !== command?.name && c !== name)
-
                                               .map(c => `\`${c.replace("__", " ")}\``)
                                               .join("\n")
                                       }
