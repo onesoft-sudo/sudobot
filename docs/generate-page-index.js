@@ -45,7 +45,7 @@ async function generateIndexForMDXPage(page) {
         .substring(contents.startsWith("---") ? 3 : 0)
         .split("\n---\n");
 
-    if (!contents.startsWith("---")) {
+    if (!contents.trimStart().startsWith("---")) {
         data = frontmatter;
         frontmatter = null;
     }
@@ -71,7 +71,7 @@ async function generateIndexForMDXPage(page) {
 
     return {
         ...frontmatterData,
-        data: data
+        data: (data ?? "")
             .replace(/^(([\s\r\n]*)import([^.]+);)+/gi, "")
             .replace(/^(([\s\r\n]*)export([^.]+);)+/gi, "")
             .replace(/([\s\r\n]*)export default ([^;]+);$/gi, "")
