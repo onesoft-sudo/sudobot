@@ -53,6 +53,7 @@ Please look at [this page](https://docs.sudobot.org/getting-started) of the docu
 Thanks to all the active and indirect contributors!
 
 -   [Ar Rakin](https://github.com/virtual-designer) (Maintainer)
+-   [dicoderin](https://github.com/dicoderin)
 -   [GuynnR](https://github.com/GuynnR)
 -   Hana (A Discord User)
 -   [Kars](https://github.com/kars1996) (Contributed by giving away a domain and a hosting server to us)
