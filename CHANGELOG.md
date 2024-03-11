@@ -1,3 +1,12 @@
+## [8.26.2](https://github.com/onesoft-sudo/sudobot/compare/v8.26.1...v8.26.2) (2024-03-11)
+
+
+### Performance Improvements
+
+* add performance related optional deps ([b755d56](https://github.com/onesoft-sudo/sudobot/commit/b755d5699b84c404be6ddcc8e9e2e413bfb839c6))
+
+
+
 ## [8.26.1](https://github.com/onesoft-sudo/sudobot/compare/v8.26.0...v8.26.1) (2024-03-11)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **utils:datetime:** number parsing error ([302d913](https://github.com/onesoft-sudo/sudobot/commit/302d9138fc8d304288f1cf10730392d56384f7c3))
-
-
-
-# [8.25.0](https://github.com/onesoft-sudo/sudobot/compare/v8.24.5...v8.25.0) (2024-03-10)
-
-
-### Features
-
-* **utils:** better time parsing ([edb9fe1](https://github.com/onesoft-sudo/sudobot/commit/edb9fe1e7187e3946d12a4783e2de21cb22a091e))
 
 
 
