@@ -56,6 +56,8 @@ Now we need to invoke the TypeScript compiler (`tsc`) to build the bot and gener
 npm run build
 ```
 
+If it fails at building because you don't have enough resources to do so, or if it's for another reason, you can find pre-built versions [here](github.com/onesoft-sudo/sudobot/releases/latest) for linux and darwin.
+
 ## JSON Configuration Schema
 
 Generate the JSON config schema files using the following command:
@@ -163,6 +165,7 @@ If you want to use the application slash commands and context menu commands of S
 node scripts/deploy-commands.js
 ```
 
+
 Pass the `--guild` option to register guild commands instead of global commands, and `--clear` to clear all the registered slash commands in the API.
 
 ## Starting the bot
@@ -171,6 +174,17 @@ Now it's time to start the bot. Run the following command to start the bot:
 
 ```bash
 npm start
+```
+
+Or in a production enviroment, it's best to use the following command as it uses a process manager.
+
+```bash
+npm run start:prod
+```
+
+Or if you want to have logging while in a production enviroment you can run the following:
+```bash
+npm run start:prod -- --no-daemon
 ```
 
 And if everything was configured correctly, the bot will log in successfully to Discord. Congratulations, you've set up your own instance of SudoBot!
