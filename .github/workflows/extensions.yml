@@ -52,4 +52,5 @@ jobs:
                   git config --global user.name "Ar Rakin"
                   git add .
                   git commit -m "chore(extensions): build extensions [skip ci]"
+                  git pull origin main
                   git push origin HEAD:main
