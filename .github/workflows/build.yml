@@ -55,3 +55,6 @@ jobs:
 
             - name: "Build (Native)"
               run: make
+
+            - name: "Test"
+              run: npm test
