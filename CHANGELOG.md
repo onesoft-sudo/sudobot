@@ -1,3 +1,12 @@
+## [8.28.1](https://github.com/onesoft-sudo/sudobot/compare/v8.28.0...v8.28.1) (2024-03-11)
+
+
+### Bug Fixes
+
+* **utils:caching:** cache function key comparison ([ae3b254](https://github.com/onesoft-sudo/sudobot/commit/ae3b2545c5f99228f79191cb41075ede9b53c091))
+
+
+
 # [8.28.0](https://github.com/onesoft-sudo/sudobot/compare/v8.27.0...v8.28.0) (2024-03-11)
 
 
@@ -36,15 +45,6 @@
 ### Bug Fixes
 
 * **api:server:** no response when sending requests ([9354e69](https://github.com/onesoft-sudo/sudobot/commit/9354e6904ebb0b4e4a845d354b3c44bb33cb3df9))
-
-
-
-# [8.26.0](https://github.com/onesoft-sudo/sudobot/compare/v8.25.2...v8.26.0) (2024-03-10)
-
-
-### Features
-
-* **snippets:** inline mention users ([e066ef2](https://github.com/onesoft-sudo/sudobot/commit/e066ef2997d6ef4be812e8514486b979a843cadb))
 
 
 
