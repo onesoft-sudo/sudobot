@@ -1,3 +1,12 @@
+# [8.28.0](https://github.com/onesoft-sudo/sudobot/compare/v8.27.0...v8.28.0) (2024-03-11)
+
+
+### Features
+
+* **infractions:reason_templates:** abort if a template reference could not be resolved in commands ([89b5f42](https://github.com/onesoft-sudo/sudobot/commit/89b5f42d5347e1a6655d3cf87718da5b6b219b12))
+
+
+
 # [8.27.0](https://github.com/onesoft-sudo/sudobot/compare/v8.26.2...v8.27.0) (2024-03-11)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * **snippets:** inline mention users ([e066ef2](https://github.com/onesoft-sudo/sudobot/commit/e066ef2997d6ef4be812e8514486b979a843cadb))
-
-
-
-## [8.25.2](https://github.com/onesoft-sudo/sudobot/compare/v8.25.1...v8.25.2) (2024-03-10)
-
-
-### Bug Fixes
-
-* lint errors/warnings ([4dfaf3b](https://github.com/onesoft-sudo/sudobot/commit/4dfaf3b92fdefdff43158b91944863923f96e5f7))
 
 
 
