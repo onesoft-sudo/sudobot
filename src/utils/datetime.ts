@@ -18,7 +18,9 @@
  */
 
 export function stringToTimeInterval(input: string, { milliseconds = false } = {}) {
-    if (input.trim() === "") {
+    input = input.trim();
+
+    if (input === "") {
         return { error: "No time value provided", result: NaN };
     }
 
@@ -30,16 +32,23 @@ export function stringToTimeInterval(input: string, { milliseconds = false } = {
         for (let i = 0; i < input.length; i++) {
             let num = "";
 
-            while (i < input.length && (!isNaN(+input[i]) || input[i] === ".")) {
-                num += input[i];
+            while (
+                i < input.length &&
+                (input[i] === "." || input[i] === " " || !isNaN(+input[i]))
+            ) {
+                if (input[i] !== " ") {
+                    num += input[i];
+                }
                 i++;
             }
 
             const value = +num;
 
-            if (Number.isNaN(value)) {
+            if (num.trim().length === 0 || Number.isNaN(value)) {
                 return { error: "Invalid numeric time value", result: NaN };
             }
+
+            while (i < input.length && input[i] === " ") i++;
 
             const unit = input[i];
 
