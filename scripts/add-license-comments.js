@@ -19,9 +19,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { existsSync } = require("fs");
 const fs = require("fs/promises");
 const path = require("path");
+const { existsSync } = require("fs");
 
 const sourceDirectory = path.join(__dirname, existsSync(path.join(__dirname, "src")) ? "." : "../src");
 
@@ -47,7 +47,7 @@ const licenseComment = `/*
 async function addLicenseComment(directory = sourceDirectory) {
     const files = await fs.readdir(directory);
 
-    for await (const file of files) {
+    for (const file of files) {
         const filePath = path.join(directory, file);
         const stat = await fs.lstat(filePath);
 
@@ -60,9 +60,7 @@ async function addLicenseComment(directory = sourceDirectory) {
             continue;
         }
 
-        const fileContents = await fs.readFile(filePath, {
-            encoding: "utf-8"
-        });
+        const fileContents = await fs.readFile(filePath, { encoding: "utf-8" });
 
         if (fileContents.trim().startsWith("/*")) continue;
 
