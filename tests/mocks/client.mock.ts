@@ -1,26 +1,26 @@
-import { mock } from "bun:test";
 import { ClientUser } from "discord.js";
+import { vi } from "vitest";
 import Client from "../../src/core/Client";
 import { randomSnowflake } from "./snowflakes";
 
-mock.module("@prisma/client", () => {
+vi.mock("@prisma/client", () => {
     return {
         __esModule: true,
-        PrismaClient: mock().mockImplementation(() => {
+        PrismaClient: vi.fn().mockImplementation(() => {
             return {
                 user: {
-                    findUnique: mock(),
-                    create: mock(),
-                    findMany: mock(),
-                    update: mock(),
-                    delete: mock()
+                    findUnique: vi.fn(),
+                    create: vi.fn(),
+                    findMany: vi.fn(),
+                    update: vi.fn(),
+                    delete: vi.fn()
                 },
                 troll: {
-                    findUnique: mock(),
-                    create: mock(),
-                    findMany: mock(),
-                    update: mock(),
-                    delete: mock()
+                    findUnique: vi.fn(),
+                    create: vi.fn(),
+                    findMany: vi.fn(),
+                    update: vi.fn(),
+                    delete: vi.fn()
                 }
             };
         })

@@ -1,9 +1,9 @@
-import { mock } from "bun:test";
 import { Message } from "discord.js";
+import { vi } from "vitest";
 
 export function createMessage(content: string, userId: string, guildId: string) {
     const mocks = {
-        reply: mock(() => Promise.resolve())
+        reply: vi.fn(() => Promise.resolve())
     };
 
     const message = {

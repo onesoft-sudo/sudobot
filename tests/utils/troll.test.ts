@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { beforeEach, describe, expect, it } from "bun:test";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type Client from "../../src/core/Client";
 import ConfigManager, { GuildConfigContainer } from "../../src/services/ConfigManager";
 import { SystemConfigSchema } from "../../src/types/SystemConfigSchema";
@@ -30,6 +30,10 @@ describe("troll functionalities", () => {
                 }
             } as unknown as GuildConfigContainer
         } as ConfigManager;
+    });
+
+    afterEach(() => {
+        vi.resetAllMocks();
     });
 
     it("should protect system admins from troll command", async () => {
