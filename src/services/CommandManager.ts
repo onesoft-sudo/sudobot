@@ -17,10 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { GlobalUserBan } from "@prisma/client";
 import {
     ChatInputCommandInteraction,
-    Collection,
     ContextMenuCommandInteraction,
     InteractionReplyOptions,
     Message,
@@ -67,18 +65,22 @@ export interface ContextMenuCommandContext extends CommandContext {
 }
 
 export default class CommandManager extends Service {
-    protected readonly userBans = new Collection<Snowflake, GlobalUserBan>();
+    protected readonly userBans = new Set<Snowflake>();
 
     async boot() {
         const bans = await this.client.prisma.globalUserBan.findMany();
 
         for (const ban of bans) {
-            this.userBans.set(ban.userId, ban);
+            this.userBans.add(ban.userId);
         }
     }
 
     getBan(userId: Snowflake) {
-        return this.userBans.get(userId);
+        return this.client.prisma.globalUserBan.findFirst({
+            where: {
+                userId
+            }
+        });
     }
 
     isBanned(userId: Snowflake) {
@@ -98,32 +100,34 @@ export default class CommandManager extends Service {
             }
         });
 
-        this.userBans.set(ban.userId, ban);
+        this.userBans.add(ban.userId);
         return ban;
     }
 
     async removeBan(userId: Snowflake) {
-        const ban = this.getBan(userId);
-
-        if (!ban) {
+        if (!this.isBanned(userId)) {
             return null;
         }
 
-        const info = await this.client.prisma.globalUserBan.delete({
+        await this.client.prisma.globalUserBan.deleteMany({
             where: {
-                id: ban.id
+                userId
             }
         });
 
-        this.userBans.delete(ban.userId);
-        return info;
+        this.userBans.delete(userId);
+        return userId;
     }
 
     async notifyBannedUser(user: User) {
-        const ban = this.getBan(user.id);
+        if (this.isBanned(user.id)) {
+            const ban = await this.getBan(user.id);
 
-        if (ban) {
-            const newBan = await this.client.prisma.globalUserBan.update({
+            if (!ban) {
+                return;
+            }
+
+            const newBan = await this.client.prisma.globalUserBan.updateMany({
                 where: {
                     id: ban.id
                 },
@@ -131,8 +135,6 @@ export default class CommandManager extends Service {
                     notified: true
                 }
             });
-
-            this.userBans.set(ban.userId, newBan);
 
             await user
                 .send({
