@@ -1,3 +1,12 @@
+## [8.28.2](https://github.com/onesoft-sudo/sudobot/compare/v8.28.1...v8.28.2) (2024-03-11)
+
+
+### Bug Fixes
+
+* **utils:datetime:** issue with parsing intervals ([2be2f9e](https://github.com/onesoft-sudo/sudobot/commit/2be2f9e54b39d650bc230fad3d2eb01b9439568c))
+
+
+
 ## [8.28.1](https://github.com/onesoft-sudo/sudobot/compare/v8.28.0...v8.28.1) (2024-03-11)
 
 
@@ -36,15 +45,6 @@
 ### Performance Improvements
 
 * add performance related optional deps ([b755d56](https://github.com/onesoft-sudo/sudobot/commit/b755d5699b84c404be6ddcc8e9e2e413bfb839c6))
-
-
-
-## [8.26.1](https://github.com/onesoft-sudo/sudobot/compare/v8.26.0...v8.26.1) (2024-03-11)
-
-
-### Bug Fixes
-
-* **api:server:** no response when sending requests ([9354e69](https://github.com/onesoft-sudo/sudobot/commit/9354e6904ebb0b4e4a845d354b3c44bb33cb3df9))
 
 
 
