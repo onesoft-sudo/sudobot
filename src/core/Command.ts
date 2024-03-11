@@ -93,7 +93,12 @@ export type RunCommandOptions = {
     checkOnly?: boolean;
 };
 
-class PermissionError extends Error {}
+export class PermissionError extends Error {}
+export class CommandAbortedError extends Error {
+    constructor(public readonly reason: string, public readonly commandName: string) {
+        super(reason);
+    }
+}
 
 type SubcommandMeta = {
     description?: string;
@@ -237,6 +242,10 @@ export default abstract class Command {
 
     protected sendSuccess(successMessage?: string, mode: DeferReplyMode = "default") {
         return this.success(this.getCommandMessage(), successMessage, mode);
+    }
+
+    protected abort() {
+        throw new CommandAbortedError(`Command aborted: ${this.name}`, this.name);
     }
 
     protected emoji(name: string) {
@@ -622,8 +631,18 @@ export default abstract class Command {
             context.parsedNamedArgs = parsedArgs;
         }
 
-        const commandReturn = await this.execute(message, context);
-        this.message = undefined;
-        return commandReturn;
+        try {
+            const commandReturn = await this.execute(message, context);
+            this.message = undefined;
+            return commandReturn;
+        } catch (error) {
+            if (error instanceof CommandAbortedError) {
+                this.message = undefined;
+                onAbort?.();
+                return;
+            }
+
+            throw error;
+        }
     }
 }

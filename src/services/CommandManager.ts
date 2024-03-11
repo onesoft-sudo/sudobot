@@ -27,7 +27,7 @@ import {
     Snowflake,
     User
 } from "discord.js";
-import { CommandMessage } from "../core/Command";
+import { CommandAbortedError, CommandMessage } from "../core/Command";
 import Service from "../core/Service";
 import { log, logError, logWarn } from "../utils/Logger";
 import { GuildConfig } from "./ConfigManager";
@@ -174,7 +174,10 @@ export default class CommandManager extends Service {
         const prefixes = [config.prefix];
         let foundPrefix: string | undefined = undefined;
 
-        if (this.client.configManager.systemConfig.commands.mention_prefix && config.commands.mention_prefix) {
+        if (
+            this.client.configManager.systemConfig.commands.mention_prefix &&
+            config.commands.mention_prefix
+        ) {
             prefixes.push(`<@${this.client.user!.id}>`, `<@!${this.client.user!.id}>`);
         }
 
@@ -200,7 +203,11 @@ export default class CommandManager extends Service {
 
         if (!command) {
             log("Command not found, trying to find a snippet");
-            return await this.client.snippetManager.onMessageCreate(message, foundPrefix, commandName);
+            return await this.client.snippetManager.onMessageCreate(
+                message,
+                foundPrefix,
+                commandName
+            );
         }
 
         if (!command.supportsLegacy) {
@@ -229,7 +236,23 @@ export default class CommandManager extends Service {
             }
         };
 
-        await this.client.emitWaitLocal("command", command.name, handlerObject, command, message, context);
+        try {
+            await this.client.emitWaitLocal(
+                "command",
+                command.name,
+                handlerObject,
+                command,
+                message,
+                context
+            );
+        } catch (error) {
+            if (error instanceof CommandAbortedError) {
+                return;
+            }
+
+            throw error;
+        }
+
         await Promise.resolve();
 
         if (handlerObject._stopped) {
@@ -245,8 +268,15 @@ export default class CommandManager extends Service {
                     onAbort: wait ? () => resolve(null) : undefined
                 })
                 .then(result => {
-                    if (result && typeof result === "object" && "__reply" in result && result.__reply === true) {
-                        message.reply(result as Parameters<typeof message.reply>[0]).catch(console.error);
+                    if (
+                        result &&
+                        typeof result === "object" &&
+                        "__reply" in result &&
+                        result.__reply === true
+                    ) {
+                        message
+                            .reply(result as Parameters<typeof message.reply>[0])
+                            .catch(console.error);
                     }
                     if (wait) {
                         resolve(true);
@@ -263,7 +293,10 @@ export default class CommandManager extends Service {
         });
     }
 
-    public async runCommandFromCommandInteraction(interaction: Exclude<CommandMessage, Message>, checkOnly = false) {
+    public async runCommandFromCommandInteraction(
+        interaction: Exclude<CommandMessage, Message>,
+        checkOnly = false
+    ) {
         const config = this.client.configManager.config[interaction.guildId!];
 
         if (!config) {
@@ -298,7 +331,14 @@ export default class CommandManager extends Service {
             }
         };
 
-        await this.client.emitWait("command", command.name, handlerObject, command, interaction, context);
+        await this.client.emitWait(
+            "command",
+            command.name,
+            handlerObject,
+            command,
+            interaction,
+            context
+        );
         await Promise.resolve();
 
         if (handlerObject._stopped) {
@@ -312,7 +352,12 @@ export default class CommandManager extends Service {
                 checkOnly
             })
             .then(result => {
-                if (result && typeof result === "object" && "__reply" in result && result.__reply === true) {
+                if (
+                    result &&
+                    typeof result === "object" &&
+                    "__reply" in result &&
+                    result.__reply === true
+                ) {
                     interaction.reply(result as InteractionReplyOptions).catch(console.error);
                 }
             })
