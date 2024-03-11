@@ -1,3 +1,12 @@
+## [8.26.1](https://github.com/onesoft-sudo/sudobot/compare/v8.26.0...v8.26.1) (2024-03-11)
+
+
+### Bug Fixes
+
+* **api:server:** no response when sending requests ([9354e69](https://github.com/onesoft-sudo/sudobot/commit/9354e6904ebb0b4e4a845d354b3c44bb33cb3df9))
+
+
+
 # [8.26.0](https://github.com/onesoft-sudo/sudobot/compare/v8.25.2...v8.26.0) (2024-03-10)
 
 
@@ -31,20 +40,6 @@
 ### Features
 
 * **utils:** better time parsing ([edb9fe1](https://github.com/onesoft-sudo/sudobot/commit/edb9fe1e7187e3946d12a4783e2de21cb22a091e))
-
-
-
-## [8.24.5](https://github.com/onesoft-sudo/sudobot/compare/v8.24.4...v8.24.5) (2024-03-10)
-
-
-### Bug Fixes
-
-* **commands:** automation command metadata ([a577e20](https://github.com/onesoft-sudo/sudobot/commit/a577e20d10fae1d07790d20de64bf643ee9168df))
-
-
-### Performance Improvements
-
-* do not load tensorflow/nsfwjs unless needed ([8037127](https://github.com/onesoft-sudo/sudobot/commit/8037127b96cf69a247f9e31f74b294d4006b273e))
 
 
 
