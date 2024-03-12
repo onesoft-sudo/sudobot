@@ -39,8 +39,12 @@ export function createClient() {
         tag: "SudoBot#0000",
         avatar: "avatar",
         bot: true,
-        system: false
-    } as ClientUser;
+        system: false,
+        client,
+        toString() {
+            return `<@${this.id}>`;
+        }
+    } as unknown as ClientUser;
 
-    return client;
+    return client as Client<true>;
 }
