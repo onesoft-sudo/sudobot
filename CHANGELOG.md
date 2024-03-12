@@ -1,3 +1,17 @@
+# [8.29.0](https://github.com/onesoft-sudo/sudobot/compare/v8.28.2...v8.29.0) (2024-03-12)
+
+
+### Bug Fixes
+
+* **searchbar:** shortcut border color ([5a6739b](https://github.com/onesoft-sudo/sudobot/commit/5a6739b5204e0bbf3b3b1a405db7ac6d07a4fe98))
+
+
+### Features
+
+* nested pages/routes ([ae60584](https://github.com/onesoft-sudo/sudobot/commit/ae60584a758b09744709cffc24d9168e00ba1bc9))
+
+
+
 ## [8.28.2](https://github.com/onesoft-sudo/sudobot/compare/v8.28.1...v8.28.2) (2024-03-11)
 
 
@@ -36,15 +50,6 @@
 ### Performance Improvements
 
 * **commandManager:** do not cache unneeded information ([1051cd9](https://github.com/onesoft-sudo/sudobot/commit/1051cd91c1b66dc469daa484c5188590fcebfffe))
-
-
-
-## [8.26.2](https://github.com/onesoft-sudo/sudobot/compare/v8.26.1...v8.26.2) (2024-03-11)
-
-
-### Performance Improvements
-
-* add performance related optional deps ([b755d56](https://github.com/onesoft-sudo/sudobot/commit/b755d5699b84c404be6ddcc8e9e2e413bfb839c6))
 
 
 
