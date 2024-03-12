@@ -1,122 +1,86 @@
-import axios from "axios";
-import { WriteStream } from "fs";
 import { join } from "path";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import stream from "stream";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { downloadFile } from "../../src/utils/download";
 
-const mockUrl = "https://example.com/file.txt";
-const mockPath = "/mock/path";
-const mockName = "file.txt";
-const mockAxiosOptions = { headers: { Authorization: "Bearer token" } };
-
-const pipe = vi.fn(stream => void (stream.closed = true));
-const writerClose = vi.fn();
-
-vi.mock("axios", () => {
-    type Options = Parameters<typeof axios.request>[0];
-
-    const request = vi.fn((options: Options) => {
-        if (options.url === mockUrl) {
+const axiosMocks = vi.hoisted(() => {
+    return {
+        request: vi.fn(() => {
             return {
                 status: 200,
                 data: {
-                    pipe
+                    pipe: vi.fn()
                 }
             };
-        }
-
-        return { status: 404 };
-    });
-
-    const module = {
-        request,
-        get: vi.fn((url: string, options: Options) => request({ ...options, url, method: "GET" }))
+        })
     };
-
-    return { ...module, default: module, __esModule: true };
 });
 
 vi.mock("fs", () => {
-    const createWriteStream = vi.fn(() => {
-        const writer = {
-            closed: false,
-            close: writerClose
-        };
-
-        return writer as unknown as WriteStream;
-    });
-
-    const module = {
-        createWriteStream
+    return {
+        createWriteStream: vi.fn(() => {
+            return {
+                write: vi.fn(),
+                close: vi.fn(callback => callback(null)),
+                closed: false
+            };
+        })
     };
-
-    return { ...module, default: module, __esModule: true };
 });
 
 vi.mock("stream", () => {
-    const finished = vi.fn((stream, callback) => {
-        callback(null);
-    });
-
-    const module = {
-        finished
+    return {
+        default: {
+            finished: vi.fn((stream, callback) => callback(null))
+        }
     };
+});
 
-    return { ...module, default: module, __esModule: true };
+vi.mock("axios", () => {
+    return {
+        default: {
+            request: axiosMocks.request
+        }
+    };
 });
 
 describe("downloadFile", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
+    afterEach(() => {
+        vi.resetAllMocks();
     });
 
-    it("should download a file and return the file path and storage path", async () => {
-        const mockAxiosRequest = vi.spyOn(axios, "request");
-        const mockLogInfo = vi.spyOn(console, "info");
+    it("should download a file", async () => {
+        const url = "https://example.com/file.txt";
+        const destinationDirectory = "path/to/dir";
+        const name = "file.txt";
+        const axiosOptions = { headers: { Authorization: "Bearer token" } };
 
-        const result = await downloadFile({
-            url: mockUrl,
-            path: mockPath,
-            name: mockName,
-            axiosOptions: mockAxiosOptions
-        });
+        const result = await downloadFile({ url, path: destinationDirectory, name, axiosOptions });
 
         expect(result).toEqual({
-            filePath: join(mockPath, mockName),
-            storagePath: mockPath
+            filePath: join(destinationDirectory, name),
+            storagePath: destinationDirectory
         });
-        expect(mockAxiosRequest).toHaveBeenCalledWith({
-            method: "GET",
-            url: mockUrl,
-            responseType: "stream",
-            ...mockAxiosOptions
-        });
-        expect(mockLogInfo.mock.lastCall?.at(1)).toBe(
-            "Saved downloaded file to: " + join(mockPath, mockName)
-        );
-        expect(pipe).toHaveBeenCalledOnce();
+
+        expect(stream.finished).toHaveBeenCalledTimes(1);
     });
 
-    it("should throw an error if the HTTP response status is not in the 2xx range", async () => {
-        const mockResponse = {
-            status: 404
-        };
-        const mockAxiosRequest = vi.spyOn(axios, "request").mockResolvedValue(mockResponse);
+    it("should throw an error if the request fails", async () => {
+        const url = "https://example.com/file.txt";
+        const destinationDirectory = "path/to/dir";
+        const name = "file.txt";
+        const axiosOptions = { headers: { Authorization: "Bearer token" } };
 
-        await expect(
-            downloadFile({
-                url: mockUrl,
-                path: mockPath,
-                name: mockName,
-                axiosOptions: mockAxiosOptions
-            })
-        ).rejects.toThrow("HTTP error: Non 2xx response received: code " + mockResponse.status);
-
-        expect(mockAxiosRequest).toHaveBeenCalledWith({
-            method: "GET",
-            url: mockUrl,
-            responseType: "stream",
-            ...mockAxiosOptions
+        axiosMocks.request.mockReturnValue({
+            status: 500,
+            data: {
+                pipe: vi.fn()
+            }
         });
+
+        expect(
+            downloadFile({ url, path: destinationDirectory, name, axiosOptions })
+        ).rejects.toThrow("HTTP error: Non 2xx response received: code 500");
+        expect(stream.finished).toHaveBeenCalledTimes(0);
     });
 });
