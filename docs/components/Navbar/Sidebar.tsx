@@ -1,23 +1,23 @@
 "use client";
 
 import useIsDesktop from "@/hooks/useIsDesktop";
-import styles from "@/styles/DocsLinkList.module.css";
-import { getDocsPages } from "@/utils/pages";
-import DocsLinkItem from "./DocsLinkItem";
+import styles from "@/styles/Sidebar.module.css";
+import { getAllDocsPages } from "@/utils/pages";
+import SidebarItem from "./SidebarItem";
 
-type DocsLinkListProps = {
+type SidebarProps = {
     expanded?: boolean;
     desktopOnly?: boolean;
     fragment?: boolean;
     onNavigate?: () => void;
 };
 
-export default function DocsLinkList({
+export default function Sidebar({
     expanded,
     desktopOnly = false,
     fragment = false,
     onNavigate,
-}: DocsLinkListProps) {
+}: SidebarProps) {
     const isDesktop = useIsDesktop();
 
     if (desktopOnly && !isDesktop) {
@@ -40,7 +40,7 @@ export default function DocsLinkList({
                           }
                         : {
                               position: "absolute",
-                              left: !expanded ? `100vh` : 0,
+                              left: !expanded ? "100vh" : 0,
                               transition: "ease 0.3s",
                               width: "100%",
                           }
@@ -50,13 +50,11 @@ export default function DocsLinkList({
                 } md:w-[10vw] lg:w-[15vw] xl:w-[20vw]`}
             >
                 <ul className="list-none m-3">
-                    {getDocsPages().map(page => (
-                        <DocsLinkItem
-                            key={`${page.name}_${page.url}`}
+                    {getAllDocsPages().children.map(item => (
+                        <SidebarItem
+                            key={`${item.name}_${item.href}`}
                             as="li"
-                            name={page.name}
-                            url={page.url}
-                            subpages={page.children}
+                            item={item}
                             onNavigate={onNavigate}
                         />
                     ))}

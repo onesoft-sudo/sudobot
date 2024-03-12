@@ -1,3 +1,4 @@
+import docsPageListJson from "@/docs_index.json";
 import indexJson from "@/index.json";
 import {
     BOT_INVITE_REQUEST_URL,
@@ -7,13 +8,24 @@ import {
 } from "./links";
 import { toTitleCase } from "./utils";
 
-export type DocsPage = {
+export type OldDocsPage = {
     name: string;
     url?: string;
     children?: DocsPageWithoutChildren[];
 };
 
-export type DocsPageWithoutChildren = Omit<DocsPage, "children">;
+export type DocsPageWithoutChildren = Omit<OldDocsPage, "children">;
+
+export type DocsPage = {
+    type: "directory" | "page";
+    name: string;
+    href: string;
+    children?: DocsPage[];
+    data?: {
+        title?: string;
+        short_name?: string;
+    };
+};
 
 export const pages = [
     {
@@ -77,7 +89,7 @@ export const getIndex = (lower = false) => {
     return lower ? lowercasedIndex! : index!;
 };
 
-let docsPages: DocsPage[] | null = null;
+let docsPages: OldDocsPage[] | null = null;
 
 export const getDocsPages = () => {
     if (!docsPages) {
@@ -181,3 +193,11 @@ function loadDocsPages() {
         return a.name.localeCompare(b.name);
     });
 }
+
+export const getAllDocsPages = () => {
+    return docsPageListJson as unknown as {
+        type: "directory";
+        name: "/";
+        children: DocsPage[];
+    };
+};

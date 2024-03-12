@@ -3,7 +3,7 @@ import { Fragment, PropsWithChildren } from "react";
 import EditButton from "../MDX/EditButton";
 import PageInfo from "../MDX/PageInfo";
 import TableOfContents from "../MDX/TableOfContents";
-import DocsLinkList from "../Navbar/DocsLinkList";
+import DocsLinkList from "../Navbar/Sidebar";
 import Navigator from "../Navigation/Navigator";
 
 export default function DocsLayout({ children }: PropsWithChildren) {

@@ -6,7 +6,7 @@ import { useState } from "react";
 import { HiArrowTopRightOnSquare } from "react-icons/hi2";
 import { MdClose, MdNavigateBefore } from "react-icons/md";
 import DocsLink from "./DocsLink";
-import DocsLinkList from "./DocsLinkList";
+import DocsLinkList from "./Sidebar";
 
 export default function Drawer({
     onClose,

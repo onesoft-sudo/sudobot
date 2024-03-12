@@ -1,36 +1,29 @@
 import Link from "@/components/Navigation/Link";
 import useActualPathname from "@/hooks/useActualPathname";
-import styles from "@/styles/DocsLinkItem.module.css";
-import { DocsPageWithoutChildren, resolveDocsURL } from "@/utils/pages";
+import styles from "@/styles/SidebarItem.module.css";
+import { DocsPage, resolveDocsURL } from "@/utils/pages";
 import { Button } from "@mui/material";
 import { SyntheticEvent, useState } from "react";
 import { MdExpandMore } from "react-icons/md";
 
-type DocsLinkItemProps = {
+type SidebarItemProps = {
     as: keyof JSX.IntrinsicElements;
-    url?: string;
-    name: string;
-    subpages?: DocsPageWithoutChildren[];
+    item: DocsPage;
     onNavigate?: () => void;
 };
 
-export default function DocsLinkItem({
+export default function SidebarItem({
     as = "li",
-    url,
-    name,
     onNavigate,
-    subpages = [],
-}: DocsLinkItemProps) {
+    item,
+}: SidebarItemProps) {
     const pathname = useActualPathname();
-    const [expanded, setExpanded] = useState(() =>
-        subpages.some(page => {
-            const link = page.url
-                ? page.url.startsWith("/")
-                    ? page.url
-                    : `/docs/${page.url}`
-                : "#";
-            return link === pathname;
-        }),
+    const [expanded, setExpanded] = useState(
+        () =>
+            item.children?.some(page => {
+                const link = page.type === "page" ? `${page.href}` : "#";
+                return link.startsWith(pathname);
+            }) ?? false,
     );
     const toggle = (e: SyntheticEvent) => {
         e.preventDefault();
@@ -38,9 +31,11 @@ export default function DocsLinkItem({
         setExpanded(s => !s);
     };
     const Root = as;
+    const url = item.type === "page" ? `${item.href}` : undefined;
     const link = url ? resolveDocsURL(url) : "#";
     const LinkComponent = url ? Link : "a";
     const IconWrapperComponent = url === undefined ? "span" : Button;
+    const name = item.data?.short_name ?? item.data?.title;
 
     return (
         <Root
@@ -58,7 +53,7 @@ export default function DocsLinkItem({
                 }}
             >
                 <span>{name}</span>
-                {subpages.length > 0 && (
+                {!!item.children?.length && (
                     <IconWrapperComponent
                         onClick={toggle}
                         style={{
@@ -78,17 +73,23 @@ export default function DocsLinkItem({
                 )}
             </LinkComponent>
 
-            {subpages.length > 0 && (
+            {!!item.children?.length && (
                 <div
                     className="ml-[13px] pl-[10px] [border-left:1px_solid_#444]"
                     style={{
                         maxHeight: expanded
                             ? `${
-                                  subpages.length *
+                                  item.children.length *
                                   (50 +
                                       Math.max(
-                                          subpages
-                                              .map(p => p.name.length)
+                                          item.children
+                                              .map(
+                                                  p =>
+                                                      (
+                                                          p.data?.short_name ??
+                                                          p.name
+                                                      ).length,
+                                              )
                                               .sort()[0] - 10,
                                           0,
                                       ))
@@ -99,12 +100,11 @@ export default function DocsLinkItem({
                     }}
                 >
                     <ul className="list-none">
-                        {subpages.map(page => (
-                            <DocsLinkItem
-                                key={`${page.name}_${page.url}`}
+                        {item.children.map(page => (
+                            <SidebarItem
+                                key={`${page.name}_${page.href}`}
                                 as="li"
-                                name={page.name}
-                                url={page.url}
+                                item={page}
                                 onNavigate={onNavigate}
                             />
                         ))}

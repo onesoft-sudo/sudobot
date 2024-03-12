@@ -1,0 +1,35 @@
+---
+title: "Command: `bean` - SudoBot"
+short_name: bean
+---
+
+import Modes from "@/components/MDX/Modes";
+
+# `bean`
+
+Does nothing except DMing the user with a message that they have been beaned.
+
+### Aliases
+`bean`
+
+### Syntax
+
+```
+-bean <User> [reason]
+```
+
+### Required Permissions
+
+`ManageMessages` or,<br />
+`BanMembers`
+
+### Modes
+
+<Modes modes={["legacy", "interaction"]} />
+
+### Examples
+
+```
+-bean @Someone Test reason
+-bean 4538546852653875
+```
