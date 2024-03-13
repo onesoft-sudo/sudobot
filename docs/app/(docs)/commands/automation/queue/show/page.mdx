@@ -1,0 +1,49 @@
+---
+title: "Command: `queue show` - SudoBot"
+short_name: queue show
+---
+
+import Modes from "@/components/MDX/Modes";
+
+# `queue show`
+
+Shows a previously created queue
+
+### Aliases
+`queue view`
+`queueshow`
+`showqueue`
+`viewqueue`
+`queueview`
+
+### Syntax
+
+```
+- queue show
+-queue view
+-queueshow [queue ID]
+-showqueue [queue ID]
+-viewqueue [queue ID]
+-queueview [queue ID]
+/queue show id: [queue ID]
+```
+
+### Required Permissions
+
+`ManageMessages`
+
+### Modes
+
+<Modes modes={["legacy", "interaction"]} />
+
+### Examples
+
+```
+- queue show 314
+-queue view 92
+-queueshow 468
+-showqueue 415
+-viewqueue 47
+-queueview 48
+/queue show id: 84
+```
