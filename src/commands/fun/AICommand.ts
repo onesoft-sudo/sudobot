@@ -52,6 +52,25 @@ type OpenAI = {
     };
 };
 
+type GoogleGenerativeModel = {
+    startChat: (data: {
+        history: Array<{
+            role: "user" | "model" | "function";
+            parts: Array<{ text: string }>;
+        }>;
+    }) => {
+        sendMessage: (prompt: string) => Promise<{
+            response: {
+                text: () => string;
+                promptFeedback?: {
+                    blockReason: string;
+                    blockReasonMessage?: string;
+                };
+            };
+        }>;
+    };
+};
+
 export default class AICommand extends Command {
     public readonly name = "ai";
     public readonly permissions = [];
@@ -66,6 +85,7 @@ export default class AICommand extends Command {
     );
     public readonly description = "Ask something to the AI.";
     public openai: OpenAI | null = null;
+    public googleAi: GoogleGenerativeModel | null = null;
 
     async execute(interaction: ChatInputCommandInteraction): Promise<CommandReturn> {
         await interaction.deferReply();
@@ -74,42 +94,70 @@ export default class AICommand extends Command {
         let content = "";
 
         try {
-            if (process.env.GOOGLE_MAKERSUIT_KEY) {
-                const url = `https://generativelanguage.googleapis.com/v1beta2/models/chat-bison-001:generateMessage?key=${encodeURIComponent(
-                    process.env.GOOGLE_MAKERSUIT_KEY
-                )}`;
+            if (process.env.GEMINI_API_KEY) {
+                let geminiAvailable = false;
 
-                const response = await axios.post(url, {
-                    prompt: {
-                        messages: [
-                            {
-                                content: prompt
-                            }
-                        ],
-                        context: "You're SudoBot, a Discord Moderation Bot.",
-                        examples: undefined
-                    },
-                    temperature: undefined,
-                    candidate_count: 1,
-                    topK: undefined,
-                    topP: undefined
+                try {
+                    require.resolve("@google/generative-ai");
+                    geminiAvailable = true;
+                } catch (error) {
+                    this.client.logger.error(error);
+                }
+
+                if (!geminiAvailable) {
+                    logError("@google/generative-ai package is not installed.");
+
+                    await this.error(
+                        interaction,
+                        "Google Generative AI package is not installed. Run `npm install @google/generative-ai` to install it."
+                    );
+                    return;
+                }
+
+                if (!this.googleAi) {
+                    const { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } = await import(
+                        "@google/generative-ai"
+                    );
+                    const generativeAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+                    this.googleAi = generativeAI.getGenerativeModel({
+                        model: "gemini-pro",
+                        safetySettings: Object.keys(HarmCategory).map(k => ({
+                            category: HarmCategory[k as keyof typeof HarmCategory],
+                            threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE
+                        }))
+                    });
+                }
+
+                const chat = this.googleAi.startChat({
+                    history: [
+                        {
+                            role: "model",
+                            parts: [{ text: "I'm SudoBot, a Discord Moderation Bot." }]
+                        }
+                    ]
                 });
 
-                if (response.data.filters?.[0]?.reason) {
+                const result = await chat.sendMessage(prompt);
+                const { response } = result;
+
+                if (result.response.promptFeedback?.blockReason) {
                     const reason =
-                        {
-                            BLOCKED_REASON_UNSPECIFIED: "for an unspecified reason",
-                            SAFETY: "by the safety filter"
-                        }[response.data.filters?.[0]?.reason as string] ?? "for unknown reasons";
+                        result.response.promptFeedback?.blockReasonMessage ??
+                        `This request was cancelled ${
+                            {
+                                BLOCKED_REASON_UNSPECIFIED: "for an unspecified reason",
+                                SAFETY: "by the safety filter"
+                            }[result.response.promptFeedback?.blockReason] ?? "for unknown reasons"
+                        }`;
 
                     await interaction.editReply({
-                        content: `This request was cancelled ${reason}.`
+                        content: ` ${reason}.`
                     });
 
                     return;
                 }
 
-                content = response.data.candidates?.[0]?.content;
+                content = response.text();
             } else if (process.env.CF_AI_URL) {
                 const { data } = await axios.post(
                     process.env.CF_AI_URL!,

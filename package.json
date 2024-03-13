@@ -31,6 +31,7 @@
         "email": "sudobot@onesoftnet.eu.org"
     },
     "dependencies": {
+        "@google/generative-ai": "^0.3.0",
         "@prisma/client": "^5.11.0",
         "@tensorflow/tfjs-node": "^4.17.0",
         "archiver": "^6.0.1",
