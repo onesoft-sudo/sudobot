@@ -3,7 +3,7 @@ import useActualPathname from "@/hooks/useActualPathname";
 import styles from "@/styles/SidebarItem.module.css";
 import { DocsPage, resolveDocsURL } from "@/utils/pages";
 import { Button } from "@mui/material";
-import { SyntheticEvent, useState } from "react";
+import { SyntheticEvent, useMemo, useState } from "react";
 import { MdExpandMore } from "react-icons/md";
 
 type SidebarItemProps = {
@@ -12,17 +12,34 @@ type SidebarItemProps = {
     onNavigate?: () => void;
 };
 
+const flatten = (pages: DocsPage[]): DocsPage[] => {
+    return pages.reduce<DocsPage[]>((acc, page) => {
+        if (page.children) {
+            acc.push(page, ...flatten(page.children));
+        } else {
+            acc.push(page);
+        }
+        return acc;
+    }, []);
+};
+
 export default function SidebarItem({
     as = "li",
     onNavigate,
     item,
 }: SidebarItemProps) {
     const pathname = useActualPathname();
+    const flattenPages = useMemo(() => flatten([item]), [item]);
     const [expanded, setExpanded] = useState(
         () =>
-            item.children?.some(page => {
+            flattenPages?.some(page => {
                 const link = page.type === "page" ? `${page.href}` : "#";
-                return link.startsWith(pathname);
+                return (
+                    (link === "/" && pathname === "/") ||
+                    (link !== "/" &&
+                        pathname !== "/" &&
+                        pathname.startsWith(link))
+                );
             }) ?? false,
     );
     const toggle = (e: SyntheticEvent) => {
@@ -49,7 +66,7 @@ export default function SidebarItem({
                 title={name}
                 onClick={url !== undefined ? onNavigate : toggle}
                 style={{
-                    paddingRight: url !== undefined ? 2 : undefined,
+                    paddingRight: 2,
                 }}
             >
                 <span>{name}</span>
@@ -79,10 +96,10 @@ export default function SidebarItem({
                     style={{
                         maxHeight: expanded
                             ? `${
-                                  item.children.length *
+                                  flattenPages.length *
                                   (50 +
                                       Math.max(
-                                          item.children
+                                          flattenPages
                                               .map(
                                                   p =>
                                                       (
