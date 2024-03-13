@@ -17,9 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ApplicationCommandType, EmbedBuilder, MessageContextMenuCommandInteraction, PermissionsBitField } from "discord.js";
+import {
+    ApplicationCommandType,
+    EmbedBuilder,
+    MessageContextMenuCommandInteraction,
+    PermissionsBitField
+} from "discord.js";
+import { logError } from "../../components/io/Logger";
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
-import { logError } from "../../utils/Logger";
 import { channelInfo, messageInfo, userInfo } from "../../utils/embed";
 import { safeChannelFetch } from "../../utils/fetch";
 
@@ -39,14 +44,16 @@ export default class SaveMessageCommand extends Command {
 
         if (!this.client.configManager.config[interaction.guildId!]?.logging?.enabled) {
             await interaction.editReply({
-                content: "This server has logging turned off. Please turn it on to use this command."
+                content:
+                    "This server has logging turned off. Please turn it on to use this command."
             });
 
             return;
         }
 
         const channelId =
-            this.client.configManager.config[interaction.guildId!]?.logging?.saved_messages_channel ??
+            this.client.configManager.config[interaction.guildId!]?.logging
+                ?.saved_messages_channel ??
             this.client.configManager.config[interaction.guildId!]?.logging?.primary_channel;
 
         if (!channelId) {
@@ -61,7 +68,8 @@ export default class SaveMessageCommand extends Command {
 
         if (!channel?.isTextBased()) {
             await interaction.editReply({
-                content: "Could not send the saved message to the log channel. This is probably due to a misconfiguration."
+                content:
+                    "Could not send the saved message to the log channel. This is probably due to a misconfiguration."
             });
             return;
         }
@@ -117,6 +125,9 @@ export default class SaveMessageCommand extends Command {
             return;
         }
 
-        await this.success(interaction, `The message was saved. [Click here](${url}) to nagivate to the saved message.`);
+        await this.success(
+            interaction,
+            `The message was saved. [Click here](${url}) to nagivate to the saved message.`
+        );
     }
 }

@@ -26,7 +26,7 @@ import {
     Snowflake,
     TextChannel
 } from "discord.js";
-import { log, logError } from "../utils/Logger";
+import { log, logError } from "../components/io/Logger";
 import Queue from "../utils/Queue";
 import { safeChannelFetch, safeMemberFetch, safeMessageFetch } from "../utils/fetch";
 
@@ -64,8 +64,11 @@ export default class CommandQueue extends Queue {
 
             if (!message) {
                 message =
-                    (this.guild.channels.cache.find(c => c.isTextBased() && c.lastMessage) as TextChannel | null)?.lastMessage ??
-                    null;
+                    (
+                        this.guild.channels.cache.find(
+                            c => c.isTextBased() && c.lastMessage
+                        ) as TextChannel | null
+                    )?.lastMessage ?? null;
 
                 member = await safeMemberFetch(this.guild, this.userId);
 
@@ -75,7 +78,10 @@ export default class CommandQueue extends Queue {
                     message!.reply = (...args: [MessagePayload | MessageReplyOptions | string]) =>
                         channel.send(...(args as [MessageCreateOptions | string]));
                     message!.delete = () => Promise.resolve(message!);
-                    message!.react = () => Promise.resolve(null as unknown as ReturnType<NonNullable<typeof message>["react"]>);
+                    message!.react = () =>
+                        Promise.resolve(
+                            null as unknown as ReturnType<NonNullable<typeof message>["react"]>
+                        );
                 }
             } else {
                 message = this.cloneObject(message);
@@ -112,7 +118,9 @@ export default class CommandQueue extends Queue {
 
             this.copyCollection(message.mentions.channels, channelMentions);
 
-            message.content = `${this.client.configManager.config[this.guild.id]?.prefix ?? "-"}${contentWithoutPrefix}`;
+            message.content = `${
+                this.client.configManager.config[this.guild.id]?.prefix ?? "-"
+            }${contentWithoutPrefix}`;
             message.channelId = channel.id;
 
             if (member) {
@@ -130,7 +138,8 @@ export default class CommandQueue extends Queue {
             });
 
             Object.defineProperty(message, "url", {
-                get: () => `https://discord.com/channels/${this.guild.id}/${channel.id}/${messageId}`
+                get: () =>
+                    `https://discord.com/channels/${this.guild.id}/${channel.id}/${messageId}`
             });
 
             await this.client.commandManager.runCommandFromMessage(message);

@@ -27,10 +27,16 @@ import {
     SlashCommandBuilder,
     TextChannel
 } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { logError } from "../../components/io/Logger";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import EmbedSchemaParser from "../../utils/EmbedSchemaParser";
 import { messageInfo } from "../../utils/embed";
-import { logError } from "../../utils/Logger";
 import { getEmojiObject, isTextableChannel } from "../../utils/utils";
 
 export default class EchoCommand extends Command {
@@ -58,22 +64,29 @@ export default class EchoCommand extends Command {
 
     public readonly description = "Make the bot say something.";
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addStringOption(option => option.setName("content").setDescription("Message content").setRequired(true))
-        .addChannelOption(option => option.setName("channel").setDescription("The channel where the message will be sent"));
+        .addStringOption(option =>
+            option.setName("content").setDescription("Message content").setRequired(true)
+        )
+        .addChannelOption(option =>
+            option.setName("channel").setDescription("The channel where the message will be sent")
+        );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message, {
             ephemeral: true
         });
 
-        const echoMentions = this.client.configManager.config[message.guildId!]?.commands?.echo_mentions ?? false;
+        const echoMentions =
+            this.client.configManager.config[message.guildId!]?.commands?.echo_mentions ?? false;
         const deleteReply =
-            this.client.configManager.config[message.guildId!]?.commands?.moderation_command_behaviour === "delete";
+            this.client.configManager.config[message.guildId!]?.commands
+                ?.moderation_command_behaviour === "delete";
 
         const channel: TextChannel =
             (!context.isLegacy
                 ? context.options.getChannel("channel")
-                : context.parsedNamedArgs.channelOrContent && typeof context.parsedNamedArgs.channelOrContent === "object"
+                : context.parsedNamedArgs.channelOrContent &&
+                  typeof context.parsedNamedArgs.channelOrContent === "object"
                 ? context.parsedNamedArgs.channelOrContent
                 : undefined) ?? message.channel;
 
@@ -107,7 +120,10 @@ export default class EchoCommand extends Command {
                               } as AttachmentPayload)
                       )
                     : undefined,
-            allowedMentions: (message.member?.permissions as Readonly<PermissionsBitField>)?.has("MentionEveryone", true)
+            allowedMentions: (message.member?.permissions as Readonly<PermissionsBitField>)?.has(
+                "MentionEveryone",
+                true
+            )
                 ? undefined
                 : echoMentions
                 ? undefined

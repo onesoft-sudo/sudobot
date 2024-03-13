@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { logError } from "../utils/Logger";
+import { logError } from "../components/io/Logger";
 import Queue from "../utils/Queue";
 import { safeChannelFetch } from "../utils/fetch";
 
@@ -31,7 +31,12 @@ export default class BumpReminderQueue extends Queue {
             }
 
             const config = this.client.configManager.config[this.guild.id]?.bump_reminder;
-            const { disabled_channels, remind_after: remindAfter, enabled, reminder_content } = config ?? {};
+            const {
+                disabled_channels,
+                remind_after: remindAfter,
+                enabled,
+                reminder_content
+            } = config ?? {};
 
             if (!enabled || disabled_channels?.includes(channelId)) {
                 return;
@@ -39,7 +44,8 @@ export default class BumpReminderQueue extends Queue {
 
             await channel.send(
                 await this.client.bumpReminder.replacePlaceholders(
-                    reminder_content ?? ":mention:\nTime to bump the server! Run the `/bump` slash command from Disboard Bot.",
+                    reminder_content ??
+                        ":mention:\nTime to bump the server! Run the `/bump` slash command from Disboard Bot.",
                     {
                         userId,
                         remindAfter

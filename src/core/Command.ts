@@ -42,13 +42,13 @@ import {
     TextBasedChannel,
     User
 } from "discord.js";
+import { logError } from "../components/io/Logger";
 import {
     ChatInputCommandContext,
     ContextMenuCommandContext,
     LegacyCommandContext
 } from "../services/CommandManager";
 import EmbedSchemaParser from "../utils/EmbedSchemaParser";
-import { logError } from "../utils/Logger";
 import { channelInfo, guildInfo, userInfo } from "../utils/embed";
 import { safeChannelFetch } from "../utils/fetch";
 import { getEmoji } from "../utils/utils";

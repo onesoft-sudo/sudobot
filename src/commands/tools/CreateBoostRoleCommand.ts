@@ -17,10 +17,16 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ChatInputCommandInteraction, ColorResolvable, GuildMember, SlashCommandBuilder, resolveColor } from "discord.js";
+import {
+    ChatInputCommandInteraction,
+    ColorResolvable,
+    GuildMember,
+    SlashCommandBuilder,
+    resolveColor
+} from "discord.js";
+import { logError } from "../../components/io/Logger";
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 import { ChatInputCommandContext } from "../../services/CommandManager";
-import { logError } from "../../utils/Logger";
 import { safeRoleFetch } from "../../utils/fetch";
 
 export default class CreateBoostRoleCommand extends Command {
@@ -31,17 +37,28 @@ export default class CreateBoostRoleCommand extends Command {
     public readonly supportsInteractions = true;
     public readonly supportsLegacy = false;
 
-    public readonly description = "Creates a custom role and assigns it to you (only for boosters).";
+    public readonly description =
+        "Creates a custom role and assigns it to you (only for boosters).";
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addStringOption(option => option.setName("name").setDescription("The role name, defaults to your name"))
-        .addStringOption(option => option.setName("color").setDescription("The role color, defaults to transparent"));
+        .addStringOption(option =>
+            option.setName("name").setDescription("The role name, defaults to your name")
+        )
+        .addStringOption(option =>
+            option.setName("color").setDescription("The role color, defaults to transparent")
+        );
 
-    async execute(message: ChatInputCommandInteraction, context: ChatInputCommandContext): Promise<CommandReturn> {
+    async execute(
+        message: ChatInputCommandInteraction,
+        context: ChatInputCommandContext
+    ): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
         const createAfterRoleId = context.config.create_boost_role?.create_roles_after;
 
         if (!createAfterRoleId) {
-            await this.error(message, "This server does not have *automatic custom roles for boosters* enabled.");
+            await this.error(
+                message,
+                "This server does not have *automatic custom roles for boosters* enabled."
+            );
             return;
         }
 
@@ -54,7 +71,8 @@ export default class CreateBoostRoleCommand extends Command {
 
         let colorCode = context.options.getString("color");
         let colorCodeHex: number | null = null;
-        const name: string = context.options.getString("name") ?? member!.displayName ?? message.user.username;
+        const name: string =
+            context.options.getString("name") ?? member!.displayName ?? message.user.username;
 
         if (colorCode && colorCode.startsWith("0x")) {
             colorCode = colorCode.replace(/^0x/i, "#");
@@ -72,7 +90,9 @@ export default class CreateBoostRoleCommand extends Command {
             }
         }
 
-        const createAfterRole = (await safeRoleFetch(message.guild!, createAfterRoleId)) ?? message.guild!.roles.everyone;
+        const createAfterRole =
+            (await safeRoleFetch(message.guild!, createAfterRoleId)) ??
+            message.guild!.roles.everyone;
 
         const boostRoleEntry = await this.client.prisma.boostRoleEntries.findFirst({
             where: {
@@ -123,7 +143,10 @@ export default class CreateBoostRoleCommand extends Command {
             });
         } catch (e) {
             logError(e);
-            await this.error(message, "An error has occurred while creating the role. Make sure that I have enough permissions.");
+            await this.error(
+                message,
+                "An error has occurred while creating the role. Make sure that I have enough permissions."
+            );
             return;
         }
     }

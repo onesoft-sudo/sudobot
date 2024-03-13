@@ -19,15 +19,16 @@
 
 import { formatDistanceToNowStrict } from "date-fns";
 import { EmbedBuilder } from "discord.js";
+import { log, logError } from "../components/io/Logger";
 import Queue from "../utils/Queue";
-import { log, logError } from "../utils/Logger";
 
 export default class ReminderQueue extends Queue {
     async run(userId: string, message: string) {
         try {
             log("Reminding user");
 
-            const user = this.client.users.cache.get(userId) ?? (await this.client.users.fetch(userId));
+            const user =
+                this.client.users.cache.get(userId) ?? (await this.client.users.fetch(userId));
 
             if (!user) {
                 throw new Error("User is null | undefined");
@@ -43,7 +44,10 @@ export default class ReminderQueue extends Queue {
                         },
                         description: message?.trim() === "" ? "*No message specified*" : message,
                         footer: {
-                            text: `You had set this reminder ${formatDistanceToNowStrict(this.createdAt, { addSuffix: true })}`
+                            text: `You had set this reminder ${formatDistanceToNowStrict(
+                                this.createdAt,
+                                { addSuffix: true }
+                            )}`
                         }
                     }).setTimestamp()
                 ]

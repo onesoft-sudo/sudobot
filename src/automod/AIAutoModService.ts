@@ -19,9 +19,9 @@
 
 import { Message, PermissionFlagsBits } from "discord.js";
 import { google } from "googleapis";
+import { log, logError } from "../components/io/Logger";
 import Service from "../core/Service";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { log, logError } from "../utils/Logger";
 import { isImmuneToAutoMod } from "../utils/utils";
 
 export const name = "aiAutoMod";
@@ -31,7 +31,10 @@ const discoveryURL = "https://commentanalyzer.googleapis.com/$discovery/rest?ver
 
 type GoogleClient = {
     comments: {
-        analyze: (params: unknown, callback: (error: Error | null, response: unknown) => void) => void;
+        analyze: (
+            params: unknown,
+            callback: (error: Error | null, response: unknown) => void
+        ) => void;
     };
 };
 
@@ -113,7 +116,13 @@ export default class AIAutoModService extends Service implements HasEventListene
             return false;
         }
 
-        if (await isImmuneToAutoMod(this.client, message.member!, PermissionFlagsBits.ManageMessages)) {
+        if (
+            await isImmuneToAutoMod(
+                this.client,
+                message.member!,
+                PermissionFlagsBits.ManageMessages
+            )
+        ) {
             return;
         }
 
@@ -153,10 +162,14 @@ export default class AIAutoModService extends Service implements HasEventListene
 
             const threatScore = response.data.attributeScores.THREAT.summaryScore.value * 100;
             const toxicityScore = response.data.attributeScores.TOXICITY.summaryScore.value * 100;
-            const severeToxicityScore = response.data.attributeScores.SEVERE_TOXICITY.summaryScore.value * 100;
-            const explicitScore = response.data.attributeScores.SEXUALLY_EXPLICIT.summaryScore.value * 100;
-            const flirtationScore = response.data.attributeScores.FLIRTATION.summaryScore.value * 100;
-            const identityAttackScore = response.data.attributeScores.IDENTITY_ATTACK.summaryScore.value * 100;
+            const severeToxicityScore =
+                response.data.attributeScores.SEVERE_TOXICITY.summaryScore.value * 100;
+            const explicitScore =
+                response.data.attributeScores.SEXUALLY_EXPLICIT.summaryScore.value * 100;
+            const flirtationScore =
+                response.data.attributeScores.FLIRTATION.summaryScore.value * 100;
+            const identityAttackScore =
+                response.data.attributeScores.IDENTITY_ATTACK.summaryScore.value * 100;
             const insultScore = response.data.attributeScores.INSULT.summaryScore.value * 100;
             const profanityScore = response.data.attributeScores.PROFANITY.summaryScore.value * 100;
 
@@ -169,7 +182,16 @@ export default class AIAutoModService extends Service implements HasEventListene
             const isInsult = insultScore >= max_insult;
             const isProfanity = profanityScore >= max_profanity;
 
-            if (isThreat || isToxic || isSeverelyToxic || isExplicit || isFlirty || isAttack || isInsult || isProfanity) {
+            if (
+                isThreat ||
+                isToxic ||
+                isSeverelyToxic ||
+                isExplicit ||
+                isFlirty ||
+                isAttack ||
+                isInsult ||
+                isProfanity
+            ) {
                 await message.delete();
                 await this.client.loggerService.logAIAutoModMessageDelete({
                     message,

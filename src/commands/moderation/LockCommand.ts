@@ -18,8 +18,14 @@
  */
 
 import { PermissionsBitField, SlashCommandBuilder, TextChannel, User } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { logError } from "../../utils/Logger";
+import { logError } from "../../components/io/Logger";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { isTextableChannel } from "../../utils/utils";
 
 export default class LockCommand extends Command {
@@ -44,13 +50,19 @@ export default class LockCommand extends Command {
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.ManageChannels];
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addSubcommand(subcommand => subcommand.setName("server").setDescription("Lock the entire server"))
+        .addSubcommand(subcommand =>
+            subcommand.setName("server").setDescription("Lock the entire server")
+        )
         .addSubcommand(subcommand =>
             subcommand
                 .setName("channel")
                 .setDescription("Lock one single channel")
                 .addChannelOption(option =>
-                    option.setName("channel").setDescription("The channel that will be locked. Default is the current channel")
+                    option
+                        .setName("channel")
+                        .setDescription(
+                            "The channel that will be locked. Default is the current channel"
+                        )
                 )
         );
 
@@ -63,21 +75,33 @@ export default class LockCommand extends Command {
         }
 
         if (context.isLegacy && typeof context.parsedNamedArgs.channel === "string") {
-            await this.error(message, "Please provide a text channel to lock, or specify `server` to lock the entire server!");
+            await this.error(
+                message,
+                "Please provide a text channel to lock, or specify `server` to lock the entire server!"
+            );
             return;
         }
 
         const channel: TextChannel =
-            (context.isLegacy ? context.parsedNamedArgs.channel : context.options.getChannel("channel")) ?? message.channel!;
+            (context.isLegacy
+                ? context.parsedNamedArgs.channel
+                : context.options.getChannel("channel")) ?? message.channel!;
 
         if (!isTextableChannel(channel)) {
             await this.error(message, "Please provide a valid text channel to lock!");
             return;
         }
 
-        const result = await this.client.channelLockManager.lock(channel, message.member!.user as User);
+        const result = await this.client.channelLockManager.lock(
+            channel,
+            message.member!.user as User
+        );
 
         if (!result) await this.error(message, "Failed to lock this channel.");
-        else await this.deferredReply(message, `${this.emoji("check")} This channel has been locked.`).catch(logError);
+        else
+            await this.deferredReply(
+                message,
+                `${this.emoji("check")} This channel has been locked.`
+            ).catch(logError);
     }
 }

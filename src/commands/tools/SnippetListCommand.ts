@@ -17,9 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ChatInputCommandInteraction, EmbedBuilder, Message, PermissionsBitField } from "discord.js";
+import {
+    ChatInputCommandInteraction,
+    EmbedBuilder,
+    Message,
+    PermissionsBitField
+} from "discord.js";
+import { log } from "../../components/io/Logger";
 import Command, { CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { log } from "../../utils/Logger";
 import Pagination from "../../utils/Pagination";
 
 export default class SnippetListCommand extends Command {
@@ -57,7 +62,8 @@ export default class SnippetListCommand extends Command {
                         name: `Snippets/tags in ${message.guild?.name}`,
                         iconURL: message.guild?.iconURL() ?? undefined
                     },
-                    description: data.length === 0 ? "Nothing to show." : `\`${data.join("`, `")}\``,
+                    description:
+                        data.length === 0 ? "Nothing to show." : `\`${data.join("`, `")}\``,
                     footer: {
                         text: `Page ${currentPage} of ${maxPages}`
                     },

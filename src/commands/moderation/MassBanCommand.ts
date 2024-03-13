@@ -18,13 +18,13 @@
  */
 
 import { GuildMember, PermissionsBitField, SlashCommandBuilder, User } from "discord.js";
+import { log, logError } from "../../components/io/Logger";
 import Command, {
     BasicCommandContext,
     CommandMessage,
     CommandReturn,
     ValidationRule
 } from "../../core/Command";
-import { log, logError } from "../../utils/Logger";
 import { stringToTimeInterval } from "../../utils/datetime";
 import { isSnowflake } from "../../utils/utils";
 

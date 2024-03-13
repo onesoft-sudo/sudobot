@@ -18,9 +18,22 @@
  */
 
 import { formatDistanceToNow } from "date-fns";
-import { ChatInputCommandInteraction, Message, PermissionsBitField, SlashCommandBuilder, User, escapeMarkdown } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { logError } from "../../utils/Logger";
+import {
+    ChatInputCommandInteraction,
+    Message,
+    PermissionsBitField,
+    SlashCommandBuilder,
+    User,
+    escapeMarkdown
+} from "discord.js";
+import { logError } from "../../components/io/Logger";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { stringToTimeInterval } from "../../utils/datetime";
 import { protectSystemAdminsFromCommands } from "../../utils/troll";
 import { createModerationEmbed } from "../../utils/utils";
@@ -43,7 +56,8 @@ export default class FakeBanCommand extends Command {
             types: [ArgumentType.TimeInterval, ArgumentType.StringRest],
             optional: true,
             errors: {
-                "time:range": "The message deletion range must be a time interval from 0 second to 604800 seconds (7 days).",
+                "time:range":
+                    "The message deletion range must be a time interval from 0 second to 604800 seconds (7 days).",
                 "type:invalid":
                     "You have specified an invalid argument. The system expected you to provide a ban reason or the message deletion range here.",
                 "string:rest:length:max": "The ban reason must be less than 4000 characters long."
@@ -75,24 +89,37 @@ export default class FakeBanCommand extends Command {
 
     public readonly description = "Fakebans a user.";
     public readonly detailedDescription = "This commands simulates a user ban.";
-    public readonly argumentSyntaxes = ["<UserID|UserMention> [Reason]", "<UserID|UserMention> [MessageDeletionTime] [Reason]"];
+    public readonly argumentSyntaxes = [
+        "<UserID|UserMention> [Reason]",
+        "<UserID|UserMention> [MessageDeletionTime] [Reason]"
+    ];
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addUserOption(option => option.setName("user").setDescription("The user").setRequired(true))
-        .addStringOption(option => option.setName("reason").setDescription("The reason for banning this user"))
+        .addUserOption(option =>
+            option.setName("user").setDescription("The user").setRequired(true)
+        )
         .addStringOption(option =>
-            option.setName("deletion_timeframe").setDescription("The message deletion timeframe (must be in range 0-604800s)")
+            option.setName("reason").setDescription("The reason for banning this user")
+        )
+        .addStringOption(option =>
+            option
+                .setName("deletion_timeframe")
+                .setDescription("The message deletion timeframe (must be in range 0-604800s)")
         )
         .addBooleanOption(option =>
             option
                 .setName("silent")
-                .setDescription("Specify if the system should not notify the user about this action. Defaults to false")
+                .setDescription(
+                    "Specify if the system should not notify the user about this action. Defaults to false"
+                )
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (message instanceof ChatInputCommandInteraction) await message.deferReply();
 
-        const user: User = context.isLegacy ? context.parsedArgs[0] : context.options.getUser("user", true);
+        const user: User = context.isLegacy
+            ? context.parsedArgs[0]
+            : context.options.getUser("user", true);
 
         if (await protectSystemAdminsFromCommands(this.client, message, user.id, "fakeban_safe")) {
             return;
@@ -124,7 +151,9 @@ export default class FakeBanCommand extends Command {
 
             if (error) {
                 await this.deferredReply(message, {
-                    content: `${this.emoji("error")} ${error} provided in the \`deletion_timeframe\` option`
+                    content: `${this.emoji(
+                        "error"
+                    )} ${error} provided in the \`deletion_timeframe\` option`
                 });
 
                 return;
@@ -190,7 +219,9 @@ export default class FakeBanCommand extends Command {
                         moderator: message.member!.user as User,
                         user,
                         actionDoneName: "banned",
-                        description: `**${escapeMarkdown(user.tag)}** has been banned from this server.`,
+                        description: `**${escapeMarkdown(
+                            user.tag
+                        )}** has been banned from this server.`,
                         fields: [
                             {
                                 name: "Message Deletion",

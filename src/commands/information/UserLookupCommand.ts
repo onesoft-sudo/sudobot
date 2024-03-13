@@ -18,9 +18,22 @@
  */
 
 import { formatDistanceStrict, formatDistanceToNowStrict } from "date-fns";
-import { EmbedBuilder, GuildMember, PermissionFlagsBits, SlashCommandBuilder, User, userMention } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { logError } from "../../utils/Logger";
+import {
+    EmbedBuilder,
+    GuildMember,
+    PermissionFlagsBits,
+    SlashCommandBuilder,
+    User,
+    userMention
+} from "discord.js";
+import { logError } from "../../components/io/Logger";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { flagsToString } from "../../utils/userflags";
 
 export default class UserLookupCommand extends Command {
@@ -50,16 +63,23 @@ export default class UserLookupCommand extends Command {
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
-        const user: User = context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user", true);
+        const user: User = context.isLegacy
+            ? context.parsedNamedArgs.user
+            : context.options.getUser("user", true);
         let member: GuildMember | null = null;
 
         try {
-            member = message.guild!.members.cache.get(user.id) ?? (await message.guild!.members.fetch(user.id));
+            member =
+                message.guild!.members.cache.get(user.id) ??
+                (await message.guild!.members.fetch(user.id));
         } catch (e) {
             logError(e);
         }
 
-        const { action, points, summary } = await this.client.infractionManager.getUserStats(user.id, message.guildId!);
+        const { action, points, summary } = await this.client.infractionManager.getUserStats(
+            user.id,
+            message.guildId!
+        );
 
         const flags = flagsToString(user.flags!);
         const fields = [
@@ -76,7 +96,9 @@ export default class UserLookupCommand extends Command {
             {
                 name: "Member",
                 value: member
-                    ? `Completed Membership Screening: ${member.pending ? "No" : "Yes"}\nNickname: ${
+                    ? `Completed Membership Screening: ${
+                          member.pending ? "No" : "Yes"
+                      }\nNickname: ${
                           member.nickname ?? "*Not set*"
                       }\nJoined At: ${member.joinedAt?.toLocaleString()} (${formatDistanceToNowStrict(
                           member.joinedAt ?? new Date(),

@@ -20,10 +20,10 @@
 import { NextFunction, Response } from "express";
 import { rateLimit } from "express-rate-limit";
 import { z } from "zod";
+import { logError } from "../../components/io/Logger";
 import { Action } from "../../decorators/Action";
 import { EnableAdminAccessControl } from "../../decorators/EnableAdminAccessControl";
 import { Validate } from "../../decorators/Validate";
-import { logError } from "../../utils/Logger";
 import Controller from "../Controller";
 import Request from "../Request";
 
@@ -60,7 +60,9 @@ export default class ReviewController extends Controller {
         });
     }
 
-    @Action("POST", "/reviews", [(_: unknown, req: Request, res: Response, next: NextFunction) => ratelimiter(req, res, next)])
+    @Action("POST", "/reviews", [
+        (_: unknown, req: Request, res: Response, next: NextFunction) => ratelimiter(req, res, next)
+    ])
     @Validate(
         z.object({
             rating: z.number().int().min(0).max(5),

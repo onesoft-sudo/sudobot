@@ -18,8 +18,14 @@
  */
 
 import { EmbedBuilder, GuildMember, SlashCommandBuilder, User } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { logError } from "../../utils/Logger";
+import { logError } from "../../components/io/Logger";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 
 export default class AvatarCommand extends Command {
     public readonly name = "avatar";
@@ -46,20 +52,28 @@ export default class AvatarCommand extends Command {
         .addBooleanOption(option =>
             option
                 .setName("global")
-                .setDescription("Specify whether the system should fetch the global user avatar instead of guild-only avatar")
+                .setDescription(
+                    "Specify whether the system should fetch the global user avatar instead of guild-only avatar"
+                )
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
         const user: User =
-            (context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user")) ?? message.member!.user;
+            (context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user")) ??
+            message.member!.user;
         let member: GuildMember | undefined;
 
-        if (!(context.isLegacy ? context.argv[0].startsWith("g") : context.options.getBoolean("global") ?? false)) {
+        if (
+            !(context.isLegacy
+                ? context.argv[0].startsWith("g")
+                : context.options.getBoolean("global") ?? false)
+        ) {
             try {
                 member = user
-                    ? message.guild!.members.cache.get(user.id) ?? (await message.guild!.members.fetch(user.id))
+                    ? message.guild!.members.cache.get(user.id) ??
+                      (await message.guild!.members.fetch(user.id))
                     : (message.member! as GuildMember);
             } catch (e) {
                 logError(e);

@@ -17,15 +17,16 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { log, logError } from "../components/io/Logger";
 import Queue from "../utils/Queue";
-import { log, logError } from "../utils/Logger";
 
 export default class UnbanQueue extends Queue {
     async run(userId: string) {
         try {
             log("Unbanning user");
 
-            const user = this.client.users.cache.get(userId) ?? (await this.client.users.fetch(userId));
+            const user =
+                this.client.users.cache.get(userId) ?? (await this.client.users.fetch(userId));
 
             if (!user) throw new Error("User is null | undefined");
 

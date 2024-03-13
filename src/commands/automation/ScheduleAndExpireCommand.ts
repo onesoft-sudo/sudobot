@@ -19,10 +19,16 @@
 
 import { Message, PermissionsBitField, SlashCommandBuilder, TextBasedChannel } from "discord.js";
 import path from "path";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { logError } from "../../components/io/Logger";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import QueueEntry from "../../utils/QueueEntry";
 import { stringToTimeInterval } from "../../utils/datetime";
-import { logError } from "../../utils/Logger";
 import { getEmojiObject, isTextableChannel } from "../../utils/utils";
 
 export default class ScheduleAndExpireCommand extends Command {
@@ -71,10 +77,13 @@ export default class ScheduleAndExpireCommand extends Command {
     public readonly permissions = [PermissionsBitField.Flags.ManageMessages];
     public readonly aliases = ["expiresc", "scex", "schedulexp"];
 
-    public readonly description = "Sends a message and deletes it after the given primary and secondary timeframe, respectively.";
+    public readonly description =
+        "Sends a message and deletes it after the given primary and secondary timeframe, respectively.";
     public readonly argumentSyntaxes = ["<send_after> <expire_after> [content]"];
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addStringOption(option => option.setName("content").setDescription("The message content").setRequired(true))
+        .addStringOption(option =>
+            option.setName("content").setDescription("The message content").setRequired(true)
+        )
         .addStringOption(option =>
             option
                 .setName("send_after")
@@ -90,7 +99,9 @@ export default class ScheduleAndExpireCommand extends Command {
         .addChannelOption(option =>
             option
                 .setName("channel")
-                .setDescription("The channel where the message will be sent, defaults to the current channel")
+                .setDescription(
+                    "The channel where the message will be sent, defaults to the current channel"
+                )
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
@@ -130,9 +141,13 @@ export default class ScheduleAndExpireCommand extends Command {
             timeIntervalRemove = result;
         }
 
-        const content: string = context.isLegacy ? context.parsedNamedArgs.content : context.options.getString("content");
+        const content: string = context.isLegacy
+            ? context.parsedNamedArgs.content
+            : context.options.getString("content");
         const channel = (
-            context.isLegacy ? message.channel! : context.options.getChannel("channel") ?? message.channel!
+            context.isLegacy
+                ? message.channel!
+                : context.options.getChannel("channel") ?? message.channel!
         ) as TextBasedChannel;
 
         if (!isTextableChannel(channel)) {

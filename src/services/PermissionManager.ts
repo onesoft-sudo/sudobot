@@ -26,12 +26,12 @@ import {
     Role,
     Snowflake
 } from "discord.js";
+import { log, logInfo } from "../components/io/Logger";
 import Service from "../core/Service";
 import AbstractPermissionManager from "../security/AbstractPermissionManager";
 import DiscordBasedPermissionManager from "../security/DiscordBasedPermissionManager";
 import LayerBasedPermissionManager from "../security/LayerBasedPermissionManager";
 import LevelBasedPermissionManager from "../security/LevelBasedPermissionManager";
-import { log, logInfo } from "../utils/Logger";
 import { GuildConfig } from "./ConfigManager";
 
 export const name = "permissionManager";

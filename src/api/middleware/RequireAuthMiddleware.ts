@@ -19,8 +19,8 @@
 
 import { NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
+import { log } from "../../components/io/Logger";
 import type Client from "../../core/Client";
-import { log } from "../../utils/Logger";
 import Request from "../Request";
 
 export default async function RequireAuthMiddleware(

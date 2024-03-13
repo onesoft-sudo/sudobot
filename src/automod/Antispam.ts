@@ -18,9 +18,9 @@
  */
 
 import { GuildMember, Message, PermissionFlagsBits, Snowflake, TextChannel } from "discord.js";
+import { log, logError } from "../components/io/Logger";
 import Service from "../core/Service";
 import { GuildConfig } from "../types/GuildConfigSchema";
-import { log, logError } from "../utils/Logger";
 import { isImmuneToAutoMod, isTextableChannel } from "../utils/utils";
 
 interface SpamUserInfo {
@@ -38,7 +38,10 @@ export const name = "antispam";
 
 export default class Antispam extends Service {
     protected readonly map: Record<`${Snowflake}_${Snowflake}`, SpamUserInfo | undefined> = {};
-    protected readonly similarMessageSpamMap: Record<`${Snowflake}_${Snowflake}`, SimilarMessageSpamInfo | undefined> = {};
+    protected readonly similarMessageSpamMap: Record<
+        `${Snowflake}_${Snowflake}`,
+        SimilarMessageSpamInfo | undefined
+    > = {};
 
     async muteUser(message: Message, antispam: GuildConfig["antispam"]) {
         this.client.infractionManager
@@ -46,7 +49,10 @@ export default class Antispam extends Service {
                 guild: message.guild!,
                 moderator: this.client.user!,
                 bulkDeleteReason: "The system has detected spam messages from this user",
-                duration: antispam?.mute_duration && antispam?.mute_duration > 0 ? antispam?.mute_duration : 1000 * 60 * 60,
+                duration:
+                    antispam?.mute_duration && antispam?.mute_duration > 0
+                        ? antispam?.mute_duration
+                        : 1000 * 60 * 60,
                 messageChannel:
                     antispam?.action === "mute_clear" || antispam?.action === "auto"
                         ? (message.channel! as TextChannel)
@@ -66,7 +72,9 @@ export default class Antispam extends Service {
                 moderator: this.client.user!,
                 notifyUser: true,
                 reason: `Spam detected.${
-                    antispam?.action === "auto" ? " If you continue to send spam messages, you might get muted." : ""
+                    antispam?.action === "auto"
+                        ? " If you continue to send spam messages, you might get muted."
+                        : ""
                 }`,
                 sendLog: true
             })
@@ -154,14 +162,16 @@ export default class Antispam extends Service {
             return false;
         }
 
-        const lastMessageInfo = this.similarMessageSpamMap[`${message.guildId!}_${message.author.id}`];
+        const lastMessageInfo =
+            this.similarMessageSpamMap[`${message.guildId!}_${message.author.id}`];
 
         if (!lastMessageInfo) {
             this.similarMessageSpamMap[`${message.guildId!}_${message.author.id}`] = {
                 count: 0,
                 content: message.content,
                 timeout: setTimeout(() => {
-                    const lastMessageInfo = this.similarMessageSpamMap[`${message.guildId!}_${message.author.id}`];
+                    const lastMessageInfo =
+                        this.similarMessageSpamMap[`${message.guildId!}_${message.author.id}`];
                     const max = config.antispam?.similar_messages?.max;
 
                     if (lastMessageInfo && max && lastMessageInfo.count >= max) {
@@ -169,7 +179,8 @@ export default class Antispam extends Service {
                         this.takeAction(message).catch(console.error);
                     }
 
-                    this.similarMessageSpamMap[`${message.guildId!}_${message.author.id}`] = undefined;
+                    this.similarMessageSpamMap[`${message.guildId!}_${message.author.id}`] =
+                        undefined;
                 }, config.antispam.similar_messages?.timeframe ?? config.antispam.timeframe)
             };
 
@@ -204,7 +215,13 @@ export default class Antispam extends Service {
             return;
         }
 
-        if (await isImmuneToAutoMod(this.client, message.member!, PermissionFlagsBits.ManageMessages)) {
+        if (
+            await isImmuneToAutoMod(
+                this.client,
+                message.member!,
+                PermissionFlagsBits.ManageMessages
+            )
+        ) {
             return;
         }
 
@@ -225,7 +242,8 @@ export default class Antispam extends Service {
             log("Timeout set");
 
             info.timeout = setTimeout(() => {
-                const delayedInfo = this.map[`${message.guildId!}_${message.author.id}`] ?? ({} as SpamUserInfo);
+                const delayedInfo =
+                    this.map[`${message.guildId!}_${message.author.id}`] ?? ({} as SpamUserInfo);
                 const timestamps = delayedInfo.timestamps.filter(
                     timestamp => (config.antispam?.timeframe ?? 0) + timestamp >= Date.now()
                 );

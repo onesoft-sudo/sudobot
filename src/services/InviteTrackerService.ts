@@ -17,11 +17,19 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Collection, Guild, GuildMember, GuildPremiumTier, Invite, Snowflake, Vanity } from "discord.js";
+import {
+    Collection,
+    Guild,
+    GuildMember,
+    GuildPremiumTier,
+    Invite,
+    Snowflake,
+    Vanity
+} from "discord.js";
+import { log, logError } from "../components/io/Logger";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { log, logError } from "../utils/Logger";
 import { wait } from "../utils/utils";
 
 export const name = "inviteTracker";
@@ -50,7 +58,10 @@ export default class InviteTrackerService extends Service implements HasEventLis
                     log("Fetching vanity info for guild ", guild.id);
 
                     try {
-                        const vanity = guild.vanityURLUses !== null ? guild.vanityURLUses : (await guild.fetchVanityData()).uses;
+                        const vanity =
+                            guild.vanityURLUses !== null
+                                ? guild.vanityURLUses
+                                : (await guild.fetchVanityData()).uses;
                         this.invites.set(`${guild.id}_VANITY`, vanity);
                     } catch (e) {
                         logError(e);
@@ -69,7 +80,10 @@ export default class InviteTrackerService extends Service implements HasEventLis
     @GatewayEventListener("inviteCreate")
     async onInviteCreate(invite: Invite) {
         log("Added new invite", invite.code);
-        if (!invite.guild?.id || !this.client.configManager.config[invite.guild?.id ?? ""]?.invite_tracking?.enabled) {
+        if (
+            !invite.guild?.id ||
+            !this.client.configManager.config[invite.guild?.id ?? ""]?.invite_tracking?.enabled
+        ) {
             log("Invalid guild");
             return;
         }
@@ -80,7 +94,10 @@ export default class InviteTrackerService extends Service implements HasEventLis
     @GatewayEventListener("inviteDelete")
     async onInviteDelete(invite: Invite) {
         log("Deleted invite", invite.code);
-        if (!invite.guild?.id || !this.client.configManager.config[invite.guild?.id ?? ""]?.invite_tracking?.enabled) {
+        if (
+            !invite.guild?.id ||
+            !this.client.configManager.config[invite.guild?.id ?? ""]?.invite_tracking?.enabled
+        ) {
             log("Invalid guild");
             return;
         }
@@ -94,7 +111,10 @@ export default class InviteTrackerService extends Service implements HasEventLis
             return;
         }
 
-        if (newGuild.vanityURLCode === oldGuild.vanityURLCode && newGuild.vanityURLUses === oldGuild.vanityURLUses) {
+        if (
+            newGuild.vanityURLCode === oldGuild.vanityURLCode &&
+            newGuild.vanityURLUses === oldGuild.vanityURLUses
+        ) {
             return;
         }
 

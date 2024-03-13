@@ -18,9 +18,9 @@
  */
 
 import { GuildMember } from "discord.js";
+import { logError } from "../../components/io/Logger";
 import EventListener from "../../core/EventListener";
 import { Events } from "../../types/ClientEvents";
-import { logError } from "../../utils/Logger";
 
 export default class GuildMemberRemoveEvent extends EventListener<Events.GuildMemberRemove> {
     public readonly name = Events.GuildMemberRemove;

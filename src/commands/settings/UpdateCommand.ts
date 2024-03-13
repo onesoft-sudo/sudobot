@@ -34,8 +34,8 @@ import { existsSync } from "fs";
 import { cp, mkdir, rename, rm } from "fs/promises";
 import path, { basename, join } from "path";
 import semver from "semver";
+import { log, logError, logInfo, logWarn } from "../../components/io/Logger";
 import Command, { CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { log, logError, logInfo, logWarn } from "../../utils/Logger";
 import { downloadFile } from "../../utils/download";
 import { sudoPrefix } from "../../utils/utils";
 
@@ -45,8 +45,10 @@ export default class UpdateCommand extends Command {
     public readonly permissions = [];
     public readonly description = "Updates the bot to the latest version.";
     public readonly systemAdminOnly = true;
-    protected readonly RELEASE_API_URL = "https://api.github.com/repos/onesoft-sudo/sudobot/releases/latest";
-    protected readonly UNSTABLE_DOWNLOAD_URL = "https://github.com/onesoft-sudo/sudobot/archive/refs/heads/main.zip";
+    protected readonly RELEASE_API_URL =
+        "https://api.github.com/repos/onesoft-sudo/sudobot/releases/latest";
+    protected readonly UNSTABLE_DOWNLOAD_URL =
+        "https://github.com/onesoft-sudo/sudobot/archive/refs/heads/main.zip";
     public updateChannel?: "stable" | "unstable";
     public readonly beta = true;
 
@@ -89,7 +91,10 @@ export default class UpdateCommand extends Command {
             const updateChannelCollector = message.channel!.createMessageComponentCollector({
                 componentType: ComponentType.StringSelect,
                 filter: (interaction: StringSelectMenuInteraction) => {
-                    if (interaction.user.id === message.member!.user.id && interaction.customId === "system_update_channel") {
+                    if (
+                        interaction.user.id === message.member!.user.id &&
+                        interaction.customId === "system_update_channel"
+                    ) {
                         return true;
                     }
 
@@ -108,7 +113,10 @@ export default class UpdateCommand extends Command {
             const confirmationCollector = message.channel!.createMessageComponentCollector({
                 componentType: ComponentType.Button,
                 filter: (interaction: ButtonInteraction) => {
-                    if (interaction.user.id === message.member!.user.id && interaction.customId.startsWith("system_update__")) {
+                    if (
+                        interaction.user.id === message.member!.user.id &&
+                        interaction.customId.startsWith("system_update__")
+                    ) {
                         return true;
                     }
 
@@ -191,8 +199,12 @@ export default class UpdateCommand extends Command {
                                 icon_url: this.client.user?.displayAvatarURL() ?? undefined
                             },
                             description: success
-                                ? `${this.emoji("check")} Successfully installed the update. Restarting now.`
-                                : `${this.emoji("error")} An error has occurred while performing the update.`,
+                                ? `${this.emoji(
+                                      "check"
+                                  )} Successfully installed the update. Restarting now.`
+                                : `${this.emoji(
+                                      "error"
+                                  )} An error has occurred while performing the update.`,
                             color: Colors.Green
                         }
                     ]
@@ -217,18 +229,31 @@ export default class UpdateCommand extends Command {
             });
         } catch (e) {
             logError(e);
-            await this.error(message, "An unknown error has occurred while trying to fetch information about the updates.");
+            await this.error(
+                message,
+                "An unknown error has occurred while trying to fetch information about the updates."
+            );
         }
     }
 
-    actionRow({ version, updateAvailable, disabled = false }: { version: string; updateAvailable: boolean; disabled?: boolean }) {
+    actionRow({
+        version,
+        updateAvailable,
+        disabled = false
+    }: {
+        version: string;
+        updateAvailable: boolean;
+        disabled?: boolean;
+    }) {
         return [
             new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
                 new StringSelectMenuBuilder()
                     .addOptions(
                         new StringSelectMenuOptionBuilder({
                             label: "Latest Stable",
-                            description: `${version} • ${updateAvailable ? "Update available" : "Up to date"}`,
+                            description: `${version} • ${
+                                updateAvailable ? "Update available" : "Up to date"
+                            }`,
                             value: "stable",
                             default: updateAvailable
                         }).setEmoji("⚙"),
@@ -260,12 +285,19 @@ export default class UpdateCommand extends Command {
         ];
     }
 
-    downloadUpdate({ stableDownloadURL, version }: { stableDownloadURL: string; version: string }): Promise<{
+    downloadUpdate({
+        stableDownloadURL,
+        version
+    }: {
+        stableDownloadURL: string;
+        version: string;
+    }): Promise<{
         filePath?: string;
         storagePath?: string;
         error?: Error;
     }> {
-        const url = this.updateChannel === "stable" ? stableDownloadURL : this.UNSTABLE_DOWNLOAD_URL;
+        const url =
+            this.updateChannel === "stable" ? stableDownloadURL : this.UNSTABLE_DOWNLOAD_URL;
         const tmpdir = sudoPrefix("tmp", true);
         const dirname = `update-${this.updateChannel === "stable" ? version : "unstable"}`;
 
@@ -298,7 +330,15 @@ export default class UpdateCommand extends Command {
         return process.platform === "win32" ? "powershell.exe" : "unzip";
     }
 
-    async unpackUpdate({ filePath, storagePath, version }: { version: string; filePath: string; storagePath: string }) {
+    async unpackUpdate({
+        filePath,
+        storagePath,
+        version
+    }: {
+        version: string;
+        filePath: string;
+        storagePath: string;
+    }) {
         const dirname = `update-${this.updateChannel === "stable" ? version : "unstable"}`;
         const unpackedDirectory = join(storagePath!, dirname);
 
@@ -338,10 +378,19 @@ export default class UpdateCommand extends Command {
     }
 
     private createDirectoryBackupPair(name: string) {
-        return [path.join(__dirname, "../../../", name), path.join(__dirname, `../../../.backup/${name}`)] as const;
+        return [
+            path.join(__dirname, "../../../", name),
+            path.join(__dirname, `../../../.backup/${name}`)
+        ] as const;
     }
 
-    async installUpdate({ unpackedDirectory, version }: { unpackedDirectory: string; version: string }) {
+    async installUpdate({
+        unpackedDirectory,
+        version
+    }: {
+        unpackedDirectory: string;
+        version: string;
+    }) {
         const { error, dirpairs } = await this.backupCurrentSystem([
             "build",
             "src",
@@ -449,7 +498,13 @@ export default class UpdateCommand extends Command {
         return true;
     }
 
-    async cleanup({ unpackedDirectory, downloadedFile }: { unpackedDirectory: string; downloadedFile: string }) {
+    async cleanup({
+        unpackedDirectory,
+        downloadedFile
+    }: {
+        unpackedDirectory: string;
+        downloadedFile: string;
+    }) {
         await rm(unpackedDirectory, { recursive: true });
         await rm(downloadedFile);
     }
@@ -526,9 +581,16 @@ export default class UpdateCommand extends Command {
 
         if (
             existsSync(path.join(__dirname, "../../..", ".git")) &&
-            (existsSync("/usr/bin/git") || existsSync("/usr/local/bin/git") || existsSync("/bin/git"))
+            (existsSync("/usr/bin/git") ||
+                existsSync("/usr/local/bin/git") ||
+                existsSync("/bin/git"))
         ) {
-            const { error, dirpairs } = await this.backupCurrentSystem(["build", "src", "prisma", "scripts"]);
+            const { error, dirpairs } = await this.backupCurrentSystem([
+                "build",
+                "src",
+                "prisma",
+                "scripts"
+            ]);
 
             if (error) {
                 return false;
@@ -555,7 +617,11 @@ export default class UpdateCommand extends Command {
             return true;
         }
 
-        const { error: downloadError, filePath, storagePath } = await this.downloadUpdate({ stableDownloadURL, version });
+        const {
+            error: downloadError,
+            filePath,
+            storagePath
+        } = await this.downloadUpdate({ stableDownloadURL, version });
 
         if (downloadError) {
             return false;
@@ -571,13 +637,19 @@ export default class UpdateCommand extends Command {
             return false;
         }
 
-        const successfullyInstalled = await this.installUpdate({ unpackedDirectory: unpackedDirectory!, version });
+        const successfullyInstalled = await this.installUpdate({
+            unpackedDirectory: unpackedDirectory!,
+            version
+        });
 
         if (!successfullyInstalled) {
             return false;
         }
 
-        await this.cleanup({ unpackedDirectory: unpackedDirectory!, downloadedFile: filePath! }).catch(log);
+        await this.cleanup({
+            unpackedDirectory: unpackedDirectory!,
+            downloadedFile: filePath!
+        }).catch(log);
         return true;
     }
 }

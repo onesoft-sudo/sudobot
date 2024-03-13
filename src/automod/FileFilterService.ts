@@ -20,9 +20,9 @@
 import { Attachment, Message, PermissionFlagsBits, Snowflake } from "discord.js";
 import crypto from "node:crypto";
 import { readFile, rm } from "node:fs/promises";
+import { logError, logInfo, logWarn } from "../components/io/Logger";
 import Service from "../core/Service";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { logError, logInfo, logWarn } from "../utils/Logger";
 import { downloadFile } from "../utils/download";
 import { sudoPrefix } from "../utils/utils";
 
@@ -44,7 +44,12 @@ export default class FileFilterService extends Service implements HasEventListen
             return false;
         }
 
-        if (await this.client.permissionManager.isImmuneToAutoMod(message.member!, PermissionFlagsBits.ManageGuild)) {
+        if (
+            await this.client.permissionManager.isImmuneToAutoMod(
+                message.member!,
+                PermissionFlagsBits.ManageGuild
+            )
+        ) {
             return false;
         }
 
@@ -145,7 +150,9 @@ export default class FileFilterService extends Service implements HasEventListen
 
     // TODO: Implement this
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    private async checkAttachmentLinks(message: Message): Promise<{ hash: string; url: string; attachment?: Attachment } | null> {
+    private async checkAttachmentLinks(
+        message: Message
+    ): Promise<{ hash: string; url: string; attachment?: Attachment } | null> {
         return null;
     }
 }

@@ -22,9 +22,9 @@ import { lstat } from "node:fs/promises";
 import path from "node:path";
 import { chdir, cwd } from "node:process";
 import readline from "node:readline";
+import { LogLevel, logError, logInfo, logWarn, logWithLevel } from "../components/io/Logger";
 import Service from "../core/Service";
 import { AnyFunction } from "../types/Utils";
-import { LogLevel, logError, logInfo, logWarn, logWithLevel } from "../utils/Logger";
 import { developmentMode } from "../utils/utils";
 
 export const name = "keypressHandler";
@@ -67,7 +67,9 @@ export default class KeypressHandlerService extends Service {
         if (key.meta) modifiers.push("Meta");
         if (key.shift) modifiers.push("Shift");
 
-        const commandKey = `${modifiers.join("+")}${modifiers.length > 0 ? "+" : ""}${key.name.toUpperCase()}`;
+        const commandKey = `${modifiers.join("+")}${
+            modifiers.length > 0 ? "+" : ""
+        }${key.name.toUpperCase()}`;
         const handler = this.keyHandlers[commandKey as CommandKey];
 
         if (handler) {

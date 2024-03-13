@@ -19,9 +19,14 @@
 
 import axios, { AxiosRequestConfig } from "axios";
 import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
-import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { log, logError } from "../../components/io/Logger";
+import Command, {
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { GuildConfig } from "../../types/GuildConfigSchema";
-import { log, logError } from "../../utils/Logger";
 
 type JokeType = GuildConfig["commands"]["default_joke_type"];
 
@@ -29,7 +34,10 @@ export default class JokeCommand extends Command {
     public readonly name = "joke";
     public readonly validationRules: ValidationRule[] = [];
     public readonly permissions = [];
-    public readonly urls: Record<JokeType, () => [Exclude<JokeType, "random">, string, AxiosRequestConfig]> = {
+    public readonly urls: Record<
+        JokeType,
+        () => [Exclude<JokeType, "random">, string, AxiosRequestConfig]
+    > = {
         joke: () => [
             "joke",
             "https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist",

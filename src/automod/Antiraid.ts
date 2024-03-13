@@ -18,11 +18,11 @@
  */
 
 import { Guild, GuildMember } from "discord.js";
+import { logError } from "../components/io/Logger";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { GuildConfig } from "../types/GuildConfigSchema";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { logError } from "../utils/Logger";
 
 export const name = "antiraid";
 

@@ -21,10 +21,10 @@ import { VerificationEntry } from "@prisma/client";
 import axios from "axios";
 import bcrypt from "bcrypt";
 import { z } from "zod";
+import { logError } from "../../components/io/Logger";
 import { Action } from "../../decorators/Action";
 import { Validate } from "../../decorators/Validate";
 import { zSnowflake } from "../../types/SnowflakeSchema";
-import { logError } from "../../utils/Logger";
 import Controller from "../Controller";
 import Request from "../Request";
 import Response from "../Response";
@@ -45,7 +45,10 @@ export default class VerificationController extends Controller {
         const config = this.client.configManager.config[entry.guildId!]?.verification;
         return (
             entry.createdAt.getTime() + (config?.max_time ?? 0) > Date.now() &&
-            entry.attempts <= ((config?.max_attempts ?? 0) === 0 ? Number.POSITIVE_INFINITY : config!.max_attempts)
+            entry.attempts <=
+                ((config?.max_attempts ?? 0) === 0
+                    ? Number.POSITIVE_INFINITY
+                    : config!.max_attempts)
         );
     }
 
@@ -124,7 +127,10 @@ export default class VerificationController extends Controller {
             });
         }
 
-        const emailVerificationToken = await bcrypt.hash(userId + (Math.random() * 100000000).toString(), await bcrypt.genSalt());
+        const emailVerificationToken = await bcrypt.hash(
+            userId + (Math.random() * 100000000).toString(),
+            await bcrypt.genSalt()
+        );
 
         await this.client.prisma.verificationEntry.update({
             where: {
@@ -177,7 +183,11 @@ export default class VerificationController extends Controller {
             email: string;
         };
 
-        if (!info.emailVerificationToken || !info.email || info.emailVerificationToken !== emailVerificationToken) {
+        if (
+            !info.emailVerificationToken ||
+            !info.email ||
+            info.emailVerificationToken !== emailVerificationToken
+        ) {
             return new Response({
                 status: 403,
                 body: {
@@ -186,7 +196,11 @@ export default class VerificationController extends Controller {
             });
         }
 
-        const result = await this.client.verification.attemptToVerifyUserByToken(userId, verificationToken, "Email");
+        const result = await this.client.verification.attemptToVerifyUserByToken(
+            userId,
+            verificationToken,
+            "Email"
+        );
 
         if (!result) {
             return new Response({
@@ -243,7 +257,11 @@ export default class VerificationController extends Controller {
             });
         }
 
-        const result = await this.client.verification.attemptToVerifyUserByToken(userId, verificationToken, "Captcha");
+        const result = await this.client.verification.attemptToVerifyUserByToken(
+            userId,
+            verificationToken,
+            "Captcha"
+        );
 
         if (!result) {
             return new Response({

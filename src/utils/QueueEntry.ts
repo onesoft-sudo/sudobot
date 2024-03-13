@@ -18,8 +18,8 @@
  */
 
 import path from "path";
+import { log, logError } from "../components/io/Logger";
 import Queue, { QueueConstructorOptions } from "./Queue";
-import { log, logError } from "./Logger";
 
 export default class QueueEntry {
     timeout: Timer | undefined = undefined;
@@ -81,7 +81,9 @@ export default class QueueEntry {
     async run(): Promise<void> {
         try {
             log("Running queue: ", this.options.filePath);
-            const { default: QueueClass }: { default: new (options: QueueConstructorOptions) => Queue } = await import(
+            const {
+                default: QueueClass
+            }: { default: new (options: QueueConstructorOptions) => Queue } = await import(
                 this.options.filePath
             );
             const queue = new QueueClass(this.options);

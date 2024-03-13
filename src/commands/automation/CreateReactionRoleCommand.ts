@@ -17,10 +17,22 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { PermissionFlagsBits, SlashCommandBuilder, Snowflake, TextBasedChannel, parseEmoji } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import {
+    PermissionFlagsBits,
+    SlashCommandBuilder,
+    Snowflake,
+    TextBasedChannel,
+    parseEmoji
+} from "discord.js";
+import { logError } from "../../components/io/Logger";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { safeChannelFetch, safeMessageFetch, safeRoleFetch } from "../../utils/fetch";
-import { logError } from "../../utils/Logger";
 import { isSnowflake } from "../../utils/utils";
 
 export default class CreateReactionRoleCommand extends Command {
@@ -57,8 +69,15 @@ export default class CreateReactionRoleCommand extends Command {
     public readonly detailedDescription =
         "Adds a reaction listener to the message, and when a user reacts with the given emoji, it will assign the given role(s).";
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addStringOption(option => option.setName("message_link").setDescription("The target message link").setRequired(true))
-        .addStringOption(option => option.setName("emoji").setDescription("The trigger emoji").setRequired(true))
+        .addStringOption(option =>
+            option
+                .setName("message_link")
+                .setDescription("The target message link")
+                .setRequired(true)
+        )
+        .addStringOption(option =>
+            option.setName("emoji").setDescription("The trigger emoji").setRequired(true)
+        )
         .addStringOption(option =>
             option
                 .setName("roles")
@@ -66,25 +85,37 @@ export default class CreateReactionRoleCommand extends Command {
                 .setRequired(true)
         )
         .addStringOption(option =>
-            option.setName("mode").setDescription("The behaviour of the reaction role trigger").setChoices(
-                {
-                    name: "Single and unique role",
-                    value: "SINGLE"
-                },
-                {
-                    name: "Multiple (Default)",
-                    value: "MULTIPLE"
-                }
-            )
+            option
+                .setName("mode")
+                .setDescription("The behaviour of the reaction role trigger")
+                .setChoices(
+                    {
+                        name: "Single and unique role",
+                        value: "SINGLE"
+                    },
+                    {
+                        name: "Multiple (Default)",
+                        value: "MULTIPLE"
+                    }
+                )
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
-        const link: string = context.isLegacy ? context.parsedNamedArgs.link : context.options.getString("message_link", true);
-        const mode = (context.isLegacy ? null : (context.options.getString("mode") as "SINGLE" | "MULTIPLE")) ?? "MULTIPLE";
+        const link: string = context.isLegacy
+            ? context.parsedNamedArgs.link
+            : context.options.getString("message_link", true);
+        const mode =
+            (context.isLegacy
+                ? null
+                : (context.options.getString("mode") as "SINGLE" | "MULTIPLE")) ?? "MULTIPLE";
 
-        if (!/^https?:\/\/(canary\.|ptb\.|beta\.|www\.|)discord\.com\/channels\/\d+\/\d+\/\d+$/i.test(link.trim())) {
+        if (
+            !/^https?:\/\/(canary\.|ptb\.|beta\.|www\.|)discord\.com\/channels\/\d+\/\d+\/\d+$/i.test(
+                link.trim()
+            )
+        ) {
             await this.error(message, this.validationRules[0].errors!.required);
             return;
         }
@@ -100,7 +131,9 @@ export default class CreateReactionRoleCommand extends Command {
         }
 
         const rolesUnprocessed: string = (
-            context.isLegacy ? context.parsedNamedArgs.roles : context.options.getString("roles", true)
+            context.isLegacy
+                ? context.parsedNamedArgs.roles
+                : context.options.getString("roles", true)
         ).split(/\s+/);
 
         if (rolesUnprocessed.length > 7) {
@@ -146,7 +179,9 @@ export default class CreateReactionRoleCommand extends Command {
             roleNames.push(role.name);
         }
 
-        const emoji: string = context.isLegacy ? context.parsedNamedArgs.emoji : context.options.getString("emoji", true);
+        const emoji: string = context.isLegacy
+            ? context.parsedNamedArgs.emoji
+            : context.options.getString("emoji", true);
         const parsed = parseEmoji(emoji);
         const emojiIdOrName = parsed?.id ?? parsed?.name ?? emoji;
 

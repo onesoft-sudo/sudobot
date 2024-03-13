@@ -18,9 +18,9 @@
  */
 
 import { Message, PermissionsBitField, PermissionsString } from "discord.js";
+import { logError } from "../../components/io/Logger";
 import Command, { ArgumentType, CommandReturn, ValidationRule } from "../../core/Command";
 import { LegacyCommandContext } from "../../services/CommandManager";
-import { logError } from "../../utils/Logger";
 
 export default class SnippetEditCommand extends Command {
     public readonly name = "snippet__edit";
@@ -52,7 +52,13 @@ export default class SnippetEditCommand extends Command {
         PermissionsBitField.Flags.ManageMessages
     ];
     public readonly permissionMode = "or";
-    public readonly aliases: string[] = ["editsnippet", "snippetedit", "tagedit", "edittag", "updatetag"];
+    public readonly aliases: string[] = [
+        "editsnippet",
+        "snippetedit",
+        "tagedit",
+        "edittag",
+        "updatetag"
+    ];
     public readonly beta: boolean = true;
     public readonly supportsInteractions = false;
 
@@ -61,7 +67,13 @@ export default class SnippetEditCommand extends Command {
 
         const name: string = context.parsedNamedArgs.name;
 
-        if (!(await this.client.snippetManager.checkPermissionInSnippetCommands(name, message, this))) {
+        if (
+            !(await this.client.snippetManager.checkPermissionInSnippetCommands(
+                name,
+                message,
+                this
+            ))
+        ) {
             return;
         }
 
@@ -83,7 +95,10 @@ export default class SnippetEditCommand extends Command {
 
         switch (attr) {
             case "level": {
-                if (this.client.configManager.config[message.guildId!]?.permissions.mode !== "levels") {
+                if (
+                    this.client.configManager.config[message.guildId!]?.permissions.mode !==
+                    "levels"
+                ) {
                     await this.error(
                         message,
                         "This server does not use the level-based permission system. Please switch to the level-based system to set a permission level for this snippet. Alternatively, if you're using the named permission system, please edit the `permission` (or `perm`) attribute instead."
@@ -99,7 +114,10 @@ export default class SnippetEditCommand extends Command {
                 const level = parseInt(context.args[index + 2]);
 
                 if (isNaN(level) || level < 0 || level > 100) {
-                    await this.error(message, "Please specify a valid permission level (0-100) to set!");
+                    await this.error(
+                        message,
+                        "Please specify a valid permission level (0-100) to set!"
+                    );
                     return;
                 }
 

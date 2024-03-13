@@ -32,7 +32,7 @@ import {
 } from "discord.js";
 import JSON5 from "json5";
 import { z } from "zod";
-import { log } from "./Logger";
+import { log } from "../components/io/Logger";
 
 type EmbedType = Embed | APIEmbed;
 type GetMessageOptions = MessageCreateOptions | APIMessage | MessageEditOptions;
@@ -127,7 +127,11 @@ export default class EmbedSchemaParser {
         let outString = string;
 
         for (let i = 0; i < length; i++) {
-            if (i + 8 < length && (i === 0 || [" ", "\n"].includes(string[i - 1])) && string.substring(i, i + 8) === "embed::{") {
+            if (
+                i + 8 < length &&
+                (i === 0 || [" ", "\n"].includes(string[i - 1])) &&
+                string.substring(i, i + 8) === "embed::{"
+            ) {
                 const pos = i;
                 i += 7;
 
@@ -160,7 +164,10 @@ export default class EmbedSchemaParser {
                         }
 
                         embeds.push(new EmbedBuilder(parsedJSON));
-                        outString = outString.replace(new RegExp(`(\\s*)embed::(.{${jsonStream.length}})::(\\s*)`, "gm"), "");
+                        outString = outString.replace(
+                            new RegExp(`(\\s*)embed::(.{${jsonStream.length}})::(\\s*)`, "gm"),
+                            ""
+                        );
                     } catch (e) {
                         console.error(e);
                         continue;
@@ -211,7 +218,9 @@ export default class EmbedSchemaParser {
     static getMessageOptions<T extends GetMessageOptions>(payload: T, withContent = true) {
         const { content, embeds = [], ...options } = payload;
 
-        type GetMessageOptionsResult = (T extends MessageCreateOptions ? MessageCreateOptions : MessageEditOptions) & {
+        type GetMessageOptionsResult = (T extends MessageCreateOptions
+            ? MessageCreateOptions
+            : MessageEditOptions) & {
             embeds: (APIEmbed | JSONEncodable<APIEmbed>)[];
         };
 
@@ -229,12 +238,17 @@ export default class EmbedSchemaParser {
             ...options,
             embeds: [...embeds, ...parsedEmbeds.slice(0, 10)],
             content: withContent ? strippedContent : undefined
-        } as unknown as (T extends MessageCreateOptions ? MessageCreateOptions : MessageEditOptions) & {
+        } as unknown as (T extends MessageCreateOptions
+            ? MessageCreateOptions
+            : MessageEditOptions) & {
             embeds: (APIEmbed | JSONEncodable<APIEmbed>)[];
         };
     }
 
-    static sendMessage(sendable: TextBasedChannel | User | GuildMember, options: MessageCreateOptions) {
+    static sendMessage(
+        sendable: TextBasedChannel | User | GuildMember,
+        options: MessageCreateOptions
+    ) {
         return sendable.send(EmbedSchemaParser.getMessageOptions(options));
     }
 

@@ -33,9 +33,9 @@ import {
     time
 } from "discord.js";
 import jwt from "jsonwebtoken";
+import { logError } from "../components/io/Logger";
 import Service from "../core/Service";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { logError } from "../utils/Logger";
 import { userInfo } from "../utils/embed";
 import { safeChannelFetch, safeMemberFetch } from "../utils/fetch";
 
@@ -118,7 +118,11 @@ export default class VerificationService extends Service implements HasEventList
         });
     }
 
-    async onMemberVerificationFail(member: GuildMember, { attempts, guildId }: VerificationEntry, remainingTime: number) {
+    async onMemberVerificationFail(
+        member: GuildMember,
+        { attempts, guildId }: VerificationEntry,
+        remainingTime: number
+    ) {
         const config = this.client.configManager.config[guildId]?.verification;
 
         if (!config) {
@@ -195,7 +199,10 @@ export default class VerificationService extends Service implements HasEventList
     async createDatabaseEntry(member: GuildMember) {
         const config = this.client.configManager.config[member.guild.id]?.verification;
 
-        const seed = await bcrypt.hash((Math.random() * 100000000).toString(), await bcrypt.genSalt());
+        const seed = await bcrypt.hash(
+            (Math.random() * 100000000).toString(),
+            await bcrypt.genSalt()
+        );
         const token = jwt.sign(
             {
                 seed,
@@ -225,7 +232,9 @@ export default class VerificationService extends Service implements HasEventList
             return;
         }
 
-        const channelId = config.logging.channel ?? this.client.configManager.config[guild.id]?.logging?.primary_channel;
+        const channelId =
+            config.logging.channel ??
+            this.client.configManager.config[guild.id]?.logging?.primary_channel;
 
         if (!channelId) {
             return;
@@ -245,9 +254,9 @@ export default class VerificationService extends Service implements HasEventList
     }
 
     sendVerificationDMToMember(member: GuildMember, token: string) {
-        const url = `${process.env.FRONTEND_URL}/challenge/verify?t=${encodeURIComponent(token)}&u=${member.id}&g=${
-            member.guild.id
-        }&n=${encodeURIComponent(member.guild.name)}`;
+        const url = `${process.env.FRONTEND_URL}/challenge/verify?t=${encodeURIComponent(
+            token
+        )}&u=${member.id}&g=${member.guild.id}&n=${encodeURIComponent(member.guild.name)}`;
 
         return member.send({
             embeds: [
@@ -269,7 +278,9 @@ export default class VerificationService extends Service implements HasEventList
                     `.replace(/(\r\n|\n)\t+/, "\n"),
                     footer: {
                         text: `You have ${formatDistanceToNowStrict(
-                            Date.now() - (this.client.configManager.config[member.guild.id]?.verification?.max_time ?? 0)
+                            Date.now() -
+                                (this.client.configManager.config[member.guild.id]?.verification
+                                    ?.max_time ?? 0)
                         )} to verify`
                     },
                     timestamp: new Date().toISOString()
@@ -351,7 +362,9 @@ export default class VerificationService extends Service implements HasEventList
         }
 
         const maxAttemptsExcceded =
-            typeof config?.max_attempts === "number" && config?.max_attempts > 0 && entry.attempts > config?.max_attempts;
+            typeof config?.max_attempts === "number" &&
+            config?.max_attempts > 0 &&
+            entry.attempts > config?.max_attempts;
 
         if (entry.token !== token || userIdFromPayload !== userId || maxAttemptsExcceded) {
             const remainingTime =
@@ -385,7 +398,9 @@ export default class VerificationService extends Service implements HasEventList
                             remainingTime === 0
                                 ? "Session expired"
                                 : Number.isFinite(remainingTime)
-                                ? `${formatDistanceToNowStrict(new Date(Date.now() - remainingTime))} remaining`
+                                ? `${formatDistanceToNowStrict(
+                                      new Date(Date.now() - remainingTime)
+                                  )} remaining`
                                 : "Session never expires"
                         })`
                     },

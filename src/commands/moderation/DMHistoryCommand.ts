@@ -18,8 +18,8 @@
  */
 
 import { User } from "discord.js";
+import { logError } from "../../components/io/Logger";
 import Command, { CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { logError } from "../../utils/Logger";
 
 export default class DMHistoryCommand extends Command {
     public readonly name = "dmhistory";
@@ -27,7 +27,8 @@ export default class DMHistoryCommand extends Command {
     public readonly permissions = [];
 
     public readonly aliases = ["sendmodhistory", "sendmodlogs", "dmmodlogs"];
-    public readonly description = "Generates a file that contains your infraction history, and sends it to you via DM.";
+    public readonly description =
+        "Generates a file that contains your infraction history, and sends it to you via DM.";
 
     async execute(message: CommandMessage): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
@@ -63,7 +64,9 @@ export default class DMHistoryCommand extends Command {
         }
 
         await this.deferredReply(message, {
-            content: `${this.emoji("check")} The system has sent you a DM. Sent ${count} records total.`
+            content: `${this.emoji(
+                "check"
+            )} The system has sent you a DM. Sent ${count} records total.`
         });
     }
 }

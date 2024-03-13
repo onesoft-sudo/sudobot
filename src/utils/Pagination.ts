@@ -33,8 +33,8 @@ import {
     MessageReplyOptions
 } from "discord.js";
 import * as uuid from "uuid";
+import { log } from "../components/io/Logger";
 import Client from "../core/Client";
-import { log } from "./Logger";
 import { getComponentEmojiResolvable } from "./utils";
 
 export default class Pagination<T> {
@@ -45,7 +45,10 @@ export default class Pagination<T> {
     protected currentData: T[] = [];
     protected metadata: Record<string, unknown>;
 
-    constructor(protected readonly data: Array<T> | null = [], protected readonly options: PaginationOptions<T>) {
+    constructor(
+        protected readonly data: Array<T> | null = [],
+        protected readonly options: PaginationOptions<T>
+    ) {
         this.id = uuid.v4();
         this.client = options.client;
         this.metadata = this.options.metadata ?? {};
@@ -67,7 +70,9 @@ export default class Pagination<T> {
                 offset: this.getOffset(page)
             });
 
-        return this.data ? this.data.slice(this.getOffset(page), this.getOffset(page) + this.options.limit) : this.currentData;
+        return this.data
+            ? this.data.slice(this.getOffset(page), this.getOffset(page) + this.options.limit)
+            : this.currentData;
     }
 
     async getEmbed(page: number = 1): Promise<EmbedBuilder> {
@@ -76,13 +81,18 @@ export default class Pagination<T> {
         return this.options.embedBuilder({
             data: this.data ? data : this.currentData,
             currentPage: this.currentPage,
-            maxPages: Math.max(Math.ceil((this.data?.length ?? this.maxPage) / this.options.limit), 1)
+            maxPages: Math.max(
+                Math.ceil((this.data?.length ?? this.maxPage) / this.options.limit),
+                1
+            )
         });
     }
 
     async getMessageOptions(
         page: number = 1,
-        actionRowOptions: { first: boolean; last: boolean; next: boolean; back: boolean } | undefined = undefined,
+        actionRowOptions:
+            | { first: boolean; last: boolean; next: boolean; back: boolean }
+            | undefined = undefined,
         optionsToMerge: MessageOptions = {},
         interaction?: Interaction
     ) {
@@ -103,7 +113,10 @@ export default class Pagination<T> {
             actionRowOptionsDup.first = false;
         }
 
-        if (actionRowOptionsDup && page >= Math.ceil((this.data?.length ?? this.maxPage) / this.options.limit)) {
+        if (
+            actionRowOptionsDup &&
+            page >= Math.ceil((this.data?.length ?? this.maxPage) / this.options.limit)
+        ) {
             actionRowOptionsDup.last = false;
             actionRowOptionsDup.next = false;
         }
@@ -115,7 +128,9 @@ export default class Pagination<T> {
         options.components = [
             this.getActionRow(actionRowOptionsDup),
             ...(this.options.extraActionRows
-                ? (this.options.extraActionRows(interaction) as ActionRowBuilder<ButtonBuilder>[]) ?? []
+                ? (this.options.extraActionRows(
+                      interaction
+                  ) as ActionRowBuilder<ButtonBuilder>[]) ?? []
                 : []),
             ...options.components
         ];
@@ -128,7 +143,13 @@ export default class Pagination<T> {
     }
 
     getActionRow(
-        { first, last, next, back, custom }: { first: boolean; last: boolean; next: boolean; back: boolean; custom?: boolean } = {
+        {
+            first,
+            last,
+            next,
+            back,
+            custom
+        }: { first: boolean; last: boolean; next: boolean; back: boolean; custom?: boolean } = {
             first: true,
             last: true,
             next: true,
@@ -180,7 +201,10 @@ export default class Pagination<T> {
             message,
             time: this.options.timeout ?? 60_000,
             filter: interaction => {
-                if (interaction.inGuild() && (!this.options.userId || interaction.user.id === this.options.userId)) {
+                if (
+                    interaction.inGuild() &&
+                    (!this.options.userId || interaction.user.id === this.options.userId)
+                ) {
                     this.options.onInteraction?.(interaction);
                     return interaction.isButton() && interaction.customId.startsWith("pagination_");
                 }
@@ -204,19 +228,35 @@ export default class Pagination<T> {
             const maxPage = Math.ceil((this.data?.length ?? this.maxPage) / this.options.limit);
             const componentOptions = { first: true, last: true, next: true, back: true };
 
-            if ([`pagination_next_${this.id}`, `pagination_back_${this.id}`].includes(interaction.customId)) {
-                if (this.currentPage >= maxPage && interaction.customId === `pagination_next_${this.id}`) {
+            if (
+                [`pagination_next_${this.id}`, `pagination_back_${this.id}`].includes(
+                    interaction.customId
+                )
+            ) {
+                if (
+                    this.currentPage >= maxPage &&
+                    interaction.customId === `pagination_next_${this.id}`
+                ) {
                     await interaction.reply({
-                        content: maxPage === 1 ? "This is the only page!" : "You've reached the last page!",
+                        content:
+                            maxPage === 1
+                                ? "This is the only page!"
+                                : "You've reached the last page!",
                         ephemeral: true
                     });
 
                     return;
                 }
 
-                if (this.currentPage <= 1 && interaction.customId === `pagination_back_${this.id}`) {
+                if (
+                    this.currentPage <= 1 &&
+                    interaction.customId === `pagination_back_${this.id}`
+                ) {
                     await interaction.reply({
-                        content: maxPage === 1 ? "This is the only page!" : "You're in the very first page!",
+                        content:
+                            maxPage === 1
+                                ? "This is the only page!"
+                                : "You're in the very first page!",
                         ephemeral: true
                     });
 
@@ -225,7 +265,8 @@ export default class Pagination<T> {
             }
 
             if (interaction.customId === `pagination_first_${this.id}`) this.currentPage = 1;
-            else if (interaction.customId === `pagination_last_${this.id}`) this.currentPage = maxPage;
+            else if (interaction.customId === `pagination_last_${this.id}`)
+                this.currentPage = maxPage;
 
             await interaction.update(
                 await this.getMessageOptions(
@@ -278,7 +319,10 @@ export default class Pagination<T> {
         return this.currentPage;
     }
 
-    async update(interaction: AnySelectMenuInteraction | ButtonInteraction, metadata: Record<string, unknown> = {}) {
+    async update(
+        interaction: AnySelectMenuInteraction | ButtonInteraction,
+        metadata: Record<string, unknown> = {}
+    ) {
         this.metadata = { ...this.metadata, ...metadata };
 
         if (this.options.maxData) {

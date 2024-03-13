@@ -63,7 +63,9 @@ export const getMemberBadges = (client: Client, member: GuildMember) => {
 
     if (
         member.premiumSinceTimestamp ||
-        client.guilds.cache.some(guild => !!guild.members.cache.get(member.id)?.premiumSinceTimestamp)
+        client.guilds.cache.some(
+            guild => !!guild.members.cache.get(member.id)?.premiumSinceTimestamp
+        )
     ) {
         badges.push(`${getEmoji(client, "nitro")} Nitro Subscriber`);
     }
@@ -83,7 +85,12 @@ export const getMemberBadges = (client: Client, member: GuildMember) => {
     }
 
     if (minPremiumSince) {
-        badges.push(`${getEmoji(client, "boost")} Server boosting since ${time(minPremiumSince, TimestampStyles.LongDate)}`);
+        badges.push(
+            `${getEmoji(client, "boost")} Server boosting since ${time(
+                minPremiumSince,
+                TimestampStyles.LongDate
+            )}`
+        );
     }
 
     return badges;

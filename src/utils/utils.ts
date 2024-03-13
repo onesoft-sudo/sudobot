@@ -47,7 +47,10 @@ export function isSnowflake(input: string) {
     return /^\d{16,22}$/.test(input);
 }
 
-export function pick<T, K extends Array<keyof T>>(object: T, keys: K): Pick<T, K extends Array<infer E> ? E : never> {
+export function pick<T, K extends Array<keyof T>>(
+    object: T,
+    keys: K
+): Pick<T, K extends Array<infer E> ? E : never> {
     if (typeof object === "object" && object !== null) {
         const picked: Partial<T> = {};
 
@@ -69,7 +72,11 @@ export interface CreateModerationEmbedOptions {
     description?: string;
     fields?:
         | APIEmbedField[]
-        | ((fields: APIEmbedField[], id: string, reason?: string) => Promise<APIEmbedField[]> | APIEmbedField[]);
+        | ((
+              fields: APIEmbedField[],
+              id: string,
+              reason?: string
+          ) => Promise<APIEmbedField[]> | APIEmbedField[]);
     id: string | number;
     color?: ColorResolvable;
 }
@@ -161,13 +168,18 @@ export function getEmoji<B extends boolean = false>(
 
 export function getEmojiObject(client: Client, name: string): GuildEmoji | null {
     return (
-        client.guilds.cache.get(process.env.HOME_GUILD_ID!)?.emojis.cache.find(e => e.name === name) ??
+        client.guilds.cache
+            .get(process.env.HOME_GUILD_ID!)
+            ?.emojis.cache.find(e => e.name === name) ??
         client.emojiMap.get(name) ??
         null
     );
 }
 
-export function getComponentEmojiResolvable(client: Client, name: string): ComponentEmojiResolvable | null {
+export function getComponentEmojiResolvable(
+    client: Client,
+    name: string
+): ComponentEmojiResolvable | null {
     const emoji = getEmojiObject(client, name);
 
     return emoji
@@ -213,7 +225,11 @@ export function wait(time: number) {
 }
 
 export function sudoPrefix(pathLike: string, createDirIfNotExists = false) {
-    const directoryOrFile = path.resolve(process.env.SUDO_PREFIX ?? __dirname, process.env.SUDO_PREFIX ? "" : "../..", pathLike);
+    const directoryOrFile = path.resolve(
+        process.env.SUDO_PREFIX ?? __dirname,
+        process.env.SUDO_PREFIX ? "" : "../..",
+        pathLike
+    );
 
     if (createDirIfNotExists) mkdirSync(directoryOrFile, { recursive: true });
 
@@ -224,7 +240,9 @@ export function getPermissionNames(permissionsBit: bigint) {
     const result = [];
     const permissions = new PermissionsBitField(permissionsBit);
 
-    for (const permission of Object.keys(PermissionsBitField.Flags) as (keyof typeof PermissionsBitField.Flags)[]) {
+    for (const permission of Object.keys(
+        PermissionsBitField.Flags
+    ) as (keyof typeof PermissionsBitField.Flags)[]) {
         if (permissions.has(PermissionsBitField.Flags[permission])) {
             result.push(permission);
         }
@@ -247,7 +265,10 @@ export function forceGetPermissionNames(permissions: PermissionResolvable[]) {
     return strings;
 }
 
-export function getChannelPermissionOverride(permission: PermissionResolvable, permissionOverwrites: PermissionOverwrites) {
+export function getChannelPermissionOverride(
+    permission: PermissionResolvable,
+    permissionOverwrites: PermissionOverwrites
+) {
     return permissionOverwrites.allow.has(permission, true)
         ? true
         : permissionOverwrites.deny.has(permission, true)
@@ -280,7 +301,11 @@ export function escapeRegex(string: string) {
     return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
 }
 
-export function safeMessageContent(content: string, member: GuildMember, channel?: TextBasedChannel) {
+export function safeMessageContent(
+    content: string,
+    member: GuildMember,
+    channel?: TextBasedChannel
+) {
     return member.permissions.has("MentionEveryone") &&
         (!channel || member.permissionsIn(channel as TextChannel).has("MentionEveryone"))
         ? content
@@ -288,7 +313,10 @@ export function safeMessageContent(content: string, member: GuildMember, channel
               .replaceAll(/@everyone/gi, "`@everyone`")
               .replaceAll(/@here/gi, "`@here`")
               .replaceAll(`<@&${member.guild.id}>`, "`@everyone`")
-              .replace(/<@&(\d+)>/gim, (_, id) => `@${member.guild.roles.cache.get(id)?.name ?? id}`);
+              .replace(
+                  /<@&(\d+)>/gim,
+                  (_, id) => `@${member.guild.roles.cache.get(id)?.name ?? id}`
+              );
 }
 
 export function isSystemAdmin(client: Client, userId: string) {

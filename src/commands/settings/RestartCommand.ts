@@ -29,10 +29,10 @@ import {
 } from "discord.js";
 import { writeFile } from "fs/promises";
 import path from "path";
+import { logError } from "../../components/io/Logger";
 import Command, { CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import { HasEventListeners } from "../../types/HasEventListeners";
-import { logError } from "../../utils/Logger";
 import { sudoPrefix } from "../../utils/utils";
 
 export default class RestartCommand extends Command implements HasEventListeners {
@@ -41,7 +41,9 @@ export default class RestartCommand extends Command implements HasEventListeners
     public readonly aliases = ["reboot"];
     public readonly systemAdminOnly = true;
     public readonly slashCommandBuilder = new SlashCommandBuilder().addStringOption(option =>
-        option.setName("credential_key").setDescription("The key to authenticate with the credentials server, if needed")
+        option
+            .setName("credential_key")
+            .setDescription("The key to authenticate with the credentials server, if needed")
     );
     public readonly keys: string[] = [];
 
@@ -87,14 +89,18 @@ export default class RestartCommand extends Command implements HasEventListeners
         }
 
         if (customId.startsWith("restart__yes__")) {
-            const buttons = this.buildButtons(guildId, channelId, userId).map(button => button.setDisabled(true));
+            const buttons = this.buildButtons(guildId, channelId, userId).map(button =>
+                button.setDisabled(true)
+            );
 
             await interaction.update({
                 embeds: [
                     {
                         color: 0x007bff,
                         title: "System Restart",
-                        description: `${this.emoji("loading")} Restarting${key ? " (with one time 2FA code)" : ""}...`
+                        description: `${this.emoji("loading")} Restarting${
+                            key ? " (with one time 2FA code)" : ""
+                        }...`
                     }
                 ],
                 components: [new ActionRowBuilder<ButtonBuilder>().addComponents(...buttons)]
@@ -117,7 +123,9 @@ export default class RestartCommand extends Command implements HasEventListeners
         }
 
         if (customId.startsWith("restart__no__")) {
-            const buttons = this.buildButtons(guildId, channelId, userId).map(button => button.setDisabled(true));
+            const buttons = this.buildButtons(guildId, channelId, userId).map(button =>
+                button.setDisabled(true)
+            );
 
             await interaction.update({
                 embeds: [
@@ -135,25 +143,38 @@ export default class RestartCommand extends Command implements HasEventListeners
     async execute(message: CommandMessage): Promise<CommandReturn> {
         if (
             process.env.CREDENTIAL_SERVER &&
-            (!(message instanceof ChatInputCommandInteraction) || !message.options.getString("credential_key"))
+            (!(message instanceof ChatInputCommandInteraction) ||
+                !message.options.getString("credential_key"))
         ) {
-            await this.error(message, "Please enter the credential server 2FA code to restart the bot!");
+            await this.error(
+                message,
+                "Please enter the credential server 2FA code to restart the bot!"
+            );
             return;
         }
 
-        const mfaKey = message instanceof ChatInputCommandInteraction ? message.options.getString("credential_key") : "";
+        const mfaKey =
+            message instanceof ChatInputCommandInteraction
+                ? message.options.getString("credential_key")
+                : "";
 
         const reply = await this.deferredReply(message, {
             embeds: [
                 {
                     color: 0x007bff,
                     title: "System Restart",
-                    description: "Are you sure you want to restart the entire system? The bot might go offline for some time."
+                    description:
+                        "Are you sure you want to restart the entire system? The bot might go offline for some time."
                 }
             ],
             components: [
                 new ActionRowBuilder<ButtonBuilder>().addComponents(
-                    ...this.buildButtons(message.guildId!, message.channelId!, message.member!.user.id, mfaKey)
+                    ...this.buildButtons(
+                        message.guildId!,
+                        message.channelId!,
+                        message.member!.user.id,
+                        mfaKey
+                    )
                 )
             ]
         });
@@ -170,7 +191,13 @@ export default class RestartCommand extends Command implements HasEventListeners
                     ],
                     components: [
                         new ActionRowBuilder<ButtonBuilder>().addComponents(
-                            ...this.buildButtons(message.guildId!, message.channelId!, message.member!.user.id, mfaKey, true)
+                            ...this.buildButtons(
+                                message.guildId!,
+                                message.channelId!,
+                                message.member!.user.id,
+                                mfaKey,
+                                true
+                            )
                         )
                     ]
                 });
@@ -178,7 +205,13 @@ export default class RestartCommand extends Command implements HasEventListeners
         }
     }
 
-    buildButtons(guildId: Snowflake, channelId: Snowflake, userId: Snowflake, key?: string | null, disable?: boolean) {
+    buildButtons(
+        guildId: Snowflake,
+        channelId: Snowflake,
+        userId: Snowflake,
+        key?: string | null,
+        disable?: boolean
+    ) {
         let keyId = key ? this.keys.indexOf(key) : null;
 
         if (keyId === -1 && key) {

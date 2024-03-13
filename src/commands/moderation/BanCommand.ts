@@ -26,6 +26,7 @@ import {
     User,
     escapeMarkdown
 } from "discord.js";
+import { logError } from "../../components/io/Logger";
 import Command, {
     ArgumentType,
     BasicCommandContext,
@@ -33,7 +34,6 @@ import Command, {
     CommandReturn,
     ValidationRule
 } from "../../core/Command";
-import { logError } from "../../utils/Logger";
 import { stringToTimeInterval } from "../../utils/datetime";
 import { createModerationEmbed } from "../../utils/utils";
 

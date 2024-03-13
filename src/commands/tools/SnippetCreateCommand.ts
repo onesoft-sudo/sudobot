@@ -18,8 +18,14 @@
  */
 
 import { Message, PermissionsBitField, escapeCodeBlock, escapeInlineCode } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { log } from "../../utils/Logger";
+import { log } from "../../components/io/Logger";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 
 export default class SnippetCreateCommand extends Command {
     public readonly name = "snippet__create";
@@ -53,7 +59,9 @@ export default class SnippetCreateCommand extends Command {
     public readonly permissionMode = "or";
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
-        const name: string = context.isLegacy ? context.parsedNamedArgs.name : context.options.getString("name", true);
+        const name: string = context.isLegacy
+            ? context.parsedNamedArgs.name
+            : context.options.getString("name", true);
 
         if (/\s/.test(name)) {
             await this.error(message, "Snippet name cannot contain spaces!");
@@ -65,7 +73,10 @@ export default class SnippetCreateCommand extends Command {
             : context.options.getString("content", true);
 
         if (message instanceof Message && !content && message.attachments.size === 0) {
-            await this.error(message, "Please either specify text content or attachments to put inside the new snippet!");
+            await this.error(
+                message,
+                "Please either specify text content or attachments to put inside the new snippet!"
+            );
             return;
         }
 
@@ -91,7 +102,9 @@ export default class SnippetCreateCommand extends Command {
 
         await this.deferredReply(
             message,
-            `${this.emoji("check")} Successfully created snippet \`${escapeInlineCode(escapeCodeBlock(name))}\`${
+            `${this.emoji("check")} Successfully created snippet \`${escapeInlineCode(
+                escapeCodeBlock(name)
+            )}\`${
                 !this.client.configManager.systemConfig.snippets?.save_attachments &&
                 message instanceof Message &&
                 message.attachments.size > 0

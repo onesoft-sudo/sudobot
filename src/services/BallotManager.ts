@@ -19,10 +19,10 @@
 
 import { Ballot } from "@prisma/client";
 import { CacheType, EmbedBuilder, Interaction, Snowflake } from "discord.js";
+import { log, logError } from "../components/io/Logger";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { log, logError } from "../utils/Logger";
 import { getEmoji } from "../utils/utils";
 
 export const name = "ballotManager";
@@ -76,7 +76,9 @@ export default class BallotManager extends Service implements HasEventListeners 
             ephemeral: true
         });
 
-        const key = `${interaction.guildId!}_${interaction.channelId!}_${interaction.message.id}` as const;
+        const key = `${interaction.guildId!}_${interaction.channelId!}_${
+            interaction.message.id
+        }` as const;
         const ballot =
             this.changedBallots.get(key) ??
             (await this.client.prisma.ballot.findFirst({
@@ -130,16 +132,20 @@ export default class BallotManager extends Service implements HasEventListeners 
             await interaction.message.edit({
                 embeds: [
                     new EmbedBuilder(interaction.message.embeds[0].data).setFooter({
-                        text: `${newTotalVotes} Vote${newTotalVotes === 1 ? "" : "s"} • React to vote!`
+                        text: `${newTotalVotes} Vote${
+                            newTotalVotes === 1 ? "" : "s"
+                        } • React to vote!`
                     })
                 ]
             });
         }
 
         await interaction.editReply({
-            content: `Successfully ${added === null ? "changed" : added ? "added" : "removed"} your vote! If you want to ${
-                added === false ? "add" : "remove"
-            } your vote${added === false ? " back" : ""}, press the same button again.`
+            content: `Successfully ${
+                added === null ? "changed" : added ? "added" : "removed"
+            } your vote! If you want to ${added === false ? "add" : "remove"} your vote${
+                added === false ? " back" : ""
+            }, press the same button again.`
         });
     }
 
@@ -148,17 +154,23 @@ export default class BallotManager extends Service implements HasEventListeners 
         const downvoteIndex = ballot.downvotes.indexOf(userId);
 
         if (upvoteIndex !== -1 && downvoteIndex !== -1) {
-            mode === "upvote" ? ballot.downvotes.splice(downvoteIndex, 1) : ballot.upvotes.splice(upvoteIndex, 1);
+            mode === "upvote"
+                ? ballot.downvotes.splice(downvoteIndex, 1)
+                : ballot.upvotes.splice(upvoteIndex, 1);
             return false;
         } else if (upvoteIndex === -1 && downvoteIndex === -1) {
             mode === "upvote" ? ballot.upvotes.push(userId) : ballot.downvotes.push(userId);
             return true;
         } else {
             if (mode === "upvote") {
-                upvoteIndex === -1 ? ballot.upvotes.push(userId) : ballot.upvotes.splice(upvoteIndex, 1);
+                upvoteIndex === -1
+                    ? ballot.upvotes.push(userId)
+                    : ballot.upvotes.splice(upvoteIndex, 1);
                 downvoteIndex === -1 ? null : ballot.downvotes.splice(downvoteIndex, 1);
             } else {
-                downvoteIndex === -1 ? ballot.downvotes.push(userId) : ballot.downvotes.splice(downvoteIndex, 1);
+                downvoteIndex === -1
+                    ? ballot.downvotes.push(userId)
+                    : ballot.downvotes.splice(downvoteIndex, 1);
                 upvoteIndex === -1 ? null : ballot.upvotes.splice(upvoteIndex, 1);
             }
 
@@ -239,7 +251,15 @@ export default class BallotManager extends Service implements HasEventListeners 
         });
     }
 
-    async upvoteRemove({ id, guildId, userId }: { id: number; guildId: Snowflake; userId: Snowflake }) {
+    async upvoteRemove({
+        id,
+        guildId,
+        userId
+    }: {
+        id: number;
+        guildId: Snowflake;
+        userId: Snowflake;
+    }) {
         const ballot = await this.get({ id, guildId });
 
         if (!ballot || ballot.upvotes.length === 0) {
@@ -259,7 +279,15 @@ export default class BallotManager extends Service implements HasEventListeners 
         });
     }
 
-    async downvoteRemove({ id, guildId, userId }: { id: number; guildId: Snowflake; userId: Snowflake }) {
+    async downvoteRemove({
+        id,
+        guildId,
+        userId
+    }: {
+        id: number;
+        guildId: Snowflake;
+        userId: Snowflake;
+    }) {
         const ballot = await this.get({ id, guildId });
 
         if (!ballot || ballot.downvotes.length === 0) {

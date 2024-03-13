@@ -31,11 +31,11 @@ import {
     escapeMarkdown
 } from "discord.js";
 import sharp from "sharp";
+import { log, logDebug, logError, logWarn } from "../components/io/Logger";
 import Service from "../core/Service";
 import { CreateLogEmbedOptions } from "../services/LoggerService";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { MessageRuleType } from "../types/MessageRuleSchema";
-import { log, logDebug, logError, logWarn } from "../utils/Logger";
 import { escapeRegex, getEmoji, request } from "../utils/utils";
 
 export const name = "messageRuleService";
@@ -87,7 +87,10 @@ export default class MessageRuleService extends Service implements HasEventListe
         if (
             !config?.enabled ||
             config?.global_disabled_channels?.includes(message.channelId!) ||
-            (await this.client.permissionManager.isImmuneToAutoMod(message.member!, PermissionFlagsBits.ManageGuild))
+            (await this.client.permissionManager.isImmuneToAutoMod(
+                message.member!,
+                PermissionFlagsBits.ManageGuild
+            ))
         ) {
             return false;
         }
@@ -102,13 +105,21 @@ export default class MessageRuleService extends Service implements HasEventListe
                 continue;
             }
 
-            if (rule.actions.length === 1 && rule.actions.includes("delete") && !message.deletable) {
-                log("Missing permissions to delete messages, but the rule actions include `delete`. Skipping.");
+            if (
+                rule.actions.length === 1 &&
+                rule.actions.includes("delete") &&
+                !message.deletable
+            ) {
+                log(
+                    "Missing permissions to delete messages, but the rule actions include `delete`. Skipping."
+                );
                 continue;
             }
 
             if (rule.actions.includes("mute") && rule.actions.includes("warn")) {
-                logWarn("You cannot include mute and warn together as message rule actions! Skipping.");
+                logWarn(
+                    "You cannot include mute and warn together as message rule actions! Skipping."
+                );
                 continue;
             }
 
@@ -129,8 +140,12 @@ export default class MessageRuleService extends Service implements HasEventListe
 
             const handlerFunctionInfo = handlers[rule.type];
             const handlerFunctionName: RuleHandlerMethod | undefined =
-                typeof handlerFunctionInfo === "string" ? handlerFunctionInfo : handlerFunctionInfo?.method;
-            const handlerFunctionMetaInfo = (typeof handlerFunctionInfo === "string" ? null : handlerFunctionInfo) ?? {
+                typeof handlerFunctionInfo === "string"
+                    ? handlerFunctionInfo
+                    : handlerFunctionInfo?.method;
+            const handlerFunctionMetaInfo = (typeof handlerFunctionInfo === "string"
+                ? null
+                : handlerFunctionInfo) ?? {
                 method: handlerFunctionName,
                 autoHandleModes: true
             };
@@ -152,7 +167,10 @@ export default class MessageRuleService extends Service implements HasEventListe
                 const inverse = rule.mode === "inverse";
                 const { autoHandleModes } = handlerFunctionMetaInfo;
 
-                if ((result && !inverse) || (inverse && ((autoHandleModes && !result) || (!autoHandleModes && result)))) {
+                if (
+                    (result && !inverse) ||
+                    (inverse && ((autoHandleModes && !result) || (!autoHandleModes && result)))
+                ) {
                     try {
                         for (const action of rule.actions) {
                             log("Taking action: ", action);
@@ -165,8 +183,15 @@ export default class MessageRuleService extends Service implements HasEventListe
                                 : inverse
                                 ? {
                                       options: {
-                                          description: `${getEmoji(this.client, "info")} This rule was __inversed__.`,
-                                          ...(result && typeof result === "object" && "options" in result ? result.options : {})
+                                          description: `${getEmoji(
+                                              this.client,
+                                              "info"
+                                          )} This rule was __inversed__.`,
+                                          ...(result &&
+                                          typeof result === "object" &&
+                                          "options" in result
+                                              ? result.options
+                                              : {})
                                       },
                                       ...(result && typeof result === "object" ? result : {})
                                   }
@@ -197,8 +222,15 @@ export default class MessageRuleService extends Service implements HasEventListe
         return false;
     }
 
-    private getReason(rule: MessageRuleType, key: Extract<keyof MessageRuleType, `${string}_reason`>) {
-        return rule[key] ?? rule.common_reason ?? "Your message violated the server rules. Please be careful next time.";
+    private getReason(
+        rule: MessageRuleType,
+        key: Extract<keyof MessageRuleType, `${string}_reason`>
+    ) {
+        return (
+            rule[key] ??
+            rule.common_reason ??
+            "Your message violated the server rules. Please be careful next time."
+        );
     }
 
     private async takeAction(message: Message, rule: MessageRuleType, action: MessageRuleAction) {
@@ -270,7 +302,11 @@ export default class MessageRuleService extends Service implements HasEventListe
         }
     }
 
-    private scanForBlockedWordsAndTokens(tokens: string[] = [], words: string[] = [], ...strings: (string | null | undefined)[]) {
+    private scanForBlockedWordsAndTokens(
+        tokens: string[] = [],
+        words: string[] = [],
+        ...strings: (string | null | undefined)[]
+    ) {
         for (const string of strings) {
             if (!string) {
                 continue;
@@ -294,7 +330,10 @@ export default class MessageRuleService extends Service implements HasEventListe
         return { includes: false };
     }
 
-    async ruleNSFWFilter(message: Message, rule: Extract<MessageRuleType, { type: "EXPERIMENTAL_nsfw_filter" }>) {
+    async ruleNSFWFilter(
+        message: Message,
+        rule: Extract<MessageRuleType, { type: "EXPERIMENTAL_nsfw_filter" }>
+    ) {
         logDebug("Scanning for NSFW content");
 
         if (message.attachments.size === 0) {
@@ -337,7 +376,9 @@ export default class MessageRuleService extends Service implements HasEventListe
                 const sharpInfo = sharp(imageData);
                 const sharpMethod = sharpInfo[sharpMethodName].bind(sharpInfo);
                 const convertedImageBuffer = await sharpMethod().toBuffer();
-                const result = await this.client.imageRecognitionService.detectNSFW(convertedImageBuffer);
+                const result = await this.client.imageRecognitionService.detectNSFW(
+                    convertedImageBuffer
+                );
                 const isNSFW =
                     result.hentai >= score_thresholds.hentai ||
                     result.porn >= score_thresholds.porn ||
@@ -351,9 +392,11 @@ export default class MessageRuleService extends Service implements HasEventListe
                         fields: [
                             {
                                 name: "Scores",
-                                value: `Hentai: ${Math.round(result.hentai * 100)}%\nPorn: ${Math.round(
-                                    result.porn * 100
-                                )}%\nSexy: ${Math.round(result.sexy * 100)}%\nNeutral: ${Math.round(result.neutral * 100)}%`
+                                value: `Hentai: ${Math.round(
+                                    result.hentai * 100
+                                )}%\nPorn: ${Math.round(result.porn * 100)}%\nSexy: ${Math.round(
+                                    result.sexy * 100
+                                )}%\nNeutral: ${Math.round(result.neutral * 100)}%`
                             }
                         ]
                     } as CreateLogEmbedOptions;
@@ -394,7 +437,9 @@ export default class MessageRuleService extends Service implements HasEventListe
 
             if (includes && mode === "normal") {
                 return {
-                    title: `Blocked ${token ? "token" : word ? "word" : "word/token"}(s) detected in embed`,
+                    title: `Blocked ${
+                        token ? "token" : word ? "word" : "word/token"
+                    }(s) detected in embed`,
                     fields: [
                         {
                             name: `${token ? "Token" : word ? "Word" : "Word/Token"}`,
@@ -408,7 +453,9 @@ export default class MessageRuleService extends Service implements HasEventListe
                 } as CreateLogEmbedOptions;
             } else if (!includes && mode === "inverse") {
                 return {
-                    title: `Blocked ${token ? "token" : word ? "word" : "word/token"}(s) was not found in embed`,
+                    title: `Blocked ${
+                        token ? "token" : word ? "word" : "word/token"
+                    }(s) was not found in embed`,
                     fields: [
                         {
                             name: `${token ? "Token" : word ? "Word" : "Word/Token"}`,
@@ -467,7 +514,9 @@ export default class MessageRuleService extends Service implements HasEventListe
 
             const {
                 data: { text: actualText, words: textWords }
-            } = await this.client.imageRecognitionService.recognize(attachment.proxyURL ?? attachment.url);
+            } = await this.client.imageRecognitionService.recognize(
+                attachment.proxyURL ?? attachment.url
+            );
             const text = actualText.toLowerCase();
 
             for (const token of tokens) {
@@ -544,12 +593,22 @@ export default class MessageRuleService extends Service implements HasEventListe
     }
 
     /** This rule is experimental. It needs caching support. */
-    async ruleURLCrawl(message: Message, rule: Extract<MessageRuleType, { type: "EXPERIMENTAL_url_crawl" }>) {
+    async ruleURLCrawl(
+        message: Message,
+        rule: Extract<MessageRuleType, { type: "EXPERIMENTAL_url_crawl" }>
+    ) {
         if (message.content.trim() === "") {
             return null;
         }
 
-        const { excluded_domains_regex, excluded_link_regex, excluded_links, words, tokens, inherit_from_word_filter } = rule;
+        const {
+            excluded_domains_regex,
+            excluded_link_regex,
+            excluded_links,
+            words,
+            tokens,
+            inherit_from_word_filter
+        } = rule;
         const config = this.client.configManager.config[message.guildId!]?.message_filter;
 
         const matches = message.content.matchAll(/https?:\/\/([A-Za-z0-9-.]*[A-Za-z0-9-])[\S]*/gim);
@@ -676,7 +735,11 @@ export default class MessageRuleService extends Service implements HasEventListe
         log(genericMatches);
 
         if (specificMatches.length > 0) {
-            const cleanedDomain = (specificMatches[2] ?? specificMatches[1] ?? specificMatches[0]).replace(/https?:\/\//, "");
+            const cleanedDomain = (
+                specificMatches[2] ??
+                specificMatches[1] ??
+                specificMatches[0]
+            ).replace(/https?:\/\//, "");
             if (mode === "normal") {
                 return {
                     title: "Blocked domain(s) detected",
@@ -691,7 +754,11 @@ export default class MessageRuleService extends Service implements HasEventListe
                 return false;
             }
         } else if (genericMatches.length > 0 && mode === "inverse" && !scan_links_only) {
-            const cleanedDomain = (genericMatches[2] ?? genericMatches[1] ?? genericMatches[0]).replace(/https?:\/\//, "");
+            const cleanedDomain = (
+                genericMatches[2] ??
+                genericMatches[1] ??
+                genericMatches[0]
+            ).replace(/https?:\/\//, "");
             return {
                 title: "Blocked domain(s) detected",
                 fields: [
@@ -706,7 +773,10 @@ export default class MessageRuleService extends Service implements HasEventListe
         return false;
     }
 
-    async ruleBlockedFileExtension(message: Message, rule: Extract<MessageRuleType, { type: "blocked_file_extension" }>) {
+    async ruleBlockedFileExtension(
+        message: Message,
+        rule: Extract<MessageRuleType, { type: "blocked_file_extension" }>
+    ) {
         for (const attachment of message.attachments.values()) {
             for (const extension of rule.data) {
                 if (attachment.proxyURL.endsWith(`.${extension}`)) {
@@ -715,7 +785,9 @@ export default class MessageRuleService extends Service implements HasEventListe
                         fields: [
                             {
                                 name: "File",
-                                value: `[${attachment.name}](${attachment.url}): \`.${escapeMarkdown(extension)}\``
+                                value: `[${attachment.name}](${
+                                    attachment.url
+                                }): \`.${escapeMarkdown(extension)}\``
                             }
                         ]
                     };
@@ -726,7 +798,10 @@ export default class MessageRuleService extends Service implements HasEventListe
         return null;
     }
 
-    async ruleBlockedMimeType(message: Message, rule: Extract<MessageRuleType, { type: "blocked_mime_type" }>) {
+    async ruleBlockedMimeType(
+        message: Message,
+        rule: Extract<MessageRuleType, { type: "blocked_mime_type" }>
+    ) {
         for (const attachment of message.attachments.values()) {
             if (rule.data.includes(attachment.contentType ?? "unknown")) {
                 return {
@@ -744,7 +819,10 @@ export default class MessageRuleService extends Service implements HasEventListe
         return null;
     }
 
-    async ruleAntiInvite(message: Message, rule: Extract<MessageRuleType, { type: "anti_invite" }>) {
+    async ruleAntiInvite(
+        message: Message,
+        rule: Extract<MessageRuleType, { type: "anti_invite" }>
+    ) {
         if (message.content.trim() === "") {
             return null;
         }
@@ -755,7 +833,10 @@ export default class MessageRuleService extends Service implements HasEventListe
 
         for (const match of matches) {
             if (match[3] && !allowedInviteCodes.includes(match[3])) {
-                if (rule.allow_internal_invites && this.client.inviteTracker.invites.has(`${message.guildId!}_${match[3]}`)) {
+                if (
+                    rule.allow_internal_invites &&
+                    this.client.inviteTracker.invites.has(`${message.guildId!}_${match[3]}`)
+                ) {
                     continue;
                 }
 
@@ -774,7 +855,10 @@ export default class MessageRuleService extends Service implements HasEventListe
         return null;
     }
 
-    async ruleRegexMustMatch(message: Message, rule: Extract<MessageRuleType, { type: "regex_must_match" }>) {
+    async ruleRegexMustMatch(
+        message: Message,
+        rule: Extract<MessageRuleType, { type: "regex_must_match" }>
+    ) {
         if (message.content.trim() === "") {
             return null;
         }
@@ -797,7 +881,10 @@ export default class MessageRuleService extends Service implements HasEventListe
         };
     }
 
-    async ruleRegexFilter(message: Message, rule: Extract<MessageRuleType, { type: "regex_filter" }>) {
+    async ruleRegexFilter(
+        message: Message,
+        rule: Extract<MessageRuleType, { type: "regex_filter" }>
+    ) {
         if (message.content.trim() === "") {
             return null;
         }
@@ -830,7 +917,10 @@ export default class MessageRuleService extends Service implements HasEventListe
         return null;
     }
 
-    async ruleRepeatedText(message: Message, rule: Extract<MessageRuleType, { type: "block_repeated_text" }>) {
+    async ruleRepeatedText(
+        message: Message,
+        rule: Extract<MessageRuleType, { type: "block_repeated_text" }>
+    ) {
         if (message.content.trim() === "") {
             return null;
         }
@@ -845,7 +935,11 @@ export default class MessageRuleService extends Service implements HasEventListe
                     }
                 ]
             };
-        } else if (new RegExp("^(.+)(?: +\\1){" + rule.max_repeated_words + "}", "gm").test(message.content)) {
+        } else if (
+            new RegExp("^(.+)(?: +\\1){" + rule.max_repeated_words + "}", "gm").test(
+                message.content
+            )
+        ) {
             return {
                 title: "Repeated text detected",
                 fields: [
@@ -860,7 +954,10 @@ export default class MessageRuleService extends Service implements HasEventListe
         return null;
     }
 
-    async ruleBlockMassMention(message: Message, rule: Extract<MessageRuleType, { type: "block_mass_mention" }>) {
+    async ruleBlockMassMention(
+        message: Message,
+        rule: Extract<MessageRuleType, { type: "block_mass_mention" }>
+    ) {
         if (message.content.trim() === "") {
             return null;
         }
@@ -869,7 +966,10 @@ export default class MessageRuleService extends Service implements HasEventListe
 
         console.log("users", data);
 
-        if (data.length >= rule.max_mentions || (rule.max_user_mentions > 0 && data.length >= rule.max_user_mentions)) {
+        if (
+            data.length >= rule.max_mentions ||
+            (rule.max_user_mentions > 0 && data.length >= rule.max_user_mentions)
+        ) {
             return {
                 title: "Mass mentions detected",
                 fields: [
@@ -883,7 +983,10 @@ export default class MessageRuleService extends Service implements HasEventListe
 
         data = [...message.content.matchAll(new RegExp("<@&[0-9]+>", "gm"))];
 
-        if (data.length >= rule.max_mentions || (rule.max_role_mentions > 0 && data.length >= rule.max_role_mentions)) {
+        if (
+            data.length >= rule.max_mentions ||
+            (rule.max_role_mentions > 0 && data.length >= rule.max_role_mentions)
+        ) {
             return {
                 title: "Repeated text detected",
                 fields: [

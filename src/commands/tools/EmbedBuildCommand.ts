@@ -18,14 +18,22 @@
  */
 
 import { Message, PermissionsBitField } from "discord.js";
-import Command, { BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { logError } from "../../components/io/Logger";
+import Command, {
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import EmbedSchemaParser from "../../utils/EmbedSchemaParser";
-import { logError } from "../../utils/Logger";
 
 export default class EmbedBuildCommand extends Command {
     public readonly name = "embed__build";
     public readonly validationRules: ValidationRule[] = [];
-    public readonly permissions = [PermissionsBitField.Flags.EmbedLinks, PermissionsBitField.Flags.ManageMessages];
+    public readonly permissions = [
+        PermissionsBitField.Flags.EmbedLinks,
+        PermissionsBitField.Flags.ManageMessages
+    ];
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         if (context.isLegacy && !context.parsedNamedArgs.schema) {
@@ -33,7 +41,9 @@ export default class EmbedBuildCommand extends Command {
             return;
         }
 
-        const schema = context.isLegacy ? context.parsedNamedArgs.schema : context.options.getString("json_schema", true);
+        const schema = context.isLegacy
+            ? context.parsedNamedArgs.schema
+            : context.options.getString("json_schema", true);
         const { embeds } = EmbedSchemaParser.getMessageOptions(
             {
                 content: schema
@@ -51,13 +61,17 @@ export default class EmbedBuildCommand extends Command {
                 embeds
             });
 
-            if (message instanceof Message) await message.react(this.emoji("check")).catch(logError);
+            if (message instanceof Message)
+                await message.react(this.emoji("check")).catch(logError);
             else
                 await this.deferredReply(message, {
                     content: "Successfully built and sent embed"
                 });
         } catch (e) {
-            await this.error(message, "Failed to send embed. Maybe I don't have enough permissions?");
+            await this.error(
+                message,
+                "Failed to send embed. Maybe I don't have enough permissions?"
+            );
             return;
         }
     }

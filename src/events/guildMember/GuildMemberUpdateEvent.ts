@@ -19,8 +19,8 @@
 
 import { InfractionType } from "@prisma/client";
 import { AuditLogEvent, Events, GuildMember } from "discord.js";
+import { logError } from "../../components/io/Logger";
 import EventListener from "../../core/EventListener";
-import { logError } from "../../utils/Logger";
 
 export default class GuildMemberUpdateEvent extends EventListener<Events.GuildMemberUpdate> {
     public readonly name = Events.GuildMemberUpdate;
@@ -45,7 +45,9 @@ export default class GuildMemberUpdateEvent extends EventListener<Events.GuildMe
                     ).entries.first();
 
                     if (auditLog?.executor?.id && auditLog.executor.id !== this.client.user?.id) {
-                        const timeout = auditLog.changes.reverse().find(change => change.key === "communication_disabled_until");
+                        const timeout = auditLog.changes
+                            .reverse()
+                            .find(change => change.key === "communication_disabled_until");
 
                         if (!timeout) return;
 

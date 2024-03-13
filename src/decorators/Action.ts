@@ -22,9 +22,18 @@ import Client from "../core/Client";
 import { RouteMetadata } from "../types/RouteMetadata";
 import { AnyFunction } from "../types/Utils";
 
-export type Middleware = (client: Client, request: Request, response: Response, next: NextFunction) => unknown;
+export type Middleware = (
+    client: Client,
+    request: Request,
+    response: Response,
+    next: NextFunction
+) => unknown;
 
-export function Action(method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE", uri: string, middleware: Middleware[] = []) {
+export function Action(
+    method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
+    uri: string,
+    middleware: Middleware[] = []
+) {
     return (
         originalMethodOrTarget: unknown,
         contextOrMethodName: string | ClassMethodDecoratorContext,
@@ -52,7 +61,12 @@ export function Action(method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE", uri:
                 PUT: null
             } as RouteMetadata;
 
-            const data = { handler: descriptor!.value, method, path: uri, middleware: middleware as AnyFunction[] };
+            const data = {
+                handler: descriptor!.value,
+                method,
+                path: uri,
+                middleware: middleware as AnyFunction[]
+            };
 
             metadata[contextOrMethodName]![method] ??= data;
             metadata[contextOrMethodName]![method]!.handler ??= data.handler;

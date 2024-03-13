@@ -19,9 +19,15 @@
 
 import { formatDistanceToNowStrict } from "date-fns";
 import { GuildChannel, PermissionsBitField, SlashCommandBuilder } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { logError } from "../../components/io/Logger";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { stringToTimeInterval } from "../../utils/datetime";
-import { logError } from "../../utils/Logger";
 
 export default class SetSlowmodeCommand extends Command {
     public readonly name = "setslowmode";
@@ -64,7 +70,9 @@ export default class SetSlowmodeCommand extends Command {
                 .setRequired(true)
         )
         .addChannelOption(option =>
-            option.setName("channel").setDescription("The target text-based channel (defaults to current channel)")
+            option
+                .setName("channel")
+                .setDescription("The target text-based channel (defaults to current channel)")
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
@@ -76,7 +84,9 @@ export default class SetSlowmodeCommand extends Command {
                   milliseconds: false
               }).result;
         const channel: GuildChannel =
-            (context.isLegacy ? context.parsedNamedArgs.channel : context.options.getChannel("channel")) ?? message.channel;
+            (context.isLegacy
+                ? context.parsedNamedArgs.channel
+                : context.options.getChannel("channel")) ?? message.channel;
 
         if (!channel.isTextBased()) {
             await this.error(message, "Cannot set slowmode for a non-text based channel!");
@@ -89,7 +99,10 @@ export default class SetSlowmodeCommand extends Command {
         }
 
         try {
-            await channel.setRateLimitPerUser(duration, "Changing the slowmode as the user has commanded me to do so");
+            await channel.setRateLimitPerUser(
+                duration,
+                "Changing the slowmode as the user has commanded me to do so"
+            );
             await this.success(
                 message,
                 `Successfully changed slowmode to ${formatDistanceToNowStrict(

@@ -22,11 +22,11 @@ import fs, { writeFile } from "fs/promises";
 import path from "path";
 import { AnyZodObject, z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
+import { log, logDebug, logInfo } from "../components/io/Logger";
 import type { Extension } from "../core/Extension";
 import Service from "../core/Service";
 import { GuildConfig, GuildConfigSchema } from "../types/GuildConfigSchema";
 import { SystemConfig, SystemConfigSchema } from "../types/SystemConfigSchema";
-import { log, logDebug, logInfo } from "../utils/Logger";
 import { sudoPrefix } from "../utils/utils";
 
 export * from "../types/GuildConfigSchema";

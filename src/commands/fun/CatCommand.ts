@@ -18,8 +18,8 @@
  */
 
 import axios, { AxiosError } from "axios";
+import { logError } from "../../components/io/Logger";
 import Command, { CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { logError } from "../../utils/Logger";
 
 export default class CatCommand extends Command {
     public readonly name = "cat";
@@ -30,7 +30,10 @@ export default class CatCommand extends Command {
 
     async execute(message: CommandMessage): Promise<CommandReturn> {
         if (!process.env.CAT_API_TOKEN) {
-            await this.error(message, "Cat API token is not set. Please ask the system administrator to set the token.");
+            await this.error(
+                message,
+                "Cat API token is not set. Please ask the system administrator to set the token."
+            );
             return;
         }
 
@@ -43,7 +46,8 @@ export default class CatCommand extends Command {
                 }
             });
 
-            if (response.status < 200 || response.status >= 300) throw new Error("Invalid status code");
+            if (response.status < 200 || response.status >= 300)
+                throw new Error("Invalid status code");
 
             await this.deferredReply(message, {
                 files: [

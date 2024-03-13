@@ -19,10 +19,15 @@
 
 import { NextFunction, Response } from "express";
 import { ZodSchema } from "zod";
-import { log } from "../../utils/Logger";
+import { log } from "../../components/io/Logger";
 import Request from "../Request";
 
-export default async function ValidateMiddleware(schema: ZodSchema, request: Request, response: Response, next: NextFunction) {
+export default async function ValidateMiddleware(
+    schema: ZodSchema,
+    request: Request,
+    response: Response,
+    next: NextFunction
+) {
     try {
         const parsedBody = await schema.parseAsync(request.body);
         request.parsedBody = parsedBody;

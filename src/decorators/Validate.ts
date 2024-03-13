@@ -29,16 +29,27 @@ export function Validate(schema: ZodSchema) {
         _descriptor?: PropertyDescriptor
     ) => {
         if (typeof contextOrMethodName === "string") {
-            const metadata = Reflect.getMetadata("validation_middleware", originalMethodOrTarget as object) ?? {};
+            const metadata =
+                Reflect.getMetadata("validation_middleware", originalMethodOrTarget as object) ??
+                {};
             const middleware = (client: Client, req: Request, res: Response, next: NextFunction) =>
                 ValidateMiddleware(schema, req, res, next);
 
             metadata[contextOrMethodName] ??= middleware;
-            Reflect.defineMetadata("validation_middleware", metadata, originalMethodOrTarget as object);
+            Reflect.defineMetadata(
+                "validation_middleware",
+                metadata,
+                originalMethodOrTarget as object
+            );
         } else {
             const metadata = (contextOrMethodName.metadata?.validationMiddleware ?? {}) as Record<
                 string | symbol,
-                (client: Client, req: Request, res: Response, next: NextFunction) => ReturnType<typeof ValidateMiddleware>
+                (
+                    client: Client,
+                    req: Request,
+                    res: Response,
+                    next: NextFunction
+                ) => ReturnType<typeof ValidateMiddleware>
             >;
 
             const middleware = (client: Client, req: Request, res: Response, next: NextFunction) =>

@@ -22,13 +22,13 @@ import { createWriteStream } from "fs";
 import { basename, join } from "path";
 import stream from "stream";
 import { promisify } from "util";
-import { logInfo } from "./Logger";
+import Client from "../core/Client";
 import { sudoPrefix } from "./utils";
 
 export const finished = promisify(stream.finished);
 
 export async function downloadFile({ url, path, name, axiosOptions }: DownloadFileOptions) {
-    logInfo("Attempting to download file: " + url);
+    Client.logger.info("Attempting to download file: " + url);
 
     const storagePath = path ?? sudoPrefix("storage");
     const filePath = join(storagePath, name ?? basename(url));
@@ -50,7 +50,7 @@ export async function downloadFile({ url, path, name, axiosOptions }: DownloadFi
 
     if (!writer.closed) await promisify(writer.close.bind(writer))();
 
-    logInfo("Saved downloaded file to: " + filePath);
+    Client.logger.info("Saved downloaded file to: " + filePath);
 
     return {
         filePath,

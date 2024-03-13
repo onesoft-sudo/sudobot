@@ -19,8 +19,8 @@
 
 import { InfractionType } from "@prisma/client";
 import { ChatInputCommandInteraction, GuildMember, PermissionsBitField } from "discord.js";
+import { logError } from "../../components/io/Logger";
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
-import { logError } from "../../utils/Logger";
 import { stringToTimeInterval } from "../../utils/datetime";
 
 export default class InfractionCreateCommand extends Command {

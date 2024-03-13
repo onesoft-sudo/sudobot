@@ -19,10 +19,10 @@
 
 import { PermissionLevel } from "@prisma/client";
 import { GuildMember, PermissionsBitField, PermissionsString, Snowflake } from "discord.js";
+import { log, logInfo } from "../components/io/Logger";
 import { GetMemberPermissionInGuildResult } from "../services/PermissionManager";
-import AbstractPermissionManager from "./AbstractPermissionManager";
-import { log, logInfo } from "../utils/Logger";
 import { isSystemAdmin } from "../utils/utils";
+import AbstractPermissionManager from "./AbstractPermissionManager";
 
 export default class LevelBasedPermissionManager extends AbstractPermissionManager {
     protected cache: Record<`${Snowflake}_${"r" | "u"}_${Snowflake}`, PermissionLevel> = {};
@@ -105,7 +105,10 @@ export default class LevelBasedPermissionManager extends AbstractPermissionManag
         return level;
     }
 
-    getMemberPermissions(member: GuildMember, mergeWithDiscordPermissions = true): GetMemberPermissionInGuildResult {
+    getMemberPermissions(
+        member: GuildMember,
+        mergeWithDiscordPermissions = true
+    ): GetMemberPermissionInGuildResult {
         const level = this.getPermissionLevel(member);
         const permissions = this.getMemberPermissionsFromHighestLevel(member, level);
 
@@ -115,7 +118,8 @@ export default class LevelBasedPermissionManager extends AbstractPermissionManag
             }
         }
 
-        for (const permission of this.cache[`${member.guild.id}_u_${member.id}`]?.grantedPermissions ?? []) {
+        for (const permission of this.cache[`${member.guild.id}_u_${member.id}`]
+            ?.grantedPermissions ?? []) {
             permissions.add(permission as PermissionsString);
         }
 

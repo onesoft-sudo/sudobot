@@ -25,9 +25,9 @@ import {
     Snowflake,
     User
 } from "discord.js";
+import { log, logError, logWarn } from "../components/io/Logger";
 import { CommandAbortedError, CommandMessage } from "../core/Command";
 import Service from "../core/Service";
-import { log, logError, logWarn } from "../utils/Logger";
 import { GuildConfig } from "./ConfigManager";
 
 export const name = "commandManager";

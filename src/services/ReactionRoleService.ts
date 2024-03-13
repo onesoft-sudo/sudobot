@@ -19,10 +19,10 @@
 
 import { ReactionRole } from "@prisma/client";
 import { Client, GuildMember, PermissionsString, Routes, Snowflake } from "discord.js";
+import { log, logError } from "../components/io/Logger";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { log, logError } from "../utils/Logger";
 import { safeMemberFetch } from "../utils/fetch";
 
 export const name = "reactionRoleService";
@@ -90,7 +90,8 @@ export default class ReactionRoleService extends Service implements HasEventList
 
         log(JSON.stringify(data, null, 2));
 
-        const config = this.client.configManager.config[data.d.guild_id]?.reaction_roles?.ratelimiting;
+        const config =
+            this.client.configManager.config[data.d.guild_id]?.reaction_roles?.ratelimiting;
 
         if (config?.enabled) {
             const rateLimitedAt = this.rateLimited.get(data.d.user_id) ?? 0;
@@ -113,7 +114,10 @@ export default class ReactionRoleService extends Service implements HasEventList
             info.timestamps.push(Date.now());
         }
 
-        const { aborted, member, reactionRole } = await this.processRequest(data, data.t === "MESSAGE_REACTION_ADD");
+        const { aborted, member, reactionRole } = await this.processRequest(
+            data,
+            data.t === "MESSAGE_REACTION_ADD"
+        );
 
         if (aborted) {
             log("Request aborted");
@@ -144,7 +148,9 @@ export default class ReactionRoleService extends Service implements HasEventList
 
             if (config?.enabled) {
                 const delayedInfo = this.users[userId];
-                const timestamps = delayedInfo.timestamps.filter(timestamp => config.timeframe + timestamp >= Date.now());
+                const timestamps = delayedInfo.timestamps.filter(
+                    timestamp => config.timeframe + timestamp >= Date.now()
+                );
 
                 if (timestamps.length >= config.max_attempts) {
                     this.rateLimited.set(userId, Date.now());
@@ -185,7 +191,9 @@ export default class ReactionRoleService extends Service implements HasEventList
             return { aborted: true };
         }
 
-        const entry = this.reactionRoleEntries.get(`${guildId}_${channelId}_${messageId!}_${emoji.id ?? emoji.name}`);
+        const entry = this.reactionRoleEntries.get(
+            `${guildId}_${channelId}_${messageId!}_${emoji.id ?? emoji.name}`
+        );
 
         if (!entry) {
             log("Reaction role entry not found, ignoring");
@@ -219,7 +227,10 @@ export default class ReactionRoleService extends Service implements HasEventList
                 return await this.removeReactionAndAbort(data);
             }
 
-            if (!member.permissions.has("Administrator") && entry.blacklistedUsers.includes(member.user.id)) {
+            if (
+                !member.permissions.has("Administrator") &&
+                entry.blacklistedUsers.includes(member.user.id)
+            ) {
                 log("User is blacklisted");
                 return await this.removeReactionAndAbort(data);
             }
@@ -230,7 +241,9 @@ export default class ReactionRoleService extends Service implements HasEventList
             }
 
             if (this.client.permissionManager.usesLevelBasedMode(member.guild.id) && entry.level) {
-                const level = (await this.client.permissionManager.getManager(member.guild.id)).getPermissionLevel(member);
+                const level = (
+                    await this.client.permissionManager.getManager(member.guild.id)
+                ).getPermissionLevel(member);
 
                 if (level < entry.level) {
                     log("Member does not have the required permission level");
@@ -250,7 +263,9 @@ export default class ReactionRoleService extends Service implements HasEventList
                     value?.messageId === messageId &&
                     member.roles.cache.hasAny(...value!.roles)
                 ) {
-                    await member.roles.remove(value!.roles, "Taking out the previous roles").catch(logError);
+                    await member.roles
+                        .remove(value!.roles, "Taking out the previous roles")
+                        .catch(logError);
                     removedPreviousRoles = !removedPreviousRoles ? true : removedPreviousRoles;
 
                     if (reactionsToRemove.length <= 4) {
@@ -266,7 +281,9 @@ export default class ReactionRoleService extends Service implements HasEventList
             for (const reaction of reactionsToRemove) {
                 const isBuiltIn = !/^\d+$/.test(reaction);
                 const emoji = !isBuiltIn
-                    ? this.client.emojis.cache.find(e => e.id === reaction || e.identifier === reaction)
+                    ? this.client.emojis.cache.find(
+                          e => e.id === reaction || e.identifier === reaction
+                      )
                     : null;
 
                 if (!isBuiltIn && !emoji) {

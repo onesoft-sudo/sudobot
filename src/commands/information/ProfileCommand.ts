@@ -31,9 +31,15 @@ import {
     User,
     roleMention
 } from "discord.js";
+import { log, logError } from "../../components/io/Logger";
 import Client from "../../core/Client";
-import Command, { AnyCommandContext, ArgumentType, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { log, logError } from "../../utils/Logger";
+import Command, {
+    AnyCommandContext,
+    ArgumentType,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { getUserBadges } from "../../utils/user";
 import { getEmoji } from "../../utils/utils";
 
@@ -46,11 +52,15 @@ const status = (s: "idle" | "online" | "dnd" | "invisible" | null | undefined): 
     return s;
 };
 
-const statusEmoji = (client: Client, s: "idle" | "online" | "dnd" | "invisible" | null | undefined): string => {
+const statusEmoji = (
+    client: Client,
+    s: "idle" | "online" | "dnd" | "invisible" | null | undefined
+): string => {
     if (s === "idle") return getEmoji(client, "idle");
     else if (s === "dnd") return getEmoji(client, "dnd");
     else if (s === "online") return getEmoji(client, "online");
-    else if (s === undefined || s === null || s === "invisible") return getEmoji(client, "invisible");
+    else if (s === undefined || s === null || s === "invisible")
+        return getEmoji(client, "invisible");
 
     return s;
 };
@@ -77,7 +87,11 @@ const getStatusText = (client: Client, member: GuildMember) =>
             : ""));
 
 export function getPermissionLevel(
-    { permissions, guild, id }: { id: string; permissions: GuildMember["permissions"]; guild: Guild },
+    {
+        permissions,
+        guild,
+        id
+    }: { id: string; permissions: GuildMember["permissions"]; guild: Guild },
     string: boolean = false
 ) {
     if (guild.ownerId === id) {
@@ -141,7 +155,8 @@ export default class ProfileCommand extends Command {
         const member: GuildMember | User | null =
             (context.isLegacy
                 ? context.parsedNamedArgs.member
-                : context.options.getMember("member") ?? context.options.getUser("member", true)) ?? message.member;
+                : context.options.getMember("member") ?? context.options.getUser("member", true)) ??
+            message.member;
 
         if (!member) {
             await this.error(message, "Could not resolve that member!");
@@ -158,17 +173,21 @@ export default class ProfileCommand extends Command {
 
                 if (a.type === ActivityType.Custom) {
                     activities.push(
-                        `${a.emoji && this.isAvailableEmoji(a.emoji) ? `${a.emoji.toString()}` : ":small_blue_diamond:"} ${
-                            a.state
-                        }`
+                        `${
+                            a.emoji && this.isAvailableEmoji(a.emoji)
+                                ? `${a.emoji.toString()}`
+                                : ":small_blue_diamond:"
+                        } ${a.state}`
                     );
                 } else if (a.type === ActivityType.Listening) {
                     if (a.name === "Spotify") {
                         const url = a.url ? `${a.url}` : null;
                         activities.push(
-                            `${this.emoji("spotify")} Listening to **Spotify**: ${url ? "[" : "__"}${a.state?.split(/;/)[0]} - ${
-                                a.details
-                            }${url ? "](" + url + ")" : "__"}`
+                            `${this.emoji("spotify")} Listening to **Spotify**: ${
+                                url ? "[" : "__"
+                            }${a.state?.split(/;/)[0]} - ${a.details}${
+                                url ? "](" + url + ")" : "__"
+                            }`
                         );
                         continue;
                     }
@@ -194,7 +213,13 @@ export default class ProfileCommand extends Command {
                   })
             : null;
         const limit = 10;
-        const roles = (isMember ? (allRoles!.length > limit ? allRoles!.slice(0, limit) : allRoles) : ([] as Role[]))!
+        const roles = (
+            isMember
+                ? allRoles!.length > limit
+                    ? allRoles!.slice(0, limit)
+                    : allRoles
+                : ([] as Role[])
+        )!
             .reduce((acc, value) => `${acc} ${roleMention(value.id)}`, "")!
             .trim()!;
         const statusText = isMember ? getStatusText(this.client, member!) : null;
@@ -204,47 +229,63 @@ export default class ProfileCommand extends Command {
                 ? [
                       {
                           name: "Nickname",
-                          value: `${member!.nickname?.replace(/\*<>@_~\|/g, "") ?? "*Nickname is not set*"}`
+                          value: `${
+                              member!.nickname?.replace(/\*<>@_~\|/g, "") ?? "*Nickname is not set*"
+                          }`
                       }
                   ]
                 : []),
             {
                 name: "Display Name",
-                value: `${user!.displayName?.replace(/\*<>@_~\|/g, "") ?? "*Display name is not set*"}`
+                value: `${
+                    user!.displayName?.replace(/\*<>@_~\|/g, "") ?? "*Display name is not set*"
+                }`
             },
             {
                 name: "Account Created",
-                value: `${user.createdAt.toLocaleDateString("en-US")} (${formatDistanceToNowStrict(user.createdTimestamp, {
-                    addSuffix: true
-                })})`,
+                value: `${user.createdAt.toLocaleDateString("en-US")} (${formatDistanceToNowStrict(
+                    user.createdTimestamp,
+                    {
+                        addSuffix: true
+                    }
+                )})`,
                 inline: true
             },
             ...(isMember
                 ? [
                       {
                           name: "Joined at",
-                          value: `${member!.joinedAt!.toLocaleDateString("en-US")} (${formatDistanceToNowStrict(
-                              member!.joinedTimestamp!,
-                              {
-                                  addSuffix: true
-                              }
-                          )})`,
+                          value: `${member!.joinedAt!.toLocaleDateString(
+                              "en-US"
+                          )} (${formatDistanceToNowStrict(member!.joinedTimestamp!, {
+                              addSuffix: true
+                          })})`,
                           inline: true
                       },
                       {
                           name: "Active Devices",
-                          value: `${statusText === "" ? `${this.emoji("invisible")} Offline/Invisible` : statusText}`
+                          value: `${
+                              statusText === ""
+                                  ? `${this.emoji("invisible")} Offline/Invisible`
+                                  : statusText
+                          }`
                       },
                       {
                           name: "Status",
-                          value: `${activities.length === 0 ? "*No status set*" : activities.join("\n")}`
+                          value: `${
+                              activities.length === 0 ? "*No status set*" : activities.join("\n")
+                          }`
                       },
                       {
                           name: "Roles",
                           value:
                               roles === ""
                                   ? "*No roles assigned*"
-                                  : `${roles} ${allRoles!.length > limit ? `**+ ${allRoles!.length - limit} More**` : ""}`
+                                  : `${roles} ${
+                                        allRoles!.length > limit
+                                            ? `**+ ${allRoles!.length - limit} More**`
+                                            : ""
+                                    }`
                       }
                   ]
                 : [])
@@ -274,12 +315,13 @@ export default class ProfileCommand extends Command {
 
         if (isMember) {
             if (this.client.permissionManager.usesLevelBasedMode(member.guild.id)) {
-                permissionPercentage = (await this.client.permissionManager.getManager(member.guild.id)).getPermissionLevel(
-                    member
-                );
+                permissionPercentage = (
+                    await this.client.permissionManager.getManager(member.guild.id)
+                ).getPermissionLevel(member);
             } else {
                 permissionPercentage =
-                    message.guild!.ownerId === user.id || (isMember && member.permissions.has("Administrator"))
+                    message.guild!.ownerId === user.id ||
+                    (isMember && member.permissions.has("Administrator"))
                         ? 100
                         : (getPermissionLevel(member, false) as number);
             }

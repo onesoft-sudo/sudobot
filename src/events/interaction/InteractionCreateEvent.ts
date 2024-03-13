@@ -18,16 +18,18 @@
  */
 
 import { Interaction } from "discord.js";
+import { logError } from "../../components/io/Logger";
 import EventListener from "../../core/EventListener";
 import { Events } from "../../types/ClientEvents";
-import { logError } from "../../utils/Logger";
 
 export default class InteractionCreateEvent extends EventListener<Events.InteractionCreate> {
     public readonly name = Events.InteractionCreate;
 
     async execute(interaction: Interaction) {
         if (interaction.isCommand()) {
-            this.client.commandManager.runCommandFromCommandInteraction(interaction).catch(logError);
+            this.client.commandManager
+                .runCommandFromCommandInteraction(interaction)
+                .catch(logError);
             return;
         }
     }

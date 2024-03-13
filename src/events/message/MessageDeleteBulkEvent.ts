@@ -17,15 +17,26 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { AuditLogEvent, Collection, GuildTextBasedChannel, Message, PartialMessage, Snowflake, TextChannel } from "discord.js";
+import {
+    AuditLogEvent,
+    Collection,
+    GuildTextBasedChannel,
+    Message,
+    PartialMessage,
+    Snowflake,
+    TextChannel
+} from "discord.js";
+import { logError } from "../../components/io/Logger";
 import EventListener from "../../core/EventListener";
 import { Events } from "../../types/ClientEvents";
-import { logError } from "../../utils/Logger";
 
 export default class MessageDeleteBulkEvent extends EventListener<Events.MessageDeleteBulk> {
     public readonly name = Events.MessageDeleteBulk;
 
-    async execute(messages: Collection<Snowflake, Message | PartialMessage>, channel: GuildTextBasedChannel) {
+    async execute(
+        messages: Collection<Snowflake, Message | PartialMessage>,
+        channel: GuildTextBasedChannel
+    ) {
         setTimeout(async () => {
             try {
                 const auditLog = (

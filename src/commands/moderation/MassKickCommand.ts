@@ -18,13 +18,13 @@
  */
 
 import { PermissionsBitField, SlashCommandBuilder, User } from "discord.js";
+import { log, logError } from "../../components/io/Logger";
 import Command, {
     BasicCommandContext,
     CommandMessage,
     CommandReturn,
     ValidationRule
 } from "../../core/Command";
-import { log, logError } from "../../utils/Logger";
 import { isSnowflake } from "../../utils/utils";
 
 export default class MassKickCommand extends Command {

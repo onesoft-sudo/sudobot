@@ -29,14 +29,16 @@ export function EnableAdminAccessControl() {
         _descriptor?: PropertyDescriptor
     ) => {
         if (typeof contextOrMethodName === "string") {
-            const metadata = Reflect.getMetadata("aac_middleware", originalMethodOrTarget as object) ?? {};
+            const metadata =
+                Reflect.getMetadata("aac_middleware", originalMethodOrTarget as object) ?? {};
             const middleware = (client: Client, req: Request, res: Response, next: NextFunction) =>
                 AdminAccessControl(req, res, next);
 
             metadata[contextOrMethodName] ??= middleware;
             Reflect.defineMetadata("aac_middleware", metadata, originalMethodOrTarget as object);
         } else {
-            const metadata = (contextOrMethodName.metadata?.adminAccessControlMiddleware ?? {}) as Record<string, Middleware>;
+            const metadata = (contextOrMethodName.metadata?.adminAccessControlMiddleware ??
+                {}) as Record<string, Middleware>;
             const middleware = (client: Client, req: Request, res: Response, next: NextFunction) =>
                 AdminAccessControl(req, res, next);
 

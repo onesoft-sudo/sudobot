@@ -19,8 +19,8 @@
 
 import { PermissionOverwrite } from "@prisma/client";
 import { GuildMember, PermissionsBitField, PermissionsString, Role, Snowflake } from "discord.js";
+import { logInfo } from "../components/io/Logger";
 import { GetMemberPermissionInGuildResult } from "../services/PermissionManager";
-import { logInfo } from "../utils/Logger";
 import AbstractPermissionManager from "./AbstractPermissionManager";
 
 export default class LayerBasedPermissionManager extends AbstractPermissionManager {
@@ -54,7 +54,10 @@ export default class LayerBasedPermissionManager extends AbstractPermissionManag
         return true;
     }
 
-    getMemberPermissions(member: GuildMember, mergeWithDiscordPermissions = true): GetMemberPermissionInGuildResult {
+    getMemberPermissions(
+        member: GuildMember,
+        mergeWithDiscordPermissions = true
+    ): GetMemberPermissionInGuildResult {
         const overwriteIds = [];
         const baseUserOverwrite = this.cache[`${member.guild.id}_u_${member.user.id}`];
         const permissions = new PermissionsBitField([

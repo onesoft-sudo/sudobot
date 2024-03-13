@@ -17,10 +17,22 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { APIEmbed, AttachmentPayload, Message, PermissionsBitField, SlashCommandBuilder } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import {
+    APIEmbed,
+    AttachmentPayload,
+    Message,
+    PermissionsBitField,
+    SlashCommandBuilder
+} from "discord.js";
+import { logError } from "../../components/io/Logger";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import EmbedSchemaParser from "../../utils/EmbedSchemaParser";
-import { logError } from "../../utils/Logger";
 import { userInfo } from "../../utils/embed";
 import { getEmojiObject } from "../../utils/utils";
 
@@ -59,12 +71,15 @@ export default class EchoCommand extends Command {
             ephemeral: true
         });
 
-        const user = !context.isLegacy ? context.options.getUser("user") : context.parsedNamedArgs.user;
+        const user = !context.isLegacy
+            ? context.options.getUser("user")
+            : context.parsedNamedArgs.user;
         const content: string | undefined = !context.isLegacy
             ? context.options.getString("content", true)
             : context.parsedNamedArgs.content;
         const deleteReply =
-            this.client.configManager.config[message.guildId!]?.commands?.moderation_command_behaviour === "delete";
+            this.client.configManager.config[message.guildId!]?.commands
+                ?.moderation_command_behaviour === "delete";
 
         if (!content && message instanceof Message && message.attachments.size === 0) {
             await this.error(message, "Please provide the message content or attachments!");
@@ -94,7 +109,9 @@ export default class EchoCommand extends Command {
             if (message instanceof Message) {
                 deleteReply && message.deletable
                     ? await message.delete().catch(logError)
-                    : await message.react((await getEmojiObject(this.client, "check"))!).catch(logError);
+                    : await message
+                          .react((await getEmojiObject(this.client, "check"))!)
+                          .catch(logError);
             } else {
                 await this.deferredReply(message, {
                     content: "Message sent."

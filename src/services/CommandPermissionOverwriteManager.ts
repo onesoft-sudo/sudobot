@@ -19,16 +19,22 @@
 
 import { CommandPermissionOverwrite } from "@prisma/client";
 import { Awaitable, GuildMember, PermissionsString, Snowflake } from "discord.js";
+import { log } from "../components/io/Logger";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { log } from "../utils/Logger";
 import { GetMemberPermissionInGuildResult } from "./PermissionManager";
 
 export const name = "commandPermissionOverwriteManager";
 
-export default class CommandPermissionOverwriteManager extends Service implements HasEventListeners {
-    readonly permissionOverwrites = new Map<`${Snowflake}____${string}`, CommandPermissionOverwrite[]>();
+export default class CommandPermissionOverwriteManager
+    extends Service
+    implements HasEventListeners
+{
+    readonly permissionOverwrites = new Map<
+        `${Snowflake}____${string}`,
+        CommandPermissionOverwrite[]
+    >();
     readonly validators: Array<keyof this> = [
         "validatePermissionOverwriteUsers",
         "validatePermissionOverwriteChannels",
@@ -68,9 +74,15 @@ export default class CommandPermissionOverwriteManager extends Service implement
     ) {
         return (
             (permissionOverwrite.requiredPermissionMode === "AND" &&
-                permissions.has(permissionOverwrite.requiredPermissions as PermissionsString[], true)) ||
+                permissions.has(
+                    permissionOverwrite.requiredPermissions as PermissionsString[],
+                    true
+                )) ||
             (permissionOverwrite.requiredPermissionMode === "OR" &&
-                permissions.any(permissionOverwrite.requiredPermissions as PermissionsString[], true))
+                permissions.any(
+                    permissionOverwrite.requiredPermissions as PermissionsString[],
+                    true
+                ))
         );
     }
 
@@ -127,22 +139,31 @@ export default class CommandPermissionOverwriteManager extends Service implement
 
     async validatePermissionOverwrites(options: ValidatePermissionOverwritesOptions) {
         const { guildId, commandName, member } = options;
-        const permissionOverwrites = this.client.commandPermissionOverwriteManager.permissionOverwrites.get(
-            `${guildId!}____${commandName}`
-        );
+        const permissionOverwrites =
+            this.client.commandPermissionOverwriteManager.permissionOverwrites.get(
+                `${guildId!}____${commandName}`
+            );
         const hasOverwrite = !!permissionOverwrites?.length;
 
         if (!permissionOverwrites?.length) {
             return { hasOverwrite: false, result: true };
         }
 
-        const memberPermissions = await this.client.permissionManager.getMemberPermissions(member, true);
+        const memberPermissions = await this.client.permissionManager.getMemberPermissions(
+            member,
+            true
+        );
         let result = true;
 
         outerLoop: for (const permissionOverwrite of permissionOverwrites) {
             for (const validator of this.validators) {
                 const method = this[validator] as PermissionValidatorFunction | undefined;
-                const validationResult = !!(await method?.call(this, permissionOverwrite, options, memberPermissions));
+                const validationResult = !!(await method?.call(
+                    this,
+                    permissionOverwrite,
+                    options,
+                    memberPermissions
+                ));
 
                 if (permissionOverwrite.mode === "AND" && !validationResult) {
                     return { hasOverwrite, result: false };

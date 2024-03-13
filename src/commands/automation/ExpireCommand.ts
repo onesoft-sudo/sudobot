@@ -19,10 +19,16 @@
 
 import { Message, PermissionsBitField, SlashCommandBuilder, TextBasedChannel } from "discord.js";
 import path from "path";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
+import { logError } from "../../components/io/Logger";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import QueueEntry from "../../utils/QueueEntry";
 import { stringToTimeInterval } from "../../utils/datetime";
-import { logError } from "../../utils/Logger";
 import { getEmojiObject, isTextableChannel } from "../../utils/utils";
 
 export default class ExpireCommand extends Command {
@@ -58,7 +64,9 @@ export default class ExpireCommand extends Command {
     public readonly description = "Sends a message and deletes it after the given timeframe.";
     public readonly argumentSyntaxes = ["<time_interval> [content]"];
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addStringOption(option => option.setName("content").setDescription("The message content").setRequired(true))
+        .addStringOption(option =>
+            option.setName("content").setDescription("The message content").setRequired(true)
+        )
         .addStringOption(option =>
             option
                 .setName("time_interval")
@@ -68,7 +76,9 @@ export default class ExpireCommand extends Command {
         .addChannelOption(option =>
             option
                 .setName("channel")
-                .setDescription("The channel where the message will be sent, defaults to the current channel")
+                .setDescription(
+                    "The channel where the message will be sent, defaults to the current channel"
+                )
         );
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
@@ -95,7 +105,9 @@ export default class ExpireCommand extends Command {
             ? context.parsedNamedArgs.content
             : context.options.getString("content");
         const channel = (
-            context.isLegacy ? message.channel! : context.options.getChannel("channel") ?? message.channel!
+            context.isLegacy
+                ? message.channel!
+                : context.options.getChannel("channel") ?? message.channel!
         ) as TextBasedChannel;
 
         if (!isTextableChannel(channel)) {
@@ -128,7 +140,10 @@ export default class ExpireCommand extends Command {
             }
         } catch (e) {
             logError(e);
-            await this.error(message, "Could not send message, make sure I have enough permissions.");
+            await this.error(
+                message,
+                "Could not send message, make sure I have enough permissions."
+            );
             return;
         }
     }

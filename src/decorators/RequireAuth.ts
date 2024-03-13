@@ -29,7 +29,8 @@ export function RequireAuth(fetchUser = true) {
         _descriptor?: PropertyDescriptor
     ) => {
         if (typeof contextOrMethodName === "string") {
-            const metadata = Reflect.getMetadata("auth_middleware", originalMethodOrTarget as object) ?? {};
+            const metadata =
+                Reflect.getMetadata("auth_middleware", originalMethodOrTarget as object) ?? {};
             const middleware = (client: Client, req: Request, res: Response, next: NextFunction) =>
                 RequireAuthMiddleware(client, fetchUser, req, res, next);
 
@@ -37,7 +38,10 @@ export function RequireAuth(fetchUser = true) {
 
             Reflect.defineMetadata("auth_middleware", metadata, originalMethodOrTarget as object);
         } else {
-            const metadata = (contextOrMethodName.metadata?.authMiddleware ?? {}) as Record<string | symbol, Middleware>;
+            const metadata = (contextOrMethodName.metadata?.authMiddleware ?? {}) as Record<
+                string | symbol,
+                Middleware
+            >;
             const middleware = (client: Client, req: Request, res: Response, next: NextFunction) =>
                 RequireAuthMiddleware(client, fetchUser, req, res, next);
 

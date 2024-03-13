@@ -19,8 +19,14 @@
 
 import axios, { AxiosError } from "axios";
 import { SlashCommandBuilder } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { logError } from "../../utils/Logger";
+import { logError } from "../../components/io/Logger";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 
 export default class MixEmojiCommand extends Command {
     public readonly name = "mixemoji";
@@ -45,14 +51,27 @@ export default class MixEmojiCommand extends Command {
     public readonly permissions = [];
     public readonly aliases = ["ce", "combineemoji", "mix", "emojimix"];
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addStringOption(option => option.setName("first").setDescription("The first emoji").setRequired(true))
-        .addStringOption(option => option.setName("second").setDescription("The second emoji").setRequired(true));
+        .addStringOption(option =>
+            option.setName("first").setDescription("The first emoji").setRequired(true)
+        )
+        .addStringOption(option =>
+            option.setName("second").setDescription("The second emoji").setRequired(true)
+        );
     protected readonly API_URL = "https://emojiapi.onesoftnet.eu.org/emojis/combine";
-    public readonly description = "Mixes two emojis and shows you the result, if any. Uses Google's Emoji Kitchen.";
+    public readonly description =
+        "Mixes two emojis and shows you the result, if any. Uses Google's Emoji Kitchen.";
 
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
-        const first = (context.isLegacy ? context.parsedNamedArgs.first : context.options.getString("first", true)).trim();
-        const second = (context.isLegacy ? context.parsedNamedArgs.second : context.options.getString("second", true)).trim();
+        const first = (
+            context.isLegacy
+                ? context.parsedNamedArgs.first
+                : context.options.getString("first", true)
+        ).trim();
+        const second = (
+            context.isLegacy
+                ? context.parsedNamedArgs.second
+                : context.options.getString("second", true)
+        ).trim();
 
         if (!/^\p{Extended_Pictographic}$/gu.test(first)) {
             await this.error(
@@ -112,7 +131,10 @@ export default class MixEmojiCommand extends Command {
                 return;
             }
 
-            await this.error(message, "An internal API error has occurred. Please try again later.");
+            await this.error(
+                message,
+                "An internal API error has occurred. Please try again later."
+            );
         }
     }
 }

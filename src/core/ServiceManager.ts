@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { logInfo } from "../components/io/Logger";
 import { Class, DefaultExport } from "../types/Utils";
-import { logInfo } from "../utils/Logger";
 import type Client from "./Client";
 import Service from "./Service";
 
@@ -30,7 +30,10 @@ export default class ServiceManager {
             let filepath = service;
 
             for (const alias in this.client.aliases) {
-                filepath = filepath.replaceAll(`@${alias}`, this.client.aliases[alias as keyof typeof this.client.aliases]);
+                filepath = filepath.replaceAll(
+                    `@${alias}`,
+                    this.client.aliases[alias as keyof typeof this.client.aliases]
+                );
             }
 
             return filepath;
@@ -42,9 +45,10 @@ export default class ServiceManager {
     }
 
     async loadService(filepath: string) {
-        const { default: ServiceClass, name }: DefaultExport<Class<Service, [Client]>> & { name?: string } = await import(
-            filepath
-        );
+        const {
+            default: ServiceClass,
+            name
+        }: DefaultExport<Class<Service, [Client]>> & { name?: string } = await import(filepath);
 
         if (!name) {
             throw new Error(`Name is empty for service ${filepath}`);

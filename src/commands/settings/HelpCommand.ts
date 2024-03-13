@@ -28,6 +28,7 @@ import {
     escapeCodeBlock,
     escapeInlineCode
 } from "discord.js";
+import { log } from "../../components/io/Logger";
 import Command, {
     ArgumentType,
     BasicCommandContext,
@@ -36,7 +37,6 @@ import Command, {
     ValidationRule
 } from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
-import { log } from "../../utils/Logger";
 import Pagination from "../../utils/Pagination";
 import { DOCS_URL, GITHUB_URL, WEBSITE_URL } from "../../utils/links";
 import { forceGetPermissionNames, getComponentEmojiResolvable } from "../../utils/utils";

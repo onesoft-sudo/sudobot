@@ -29,11 +29,11 @@ import {
     TextInputBuilder,
     TextInputStyle
 } from "discord.js";
+import { logError } from "../../components/io/Logger";
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import { HasEventListeners } from "../../types/HasEventListeners";
 import EmbedSchemaParser from "../../utils/EmbedSchemaParser";
-import { logError } from "../../utils/Logger";
 
 export default class EditMessageCommand extends Command implements HasEventListeners {
     public readonly name = "Edit Message";
@@ -50,7 +50,9 @@ export default class EditMessageCommand extends Command implements HasEventListe
             return;
         }
 
-        const echoMentions = this.client.configManager.config[interaction.guildId!]?.commands?.echo_mentions ?? false;
+        const echoMentions =
+            this.client.configManager.config[interaction.guildId!]?.commands?.echo_mentions ??
+            false;
 
         await interaction
             .deferReply({
@@ -80,7 +82,9 @@ export default class EditMessageCommand extends Command implements HasEventListe
 
         const options = {
             content: interaction.fields.getTextInputValue("content"),
-            allowedMentions: (interaction.member?.permissions as Readonly<PermissionsBitField>)?.has("MentionEveryone", true)
+            allowedMentions: (
+                interaction.member?.permissions as Readonly<PermissionsBitField>
+            )?.has("MentionEveryone", true)
                 ? undefined
                 : echoMentions
                 ? undefined
@@ -100,7 +104,9 @@ export default class EditMessageCommand extends Command implements HasEventListe
         } catch (error) {
             logError(error);
             await interaction.editReply({
-                content: `${this.emoji("error")} An error has occurred while trying to update the message.`
+                content: `${this.emoji(
+                    "error"
+                )} An error has occurred while trying to update the message.`
             });
             return;
         }

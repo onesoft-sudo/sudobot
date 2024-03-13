@@ -46,9 +46,9 @@ import {
     time
 } from "discord.js";
 import path from "path";
+import { log, logError } from "../components/io/Logger";
 import { CommandAbortedError } from "../core/Command";
 import Service from "../core/Service";
-import { log, logError } from "../utils/Logger";
 import QueueEntry from "../utils/QueueEntry";
 import { safeChannelFetch } from "../utils/fetch";
 import { getEmoji, wait } from "../utils/utils";

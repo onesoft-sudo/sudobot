@@ -18,8 +18,8 @@
  */
 
 import { Guild, Snowflake, TextBasedChannel } from "discord.js";
+import { logError } from "../components/io/Logger";
 import Client from "../core/Client";
-import { logError } from "./Logger";
 
 export async function safeMemberFetch(guild: Guild, id: Snowflake) {
     try {

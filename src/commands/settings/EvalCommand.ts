@@ -18,8 +18,14 @@
  */
 
 import { SlashCommandBuilder, escapeCodeBlock, escapeMarkdown } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { logError } from "../../utils/Logger";
+import { logError } from "../../components/io/Logger";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 
 export default class EvalCommand extends Command {
     public readonly name = "eval";
@@ -37,7 +43,8 @@ export default class EvalCommand extends Command {
     public errorOccurred: boolean = false;
 
     public readonly description = "Execute JavaScript code.";
-    public readonly detailedDescription = "This command executes arbitrary JavaScript code. Must be used with caution.";
+    public readonly detailedDescription =
+        "This command executes arbitrary JavaScript code. Must be used with caution.";
     public readonly argumentSyntaxes = ["<...Code>"];
 
     public readonly botRequiredPermissions = [];
@@ -54,7 +61,9 @@ export default class EvalCommand extends Command {
             this.deferredReply(message, {
                 embeds: [
                     {
-                        description: `${this.emoji("error")} **Exception occurred**\n\n\`\`\`\n${escapeMarkdown(
+                        description: `${this.emoji(
+                            "error"
+                        )} **Exception occurred**\n\n\`\`\`\n${escapeMarkdown(
                             e.message + "\n" + e.stack
                         )}\n\`\`\``,
                         color: 0xf14a60
@@ -72,9 +81,15 @@ export default class EvalCommand extends Command {
             this.deferredReply(message, {
                 embeds: [
                     {
-                        description: `${this.emoji("error")} **Unhandled promise rejection**\n\n\`\`\`\n${
+                        description: `${this.emoji(
+                            "error"
+                        )} **Unhandled promise rejection**\n\n\`\`\`\n${
                             typeof e === "string" || typeof (e as string)?.toString === "function"
-                                ? escapeCodeBlock((e as string)?.toString ? (e as string).toString() : (e as string))
+                                ? escapeCodeBlock(
+                                      (e as string)?.toString
+                                          ? (e as string).toString()
+                                          : (e as string)
+                                  )
                                 : e
                         }\n\`\`\``,
                         color: 0xf14a60
@@ -87,7 +102,9 @@ export default class EvalCommand extends Command {
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         this.errorOccurred = false;
 
-        const code = context.isLegacy ? context.parsedNamedArgs.code : context.options.getString("code", true);
+        const code = context.isLegacy
+            ? context.parsedNamedArgs.code
+            : context.options.getString("code", true);
         await this.deferIfInteraction(message);
 
         const exceptionHandler = this.createUncaughtExecptionHandler(message);
@@ -100,7 +117,11 @@ export default class EvalCommand extends Command {
             const result = eval(code);
             const string = `${
                 typeof result === "string" || typeof result?.toString === "function"
-                    ? escapeCodeBlock((result as string)?.toString ? (result as string).toString() : (result as string))
+                    ? escapeCodeBlock(
+                          (result as string)?.toString
+                              ? (result as string).toString()
+                              : (result as string)
+                      )
                     : result
             }`;
 

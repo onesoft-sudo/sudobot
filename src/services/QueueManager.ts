@@ -19,9 +19,9 @@
 
 import { Collection } from "discord.js";
 import path from "path";
+import { log, logError } from "../components/io/Logger";
 import Service from "../core/Service";
 import QueueEntry from "../utils/QueueEntry";
-import { log, logError } from "../utils/Logger";
 
 export const name = "queueManager";
 
@@ -41,7 +41,9 @@ export default class QueueManager extends Service {
                     channelId: queue.channel_id ?? undefined,
                     client: this.client,
                     createdAt: queue.createdAt,
-                    guild: this.client.guilds.cache.get(queue.guild_id) || (await this.client.guilds.fetch(queue.guild_id)!),
+                    guild:
+                        this.client.guilds.cache.get(queue.guild_id) ||
+                        (await this.client.guilds.fetch(queue.guild_id)!),
                     messageId: queue.message_id ?? undefined,
                     willRunAt: queue.willRunAt,
                     filePath: path.resolve(__dirname, "../queues/", queue.file_name),

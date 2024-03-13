@@ -51,10 +51,10 @@ import {
     roleMention,
     time
 } from "discord.js";
+import { log, logError } from "../components/io/Logger";
 import Service from "../core/Service";
 import { MessageRuleType } from "../types/MessageRuleSchema";
 import { NotUndefined } from "../types/NotUndefined";
-import { log, logError } from "../utils/Logger";
 import { userInfo } from "../utils/embed";
 import { isTextableChannel } from "../utils/utils";
 import { GuildConfig } from "./ConfigManager";

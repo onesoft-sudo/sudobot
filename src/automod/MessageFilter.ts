@@ -18,15 +18,18 @@
  */
 
 import { Message, PermissionsBitField } from "discord.js";
+import { logError } from "../components/io/Logger";
 import Service from "../core/Service";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { logError } from "../utils/Logger";
 import { isImmuneToAutoMod } from "../utils/utils";
 
 export const name = "messageFilter";
 
 export default class MessageFilter extends Service implements HasEventListeners {
-    protected readonly immunePermissions = [PermissionsBitField.Flags.ManageGuild, PermissionsBitField.Flags.ManageMessages];
+    protected readonly immunePermissions = [
+        PermissionsBitField.Flags.ManageGuild,
+        PermissionsBitField.Flags.ManageMessages
+    ];
 
     private config(guildId: string) {
         return this.client.configManager.config[guildId]?.message_filter;
@@ -53,16 +56,24 @@ export default class MessageFilter extends Service implements HasEventListeners 
 
         const { safe: tokenSafe, token } = await this.filterTokens(message, blockedTokens);
         const { safe: wordSafe, word } = await this.filterWords(message, blockedWords);
-        const { safe: messageSafe, theMessage } = await this.filterMessages(message, blockedMessages);
+        const { safe: messageSafe, theMessage } = await this.filterMessages(
+            message,
+            blockedMessages
+        );
 
         if (
             (!tokenSafe || !wordSafe || !messageSafe) &&
             ((!tokenSafe &&
-                (config.send_logs === true || (typeof config.send_logs === "object" && config.send_logs.blocked_tokens))) ||
+                (config.send_logs === true ||
+                    (typeof config.send_logs === "object" && config.send_logs.blocked_tokens))) ||
                 (!wordSafe &&
-                    (config.send_logs === true || (typeof config.send_logs === "object" && config.send_logs.blocked_words))) ||
+                    (config.send_logs === true ||
+                        (typeof config.send_logs === "object" &&
+                            config.send_logs.blocked_words))) ||
                 (!messageSafe &&
-                    (config.send_logs === true || (typeof config.send_logs === "object" && config.send_logs.blocked_messages))))
+                    (config.send_logs === true ||
+                        (typeof config.send_logs === "object" &&
+                            config.send_logs.blocked_messages))))
         ) {
             const blockType = !tokenSafe ? "token" : !wordSafe ? "word" : "message";
             this.client.loggerService
@@ -91,7 +102,8 @@ export default class MessageFilter extends Service implements HasEventListeners 
 
         if (
             !wordSafe &&
-            (config.delete_message === true || (typeof config.delete_message === "object" && config.delete_message.blocked_words))
+            (config.delete_message === true ||
+                (typeof config.delete_message === "object" && config.delete_message.blocked_words))
         ) {
             message.delete().catch(logError);
             return true;
@@ -100,7 +112,8 @@ export default class MessageFilter extends Service implements HasEventListeners 
         if (
             !messageSafe &&
             (config.delete_message === true ||
-                (typeof config.delete_message === "object" && config.delete_message.blocked_messages))
+                (typeof config.delete_message === "object" &&
+                    config.delete_message.blocked_messages))
         ) {
             message.delete().catch(logError);
             return true;

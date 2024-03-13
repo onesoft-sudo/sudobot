@@ -18,8 +18,14 @@
  */
 
 import { PermissionsBitField, SlashCommandBuilder, TextChannel, User } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { logError } from "../../utils/Logger";
+import { logError } from "../../components/io/Logger";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 import { isTextableChannel } from "../../utils/utils";
 
 export default class UnlockCommand extends Command {
@@ -44,13 +50,19 @@ export default class UnlockCommand extends Command {
     public readonly botRequiredPermissions = [PermissionsBitField.Flags.ManageChannels];
 
     public readonly slashCommandBuilder = new SlashCommandBuilder()
-        .addSubcommand(subcommand => subcommand.setName("server").setDescription("Unlock the entire server"))
+        .addSubcommand(subcommand =>
+            subcommand.setName("server").setDescription("Unlock the entire server")
+        )
         .addSubcommand(subcommand =>
             subcommand
                 .setName("channel")
                 .setDescription("Unlock one single channel")
                 .addChannelOption(option =>
-                    option.setName("channel").setDescription("The channel that will be unlocked. Default is the current channel")
+                    option
+                        .setName("channel")
+                        .setDescription(
+                            "The channel that will be unlocked. Default is the current channel"
+                        )
                 )
         );
 
@@ -71,16 +83,25 @@ export default class UnlockCommand extends Command {
         }
 
         const channel: TextChannel =
-            (context.isLegacy ? context.parsedNamedArgs.channel : context.options.getChannel("channel")) ?? message.channel!;
+            (context.isLegacy
+                ? context.parsedNamedArgs.channel
+                : context.options.getChannel("channel")) ?? message.channel!;
 
         if (!isTextableChannel(channel)) {
             await this.error(message, "Please provide a valid text channel to unlock!");
             return;
         }
 
-        const result = await this.client.channelLockManager.unlock(channel, message.member!.user as User);
+        const result = await this.client.channelLockManager.unlock(
+            channel,
+            message.member!.user as User
+        );
 
         if (result === false) await this.error(message, "Failed to unlock this channel.");
-        else await this.deferredReply(message, `${this.emoji("check")} This channel has been unlocked.`).catch(logError);
+        else
+            await this.deferredReply(
+                message,
+                `${this.emoji("check")} This channel has been unlocked.`
+            ).catch(logError);
     }
 }

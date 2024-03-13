@@ -18,8 +18,8 @@
  */
 
 import { Guild, TextChannel } from "discord.js";
+import { logError } from "../components/io/Logger";
 import Client from "../core/Client";
-import { logError } from "./Logger";
 import { isTextableChannel } from "./utils";
 
 export interface QueueConstructorOptions {
@@ -47,7 +47,17 @@ export default abstract class Queue {
     public readonly filePath: string;
     public readonly args: string[] = [];
 
-    constructor({ client, createdAt, willRunAt, guild, channelId, messageId, userId, filePath, args }: QueueConstructorOptions) {
+    constructor({
+        client,
+        createdAt,
+        willRunAt,
+        guild,
+        channelId,
+        messageId,
+        userId,
+        filePath,
+        args
+    }: QueueConstructorOptions) {
         this.client = client;
         this.createdAt = createdAt;
         this.willRunAt = willRunAt;
@@ -63,7 +73,8 @@ export default abstract class Queue {
         if (!this.channelId) return;
 
         try {
-            return await (this.guild.channels.cache.get(this.channelId) ?? this.guild.channels.fetch(this.channelId));
+            return await (this.guild.channels.cache.get(this.channelId) ??
+                this.guild.channels.fetch(this.channelId));
         } catch (e) {
             logError(e);
             return null;
@@ -78,7 +89,10 @@ export default abstract class Queue {
 
             if (!fetchedChannel || !isTextableChannel(fetchedChannel)) return null;
 
-            return fetchedChannel.messages.cache.get(this.messageId) ?? (await fetchedChannel.messages.fetch(this.messageId));
+            return (
+                fetchedChannel.messages.cache.get(this.messageId) ??
+                (await fetchedChannel.messages.fetch(this.messageId))
+            );
         } catch (e) {
             logError(e);
             return null;

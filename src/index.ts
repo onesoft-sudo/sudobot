@@ -27,7 +27,6 @@ import { existsSync, readFileSync } from "fs";
 import { createInterface } from "node:readline/promises";
 import path from "path";
 import Client from "./core/Client";
-import { logError, logInfo, logSuccess } from "./utils/Logger";
 import { sudoPrefix } from "./utils/utils";
 
 global.bootDate = Date.now();
@@ -75,13 +74,13 @@ async function fetchCredentials() {
     let restartKey = null;
 
     if (existsSync(restartJsonFile)) {
-        logInfo("Found restart.json file: ", restartJsonFile);
+        Client.logger.info("Found restart.json file: ", restartJsonFile);
 
         try {
             const { key } = JSON.parse(readFileSync(restartJsonFile, { encoding: "utf-8" }));
             restartKey = key;
         } catch (error) {
-            logError(error);
+            Client.logger.error(error);
         }
     }
 
@@ -93,12 +92,12 @@ async function fetchCredentials() {
         key = await readline.question("Enter the one-time 2FA code: ");
         readline.close();
     } else if (restartKey) {
-        logInfo("Accepted 2FA code during last restart command");
+        Client.logger.info("Accepted 2FA code during last restart command");
     } else {
-        logInfo("Accepted 2FA code from command-line arguments");
+        Client.logger.info("Accepted 2FA code from command-line arguments");
     }
 
-    logInfo("Authenticating with the server...");
+    Client.logger.info("Authenticating with the server...");
 
     const is2FACode = key.length === 6 && !isNaN(Number(key));
 
@@ -115,7 +114,7 @@ async function fetchCredentials() {
             response.data?.config &&
             typeof response.data?.config === "object"
         ) {
-            logSuccess(
+            Client.logger.success(
                 "Successfully authenticated with the credentials server (Method: " +
                     (is2FACode ? "2FA" : "Key") +
                     ")"
@@ -128,7 +127,7 @@ async function fetchCredentials() {
             throw new Error("Invalid response received");
         }
     } catch (error) {
-        logError(error);
+        Client.logger.error(error);
         process.exit(-1);
     }
 }

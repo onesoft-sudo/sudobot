@@ -24,13 +24,13 @@ import fs, { rm } from "fs/promises";
 import path from "path";
 import tar from "tar";
 import { z } from "zod";
+import { log, logDebug, logError, logInfo, logWarn } from "../components/io/Logger";
 import Client from "../core/Client";
 import EventListener from "../core/EventListener";
 import { Extension } from "../core/Extension";
 import Service from "../core/Service";
 import type { ClientEvents } from "../types/ClientEvents";
 import { ExtensionInfo } from "../types/ExtensionInfo";
-import { log, logDebug, logError, logInfo, logWarn } from "../utils/Logger";
 import { cache } from "../utils/cache";
 import { downloadFile } from "../utils/download";
 import { request, sudoPrefix, wait } from "../utils/utils";
@@ -80,17 +80,23 @@ const guildIdResolvers = [
     },
     {
         events: ["channelCreate", "channelDelete", "channelUpdate", "channelPinsUpdate"],
-        resolver: ([data]: ClientEvents["channelCreate" | "channelDelete" | "channelUpdate" | "channelPinsUpdate"]) =>
-            data.isDMBased() ? undefined : data.guildId
+        resolver: ([data]: ClientEvents[
+            | "channelCreate"
+            | "channelDelete"
+            | "channelUpdate"
+            | "channelPinsUpdate"]) => (data.isDMBased() ? undefined : data.guildId)
     },
     {
         events: ["emojiCreate", "emojiDelete", "emojiUpdate"],
-        resolver: ([data]: ClientEvents["emojiCreate" | "emojiDelete" | "emojiUpdate"]) => data?.guild?.id ?? undefined
+        resolver: ([data]: ClientEvents["emojiCreate" | "emojiDelete" | "emojiUpdate"]) =>
+            data?.guild?.id ?? undefined
     },
     {
         events: ["messageReactionAdd", "messageReactionRemove", "messageReactionRemoveEmoji"],
-        resolver: ([data]: ClientEvents["messageReactionAdd" | "messageReactionRemove" | "messageReactionRemoveEmoji"]) =>
-            data?.message.guildId ?? undefined
+        resolver: ([data]: ClientEvents[
+            | "messageReactionAdd"
+            | "messageReactionRemove"
+            | "messageReactionRemoveEmoji"]) => data?.message.guildId ?? undefined
     },
     {
         events: ["messageReactionRemoveAll"],
@@ -98,11 +104,20 @@ const guildIdResolvers = [
     },
     {
         events: ["guildAuditLogEntryCreate", "guildMembersChunk", "threadListSync"],
-        resolver: ([, data]: ClientEvents["guildAuditLogEntryCreate" | "guildMembersChunk" | "threadListSync"]) =>
-            data.id ?? undefined
+        resolver: ([, data]: ClientEvents[
+            | "guildAuditLogEntryCreate"
+            | "guildMembersChunk"
+            | "threadListSync"]) => data.id ?? undefined
     },
     {
-        events: ["guildAvailable", "guildCreate", "guildDelete", "guildUpdate", "guildUnavailable", "guildIntegrationsUpdate"],
+        events: [
+            "guildAvailable",
+            "guildCreate",
+            "guildDelete",
+            "guildUpdate",
+            "guildUnavailable",
+            "guildIntegrationsUpdate"
+        ],
         resolver: ([data]: ClientEvents[
             | "guildAvailable"
             | "guildCreate"
@@ -150,10 +165,18 @@ const guildIdResolvers = [
     },
     {
         events: ["guildScheduledEventUpdate"],
-        resolver: ([data]: ClientEvents["guildScheduledEventUpdate"]) => data?.guild?.id ?? data?.guildId ?? undefined
+        resolver: ([data]: ClientEvents["guildScheduledEventUpdate"]) =>
+            data?.guild?.id ?? data?.guildId ?? undefined
     },
     {
-        events: ["presenceUpdate", "roleUpdate", "stageInstanceUpdate", "stickerUpdate", "threadUpdate", "voiceStateUpdate"],
+        events: [
+            "presenceUpdate",
+            "roleUpdate",
+            "stageInstanceUpdate",
+            "stickerUpdate",
+            "threadUpdate",
+            "voiceStateUpdate"
+        ],
         resolver: ([data, data2]: ClientEvents[
             | "presenceUpdate"
             | "roleUpdate"
@@ -162,7 +185,14 @@ const guildIdResolvers = [
             | "voiceStateUpdate"]) => data?.guild?.id ?? data2.guild?.id ?? undefined
     },
     {
-        events: ["stageInstanceDelete", "stageInstanceCreate", "stickerCreate", "stickerDelete", "threadCreate", "threadDelete"],
+        events: [
+            "stageInstanceDelete",
+            "stageInstanceCreate",
+            "stickerCreate",
+            "stickerDelete",
+            "threadCreate",
+            "threadDelete"
+        ],
         resolver: ([data]: ClientEvents[
             | "stageInstanceDelete"
             | "stageInstanceCreate"
@@ -178,7 +208,8 @@ const guildIdResolvers = [
     },
     {
         events: ["typingStart", "webhookUpdate"],
-        resolver: ([data]: ClientEvents["typingStart" | "webhookUpdate"]) => data.guild?.id ?? undefined
+        resolver: ([data]: ClientEvents["typingStart" | "webhookUpdate"]) =>
+            data.guild?.id ?? undefined
     },
     {
         events: ["command"],
@@ -214,7 +245,9 @@ function getGuildIdResolversMap() {
         for (const event of guildIdResolver.events) {
             if (map.has(event)) {
                 logWarn("Overlapping Guild ID Resolvers detected: ", event);
-                logWarn("This seems to be an internal bug. Please report this issue to the developers.");
+                logWarn(
+                    "This seems to be an internal bug. Please report this issue to the developers."
+                );
             }
 
             map.set(event, guildIdResolver.resolver);
@@ -379,7 +412,8 @@ export default class ExtensionService extends Service {
         extensionId: string;
     }) {
         logDebug("Attempting to load extension initializer: ", extensionName, extensionId);
-        const { default: ExtensionClass }: { default: new (client: Client) => Extension } = await import(extensionPath);
+        const { default: ExtensionClass }: { default: new (client: Client) => Extension } =
+            await import(extensionPath);
         return new ExtensionClass(this.client);
     }
 
@@ -470,9 +504,16 @@ export default class ExtensionService extends Service {
     }
 
     async loadEvent(extensionName: string, filePath: string) {
-        const { default: Event }: { default: new (client: Client) => EventListener<keyof ClientEvents> } = await import(filePath);
+        const {
+            default: Event
+        }: { default: new (client: Client) => EventListener<keyof ClientEvents> } = await import(
+            filePath
+        );
         const event = new Event(this.client);
-        this.client.addEventListener(event.name, this.wrapHandler(extensionName, event.name, event.execute.bind(event)));
+        this.client.addEventListener(
+            event.name,
+            this.wrapHandler(extensionName, event.name, event.execute.bind(event))
+        );
     }
 
     wrapHandler<K extends keyof ClientEvents>(
@@ -482,7 +523,8 @@ export default class ExtensionService extends Service {
         bail?: boolean
     ) {
         return async (...args: ClientEvents[K]) => {
-            const guildId: Snowflake | null | undefined = this.guildIdResolvers.get(eventName)?.(args);
+            const guildId: Snowflake | null | undefined =
+                this.guildIdResolvers.get(eventName)?.(args);
 
             if (guildId === undefined) {
                 logError("Invalid event or failed to fetch guild: ", eventName);
@@ -499,7 +541,9 @@ export default class ExtensionService extends Service {
             try {
                 return await handler(...args);
             } catch (e) {
-                logError(`Extension error: the extension '${extensionName}' seems to cause this exception`);
+                logError(
+                    `Extension error: the extension '${extensionName}' seems to cause this exception`
+                );
                 logError(e);
 
                 if (bail) {
@@ -510,10 +554,14 @@ export default class ExtensionService extends Service {
     }
 
     isEnabled(extensionName: string, guildId: Snowflake) {
-        const { disabled_extensions, enabled } = this.client.configManager.config[guildId]?.extensions ?? {};
+        const { disabled_extensions, enabled } =
+            this.client.configManager.config[guildId]?.extensions ?? {};
         const { default_mode } = this.client.configManager.systemConfig.extensions ?? {};
         log(default_mode, enabled);
-        return (enabled === undefined ? default_mode === "enable_all" : enabled) && !disabled_extensions?.includes(extensionName);
+        return (
+            (enabled === undefined ? default_mode === "enable_all" : enabled) &&
+            !disabled_extensions?.includes(extensionName)
+        );
     }
 
     private async fetchExtensionMetadata() {
@@ -592,7 +640,9 @@ export default class ExtensionService extends Service {
                             return;
                         }
 
-                        const percentCompleted = Math.floor((progressEvent.loaded / progressEvent.total) * 100);
+                        const percentCompleted = Math.floor(
+                            (progressEvent.loaded / progressEvent.total) * 100
+                        );
                         await this.writeStream(stream, `${percentCompleted}\n`);
                     }
                 }
@@ -609,7 +659,10 @@ export default class ExtensionService extends Service {
                 await rm(filePath, { force: true });
             } catch (error) {
                 this.client.logger.error(error);
-                await this.writeStream(stream, `W: Failed to clean download caches for extension: ${id}\n`);
+                await this.writeStream(
+                    stream,
+                    `W: Failed to clean download caches for extension: ${id}\n`
+                );
             }
         } catch (error) {
             this.client.logger.error(error);
@@ -625,7 +678,10 @@ export default class ExtensionService extends Service {
             return;
         }
 
-        await this.writeStream(stream, `Preparing to unpack ${extension.name} (${extension.version})...\n`);
+        await this.writeStream(
+            stream,
+            `Preparing to unpack ${extension.name} (${extension.version})...\n`
+        );
         const extensionTmpDirectory = sudoPrefix(`tmp/${extension.id}-${extension.version}`, true);
         await this.writeStream(stream, `Unpacking ${extension.name} (${extension.version})...\n`);
 
@@ -644,7 +700,10 @@ export default class ExtensionService extends Service {
         const extensionDirectory = path.join(this.extensionsPath, extension.shortName);
 
         try {
-            await fs.rename(path.join(extensionTmpDirectory, `${extension.shortName}-${extension.version}`), extensionDirectory);
+            await fs.rename(
+                path.join(extensionTmpDirectory, `${extension.shortName}-${extension.version}`),
+                extensionDirectory
+            );
         } catch (error) {
             this.client.logger.error(error);
             await this.writeStream(stream, `E: Failed to set up extension: ${extension.id}\n`);
@@ -657,7 +716,10 @@ export default class ExtensionService extends Service {
             await rm(extensionTmpDirectory, { force: true, recursive: true });
         } catch (error) {
             this.client.logger.error(error);
-            await this.writeStream(stream, `W: Failed to clean up temporary files for extension: ${extension.id}\n`);
+            await this.writeStream(
+                stream,
+                `W: Failed to clean up temporary files for extension: ${extension.id}\n`
+            );
         }
 
         // TODO: Load extension automatically

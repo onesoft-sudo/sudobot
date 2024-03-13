@@ -22,17 +22,20 @@ import { Router } from "express";
 import { lstat, readdir } from "node:fs/promises";
 import path, { basename, dirname } from "node:path";
 import Controller from "../api/Controller";
+import { log, logInfo } from "../components/io/Logger";
 import { EventListenerInfo } from "../decorators/GatewayEventListener";
 import { ClientEvents } from "../types/ClientEvents";
 import { AnyFunction, Class, DefaultExport } from "../types/Utils";
-import { log, logInfo } from "../utils/Logger";
 import type Client from "./Client";
 import Command from "./Command";
 import EventListener from "./EventListener";
 import Service from "./Service";
 
 class DynamicLoader extends Service {
-    protected readonly eventHandlers = new WeakMap<object, Record<keyof ClientEvents, AnyFunction[]>>();
+    protected readonly eventHandlers = new WeakMap<
+        object,
+        Record<keyof ClientEvents, AnyFunction[]>
+    >();
 
     private async iterateDirectoryRecursively(root: string, rootArray?: string[]) {
         const filesAndDirectories = await readdir(root);
@@ -54,7 +57,9 @@ class DynamicLoader extends Service {
     }
 
     async loadControllers(router: Router) {
-        const eventListenerFiles = await this.iterateDirectoryRecursively(path.resolve(__dirname, "../api/controllers"));
+        const eventListenerFiles = await this.iterateDirectoryRecursively(
+            path.resolve(__dirname, "../api/controllers")
+        );
 
         for (const file of eventListenerFiles) {
             if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
@@ -66,14 +71,17 @@ class DynamicLoader extends Service {
     }
 
     async loadController(filepath: string, router: Router) {
-        const { default: ControllerClass }: DefaultExport<Class<Controller, [Client]>> = await import(filepath);
+        const { default: ControllerClass }: DefaultExport<Class<Controller, [Client]>> =
+            await import(filepath);
         const controller = new ControllerClass(this.client);
         this.client.server.loadController(controller, ControllerClass, router);
         logInfo("Loaded Controller: ", ControllerClass.name);
     }
 
     async loadEvents() {
-        const eventListenerFiles = await this.iterateDirectoryRecursively(path.resolve(__dirname, "../events"));
+        const eventListenerFiles = await this.iterateDirectoryRecursively(
+            path.resolve(__dirname, "../events")
+        );
 
         for (const file of eventListenerFiles) {
             if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
@@ -85,7 +93,8 @@ class DynamicLoader extends Service {
     }
 
     async loadEvent(filepath: string) {
-        const { default: EventListenerClass }: DefaultExport<Class<EventListener, [Client]>> = await import(filepath);
+        const { default: EventListenerClass }: DefaultExport<Class<EventListener, [Client]>> =
+            await import(filepath);
         const listener = new EventListenerClass(this.client);
         this.client.addEventListener(listener.name, listener.execute.bind(listener));
         logInfo("Loaded Event: ", listener.name);
@@ -143,8 +152,14 @@ class DynamicLoader extends Service {
         }
     }
 
-    async loadCommand(filepath: string, loadMetadata = true, groups: Record<string, string> | null = null) {
-        const { default: CommandClass }: DefaultExport<Class<Command, [Client]>> = await import(filepath);
+    async loadCommand(
+        filepath: string,
+        loadMetadata = true,
+        groups: Record<string, string> | null = null
+    ) {
+        const { default: CommandClass }: DefaultExport<Class<Command, [Client]>> = await import(
+            filepath
+        );
         const command = new CommandClass(this.client);
         const previousCommand = this.client.commands.get(command.name);
         let aliasGroupSet = false;
@@ -181,13 +196,19 @@ class DynamicLoader extends Service {
             Symbol.metadata in finalObject
                 ? (finalObject[Symbol.metadata] as { eventListeners?: EventListenerInfo[] })
                 : {
-                      eventListeners: Reflect.getMetadata("event_listeners", (finalObject as { prototype: object }).prototype)
+                      eventListeners: Reflect.getMetadata(
+                          "event_listeners",
+                          (finalObject as { prototype: object }).prototype
+                      )
                   };
 
-        const handlerData = this.eventHandlers.get(object) ?? ({} as Record<keyof ClientEvents, AnyFunction[]>);
+        const handlerData =
+            this.eventHandlers.get(object) ?? ({} as Record<keyof ClientEvents, AnyFunction[]>);
 
         for (const listenerInfo of metadata.eventListeners ?? []) {
-            const callback = object[listenerInfo.methodName as unknown as keyof typeof object] as AnyFunction;
+            const callback = object[
+                listenerInfo.methodName as unknown as keyof typeof object
+            ] as AnyFunction;
             const handler = callback.bind(object);
             handlerData[listenerInfo.event as keyof typeof handlerData] ??= [] as AnyFunction[];
             handlerData[listenerInfo.event as keyof typeof handlerData].push(handler);
@@ -203,7 +224,8 @@ class DynamicLoader extends Service {
     }
 
     async unloadEventsFromMetadata(object: object) {
-        const handlerData = this.eventHandlers.get(object) ?? ({} as Record<keyof ClientEvents, AnyFunction[]>);
+        const handlerData =
+            this.eventHandlers.get(object) ?? ({} as Record<keyof ClientEvents, AnyFunction[]>);
         let count = 0;
 
         for (const event in handlerData) {

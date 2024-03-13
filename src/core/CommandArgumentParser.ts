@@ -17,9 +17,17 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Awaitable, Client, GuildBasedChannel, GuildMember, Role, SnowflakeUtil, User } from "discord.js";
+import {
+    Awaitable,
+    Client,
+    GuildBasedChannel,
+    GuildMember,
+    Role,
+    SnowflakeUtil,
+    User
+} from "discord.js";
+import { logWarn } from "../components/io/Logger";
 import { AnyFunction } from "../types/Utils";
-import { logWarn } from "../utils/Logger";
 import { stringToTimeInterval } from "../utils/datetime";
 import CommandArgumentParserInterface, {
     ArgumentType,
@@ -31,13 +39,19 @@ import CommandArgumentParserInterface, {
 } from "./CommandArgumentParserInterface";
 
 class ArgumentParseError extends Error {
-    constructor(message: string, public readonly type: ValidationErrorType | ValidationErrorType[]) {
+    constructor(
+        message: string,
+        public readonly type: ValidationErrorType | ValidationErrorType[]
+    ) {
         super(`[${type}]: ${message}`);
     }
 }
 
 export default class CommandArgumentParser implements CommandArgumentParserInterface {
-    protected readonly parsers: Record<ArgumentType, Extract<keyof CommandArgumentParser, `parse${string}Type`>> = {
+    protected readonly parsers: Record<
+        ArgumentType,
+        Extract<keyof CommandArgumentParser, `parse${string}Type`>
+    > = {
         [ArgumentType.String]: "parseStringType",
         [ArgumentType.Snowflake]: "parseSnowflakeType",
         [ArgumentType.StringRest]: "parseStringRestType",
@@ -60,16 +74,25 @@ export default class CommandArgumentParser implements CommandArgumentParserInter
         });
 
         if (error) {
-            throw new ArgumentParseError(`Error occurred while parsing time interval: ${error}`, "type:invalid");
+            throw new ArgumentParseError(
+                `Error occurred while parsing time interval: ${error}`,
+                "type:invalid"
+            );
         }
 
         const max = state.rule.time?.max;
         const min = state.rule.time?.min;
 
         if (min !== undefined && result < min) {
-            throw new ArgumentParseError("Time interval is less than the minimum limit", ["time:range:min", "time:range"]);
+            throw new ArgumentParseError("Time interval is less than the minimum limit", [
+                "time:range:min",
+                "time:range"
+            ]);
         } else if (max !== undefined && result > max) {
-            throw new ArgumentParseError("Time interval has exceeded the maximum limit", ["time:range:max", "time:range"]);
+            throw new ArgumentParseError("Time interval has exceeded the maximum limit", [
+                "time:range:max",
+                "time:range"
+            ]);
         }
 
         return {
@@ -103,9 +126,15 @@ export default class CommandArgumentParser implements CommandArgumentParserInter
         const min = state.rule.number?.min;
 
         if (min !== undefined && number < min) {
-            throw new ArgumentParseError("Numeric value is less than the minimum limit", ["number:range:min", "number:range"]);
+            throw new ArgumentParseError("Numeric value is less than the minimum limit", [
+                "number:range:min",
+                "number:range"
+            ]);
         } else if (max !== undefined && number > max) {
-            throw new ArgumentParseError("Numeric value exceeded the maximum limit", ["number:range:max", "number:range"]);
+            throw new ArgumentParseError("Numeric value exceeded the maximum limit", [
+                "number:range:max",
+                "number:range"
+            ]);
         }
 
         return {
@@ -113,7 +142,9 @@ export default class CommandArgumentParser implements CommandArgumentParserInter
         };
     }
 
-    async parseEntityType(state: ParsingState): Promise<ParseResult<GuildBasedChannel | User | Role | GuildMember | null>> {
+    async parseEntityType(
+        state: ParsingState
+    ): Promise<ParseResult<GuildBasedChannel | User | Role | GuildMember | null>> {
         let id = state.currentArg!;
 
         if (!id.startsWith("<") && !id.endsWith(">") && !/^\d+$/.test(id)) {
@@ -127,7 +158,10 @@ export default class CommandArgumentParser implements CommandArgumentParserInter
 
             case ArgumentType.Member:
             case ArgumentType.User:
-                id = id.startsWith("<@") && id.endsWith(">") ? id.substring(id.includes("!") ? 3 : 2, id.length - 1) : id;
+                id =
+                    id.startsWith("<@") && id.endsWith(">")
+                        ? id.substring(id.includes("!") ? 3 : 2, id.length - 1)
+                        : id;
                 break;
 
             case ArgumentType.Channel:
@@ -157,7 +191,10 @@ export default class CommandArgumentParser implements CommandArgumentParserInter
                 result: entity
             };
         } catch (error) {
-            if (state.rule.entity === true || (typeof state.rule.entity === "object" && state.rule.entity?.notNull)) {
+            if (
+                state.rule.entity === true ||
+                (typeof state.rule.entity === "object" && state.rule.entity?.notNull)
+            ) {
                 throw new ArgumentParseError("Failed to fetch entity", "entity:null");
             }
 
@@ -190,7 +227,10 @@ export default class CommandArgumentParser implements CommandArgumentParserInter
     parseStringRestType(state: ParsingState): Awaitable<ParseResult<string>> {
         this.validateStringType(state, ["string:rest", "string"]);
 
-        let string = state.parseOptions.input.trim().substring(state.parseOptions.prefix.length).trim();
+        let string = state.parseOptions.input
+            .trim()
+            .substring(state.parseOptions.prefix.length)
+            .trim();
 
         for (let i = 0; i < Object.keys(state.parsedArgs).length + 1; i++) {
             string = string.trim().substring(state.argv[i].length);
@@ -204,7 +244,10 @@ export default class CommandArgumentParser implements CommandArgumentParserInter
         };
     }
 
-    private validateStringType(state: ParsingState, prefixes: ("string" | "string:rest")[] = ["string"]) {
+    private validateStringType(
+        state: ParsingState,
+        prefixes: ("string" | "string:rest")[] = ["string"]
+    ) {
         if (
             (state.rule.string?.notEmpty || !state.rule.optional) &&
             !state.currentArg?.trim() &&
@@ -215,12 +258,18 @@ export default class CommandArgumentParser implements CommandArgumentParserInter
                 "The string must not be empty",
                 !state.rule.optional ? "required" : `${prefixes[0] as "string"}:empty`
             );
-        else if (state.rule.string?.minLength !== undefined && (state.currentArg?.length ?? 0) < state.rule.string.minLength)
+        else if (
+            state.rule.string?.minLength !== undefined &&
+            (state.currentArg?.length ?? 0) < state.rule.string.minLength
+        )
             throw new ArgumentParseError(
                 "The string is too short",
                 prefixes.map(prefix => `${prefix}:length:min` as const)
             );
-        else if (state.rule.string?.maxLength !== undefined && (state.currentArg?.length ?? 0) > state.rule.string.maxLength)
+        else if (
+            state.rule.string?.maxLength !== undefined &&
+            (state.currentArg?.length ?? 0) > state.rule.string.maxLength
+        )
             throw new ArgumentParseError(
                 "The string is too long",
                 prefixes.map(prefix => `${prefix}:length:max` as const)
@@ -257,7 +306,9 @@ export default class CommandArgumentParser implements CommandArgumentParserInter
 
             if (!state.currentArg) {
                 if (!rule.optional) {
-                    return { error: rule.errors?.["required"] ?? `Argument #${state.index} is required` };
+                    return {
+                        error: rule.errors?.["required"] ?? `Argument #${state.index} is required`
+                    };
                 } else if (rule.default !== undefined) {
                     result = {
                         result: rule.default

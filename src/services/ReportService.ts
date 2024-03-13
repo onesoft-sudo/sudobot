@@ -38,11 +38,11 @@ import {
     TextInputStyle,
     User
 } from "discord.js";
+import { logError } from "../components/io/Logger";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import LevelBasedPermissionManager from "../security/LevelBasedPermissionManager";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { logError } from "../utils/Logger";
 import { stringToTimeInterval } from "../utils/datetime";
 import { userInfo } from "../utils/embed";
 import { safeChannelFetch, safeMemberFetch } from "../utils/fetch";
@@ -95,7 +95,9 @@ export default class ReportService extends Service implements HasEventListeners 
                 this.client.permissionManager.usesLevelBasedMode(guildId!) &&
                 manager instanceof LevelBasedPermissionManager &&
                 manager.getPermissionLevel(moderator) < config.permission_level) ||
-            !manager.getMemberPermissions(moderator).permissions.has(config.permissions as PermissionsString[], true) ||
+            !manager
+                .getMemberPermissions(moderator)
+                .permissions.has(config.permissions as PermissionsString[], true) ||
             !moderator?.roles.cache.hasAll(...(config?.roles ?? []))
         ) {
             return {
@@ -116,7 +118,11 @@ export default class ReportService extends Service implements HasEventListeners 
 
     async report({ reason, moderator, guildId, member, message }: ReportOptions) {
         const config = this.client.configManager.config[guildId!]?.message_reporting;
-        const { error } = await this.check(guildId, moderator, member ?? message?.member ?? undefined);
+        const { error } = await this.check(
+            guildId,
+            moderator,
+            member ?? message?.member ?? undefined
+        );
 
         if (error) {
             return { error };
@@ -260,7 +266,10 @@ export default class ReportService extends Service implements HasEventListeners 
             requiredPermissions.shift();
         }
 
-        return memberPermissions[mode === "or" ? "any" : "has"](requiredPermissions as PermissionsString[], true);
+        return memberPermissions[mode === "or" ? "any" : "has"](
+            requiredPermissions as PermissionsString[],
+            true
+        );
     }
 
     async onStringSelectMenuInteraction(interaction: StringSelectMenuInteraction) {
@@ -316,7 +325,11 @@ export default class ReportService extends Service implements HasEventListeners 
         await interaction.showModal(modal);
     }
 
-    editMessage(interaction: StringSelectMenuInteraction | ModalSubmitInteraction, action: string, color?: number) {
+    editMessage(
+        interaction: StringSelectMenuInteraction | ModalSubmitInteraction,
+        action: string,
+        color?: number
+    ) {
         return interaction.message?.edit({
             components: [],
             embeds: [
@@ -341,7 +354,11 @@ export default class ReportService extends Service implements HasEventListeners 
         });
     }
 
-    async commonChecks(action: Action, userId: string, interaction: ModalSubmitInteraction | StringSelectMenuInteraction) {
+    async commonChecks(
+        action: Action,
+        userId: string,
+        interaction: ModalSubmitInteraction | StringSelectMenuInteraction
+    ) {
         if (
             !interaction.memberPermissions ||
             !this.permissionCheck(action, interaction.guildId!, interaction.memberPermissions)
@@ -365,7 +382,11 @@ export default class ReportService extends Service implements HasEventListeners 
             return false;
         }
 
-        const { error } = await this.check(interaction.guildId!, interaction.member! as GuildMember, member);
+        const { error } = await this.check(
+            interaction.guildId!,
+            interaction.member! as GuildMember,
+            member
+        );
 
         if (error) {
             await interaction.reply({
@@ -380,7 +401,11 @@ export default class ReportService extends Service implements HasEventListeners 
     }
 
     async onModalSubmit(interaction: ModalSubmitInteraction) {
-        const [action, type, userId] = interaction.customId.split("_").slice(3) as [Action, "m" | "u", Snowflake];
+        const [action, type, userId] = interaction.customId.split("_").slice(3) as [
+            Action,
+            "m" | "u",
+            Snowflake
+        ];
 
         if (!(await this.commonChecks(action, userId, interaction))) {
             return;
@@ -399,7 +424,8 @@ export default class ReportService extends Service implements HasEventListeners 
         if (parsedDuration && parsedDuration.error) {
             await interaction.reply({
                 ephemeral: true,
-                content: "Invalid duration given. The duration should look something like these: 20h, 50m, 10m60s etc."
+                content:
+                    "Invalid duration given. The duration should look something like these: 20h, 50m, 10m60s etc."
             });
 
             return;

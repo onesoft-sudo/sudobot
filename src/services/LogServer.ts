@@ -22,7 +22,6 @@ import chalk from "chalk";
 import { Server, Socket } from "socket.io";
 import Client from "../core/Client";
 import Service from "../core/Service";
-import { logInfo, logWarn } from "../utils/Logger";
 
 export const name = "logServer";
 
@@ -71,7 +70,12 @@ export default class LogServer extends Service {
             return false;
         }
 
-        if (!bcrypt.compareSync(password, process.env.LOG_SERVER_PASSWORD ?? Math.random().toString())) {
+        if (
+            !bcrypt.compareSync(
+                password,
+                process.env.LOG_SERVER_PASSWORD ?? Math.random().toString()
+            )
+        ) {
             socket.send("[error] Authentication failed");
             socket.disconnect(true);
             return false;
@@ -88,11 +92,11 @@ export default class LogServer extends Service {
             }
 
             this.connections++;
-            logInfo("New client connected to the log server", socket.id);
+            this.client.logger.info("New client connected to the log server", socket.id);
 
             socket.on("disconnect", reason => {
                 this.connections--;
-                logInfo("Client Disconnected from log server: ", socket.id, reason);
+                this.client.logger.info("Client Disconnected from log server: ", socket.id, reason);
                 const index = this.sockets.findIndex(s => s.id === socket.id);
 
                 if (index !== -1) {
@@ -101,7 +105,10 @@ export default class LogServer extends Service {
             });
 
             if (!this.isAuthorized(socket)) {
-                logWarn("Unauthorized client attempted to connect to the log server", socket.id);
+                this.client.logger.warn(
+                    "Unauthorized client attempted to connect to the log server",
+                    socket.id
+                );
                 return;
             }
 
@@ -128,6 +135,6 @@ export default class LogServer extends Service {
         port = isNaN(port) ? 3500 : port;
 
         this.io?.listen(port);
-        logInfo("The log server is running at port", port);
+        this.client.logger.info("The log server is running at port", port);
     }
 }

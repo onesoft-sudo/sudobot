@@ -18,8 +18,8 @@
  */
 
 import packageJson from "../../package.json";
+import { log } from "../components/io/Logger";
 import Service from "../core/Service";
-import { log } from "../utils/Logger";
 
 export const name = "metadata";
 

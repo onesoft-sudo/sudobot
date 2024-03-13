@@ -18,8 +18,8 @@
  */
 
 import axios from "axios";
+import { logError } from "../../components/io/Logger";
 import Command, { CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { logError } from "../../utils/Logger";
 
 export default class EncourageCommand extends Command {
     public readonly name = "encourage";
@@ -43,7 +43,10 @@ export default class EncourageCommand extends Command {
 
             const [quote] = response.data;
 
-            await this.deferredReply(message, `> ${quote.q.replace(/\n/gi, "\n> ")}\n\n — *${quote.a}*`);
+            await this.deferredReply(
+                message,
+                `> ${quote.q.replace(/\n/gi, "\n> ")}\n\n — *${quote.a}*`
+            );
         } catch (e) {
             logError(e);
             await this.error(

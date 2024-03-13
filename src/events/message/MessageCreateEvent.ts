@@ -18,10 +18,10 @@
  */
 
 import { ChannelType, GuildMember, Message, MessageType } from "discord.js";
+import { log, logError } from "../../components/io/Logger";
 import Client from "../../core/Client";
 import EventListener from "../../core/EventListener";
 import { Events } from "../../types/ClientEvents";
-import { log, logError } from "../../utils/Logger";
 
 export default class MessageCreateEvent extends EventListener<Events.MessageCreate> {
     public readonly name = Events.MessageCreate;
@@ -74,7 +74,9 @@ export default class MessageCreateEvent extends EventListener<Events.MessageCrea
         this.client.statsService.onMessageCreate(message);
         this.client.triggerService.onMessageCreate(message);
 
-        const value = await this.client.commandManager.runCommandFromMessage(message).catch(logError);
+        const value = await this.client.commandManager
+            .runCommandFromMessage(message)
+            .catch(logError);
 
         if (value === false) {
             log("Command or snippet not found: all strategies failed");

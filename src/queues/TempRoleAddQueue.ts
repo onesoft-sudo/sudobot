@@ -17,13 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { logError } from "../components/io/Logger";
 import Queue from "../utils/Queue";
-import { logError } from "../utils/Logger";
 
 export default class TempRoleAddQueue extends Queue {
     async run(userId: string, roleId: string) {
         try {
-            const member = this.guild.members.cache.get(userId) ?? (await this.guild.members.fetch(userId));
+            const member =
+                this.guild.members.cache.get(userId) ?? (await this.guild.members.fetch(userId));
 
             if (!member) throw new Error("Member is null | undefined");
 

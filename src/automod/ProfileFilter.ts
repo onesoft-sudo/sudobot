@@ -18,11 +18,11 @@
  */
 
 import { ActivityType, GuildMember, PartialGuildMember, PermissionFlagsBits } from "discord.js";
+import { log } from "../components/io/Logger";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { GuildConfig } from "../types/GuildConfigSchema";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { log } from "../utils/Logger";
 import { isImmuneToAutoMod } from "../utils/utils";
 
 export const name = "profileFilter";
@@ -47,7 +47,8 @@ export default class ProfileFilter extends Service implements HasEventListeners 
         }
 
         const config = this.client.configManager.config[newMember.guild.id]?.profile_filter;
-        const messageFilterConfig = this.client.configManager.config[newMember.guild.id]?.message_filter;
+        const messageFilterConfig =
+            this.client.configManager.config[newMember.guild.id]?.message_filter;
 
         if (!config?.enabled) return;
 
@@ -92,7 +93,12 @@ export default class ProfileFilter extends Service implements HasEventListeners 
                 }
             }
 
-            if (config.scan.includes("status") && config.actions?.status && config.actions?.status !== "none" && newStatus) {
+            if (
+                config.scan.includes("status") &&
+                config.actions?.status &&
+                config.actions?.status !== "none" &&
+                newStatus
+            ) {
                 const token = this.findToken(tokens, `${newStatus.name} ${newStatus.details}`);
 
                 if (token) {

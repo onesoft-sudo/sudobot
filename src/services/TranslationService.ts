@@ -18,13 +18,14 @@
  */
 
 import axios from "axios";
+import { log, logError } from "../components/io/Logger";
 import Service from "../core/Service";
-import { log, logError } from "../utils/Logger";
 
 export const name = "translator";
 
 export default class TranslationService extends Service {
-    protected readonly requestURL = "https://translate.google.com/translate_a/single?client=at&dt=t&dt=rm&dj=1";
+    protected readonly requestURL =
+        "https://translate.google.com/translate_a/single?client=at&dt=t&dt=rm&dj=1";
 
     public async translate(text: string, from: string = "auto", to: string = "en") {
         try {

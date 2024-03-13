@@ -19,8 +19,14 @@
 
 import { InfractionType } from "@prisma/client";
 import { PermissionsBitField, User } from "discord.js";
-import Command, { ArgumentType, BasicCommandContext, CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
-import { log } from "../../utils/Logger";
+import { log } from "../../components/io/Logger";
+import Command, {
+    ArgumentType,
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+    ValidationRule
+} from "../../core/Command";
 
 export default class InfractionClearCommand extends Command {
     public readonly name = "infraction__clear";
@@ -38,7 +44,10 @@ export default class InfractionClearCommand extends Command {
             }
         }
     ];
-    public readonly permissions = [PermissionsBitField.Flags.ModerateMembers, PermissionsBitField.Flags.ViewAuditLog];
+    public readonly permissions = [
+        PermissionsBitField.Flags.ModerateMembers,
+        PermissionsBitField.Flags.ViewAuditLog
+    ];
     public readonly permissionMode = "or";
     public readonly aliases: string[] = ["ci", "clearinfractions"];
 
@@ -48,8 +57,12 @@ export default class InfractionClearCommand extends Command {
     async execute(message: CommandMessage, context: BasicCommandContext): Promise<CommandReturn> {
         await this.deferIfInteraction(message);
 
-        const user: User = context.isLegacy ? context.parsedNamedArgs.user : context.options.getUser("user", true);
-        const type = context.isLegacy ? undefined : context.options.getString("type")?.toUpperCase();
+        const user: User = context.isLegacy
+            ? context.parsedNamedArgs.user
+            : context.options.getUser("user", true);
+        const type = context.isLegacy
+            ? undefined
+            : context.options.getString("type")?.toUpperCase();
 
         if (type && !(type in InfractionType)) {
             await this.error(message, "Invalid infraction type provided");
@@ -77,6 +90,9 @@ export default class InfractionClearCommand extends Command {
             return;
         }
 
-        await this.deferredReply(message, `${this.emoji("check")} Deleted ${count} infractions for user ${user.username}`);
+        await this.deferredReply(
+            message,
+            `${this.emoji("check")} Deleted ${count} infractions for user ${user.username}`
+        );
     }
 }

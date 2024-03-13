@@ -37,9 +37,9 @@ import { rm } from "fs/promises";
 import path from "path";
 import { gt } from "semver";
 import { version } from "../../package.json";
+import { log, logError, logInfo, logSuccess } from "../components/io/Logger";
 import Service from "../core/Service";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { log, logError, logInfo, logSuccess } from "../utils/Logger";
 import { safeChannelFetch, safeMessageFetch } from "../utils/fetch";
 import { chunkedString, getEmoji, sudoPrefix } from "../utils/utils";
 

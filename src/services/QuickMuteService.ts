@@ -17,18 +17,33 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ChannelType, GuildMember, MessageReaction, PartialMessageReaction, PartialUser, TextChannel, User } from "discord.js";
+import {
+    ChannelType,
+    GuildMember,
+    MessageReaction,
+    PartialMessageReaction,
+    PartialUser,
+    TextChannel,
+    User
+} from "discord.js";
+import { log, logError, logInfo, logWarn } from "../components/io/Logger";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { log, logError, logInfo, logWarn } from "../utils/Logger";
 
 export const name = "quickmute";
 
 export default class QuickMuteService extends Service implements HasEventListeners {
     @GatewayEventListener("messageReactionAdd")
-    async onMessageReactionAdd(reaction: MessageReaction | PartialMessageReaction, user: User | PartialUser) {
-        if (!reaction || !reaction.message.guild || reaction.message.channel.type === ChannelType.DM) {
+    async onMessageReactionAdd(
+        reaction: MessageReaction | PartialMessageReaction,
+        user: User | PartialUser
+    ) {
+        if (
+            !reaction ||
+            !reaction.message.guild ||
+            reaction.message.channel.type === ChannelType.DM
+        ) {
             return;
         }
 
@@ -63,7 +78,9 @@ export default class QuickMuteService extends Service implements HasEventListene
 
         logInfo("Quickmute trigger reaction receieved.");
 
-        const clearMessages = reaction.emoji.id === config.clear_emoji || reaction.emoji.identifier === config.clear_emoji;
+        const clearMessages =
+            reaction.emoji.id === config.clear_emoji ||
+            reaction.emoji.identifier === config.clear_emoji;
         const guild = this.client.guilds.cache.get(reaction.message.guildId!);
 
         if (!guild) {
@@ -89,9 +106,16 @@ export default class QuickMuteService extends Service implements HasEventListene
             return;
         }
 
-        const { permissions } = await this.client.permissionManager.getMemberPermissions(moderator, true);
+        const { permissions } = await this.client.permissionManager.getMemberPermissions(
+            moderator,
+            true
+        );
 
-        if (!permissions.has("Administrator") && !permissions.has("ManageMessages") && !permissions.has("ModerateMembers")) {
+        if (
+            !permissions.has("Administrator") &&
+            !permissions.has("ManageMessages") &&
+            !permissions.has("ModerateMembers")
+        ) {
             logInfo("This moderator does not have permission to use quickmute!");
             return false;
         }

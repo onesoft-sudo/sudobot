@@ -29,11 +29,11 @@ import {
     TextInputBuilder,
     TextInputStyle
 } from "discord.js";
+import { logError } from "../../components/io/Logger";
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import { HasEventListeners } from "../../types/HasEventListeners";
 import EmbedSchemaParser from "../../utils/EmbedSchemaParser";
-import { logError } from "../../utils/Logger";
 
 export default class SendReplyCommand extends Command implements HasEventListeners {
     public readonly name = "Send Reply";
@@ -50,7 +50,9 @@ export default class SendReplyCommand extends Command implements HasEventListene
             return;
         }
 
-        const echoMentions = this.client.configManager.config[interaction.guildId!]?.commands?.echo_mentions ?? false;
+        const echoMentions =
+            this.client.configManager.config[interaction.guildId!]?.commands?.echo_mentions ??
+            false;
 
         await interaction
             .deferReply({
@@ -65,7 +67,9 @@ export default class SendReplyCommand extends Command implements HasEventListene
                 failIfNotExists: true
             },
             content: interaction.fields.getTextInputValue("content"),
-            allowedMentions: (interaction.member?.permissions as Readonly<PermissionsBitField>)?.has("MentionEveryone", true)
+            allowedMentions: (
+                interaction.member?.permissions as Readonly<PermissionsBitField>
+            )?.has("MentionEveryone", true)
                 ? undefined
                 : echoMentions
                 ? undefined
@@ -76,13 +80,17 @@ export default class SendReplyCommand extends Command implements HasEventListene
         let messageId: string | undefined = undefined;
 
         if (interaction.channel) {
-            messageId = (await EmbedSchemaParser.sendMessage(interaction.channel, options).catch(logError))?.id;
+            messageId = (
+                await EmbedSchemaParser.sendMessage(interaction.channel, options).catch(logError)
+            )?.id;
         }
 
         await interaction
             .editReply({
                 content: `${this.emoji(messageId ? "check" : "error")} ${
-                    messageId ? "Reply sent successfully" : "Failed to send reply. Make sure it's a valid and reply-able message"
+                    messageId
+                        ? "Reply sent successfully"
+                        : "Failed to send reply. Make sure it's a valid and reply-able message"
                 }.`
             })
             .catch(logError);

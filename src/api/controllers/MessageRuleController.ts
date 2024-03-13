@@ -29,7 +29,12 @@ import Controller from "../Controller";
 import Request from "../Request";
 import Response from "../Response";
 
-async function middleware(client: Client, request: Request, response: ExpressResponse, next: NextFunction) {
+async function middleware(
+    client: Client,
+    request: Request,
+    response: ExpressResponse,
+    next: NextFunction
+) {
     if (client.configManager.config[request.params.guild]?.message_rules?.enabled) {
         response.status(400).json({
             error: "Cannot use message rule features when it's not enabled"
