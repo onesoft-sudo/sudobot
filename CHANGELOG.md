@@ -1,3 +1,12 @@
+## [8.29.3](https://github.com/onesoft-sudo/sudobot/compare/v8.29.2...v8.29.3) (2024-03-13)
+
+
+### Bug Fixes
+
+* ai command ([025f94a](https://github.com/onesoft-sudo/sudobot/commit/025f94a1474add7884ed2e7f5ff9089e0f6f41ed))
+
+
+
 ## [8.29.2](https://github.com/onesoft-sudo/sudobot/compare/v8.29.1...v8.29.2) (2024-03-13)
 
 
@@ -36,15 +45,6 @@
 ### Bug Fixes
 
 * **utils:datetime:** issue with parsing intervals ([2be2f9e](https://github.com/onesoft-sudo/sudobot/commit/2be2f9e54b39d650bc230fad3d2eb01b9439568c))
-
-
-
-## [8.28.1](https://github.com/onesoft-sudo/sudobot/compare/v8.28.0...v8.28.1) (2024-03-11)
-
-
-### Bug Fixes
-
-* **utils:caching:** cache function key comparison ([ae3b254](https://github.com/onesoft-sudo/sudobot/commit/ae3b2545c5f99228f79191cb41075ede9b53c091))
 
 
 
