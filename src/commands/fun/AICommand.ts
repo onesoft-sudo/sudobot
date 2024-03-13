@@ -131,33 +131,57 @@ export default class AICommand extends Command {
                 const chat = this.googleAi.startChat({
                     history: [
                         {
+                            role: "user",
+                            parts: [{ text: "Who are you?" }]
+                        },
+                        {
                             role: "model",
                             parts: [{ text: "I'm SudoBot, a Discord Moderation Bot." }]
                         }
                     ]
                 });
 
-                const result = await chat.sendMessage(prompt);
-                const { response } = result;
+                try {
+                    const result = await chat.sendMessage(prompt);
+                    const { response } = result;
 
-                if (result.response.promptFeedback?.blockReason) {
-                    const reason =
-                        result.response.promptFeedback?.blockReasonMessage ??
-                        `This request was cancelled ${
-                            {
-                                BLOCKED_REASON_UNSPECIFIED: "for an unspecified reason",
-                                SAFETY: "by the safety filter"
-                            }[result.response.promptFeedback?.blockReason] ?? "for unknown reasons"
-                        }`;
+                    if (result.response.promptFeedback?.blockReason) {
+                        const reason =
+                            result.response.promptFeedback?.blockReasonMessage ??
+                            `This request was cancelled ${
+                                {
+                                    BLOCKED_REASON_UNSPECIFIED: "for an unspecified reason",
+                                    SAFETY: "by the safety filter"
+                                }[result.response.promptFeedback?.blockReason] ??
+                                "for unknown reasons"
+                            }`;
 
-                    await interaction.editReply({
-                        content: ` ${reason}.`
-                    });
+                        await interaction.editReply({
+                            content: ` ${reason}.`
+                        });
 
-                    return;
+                        return;
+                    }
+
+                    content = response.text();
+                } catch (error) {
+                    if (
+                        error &&
+                        typeof error === "object" &&
+                        "message" in error &&
+                        typeof error.message === "string" &&
+                        error.message.includes("overloaded")
+                    ) {
+                        logError(error);
+
+                        await this.error(
+                            interaction,
+                            "The AI model is currently overloaded. Please try again later."
+                        );
+                    }
+
+                    throw error;
                 }
-
-                content = response.text();
             } else if (process.env.CF_AI_URL) {
                 const { data } = await axios.post(
                     process.env.CF_AI_URL!,
