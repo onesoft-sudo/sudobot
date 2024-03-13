@@ -1,3 +1,12 @@
+## [8.29.2](https://github.com/onesoft-sudo/sudobot/compare/v8.29.1...v8.29.2) (2024-03-13)
+
+
+### Bug Fixes
+
+* ai command ([523af9f](https://github.com/onesoft-sudo/sudobot/commit/523af9f74fee0b94e364a3c5bb1b0fb169d02529))
+
+
+
 ## [8.29.1](https://github.com/onesoft-sudo/sudobot/compare/v8.29.0...v8.29.1) (2024-03-13)
 
 
@@ -36,15 +45,6 @@
 ### Bug Fixes
 
 * **utils:caching:** cache function key comparison ([ae3b254](https://github.com/onesoft-sudo/sudobot/commit/ae3b2545c5f99228f79191cb41075ede9b53c091))
-
-
-
-# [8.28.0](https://github.com/onesoft-sudo/sudobot/compare/v8.27.0...v8.28.0) (2024-03-11)
-
-
-### Features
-
-* **infractions:reason_templates:** abort if a template reference could not be resolved in commands ([89b5f42](https://github.com/onesoft-sudo/sudobot/commit/89b5f42d5347e1a6655d3cf87718da5b6b219b12))
 
 
 
