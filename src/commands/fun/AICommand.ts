@@ -122,7 +122,7 @@ export default class AICommand extends Command {
                     } = require("@google/generative-ai");
                     const generativeAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
                     this.googleAi = generativeAI.getGenerativeModel({
-                        model: "gemini-pro",
+                        model: process.env.GEMINI_API_MODEL_CODE ?? "gemini-pro",
                         safetySettings: Object.keys(HarmCategory).map(k => ({
                             category: HarmCategory[k as keyof typeof HarmCategory],
                             threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE

@@ -42,6 +42,7 @@ namespace NodeJS {
         CREDENTIAL_SERVER?: string;
         PRIVATE_BOT_MODE?: string;
         GEMINI_API_KEY?: string;
+        GEMINI_API_MODEL_CODE?: string;
         OPENAI_API_KEY?: string;
         OPENAI_MODEL_ID?: string;
         EXTENSIONS_DIRECTORY?: string;
