@@ -78,13 +78,36 @@ const path = require("path");
                   ),
               )
             : null;
+        const children = [...(dirdata?.entries ?? []), ...data];
+
+        children.sort((a, b) => {
+            if (dirdata?.sort_as) {
+                const aIndex = dirdata.sort_as.indexOf(a.name);
+                const bIndex = dirdata.sort_as.indexOf(b.name);
+
+                if (aIndex !== -1 && bIndex !== -1) {
+                    return aIndex - bIndex;
+                } else if (aIndex !== -1) {
+                    return -1;
+                } else if (bIndex !== -1) {
+                    return 1;
+                }
+            }
+
+            return a.name.localeCompare(b.name);
+        });
 
         return {
             type: "directory",
             name: name === "(docs)" ? "/" : name,
-            children: data,
+            children: children,
             href,
-            data: dirdata ?? undefined,
+            data: dirdata
+                ? {
+                      title: dirdata.title,
+                      short_name: dirdata.short_name,
+                  }
+                : undefined,
         };
     }
 
