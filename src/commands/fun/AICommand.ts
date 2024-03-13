@@ -115,9 +115,11 @@ export default class AICommand extends Command {
                 }
 
                 if (!this.googleAi) {
-                    const { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } = await import(
-                        "@google/generative-ai"
-                    );
+                    const {
+                        GoogleGenerativeAI,
+                        HarmCategory,
+                        HarmBlockThreshold
+                    } = require("@google/generative-ai");
                     const generativeAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
                     this.googleAi = generativeAI.getGenerativeModel({
                         model: "gemini-pro",
@@ -128,7 +130,7 @@ export default class AICommand extends Command {
                     });
                 }
 
-                const chat = this.googleAi.startChat({
+                const chat = this.googleAi!.startChat({
                     history: [
                         {
                             role: "user",
