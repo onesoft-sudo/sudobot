@@ -17,8 +17,20 @@
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "strict": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true
     },
     "include": ["./src/types/globals.d.ts", "src/**/*.ts"],
-    "exclude": ["./backup", "./tmp", "./tmp/**", "./scripts", "./tests", "./build", "./extensions", "./docs", "./docs/**"]
+    "exclude": [
+        "./backup",
+        "./tmp",
+        "./tmp/**",
+        "./scripts",
+        "./tests",
+        "./build",
+        "./extensions",
+        "./docs",
+        "./docs/**"
+    ]
 }
