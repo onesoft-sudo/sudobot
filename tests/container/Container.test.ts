@@ -224,3 +224,27 @@ describe("container bindings with factories", () => {
         expect(instance.value).toBe(instance2.value);
     });
 });
+
+describe("global containers", () => {
+    beforeEach(() => {
+        Container.destroyGlobalContainer();
+    });
+
+    it("should set the first container as the global container", () => {
+        Container.setFirstContainerAsGlobal();
+        const container = new Container();
+        expect(Container.getGlobalContainer()).toBe(container);
+    });
+
+    it("should throw an error when trying to get the global container without setting it first", () => {
+        expect(() => Container.getGlobalContainer()).toThrowError(
+            "Global container has not been set yet"
+        );
+    });
+
+    it("should set a custom global container", () => {
+        const container = new Container();
+        Container.getGlobalContainerResolver(() => container);
+        expect(Container.getGlobalContainer()).toBe(container);
+    });
+});
