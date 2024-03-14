@@ -40,5 +40,5 @@
             }
         }
     ],
-    "ignorePatterns": ["*.js", "./node_modules/**", "./extensions/**", "./docs/**", "./src.bak/**"]
+    "ignorePatterns": ["*.js", "./node_modules/**", "./extensions/**", "./docs/**", "./*.bak/**"]
 }
