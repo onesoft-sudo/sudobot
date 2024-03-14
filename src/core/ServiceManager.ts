@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { logInfo } from "../components/io/Logger";
+import { logInfo } from "../components/log/Logger";
 import { Class, DefaultExport } from "../types/Utils";
 import type Client from "./Client";
 import Service from "./Service";

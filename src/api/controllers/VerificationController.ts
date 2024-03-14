@@ -21,7 +21,7 @@ import { VerificationEntry } from "@prisma/client";
 import axios from "axios";
 import bcrypt from "bcrypt";
 import { z } from "zod";
-import { logError } from "../../components/io/Logger";
+import { logError } from "../../components/log/Logger";
 import { Action } from "../../decorators/Action";
 import { Validate } from "../../decorators/Validate";
 import { zSnowflake } from "../../types/SnowflakeSchema";

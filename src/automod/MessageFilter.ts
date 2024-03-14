@@ -18,7 +18,7 @@
  */
 
 import { Message, PermissionsBitField } from "discord.js";
-import { logError } from "../components/io/Logger";
+import { logError } from "../components/log/Logger";
 import Service from "../core/Service";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { isImmuneToAutoMod } from "../utils/utils";

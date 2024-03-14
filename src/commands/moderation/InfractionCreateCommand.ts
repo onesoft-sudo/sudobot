@@ -19,7 +19,7 @@
 
 import { InfractionType } from "@prisma/client";
 import { ChatInputCommandInteraction, GuildMember, PermissionsBitField } from "discord.js";
-import { logError } from "../../components/io/Logger";
+import { logError } from "../../components/log/Logger";
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 import { stringToTimeInterval } from "../../utils/datetime";
 

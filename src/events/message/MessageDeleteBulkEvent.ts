@@ -26,7 +26,7 @@ import {
     Snowflake,
     TextChannel
 } from "discord.js";
-import { logError } from "../../components/io/Logger";
+import { logError } from "../../components/log/Logger";
 import EventListener from "../../core/EventListener";
 import { Events } from "../../types/ClientEvents";
 

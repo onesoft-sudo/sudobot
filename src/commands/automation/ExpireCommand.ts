@@ -19,7 +19,7 @@
 
 import { Message, PermissionsBitField, SlashCommandBuilder, TextBasedChannel } from "discord.js";
 import path from "path";
-import { logError } from "../../components/io/Logger";
+import { logError } from "../../components/log/Logger";
 import Command, {
     ArgumentType,
     BasicCommandContext,

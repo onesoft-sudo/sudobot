@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { log, logError } from "../components/io/Logger";
+import { log, logError } from "../components/log/Logger";
 import Queue from "../utils/Queue";
 
 export default class UnbanQueue extends Queue {

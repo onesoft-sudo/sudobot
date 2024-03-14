@@ -33,7 +33,7 @@ import {
 } from "discord.js";
 import { readFile } from "fs/promises";
 import JSON5 from "json5";
-import { log, logError, logWarn } from "../components/io/Logger";
+import { log, logError, logWarn } from "../components/log/Logger";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { NotUndefined } from "../types/NotUndefined";

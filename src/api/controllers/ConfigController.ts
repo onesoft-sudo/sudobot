@@ -21,7 +21,7 @@ import deepmerge from "deepmerge";
 import dot from "dot-object";
 import { Response as ExpressResponse } from "express";
 import { z } from "zod";
-import { logError } from "../../components/io/Logger";
+import { logError } from "../../components/log/Logger";
 import { Action } from "../../decorators/Action";
 import { RequireAuth } from "../../decorators/RequireAuth";
 import { Validate } from "../../decorators/Validate";

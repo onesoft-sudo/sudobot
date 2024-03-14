@@ -19,7 +19,7 @@
 
 import { CommandPermissionOverwrite } from "@prisma/client";
 import { Awaitable, GuildMember, PermissionsString, Snowflake } from "discord.js";
-import { log } from "../components/io/Logger";
+import { log } from "../components/log/Logger";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";

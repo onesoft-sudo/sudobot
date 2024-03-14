@@ -24,7 +24,7 @@ import fs, { rm } from "fs/promises";
 import path from "path";
 import tar from "tar";
 import { z } from "zod";
-import { log, logDebug, logError, logInfo, logWarn } from "../components/io/Logger";
+import { log, logDebug, logError, logInfo, logWarn } from "../components/log/Logger";
 import Client from "../core/Client";
 import EventListener from "../core/EventListener";
 import { Extension } from "../core/Extension";

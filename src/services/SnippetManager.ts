@@ -33,7 +33,7 @@ import {
 import { existsSync } from "fs";
 import fs from "fs/promises";
 import { basename } from "path";
-import { LogLevel, log, logError, logInfo, logWithLevel } from "../components/io/Logger";
+import { LogLevel, log, logError, logInfo, logWithLevel } from "../components/log/Logger";
 import Command, { CommandMessage } from "../core/Command";
 import Service from "../core/Service";
 import EmbedSchemaParser from "../utils/EmbedSchemaParser";

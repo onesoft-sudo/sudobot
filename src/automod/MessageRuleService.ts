@@ -31,7 +31,7 @@ import {
     escapeMarkdown
 } from "discord.js";
 import sharp from "sharp";
-import { log, logDebug, logError, logWarn } from "../components/io/Logger";
+import { log, logDebug, logError, logWarn } from "../components/log/Logger";
 import Service from "../core/Service";
 import { CreateLogEmbedOptions } from "../services/LoggerService";
 import { HasEventListeners } from "../types/HasEventListeners";

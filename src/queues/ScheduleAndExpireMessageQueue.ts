@@ -18,7 +18,7 @@
  */
 
 import path from "path";
-import { logError } from "../components/io/Logger";
+import { logError } from "../components/log/Logger";
 import Queue from "../utils/Queue";
 import QueueEntry from "../utils/QueueEntry";
 import { safeChannelFetch } from "../utils/fetch";

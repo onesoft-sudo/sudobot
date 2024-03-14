@@ -46,7 +46,7 @@ import {
     time
 } from "discord.js";
 import path from "path";
-import { log, logError } from "../components/io/Logger";
+import { log, logError } from "../components/log/Logger";
 import { CommandAbortedError } from "../core/Command";
 import Service from "../core/Service";
 import QueueEntry from "../utils/QueueEntry";

@@ -20,7 +20,7 @@
 import type { Tensor3D } from "@tensorflow/tfjs-node";
 import type { NSFWJS } from "nsfwjs";
 import Tesseract, { createWorker } from "tesseract.js";
-import { log, logInfo } from "../components/io/Logger";
+import { log, logInfo } from "../components/log/Logger";
 import Service from "../core/Service";
 import { developmentMode } from "../utils/utils";
 

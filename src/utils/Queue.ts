@@ -18,7 +18,7 @@
  */
 
 import { Guild, TextChannel } from "discord.js";
-import { logError } from "../components/io/Logger";
+import { logError } from "../components/log/Logger";
 import Client from "../core/Client";
 import { isTextableChannel } from "./utils";
 

@@ -22,7 +22,7 @@ import { lstat } from "node:fs/promises";
 import path from "node:path";
 import { chdir, cwd } from "node:process";
 import readline from "node:readline";
-import { LogLevel, logError, logInfo, logWarn, logWithLevel } from "../components/io/Logger";
+import { LogLevel, logError, logInfo, logWarn, logWithLevel } from "../components/log/Logger";
 import Service from "../core/Service";
 import { AnyFunction } from "../types/Utils";
 import { developmentMode } from "../utils/utils";

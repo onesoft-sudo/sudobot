@@ -26,7 +26,7 @@ import {
     TextChannel,
     User
 } from "discord.js";
-import { log, logError, logInfo, logWarn } from "../components/io/Logger";
+import { log, logError, logInfo, logWarn } from "../components/log/Logger";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";

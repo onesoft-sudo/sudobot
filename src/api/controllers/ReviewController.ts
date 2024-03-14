@@ -20,7 +20,7 @@
 import { NextFunction, Response } from "express";
 import { rateLimit } from "express-rate-limit";
 import { z } from "zod";
-import { logError } from "../../components/io/Logger";
+import { logError } from "../../components/log/Logger";
 import { Action } from "../../decorators/Action";
 import { EnableAdminAccessControl } from "../../decorators/EnableAdminAccessControl";
 import { Validate } from "../../decorators/Validate";

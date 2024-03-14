@@ -19,7 +19,7 @@
 
 import { PermissionOverwrite } from "@prisma/client";
 import { GuildMember, PermissionsBitField, PermissionsString, Role, Snowflake } from "discord.js";
-import { logInfo } from "../components/io/Logger";
+import { logInfo } from "../components/log/Logger";
 import { GetMemberPermissionInGuildResult } from "../services/PermissionManager";
 import AbstractPermissionManager from "./AbstractPermissionManager";
 

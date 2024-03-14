@@ -33,7 +33,7 @@ import {
     time
 } from "discord.js";
 import jwt from "jsonwebtoken";
-import { logError } from "../components/io/Logger";
+import { logError } from "../components/log/Logger";
 import Service from "../core/Service";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { userInfo } from "../utils/embed";

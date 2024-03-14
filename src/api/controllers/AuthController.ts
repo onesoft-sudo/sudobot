@@ -32,7 +32,7 @@ import jwt from "jsonwebtoken";
 import { randomInt } from "node:crypto";
 import { request as undiciRequest } from "undici";
 import { z } from "zod";
-import { logError } from "../../components/io/Logger";
+import { logError } from "../../components/log/Logger";
 import { Action } from "../../decorators/Action";
 import { Validate } from "../../decorators/Validate";
 import { safeUserFetch } from "../../utils/fetch";

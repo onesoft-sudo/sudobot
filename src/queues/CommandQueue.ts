@@ -26,7 +26,7 @@ import {
     Snowflake,
     TextChannel
 } from "discord.js";
-import { log, logError } from "../components/io/Logger";
+import { log, logError } from "../components/log/Logger";
 import Queue from "../utils/Queue";
 import { safeChannelFetch, safeMemberFetch, safeMessageFetch } from "../utils/fetch";
 

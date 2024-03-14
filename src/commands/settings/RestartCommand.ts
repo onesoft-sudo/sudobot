@@ -29,7 +29,7 @@ import {
 } from "discord.js";
 import { writeFile } from "fs/promises";
 import path from "path";
-import { logError } from "../../components/io/Logger";
+import { logError } from "../../components/log/Logger";
 import Command, { CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import { HasEventListeners } from "../../types/HasEventListeners";

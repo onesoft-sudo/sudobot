@@ -22,7 +22,7 @@ import fs, { writeFile } from "fs/promises";
 import path from "path";
 import { AnyZodObject, z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import { log, logDebug, logInfo } from "../components/io/Logger";
+import { log, logDebug, logInfo } from "../components/log/Logger";
 import type { Extension } from "../core/Extension";
 import Service from "../core/Service";
 import { GuildConfig, GuildConfigSchema } from "../types/GuildConfigSchema";

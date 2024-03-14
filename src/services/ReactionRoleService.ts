@@ -19,7 +19,7 @@
 
 import { ReactionRole } from "@prisma/client";
 import { Client, GuildMember, PermissionsString, Routes, Snowflake } from "discord.js";
-import { log, logError } from "../components/io/Logger";
+import { log, logError } from "../components/log/Logger";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";

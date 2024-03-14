@@ -19,7 +19,7 @@
 
 import { NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
-import { log } from "../../components/io/Logger";
+import { log } from "../../components/log/Logger";
 import type Client from "../../core/Client";
 import Request from "../Request";
 

@@ -19,7 +19,7 @@
 
 import { Message, PermissionFlagsBits } from "discord.js";
 import { google } from "googleapis";
-import { log, logError } from "../components/io/Logger";
+import { log, logError } from "../components/log/Logger";
 import Service from "../core/Service";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { isImmuneToAutoMod } from "../utils/utils";

@@ -19,7 +19,7 @@
 
 import axios from "axios";
 import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from "discord.js";
-import { logError } from "../../components/io/Logger";
+import { logError } from "../../components/log/Logger";
 import Command, { CommandReturn } from "../../core/Command";
 import Pagination from "../../utils/Pagination";
 import { chunkedString } from "../../utils/utils";

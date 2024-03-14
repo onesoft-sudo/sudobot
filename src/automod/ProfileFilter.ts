@@ -18,7 +18,7 @@
  */
 
 import { ActivityType, GuildMember, PartialGuildMember, PermissionFlagsBits } from "discord.js";
-import { log } from "../components/io/Logger";
+import { log } from "../components/log/Logger";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { GuildConfig } from "../types/GuildConfigSchema";

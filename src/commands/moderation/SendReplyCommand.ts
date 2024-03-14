@@ -29,7 +29,7 @@ import {
     TextInputBuilder,
     TextInputStyle
 } from "discord.js";
-import { logError } from "../../components/io/Logger";
+import { logError } from "../../components/log/Logger";
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import { HasEventListeners } from "../../types/HasEventListeners";

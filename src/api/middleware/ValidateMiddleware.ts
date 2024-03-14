@@ -19,7 +19,7 @@
 
 import { NextFunction, Response } from "express";
 import { ZodSchema } from "zod";
-import { log } from "../../components/io/Logger";
+import { log } from "../../components/log/Logger";
 import Request from "../Request";
 
 export default async function ValidateMiddleware(

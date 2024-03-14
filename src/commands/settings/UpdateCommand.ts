@@ -34,7 +34,7 @@ import { existsSync } from "fs";
 import { cp, mkdir, rename, rm } from "fs/promises";
 import path, { basename, join } from "path";
 import semver from "semver";
-import { log, logError, logInfo, logWarn } from "../../components/io/Logger";
+import { log, logError, logInfo, logWarn } from "../../components/log/Logger";
 import Command, { CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import { downloadFile } from "../../utils/download";
 import { sudoPrefix } from "../../utils/utils";

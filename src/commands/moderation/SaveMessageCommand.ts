@@ -23,7 +23,7 @@ import {
     MessageContextMenuCommandInteraction,
     PermissionsBitField
 } from "discord.js";
-import { logError } from "../../components/io/Logger";
+import { logError } from "../../components/log/Logger";
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 import { channelInfo, messageInfo, userInfo } from "../../utils/embed";
 import { safeChannelFetch } from "../../utils/fetch";

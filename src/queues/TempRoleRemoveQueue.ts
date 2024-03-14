@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { logError } from "../components/io/Logger";
+import { logError } from "../components/log/Logger";
 import Queue from "../utils/Queue";
 
 export default class TempRoleRemoveQueue extends Queue {

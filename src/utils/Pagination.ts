@@ -33,7 +33,7 @@ import {
     MessageReplyOptions
 } from "discord.js";
 import * as uuid from "uuid";
-import { log } from "../components/io/Logger";
+import { log } from "../components/log/Logger";
 import Client from "../core/Client";
 import { getComponentEmojiResolvable } from "./utils";
 

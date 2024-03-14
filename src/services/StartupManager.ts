@@ -37,7 +37,7 @@ import { rm } from "fs/promises";
 import path from "path";
 import { gt } from "semver";
 import { version } from "../../package.json";
-import { log, logError, logInfo, logSuccess } from "../components/io/Logger";
+import { log, logError, logInfo, logSuccess } from "../components/log/Logger";
 import Service from "../core/Service";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { safeChannelFetch, safeMessageFetch } from "../utils/fetch";

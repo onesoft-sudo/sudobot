@@ -25,7 +25,7 @@ import {
     User,
     escapeMarkdown
 } from "discord.js";
-import { log, logError } from "../../components/io/Logger";
+import { log, logError } from "../../components/log/Logger";
 import Command, {
     ArgumentType,
     BasicCommandContext,

@@ -18,7 +18,7 @@
  */
 
 import path from "path";
-import { log, logError } from "../components/io/Logger";
+import { log, logError } from "../components/log/Logger";
 import Queue, { QueueConstructorOptions } from "./Queue";
 
 export default class QueueEntry {

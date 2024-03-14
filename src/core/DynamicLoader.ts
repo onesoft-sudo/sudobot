@@ -22,7 +22,7 @@ import { Router } from "express";
 import { lstat, readdir } from "node:fs/promises";
 import path, { basename, dirname } from "node:path";
 import Controller from "../api/Controller";
-import { log, logInfo } from "../components/io/Logger";
+import { log, logInfo } from "../components/log/Logger";
 import { EventListenerInfo } from "../decorators/GatewayEventListener";
 import { ClientEvents } from "../types/ClientEvents";
 import { AnyFunction, Class, DefaultExport } from "../types/Utils";

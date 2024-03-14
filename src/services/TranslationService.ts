@@ -18,7 +18,7 @@
  */
 
 import axios from "axios";
-import { log, logError } from "../components/io/Logger";
+import { log, logError } from "../components/log/Logger";
 import Service from "../core/Service";
 
 export const name = "translator";

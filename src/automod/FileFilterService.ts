@@ -20,7 +20,7 @@
 import { Attachment, Message, PermissionFlagsBits, Snowflake } from "discord.js";
 import crypto from "node:crypto";
 import { readFile, rm } from "node:fs/promises";
-import { logError, logInfo, logWarn } from "../components/io/Logger";
+import { logError, logInfo, logWarn } from "../components/log/Logger";
 import Service from "../core/Service";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { downloadFile } from "../utils/download";

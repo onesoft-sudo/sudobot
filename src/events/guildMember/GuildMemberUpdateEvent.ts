@@ -19,7 +19,7 @@
 
 import { InfractionType } from "@prisma/client";
 import { AuditLogEvent, Events, GuildMember } from "discord.js";
-import { logError } from "../../components/io/Logger";
+import { logError } from "../../components/log/Logger";
 import EventListener from "../../core/EventListener";
 
 export default class GuildMemberUpdateEvent extends EventListener<Events.GuildMemberUpdate> {

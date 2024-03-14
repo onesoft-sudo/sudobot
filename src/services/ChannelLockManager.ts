@@ -28,7 +28,7 @@ import {
     TextChannel,
     User
 } from "discord.js";
-import { log, logError } from "../components/io/Logger";
+import { log, logError } from "../components/log/Logger";
 import Service from "../core/Service";
 import { getChannelPermissionOverride } from "../utils/utils";
 

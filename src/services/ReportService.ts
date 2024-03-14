@@ -38,7 +38,7 @@ import {
     TextInputStyle,
     User
 } from "discord.js";
-import { logError } from "../components/io/Logger";
+import { logError } from "../components/log/Logger";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import LevelBasedPermissionManager from "../security/LevelBasedPermissionManager";

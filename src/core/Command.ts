@@ -42,7 +42,7 @@ import {
     TextBasedChannel,
     User
 } from "discord.js";
-import { logError } from "../components/io/Logger";
+import { logError } from "../components/log/Logger";
 import {
     ChatInputCommandContext,
     ContextMenuCommandContext,

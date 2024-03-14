@@ -26,7 +26,7 @@ import {
     SnowflakeUtil,
     User
 } from "discord.js";
-import { logWarn } from "../components/io/Logger";
+import { logWarn } from "../components/log/Logger";
 import { AnyFunction } from "../types/Utils";
 import { stringToTimeInterval } from "../utils/datetime";
 import CommandArgumentParserInterface, {

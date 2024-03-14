@@ -18,7 +18,7 @@
  */
 
 import axios from "axios";
-import { logError } from "../../components/io/Logger";
+import { logError } from "../../components/log/Logger";
 import Command, { CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class EncourageCommand extends Command {

@@ -18,7 +18,7 @@
  */
 
 import { User } from "discord.js";
-import { logError } from "../../components/io/Logger";
+import { logError } from "../../components/log/Logger";
 import Command, { CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 
 export default class DMHistoryCommand extends Command {

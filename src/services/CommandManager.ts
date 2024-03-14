@@ -25,7 +25,7 @@ import {
     Snowflake,
     User
 } from "discord.js";
-import { log, logError, logWarn } from "../components/io/Logger";
+import { log, logError, logWarn } from "../components/log/Logger";
 import { CommandAbortedError, CommandMessage } from "../core/Command";
 import Service from "../core/Service";
 import { GuildConfig } from "./ConfigManager";

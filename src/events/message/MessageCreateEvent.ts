@@ -18,7 +18,7 @@
  */
 
 import { ChannelType, GuildMember, Message, MessageType } from "discord.js";
-import { log, logError } from "../../components/io/Logger";
+import { log, logError } from "../../components/log/Logger";
 import Client from "../../core/Client";
 import EventListener from "../../core/EventListener";
 import { Events } from "../../types/ClientEvents";

@@ -25,7 +25,7 @@ import {
     Message,
     User
 } from "discord.js";
-import { logError } from "../../components/io/Logger";
+import { logError } from "../../components/log/Logger";
 import Command, { BasicCommandContext, CommandMessage, CommandReturn } from "../../core/Command";
 import { getComponentEmojiResolvable, isTextableChannel } from "../../utils/utils";
 

@@ -28,7 +28,7 @@ import {
     Presence,
     Snowflake
 } from "discord.js";
-import { logError } from "../components/io/Logger";
+import { logError } from "../components/log/Logger";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";

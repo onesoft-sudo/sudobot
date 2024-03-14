@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { logError, logInfo, logWarn } from "../components/io/Logger";
+import { logError, logInfo, logWarn } from "../components/log/Logger";
 import type Client from "../core/Client";
 import EventListener from "../core/EventListener";
 import { Events } from "../types/ClientEvents";

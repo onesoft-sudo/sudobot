@@ -21,7 +21,7 @@ import { PrismaClient } from "@prisma/client";
 import { ClientOptions, Client as DiscordJSClient } from "discord.js";
 import path from "path";
 import Server from "../api/Server";
-import { Logger } from "../components/io/Logger";
+import { Logger } from "../components/log/Logger";
 import type ConfigManager from "../services/ConfigManager";
 import type LogServer from "../services/LogServer";
 import type StartupManager from "../services/StartupManager";

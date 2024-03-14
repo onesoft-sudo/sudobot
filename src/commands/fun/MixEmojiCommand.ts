@@ -19,7 +19,7 @@
 
 import axios, { AxiosError } from "axios";
 import { SlashCommandBuilder } from "discord.js";
-import { logError } from "../../components/io/Logger";
+import { logError } from "../../components/log/Logger";
 import Command, {
     ArgumentType,
     BasicCommandContext,

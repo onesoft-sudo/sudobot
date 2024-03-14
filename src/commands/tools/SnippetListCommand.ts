@@ -23,7 +23,7 @@ import {
     Message,
     PermissionsBitField
 } from "discord.js";
-import { log } from "../../components/io/Logger";
+import { log } from "../../components/log/Logger";
 import Command, { CommandMessage, CommandReturn, ValidationRule } from "../../core/Command";
 import Pagination from "../../utils/Pagination";
 

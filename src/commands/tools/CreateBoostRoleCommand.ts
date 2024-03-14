@@ -24,7 +24,7 @@ import {
     SlashCommandBuilder,
     resolveColor
 } from "discord.js";
-import { logError } from "../../components/io/Logger";
+import { logError } from "../../components/log/Logger";
 import Command, { CommandReturn, ValidationRule } from "../../core/Command";
 import { ChatInputCommandContext } from "../../services/CommandManager";
 import { safeRoleFetch } from "../../utils/fetch";

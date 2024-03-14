@@ -19,7 +19,7 @@
 
 import { PermissionLevel } from "@prisma/client";
 import { GuildMember, PermissionsBitField, PermissionsString, Snowflake } from "discord.js";
-import { log, logInfo } from "../components/io/Logger";
+import { log, logInfo } from "../components/log/Logger";
 import { GetMemberPermissionInGuildResult } from "../services/PermissionManager";
 import { isSystemAdmin } from "../utils/utils";
 import AbstractPermissionManager from "./AbstractPermissionManager";

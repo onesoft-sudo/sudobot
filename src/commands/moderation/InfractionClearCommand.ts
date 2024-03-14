@@ -19,7 +19,7 @@
 
 import { InfractionType } from "@prisma/client";
 import { PermissionsBitField, User } from "discord.js";
-import { log } from "../../components/io/Logger";
+import { log } from "../../components/log/Logger";
 import Command, {
     ArgumentType,
     BasicCommandContext,
