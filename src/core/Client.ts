@@ -20,15 +20,9 @@
 import { PrismaClient } from "@prisma/client";
 import { ClientOptions, Client as DiscordJSClient } from "discord.js";
 import path from "path";
-import Server from "../api/Server";
+import { Inject } from "../components/container/Inject";
 import { Logger } from "../components/log/Logger";
-import type ConfigManager from "../services/ConfigManager";
-import type LogServer from "../services/LogServer";
-import type StartupManager from "../services/StartupManager";
 import { developmentMode } from "../utils/utils";
-import DynamicLoader from "./DynamicLoader";
-import type Service from "./Service";
-import ServiceManager from "./ServiceManager";
 
 class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
     public readonly prisma = new PrismaClient({
@@ -38,29 +32,10 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
 
     public static instance: Client;
 
-    // FIXME: Use DI for Logger
-    private static _logger?: Logger;
-
-    public static get logger() {
-        if (!this._logger) {
-            this._logger = new Logger("system", true);
-        }
-
-        return this._logger;
-    }
-
-    public get logger() {
-        return Client.logger;
-    }
-
-    public static getLogger() {
-        return this.logger;
-    }
+    @Inject()
+    public readonly logger!: Logger;
 
     // FIXME: Use DI for Services
-    public readonly dynamicLoader = new DynamicLoader(this);
-    public readonly serviceManager = new ServiceManager(this);
-    public readonly server = new Server(this);
 
     public readonly aliases = {
         automod: path.resolve(__dirname, "../automod"),
@@ -74,30 +49,20 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
         "@services/LogServer"
     ];
 
-    startupManager!: StartupManager;
-    configManager!: ConfigManager;
-    logServer!: LogServer;
-
     constructor(options: ClientOptions) {
         super(options);
         Client.instance = this;
     }
 
-    getService<S extends Service = Service>(name: string): S {
-        return this[name as keyof typeof this] as S;
-    }
-
     async boot({ commands = true, events = true }: { commands?: boolean; events?: boolean } = {}) {
-        await this.serviceManager.loadServices();
-
-        if (events) {
-            this.setMaxListeners(50);
-            await this.dynamicLoader.loadEvents();
-        }
-
-        if (commands) {
-            await this.dynamicLoader.loadCommands();
-        }
+        // await this.serviceManager.loadServices();
+        // if (events) {
+        //     this.setMaxListeners(50);
+        //     await this.dynamicLoader.loadEvents();
+        // }
+        // if (commands) {
+        //     await this.dynamicLoader.loadCommands();
+        // }
     }
 
     async getHomeGuild() {

@@ -23,7 +23,7 @@ export type ContainerOptions = {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyConstructor<A extends any[] = any[]> = new (...args: A) => unknown;
+export type AnyConstructor<A extends any[] = any[]> = new (...args: A) => unknown;
 
 /**
  * A simple dependency injection container. It allows you to bind classes to a key and resolve them later.
@@ -54,7 +54,6 @@ class Container {
     }
 
     public static getGlobalContainer(): Container {
-        console.log(this.globalContainerResolver);
         if (this.globalContainerResolver === undefined) {
             throw new Error("Global container has not been set yet");
         }
@@ -66,15 +65,44 @@ class Container {
         ref: R,
         options?: BindOptions<InstanceType<R>>
     ): Promise<void> {
-        this.bindings.set(ref, {
+        await this.resolveStaticProps(ref);
+
+        const value =
+            options?.factory && options.callImmediately ? await options.factory() : options?.value;
+
+        const binding = {
             key: options?.key,
-            value:
-                options?.factory && options.callImmediately
-                    ? await options.factory()
-                    : options?.value,
+            value,
             singleton: options?.singleton ?? false,
             factory: options?.factory
-        });
+        };
+
+        this.bindings.set(ref, binding);
+
+        if (value) {
+            await this.resolveProps(ref, value);
+        }
+    }
+
+    public async resolveStaticProps<R extends AnyConstructor>(ref: R) {
+        const metadata = Reflect.getMetadata("di:inject", ref);
+
+        if (!metadata) {
+            return;
+        }
+
+        for (const { key, ref: propRef } of metadata) {
+            const type = Reflect.getMetadata("design:type", ref, key);
+
+            if (!propRef && !type) {
+                throw new Error(
+                    `Failed to resolve property "${key}" on object of class "${ref.name}"`
+                );
+            }
+
+            const propTypeRef = propRef ?? type;
+            ref[key as keyof typeof ref] = await this.resolve(propTypeRef);
+        }
     }
 
     public resolveExisting<R extends AnyConstructor>(ref: R): InstanceType<R> {
@@ -87,6 +115,27 @@ class Container {
         return value as InstanceType<R>;
     }
 
+    private async resolveProps<R extends AnyConstructor>(ref: R, instance: InstanceType<R>) {
+        const metadata = Reflect.getMetadata("di:inject", ref.prototype);
+
+        if (!metadata) {
+            return;
+        }
+
+        for (const { key, ref: propRef } of metadata) {
+            const type = Reflect.getMetadata("design:type", ref.prototype, key);
+
+            if (!propRef && !type) {
+                throw new Error(
+                    `Failed to resolve property "${key}" on object of class "${ref.name}"`
+                );
+            }
+
+            const propTypeRef = propRef ?? type;
+            (instance as Record<string, unknown>)[key] = await this.resolve(propTypeRef);
+        }
+    }
+
     private async createInstance<R extends AnyConstructor>(ref: R): Promise<InstanceType<R>> {
         const paramTypes = Reflect.getMetadata("design:paramtypes", ref);
         const params: [] = [];
@@ -95,7 +144,9 @@ class Container {
             (params as unknown[]).push(await this.resolve(paramType));
         }
 
-        return new (ref as new () => InstanceType<R>)(...params);
+        const instance = new (ref as new () => InstanceType<R>)(...params);
+        await this.resolveProps(ref, instance);
+        return instance;
     }
 
     public async resolve<R extends AnyConstructor>(ref: R): Promise<InstanceType<R>> {

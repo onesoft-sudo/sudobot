@@ -19,13 +19,8 @@
 
 import axios, { AxiosRequestConfig } from "axios";
 import {
-    APIEmbedField,
     Channel,
     ChannelType,
-    ColorResolvable,
-    ComponentEmojiResolvable,
-    EmbedBuilder,
-    GuildEmoji,
     GuildMember,
     NewsChannel,
     PermissionOverwrites,
@@ -33,15 +28,10 @@ import {
     PermissionsBitField,
     TextBasedChannel,
     TextChannel,
-    ThreadChannel,
-    User,
-    escapeMarkdown
+    ThreadChannel
 } from "discord.js";
 import { mkdirSync } from "fs";
 import path from "path";
-import Client from "../core/Client";
-import { ActionDoneName } from "../services/InfractionManager";
-import { userInfo } from "./embed";
 
 export function isSnowflake(input: string) {
     return /^\d{16,22}$/.test(input);
@@ -64,133 +54,6 @@ export function pick<T, K extends Array<keyof T>>(
     return {} as Pick<T, K extends Array<infer E> ? E : never>;
 }
 
-export interface CreateModerationEmbedOptions {
-    user: User;
-    moderator: User;
-    actionDoneName?: ActionDoneName;
-    reason?: string | null;
-    description?: string;
-    fields?:
-        | APIEmbedField[]
-        | ((
-              fields: APIEmbedField[],
-              id: string,
-              reason?: string
-          ) => Promise<APIEmbedField[]> | APIEmbedField[]);
-    id: string | number;
-    color?: ColorResolvable;
-}
-
-export async function createModerationEmbed({
-    user,
-    actionDoneName,
-    reason,
-    description,
-    fields,
-    id,
-    color = 0xf14a60,
-    moderator
-}: CreateModerationEmbedOptions) {
-    return new EmbedBuilder({
-        author: {
-            name: user.tag,
-            icon_url: user.displayAvatarURL()
-        },
-        description: description ?? `**${escapeMarkdown(user.tag)}** has been ${actionDoneName}.`,
-        fields:
-            typeof fields === "function"
-                ? await fields(
-                      [
-                          {
-                              name: "Reason",
-                              value: reason ?? "*No reason provided*"
-                          },
-                          {
-                              name: "User",
-                              value: userInfo(user)
-                          },
-                          {
-                              name: "Moderator",
-                              value: userInfo(moderator)
-                          },
-                          {
-                              name: "Infraction ID",
-                              value: `${id}`
-                          }
-                      ],
-                      `${id}`,
-                      reason ?? undefined
-                  )
-                : [
-                      {
-                          name: "Reason",
-                          value: reason ?? "*No reason provided*"
-                      },
-                      {
-                          name: "User",
-                          value: userInfo(user)
-                      },
-                      {
-                          name: "Moderator",
-                          value: userInfo(moderator)
-                      },
-                      ...(fields ?? []),
-                      {
-                          name: "Infraction ID",
-                          value: `${id}`
-                      }
-                  ],
-        footer: actionDoneName
-            ? {
-                  text: actionDoneName[0].toUpperCase() + actionDoneName.substring(1)
-              }
-            : undefined
-    })
-        .setTimestamp()
-        .setColor(color);
-}
-
-export function getEmoji<B extends boolean = false>(
-    client: Client,
-    name: string,
-    returnNull: B = false as B
-): B extends false ? string : string | null {
-    return (
-        client.guilds.cache
-            .get(process.env.HOME_GUILD_ID!)
-            ?.emojis.cache.find(e => e.name === name)
-            ?.toString() ??
-        client.configManager.systemConfig.emojis?.[name] ??
-        client.emojiMap.get(name)?.toString() ??
-        (returnNull ? null : "")
-    );
-}
-
-export function getEmojiObject(client: Client, name: string): GuildEmoji | null {
-    return (
-        client.guilds.cache
-            .get(process.env.HOME_GUILD_ID!)
-            ?.emojis.cache.find(e => e.name === name) ??
-        client.emojiMap.get(name) ??
-        null
-    );
-}
-
-export function getComponentEmojiResolvable(
-    client: Client,
-    name: string
-): ComponentEmojiResolvable | null {
-    const emoji = getEmojiObject(client, name);
-
-    return emoji
-        ? {
-              id: emoji?.id,
-              name: emoji?.name ?? emoji?.identifier,
-              animated: emoji?.animated ?? false
-          }
-        : null;
-}
-
 export function isTextableChannel(
     channel: Channel | ThreadChannel,
     DMs = false
@@ -210,14 +73,6 @@ export function developmentMode() {
         ["dev", "development"].includes(process.env.NODE_ENV?.toLowerCase() ?? "production") ||
         ["dev", "development"].includes(process.env.SUDO_ENV?.toLowerCase() ?? "production")
     );
-}
-
-export function isImmuneToAutoMod(
-    client: Client,
-    member: GuildMember,
-    permission?: PermissionResolvable[] | PermissionResolvable
-) {
-    return client.permissionManager.isImmuneToAutoMod(member, permission);
 }
 
 export function wait(time: number) {
@@ -317,10 +172,6 @@ export function safeMessageContent(
                   /<@&(\d+)>/gim,
                   (_, id) => `@${member.guild.roles.cache.get(id)?.name ?? id}`
               );
-}
-
-export function isSystemAdmin(client: Client, userId: string) {
-    return client.configManager.systemConfig.system_admins.includes(userId);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

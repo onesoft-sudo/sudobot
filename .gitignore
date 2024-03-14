@@ -25,3 +25,4 @@ setup.sh
 *.tsbuildinfo
 .extbuild
 /coverage
+/src.bak

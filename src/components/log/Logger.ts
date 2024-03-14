@@ -17,7 +17,6 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 import chalk from "chalk";
-import Client from "../../core/Client";
 import { AnyFunction } from "../../types/Utils";
 import { developmentMode } from "../../utils/utils";
 
@@ -67,8 +66,9 @@ export class Logger {
         }
     }
 
+    // FIXME
     public print(methodName: "log" | "info" | "warn" | "error" | "debug", ...args: unknown[]) {
-        const logServerEnabled = Client.instance?.configManager?.systemConfig?.log_server?.enabled;
+        // const logServerEnabled = Client.instance?.configManager?.systemConfig?.log_server?.enabled;
 
         if (process.env.SUPRESS_LOGS) {
             return;
@@ -79,9 +79,9 @@ export class Logger {
             .map(arg => (typeof arg === "string" ? arg : JSON.stringify(arg, null, 2)))
             .join(" ");
 
-        if (logServerEnabled) {
-            Client.instance.logServer?.log(message);
-        }
+        // if (logServerEnabled) {
+        //     Client.instance.logServer?.log(message);
+        // }
     }
 
     private colorize(text: string, level: LogLevel) {

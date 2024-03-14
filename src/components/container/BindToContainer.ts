@@ -1,3 +1,4 @@
+import CanBind from "./CanBind";
 import Container, { BindOptions as DIBindOptions } from "./Container";
 
 type BindOptions<T> = Omit<DIBindOptions<T>, "value" | "factory"> & {
@@ -10,6 +11,8 @@ export default function BindToContainer<T extends new (...args: any[]) => any>(
 ) {
     return (constructor: T, context?: ClassDecoratorContext<T>) => {
         console.log(`Binding class ${constructor.name} to container with key ${options?.key}`);
+
+        CanBind(constructor, context);
 
         if (context) {
             (context.metadata as Record<string, string>) ??= {};
