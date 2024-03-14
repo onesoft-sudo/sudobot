@@ -32,6 +32,7 @@
         "./extensions",
         "./docs",
         "./docs/**",
-        "./src.bak/**"
+        "./src.bak/**",
+        "./src.bak"
     ]
 }
