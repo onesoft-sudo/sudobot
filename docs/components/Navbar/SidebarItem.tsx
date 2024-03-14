@@ -19,18 +19,23 @@ export default function SidebarItem({
 }: SidebarItemProps) {
     const pathname = useActualPathname();
     const flattenPages = useMemo(() => flatten([item]), [item]);
-    const [expanded, setExpanded] = useState(
-        () =>
+    const [expanded, setExpanded] = useState(false);
+    const isFinalExpanded = useMemo(() => {
+        return (
+            expanded ||
             flattenPages?.some(page => {
                 const link = page.type === "page" ? `${page.href}` : "#";
+
                 return (
                     (link === "/" && pathname === "/") ||
                     (link !== "/" &&
                         pathname !== "/" &&
                         pathname.startsWith(link))
                 );
-            }) ?? false,
-    );
+            })
+        );
+    }, [flattenPages, pathname, expanded]);
+
     const toggle = (e: SyntheticEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -72,7 +77,7 @@ export default function SidebarItem({
                         <MdExpandMore
                             size={20}
                             className={`${
-                                expanded ? "rotate-180" : ""
+                                isFinalExpanded ? "rotate-180" : ""
                             } transition-[0.2s]`}
                         />
                     </IconWrapperComponent>
@@ -83,7 +88,7 @@ export default function SidebarItem({
                 <div
                     className="ml-[13px] pl-[10px] [border-left:1px_solid_#444]"
                     style={{
-                        maxHeight: expanded
+                        maxHeight: isFinalExpanded
                             ? `${
                                   flattenPages.length *
                                   (50 +
