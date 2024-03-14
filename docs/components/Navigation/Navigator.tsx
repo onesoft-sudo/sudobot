@@ -2,48 +2,27 @@
 
 import useActualPathname from "@/hooks/useActualPathname";
 import styles from "@/styles/Navigator.module.css";
-import { getDocsPages, resolveDocsURL } from "@/utils/pages";
+import { flatten, getDocsPages, resolveDocsURL } from "@/utils/pages";
 import Link from "next/link";
 import { FC } from "react";
 import { MdArrowBack, MdArrowForward } from "react-icons/md";
 
 interface NavigatorProps {}
 
-const flattenRoutes = () => {
-    const flatRoutes = [];
-
-    for (const page of getDocsPages()) {
-        if (page.url) {
-            flatRoutes.push({
-                name: page.name,
-                url: page.url,
-            });
-        }
-
-        if (page.children) {
-            for (const child of page.children) {
-                flatRoutes.push(child);
-            }
-        }
-    }
-
-    return flatRoutes;
-};
-
-const flatRoutes = flattenRoutes();
+const flatRoutes = flatten();
 
 const Navigator: FC<NavigatorProps> = () => {
     const pathname = useActualPathname();
 
     const currentPage = flatRoutes.findIndex(page => {
-        if (!page.url) {
+        if (!page.href || page.type === "directory") {
             return false;
         }
 
-        const url = resolveDocsURL(page.url);
-
+        const url = resolveDocsURL(page.href);
         return url === pathname;
     });
+
     const nextIndex = currentPage + 1;
     const prevIndex = currentPage - 1;
     const nextPage = flatRoutes[nextIndex];
@@ -56,7 +35,7 @@ const Navigator: FC<NavigatorProps> = () => {
         >
             {prevPage && (
                 <Link
-                    href={prevPage.url ? resolveDocsURL(prevPage.url) : "#"}
+                    href={prevPage.href ? resolveDocsURL(prevPage.href) : "#"}
                     className={`${styles.navigationControl} ${styles.navigationControlBack}`}
                 >
                     <div className={styles.iconWrapper}>
@@ -70,7 +49,7 @@ const Navigator: FC<NavigatorProps> = () => {
             )}
             {nextPage && (
                 <Link
-                    href={nextPage.url ? resolveDocsURL(nextPage.url) : "#"}
+                    href={nextPage.href ? resolveDocsURL(nextPage.href) : "#"}
                     className={`${styles.navigationControl} ${styles.navigationControlNext}`}
                 >
                     <div className={styles.text}>

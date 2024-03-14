@@ -1,7 +1,7 @@
 import Link from "@/components/Navigation/Link";
 import useActualPathname from "@/hooks/useActualPathname";
 import styles from "@/styles/SidebarItem.module.css";
-import { DocsPage, resolveDocsURL } from "@/utils/pages";
+import { DocsPage, flatten, resolveDocsURL } from "@/utils/pages";
 import { Button } from "@mui/material";
 import { SyntheticEvent, useMemo, useState } from "react";
 import { MdExpandMore } from "react-icons/md";
@@ -10,17 +10,6 @@ type SidebarItemProps = {
     as: keyof JSX.IntrinsicElements;
     item: DocsPage;
     onNavigate?: () => void;
-};
-
-const flatten = (pages: DocsPage[]): DocsPage[] => {
-    return pages.reduce<DocsPage[]>((acc, page) => {
-        if (page.children) {
-            acc.push(page, ...flatten(page.children));
-        } else {
-            acc.push(page);
-        }
-        return acc;
-    }, []);
 };
 
 export default function SidebarItem({

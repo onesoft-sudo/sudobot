@@ -201,3 +201,16 @@ export const getAllDocsPages = () => {
         children: DocsPage[];
     };
 };
+
+export const flatten = (
+    pages: DocsPage[] = getAllDocsPages().children,
+): DocsPage[] => {
+    return pages.reduce<DocsPage[]>((acc, page) => {
+        if (page.children) {
+            acc.push(page, ...flatten(page.children));
+        } else {
+            acc.push(page);
+        }
+        return acc;
+    }, []);
+};
