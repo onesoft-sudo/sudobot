@@ -31,9 +31,36 @@ type AnyConstructor<A extends any[] = any[]> = new (...args: A) => unknown;
  * @since 9.0.0
  */
 class Container {
+    private static globalContainerResolver?: () => Container;
+    private static canSetGlobalContainer = false;
     private readonly bindings = new WeakMap<object, Binding>();
 
-    public constructor(private readonly options: ContainerOptions = {}) {}
+    public constructor(private readonly options: ContainerOptions = {}) {
+        if (Container.canSetGlobalContainer) {
+            Container.globalContainerResolver = () => this;
+        }
+    }
+
+    public static getGlobalContainerResolver(resolver: () => Container) {
+        this.globalContainerResolver = resolver;
+    }
+
+    public static setFirstContainerAsGlobal(canSetGlobalContainer: boolean = true) {
+        this.canSetGlobalContainer = canSetGlobalContainer;
+    }
+
+    public static destroyGlobalContainer() {
+        this.globalContainerResolver = undefined;
+    }
+
+    public static getGlobalContainer(): Container {
+        console.log(this.globalContainerResolver);
+        if (this.globalContainerResolver === undefined) {
+            throw new Error("Global container has not been set yet");
+        }
+
+        return this.globalContainerResolver();
+    }
 
     public async bind<R extends AnyConstructor>(
         ref: R,
