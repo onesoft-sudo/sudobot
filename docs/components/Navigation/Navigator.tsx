@@ -2,20 +2,20 @@
 
 import useActualPathname from "@/hooks/useActualPathname";
 import styles from "@/styles/Navigator.module.css";
-import { flatten, getDocsPages, resolveDocsURL } from "@/utils/pages";
+import { flatten, resolveDocsURL } from "@/utils/pages";
 import Link from "next/link";
 import { FC } from "react";
 import { MdArrowBack, MdArrowForward } from "react-icons/md";
 
 interface NavigatorProps {}
 
-const flatRoutes = flatten();
+const flatRoutes = flatten().filter(page => page.type !== "directory");
 
 const Navigator: FC<NavigatorProps> = () => {
     const pathname = useActualPathname();
 
     const currentPage = flatRoutes.findIndex(page => {
-        if (!page.href || page.type === "directory") {
+        if (!page.href) {
             return false;
         }
 
@@ -43,7 +43,9 @@ const Navigator: FC<NavigatorProps> = () => {
                     </div>
                     <div className={styles.text}>
                         <small>Back</small>
-                        <span>{prevPage.name}</span>
+                        <span>
+                            {prevPage.data?.short_name ?? prevPage.data?.title}
+                        </span>
                     </div>
                 </Link>
             )}
@@ -54,7 +56,9 @@ const Navigator: FC<NavigatorProps> = () => {
                 >
                     <div className={styles.text}>
                         <small>Next</small>
-                        <span>{nextPage.name}</span>
+                        <span>
+                            {nextPage.data?.short_name ?? nextPage.data?.title}
+                        </span>
                     </div>
                     <div className={styles.iconWrapper}>
                         <MdArrowForward size={26} />
