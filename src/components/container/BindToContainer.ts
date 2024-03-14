@@ -19,15 +19,14 @@ export default function BindToContainer<T extends new (...args: any[]) => any>(
         }
 
         const container =
-            typeof options?.container === "function" ? options.container() : options?.container;
+            (typeof options?.container === "function" ? options.container() : options?.container) ??
+            Container.getGlobalContainer();
 
-        if (container) {
-            container.bind(constructor, {
-                key: options?.key,
-                singleton: options?.singleton,
-                callImmediately: options?.callImmediately
-            });
-        }
+        container.bind(constructor, {
+            key: options?.key,
+            singleton: options?.singleton,
+            callImmediately: options?.callImmediately
+        });
 
         return constructor;
     };
