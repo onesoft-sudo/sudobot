@@ -2,16 +2,24 @@ import { Awaitable } from "discord.js";
 
 type Binding<T = unknown> = {
     value?: T;
-    key: string;
+    key?: string;
     singleton: boolean;
     factory?: () => Awaitable<T>;
 };
 
-type BindOptions<T> = {
+export type BindOptions<T> = {
+    key?: string;
     value?: T;
     singleton?: boolean;
     factory?: () => Awaitable<T>;
     callImmediately?: boolean;
+};
+
+export type ContainerOptions = {
+    /**
+     * Whether to use implicit resolution for classes that are not explicitly bound.
+     */
+    implicitResolution?: boolean;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,13 +33,14 @@ type AnyConstructor<A extends any[] = any[]> = new (...args: A) => unknown;
 class Container {
     private readonly bindings = new WeakMap<object, Binding>();
 
+    public constructor(private readonly options: ContainerOptions = {}) {}
+
     public async bind<R extends AnyConstructor>(
-        key: string,
         ref: R,
         options?: BindOptions<InstanceType<R>>
     ): Promise<void> {
         this.bindings.set(ref, {
-            key,
+            key: options?.key,
             value:
                 options?.factory && options.callImmediately
                     ? await options.factory()
@@ -51,21 +60,32 @@ class Container {
         return value as InstanceType<R>;
     }
 
-    private createInstanceDefault<R extends AnyConstructor>(ref: R): InstanceType<R> {
-        return new (ref as new () => InstanceType<R>)();
+    private async createInstance<R extends AnyConstructor>(ref: R): Promise<InstanceType<R>> {
+        const paramTypes = Reflect.getMetadata("design:paramtypes", ref);
+        const params: [] = [];
+
+        for (const paramType of paramTypes ?? []) {
+            (params as unknown[]).push(await this.resolve(paramType));
+        }
+
+        return new (ref as new () => InstanceType<R>)(...params);
     }
 
     public async resolve<R extends AnyConstructor>(ref: R): Promise<InstanceType<R>> {
         const binding = this.bindings.get(ref);
 
         if (!binding) {
-            return this.createInstanceDefault(ref);
+            if (this.options.implicitResolution) {
+                return this.createInstance(ref);
+            }
+
+            throw new Error(`Failed to resolve binding for "${ref.name ? ref.name : ref}"`);
         }
 
         if (!binding.singleton || !binding.value) {
-            const value = (
-                binding.factory ? await binding.factory() : new ref()
-            ) as InstanceType<R>;
+            const value = (await (binding.factory
+                ? binding.factory()
+                : this.createInstance(ref))) as InstanceType<R>;
 
             if (!binding.singleton) {
                 return value;
