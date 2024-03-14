@@ -8,7 +8,7 @@ import { createInterface } from "readline/promises";
 import Container from "../components/container/Container";
 import Kernel from "../components/core/Kernel";
 import { Logger } from "../components/log/Logger";
-import { sudoPrefix } from "../utils/utils";
+import { systemPrefix } from "../utils/utils";
 import Client from "./Client";
 
 class DiscordKernel extends Kernel {
@@ -25,7 +25,15 @@ class DiscordKernel extends Kernel {
         GatewayIntentBits.GuildVoiceStates
     ];
     protected readonly partials = [Partials.Channel];
-    protected readonly container = Container.getGlobalContainer();
+    public static readonly aliases = {
+        automod: path.resolve(__dirname, "../automod"),
+        services: path.resolve(__dirname, "../services")
+    };
+    public static readonly services = [
+        "@services/StartupManager",
+        "@services/ConfigurationManager" /* This service is manually booted by the Extension Service. */,
+        "@services/ExtensionManager"
+    ];
 
     protected createClient() {
         return new Client({
@@ -35,21 +43,21 @@ class DiscordKernel extends Kernel {
     }
 
     public async bindings() {
-        // const client = this.createClient();
+        const container = Container.getGlobalContainer();
 
-        await this.container.bind(Logger, {
-            value: new Logger("sys2", true),
+        await container.bind(Logger, {
+            value: new Logger("system", true),
             singleton: true
         });
 
-        await this.container.bind(Client, {
+        await container.bind(Client, {
             value: this.createClient(),
             singleton: true
         });
     }
 
     public getClient() {
-        return this.container.resolve(Client);
+        return Container.getGlobalContainer().resolve(Client);
     }
 
     public override async boot() {
@@ -100,7 +108,7 @@ class DiscordKernel extends Kernel {
     }
 
     protected async promptForCode() {
-        const restartJsonFile = path.join(sudoPrefix("tmp", true), "restart.json");
+        const restartJsonFile = path.join(systemPrefix("tmp", true), "restart.json");
         let restartKey = null;
 
         if (existsSync(restartJsonFile)) {

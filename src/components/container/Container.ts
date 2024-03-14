@@ -146,6 +146,18 @@ class Container {
 
         const instance = new (ref as new () => InstanceType<R>)(...params);
         await this.resolveProps(ref, instance);
+
+        const bindTo = Reflect.getMetadata("di:bind", ref) as
+            | undefined
+            | (Omit<BindOptions<R>, "value" | "factory"> & { ref: R });
+
+        if (bindTo) {
+            await this.bind(bindTo.ref, {
+                ...bindTo,
+                factory: () => this.createInstance(bindTo.ref)
+            });
+        }
+
         return instance;
     }
 

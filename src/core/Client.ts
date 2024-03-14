@@ -18,13 +18,23 @@
  */
 
 import { PrismaClient } from "@prisma/client";
-import { ClientOptions, Client as DiscordJSClient } from "discord.js";
-import path from "path";
+import { ClientOptions } from "discord.js";
+import metadata from "../../package.json";
+import BaseClient from "../components/client/BaseClient";
 import { Inject } from "../components/container/Inject";
+import DynamicLoader from "../components/import/DynamicLoader";
 import { Logger } from "../components/log/Logger";
+import { Service } from "../components/services/Service";
+import { ServiceManager } from "../components/services/ServiceManager";
 import { developmentMode } from "../utils/utils";
 
-class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
+class Client<R extends boolean = boolean> extends BaseClient<R> {
+    public readonly dynamicLoader = new DynamicLoader(this);
+    public readonly serviceManager = new ServiceManager(this);
+
+    @Inject()
+    public readonly logger!: Logger;
+
     public readonly prisma = new PrismaClient({
         errorFormat: "pretty",
         log: developmentMode() ? ["error", "info", "query", "warn"] : ["error", "info", "warn"]
@@ -32,30 +42,22 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
 
     public static instance: Client;
 
-    @Inject()
-    public readonly logger!: Logger;
-
-    // FIXME: Use DI for Services
-
-    public readonly aliases = {
-        automod: path.resolve(__dirname, "../automod"),
-        services: path.resolve(__dirname, "../services")
-    };
-
-    public readonly services = [
-        "@services/StartupManager",
-        "@services/ConfigManager" /* This service is manually booted by the Extension Service. */,
-        "@services/ExtensionService",
-        "@services/LogServer"
-    ];
-
-    constructor(options: ClientOptions) {
+    public constructor(options: ClientOptions) {
         super(options);
         Client.instance = this;
     }
 
+    public static get logger() {
+        return Client.instance.logger;
+    }
+
+    public get metadata() {
+        return metadata;
+    }
+
     async boot({ commands = true, events = true }: { commands?: boolean; events?: boolean } = {}) {
-        // await this.serviceManager.loadServices();
+        await this.serviceManager.loadServices();
+
         // if (events) {
         //     this.setMaxListeners(50);
         //     await this.dynamicLoader.loadEvents();
@@ -70,6 +72,12 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
             this.guilds.cache.get(process.env.HOME_GUILD_ID) ??
             (await this.guilds.fetch(process.env.HOME_GUILD_ID))
         );
+    }
+
+    getService<S extends typeof Service>(serviceClass: S): InstanceType<S> {
+        return this.serviceManager.getService(
+            serviceClass as unknown as new () => Service
+        ) as InstanceType<S>;
     }
 }
 

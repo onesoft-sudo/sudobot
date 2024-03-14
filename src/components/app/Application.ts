@@ -6,6 +6,7 @@ class Application {
 
     public constructor() {
         Container.setFirstContainerAsGlobal();
+
         this.container = new Container({
             implicitResolution: true
         });

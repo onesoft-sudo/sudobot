@@ -79,7 +79,7 @@ export function wait(time: number) {
     return new Promise(resolve => setTimeout(resolve, time));
 }
 
-export function sudoPrefix(pathLike: string, createDirIfNotExists = false) {
+export function systemPrefix(pathLike: string, createDirIfNotExists = false) {
     const directoryOrFile = path.resolve(
         process.env.SUDO_PREFIX ?? __dirname,
         process.env.SUDO_PREFIX ? "" : "../..",
