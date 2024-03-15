@@ -8,6 +8,8 @@ import { createInterface } from "readline/promises";
 import Container from "../components/container/Container";
 import Kernel from "../components/core/Kernel";
 import { Logger } from "../components/log/Logger";
+import ConfigurationManager from "../services/ConfigurationManager";
+import LogStreamingService from "../services/LogStreamingService";
 import { systemPrefix } from "../utils/utils";
 import Client from "./Client";
 
@@ -32,7 +34,8 @@ class DiscordKernel extends Kernel {
     public static readonly services = [
         "@services/StartupManager",
         "@services/ConfigurationManager" /* This service is manually booted by the Extension Service. */,
-        "@services/ExtensionManager"
+        "@services/ExtensionManager",
+        "@services/LogStreamingService"
     ];
 
     protected createClient() {
@@ -42,11 +45,27 @@ class DiscordKernel extends Kernel {
         });
     }
 
+    protected createLogger() {
+        const logger = new Logger("system", true);
+
+        logger.on("log", message => {
+            const logServerEnabled =
+                Client.instance?.getService(ConfigurationManager)?.systemConfig?.log_server
+                    ?.enabled;
+
+            if (logServerEnabled) {
+                Client.instance.getService(LogStreamingService)?.log(message);
+            }
+        });
+
+        return logger;
+    }
+
     public async bindings() {
         const container = Container.getGlobalContainer();
 
         await container.bind(Logger, {
-            value: new Logger("system", true),
+            value: this.createLogger(),
             singleton: true
         });
 
@@ -84,9 +103,8 @@ class DiscordKernel extends Kernel {
             // await client.server.start();
         } else {
             this.logger.debug("Attempting to log into Discord...");
-            // await client.login(process.env.TOKEN);
-            // FIXME: ^^^ This is the line that needs to be fixed
-            this.logger.success("Logged into Discord");
+            await client.login(process.env.TOKEN);
+            this.logger.debug("Logged into Discord");
         }
     }
 

@@ -18,8 +18,10 @@
  */
 
 import Client from "../../core/Client";
+import CanBind from "../container/CanBind";
 import { ClientEvents } from "../utils/ClientEvents";
 
+@CanBind
 export default abstract class EventListener<K extends keyof ClientEvents = keyof ClientEvents> {
     public abstract readonly name: K;
 

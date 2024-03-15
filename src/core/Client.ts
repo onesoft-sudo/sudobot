@@ -19,6 +19,7 @@
 
 import { PrismaClient } from "@prisma/client";
 import { ClientOptions } from "discord.js";
+import path from "node:path";
 import metadata from "../../package.json";
 import BaseClient from "../components/client/BaseClient";
 import { Inject } from "../components/container/Inject";
@@ -58,10 +59,11 @@ class Client<R extends boolean = boolean> extends BaseClient<R> {
     async boot({ commands = true, events = true }: { commands?: boolean; events?: boolean } = {}) {
         await this.serviceManager.loadServices();
 
-        // if (events) {
-        //     this.setMaxListeners(50);
-        //     await this.dynamicLoader.loadEvents();
-        // }
+        if (events) {
+            this.setMaxListeners(50);
+            await this.dynamicLoader.loadEvents(path.resolve(__dirname, "../events"));
+        }
+
         // if (commands) {
         //     await this.dynamicLoader.loadCommands();
         // }

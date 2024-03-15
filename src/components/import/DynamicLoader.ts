@@ -24,6 +24,7 @@ import path from "node:path";
 import type Client from "../../core/Client";
 import ConfigurationManager from "../../services/ConfigurationManager";
 import Controller from "../api/Controller";
+import Container from "../container/Container";
 import { EventListenerInfo } from "../decorators/GatewayEventListener";
 import EventListener from "../events/EventListener";
 import { Service } from "../services/Service";
@@ -35,6 +36,10 @@ class DynamicLoader extends Service {
         object,
         Record<keyof ClientEvents, AnyFunction[]>
     >();
+
+    private getContainer() {
+        return Container.getGlobalContainer();
+    }
 
     private async iterateDirectoryRecursively(root: string, rootArray?: string[]) {
         const filesAndDirectories = await readdir(root);
@@ -56,11 +61,11 @@ class DynamicLoader extends Service {
     }
 
     async loadControllers(router: Router) {
-        const eventListenerFiles = await this.iterateDirectoryRecursively(
+        const controllerFiles = await this.iterateDirectoryRecursively(
             path.resolve(__dirname, "../api/controllers")
         );
 
-        for (const file of eventListenerFiles) {
+        for (const file of controllerFiles) {
             if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
                 continue;
             }
@@ -78,10 +83,8 @@ class DynamicLoader extends Service {
         this.client.logger.info("Loaded Controller: ", ControllerClass.name);
     }
 
-    async loadEvents() {
-        const eventListenerFiles = await this.iterateDirectoryRecursively(
-            path.resolve(__dirname, "../events")
-        );
+    async loadEvents(directory = path.resolve(__dirname, "../events")) {
+        const eventListenerFiles = await this.iterateDirectoryRecursively(directory);
 
         for (const file of eventListenerFiles) {
             if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
@@ -95,7 +98,7 @@ class DynamicLoader extends Service {
     async loadEvent(filepath: string) {
         const { default: EventListenerClass }: DefaultExport<Class<EventListener, [Client]>> =
             await import(filepath);
-        const listener = new EventListenerClass(this.client);
+        const listener = await this.getContainer().resolve(EventListenerClass);
         this.client.addEventListener(listener.name, listener.execute.bind(listener));
         this.client.logger.info("Loaded Event: ", listener.name);
     }

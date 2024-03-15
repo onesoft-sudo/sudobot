@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 import chalk from "chalk";
+import { EventEmitter } from "events";
 import { AnyFunction } from "../../types/Utils";
 import { developmentMode } from "../../utils/utils";
 
@@ -36,6 +37,7 @@ export class Logger {
         dateStyle: "long",
         timeStyle: "long"
     });
+    private readonly eventEmitter = new EventEmitter();
 
     public constructor(private readonly name: string, private readonly logTime: boolean = false) {
         for (const key in this) {
@@ -43,6 +45,10 @@ export class Logger {
                 (this[key] as AnyFunction) = (this[key] as AnyFunction).bind(this);
             }
         }
+    }
+
+    public on(event: "log", listener: (message: string) => void) {
+        this.eventEmitter.on(event, listener);
     }
 
     public log(level: LogLevel, ...args: unknown[]) {
@@ -66,11 +72,8 @@ export class Logger {
         }
     }
 
-    // FIXME
     public print(methodName: "log" | "info" | "warn" | "error" | "debug", ...args: unknown[]) {
-        // const logServerEnabled = Client.instance?.configManager?.systemConfig?.log_server?.enabled;
-
-        if (process.env.SUPRESS_LOGS) {
+        if (process.env.SUPPRESS_LOGS) {
             return;
         }
 
@@ -79,9 +82,7 @@ export class Logger {
             .map(arg => (typeof arg === "string" ? arg : JSON.stringify(arg, null, 2)))
             .join(" ");
 
-        // if (logServerEnabled) {
-        //     Client.instance.logServer?.log(message);
-        // }
+        this.eventEmitter.emit("log", message);
     }
 
     private colorize(text: string, level: LogLevel) {

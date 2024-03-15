@@ -84,7 +84,7 @@ class Container {
         }
     }
 
-    public async resolveStaticProps<R extends AnyConstructor>(ref: R) {
+    public async resolveStaticProps<R extends AnyConstructor>(ref: R, targetRef: R = ref) {
         const metadata = Reflect.getMetadata("di:inject", ref);
 
         if (!metadata) {
@@ -96,12 +96,18 @@ class Container {
 
             if (!propRef && !type) {
                 throw new Error(
-                    `Failed to resolve property "${key}" on object of class "${ref.name}"`
+                    `Failed to resolve static property "${key}" of class "${ref.name} (${targetRef.name})"`
                 );
             }
 
             const propTypeRef = propRef ?? type;
-            ref[key as keyof typeof ref] = await this.resolve(propTypeRef);
+            targetRef[key as keyof typeof targetRef] = await this.resolve(propTypeRef);
+        }
+
+        const prototype = Object.getPrototypeOf(ref);
+
+        if (prototype) {
+            await this.resolveStaticProps(prototype as R, ref);
         }
     }
 
@@ -134,10 +140,30 @@ class Container {
             const propTypeRef = propRef ?? type;
             (instance as Record<string, unknown>)[key] = await this.resolve(propTypeRef);
         }
+
+        const prototype = Object.getPrototypeOf(ref);
+
+        if (prototype) {
+            await this.resolveProps(prototype, instance);
+        }
+    }
+
+    private getParamTypes<R extends AnyConstructor>(ref: R): ConstructorParameters<R> {
+        const paramTypes = Reflect.getMetadata("design:paramtypes", ref);
+
+        if (paramTypes === undefined || paramTypes === null) {
+            const prototype = Object.getPrototypeOf(ref);
+
+            if (prototype) {
+                return this.getParamTypes(prototype as R);
+            }
+        }
+
+        return paramTypes;
     }
 
     private async createInstance<R extends AnyConstructor>(ref: R): Promise<InstanceType<R>> {
-        const paramTypes = Reflect.getMetadata("design:paramtypes", ref);
+        const paramTypes = this.getParamTypes(ref);
         const params: [] = [];
 
         for (const paramType of paramTypes ?? []) {

@@ -51,5 +51,6 @@ namespace NodeJS {
         NSFWJS_MODEL_URL?: string;
         NSFWJS_MODEL_IMAGE_SIZE?: string;
         BACKUP_STORAGE?: string;
+        SUPPRESS_LOGS?: string;
     }
 }
