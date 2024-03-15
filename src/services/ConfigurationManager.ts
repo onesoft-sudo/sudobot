@@ -49,6 +49,7 @@ export default class ConfigurationManager extends Service {
     protected guildConfigSchema = GuildConfigSchema;
     protected systemConfigSchema = SystemConfigSchema;
     protected guildConfigContainerSchema = this.guildConfigContainer();
+    protected a = this.client.logger.info("Configuration Manager has been loaded");
 
     config: GuildConfigContainer = {} as GuildConfigContainer;
     systemConfig: SystemConfig = {} as SystemConfig;

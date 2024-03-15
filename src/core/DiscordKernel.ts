@@ -29,13 +29,15 @@ class DiscordKernel extends Kernel {
     protected readonly partials = [Partials.Channel];
     public static readonly aliases = {
         automod: path.resolve(__dirname, "../automod"),
-        services: path.resolve(__dirname, "../services")
+        services: path.resolve(__dirname, "../services"),
+        root: path.resolve(__dirname, "..")
     };
     public static readonly services = [
         "@services/StartupManager",
         "@services/ConfigurationManager" /* This service is manually booted by the Extension Service. */,
         "@services/ExtensionManager",
-        "@services/LogStreamingService"
+        "@services/LogStreamingService",
+        "@root/components/api/APIServer"
     ];
 
     protected createClient() {
@@ -49,12 +51,11 @@ class DiscordKernel extends Kernel {
         const logger = new Logger("system", true);
 
         logger.on("log", message => {
-            const logServerEnabled =
-                Client.instance?.getService(ConfigurationManager)?.systemConfig?.log_server
-                    ?.enabled;
+            const logServerEnabled = Client.instance?.getService(ConfigurationManager, false)
+                ?.systemConfig?.log_server?.enabled;
 
             if (logServerEnabled) {
-                Client.instance.getService(LogStreamingService)?.log(message);
+                Client.instance.getService(LogStreamingService, false)?.log(message);
             }
         });
 

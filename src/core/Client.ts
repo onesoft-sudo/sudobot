@@ -76,10 +76,20 @@ class Client<R extends boolean = boolean> extends BaseClient<R> {
         );
     }
 
-    getService<S extends typeof Service>(serviceClass: S): InstanceType<S> {
-        return this.serviceManager.getService(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getService<S extends new (...args: any[]) => Service>(
+        serviceClass: S,
+        error = true
+    ): InstanceType<S> {
+        const service = this.serviceManager.getService(
             serviceClass as unknown as new () => Service
         ) as InstanceType<S>;
+
+        if (!service && error) {
+            throw new Error(`Service ${serviceClass.name} not found`);
+        }
+
+        return service;
     }
 }
 

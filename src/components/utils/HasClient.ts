@@ -1,7 +1,7 @@
-import Client from "../../core/Client";
-import BaseClient from "../client/BaseClient";
-
 // FIXME: Using Client here is a bit of a hack, but it works for now.
-export abstract class HasClient<C extends BaseClient = Client> {
-    public constructor(protected readonly client: C) {}
+
+import Client from "../../core/Client";
+
+export abstract class HasClient {
+    public constructor(protected readonly client: Client) {}
 }

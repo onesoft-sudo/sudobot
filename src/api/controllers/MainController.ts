@@ -1,0 +1,49 @@
+/**
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2023 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+import { Action } from "../../components/api/decorators/Action";
+import Controller from "../../components/api/http/Controller";
+import CanBind from "../../components/container/CanBind";
+import { Inject } from "../../components/container/Inject";
+import ConfigurationManager from "../../services/ConfigurationManager";
+
+@CanBind
+export default class MainController extends Controller {
+    @Inject()
+    protected readonly configManager!: ConfigurationManager;
+
+    @Action("GET", "/")
+    public async index() {
+        return {
+            message: "API server is up."
+        };
+    }
+
+    @Action("GET", "/status")
+    public async status() {
+        const { server_status, server_status_description, server_status_started_at } =
+            this.configManager.systemConfig.api;
+
+        return {
+            status: server_status,
+            description: server_status_description,
+            started: server_status_started_at
+        };
+    }
+}

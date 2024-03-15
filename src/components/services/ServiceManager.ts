@@ -1,15 +1,17 @@
-import { Client, Collection } from "discord.js";
+import { Collection } from "discord.js";
+import Client from "../../core/Client";
 import DiscordKernel from "../../core/DiscordKernel";
 import { ESModule } from "../../types/ESModule";
 import BindToContainer from "../container/BindToContainer";
+import Container from "../container/Container";
 import FileSystem from "../polyfills/FileSystem";
-import { HasClient } from "../utils/HasClient";
 import { Service } from "./Service";
 
 type ServiceConstructor = new (client: Client) => Service;
 
 @BindToContainer({ singleton: true })
-class ServiceManager extends HasClient {
+class ServiceManager {
+    public constructor(protected readonly client: Client) {}
     private readonly services = new Collection<ServiceConstructor, Service>();
 
     public async loadServices() {
@@ -38,13 +40,19 @@ class ServiceManager extends HasClient {
     public async loadService(servicePath: string, name?: string) {
         const { default: ServiceClass }: ESModule<ServiceConstructor> = await import(servicePath);
         const instance = new ServiceClass(this.client);
-        await instance.boot();
+
+        Container.getGlobalContainer().bind(ServiceClass, {
+            value: instance,
+            singleton: true
+        });
+
         this.services.set(ServiceClass, instance);
+        await instance.boot();
         this.client.logger.info(`Loaded service: ${name ?? ServiceClass.name}`);
     }
 
-    public async loadServiceFromDirectory(servicesDirectory: string) {
-        throw new Error("Method not implemented.");
+    public loadServicesFromDirectory(servicesDirectory: string) {
+        return this.client.dynamicLoader.loadServicesFromDirectory(servicesDirectory);
     }
 
     getService<S extends new () => Service>(serviceClass: S): InstanceType<S> {

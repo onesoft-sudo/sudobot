@@ -30,8 +30,7 @@
                 "varsIgnorePattern": "^_",
                 "caughtErrorsIgnorePattern": "^_"
             }
-        ],
-        "@typescript-eslint/no-misused-promises": "warn"
+        ]
     },
     "overrides": [
         {

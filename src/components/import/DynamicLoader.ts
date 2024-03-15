@@ -23,19 +23,21 @@ import { lstat, readdir } from "node:fs/promises";
 import path from "node:path";
 import type Client from "../../core/Client";
 import ConfigurationManager from "../../services/ConfigurationManager";
-import Controller from "../api/Controller";
+import APIServer from "../api/APIServer";
+import Controller from "../api/http/Controller";
 import Container from "../container/Container";
-import { EventListenerInfo } from "../decorators/GatewayEventListener";
 import EventListener from "../events/EventListener";
-import { Service } from "../services/Service";
+import { EventListenerInfo } from "../events/GatewayEventListener";
 import { ClientEvents } from "../utils/ClientEvents";
 import { AnyFunction, Class, DefaultExport } from "../utils/Utils";
 
-class DynamicLoader extends Service {
+class DynamicLoader {
     protected readonly eventHandlers = new WeakMap<
         object,
         Record<keyof ClientEvents, AnyFunction[]>
     >();
+
+    public constructor(protected readonly client: Client) {}
 
     private getContainer() {
         return Container.getGlobalContainer();
@@ -62,7 +64,7 @@ class DynamicLoader extends Service {
 
     async loadControllers(router: Router) {
         const controllerFiles = await this.iterateDirectoryRecursively(
-            path.resolve(__dirname, "../api/controllers")
+            path.resolve(__dirname, "../../api/controllers")
         );
 
         for (const file of controllerFiles) {
@@ -77,9 +79,8 @@ class DynamicLoader extends Service {
     async loadController(filepath: string, router: Router) {
         const { default: ControllerClass }: DefaultExport<Class<Controller, [Client]>> =
             await import(filepath);
-        const controller = new ControllerClass(this.client);
-        throw new Error("not ready");
-        // this.client.server.loadController(controller, ControllerClass, router);
+        const controller = await Container.getGlobalContainer().resolve(ControllerClass);
+        this.client.getService(APIServer).loadController(controller, ControllerClass, router);
         this.client.logger.info("Loaded Controller: ", ControllerClass.name);
     }
 
@@ -103,7 +104,7 @@ class DynamicLoader extends Service {
         this.client.logger.info("Loaded Event: ", listener.name);
     }
 
-    async loadServiceFromDirectory(servicesDirectory = path.resolve(__dirname, "../services")) {
+    async loadServicesFromDirectory(servicesDirectory = path.resolve(__dirname, "../services")) {
         const serviceFiles = await this.iterateDirectoryRecursively(servicesDirectory);
 
         for (const file of serviceFiles) {

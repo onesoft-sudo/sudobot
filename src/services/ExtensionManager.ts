@@ -445,7 +445,7 @@ export default class ExtensionService extends Service {
         if (servicePaths === null) {
             if (servicesDirectory) {
                 if (existsSync(servicesDirectory)) {
-                    await this.client.serviceManager.loadServiceFromDirectory(servicesDirectory);
+                    await this.client.serviceManager.loadServicesFromDirectory(servicesDirectory);
                 }
             } else if (services) {
                 for (const servicePath of services) {
