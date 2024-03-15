@@ -76,9 +76,6 @@ export default class APIServer extends Service {
 
         this.expressApp.use(this.rateLimiter);
 
-        // FIXME: This is a bit of a hack, but it works for now.
-        this.expressApp.use("/config", this.configRateLimiter);
-
         this.expressApp.use("*", (req, res, next) => {
             this.logger.info(`${req.method.toUpperCase()} ${req.path} -- from ${req.ip}`);
             next();
