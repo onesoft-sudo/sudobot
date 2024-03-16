@@ -1,6 +1,7 @@
 import { Collection, Message } from "discord.js";
 import ArgumentParser from "../framework/arguments/ArgumentParser";
 import { Command } from "../framework/commands/Command";
+import CommandAbortedError from "../framework/commands/CommandAbortedError";
 import { InjectService } from "../framework/container/InjectService";
 import { Service } from "../framework/services/Service";
 import ConfigurationManager from "./ConfigurationManager";
@@ -81,6 +82,7 @@ class CommandManager extends Service {
         }
 
         const { context, error, payload } = await this.argumentParser.parseArguments(
+            content,
             message,
             commandName,
             command,
@@ -93,7 +95,16 @@ class CommandManager extends Service {
             return;
         }
 
-        await command.run(context, payload!);
+        try {
+            await command.run(context, payload!);
+        } catch (error) {
+            if (error instanceof CommandAbortedError) {
+                await error.sendMessage(context);
+                return;
+            }
+
+            this.client.logger.error(error);
+        }
     }
 }
 

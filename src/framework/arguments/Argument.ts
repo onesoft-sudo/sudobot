@@ -8,24 +8,30 @@ export type Casted<T> = {
     error?: InvalidArgumentError;
 };
 
-export type ArgumentConstructor = (new (
-    ...args: ConstructorParameters<typeof Argument>
-) => Argument) &
-    Pick<typeof Argument, "performCast">;
+export type ArgumentConstructor<T = unknown> = (new (
+    ...args: ConstructorParameters<typeof Argument<T>>
+) => Argument<T>) &
+    Pick<typeof Argument<T>, "performCast">;
 
 export default abstract class Argument<T = unknown> implements ArgumentInterface<T> {
+    protected readonly commandContent: string;
     protected readonly stringValue: string;
+    protected readonly argv: string[];
     protected transformedValue!: T;
     public readonly position: number;
     public readonly name?: string;
     protected readonly rules?: NonNullable<ArgumentTypeOptions["rules"]>;
 
     public constructor(
+        commandContent: string,
+        argv: string[],
         value: string,
         position: number,
         name?: string,
         rules?: NonNullable<ArgumentTypeOptions["rules"]>
     ) {
+        this.commandContent = commandContent;
+        this.argv = argv;
         this.stringValue = value;
         this.position = position;
         this.rules = rules;
@@ -38,7 +44,10 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
      * @returns {Awaitable<boolean>} Whether the argument is valid.
      * @throws {InvalidArgumentError} If the argument is invalid.
      */
-    public abstract validate(): Awaitable<boolean>;
+    public validate(): Awaitable<boolean> {
+        return true;
+    }
+
     public abstract toString(): string;
     protected abstract transform(): Awaitable<T>;
 
@@ -96,13 +105,15 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
     }
 
     public static async performCast(
+        commandContent: string,
+        argv: string[],
         value: string,
         position: number,
         name?: string,
         rules?: NonNullable<ArgumentTypeOptions["rules"]>
     ): Promise<Casted<unknown>> {
         try {
-            const casted = await this.castFrom(value, position, name, rules);
+            const casted = await this.castFrom(commandContent, argv, value, position, name, rules);
 
             if (!casted.attemptValidation()) {
                 throw new InvalidArgumentError(
@@ -129,6 +140,8 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
     }
 
     public static castFrom(
+        commandContent: string,
+        argv: string[],
         value: string,
         position: number,
         name?: string,
@@ -136,6 +149,6 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
     ) {
         return new (this as unknown as new (
             ...args: ConstructorParameters<typeof Argument<unknown>>
-        ) => Argument<unknown>)(value, position, name, rules);
+        ) => Argument<unknown>)(commandContent, argv, value, position, name, rules);
     }
 }

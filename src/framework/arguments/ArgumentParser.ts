@@ -8,6 +8,7 @@ import { ArgumentTypeOptions } from "./ArgumentTypes";
 
 class ArgumentParser extends HasClient {
     public async parseArguments(
+        commandContent: string,
         message: Message<true>,
         commandName: string,
         command: Command,
@@ -38,7 +39,12 @@ class ArgumentParser extends HasClient {
                 );
             }
 
-            const { error, value } = await this.parseArgumentsUsingParamTypes(args, paramTypes);
+            const { error, value } = await this.parseArgumentsUsingParamTypes(
+                commandContent,
+                args,
+                argv,
+                paramTypes
+            );
 
             if (error) {
                 return {
@@ -49,7 +55,12 @@ class ArgumentParser extends HasClient {
 
             payload = value!;
         } else {
-            const { error, value } = await this.parseArgumentsUsingCustomTypes(args, argTypes);
+            const { error, value } = await this.parseArgumentsUsingCustomTypes(
+                commandContent,
+                args,
+                argv,
+                argTypes
+            );
 
             if (error) {
                 return {
@@ -67,7 +78,12 @@ class ArgumentParser extends HasClient {
         };
     }
 
-    private async parseArgumentsUsingCustomTypes(args: string[], types: ArgumentTypeOptions[]) {
+    private async parseArgumentsUsingCustomTypes(
+        commandContent: string,
+        args: string[],
+        argv: string[],
+        types: ArgumentTypeOptions[]
+    ) {
         const parsedArguments: Record<string, unknown> = {};
         let lastError;
 
@@ -94,6 +110,8 @@ class ArgumentParser extends HasClient {
 
             for (const argType of argTypes) {
                 const { error, value } = await argType.performCast(
+                    commandContent,
+                    argv,
                     arg,
                     i,
                     expectedArgInfo.name,
@@ -101,7 +119,7 @@ class ArgumentParser extends HasClient {
                 );
 
                 if (value) {
-                    parsedArguments[expectedArgInfo.name] = value;
+                    parsedArguments[expectedArgInfo.name] = value.getValue();
                     lastError = undefined;
                     break;
                 }
@@ -122,7 +140,12 @@ class ArgumentParser extends HasClient {
         };
     }
 
-    private async parseArgumentsUsingParamTypes(args: string[], types: unknown[]) {
+    private async parseArgumentsUsingParamTypes(
+        commandContent: string,
+        args: string[],
+        argv: string[],
+        types: unknown[]
+    ) {
         const parsedArguments = [];
 
         for (let i = 0; i < types.length; i++) {
@@ -135,7 +158,7 @@ class ArgumentParser extends HasClient {
                 };
             }
 
-            const { error, value } = await argType.performCast(arg, i);
+            const { error, value } = await argType.performCast(commandContent, argv, arg, i);
 
             if (error) {
                 return {

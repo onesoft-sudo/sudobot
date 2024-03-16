@@ -31,3 +31,5 @@ export type TODO = any;
 export type ArrayLike<T> = {
     [K: number]: T;
 };
+
+export type If<T extends boolean, A, B> = T extends true ? A : B;

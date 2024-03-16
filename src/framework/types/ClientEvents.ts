@@ -17,98 +17,104 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { ClientEvents as DiscordClientEvents, Message } from "discord.js";
+import { Infraction } from "@prisma/client";
+import type { ClientEvents as DiscordClientEvents, Message, User } from "discord.js";
 import type { Command, CommandMessage } from "../commands/Command";
 import Context from "../commands/Context";
 
-// FIXME
-export type ClientEvents = DiscordClientEvents & {
-    command: [name: string, command: Command, message: CommandMessage, context: Context];
-    normalMessageCreate: [message: Message];
-    normalMessageUpdate: [oldMessage: Message, newMessage: Message];
-    normalMessageDelete: [message: Message];
-};
-
 export const CustomEvents: ReadonlyArray<keyof ClientEvents> = ["command"];
 
-export enum Events {
-    ApplicationCommandPermissionsUpdate = "applicationCommandPermissionsUpdate",
-    AutoModerationActionExecution = "autoModerationActionExecution",
-    AutoModerationRuleCreate = "autoModerationRuleCreate",
-    AutoModerationRuleDelete = "autoModerationRuleDelete",
-    AutoModerationRuleUpdate = "autoModerationRuleUpdate",
-    CacheSweep = "cacheSweep",
-    ChannelCreate = "channelCreate",
-    ChannelDelete = "channelDelete",
-    ChannelPinsUpdate = "channelPinsUpdate",
-    ChannelUpdate = "channelUpdate",
-    Debug = "debug",
-    EmojiCreate = "emojiCreate",
-    EmojiDelete = "emojiDelete",
-    EmojiUpdate = "emojiUpdate",
-    Error = "error",
-    GuildAuditLogEntryCreate = "guildAuditLogEntryCreate",
-    GuildAvailable = "guildAvailable",
-    GuildBanAdd = "guildBanAdd",
-    GuildBanRemove = "guildBanRemove",
-    GuildCreate = "guildCreate",
-    GuildDelete = "guildDelete",
-    GuildIntegrationsUpdate = "guildIntegrationsUpdate",
-    GuildMemberAdd = "guildMemberAdd",
-    GuildMemberAvailable = "guildMemberAvailable",
-    GuildMemberRemove = "guildMemberRemove",
-    GuildMemberChunk = "guildMembersChunk",
-    GuildMemberUpdate = "guildMemberUpdate",
-    GuildScheduledEventCreate = "guildScheduledEventCreate",
-    GuildScheduledEventDelete = "guildScheduledEventDelete",
-    GuildScheduledEventUpdate = "guildScheduledEventUpdate",
-    GuildScheduledEventUserAdd = "guildScheduledEventUserAdd",
-    GuildScheduledEventUserRemove = "guildScheduledEventUserRemove",
-    GuildUnavailable = "guildUnavailable",
-    GuildUpdate = "guildUpdate",
-    InteractionCreate = "interactionCreate",
-    Invalidated = "invalidated",
-    InviteCreate = "inviteCreate",
-    InviteDelete = "inviteDelete",
-    MessageCreate = "messageCreate",
-    MessageDelete = "messageDelete",
-    MessageDeleteBulk = "messageDeleteBulk",
-    MessageReactionAdd = "messageReactionAdd",
-    MessageReactionRemove = "messageReactionRemove",
-    MessageReactionRemoveAll = "messageReactionRemoveAll",
-    MessageReactionRemoveEmoji = "messageReactionRemoveEmoji",
-    MessageUpdate = "messageUpdate",
-    PresenceUpdate = "presenceUpdate",
-    Ready = "ready",
-    RoleCreate = "roleCreate",
-    RoleDelete = "roleDelete",
-    RoleUpdate = "roleUpdate",
-    ShardDisconnect = "shardDisconnect",
-    ShardError = "shardError",
-    ShardReady = "shardReady",
-    ShardReconnecting = "shardReconnecting",
-    ShardResume = "shardResume",
-    StageInstanceCreate = "stageInstanceCreate",
-    StageInstanceDelete = "stageInstanceDelete",
-    StageInstanceUpdate = "stageInstanceUpdate",
-    StickerCreate = "stickerCreate",
-    StickerDelete = "stickerDelete",
-    StickerUpdate = "stickerUpdate",
-    ThreadCreate = "threadCreate",
-    ThreadDelete = "threadDelete",
-    ThreadListSync = "threadListSync",
-    ThreadMembersUpdate = "threadMembersUpdate",
-    ThreadMemberUpdate = "threadMemberUpdate",
-    ThreadUpdate = "threadUpdate",
-    TypingStart = "typingStart",
-    UserUpdate = "userUpdate",
-    VoiceStateUpdate = "voiceStateUpdate",
-    Warn = "warn",
-    WebhooksUpdate = "webhooksUpdate",
-    WebhookUpdate = "webhookUpdate",
+declare global {
+    // FIXME
+    export type ClientEvents = DiscordClientEvents & {
+        command: [name: string, command: Command, message: CommandMessage, context: Context];
+        normalMessageCreate: [message: Message];
+        normalMessageUpdate: [oldMessage: Message, newMessage: Message];
+        normalMessageDelete: [message: Message];
 
-    NormalMessageCreate = "normalMessageCreate",
-    NormalMessageUpdate = "normalMessageUpdate",
-    NormalMessageDelete = "normalMessageDelete",
-    Command = "command"
+        infractionCreate: [infraction: Infraction, user: User, moderator: User, manual: boolean];
+    };
+
+    export enum Events {
+        ApplicationCommandPermissionsUpdate = "applicationCommandPermissionsUpdate",
+        AutoModerationActionExecution = "autoModerationActionExecution",
+        AutoModerationRuleCreate = "autoModerationRuleCreate",
+        AutoModerationRuleDelete = "autoModerationRuleDelete",
+        AutoModerationRuleUpdate = "autoModerationRuleUpdate",
+        CacheSweep = "cacheSweep",
+        ChannelCreate = "channelCreate",
+        ChannelDelete = "channelDelete",
+        ChannelPinsUpdate = "channelPinsUpdate",
+        ChannelUpdate = "channelUpdate",
+        Debug = "debug",
+        EmojiCreate = "emojiCreate",
+        EmojiDelete = "emojiDelete",
+        EmojiUpdate = "emojiUpdate",
+        Error = "error",
+        GuildAuditLogEntryCreate = "guildAuditLogEntryCreate",
+        GuildAvailable = "guildAvailable",
+        GuildBanAdd = "guildBanAdd",
+        GuildBanRemove = "guildBanRemove",
+        GuildCreate = "guildCreate",
+        GuildDelete = "guildDelete",
+        GuildIntegrationsUpdate = "guildIntegrationsUpdate",
+        GuildMemberAdd = "guildMemberAdd",
+        GuildMemberAvailable = "guildMemberAvailable",
+        GuildMemberRemove = "guildMemberRemove",
+        GuildMemberChunk = "guildMembersChunk",
+        GuildMemberUpdate = "guildMemberUpdate",
+        GuildScheduledEventCreate = "guildScheduledEventCreate",
+        GuildScheduledEventDelete = "guildScheduledEventDelete",
+        GuildScheduledEventUpdate = "guildScheduledEventUpdate",
+        GuildScheduledEventUserAdd = "guildScheduledEventUserAdd",
+        GuildScheduledEventUserRemove = "guildScheduledEventUserRemove",
+        GuildUnavailable = "guildUnavailable",
+        GuildUpdate = "guildUpdate",
+        InteractionCreate = "interactionCreate",
+        Invalidated = "invalidated",
+        InviteCreate = "inviteCreate",
+        InviteDelete = "inviteDelete",
+        MessageCreate = "messageCreate",
+        MessageDelete = "messageDelete",
+        MessageDeleteBulk = "messageDeleteBulk",
+        MessageReactionAdd = "messageReactionAdd",
+        MessageReactionRemove = "messageReactionRemove",
+        MessageReactionRemoveAll = "messageReactionRemoveAll",
+        MessageReactionRemoveEmoji = "messageReactionRemoveEmoji",
+        MessageUpdate = "messageUpdate",
+        PresenceUpdate = "presenceUpdate",
+        Ready = "ready",
+        RoleCreate = "roleCreate",
+        RoleDelete = "roleDelete",
+        RoleUpdate = "roleUpdate",
+        ShardDisconnect = "shardDisconnect",
+        ShardError = "shardError",
+        ShardReady = "shardReady",
+        ShardReconnecting = "shardReconnecting",
+        ShardResume = "shardResume",
+        StageInstanceCreate = "stageInstanceCreate",
+        StageInstanceDelete = "stageInstanceDelete",
+        StageInstanceUpdate = "stageInstanceUpdate",
+        StickerCreate = "stickerCreate",
+        StickerDelete = "stickerDelete",
+        StickerUpdate = "stickerUpdate",
+        ThreadCreate = "threadCreate",
+        ThreadDelete = "threadDelete",
+        ThreadListSync = "threadListSync",
+        ThreadMembersUpdate = "threadMembersUpdate",
+        ThreadMemberUpdate = "threadMemberUpdate",
+        ThreadUpdate = "threadUpdate",
+        TypingStart = "typingStart",
+        UserUpdate = "userUpdate",
+        VoiceStateUpdate = "voiceStateUpdate",
+        Warn = "warn",
+        WebhooksUpdate = "webhooksUpdate",
+        WebhookUpdate = "webhookUpdate",
+
+        NormalMessageCreate = "normalMessageCreate",
+        NormalMessageUpdate = "normalMessageUpdate",
+        NormalMessageDelete = "normalMessageDelete",
+        Command = "command",
+        InfractionCreate = "infractionCreate"
+    }
 }

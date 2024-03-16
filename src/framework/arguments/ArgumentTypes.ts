@@ -1,4 +1,3 @@
-import { ArrayLike } from "../types/Utils";
 import { ArgumentConstructor } from "./Argument";
 import { ErrorType } from "./InvalidArgumentError";
 
@@ -18,20 +17,28 @@ export type Rule = {
     rules: ArgumentRules;
 };
 
-export type ArgumentTypeOptions = {
-    types: Array<ArgumentConstructor> | ArgumentConstructor;
+export type ArgumentTypeOptions<T = unknown, N extends string = string> = {
+    types: Array<ArgumentConstructor<T>> | ArgumentConstructor<T>;
     optional?: boolean;
     default?: unknown;
     errorMessages?: {
         [key in ErrorType]?: string;
     };
-    name: string;
+    name: N;
     rules?: {
         [K in keyof ArgumentRules]?: ArgumentRules[K];
     };
 };
 
-export function ArgumentTypes(types: ArrayLike<ArgumentTypeOptions>) {
+export type ArrayOfArguments<T extends Record<string, unknown>> = {
+    [K: number]: {
+        [K in keyof T]: ArgumentTypeOptions<T[K], K extends string ? K : never>;
+    }[keyof T];
+};
+
+export function ArgumentTypes<T extends Record<string, unknown> = Record<string, unknown>>(
+    types: ArrayOfArguments<T>
+) {
     return (target: object, _key?: unknown, _descriptor?: unknown) => {
         const arr: ArgumentTypeOptions[] = [];
 
@@ -43,7 +50,11 @@ export function ArgumentTypes(types: ArrayLike<ArgumentTypeOptions>) {
     };
 }
 
-export function TakesArgument(type: ArgumentTypeOptions) {
+export function TakesArgument<T extends Record<string, unknown>, N extends keyof T = keyof T>(
+    type: {
+        [K in N]: ArgumentTypeOptions<T[K], K extends string ? K : never>;
+    }[N]
+) {
     return (target: object, _key?: unknown, _descriptor?: unknown) => {
         const metadata =
             (Reflect.getMetadata("command:types", target) as ArgumentTypeOptions[] | undefined) ||
