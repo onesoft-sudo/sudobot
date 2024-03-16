@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of SudoBot.
  *
  * Copyright (C) 2021-2023 OSN Developers.
@@ -16,17 +16,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
-import "dotenv/config";
-import "module-alias/register";
-import "reflect-metadata";
 
-import DiscordKernel from "./core/DiscordKernel";
-import Application from "./framework/app/Application";
+export type DefaultExport<T> = {
+    default: T;
+};
 
-async function main() {
-    Application.setupGlobals();
-    const application = new Application();
-    await application.run(new DiscordKernel());
-}
+export type Class<I, A extends Array<unknown>> = new (...a: A) => I;
 
-export default main();
+export type AnyFunction<A extends unknown[] = unknown[], R = unknown> = (...args: A) => R;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type TODO = any;
+
+export type ArrayLike<T> = {
+    [K: number]: T;
+};

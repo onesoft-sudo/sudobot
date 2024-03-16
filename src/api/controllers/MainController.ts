@@ -17,10 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Action } from "../../components/api/decorators/Action";
-import Controller from "../../components/api/http/Controller";
-import CanBind from "../../components/container/CanBind";
-import { Inject } from "../../components/container/Inject";
+import { Action } from "../../framework/api/decorators/Action";
+import Controller from "../../framework/api/http/Controller";
+import CanBind from "../../framework/container/CanBind";
+import { Inject } from "../../framework/container/Inject";
 import ConfigurationManager from "../../services/ConfigurationManager";
 
 @CanBind

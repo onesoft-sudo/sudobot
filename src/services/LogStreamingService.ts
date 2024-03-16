@@ -20,7 +20,7 @@
 import bcrypt from "bcrypt";
 import chalk from "chalk";
 import { Server, Socket } from "socket.io";
-import { Service } from "../components/services/Service";
+import { Service } from "../framework/services/Service";
 import ConfigurationManager from "./ConfigurationManager";
 
 export default class LogStreamingService extends Service {

@@ -1,3 +1,5 @@
+import "reflect-metadata";
+
 import { ClientUser } from "discord.js";
 import { vi } from "vitest";
 import Client from "../../src/core/Client";

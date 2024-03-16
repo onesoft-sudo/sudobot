@@ -21,12 +21,12 @@ import { PrismaClient } from "@prisma/client";
 import { ClientOptions } from "discord.js";
 import path from "node:path";
 import metadata from "../../package.json";
-import BaseClient from "../components/client/BaseClient";
-import { Inject } from "../components/container/Inject";
-import DynamicLoader from "../components/import/DynamicLoader";
-import { Logger } from "../components/log/Logger";
-import { Service } from "../components/services/Service";
-import { ServiceManager } from "../components/services/ServiceManager";
+import BaseClient from "../framework/client/BaseClient";
+import { Inject } from "../framework/container/Inject";
+import DynamicLoader from "../framework/import/DynamicLoader";
+import { Logger } from "../framework/log/Logger";
+import { Service } from "../framework/services/Service";
+import { ServiceManager } from "../framework/services/ServiceManager";
 import { developmentMode } from "../utils/utils";
 
 class Client<R extends boolean = boolean> extends BaseClient<R> {
@@ -64,9 +64,9 @@ class Client<R extends boolean = boolean> extends BaseClient<R> {
             await this.dynamicLoader.loadEvents(path.resolve(__dirname, "../events"));
         }
 
-        // if (commands) {
-        //     await this.dynamicLoader.loadCommands();
-        // }
+        if (commands) {
+            await this.dynamicLoader.loadCommands(path.resolve(__dirname, "../commands"));
+        }
     }
 
     async getHomeGuild() {

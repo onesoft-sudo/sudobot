@@ -16,17 +16,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
-import "dotenv/config";
-import "module-alias/register";
-import "reflect-metadata";
 
-import DiscordKernel from "./core/DiscordKernel";
-import Application from "./framework/app/Application";
+import Client from "../../core/Client";
+import CanBind from "../container/CanBind";
+import { ClientEvents } from "../types/ClientEvents";
 
-async function main() {
-    Application.setupGlobals();
-    const application = new Application();
-    await application.run(new DiscordKernel());
+@CanBind
+export default abstract class EventListener<K extends keyof ClientEvents = keyof ClientEvents> {
+    public abstract readonly name: K;
+
+    constructor(protected client: Client) {}
+
+    abstract execute(...args: ClientEvents[K]): Promise<unknown> | void;
 }
-
-export default main();

@@ -5,9 +5,9 @@ import { existsSync } from "fs";
 import { readFile } from "fs/promises";
 import path from "path";
 import { createInterface } from "readline/promises";
-import Container from "../components/container/Container";
-import Kernel from "../components/core/Kernel";
-import { Logger } from "../components/log/Logger";
+import Container from "../framework/container/Container";
+import Kernel from "../framework/core/Kernel";
+import { Logger } from "../framework/log/Logger";
 import ConfigurationManager from "../services/ConfigurationManager";
 import LogStreamingService from "../services/LogStreamingService";
 import { systemPrefix } from "../utils/utils";
@@ -30,6 +30,7 @@ class DiscordKernel extends Kernel {
     public static readonly aliases = {
         automod: path.resolve(__dirname, "../automod"),
         services: path.resolve(__dirname, "../services"),
+        framework: path.resolve(__dirname, "../framework"),
         root: path.resolve(__dirname, "..")
     };
     public static readonly services = [
@@ -37,7 +38,8 @@ class DiscordKernel extends Kernel {
         "@services/ConfigurationManager" /* This service is manually booted by the Extension Service. */,
         "@services/ExtensionManager",
         "@services/LogStreamingService",
-        "@root/components/api/APIServer"
+        "@services/CommandManager",
+        "@framework/api/APIServer"
     ];
 
     protected createClient() {

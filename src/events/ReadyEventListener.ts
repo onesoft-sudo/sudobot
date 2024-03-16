@@ -1,6 +1,7 @@
-import APIServer from "../components/api/APIServer";
-import EventListener from "../components/events/EventListener";
-import { Events } from "../components/utils/ClientEvents";
+import APIServer from "../framework/api/APIServer";
+import { InjectService } from "../framework/container/InjectService";
+import EventListener from "../framework/events/EventListener";
+import { Events } from "../framework/types/ClientEvents";
 import ConfigurationManager from "../services/ConfigurationManager";
 import LogStreamingService from "../services/LogStreamingService";
 import StartupManager from "../services/StartupManager";
@@ -8,16 +9,31 @@ import StartupManager from "../services/StartupManager";
 class ReadyEventListener extends EventListener<Events.Ready> {
     public override readonly name = Events.Ready;
 
+    @InjectService()
+    public readonly configManager!: ConfigurationManager;
+
+    @InjectService()
+    public readonly startupManager!: StartupManager;
+
+    @InjectService()
+    public readonly server!: APIServer;
+
+    @InjectService()
+    public readonly logStreamingService!: LogStreamingService;
+
     public override async execute() {
         this.client.logger.info(`Logged in as: ${this.client.user?.username}`);
 
-        this.client.getService(ConfigurationManager).onReady();
-        this.client.getService(StartupManager).onReady();
-        await this.client.getService(APIServer).onReady();
+        this.configManager.onReady();
+        this.startupManager.onReady();
+        await this.server.onReady();
+
+        // FIXME
         // this.client.queueManager.onReady().catch(logError);
+
         const homeGuild = await this.client.getHomeGuild();
 
-        if (this.client.getService(ConfigurationManager).systemConfig.sync_emojis) {
+        if (this.configManager.systemConfig.sync_emojis) {
             try {
                 const emojis = await homeGuild.emojis.fetch();
 
@@ -36,8 +52,8 @@ class ReadyEventListener extends EventListener<Events.Ready> {
             }
         }
 
-        if (this.client.getService(ConfigurationManager).systemConfig.log_server?.auto_start) {
-            this.client.getService(LogStreamingService).listen();
+        if (this.configManager.systemConfig.log_server?.auto_start) {
+            this.logStreamingService.listen();
         }
     }
 }

@@ -2,7 +2,9 @@ import { faker } from "@faker-js/faker";
 import { Snowflake } from "discord.js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type Client from "../../src/core/Client";
-import ConfigManager, { GuildConfigContainer } from "../../src/services/ConfigManager";
+import ConfigurationManager, {
+    GuildConfigContainer
+} from "../../src/services/ConfigurationManager";
 import { SystemConfigSchema } from "../../src/types/SystemConfigSchema";
 import { protectSystemAdminsFromCommands } from "../../src/utils/troll";
 import { createClient } from "../mocks/client.mock";
@@ -18,20 +20,24 @@ describe("troll functionalities", () => {
         guildId = randomSnowflake();
         normalUserId = randomSnowflake();
         client = createClient();
-        client.configManager = {
-            systemConfig: SystemConfigSchema.parse({
-                system_admins: [sysAdminId]
-            }),
-            config: {
-                [guildId]: {
-                    commands: {
-                        bean_safe: [],
-                        shot_safe: [],
-                        fakeban_safe: []
-                    }
-                }
-            } as unknown as GuildConfigContainer
-        } as ConfigManager;
+        client.getService = vi.fn(c => {
+            if ((c as unknown as typeof ConfigurationManager) === ConfigurationManager) {
+                return {
+                    systemConfig: SystemConfigSchema.parse({
+                        system_admins: [sysAdminId]
+                    }),
+                    config: {
+                        [guildId]: {
+                            commands: {
+                                bean_safe: [],
+                                shot_safe: [],
+                                fakeban_safe: []
+                            }
+                        }
+                    } as unknown as GuildConfigContainer
+                } as ConfigurationManager;
+            }
+        }) as typeof client.getService;
     });
 
     afterEach(() => {
