@@ -1,4 +1,6 @@
 import { Collection } from "discord.js";
+import { requireNonNull } from "../utils/utils";
+import { Inject } from "./Inject";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyConstructor<A extends any[] = any[]> = new (...args: A) => unknown;
@@ -25,7 +27,8 @@ export type Resolved<T extends AnyConstructor> = InstanceType<T>;
  * @since 9.0.0
  */
 class Container {
-    private static instance: Container;
+    public static readonly Inject = Inject;
+    private static instance?: Container;
     public readonly bindingsByConstructor = new Collection<AnyConstructor, Binding>();
     public readonly bindingsByName = new Collection<string, Binding>();
 
@@ -42,6 +45,15 @@ class Container {
         }
 
         return Container.instance;
+    }
+
+    /**
+     * Destroy the global container instance.
+     *
+     * @since 9.0.0
+     */
+    public static destroyGlobalContainer() {
+        Container.instance = undefined;
     }
 
     /**
@@ -90,8 +102,6 @@ class Container {
         return this.resolveBinding(binding) as InstanceType<T>;
     }
 
-    count = 0;
-
     protected resolveBinding<T extends AnyConstructor>(binding: Binding<T>): Resolved<T> {
         if (binding.instance) {
             return binding.instance;
@@ -117,6 +127,8 @@ class Container {
     }
 
     protected autoCreateInstance<T extends AnyConstructor>(value: T): InstanceType<T> {
+        requireNonNull(value);
+
         const constructorParamTypes = Reflect.getMetadata("design:paramtypes", value) as
             | AnyConstructor[]
             | undefined;
@@ -173,8 +185,15 @@ class Container {
                 typeof injection.name === "string"
                     ? this.resolve(injection.name)
                     : this.resolveByClass(
-                          injection.ref ??
-                              Reflect.getMetadata("design:type", value.prototype, injection.key)
+                          requireNonNull(
+                              injection.ref ??
+                                  Reflect.getMetadata(
+                                      "design:type",
+                                      value.prototype,
+                                      injection.key
+                                  ),
+                              "Cannot determine the type of property to inject"
+                          )
                       );
 
             (finalInstance as Record<string, unknown>)[injection.key] = resolved;
