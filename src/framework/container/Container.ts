@@ -22,7 +22,8 @@ export type ContainerBindOptions<T extends AnyConstructor = AnyConstructor> = {
 export type Resolved<T extends AnyConstructor> = InstanceType<T>;
 
 /**
- * A simple dependency injection container. It allows you to bind classes to a key and resolve them later.
+ * A custom dependency injection container.
+ * It allows you to bind classes to a key and resolve them later.
  *
  * @since 9.0.0
  */
@@ -92,6 +93,12 @@ class Container {
         return this.resolveBinding(binding) as Resolved<T>;
     }
 
+    /**
+     * Resolve a class by its constructor.
+     *
+     * @param value The constructor to resolve.
+     * @since 9.0.0
+     */
     public resolveByClass<T extends AnyConstructor>(value: T): InstanceType<T> {
         const binding = this.bindingsByConstructor.get(value);
 
@@ -102,6 +109,12 @@ class Container {
         return this.resolveBinding(binding) as InstanceType<T>;
     }
 
+    /**
+     * Resolve a class by its constructor.
+     *
+     * @param value The constructor to resolve.
+     * @since 9.0.0
+     */
     protected resolveBinding<T extends AnyConstructor>(binding: Binding<T>): Resolved<T> {
         if (binding.instance) {
             return binding.instance;
@@ -126,6 +139,12 @@ class Container {
         return instance as Resolved<T>;
     }
 
+    /**
+     * Automatically create an instance of a class.
+     *
+     * @param value The constructor to create an instance of.
+     * @since 9.0.0
+     */
     protected autoCreateInstance<T extends AnyConstructor>(value: T): InstanceType<T> {
         requireNonNull(value);
 
@@ -153,6 +172,13 @@ class Container {
         return instance;
     }
 
+    /**
+     * Create a binding from an instance.
+     *
+     * @param ref The constructor to bind.
+     * @param instance The instance to bind.
+     * @param key The key to bind the instance to.
+     */
     private createBindingFromInstance<T extends AnyConstructor>(
         ref: T,
         instance: InstanceType<T>,
@@ -169,6 +195,12 @@ class Container {
         this.bindingsByConstructor.set(ref, binding as Binding<T>);
     }
 
+    /**
+     * Resolve the properties of a class.
+     *
+     * @param value The constructor to resolve the properties of.
+     * @param instance The instance to resolve the properties of.
+     */
     public resolveProperties<T extends AnyConstructor>(
         value: T,
         instance?: InstanceType<T>
