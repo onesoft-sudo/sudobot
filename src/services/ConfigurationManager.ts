@@ -23,6 +23,7 @@ import path from "path";
 import { AnyZodObject, z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import type { Extension } from "../framework/extensions/Extension";
+import { Name } from "../framework/services/Name";
 import { Service } from "../framework/services/Service";
 import { GuildConfig, GuildConfigSchema } from "../types/GuildConfigSchema";
 import { SystemConfig, SystemConfigSchema } from "../types/SystemConfigSchema";
@@ -34,6 +35,7 @@ export type GuildConfigContainer = {
     [key: string]: GuildConfig | undefined;
 };
 
+@Name("configManager")
 export default class ConfigurationManager extends Service {
     public readonly configPath = systemPrefix("config/config.json");
     public readonly systemConfigPath = systemPrefix("config/system.json");
@@ -49,7 +51,6 @@ export default class ConfigurationManager extends Service {
     protected guildConfigSchema = GuildConfigSchema;
     protected systemConfigSchema = SystemConfigSchema;
     protected guildConfigContainerSchema = this.guildConfigContainer();
-    protected a = this.client.logger.info("Configuration Manager has been loaded");
 
     config: GuildConfigContainer = {} as GuildConfigContainer;
     systemConfig: SystemConfig = {} as SystemConfig;

@@ -22,10 +22,15 @@ import CanBind from "../container/CanBind";
 import { ClientEvents } from "../types/ClientEvents";
 
 @CanBind
-export default abstract class EventListener<K extends keyof ClientEvents = keyof ClientEvents> {
+export default abstract class EventListener<
+    K extends keyof ClientEvents | string = keyof ClientEvents
+> {
     public abstract readonly name: K;
 
     constructor(protected client: Client) {}
 
-    abstract execute(...args: ClientEvents[K]): Promise<unknown> | void;
+    abstract execute(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ...args: K extends keyof ClientEvents ? ClientEvents[K] : any[]
+    ): Promise<unknown> | void;
 }

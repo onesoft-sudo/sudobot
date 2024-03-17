@@ -3,9 +3,11 @@ import ArgumentParser from "../framework/arguments/ArgumentParser";
 import { Command } from "../framework/commands/Command";
 import CommandAbortedError from "../framework/commands/CommandAbortedError";
 import { InjectService } from "../framework/container/InjectService";
+import { Name } from "../framework/services/Name";
 import { Service } from "../framework/services/Service";
 import ConfigurationManager from "./ConfigurationManager";
 
+@Name("commandManager")
 class CommandManager extends Service {
     public readonly commands = new Collection<string, Command>();
 

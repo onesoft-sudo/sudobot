@@ -2,10 +2,12 @@ import { Infraction, InfractionType } from "@prisma/client";
 import { formatDistanceToNowStrict } from "date-fns";
 import { APIEmbed, Colors, Snowflake, User } from "discord.js";
 import CommandAbortedError from "../framework/commands/CommandAbortedError";
+import { Name } from "../framework/services/Name";
 import { Service } from "../framework/services/Service";
 import { emoji } from "../utils/emoji";
 import ConfigurationManager from "./ConfigurationManager";
 
+@Name("infractionManager")
 class InfractionManager extends Service {
     private readonly actionDoneNames: Record<InfractionType, string> = {
         [InfractionType.BEAN]: "beaned",

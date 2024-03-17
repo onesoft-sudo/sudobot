@@ -28,6 +28,7 @@ import Client from "../core/Client";
 import EventListener from "../framework/events/EventListener";
 import { Extension } from "../framework/extensions/Extension";
 import { ExtensionInfo } from "../framework/extensions/ExtensionInfo";
+import { Name } from "../framework/services/Name";
 import { Service } from "../framework/services/Service";
 import type { ClientEvents } from "../framework/types/ClientEvents";
 import { cache } from "../utils/cache";
@@ -273,6 +274,7 @@ const extensionMetadataSchema = z.object({
     readmeFileName: z.string().default("README.md")
 });
 
+@Name("extensionService")
 export default class ExtensionService extends Service {
     private readonly extensionIndexURL =
         "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/index.json";

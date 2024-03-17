@@ -27,14 +27,17 @@ import DynamicLoader from "../framework/import/DynamicLoader";
 import { Logger } from "../framework/log/Logger";
 import { Service } from "../framework/services/Service";
 import { ServiceManager } from "../framework/services/ServiceManager";
+import { Services } from "../types/Services";
 import { developmentMode } from "../utils/utils";
 
 class Client<R extends boolean = boolean> extends BaseClient<R> {
     public readonly dynamicLoader = new DynamicLoader(this);
-    public readonly serviceManager = new ServiceManager(this);
 
     @Inject()
     public readonly logger!: Logger;
+
+    @Inject()
+    public readonly serviceManager!: ServiceManager;
 
     public readonly prisma = new PrismaClient({
         errorFormat: "pretty",
@@ -56,7 +59,12 @@ class Client<R extends boolean = boolean> extends BaseClient<R> {
         return metadata;
     }
 
-    async boot({ commands = true, events = true }: { commands?: boolean; events?: boolean } = {}) {
+    public async boot({
+        commands = true,
+        events = true
+    }: { commands?: boolean; events?: boolean } = {}) {
+        // if (this !== this.serviceManager)
+
         await this.serviceManager.loadServices();
 
         if (events) {
@@ -69,7 +77,7 @@ class Client<R extends boolean = boolean> extends BaseClient<R> {
         }
     }
 
-    async getHomeGuild() {
+    public async getHomeGuild() {
         return (
             this.guilds.cache.get(process.env.HOME_GUILD_ID) ??
             (await this.guilds.fetch(process.env.HOME_GUILD_ID))
@@ -77,7 +85,7 @@ class Client<R extends boolean = boolean> extends BaseClient<R> {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    getService<S extends new (...args: any[]) => Service>(
+    public getService<S extends new (...args: any[]) => Service>(
         serviceClass: S,
         error = true
     ): InstanceType<S> {
@@ -87,6 +95,16 @@ class Client<R extends boolean = boolean> extends BaseClient<R> {
 
         if (!service && error) {
             throw new Error(`Service ${serviceClass.name} not found`);
+        }
+
+        return service;
+    }
+
+    public getServiceByName<N extends keyof Services>(name: N, error = true): Services[N] {
+        const service = this.serviceManager.getServiceByName(name);
+
+        if (!service && error) {
+            throw new Error(`Service ${name} not found`);
         }
 
         return service;

@@ -5,11 +5,7 @@ class Application {
     public readonly container: Container;
 
     public constructor() {
-        Container.setFirstContainerAsGlobal();
-
-        this.container = new Container({
-            implicitResolution: true
-        });
+        this.container = Container.getGlobalContainer();
     }
 
     public async run(kernel: KernelInterface) {

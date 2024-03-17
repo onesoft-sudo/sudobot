@@ -81,7 +81,7 @@ class DynamicLoader {
     async loadController(filepath: string, router: Router) {
         const { default: ControllerClass }: DefaultExport<Class<Controller, [Client]>> =
             await import(filepath);
-        const controller = await Container.getGlobalContainer().resolve(ControllerClass);
+        const controller = await Container.getGlobalContainer().resolveByClass(ControllerClass);
         this.client.getService(APIServer).loadController(controller, ControllerClass, router);
         this.client.logger.info("Loaded Controller: ", ControllerClass.name);
     }
@@ -101,7 +101,7 @@ class DynamicLoader {
     async loadEvent(filepath: string) {
         const { default: EventListenerClass }: DefaultExport<Class<EventListener, [Client]>> =
             await import(filepath);
-        const listener = await this.getContainer().resolve(EventListenerClass);
+        const listener = await this.getContainer().resolveByClass(EventListenerClass);
         this.client.addEventListener(listener.name, listener.execute.bind(listener));
         this.client.logger.info("Loaded Event: ", listener.name);
     }
@@ -170,11 +170,11 @@ class DynamicLoader {
         );
         const canBind = Reflect.hasMetadata("di:can-bind", CommandClass.prototype);
         const command = canBind
-            ? await this.getContainer().resolve(CommandClass)
+            ? await this.getContainer().resolveByClass(CommandClass)
             : new CommandClass(this.client);
 
         if (!canBind) {
-            await this.getContainer().resolveProps(CommandClass, command);
+            await this.getContainer().resolveProperties(CommandClass, command);
         }
 
         const defaultGroup = basename(dirname(filepath));

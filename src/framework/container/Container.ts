@@ -1,30 +1,23 @@
-import { Awaitable } from "discord.js";
-import Client from "../../core/Client";
-
-type Binding<T = unknown> = {
-    value?: T;
-    key?: string;
-    singleton: boolean;
-    factory?: () => Awaitable<T>;
-};
-
-export type BindOptions<T> = {
-    key?: string;
-    value?: T;
-    singleton?: boolean;
-    factory?: () => Awaitable<T>;
-    callImmediately?: boolean;
-};
-
-export type ContainerOptions = {
-    /**
-     * Whether to use implicit resolution for classes that are not explicitly bound.
-     */
-    implicitResolution?: boolean;
-};
+import { Collection } from "discord.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyConstructor<A extends any[] = any[]> = new (...args: A) => unknown;
+
+export type Binding<T extends AnyConstructor = AnyConstructor> = {
+    key: string;
+    value: T;
+    instance?: InstanceType<T>;
+    factory?: () => InstanceType<T>;
+    singleton?: boolean;
+};
+
+export type ContainerBindOptions<T extends AnyConstructor = AnyConstructor> = {
+    key?: string;
+    singleton?: boolean;
+    factory?: () => InstanceType<T>;
+};
+
+export type Resolved<T extends AnyConstructor> = InstanceType<T>;
 
 /**
  * A simple dependency injection container. It allows you to bind classes to a key and resolve them later.
@@ -32,208 +25,162 @@ export type AnyConstructor<A extends any[] = any[]> = new (...args: A) => unknow
  * @since 9.0.0
  */
 class Container {
-    private static globalContainerResolver?: () => Container;
-    private static canSetGlobalContainer = false;
-    private readonly bindings = new WeakMap<object, Binding>();
+    private static instance: Container;
+    public readonly bindingsByConstructor = new Collection<AnyConstructor, Binding>();
+    public readonly bindingsByName = new Collection<string, Binding>();
 
-    public constructor(private readonly options: ContainerOptions = {}) {
-        if (Container.canSetGlobalContainer) {
-            Container.globalContainerResolver = () => this;
-        }
-    }
+    private constructor() {}
 
-    public static getGlobalContainerResolver(resolver: () => Container) {
-        this.globalContainerResolver = resolver;
-    }
-
-    public static setFirstContainerAsGlobal(canSetGlobalContainer: boolean = true) {
-        this.canSetGlobalContainer = canSetGlobalContainer;
-    }
-
-    public static destroyGlobalContainer() {
-        this.globalContainerResolver = undefined;
-    }
-
-    public static getGlobalContainer(): Container {
-        if (this.globalContainerResolver === undefined) {
-            throw new Error("Global container has not been set yet");
+    /**
+     * Get the global container instance.
+     *
+     * @since 9.0.0
+     */
+    public static getGlobalContainer() {
+        if (!Container.instance) {
+            Container.instance = new Container();
         }
 
-        return this.globalContainerResolver();
+        return Container.instance;
     }
 
-    public async bind<R extends AnyConstructor>(
-        ref: R,
-        options?: BindOptions<InstanceType<R>>
-    ): Promise<void> {
-        await this.resolveStaticProps(ref);
-
-        const value =
-            options?.factory && options.callImmediately ? await options.factory() : options?.value;
-
+    /**
+     * Bind a class to a key.
+     *
+     * @param key The key to bind the class to.
+     * @param value The class to bind.
+     * @since 9.0.0
+     */
+    public bind<T extends AnyConstructor>(value: T, options?: ContainerBindOptions<T>) {
+        const key = options?.key ?? value.name;
         const binding = {
-            key: options?.key,
+            key,
             value,
-            singleton: options?.singleton ?? false,
-            factory: options?.factory
+            instance: undefined,
+            factory: options?.factory,
+            singleton: options?.singleton ?? false
         };
-
-        this.bindings.set(ref, binding);
-
-        if (value) {
-            await this.resolveProps(ref, value);
-        }
+        this.bindingsByName.set(key as string, binding as Binding<T>);
+        this.bindingsByConstructor.set(value, binding as Binding<T>);
     }
 
-    public async resolveStaticProps<R extends AnyConstructor>(ref: R, targetRef: R = ref) {
-        const metadata = Reflect.getMetadata("di:inject", ref);
+    /**
+     * Resolve a class by its key.
+     *
+     * @param key The key to resolve.
+     * @since 9.0.0
+     */
+    public resolve<T extends AnyConstructor>(key: string): Resolved<T> {
+        const binding = this.bindingsByName.get(key as string);
 
-        if (!metadata) {
-            return;
+        if (!binding) {
+            throw new Error(`No binding found for key: ${key}`);
         }
 
-        for (const { key, ref: propRef } of metadata) {
-            const type = Reflect.getMetadata("design:type", ref, key);
-
-            if (!propRef && !type) {
-                throw new Error(
-                    `Failed to resolve static property "${key}" of class "${ref.name} (${targetRef.name})"`
-                );
-            }
-
-            const propTypeRef = propRef ?? type;
-            targetRef[key as keyof typeof targetRef] = await this.resolve(propTypeRef);
-        }
-
-        const prototype = Object.getPrototypeOf(ref);
-
-        if (prototype) {
-            await this.resolveStaticProps(prototype as R, ref);
-        }
+        return this.resolveBinding(binding) as Resolved<T>;
     }
 
-    public resolveExisting<R extends AnyConstructor>(ref: R): InstanceType<R> {
-        const value = this.bindings.get(ref)?.value;
+    public resolveByClass<T extends AnyConstructor>(value: T): InstanceType<T> {
+        const binding = this.bindingsByConstructor.get(value);
 
-        if (!value) {
-            throw new Error(`Failed to resolve binding for "${ref.name ? ref.name : ref}"`);
+        if (!binding) {
+            return this.autoCreateInstance(value);
         }
 
-        return value as InstanceType<R>;
+        return this.resolveBinding(binding) as InstanceType<T>;
     }
 
-    public async resolveProps<R extends AnyConstructor>(ref: R, instance: InstanceType<R>) {
-        const metadata = Reflect.getMetadata("di:inject", ref.prototype);
+    count = 0;
 
-        if (metadata) {
-            for (const { key, ref: propRef } of metadata) {
-                const type = Reflect.getMetadata("design:type", ref.prototype, key);
-
-                if (!propRef && !type) {
-                    throw new Error(
-                        `Failed to resolve property "${key}" on object of class "${ref.name}"`
-                    );
-                }
-
-                const propTypeRef = propRef ?? type;
-                (instance as Record<string, unknown>)[key] = await this.resolve(propTypeRef);
-            }
+    protected resolveBinding<T extends AnyConstructor>(binding: Binding<T>): Resolved<T> {
+        if (binding.instance) {
+            return binding.instance;
         }
 
-        const services = Reflect.getMetadata("di:inject:services", ref.prototype) ?? [];
+        let instance;
 
-        if (services) {
-            for (const { ref: service, key } of services) {
-                const type = Reflect.getMetadata("design:type", ref.prototype, key);
-
-                if (!service && !type) {
-                    throw new Error(
-                        `Failed to resolve service for property "${key}" on object of class "${ref.name}"`
-                    );
-                }
-
-                const serviceTypeRef = service ?? type;
-
-                (instance as Record<string, unknown>)[key] =
-                    Client.instance.getService(serviceTypeRef);
-            }
+        if (binding.factory) {
+            instance = binding.factory();
+        } else {
+            instance = this.autoCreateInstance(binding.value as AnyConstructor);
         }
 
-        if (!metadata) {
-            return;
+        if (binding.singleton) {
+            binding.instance = instance as Resolved<T>;
         }
 
-        const prototype = Object.getPrototypeOf(ref);
-
-        if (prototype) {
-            await this.resolveProps(prototype, instance);
+        if (binding.factory) {
+            this.resolveProperties(binding.value as AnyConstructor, instance);
         }
+
+        return instance as Resolved<T>;
     }
 
-    private getParamTypes<R extends AnyConstructor>(ref: R): ConstructorParameters<R> {
-        const paramTypes = Reflect.getMetadata("design:paramtypes", ref);
+    protected autoCreateInstance<T extends AnyConstructor>(value: T): InstanceType<T> {
+        const constructorParamTypes = Reflect.getMetadata("design:paramtypes", value) as
+            | AnyConstructor[]
+            | undefined;
+        const bindAs = Reflect.getMetadata("di:bind_as", value);
+        let instance: InstanceType<T>;
 
-        if (paramTypes === undefined || paramTypes === null) {
-            const prototype = Object.getPrototypeOf(ref);
+        if (!constructorParamTypes) {
+            instance = new value() as InstanceType<T>;
+        } else {
+            const resolvedParams = constructorParamTypes.map(paramType =>
+                this.resolveByClass(paramType)
+            );
 
-            if (prototype) {
-                return this.getParamTypes(prototype as R);
-            }
+            instance = new value(...resolvedParams) as InstanceType<T>;
         }
 
-        return paramTypes;
-    }
-
-    private async createInstance<R extends AnyConstructor>(ref: R): Promise<InstanceType<R>> {
-        const paramTypes = this.getParamTypes(ref);
-        const params: [] = [];
-
-        for (const paramType of paramTypes ?? []) {
-            (params as unknown[]).push(await this.resolve(paramType));
+        if (bindAs) {
+            this.createBindingFromInstance(value, instance, bindAs);
         }
 
-        const instance = new (ref as new () => InstanceType<R>)(...params);
-        await this.resolveProps(ref, instance);
-
-        const bindTo = Reflect.getMetadata("di:bind", ref) as
-            | undefined
-            | (Omit<BindOptions<R>, "value" | "factory"> & { ref: R });
-
-        if (bindTo) {
-            await this.bind(bindTo.ref, {
-                ...bindTo,
-                factory: () => this.createInstance(bindTo.ref)
-            });
-        }
-
+        this.resolveProperties(value, instance);
         return instance;
     }
 
-    public async resolve<R extends AnyConstructor>(ref: R): Promise<InstanceType<R>> {
-        const binding = this.bindings.get(ref);
+    private createBindingFromInstance<T extends AnyConstructor>(
+        ref: T,
+        instance: InstanceType<T>,
+        key: string
+    ) {
+        const binding = {
+            key,
+            value: ref,
+            instance,
+            singleton: true
+        };
 
-        if (!binding) {
-            if (this.options.implicitResolution) {
-                return this.createInstance(ref);
+        this.bindingsByName.set(key, binding as Binding<T>);
+        this.bindingsByConstructor.set(ref, binding as Binding<T>);
+    }
+
+    public resolveProperties<T extends AnyConstructor>(
+        value: T,
+        instance?: InstanceType<T>
+    ): InstanceType<T> {
+        const finalInstance = instance ?? this.resolveByClass(value);
+        const injections = Reflect.getMetadata("di:inject", value.prototype) || [];
+
+        for (const injection of injections) {
+            if ((finalInstance as Record<string, unknown>)[injection.key]) {
+                continue;
             }
 
-            throw new Error(`Failed to resolve binding for "${ref.name ? ref.name : ref}"`);
+            const resolved =
+                typeof injection.name === "string"
+                    ? this.resolve(injection.name)
+                    : this.resolveByClass(
+                          injection.ref ??
+                              Reflect.getMetadata("design:type", value.prototype, injection.key)
+                      );
+
+            (finalInstance as Record<string, unknown>)[injection.key] = resolved;
         }
 
-        if (!binding.singleton || !binding.value) {
-            const value = (await (binding.factory
-                ? binding.factory()
-                : this.createInstance(ref))) as InstanceType<R>;
-
-            if (!binding.singleton) {
-                return value;
-            }
-
-            binding.value = value;
-            return value;
-        }
-
-        return binding.value as InstanceType<R>;
+        return finalInstance;
     }
 }
 

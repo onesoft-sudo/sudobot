@@ -20,9 +20,11 @@
 import bcrypt from "bcrypt";
 import chalk from "chalk";
 import { Server, Socket } from "socket.io";
+import { Name } from "../framework/services/Name";
 import { Service } from "../framework/services/Service";
 import ConfigurationManager from "./ConfigurationManager";
 
+@Name("logStreamingService")
 export default class LogStreamingService extends Service {
     public readonly MAX_CONNECTIONS = 5;
     protected connections = 0;

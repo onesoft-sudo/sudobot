@@ -64,27 +64,29 @@ class DiscordKernel extends Kernel {
         return logger;
     }
 
-    public async bindings() {
+    public bindings() {
         const container = Container.getGlobalContainer();
 
-        await container.bind(Logger, {
-            value: this.createLogger(),
-            singleton: true
+        container.bind(Logger, {
+            factory: () => this.createLogger(),
+            singleton: true,
+            key: "logger"
         });
 
-        await container.bind(Client, {
-            value: this.createClient(),
-            singleton: true
+        container.bind(Client, {
+            factory: () => this.createClient(),
+            singleton: true,
+            key: "client"
         });
     }
 
     public getClient() {
-        return Container.getGlobalContainer().resolve(Client);
+        return Container.getGlobalContainer().resolveByClass(Client);
     }
 
     public override async boot() {
         this.logger.debug("Starting the kernel...");
-        await this.bindings();
+        this.bindings();
 
         if (process.env.TWO_FACTOR_AUTH_URL) {
             const key = await this.promptForCode();
@@ -98,7 +100,7 @@ class DiscordKernel extends Kernel {
         this.spawnNativeProcess();
 
         this.logger.debug("Booting up the client...");
-        const client = await this.getClient();
+        const client = this.getClient();
         await client.boot();
 
         if (process.env.SERVER_ONLY_MODE) {

@@ -18,6 +18,7 @@ import path from "path";
 import semver from "semver";
 import { version } from "../../package.json";
 import FileSystem from "../framework/polyfills/FileSystem";
+import { Name } from "../framework/services/Name";
 import { Service } from "../framework/services/Service";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { emoji } from "../utils/emoji";
@@ -27,6 +28,7 @@ import ConfigurationManager from "./ConfigurationManager";
 
 const { BACKUP_CHANNEL_ID, ERROR_WEBHOOK_URL, BACKUP_STORAGE } = process.env;
 
+@Name("startupManager")
 class StartupManager extends Service implements HasEventListeners {
     interval: Timer | undefined = undefined;
     readonly packageJsonUrl =

@@ -1,18 +1,28 @@
 import { Collection } from "discord.js";
-import Client from "../../core/Client";
+import type Client from "../../core/Client";
 import DiscordKernel from "../../core/DiscordKernel";
 import { ESModule } from "../../types/ESModule";
+import { Services } from "../../types/Services";
+import Bind from "../container/Bind";
 import Container from "../container/Container";
+import { Inject } from "../container/Inject";
 import FileSystem from "../polyfills/FileSystem";
+import { requireNonNull } from "../utils/utils";
 import { Service } from "./Service";
 
 type ServiceConstructor = new (client: Client) => Service;
 
+@Bind("serviceManager")
 class ServiceManager {
-    public constructor(protected readonly client: Client) {}
+    @Inject("client")
+    protected readonly client!: Client;
+
     private readonly services = new Collection<ServiceConstructor, Service>();
+    private readonly servicesMappedByName = new Collection<string, Service>();
 
     public async loadServices() {
+        requireNonNull(this.client);
+
         for (const service of DiscordKernel.services) {
             let servicePath = service;
 
@@ -40,11 +50,15 @@ class ServiceManager {
         const instance = new ServiceClass(this.client);
 
         Container.getGlobalContainer().bind(ServiceClass, {
-            value: instance,
+            factory: () => instance,
             singleton: true
         });
 
         this.services.set(ServiceClass, instance);
+        this.servicesMappedByName.set(
+            Reflect.getMetadata("service:name", ServiceClass.prototype) ?? ServiceClass.name,
+            instance
+        );
         await instance.boot();
         this.client.logger.info(`Loaded service: ${name ?? ServiceClass.name}`);
     }
@@ -53,8 +67,12 @@ class ServiceManager {
         return this.client.dynamicLoader.loadServicesFromDirectory(servicesDirectory);
     }
 
-    getService<S extends new () => Service>(serviceClass: S): InstanceType<S> {
+    public getService<S extends new () => Service>(serviceClass: S): InstanceType<S> {
         return this.services.get(serviceClass) as InstanceType<S>;
+    }
+
+    public getServiceByName<N extends keyof Services>(name: N): Services[N] {
+        return this.servicesMappedByName.get(name) as Services[N];
     }
 }
 
