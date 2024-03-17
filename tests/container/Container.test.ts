@@ -1,41 +1,59 @@
 import "reflect-metadata";
+
+import Container from "@/framework/container/Container";
+import { afterEach } from "node:test";
 import { beforeEach, describe, expect, it } from "vitest";
-import CanBind from "../../src/components/container/CanBind";
-import Container from "../../src/components/container/Container";
 
 describe("container bindings", () => {
     let container: Container;
 
     beforeEach(() => {
-        container = new Container();
+        container = Container.getGlobalContainer();
     });
 
-    it("should bind and resolve a class instance", async () => {
+    afterEach(() => {
+        Container.destroyGlobalContainer();
+    });
+
+    it("should bind and resolve a class instance", () => {
         class MyClass {}
 
-        await container.bind(MyClass);
-        const instance = await container.resolve(MyClass);
+        container.bind(MyClass);
+        const instance = container.resolveByClass(MyClass);
 
         expect(instance).toBeInstanceOf(MyClass);
     });
 
-    it("should bind and resolve a singleton class instance", async () => {
+    it("should bind and resolve a singleton class instance", () => {
         class MyClass {}
 
-        await container.bind(MyClass, { singleton: true });
-        const instance1 = await container.resolve(MyClass);
-        const instance2 = await container.resolve(MyClass);
+        container.bind(MyClass, { singleton: true });
+        const instance1 = container.resolveByClass(MyClass);
+        const instance2 = container.resolveByClass(MyClass);
 
         expect(instance1).toBeInstanceOf(MyClass);
         expect(instance2).toBe(instance1);
     });
 
-    it("should throw an error when resolving an unbound class", async () => {
+    it("should bind and resolve a class instance with a custom key", () => {
         class MyClass {}
 
-        expect(container.resolve(MyClass)).rejects.toEqual(
-            new Error('Failed to resolve binding for "MyClass"')
-        );
+        container.bind(MyClass, { key: "myClass", singleton: true });
+
+        const instance = container.resolve("myClass");
+        expect(instance).toBeInstanceOf(MyClass);
+
+        const instance2 = container.resolveByClass(MyClass);
+        expect(instance2).toBeInstanceOf(MyClass);
+
+        expect(instance2).toBe(instance);
+    });
+
+    it("should implicitly resolve a class instance if not bound", () => {
+        class MyClass {}
+
+        const instance = container.resolveByClass(MyClass);
+        expect(instance).toBeInstanceOf(MyClass);
     });
 });
 
@@ -43,29 +61,32 @@ describe("container bindings with dependencies", () => {
     let container: Container;
 
     beforeEach(() => {
-        container = new Container();
+        container = Container.getGlobalContainer();
     });
 
-    it("should bind and resolve a class instance with dependencies", async () => {
+    afterEach(() => {
+        Container.destroyGlobalContainer();
+    });
+
+    it("should bind and resolve a class instance with dependencies", () => {
         class MyClass {}
 
         class MyDependentClass {
             public constructor(public myClass: MyClass) {}
         }
 
-        CanBind(MyDependentClass);
         Reflect.defineMetadata("design:paramtypes", [MyClass], MyDependentClass);
 
-        await container.bind(MyClass);
-        await container.bind(MyDependentClass);
+        container.bind(MyClass);
+        container.bind(MyDependentClass);
 
-        const instance = await container.resolve(MyDependentClass);
+        const instance = container.resolveByClass(MyDependentClass);
 
         expect(instance).toBeInstanceOf(MyDependentClass);
         expect(instance.myClass).toBeInstanceOf(MyClass);
     });
 
-    it("should bind and resolve a class instance with singleton dependencies", async () => {
+    it("should bind and resolve a class instance with singleton dependencies", () => {
         class MyClass {}
         class MyClass2 {}
 
@@ -73,15 +94,14 @@ describe("container bindings with dependencies", () => {
             public constructor(public myClass: MyClass, public myClass2: MyClass2) {}
         }
 
-        CanBind(MyDependentClass);
         Reflect.defineMetadata("design:paramtypes", [MyClass, MyClass2], MyDependentClass);
 
-        await container.bind(MyClass, { singleton: true });
-        await container.bind(MyClass2, { singleton: true });
-        await container.bind(MyDependentClass, { singleton: true });
+        container.bind(MyClass, { singleton: true });
+        container.bind(MyClass2, { singleton: true });
+        container.bind(MyDependentClass, { singleton: true });
 
-        const instance1 = await container.resolve(MyDependentClass);
-        const instance2 = await container.resolve(MyDependentClass);
+        const instance1 = container.resolveByClass(MyDependentClass);
+        const instance2 = container.resolveByClass(MyDependentClass);
 
         expect(instance1).toBeInstanceOf(MyDependentClass);
         expect(instance2).toBe(instance1);
@@ -91,7 +111,7 @@ describe("container bindings with dependencies", () => {
         expect(instance2.myClass2).toBe(instance1.myClass2);
     });
 
-    it("should bind and resolve a class instance with deep and circular dependencies", async () => {
+    it("should bind and resolve a class instance with deep and circular dependencies", () => {
         class Level0Dep0 {}
         class Level0Dep1 {}
 
@@ -133,15 +153,15 @@ describe("container bindings with dependencies", () => {
 
         Reflect.defineMetadata("design:paramtypes", [Level2Dep1, Level2Dep0], Application);
 
-        await container.bind(Level0Dep0, { singleton: true });
-        await container.bind(Level0Dep1, { singleton: true });
-        await container.bind(Level1Dep0, { singleton: true });
-        await container.bind(Level1Dep1, { singleton: true });
-        await container.bind(Level2Dep0, { singleton: true });
-        await container.bind(Level2Dep1, { singleton: true });
-        await container.bind(Application);
+        container.bind(Level0Dep0, { singleton: true });
+        container.bind(Level0Dep1, { singleton: true });
+        container.bind(Level1Dep0, { singleton: true });
+        container.bind(Level1Dep1, { singleton: true });
+        container.bind(Level2Dep0, { singleton: true });
+        container.bind(Level2Dep1, { singleton: true });
+        container.bind(Application);
 
-        const instance = await container.resolve(Application);
+        const instance = container.resolveByClass(Application);
 
         expect(instance).toBeInstanceOf(Application);
 
@@ -184,7 +204,11 @@ describe("container bindings with factories", () => {
     let container: Container;
 
     beforeEach(() => {
-        container = new Container();
+        container = Container.getGlobalContainer();
+    });
+
+    afterEach(() => {
+        Container.destroyGlobalContainer();
     });
 
     it("should bind and resolve a class instance with a factory", async () => {
@@ -193,11 +217,11 @@ describe("container bindings with factories", () => {
         }
 
         await container.bind(MyClass, {
-            factory: async () => new MyClass(crypto.getRandomValues(new Uint32Array(1))[0])
+            factory: () => new MyClass(crypto.getRandomValues(new Uint32Array(1))[0])
         });
 
-        const instance = await container.resolve(MyClass);
-        const instance2 = await container.resolve(MyClass);
+        const instance = container.resolveByClass(MyClass);
+        const instance2 = container.resolveByClass(MyClass);
 
         expect(instance).toBeInstanceOf(MyClass);
         expect(instance2).toBeInstanceOf(MyClass);
@@ -205,18 +229,18 @@ describe("container bindings with factories", () => {
         expect(instance.value).not.toBe(instance2.value);
     });
 
-    it("should bind and resolve a singleton class instance with a factory", async () => {
+    it("should bind and resolve a singleton class instance with a factory", () => {
         class MyClass {
             public constructor(public value: number) {}
         }
 
-        await container.bind(MyClass, {
-            factory: async () => new MyClass(Math.ceil(Math.random() * 100)),
+        container.bind(MyClass, {
+            factory: () => new MyClass(Math.ceil(Math.random() * 100)),
             singleton: true
         });
 
-        const instance = await container.resolve(MyClass);
-        const instance2 = await container.resolve(MyClass);
+        const instance = container.resolveByClass(MyClass);
+        const instance2 = container.resolveByClass(MyClass);
 
         expect(instance).toBeInstanceOf(MyClass);
         expect(instance2).toBeInstanceOf(MyClass);
@@ -226,25 +250,94 @@ describe("container bindings with factories", () => {
 });
 
 describe("global containers", () => {
+    it("should return the same container instance", () => {
+        const container1 = Container.getGlobalContainer();
+        const container2 = Container.getGlobalContainer();
+
+        expect(container2).toBe(container1);
+    });
+
+    it("should destroy the global container instance", () => {
+        const container1 = Container.getGlobalContainer();
+        Container.destroyGlobalContainer();
+        const container2 = Container.getGlobalContainer();
+
+        expect(container2).not.toBe(container1);
+    });
+});
+
+describe("container property injection", () => {
+    let container: Container;
+
     beforeEach(() => {
+        container = Container.getGlobalContainer();
+    });
+
+    afterEach(() => {
         Container.destroyGlobalContainer();
     });
 
-    it("should set the first container as the global container", () => {
-        Container.setFirstContainerAsGlobal();
-        const container = new Container();
-        expect(Container.getGlobalContainer()).toBe(container);
+    it("should inject a class instance with properties", () => {
+        class MyClass {
+            public value = 42;
+        }
+
+        class MyDependentClass {
+            @Container.Inject()
+            public myClass!: MyClass;
+        }
+
+        Reflect.defineMetadata("design:type", MyClass, MyDependentClass.prototype, "myClass");
+
+        container.bind(MyClass, { singleton: true });
+        container.bind(MyDependentClass, { singleton: true });
+
+        const instance = container.resolveByClass(MyDependentClass);
+
+        expect(instance).toBeInstanceOf(MyDependentClass);
+        expect(instance.myClass).toBeInstanceOf(MyClass);
+        expect(instance.myClass.value).toBe(42);
+
+        const instance2 = container.resolveByClass(MyDependentClass);
+
+        expect(instance2).toBe(instance);
+        expect(instance2.myClass).toBe(instance.myClass);
+        expect(instance2.myClass.value).toBe(instance.myClass.value);
+
+        instance.myClass.value = 100;
+
+        expect(instance2.myClass.value).toBe(100);
     });
 
-    it("should throw an error when trying to get the global container without setting it first", () => {
-        expect(() => Container.getGlobalContainer()).toThrowError(
-            "Global container has not been set yet"
-        );
-    });
+    it("should inject a class instance with properties and singleton dependencies", () => {
+        class MyClass {
+            public value = 42;
+        }
 
-    it("should set a custom global container", () => {
-        const container = new Container();
-        Container.getGlobalContainerResolver(() => container);
-        expect(Container.getGlobalContainer()).toBe(container);
+        class MyDependentClass {
+            @Container.Inject()
+            public myClass!: MyClass;
+        }
+
+        Reflect.defineMetadata("design:type", MyClass, MyDependentClass.prototype, "myClass");
+
+        container.bind(MyClass, { singleton: true });
+        container.bind(MyDependentClass, { singleton: true });
+
+        const instance = container.resolveByClass(MyDependentClass);
+
+        expect(instance).toBeInstanceOf(MyDependentClass);
+        expect(instance.myClass).toBeInstanceOf(MyClass);
+        expect(instance.myClass.value).toBe(42);
+
+        const instance2 = container.resolveByClass(MyDependentClass);
+
+        expect(instance2).toBe(instance);
+        expect(instance2.myClass).toBe(instance.myClass);
+        expect(instance2.myClass.value).toBe(instance.myClass.value);
+
+        instance.myClass.value = 100;
+
+        expect(instance2.myClass.value).toBe(100);
     });
 });
