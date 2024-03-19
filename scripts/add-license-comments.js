@@ -23,12 +23,15 @@ const fs = require("fs/promises");
 const path = require("path");
 const { existsSync } = require("fs");
 
-const sourceDirectory = path.join(__dirname, existsSync(path.join(__dirname, "src")) ? "." : "../src");
+const sourceDirectory = path.join(
+    __dirname,
+    existsSync(path.join(__dirname, "src")) ? "." : "../src"
+);
 
 const licenseComment = `/*
 * This file is part of SudoBot.
 *
-* Copyright (C) 2021-2023 OSN Developers.
+* Copyright (C) 2021-${new Date().getFullYear()} OSN Developers.
 *
 * SudoBot is free software; you can redistribute it and/or modify it
 * under the terms of the GNU Affero General Public License as published by
