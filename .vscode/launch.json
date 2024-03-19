@@ -9,7 +9,7 @@
             "request": "launch"
         },
         {
-            "name": "Launch (Bun)",
+            "name": "Launch via Bun",
             "cwd": "${workspaceFolder}",
             "command": "bun dev",
             "type": "node-terminal",
