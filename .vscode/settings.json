@@ -1,0 +1,29 @@
+{
+    "[javascript]": {
+        "editor.formatOnSave": true
+    },
+    "[typescript]": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+        }
+    },
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "window.commandCenter": true,
+    "workbench.experimental.share.enabled": true,
+    "C_Cpp.files.exclude": {
+        "extensions/**": true,
+        "build/**": true,
+        "src/**": true,
+        "tmp/**": true,
+        "tests/**": true,
+        "node_modules/**": true
+    },
+    "cSpell.words": ["botinfo", "SOFTBAN", "softbanned"],
+    "material-icon-theme.folders.associations": {
+        "automod": "Secure",
+        "framework": "Server",
+        "policies": "Secure",
+        "permissions": "Resolver"
+    }
+}

@@ -1,6 +1,5 @@
 .env
 node_modules/
-.vscode/
 .idea/
 src/commands/test/
 yarn-error.log
@@ -26,3 +25,4 @@ setup.sh
 .extbuild
 /coverage
 /src.bak
+/docs/.vscode
