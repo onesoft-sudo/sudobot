@@ -1,11 +1,13 @@
 import {
     ApplicationCommandType,
+    Awaitable,
     ChatInputCommandInteraction,
     ContextMenuCommandBuilder,
     ContextMenuCommandInteraction,
     Message,
     PermissionResolvable,
-    SlashCommandBuilder
+    SlashCommandBuilder,
+    User
 } from "discord.js";
 import Client from "../../core/Client";
 import Argument from "../arguments/Argument";
@@ -13,6 +15,7 @@ import ArgumentParser from "../arguments/ArgumentParser";
 import Container from "../container/Container";
 import { Guard } from "../guards/Guard";
 import { GuardLike } from "../guards/GuardLike";
+import { Policy } from "../policies/Policy";
 import { Permission, PermissionLike } from "../security/Permission";
 import { PermissionDeniedError } from "../security/PermissionDeniedError";
 import Builder from "../types/Builder";
@@ -156,6 +159,9 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      */
     private cachedGuards?: GuardLike[];
 
+    /**
+     * The argument parser for the command.
+     */
     private readonly argumentParser: ArgumentParser;
 
     /**
@@ -360,8 +366,9 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
             return;
         }
 
-        const discordPermissions = new Set<PermissionResolvable>();
+        this.client.logger.debug("Computing permissions for command: ", this.name);
 
+        const discordPermissions = new Set<PermissionResolvable>();
         this.cachedPermissions = [];
 
         for (const permission of this.permissions) {
@@ -404,7 +411,48 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
 
         return true;
     }
+
+    /**
+     * Attempts to authorize the user to perform an action.
+     *
+     * @param options - The options for the authorization.
+     * @param contextOrUser - The context or user to authorize.
+     * @returns True if the user is authorized, false otherwise.
+     * @throws {PermissionDeniedError} If the user is not authorized.
+     */
+    protected async authorize<K extends Exclude<keyof PolicyActions, number>>(
+        contextOrUser: Context | User,
+        options: AuthorizeOptions<K>
+    ) {
+        const { action, args, policy, errorMessage, onFail } = options;
+        const result = await policy.can(
+            action,
+            contextOrUser instanceof Context ? contextOrUser.user : contextOrUser,
+            ...args
+        );
+
+        if (!result) {
+            if (onFail) {
+                await onFail();
+                return false;
+            }
+
+            throw new PermissionDeniedError(
+                errorMessage ?? "You're missing permissions to perform this action."
+            );
+        }
+
+        return result;
+    }
 }
+
+export type AuthorizeOptions<K extends Exclude<keyof PolicyActions, number>> = {
+    policy: typeof Policy;
+    action: K;
+    args: PolicyActions[K];
+    onFail?: () => Awaitable<void>;
+    errorMessage?: string;
+};
 
 export type Arguments = Record<string | number, unknown>;
 export type ArgumentPayload = Array<Argument<unknown> | null> | [Arguments];
