@@ -22,6 +22,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
     public readonly name?: string;
     protected readonly rules?: NonNullable<ArgumentTypeOptions["rules"]>;
     protected readonly interaction?: ChatInputCommandInteraction;
+    protected isRequired = false;
 
     public constructor(
         commandContent: string,
@@ -39,6 +40,11 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         this.rules = rules;
         this.name = name;
         this.interaction = interaction;
+    }
+
+    public setRequired(isRequired: boolean) {
+        this.isRequired = isRequired;
+        return this;
     }
 
     /**
@@ -60,10 +66,13 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
     public static async performCastFromInteraction(
         interaction: ChatInputCommandInteraction,
         name: string,
-        rules?: NonNullable<ArgumentTypeOptions["rules"]>
+        rules?: NonNullable<ArgumentTypeOptions["rules"]>,
+        isRequired = false
     ) {
         try {
-            const casted = this.castFrom("", [], "", 0, name, rules, interaction);
+            const casted = this.castFrom("", [], "", 0, name, rules, interaction).setRequired(
+                isRequired
+            );
 
             return {
                 value: await casted.toTransformed()
@@ -140,10 +149,18 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         value: string,
         position: number,
         name?: string,
-        rules?: NonNullable<ArgumentTypeOptions["rules"]>
+        rules?: NonNullable<ArgumentTypeOptions["rules"]>,
+        isRequired = false
     ): Promise<Casted<unknown>> {
         try {
-            const casted = await this.castFrom(commandContent, argv, value, position, name, rules);
+            const casted = await this.castFrom(
+                commandContent,
+                argv,
+                value,
+                position,
+                name,
+                rules
+            ).setRequired(isRequired);
 
             if (!casted.attemptValidation()) {
                 throw new InvalidArgumentError(

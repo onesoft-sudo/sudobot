@@ -52,14 +52,14 @@ export default class APIServer extends Service {
     public expressServer?: HttpServer;
     private readonly logger = new Logger("server", true);
 
-    async onReady() {
+    public async onReady() {
         if (this.client.getService(ConfigurationManager).systemConfig.api.enabled) {
             await this.boot();
             await this.start();
         }
     }
 
-    async boot() {
+    public override async boot() {
         this.expressApp.use(this.onError);
         this.expressApp.use(cors());
 
@@ -87,7 +87,7 @@ export default class APIServer extends Service {
         this.expressApp.use("/", router);
     }
 
-    async createRouter() {
+    private async createRouter() {
         const router = express.Router();
         await this.client.dynamicLoader.loadControllers(router);
         return router;
@@ -103,7 +103,11 @@ export default class APIServer extends Service {
             : Reflect.getMetadata(key, controllerClass.prototype);
     }
 
-    loadController(controller: Controller, controllerClass: typeof Controller, router: Router) {
+    public loadController(
+        controller: Controller,
+        controllerClass: typeof Controller,
+        router: Router
+    ) {
         const actions = this.getMetadata<Record<string, RouteMetadata>>(
             controllerClass,
             "action_methods",
@@ -179,7 +183,7 @@ export default class APIServer extends Service {
         }
     }
 
-    wrapControllerAction(controller: Controller, callbackName: string) {
+    private wrapControllerAction(controller: Controller, callbackName: string) {
         return async (request: ExpressRequest, response: ExpressResponse) => {
             const callback = controller[callbackName as keyof typeof controller] as (
                 request: ExpressRequest,
@@ -205,7 +209,7 @@ export default class APIServer extends Service {
         };
     }
 
-    onError(err: unknown, _: ExpressRequest, res: ExpressResponse, next: NextFunction) {
+    private onError(err: unknown, _: ExpressRequest, res: ExpressResponse, next: NextFunction) {
         if (err instanceof SyntaxError && "status" in err && err.status === 400 && "body" in err) {
             res.status(400).json({
                 error: "Invalid JSON payload"
@@ -217,7 +221,7 @@ export default class APIServer extends Service {
         next();
     }
 
-    async start() {
+    public async start() {
         this.expressServer = this.expressApp.listen(this.port, () =>
             this.client.logger.info(`API server is listening at port ${this.port}`)
         );

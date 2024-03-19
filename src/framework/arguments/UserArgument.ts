@@ -1,4 +1,4 @@
-import { User } from "discord.js";
+import { Awaitable, ChatInputCommandInteraction, User } from "discord.js";
 import Client from "../../core/Client";
 import { safeUserFetch } from "../../utils/fetch";
 import { If } from "../types/Utils";
@@ -11,7 +11,7 @@ class UserArgument<E extends boolean = false> extends EntityArgument<If<E, User,
         [ErrorType.InvalidType]: "You must specify a valid user to perform this action.",
         [ErrorType.EntityNotFound]: "The user you specified could not be found."
     };
-    protected readonly mentionStart: string[] = ["<@!", "<@"];
+    protected override readonly mentionStart: string[] = ["<@!", "<@"];
 
     protected override transform(): Promise<If<E, User, User | null>> {
         return safeUserFetch(Client.instance, this.toSnowflake()) as Promise<
@@ -25,6 +25,18 @@ class UserArgument<E extends boolean = false> extends EntityArgument<If<E, User,
         }
 
         return true;
+    }
+
+    protected override resolveFromInteraction(
+        interaction: ChatInputCommandInteraction
+    ): Awaitable<User> {
+        const value = interaction.options.getUser(this.name!, this.isRequired);
+
+        if (value === null) {
+            return this.error(`${this.name} is required!`, ErrorType.Required);
+        }
+
+        return value;
     }
 }
 

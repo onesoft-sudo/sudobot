@@ -31,7 +31,7 @@ export default class LogStreamingService extends Service {
     private _io?: Server;
     public readonly sockets: Array<Socket> = [];
 
-    boot() {
+    public override boot() {
         if (!this.client.getService(ConfigurationManager).systemConfig.log_server?.auto_start) {
             return;
         }
@@ -39,26 +39,26 @@ export default class LogStreamingService extends Service {
         this.initialize();
     }
 
-    get io() {
+    private get io() {
         return this._io;
     }
 
-    initialize() {
+    private initialize() {
         this._io = new Server();
         this.setupListeners();
     }
 
-    start() {
+    public start() {
         this.initialize();
         this.listen();
     }
 
-    close() {
+    public close() {
         this.io?.close();
         this._io = undefined;
     }
 
-    isAuthorized(socket: Socket) {
+    private isAuthorized(socket: Socket) {
         const { authorization } = socket.request.headers;
         const [type, password] = authorization?.split(/\s+/) ?? ["", ""];
 
@@ -82,7 +82,7 @@ export default class LogStreamingService extends Service {
         return true;
     }
 
-    setupListeners() {
+    private setupListeners() {
         this.io?.on("connection", socket => {
             if (this.connections >= this.MAX_CONNECTIONS) {
                 socket.disconnect();
@@ -116,19 +116,19 @@ export default class LogStreamingService extends Service {
         });
     }
 
-    send(message: string) {
+    public send(message: string) {
         for (const socket of this.sockets) {
             socket.send(message);
         }
     }
 
-    log(message: string) {
+    public log(message: string) {
         this.sockets.forEach(socket => {
             socket.send(`${message}`);
         });
     }
 
-    listen() {
+    public listen() {
         let port = process.env.LOG_SERVER_PORT ? parseInt(process.env.LOG_SERVER_PORT) : 3500;
         port = isNaN(port) ? 3500 : port;
 

@@ -1,3 +1,4 @@
+import { Awaitable, ChatInputCommandInteraction } from "discord.js";
 import Argument from "./Argument";
 import { ErrorType } from "./InvalidArgumentError";
 
@@ -29,6 +30,18 @@ class RestStringArgument extends Argument<string> {
         }
 
         return true;
+    }
+
+    protected override resolveFromInteraction(
+        interaction: ChatInputCommandInteraction
+    ): Awaitable<string> {
+        const value = interaction.options.getString(this.name!, this.isRequired);
+
+        if (value === null) {
+            return this.error(`${this.name} is required!`, ErrorType.Required);
+        }
+
+        return value;
     }
 }
 

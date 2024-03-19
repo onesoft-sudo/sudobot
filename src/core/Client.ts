@@ -44,7 +44,7 @@ class Client<R extends boolean = boolean> extends BaseClient<R> {
         log: developmentMode() ? ["error", "info", "query", "warn"] : ["error", "info", "warn"]
     });
 
-    public static instance: Client;
+    public static override instance: Client;
 
     public constructor(options: ClientOptions) {
         super(options);

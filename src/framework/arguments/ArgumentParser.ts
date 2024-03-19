@@ -119,7 +119,8 @@ class ArgumentParser extends HasClient {
                     arg,
                     i,
                     expectedArgInfo.name,
-                    expectedArgInfo.rules
+                    expectedArgInfo.rules,
+                    !expectedArgInfo.optional
                 );
 
                 if (value) {
@@ -162,7 +163,15 @@ class ArgumentParser extends HasClient {
                 };
             }
 
-            const { error, value } = await argType.performCast(commandContent, argv, arg, i);
+            const { error, value } = await argType.performCast(
+                commandContent,
+                argv,
+                arg,
+                i,
+                undefined,
+                undefined,
+                true
+            );
 
             if (error) {
                 return {
@@ -201,7 +210,7 @@ class ArgumentParser extends HasClient {
         command: Command
     ): Promise<ParseResult> {
         const interaction = context.commandMessage as ChatInputCommandInteraction;
-        const argTypes =
+        const expectedArgs =
             (Reflect.getMetadata("command:types", command.constructor) as ArgumentTypeOptions[]) ||
             [];
         const isDynamic = Reflect.getMetadata("command:dynamic", command.constructor);
@@ -212,30 +221,35 @@ class ArgumentParser extends HasClient {
 
         const args: Record<string, unknown> = {};
 
-        for (const argType of argTypes) {
+        for (const expectedArgInfo of expectedArgs) {
             const type =
-                argType.interactionType ??
-                (Array.isArray(argType.types) ? argType.types[0] : argType.types);
+                expectedArgInfo.interactionType ??
+                (Array.isArray(expectedArgInfo.types)
+                    ? expectedArgInfo.types[0]
+                    : expectedArgInfo.types);
 
             if (
-                !argType.rules?.["interaction:no_required_check"] &&
-                !interaction.options.get(argType.name)
+                !expectedArgInfo.rules?.["interaction:no_required_check"] &&
+                !interaction.options.get(expectedArgInfo.name)
             ) {
-                if (argType.optional || argType.default !== undefined) {
-                    args[argType.name] = argType.default ?? null;
+                if (expectedArgInfo.optional || expectedArgInfo.default !== undefined) {
+                    args[expectedArgInfo.name] = expectedArgInfo.default ?? null;
                     continue;
                 }
 
                 return {
-                    error: argType.errorMessages?.Required ?? `${argType.name} is required!`,
+                    error:
+                        expectedArgInfo.errorMessages?.Required ??
+                        `${expectedArgInfo.name} is required!`,
                     payload: undefined
                 };
             }
 
             const { error, value } = await type.performCastFromInteraction(
                 interaction,
-                argType.name,
-                argType.rules
+                expectedArgInfo.name,
+                expectedArgInfo.rules,
+                !expectedArgInfo.optional
             );
 
             if (error) {
@@ -245,7 +259,7 @@ class ArgumentParser extends HasClient {
                 };
             }
 
-            args[argType.name] = value.getValue();
+            args[expectedArgInfo.name] = value?.getValue();
         }
 
         return {
