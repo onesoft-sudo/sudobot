@@ -19,7 +19,8 @@
         "strict": true,
         "skipLibCheck": true,
         "emitDecoratorMetadata": true,
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "noImplicitOverride": true
     },
     "include": ["./src/types/globals.d.ts", "src/**/*.ts"],
     "exclude": [

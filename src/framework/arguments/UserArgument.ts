@@ -6,7 +6,7 @@ import EntityArgument from "./EntityArgument";
 import { ErrorType } from "./InvalidArgumentError";
 
 class UserArgument<E extends boolean = false> extends EntityArgument<If<E, User, User | null>> {
-    public static readonly defaultErrorMessages = {
+    public static readonly defaultErrors = {
         [ErrorType.Required]: "You must specify a user to perform this action!",
         [ErrorType.InvalidType]: "You must specify a valid user to perform this action.",
         [ErrorType.EntityNotFound]: "The user you specified could not be found."

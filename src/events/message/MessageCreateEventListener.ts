@@ -1,5 +1,5 @@
 import { Message, MessageType } from "discord.js";
-import { InjectService } from "../../framework/container/InjectService";
+import { Inject } from "../../framework/container/Inject";
 import EventListener from "../../framework/events/EventListener";
 import { Events } from "../../framework/types/ClientEvents";
 import CommandManager from "../../services/CommandManager";
@@ -9,7 +9,7 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
     public override readonly name = Events.MessageCreate;
     protected readonly types = [MessageType.Default, MessageType.Reply];
 
-    @InjectService()
+    @Inject()
     protected readonly commandManager!: CommandManager;
 
     public override async execute(message: Message<boolean>) {

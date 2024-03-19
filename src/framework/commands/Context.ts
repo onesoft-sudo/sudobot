@@ -11,8 +11,22 @@ import {
 } from "discord.js";
 import Client from "../../core/Client";
 import { emoji } from "../../utils/emoji";
-import { CommandMessage } from "./Command";
+import { AnyCommand, Command, CommandMessage } from "./Command";
 import { ContextType } from "./ContextType";
+import InteractionContext from "./InteractionContext";
+import LegacyContext from "./LegacyContext";
+
+export type ContextOf<T extends Command<ContextType>> = T extends Command<infer U>
+    ?
+          | (U extends ContextType.Legacy ? LegacyContext : never)
+          | (U extends
+                | ContextType.ChatInput
+                | ContextType.MessageContextMenu
+                | ContextType.UserContextMenu
+                ? InteractionContext
+                : never)
+    : never;
+export type AnyContext = ContextOf<AnyCommand>;
 
 abstract class Context<T extends CommandMessage = CommandMessage> {
     public readonly commandName: string;

@@ -218,7 +218,7 @@ class StartupManager extends Service implements HasEventListeners {
 
         if (BACKUP_STORAGE) {
             if (process.isBun) {
-                this.client.logger.error("Cannot create storage backup in a Bun environment");
+                this.client.logger.warn("Cannot create storage backup in a Bun environment");
                 return;
             }
 

@@ -99,14 +99,18 @@ class Container {
      * @param value The constructor to resolve.
      * @since 9.0.0
      */
-    public resolveByClass<T extends AnyConstructor>(value: T): InstanceType<T> {
+    public resolveByClass<T extends AnyConstructor>(
+        value: T,
+        args?: ConstructorParameters<T>,
+        singleton = true
+    ): InstanceType<T> {
         const binding = this.bindingsByConstructor.get(value);
 
         if (!binding) {
-            return this.autoCreateInstance(value);
+            return this.autoCreateInstance(value, args, singleton);
         }
 
-        return this.resolveBinding(binding) as InstanceType<T>;
+        return this.resolveBinding(binding, args) as InstanceType<T>;
     }
 
     /**
@@ -115,7 +119,10 @@ class Container {
      * @param value The constructor to resolve.
      * @since 9.0.0
      */
-    protected resolveBinding<T extends AnyConstructor>(binding: Binding<T>): Resolved<T> {
+    protected resolveBinding<T extends AnyConstructor>(
+        binding: Binding<T>,
+        args?: ConstructorParameters<T>
+    ): Resolved<T> {
         if (binding.instance) {
             return binding.instance;
         }
@@ -125,7 +132,7 @@ class Container {
         if (binding.factory) {
             instance = binding.factory();
         } else {
-            instance = this.autoCreateInstance(binding.value as AnyConstructor);
+            instance = this.autoCreateInstance(binding.value as AnyConstructor, args);
         }
 
         if (binding.singleton) {
@@ -145,7 +152,11 @@ class Container {
      * @param value The constructor to create an instance of.
      * @since 9.0.0
      */
-    protected autoCreateInstance<T extends AnyConstructor>(value: T): InstanceType<T> {
+    protected autoCreateInstance<T extends AnyConstructor>(
+        value: T,
+        args?: ConstructorParameters<T>,
+        singleton = true
+    ): InstanceType<T> {
         requireNonNull(value);
 
         const constructorParamTypes = Reflect.getMetadata("design:paramtypes", value) as
@@ -154,8 +165,8 @@ class Container {
         const bindAs = Reflect.getMetadata("di:bind_as", value);
         let instance: InstanceType<T>;
 
-        if (!constructorParamTypes) {
-            instance = new value() as InstanceType<T>;
+        if (!constructorParamTypes || args) {
+            instance = new value(...(args ?? [])) as InstanceType<T>;
         } else {
             const resolvedParams = constructorParamTypes.map(paramType =>
                 this.resolveByClass(paramType)
@@ -165,7 +176,7 @@ class Container {
         }
 
         if (bindAs) {
-            this.createBindingFromInstance(value, instance, bindAs);
+            this.createBindingFromInstance(value, instance, bindAs, singleton);
         }
 
         this.resolveProperties(value, instance);
@@ -182,13 +193,14 @@ class Container {
     private createBindingFromInstance<T extends AnyConstructor>(
         ref: T,
         instance: InstanceType<T>,
-        key: string
+        key: string,
+        singleton = true
     ) {
         const binding = {
             key,
             value: ref,
             instance,
-            singleton: true
+            singleton
         };
 
         this.bindingsByName.set(key, binding as Binding<T>);

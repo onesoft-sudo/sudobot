@@ -1,5 +1,5 @@
 import APIServer from "../framework/api/APIServer";
-import { InjectService } from "../framework/container/InjectService";
+import { Inject } from "../framework/container/Inject";
 import EventListener from "../framework/events/EventListener";
 import { Events } from "../framework/types/ClientEvents";
 import ConfigurationManager from "../services/ConfigurationManager";
@@ -9,16 +9,16 @@ import StartupManager from "../services/StartupManager";
 class ReadyEventListener extends EventListener<Events.Ready> {
     public override readonly name = Events.Ready;
 
-    @InjectService()
+    @Inject()
     public readonly configManager!: ConfigurationManager;
 
-    @InjectService()
+    @Inject()
     public readonly startupManager!: StartupManager;
 
-    @InjectService()
+    @Inject()
     public readonly server!: APIServer;
 
-    @InjectService()
+    @Inject()
     public readonly logStreamingService!: LogStreamingService;
 
     public override async execute() {

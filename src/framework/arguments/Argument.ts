@@ -1,4 +1,4 @@
-import { Awaitable } from "discord.js";
+import { Awaitable, ChatInputCommandInteraction } from "discord.js";
 import { ArgumentInterface } from "./ArgumentInterface";
 import { ArgumentTypeOptions } from "./ArgumentTypes";
 import { ErrorType, InvalidArgumentError } from "./InvalidArgumentError";
@@ -11,7 +11,7 @@ export type Casted<T> = {
 export type ArgumentConstructor<T = unknown> = (new (
     ...args: ConstructorParameters<typeof Argument<T>>
 ) => Argument<T>) &
-    Pick<typeof Argument<T>, "performCast">;
+    Pick<typeof Argument<T>, "performCast" | "performCastFromInteraction">;
 
 export default abstract class Argument<T = unknown> implements ArgumentInterface<T> {
     protected readonly commandContent: string;
@@ -21,6 +21,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
     public readonly position: number;
     public readonly name?: string;
     protected readonly rules?: NonNullable<ArgumentTypeOptions["rules"]>;
+    protected readonly interaction?: ChatInputCommandInteraction;
 
     public constructor(
         commandContent: string,
@@ -28,7 +29,8 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         value: string,
         position: number,
         name?: string,
-        rules?: NonNullable<ArgumentTypeOptions["rules"]>
+        rules?: NonNullable<ArgumentTypeOptions["rules"]>,
+        interaction?: ChatInputCommandInteraction
     ) {
         this.commandContent = commandContent;
         this.argv = argv;
@@ -36,6 +38,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         this.position = position;
         this.rules = rules;
         this.name = name;
+        this.interaction = interaction;
     }
 
     /**
@@ -50,9 +53,36 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
 
     public abstract toString(): string;
     protected abstract transform(): Awaitable<T>;
+    protected abstract resolveFromInteraction(
+        interaction: ChatInputCommandInteraction
+    ): Awaitable<T>;
+
+    public static async performCastFromInteraction(
+        interaction: ChatInputCommandInteraction,
+        name: string,
+        rules?: NonNullable<ArgumentTypeOptions["rules"]>
+    ) {
+        try {
+            const casted = this.castFrom("", [], "", 0, name, rules, interaction);
+
+            return {
+                value: await casted.toTransformed()
+            };
+        } catch (error) {
+            if (error instanceof InvalidArgumentError) {
+                return {
+                    error
+                };
+            }
+
+            throw error;
+        }
+    }
 
     public async toTransformed() {
-        this.transformedValue = await this.transform();
+        this.transformedValue = this.interaction
+            ? await this.resolveFromInteraction(this.interaction)
+            : await this.transform();
 
         if (!(await this.postTransformValidation())) {
             this.error("Invalid argument received", ErrorType.InvalidType);
@@ -145,10 +175,11 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         value: string,
         position: number,
         name?: string,
-        rules?: NonNullable<ArgumentTypeOptions["rules"]>
+        rules?: NonNullable<ArgumentTypeOptions["rules"]>,
+        interaction?: ChatInputCommandInteraction
     ) {
         return new (this as unknown as new (
             ...args: ConstructorParameters<typeof Argument<unknown>>
-        ) => Argument<unknown>)(commandContent, argv, value, position, name, rules);
+        ) => Argument<unknown>)(commandContent, argv, value, position, name, rules, interaction);
     }
 }

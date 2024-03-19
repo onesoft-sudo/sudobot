@@ -4,7 +4,7 @@ import RestStringArgument from "../../framework/arguments/RestStringArgument";
 import UserArgument from "../../framework/arguments/UserArgument";
 import { Command, CommandMessage } from "../../framework/commands/Command";
 import Context from "../../framework/commands/Context";
-import { ContextType } from "../../framework/commands/ContextType";
+import SystemAdminPermission from "../../permissions/SystemAdminPermission";
 import { ErrorMessages } from "../../utils/ErrorMessages";
 
 type BeanCommandArgs = {
@@ -12,22 +12,14 @@ type BeanCommandArgs = {
     reason?: string;
 };
 
-@TakesArgument<BeanCommandArgs>({
-    types: [UserArgument<true>],
-    name: "user",
-    errorMessages: UserArgument.defaultErrorMessages
-})
-@TakesArgument({
-    types: [RestStringArgument],
-    name: "reason",
-    errorMessages: ErrorMessages.reason,
-    optional: true
-})
-class BeanCommand extends Command<ContextType.Legacy | ContextType.ChatInput> {
+@TakesArgument<BeanCommandArgs>("user", UserArgument<true>, false, UserArgument.defaultErrors)
+@TakesArgument<BeanCommandArgs>("reason", RestStringArgument, true, ErrorMessages.reason)
+class BeanCommand extends Command {
     public override readonly name = "bean";
     public override readonly description = "Beans a user.";
     public override readonly detailedDescription =
         "Sends a DM to the user telling them they've been beaned. It doesn't actually do anything.";
+    public override readonly permissions = [SystemAdminPermission];
 
     public override async execute(
         context: Context<CommandMessage>,

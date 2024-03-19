@@ -48,19 +48,21 @@ class ServiceManager {
     public async loadService(servicePath: string, name?: string) {
         const { default: ServiceClass }: ESModule<ServiceConstructor> = await import(servicePath);
         const instance = new ServiceClass(this.client);
+        const key =
+            Reflect.getMetadata("service:name", ServiceClass.prototype) ??
+            Reflect.getMetadata("di:bind_as", ServiceClass.prototype) ??
+            ServiceClass.name;
 
         Container.getGlobalContainer().bind(ServiceClass, {
             factory: () => instance,
-            singleton: true
+            singleton: true,
+            key
         });
 
         this.services.set(ServiceClass, instance);
-        this.servicesMappedByName.set(
-            Reflect.getMetadata("service:name", ServiceClass.prototype) ?? ServiceClass.name,
-            instance
-        );
+        this.servicesMappedByName.set(key, instance);
         await instance.boot();
-        this.client.logger.info(`Loaded service: ${name ?? ServiceClass.name}`);
+        this.client.logger.info(`Loaded service: ${name ?? ServiceClass.name} (bound as ${key})`);
     }
 
     public loadServicesFromDirectory(servicesDirectory: string) {

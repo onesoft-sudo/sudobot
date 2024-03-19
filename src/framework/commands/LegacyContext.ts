@@ -6,9 +6,11 @@ class LegacyContext extends Context<Message<true>> {
     public override readonly type = ContextType.Legacy;
     public readonly args: string[];
     public readonly argv: string[];
+    public readonly commandContent: string;
 
     public constructor(
         commandName: string,
+        commandContent: string,
         commandMessage: Message<true>,
         args: string[],
         argv: string[]
@@ -16,6 +18,7 @@ class LegacyContext extends Context<Message<true>> {
         super(commandName, commandMessage);
         this.args = args;
         this.argv = argv;
+        this.commandContent = commandContent;
     }
 
     public override get userId(): string {

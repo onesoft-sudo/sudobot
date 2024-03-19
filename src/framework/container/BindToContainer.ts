@@ -1,12 +1,9 @@
 import CanBind from "./CanBind";
-import { ContainerBindOptions as DIBindOptions } from "./Container";
+import { AnyConstructor, ContainerBindOptions as DIBindOptions } from "./Container";
 
-type BindOptions<T> = Omit<DIBindOptions, "value" | "factory">;
+type BindOptions<T extends AnyConstructor> = Omit<DIBindOptions<T>, "value" | "factory">;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function BindToContainer<T extends new (...args: any[]) => any>(
-    options?: BindOptions<T>
-) {
+export default function BindToContainer<T extends AnyConstructor>(options?: BindOptions<T>) {
     return (constructor: T, context?: ClassDecoratorContext<T>) => {
         CanBind(constructor, context);
 

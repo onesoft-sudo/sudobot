@@ -283,7 +283,7 @@ export default class ExtensionService extends Service {
 
     private readonly downloadProgressStreamEOF = "%";
 
-    async boot() {
+    public override async boot() {
         if (!this.extensionsPath || !existsSync(this.extensionsPath)) {
             this.client.logger.debug("No extensions found");
             await this.initializeConfigService();
@@ -654,6 +654,7 @@ export default class ExtensionService extends Service {
                         const percentCompleted = Math.floor(
                             (progressEvent.loaded / progressEvent.total) * 100
                         );
+
                         await this.writeStream(stream, `${percentCompleted}\n`);
                     }
                 }

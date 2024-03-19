@@ -1,20 +1,18 @@
 import { Collection, Message } from "discord.js";
-import ArgumentParser from "../framework/arguments/ArgumentParser";
 import { Command } from "../framework/commands/Command";
 import CommandAbortedError from "../framework/commands/CommandAbortedError";
-import { InjectService } from "../framework/container/InjectService";
+import LegacyContext from "../framework/commands/LegacyContext";
+import { Inject } from "../framework/container/Inject";
 import { Name } from "../framework/services/Name";
 import { Service } from "../framework/services/Service";
-import ConfigurationManager from "./ConfigurationManager";
+import type ConfigurationManager from "./ConfigurationManager";
 
 @Name("commandManager")
 class CommandManager extends Service {
     public readonly commands = new Collection<string, Command>();
 
-    @InjectService()
+    @Inject("configManager")
     protected readonly configManager!: ConfigurationManager;
-
-    protected readonly argumentParser = new ArgumentParser(this.client);
 
     public async addCommand(
         command: Command,
@@ -83,22 +81,10 @@ class CommandManager extends Service {
             return false;
         }
 
-        const { context, error, payload } = await this.argumentParser.parseArguments(
-            content,
-            message,
-            commandName,
-            command,
-            args,
-            argv
-        );
-
-        if (error) {
-            context.error(error);
-            return;
-        }
+        const context = new LegacyContext(commandName, content, message, args, argv);
 
         try {
-            await command.run(context, payload!);
+            await command.run(context);
         } catch (error) {
             if (error instanceof CommandAbortedError) {
                 await error.sendMessage(context);

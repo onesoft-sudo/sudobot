@@ -9,8 +9,14 @@ import {
 } from "discord.js";
 import Client from "../../core/Client";
 import Argument from "../arguments/Argument";
+import ArgumentParser from "../arguments/ArgumentParser";
+import Container from "../container/Container";
+import { Guard } from "../guards/Guard";
+import { GuardLike } from "../guards/GuardLike";
+import { Permission, PermissionLike } from "../security/Permission";
+import { PermissionDeniedError } from "../security/PermissionDeniedError";
 import Builder from "../types/Builder";
-import Context from "./Context";
+import Context, { ContextOf } from "./Context";
 import { ContextType } from "./ContextType";
 import InteractionContext from "./InteractionContext";
 import LegacyContext from "./LegacyContext";
@@ -21,11 +27,12 @@ export type CommandMessage =
     | ContextMenuCommandInteraction;
 export type ChatContext = LegacyContext | InteractionContext<ChatInputCommandInteraction>;
 export type CommandBuilders = Array<SlashCommandBuilder | ContextMenuCommandBuilder>;
+export type AnyCommand = Command<ContextType>;
 
 export type SubcommandMeta = {
     description: string;
     detailedDescription?: string;
-    syntaxes?: string[];
+    usage?: string[];
     options?: Record<string, string>;
     beta?: boolean;
     since?: string;
@@ -33,11 +40,16 @@ export type SubcommandMeta = {
     systemPermissions?: PermissionResolvable[];
 };
 
+export type CommandGuardLike = GuardLike | typeof Guard;
+export type CommandPermissionLike = PermissionLike | typeof Permission;
+
 /**
  * Represents an abstract command.
  * @template T - The type of context the command supports.
  */
-abstract class Command<T extends ContextType = ContextType> implements Builder<CommandBuilders> {
+abstract class Command<T extends ContextType = ContextType.ChatInput | ContextType.Legacy>
+    implements Builder<CommandBuilders>
+{
     /**
      * The name of the command.
      */
@@ -112,7 +124,17 @@ abstract class Command<T extends ContextType = ContextType> implements Builder<C
     /**
      * The required permissions for the member running this command.
      */
-    public readonly permissions?: PermissionResolvable[];
+    public readonly permissions?: CommandPermissionLike[];
+
+    /**
+     * The cached discord permissions of this command. For internal use only.
+     */
+    private cachedDiscordPermissions?: PermissionResolvable[];
+
+    /**
+     * The cached custom permissions of this command. For internal use only.
+     */
+    private cachedPermissions?: Permission[];
 
     /**
      * The required permissions for the bot system to run this command.
@@ -120,13 +142,34 @@ abstract class Command<T extends ContextType = ContextType> implements Builder<C
     public readonly systemPermissions?: PermissionResolvable[];
 
     /**
+     * The usage(s) of the command.
+     */
+    public readonly usage: string[] = [];
+
+    /**
+     * The permission guards for the command.
+     */
+    public readonly guards: CommandGuardLike[] = [];
+
+    /**
+     * The cached guards of this command. For internal use only.
+     */
+    private cachedGuards?: GuardLike[];
+
+    private readonly argumentParser: ArgumentParser;
+
+    /**
      * Creates a new instance of the Command class.
+     *
      * @param client - The client instance.
      */
-    public constructor(protected readonly client: Client) {}
+    public constructor(protected readonly client: Client) {
+        this.argumentParser = new ArgumentParser(client);
+    }
 
     /**
      * Checks if the command supports legacy context.
+     *
      * @returns True if the command supports legacy context, false otherwise.
      */
     public supportsLegacy(): this is Command<ContextType.Legacy> {
@@ -135,6 +178,7 @@ abstract class Command<T extends ContextType = ContextType> implements Builder<C
 
     /**
      * Checks if the command supports chat input context.
+     *
      * @returns True if the command supports chat input context, false otherwise.
      */
     public supportsChatInput(): this is Command<ContextType.ChatInput> {
@@ -143,6 +187,7 @@ abstract class Command<T extends ContextType = ContextType> implements Builder<C
 
     /**
      * Checks if the command supports message context menu.
+     *
      * @returns True if the command supports message context menu, false otherwise.
      */
     public supportsMessageContextMenu(): this is Command<ContextType.MessageContextMenu> {
@@ -151,6 +196,7 @@ abstract class Command<T extends ContextType = ContextType> implements Builder<C
 
     /**
      * Checks if the command supports user context menu.
+     *
      * @returns True if the command supports user context menu, false otherwise.
      */
     public supportsUserContextMenu(): this is Command<ContextType.UserContextMenu> {
@@ -159,6 +205,7 @@ abstract class Command<T extends ContextType = ContextType> implements Builder<C
 
     /**
      * Checks if the command supports any context menu.
+     *
      * @returns True if the command supports any context menu, false otherwise.
      */
     public supportsContextMenu(): this is Command<
@@ -169,6 +216,7 @@ abstract class Command<T extends ContextType = ContextType> implements Builder<C
 
     /**
      * Builds the command data.
+     *
      * @returns An array of command builders.
      */
     public build() {
@@ -206,6 +254,7 @@ abstract class Command<T extends ContextType = ContextType> implements Builder<C
 
     /**
      * Executes the actual command logic.
+     *
      * @param context - The command context.
      * @param args - The command arguments.
      */
@@ -213,15 +262,147 @@ abstract class Command<T extends ContextType = ContextType> implements Builder<C
 
     /**
      * Prepares and begins to execute the command.
+     *
      * @param context - The command context.
      * @param args - The command arguments.
      */
-    public async run(context: Context, args: ArgumentPayload) {
+    public async run(context: Context) {
+        if (!(await this.checkPreconditions(context))) {
+            return;
+        }
+
         if (this.defer) {
             await context.defer({ ephemeral: this.ephemeral });
         }
 
-        await this.execute(context, ...args);
+        if (context.isLegacy || context.isChatInput) {
+            const { error, payload } = await this.argumentParser.parse(
+                context as LegacyContext | InteractionContext<ChatInputCommandInteraction>,
+                this as Command<ContextType.Legacy | ContextType.ChatInput>,
+                context instanceof LegacyContext ? context.commandContent : undefined
+            );
+
+            if (error) {
+                context.error(error);
+                return;
+            }
+
+            await this.execute(context, ...payload!);
+        } else {
+            await this.execute(context);
+        }
+    }
+
+    /**
+     * Checks the preconditions of the command.
+     *
+     * @param context - The command context.
+     * @returns {Promise<boolean>} True if the preconditions are met, false otherwise.
+     */
+    protected async checkPreconditions(context: Context): Promise<boolean> {
+        try {
+            if (!(await this.checkPermissions(context)) && (await this.checkGuards(context))) {
+                throw new PermissionDeniedError("You don't have permission to run this command.");
+            }
+        } catch (error) {
+            if (error instanceof PermissionDeniedError) {
+                context.error(error.message);
+                return false;
+            }
+
+            throw error;
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks the permissions of the command.
+     *
+     * @param context - The command context.
+     * @returns True if the permissions are met, false otherwise.
+     */
+    protected async checkPermissions(context: Context) {
+        if (this.permissions) {
+            if (!context.member) {
+                return false;
+            }
+
+            if (!this.cachedPermissions) {
+                this.computePermissions();
+            }
+
+            if (this.cachedDiscordPermissions) {
+                if (!context.member?.permissions.has(this.cachedDiscordPermissions, true)) {
+                    return false;
+                }
+            }
+
+            if (this.cachedPermissions) {
+                for (const permission of this.cachedPermissions) {
+                    if (!(await permission.has(context.member))) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Computes the permissions of the command.
+     *
+     * @returns The computed permissions.
+     */
+    private computePermissions() {
+        if (!this.permissions) {
+            return;
+        }
+
+        const discordPermissions = new Set<PermissionResolvable>();
+
+        this.cachedPermissions = [];
+
+        for (const permission of this.permissions) {
+            if (typeof permission === "function") {
+                const instance = Container.getGlobalContainer().resolveByClass(
+                    permission as new () => Permission,
+                    undefined,
+                    false
+                );
+
+                if (instance.canConvertToDiscordPermissions()) {
+                    for (const resolved of instance.toDiscordPermissions().flat()) {
+                        discordPermissions.add(resolved);
+                    }
+
+                    continue;
+                }
+
+                this.cachedPermissions.push(instance);
+            }
+        }
+
+        this.cachedDiscordPermissions = Array.from(discordPermissions);
+    }
+
+    /**
+     * Checks the guards of the command.
+     *
+     * @param context - The command context.
+     * @returns {Promise<boolean>} True if the guards are met, false otherwise.
+     */
+    protected async checkGuards(context: Context): Promise<boolean> {
+        for (const guard of this.guards) {
+            const instance = typeof guard === "function" ? await guard.getInstance() : guard;
+
+            if (!(await instance.check(this, context as ContextOf<this>))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
 
