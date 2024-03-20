@@ -29,11 +29,13 @@ import { Router } from "express-serve-static-core";
 import { Server as HttpServer } from "http";
 import ConfigurationManager from "../../services/ConfigurationManager";
 import { Logger } from "../log/Logger";
+import { Name } from "../services/Name";
 import { Service } from "../services/Service";
 import { RouteMetadata, RouteMetadataEntry } from "./RouteMetadata";
 import Controller from "./http/Controller";
 import Response from "./http/Response";
 
+@Name("apiServer")
 export default class APIServer extends Service {
     protected readonly expressApp = express();
     protected readonly rateLimiter = ratelimiter({

@@ -61,11 +61,16 @@ class Client<R extends boolean = boolean> extends BaseClient<R> {
 
     public async boot({
         commands = true,
-        events = true
-    }: { commands?: boolean; events?: boolean } = {}) {
+        events = true,
+        permissions = true
+    }: { commands?: boolean; events?: boolean; permissions?: boolean } = {}) {
         // if (this !== this.serviceManager)
 
         await this.serviceManager.loadServices();
+
+        if (permissions) {
+            await this.dynamicLoader.loadPermissions(path.resolve(__dirname, "../permissions"));
+        }
 
         if (events) {
             this.setMaxListeners(50);

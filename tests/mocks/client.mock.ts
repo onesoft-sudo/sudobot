@@ -16,13 +16,6 @@ vi.mock("@prisma/client", () => {
                     findMany: vi.fn(),
                     update: vi.fn(),
                     delete: vi.fn()
-                },
-                troll: {
-                    findUnique: vi.fn(),
-                    create: vi.fn(),
-                    findMany: vi.fn(),
-                    update: vi.fn(),
-                    delete: vi.fn()
                 }
             };
         })
@@ -34,8 +27,10 @@ export function createClient() {
         intents: []
     });
 
+    const id = randomSnowflake();
+
     client.user = {
-        id: randomSnowflake(),
+        id,
         username: "SudoBot",
         discriminator: "0000",
         tag: "SudoBot#0000",
@@ -44,7 +39,7 @@ export function createClient() {
         system: false,
         client,
         toString() {
-            return `<@${this.id}>`;
+            return `<@${id}>`;
         }
     } as unknown as ClientUser;
 

@@ -30,6 +30,7 @@ import { Command } from "../commands/Command";
 import Container from "../container/Container";
 import EventListener from "../events/EventListener";
 import { EventListenerInfo } from "../events/GatewayEventListener";
+import { Permission } from "../permissions/Permission";
 import { ClientEvents } from "../types/ClientEvents";
 import { AnyFunction, Class, DefaultExport } from "../types/Utils";
 
@@ -104,6 +105,27 @@ class DynamicLoader {
         const listener = await this.getContainer().resolveByClass(EventListenerClass);
         this.client.addEventListener(listener.name, listener.execute.bind(listener));
         this.client.logger.info("Loaded Event: ", listener.name);
+    }
+
+    async loadPermissions(directory = path.resolve(__dirname, "../permissions")) {
+        const eventListenerFiles = await this.iterateDirectoryRecursively(directory);
+
+        for (const file of eventListenerFiles) {
+            if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
+                continue;
+            }
+
+            await this.loadPermission(file);
+        }
+    }
+
+    async loadPermission(filepath: string) {
+        const { default: PermissionClass }: DefaultExport<typeof Permission> = await import(
+            filepath
+        );
+        const permission = await PermissionClass.getInstance<Permission>();
+        this.client.serviceManager.getServiceByName("permissionManager").loadPermission(permission);
+        this.client.logger.info("Loaded Permission Handler: ", permission.toString());
     }
 
     async loadServicesFromDirectory(servicesDirectory = path.resolve(__dirname, "../services")) {

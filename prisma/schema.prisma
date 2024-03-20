@@ -99,14 +99,17 @@ model ChannelLock {
 }
 
 model PermissionOverwrite {
-    id                 Int      @id @default(autoincrement())
-    name               String?
-    guildId            String
-    roles              String[] @default([])
-    users              String[] @default([])
-    grantedPermissions String[] @default([])
-    createdAt          DateTime @default(now())
-    updatedAt          DateTime @default(now()) @updatedAt
+    id                        Int      @id @default(autoincrement())
+    name                      String?
+    guildId                   String
+    roles                     String[] @default([])
+    users                     String[] @default([])
+    grantedDiscordPermissions String[] @default([])
+    grantedSystemPermissions  String[] @default([])
+    priority                  Int      @default(0)
+    merge                     Boolean  @default(true)
+    createdAt                 DateTime @default(now())
+    updatedAt                 DateTime @default(now()) @updatedAt
 
     @@map("permission_overwrites")
 }

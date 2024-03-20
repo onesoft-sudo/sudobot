@@ -1,3 +1,4 @@
+/* eslint-disable no-var */
 /*
  * This file is part of SudoBot.
  *
@@ -17,8 +18,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-interface Globals {
-    bootDate: number;
-}
+import type Kernel from "../framework/core/Kernel";
 
-declare let global: Globals;
+declare global {
+    var bootDate: number;
+    var kernel: Kernel;
+}

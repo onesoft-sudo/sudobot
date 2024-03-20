@@ -1,28 +1,28 @@
 /*
-* This file is part of SudoBot.
-*
-* Copyright (C) 2021-2024 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 import { Collection } from "discord.js";
 import { requireNonNull } from "../utils/utils";
 import { Inject } from "./Inject";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type AnyConstructor<A extends any[] = any[]> = new (...args: A) => unknown;
+export type AnyConstructor<A extends any[] = any[]> = abstract new (...args: A) => unknown;
 
 export type Binding<T extends AnyConstructor = AnyConstructor> = {
     key: string;
@@ -185,13 +185,17 @@ class Container {
         let instance: InstanceType<T>;
 
         if (!constructorParamTypes || args) {
-            instance = new value(...(args ?? [])) as InstanceType<T>;
+            instance = new (value as unknown as new (...args: unknown[]) => InstanceType<T>)(
+                ...(args ?? [])
+            ) as InstanceType<T>;
         } else {
             const resolvedParams = constructorParamTypes.map(paramType =>
                 this.resolveByClass(paramType)
             );
 
-            instance = new value(...resolvedParams) as InstanceType<T>;
+            instance = new (value as unknown as new (...args: unknown[]) => InstanceType<T>)(
+                ...resolvedParams
+            ) as InstanceType<T>;
         }
 
         if (bindAs) {

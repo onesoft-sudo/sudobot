@@ -29,7 +29,8 @@ export enum LogLevel {
     Fatal,
     Critical,
     Success,
-    Event
+    Event,
+    Performance
 }
 
 export class Logger {
@@ -56,7 +57,7 @@ export class Logger {
         const methodName =
             level === LogLevel.Info || level === LogLevel.Success || level === LogLevel.Event
                 ? "info"
-                : level === LogLevel.Debug
+                : level === LogLevel.Debug || level === LogLevel.Performance
                 ? "debug"
                 : level === LogLevel.Warn
                 ? "warn"
@@ -106,6 +107,9 @@ export class Logger {
             case LogLevel.Success:
             case LogLevel.Event:
                 return chalk.greenBright(text);
+
+            case LogLevel.Performance:
+                return chalk.magenta(text);
         }
     }
 
@@ -115,6 +119,14 @@ export class Logger {
         }
 
         this.log(LogLevel.Debug, ...args);
+    }
+
+    public perf(...args: unknown[]) {
+        if (!developmentMode()) {
+            return;
+        }
+
+        this.log(LogLevel.Performance, ...args);
     }
 
     public info(...args: unknown[]) {

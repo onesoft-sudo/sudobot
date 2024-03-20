@@ -1,21 +1,21 @@
 /*
-* This file is part of SudoBot.
-*
-* Copyright (C) 2021-2024 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 import {
     ApplicationCommandType,
@@ -25,18 +25,19 @@ import {
     ContextMenuCommandInteraction,
     Message,
     PermissionResolvable,
+    PermissionsString,
     SlashCommandBuilder,
     User
 } from "discord.js";
 import Client from "../../core/Client";
 import Argument from "../arguments/Argument";
 import ArgumentParser from "../arguments/ArgumentParser";
-import Container from "../container/Container";
 import { Guard } from "../guards/Guard";
 import { GuardLike } from "../guards/GuardLike";
+import { SystemOnlyPermissionResolvable } from "../permissions/AbstractPermissionManagerService";
+import { Permission, PermissionLike } from "../permissions/Permission";
+import { PermissionDeniedError } from "../permissions/PermissionDeniedError";
 import { Policy } from "../policies/Policy";
-import { Permission, PermissionLike } from "../security/Permission";
-import { PermissionDeniedError } from "../security/PermissionDeniedError";
 import Builder from "../types/Builder";
 import Context, { ContextOf } from "./Context";
 import { ContextType } from "./ContextType";
@@ -145,6 +146,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
 
     /**
      * The required permissions for the member running this command.
+     * Can be modified or removed by the permission manager.
      */
     public readonly permissions?: CommandPermissionLike[];
 
@@ -157,6 +159,30 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      * The cached custom permissions of this command. For internal use only.
      */
     private cachedPermissions?: Permission[];
+
+    /**
+     * The persistent discord permissions for the member running this command.
+     *
+     * These permissions are not affected by the permission manager.
+     */
+    public readonly persistentDiscordPermissions?: PermissionsString[];
+
+    /**
+     * The persistent custom permissions for the member running this command.
+     *
+     * These permissions are not affected by the permission manager.
+     */
+    public readonly persistentCustomPermissions?: SystemOnlyPermissionResolvable[];
+
+    /**
+     * The cached persistent discord permissions of this command. For internal use only.
+     */
+    private cachedPersistentDiscordPermissions?: PermissionResolvable[];
+
+    /**
+     * The cached persistent custom permissions of this command. For internal use only.
+     */
+    private cachedPersistentCustomPermissions?: Permission[];
 
     /**
      * The required permissions for the bot system to run this command.
@@ -172,11 +198,6 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      * The permission guards for the command.
      */
     public readonly guards: CommandGuardLike[] = [];
-
-    /**
-     * The cached guards of this command. For internal use only.
-     */
-    private cachedGuards?: GuardLike[];
 
     /**
      * The argument parser for the command.
@@ -341,6 +362,43 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
         return true;
     }
 
+    protected async computePersistentPermissions() {
+        if (!this.persistentCustomPermissions) {
+            return;
+        }
+
+        this.client.logger.debug("Computing persistent permissions for command: ", this.name);
+
+        const discordPermissions = new Set<PermissionResolvable>();
+        this.cachedPersistentCustomPermissions = [];
+
+        for (const permission of this.persistentCustomPermissions) {
+            const instance =
+                typeof permission === "string"
+                    ? this.client
+                          .getServiceByName("permissionManager")
+                          .getPermissionByName(permission)
+                    : typeof permission === "function"
+                    ? await permission.getInstance<Permission>()
+                    : permission;
+
+            if (!instance) {
+                this.client.logger.debug(`Invalid permission: ${permission}: Not found`);
+                continue;
+            }
+
+            if (instance.canConvertToDiscordPermissions()) {
+                for (const resolved of instance.toDiscordPermissions()) {
+                    discordPermissions.add(resolved);
+                }
+            } else {
+                this.cachedPersistentCustomPermissions.push(instance);
+            }
+        }
+
+        this.cachedPersistentDiscordPermissions = Array.from(discordPermissions);
+    }
+
     /**
      * Checks the permissions of the command.
      *
@@ -348,28 +406,52 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      * @returns True if the permissions are met, false otherwise.
      */
     protected async checkPermissions(context: Context) {
-        if (this.permissions) {
-            if (!context.member) {
-                return false;
+        const permissionManager = this.client.getServiceByName("permissionManager");
+
+        if (this.systemPermissions) {
+            const me = context.guild.members.me ?? (await context.guild.members.fetchMe());
+
+            if (!me.permissions.has(this.systemPermissions, true)) {
+                throw new PermissionDeniedError(
+                    "The system is missing permissions to perform this action."
+                );
+            }
+        }
+
+        if (!context.member) {
+            return false;
+        }
+
+        if (this.persistentCustomPermissions) {
+            if (
+                !this.cachedPersistentCustomPermissions ||
+                !this.cachedPersistentDiscordPermissions
+            ) {
+                this.computePersistentPermissions();
             }
 
-            if (!this.cachedPermissions) {
-                this.computePermissions();
-            }
-
-            if (this.cachedDiscordPermissions) {
-                if (!context.member?.permissions.has(this.cachedDiscordPermissions, true)) {
+            if (this.cachedPersistentDiscordPermissions) {
+                if (
+                    !context.member.permissions.has(this.cachedPersistentDiscordPermissions, true)
+                ) {
                     return false;
                 }
             }
 
-            if (this.cachedPermissions) {
-                for (const permission of this.cachedPermissions) {
+            if (this.cachedPersistentCustomPermissions) {
+                for (const permission of this.cachedPersistentCustomPermissions) {
                     if (!(await permission.has(context.member))) {
                         return false;
                     }
                 }
             }
+        }
+
+        if (
+            this.permissions &&
+            !(await permissionManager.hasPermissions(context.member, this.permissions))
+        ) {
+            return false;
         }
 
         return true;
@@ -380,7 +462,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      *
      * @returns The computed permissions.
      */
-    private computePermissions() {
+    private async computePermissions() {
         if (!this.permissions) {
             return;
         }
@@ -392,14 +474,10 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
 
         for (const permission of this.permissions) {
             if (typeof permission === "function") {
-                const instance = Container.getGlobalContainer().resolveByClass(
-                    permission as new () => Permission,
-                    undefined,
-                    false
-                );
+                const instance = await permission.getInstance<Permission>();
 
                 if (instance.canConvertToDiscordPermissions()) {
-                    for (const resolved of instance.toDiscordPermissions().flat()) {
+                    for (const resolved of instance.toDiscordPermissions()) {
                         discordPermissions.add(resolved);
                     }
 

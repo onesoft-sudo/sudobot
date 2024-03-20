@@ -1,7 +1,12 @@
 import { faker } from "@faker-js/faker";
-import { ColorResolvable, Colors, EmbedBuilder, User } from "discord.js";
+import {
+    ChatInputCommandInteraction,
+    ColorResolvable,
+    Colors,
+    EmbedBuilder,
+    User
+} from "discord.js";
 import { beforeEach, describe, expect, it } from "vitest";
-import { ChatInputCommandContext } from "../../src/services/CommandManager";
 import { generateEmbed, guildInfo, userInfo } from "../../src/utils/embed";
 import { createClient } from "../mocks/client.mock";
 import { createGuild, createInvite } from "../mocks/guild.mock";
@@ -15,7 +20,7 @@ describe("generateEmbed", () => {
     let videoURL: string;
     let timestamp: Date;
 
-    let options: ChatInputCommandContext["options"];
+    let options: ChatInputCommandInteraction["options"];
 
     beforeEach(() => {
         authorIconURL = faker.image.avatar();
@@ -56,7 +61,7 @@ describe("generateEmbed", () => {
                         return undefined;
                 }
             }
-        } as ChatInputCommandContext["options"];
+        } as ChatInputCommandInteraction["options"];
     });
 
     it("should generate an embed", () => {
@@ -132,12 +137,13 @@ describe("generateEmbed", () => {
 
 describe("userInfo", () => {
     it("should return the user info", () => {
+        const id = randomSnowflake();
         const user = {
-            id: randomSnowflake(),
+            id,
             username: faker.internet.userName(),
             client: createClient(),
             toString() {
-                return `<@${this.id}>`;
+                return `<@${id}>`;
             }
         } as unknown as User;
 

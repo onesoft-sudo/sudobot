@@ -1,21 +1,21 @@
 /*
-* This file is part of SudoBot.
-*
-* Copyright (C) 2021-2024 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 import axios from "axios";
 import { spawn } from "child_process";
@@ -58,8 +58,28 @@ class DiscordKernel extends Kernel {
         "@services/ExtensionManager",
         "@services/LogStreamingService",
         "@services/CommandManager",
+        "@services/PermissionManagerService",
         "@framework/api/APIServer"
     ];
+
+    public constructor() {
+        super();
+        global.kernel = this;
+        this.bindSelf();
+    }
+
+    protected bindSelf() {
+        Container.getGlobalContainer().bind(DiscordKernel, {
+            factory: () => this,
+            singleton: true,
+            key: "kernel"
+        });
+
+        Container.getGlobalContainer().bind(Kernel, {
+            factory: () => this,
+            singleton: true
+        });
+    }
 
     protected createClient() {
         return new Client({
@@ -123,8 +143,8 @@ class DiscordKernel extends Kernel {
         await client.boot();
 
         if (process.env.SERVER_ONLY_MODE) {
-            // await client.server.boot();
-            // await client.server.start();
+            await client.getServiceByName("apiServer").boot();
+            await client.getServiceByName("apiServer").start();
         } else {
             this.logger.debug("Attempting to log into Discord...");
             await client.login(process.env.TOKEN);

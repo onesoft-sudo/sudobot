@@ -33,3 +33,5 @@ export type ArrayLike<T> = {
 };
 
 export type If<T extends boolean, A, B> = T extends true ? A : B;
+
+export type ArrayOrElement<T> = T | T[];
