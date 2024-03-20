@@ -14,7 +14,8 @@ export default defineConfig({
     plugins: [],
     resolve: {
         alias: {
-            "@": path.resolve(import.meta.dirname, "./src")
+            "@": path.resolve(import.meta.dirname, "./src"),
+            "@framework": path.resolve(import.meta.dirname, "./src/framework")
         }
     }
 });
