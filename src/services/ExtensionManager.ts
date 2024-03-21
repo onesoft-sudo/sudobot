@@ -24,7 +24,7 @@ import fs, { rm } from "fs/promises";
 import path from "path";
 import tar from "tar";
 import { z } from "zod";
-import Client from "../core/Client";
+import Application from "../framework/app/Application";
 import EventListener from "../framework/events/EventListener";
 import { Extension } from "../framework/extensions/Extension";
 import { ExtensionInfo } from "../framework/extensions/ExtensionInfo";
@@ -245,8 +245,11 @@ function getGuildIdResolversMap() {
     for (const guildIdResolver of guildIdResolvers) {
         for (const event of guildIdResolver.events) {
             if (map.has(event)) {
-                Client.logger.warn("Overlapping Guild ID Resolvers detected: ", event);
-                Client.logger.warn(
+                Application.current().logger.warn(
+                    "Overlapping Guild ID Resolvers detected: ",
+                    event
+                );
+                Application.current().logger.warn(
                     "This seems to be an internal bug. Please report this issue to the developers."
                 );
             }
@@ -285,7 +288,7 @@ export default class ExtensionService extends Service {
 
     public override async boot() {
         if (!this.extensionsPath || !existsSync(this.extensionsPath)) {
-            this.client.logger.debug("No extensions found");
+            this.application.logger.debug("No extensions found");
             await this.initializeConfigService();
             return;
         }
@@ -301,12 +304,12 @@ export default class ExtensionService extends Service {
     }
 
     async onInitializationComplete(extensions: Extension[]) {
-        await this.client.getService(ConfigurationManager).registerExtensionConfig(extensions);
+        await this.application.getService(ConfigurationManager).registerExtensionConfig(extensions);
         return this.initializeConfigService();
     }
 
     initializeConfigService() {
-        return this.client.getService(ConfigurationManager).manualBoot();
+        return this.application.getService(ConfigurationManager).manualBoot();
     }
 
     async loadExtensionsFromIndex(extensionsIndex: string) {
@@ -315,7 +318,7 @@ export default class ExtensionService extends Service {
         const extensionInitializers = [];
 
         for (const { entry, commands, events, name, services, id } of extensions) {
-            this.client.logger.info("Loading extension initializer (cached): ", name);
+            this.application.logger.info("Loading extension initializer (cached): ", name);
             const loadInfo = {
                 extensionPath: entry,
                 commands,
@@ -355,11 +358,11 @@ export default class ExtensionService extends Service {
                 continue;
             }
 
-            this.client.logger.info("Loading extension: ", extensionName);
+            this.application.logger.info("Loading extension: ", extensionName);
             const metadataFile = path.join(extensionDirectory, "extension.json");
 
             if (!existsSync(metadataFile)) {
-                this.client.logger.error(
+                this.application.logger.error(
                     `Extension ${extensionName} does not have a "extension.json" file!`
                 );
                 process.exit(-1);
@@ -370,10 +373,10 @@ export default class ExtensionService extends Service {
             );
 
             if (!parseResult.success) {
-                this.client.logger.error(
+                this.application.logger.error(
                     `Error parsing extension metadata for extension ${extensionName}`
                 );
-                this.client.logger.error(parseResult.error);
+                this.application.logger.error(parseResult.error);
                 continue;
             }
 
@@ -417,14 +420,15 @@ export default class ExtensionService extends Service {
         extensionName: string;
         extensionId: string;
     }) {
-        this.client.logger.debug(
+        this.application.logger.debug(
             "Attempting to load extension initializer: ",
             extensionName,
             extensionId
         );
-        const { default: ExtensionClass }: { default: new (client: Client) => Extension } =
-            await import(extensionPath);
-        return new ExtensionClass(this.client);
+        const {
+            default: ExtensionClass
+        }: { default: new (application: Application) => Extension } = await import(extensionPath);
+        return new ExtensionClass(this.application);
     }
 
     async loadExtension({
@@ -438,7 +442,7 @@ export default class ExtensionService extends Service {
         extensionId,
         extension
     }: LoadInfo) {
-        this.client.logger.debug("Attempting to load extension: ", extensionName, extensionId);
+        this.application.logger.debug("Attempting to load extension: ", extensionName, extensionId);
 
         const commandPaths = await extension.commands();
         const eventPaths = await extension.events();
@@ -447,32 +451,34 @@ export default class ExtensionService extends Service {
         if (servicePaths === null) {
             if (servicesDirectory) {
                 if (existsSync(servicesDirectory)) {
-                    await this.client.serviceManager.loadServicesFromDirectory(servicesDirectory);
+                    await this.application.serviceManager.loadServicesFromDirectory(
+                        servicesDirectory
+                    );
                 }
             } else if (services) {
                 for (const servicePath of services) {
-                    await this.client.serviceManager.loadService(servicePath);
+                    await this.application.serviceManager.loadService(servicePath);
                 }
             }
         } else {
             for (const servicePath of servicePaths) {
-                await this.client.serviceManager.loadService(servicePath);
+                await this.application.serviceManager.loadService(servicePath);
             }
         }
 
         if (commandPaths === null) {
             if (commandsDirectory) {
                 if (existsSync(commandsDirectory)) {
-                    await this.client.dynamicLoader.loadCommands(commandsDirectory);
+                    await this.application.dynamicLoader.loadCommands(commandsDirectory);
                 }
             } else if (commands) {
                 for (const commandPath of commands) {
-                    await this.client.dynamicLoader.loadCommand(commandPath);
+                    await this.application.dynamicLoader.loadCommand(commandPath);
                 }
             }
         } else {
             for (const commandPath of commandPaths) {
-                await this.client.dynamicLoader.loadCommand(commandPath);
+                await this.application.dynamicLoader.loadCommand(commandPath);
             }
         }
 
@@ -516,14 +522,15 @@ export default class ExtensionService extends Service {
     async loadEvent(extensionName: string, filePath: string) {
         const {
             default: Event
-        }: { default: new (client: Client) => EventListener<keyof ClientEvents> } = await import(
-            filePath
-        );
-        const event = new Event(this.client);
-        this.client.addEventListener(
-            event.name,
-            this.wrapHandler(extensionName, event.name, event.execute.bind(event))
-        );
+        }: { default: new (application: Application) => EventListener<keyof ClientEvents> } =
+            await import(filePath);
+        const event = new Event(this.application);
+        this.application
+            .getClient()
+            .addEventListener(
+                event.name,
+                this.wrapHandler(extensionName, event.name, event.execute.bind(event))
+            );
     }
 
     wrapHandler<K extends keyof ClientEvents>(
@@ -537,24 +544,27 @@ export default class ExtensionService extends Service {
                 this.guildIdResolvers.get(eventName)?.(args);
 
             if (guildId === undefined) {
-                this.client.logger.error("Invalid event or failed to fetch guild: ", eventName);
+                this.application.logger.error(
+                    "Invalid event or failed to fetch guild: ",
+                    eventName
+                );
                 return;
             }
 
             if (guildId !== null && !this.isEnabled(extensionName, guildId)) {
-                this.client.logger.debug("Extension isn't enabled in this guild: ", guildId);
+                this.application.logger.debug("Extension isn't enabled in this guild: ", guildId);
                 return;
             }
 
-            this.client.logger.info("Running: " + eventName + " [" + extensionName + "]");
+            this.application.logger.info("Running: " + eventName + " [" + extensionName + "]");
 
             try {
                 return await handler(...args);
             } catch (e) {
-                this.client.logger.error(
+                this.application.logger.error(
                     `Extension error: the extension '${extensionName}' seems to cause this exception`
                 );
-                this.client.logger.error(e);
+                this.application.logger.error(e);
 
                 if (bail) {
                     return;
@@ -565,10 +575,10 @@ export default class ExtensionService extends Service {
 
     isEnabled(extensionName: string, guildId: Snowflake) {
         const { disabled_extensions, enabled } =
-            this.client.getService(ConfigurationManager).config[guildId]?.extensions ?? {};
+            this.application.getService(ConfigurationManager).config[guildId]?.extensions ?? {};
         const { default_mode } =
-            this.client.getService(ConfigurationManager).systemConfig.extensions ?? {};
-        this.client.logger.debug(default_mode, enabled);
+            this.application.getService(ConfigurationManager).systemConfig.extensions ?? {};
+        this.application.logger.debug(default_mode, enabled);
         return (
             (enabled === undefined ? default_mode === "enable_all" : enabled) &&
             !disabled_extensions?.includes(extensionName)
@@ -576,7 +586,7 @@ export default class ExtensionService extends Service {
     }
 
     private async fetchExtensionMetadata() {
-        this.client.logger.debug("Fetching extension list metadata");
+        this.application.logger.debug("Fetching extension list metadata");
 
         const [response, error] = await request({
             method: "GET",
@@ -670,14 +680,14 @@ export default class ExtensionService extends Service {
             try {
                 await rm(filePath, { force: true });
             } catch (error) {
-                this.client.logger.error(error);
+                this.application.logger.error(error);
                 await this.writeStream(
                     stream,
                     `W: Failed to clean download caches for extension: ${id}\n`
                 );
             }
         } catch (error) {
-            this.client.logger.error(error);
+            this.application.logger.error(error);
 
             await this.writeStream(stream, this.downloadProgressStreamEOF);
             await this.writeStream(stream, "\n");
@@ -706,7 +716,7 @@ export default class ExtensionService extends Service {
                 cwd: extensionTmpDirectory
             });
         } catch (error) {
-            this.client.logger.error(error);
+            this.application.logger.error(error);
             await this.writeStream(stream, `E: Unable to unpack extension: ${extension.id}\n`);
             return;
         }
@@ -720,7 +730,7 @@ export default class ExtensionService extends Service {
                 extensionDirectory
             );
         } catch (error) {
-            this.client.logger.error(error);
+            this.application.logger.error(error);
             await this.writeStream(stream, `E: Failed to set up extension: ${extension.id}\n`);
             return;
         }
@@ -730,7 +740,7 @@ export default class ExtensionService extends Service {
         try {
             await rm(extensionTmpDirectory, { force: true, recursive: true });
         } catch (error) {
-            this.client.logger.error(error);
+            this.application.logger.error(error);
             await this.writeStream(
                 stream,
                 `W: Failed to clean up temporary files for extension: ${extension.id}\n`

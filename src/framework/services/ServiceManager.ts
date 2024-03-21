@@ -18,29 +18,36 @@
  */
 
 import { Collection } from "discord.js";
-import type Client from "../../core/Client";
 import DiscordKernel from "../../core/DiscordKernel";
 import { ESModule } from "../../types/ESModule";
-import { Services } from "../../types/Services";
+import type Application from "../app/Application";
 import Bind from "../container/Bind";
 import Container from "../container/Container";
-import { Inject } from "../container/Inject";
 import FileSystem from "../polyfills/FileSystem";
 import { requireNonNull } from "../utils/utils";
 import { Service } from "./Service";
 
-type ServiceConstructor = new (client: Client) => Service;
+type ServiceConstructor = new (client: Application) => Service;
+
+declare global {
+    interface ServiceRecord extends Record<string, object> {}
+}
+
+export type ServiceName = Extract<keyof ServiceRecord, string>;
 
 @Bind("serviceManager")
 class ServiceManager {
-    @Inject("client")
-    protected readonly client!: Client;
+    protected readonly application: Application;
+
+    public constructor(application: Application) {
+        this.application = application;
+    }
 
     private readonly services = new Collection<ServiceConstructor, Service>();
     private readonly servicesMappedByName = new Collection<string, Service>();
 
     public async loadServices() {
-        requireNonNull(this.client);
+        requireNonNull(this.application);
 
         for (const service of DiscordKernel.services) {
             let servicePath = service;
@@ -56,7 +63,7 @@ class ServiceManager {
                 !(await FileSystem.exists(servicePath + ".ts")) &&
                 !(await FileSystem.exists(servicePath + ".js"))
             ) {
-                this.client.logger.error(`Service not found: ${servicePath}`);
+                this.application.logger.error(`Service not found: ${servicePath}`);
                 continue;
             }
 
@@ -66,7 +73,7 @@ class ServiceManager {
 
     public async loadService(servicePath: string, name?: string) {
         const { default: ServiceClass }: ESModule<ServiceConstructor> = await import(servicePath);
-        const instance = new ServiceClass(this.client);
+        const instance = new ServiceClass(this.application);
         const key =
             Reflect.getMetadata("service:name", ServiceClass.prototype) ??
             Reflect.getMetadata("di:bind_as", ServiceClass.prototype) ??
@@ -81,19 +88,21 @@ class ServiceManager {
         this.services.set(ServiceClass, instance);
         this.servicesMappedByName.set(key, instance);
         await instance.boot();
-        this.client.logger.info(`Loaded service: ${name ?? ServiceClass.name} (bound as ${key})`);
+        this.application.logger.info(
+            `Loaded service: ${name ?? ServiceClass.name} (bound as ${key})`
+        );
     }
 
     public loadServicesFromDirectory(servicesDirectory: string) {
-        return this.client.dynamicLoader.loadServicesFromDirectory(servicesDirectory);
+        return this.application.dynamicLoader.loadServicesFromDirectory(servicesDirectory);
     }
 
     public getService<S extends new () => Service>(serviceClass: S): InstanceType<S> {
         return this.services.get(serviceClass) as InstanceType<S>;
     }
 
-    public getServiceByName<N extends keyof Services>(name: N): Services[N] {
-        return this.servicesMappedByName.get(name) as Services[N];
+    public getServiceByName<N extends ServiceName>(name: N): ServiceRecord[N] {
+        return this.servicesMappedByName.get(name) as ServiceRecord[N];
     }
 }
 

@@ -1,5 +1,5 @@
 import { GuildMember } from "discord.js";
-import Client from "../core/Client";
+import Application from "../framework/app/Application";
 import FluentSet from "../framework/collections/FluentSet";
 import AbstractPermissionManager from "../framework/permissions/AbstractPermissionManager";
 import {
@@ -16,13 +16,13 @@ import { PermissionMode } from "../types/GuildConfigSchema";
 class PermissionManagerService extends AbstractPermissionManagerService {
     public readonly managers: OptionalRecord<PermissionMode, AbstractPermissionManager> = {};
 
-    public constructor(client: Client) {
-        super(client);
+    public constructor(application: Application) {
+        super(application);
         this.createManagers();
     }
 
     private createManagers() {
-        const config = this.client.getServiceByName("configManager").config;
+        const config = this.application.getServiceByName("configManager").config;
         const modes = new FluentSet<PermissionMode>();
 
         for (const guildId in config) {
@@ -43,10 +43,10 @@ class PermissionManagerService extends AbstractPermissionManagerService {
     private createManager(mode: PermissionMode) {
         switch (mode) {
             case "layered":
-                return new LayeredPermissionManager(this.client);
+                return new LayeredPermissionManager(this.application);
 
             case "discord":
-                return new DiscordPermissionManager(this.client);
+                return new DiscordPermissionManager(this.application);
 
             default:
                 throw new Error(`Unknown permission mode: ${mode}`);
@@ -55,7 +55,7 @@ class PermissionManagerService extends AbstractPermissionManagerService {
 
     public async hasPermissions(member: GuildMember, permissions: SystemPermissionResolvable[]) {
         const mode =
-            this.client.getServiceByName("configManager").config[member.guild.id]?.permissions
+            this.application.getServiceByName("configManager").config[member.guild.id]?.permissions
                 .mode ?? "discord";
 
         if (!this.managers[mode]) {

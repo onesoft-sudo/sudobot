@@ -19,11 +19,11 @@
 
 import { NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
-import type Client from "../../../core/Client";
+import Application from "../../app/Application";
 import Request from "../http/Request";
 
 export default async function RequireAuthMiddleware(
-    client: Client,
+    application: Application,
     fetchUser: boolean = true,
     request: Request,
     response: Response,
@@ -58,7 +58,7 @@ export default async function RequireAuthMiddleware(
             userId: number;
         };
 
-        client.logger.debug(info, payload);
+        application.logger.debug(info, payload);
 
         if (!payload?.userId) {
             throw new Error("ID not found");
@@ -70,7 +70,7 @@ export default async function RequireAuthMiddleware(
             return;
         }
 
-        const user = await client.prisma.user.findFirst({
+        const user = await application.prisma.user.findFirst({
             where: {
                 id: payload.userId,
                 token
@@ -85,7 +85,7 @@ export default async function RequireAuthMiddleware(
         request.user = user;
         next();
     } catch (e) {
-        client.logger.debug(e);
+        application.logger.debug(e);
 
         response.status(401).json({
             error: "Invalid API token"

@@ -23,7 +23,7 @@ class DiscordPermissionManager extends AbstractPermissionManager {
             const instance = await Permission.resolve(permission);
 
             if (!instance) {
-                this.client.logger.warn(`Permission ${permission} does not exist.`);
+                this.application.logger.warn(`Permission ${permission} does not exist.`);
                 return false;
             }
 

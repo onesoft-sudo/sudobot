@@ -32,7 +32,7 @@ import {
 } from "discord.js";
 import JSON5 from "json5";
 import { z } from "zod";
-import Client from "../core/Client";
+import Application from "../framework/app/Application";
 
 type EmbedType = Embed | APIEmbed;
 type GetMessageOptions = MessageCreateOptions | APIMessage | MessageEditOptions;
@@ -180,12 +180,13 @@ export default class EmbedSchemaParser {
     }
 
     private static validate(parsedJSON: object) {
-        Client.logger.debug(parsedJSON);
+        const logger = Application.current().getLogger();
+        logger.debug(parsedJSON);
 
         const { success } = this.embedZodSchema.safeParse(parsedJSON);
 
         if (!success) {
-            Client.logger.debug("Embed validation failed");
+            logger.debug("Embed validation failed");
             return false;
         }
 
@@ -195,7 +196,7 @@ export default class EmbedSchemaParser {
             }
         }
 
-        Client.logger.debug("Embed required key validation failed");
+        logger.debug("Embed required key validation failed");
         return false;
     }
 

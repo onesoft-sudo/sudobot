@@ -1,21 +1,21 @@
 /*
-* This file is part of SudoBot.
-*
-* Copyright (C) 2021-2024 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 import archiver from "archiver";
 import axios from "axios";
@@ -39,8 +39,8 @@ import { version } from "../../package.json";
 import FileSystem from "../framework/polyfills/FileSystem";
 import { Name } from "../framework/services/Name";
 import { Service } from "../framework/services/Service";
+import { emoji } from "../framework/utils/emoji";
 import { HasEventListeners } from "../types/HasEventListeners";
-import { emoji } from "../utils/emoji";
 import { safeChannelFetch, safeMessageFetch } from "../utils/fetch";
 import { chunkedString, systemPrefix } from "../utils/utils";
 import ConfigurationManager from "./ConfigurationManager";
@@ -80,14 +80,14 @@ class StartupManager extends Service implements HasEventListeners {
         }
 
         if (ERROR_WEBHOOK_URL) {
-            this.client.logger.debug("Error webhook URL found. Setting up error handlers...");
+            this.application.logger.debug("Error webhook URL found. Setting up error handlers...");
             this.setupErrorHandlers();
         }
 
         const restartJsonFile = path.join(systemPrefix("tmp", true), "restart.json");
 
         if (await FileSystem.exists(restartJsonFile)) {
-            this.client.logger.info("Found restart.json file: ", restartJsonFile);
+            this.application.logger.info("Found restart.json file: ", restartJsonFile);
 
             try {
                 const { guildId, messageId, channelId, time } = (await FileSystem.readFileContents(
@@ -100,7 +100,7 @@ class StartupManager extends Service implements HasEventListeners {
                     time: number;
                 };
 
-                const guild = this.client.guilds.cache.get(guildId);
+                const guild = this.application.getClient().guilds.cache.get(guildId);
 
                 if (!guild) {
                     return;
@@ -124,7 +124,7 @@ class StartupManager extends Service implements HasEventListeners {
                             color: Colors.Green,
                             title: "System Restart",
                             description: `${emoji(
-                                this.client,
+                                this.application.getClient(),
                                 "check"
                             )} Operation completed. (took ${((Date.now() - time) / 1000).toFixed(
                                 2
@@ -133,13 +133,13 @@ class StartupManager extends Service implements HasEventListeners {
                     ]
                 });
             } catch (e) {
-                this.client.logger.error(e);
+                this.application.logger.error(e);
             }
 
-            rm(restartJsonFile).catch(this.client.logger.error);
+            rm(restartJsonFile).catch(this.application.logger.error);
         }
 
-        const { presence } = this.client.getService(ConfigurationManager).systemConfig;
+        const { presence } = this.application.getService(ConfigurationManager).systemConfig;
 
         this.client.user?.setPresence({
             activities: [
@@ -188,13 +188,13 @@ class StartupManager extends Service implements HasEventListeners {
             .send({
                 embeds
             })
-            .catch(this.client.logger.error);
+            .catch(this.application.logger.error);
     }
 
     private setupErrorHandlers() {
         process.on("unhandledRejection", (reason: unknown) => {
             process.removeAllListeners("unhandledRejection");
-            this.client.logger.error(reason);
+            this.application.logger.error(reason);
             this.sendErrorLog(
                 `Unhandled promise rejection: ${
                     typeof reason === "string" ||
@@ -211,7 +211,7 @@ class StartupManager extends Service implements HasEventListeners {
 
         process.on("uncaughtException", async (error: Error) => {
             process.removeAllListeners("uncaughtException");
-            this.client.logger.error(error);
+            this.application.logger.error(error);
             this.sendErrorLog(
                 error.stack ??
                     `Uncaught ${error.name.trim() === "" ? "Error" : error.name}: ${error.message}`
@@ -231,20 +231,20 @@ class StartupManager extends Service implements HasEventListeners {
         }
 
         const files: Array<string | AttachmentBuilder | Attachment> = [
-            this.client.getService(ConfigurationManager).configPath,
-            this.client.getService(ConfigurationManager).systemConfigPath
+            this.application.getService(ConfigurationManager).configPath,
+            this.application.getService(ConfigurationManager).systemConfigPath
         ];
 
         if (BACKUP_STORAGE) {
             if (process.isBun) {
-                this.client.logger.warn("Cannot create storage backup in a Bun environment");
+                this.application.logger.warn("Cannot create storage backup in a Bun environment");
                 return;
             }
 
             const buffer = await this.makeStorageBackup();
 
             if (buffer.byteLength > 80 * 1024 * 1024) {
-                this.client.logger.error("Storage backup is too large to send to Discord");
+                this.application.logger.error("Storage backup is too large to send to Discord");
                 return;
             }
 
@@ -254,7 +254,7 @@ class StartupManager extends Service implements HasEventListeners {
                 })
             );
 
-            this.client.logger.info("Storage backup created");
+            this.application.logger.info("Storage backup created");
         }
 
         await channel
@@ -262,7 +262,7 @@ class StartupManager extends Service implements HasEventListeners {
                 content: "# Configuration Backup",
                 files
             })
-            .catch(this.client.logger.error);
+            .catch(this.application.logger.error);
     }
 
     private makeStorageBackup() {
@@ -297,32 +297,32 @@ class StartupManager extends Service implements HasEventListeners {
             : 1000 * 60 * 60 * 2;
         const finalTime = isNaN(time) ? 1000 * 60 * 60 * 2 : time;
         this.interval = setInterval(this.sendConfigBackupCopy.bind(this), finalTime);
-        this.client.logger.info(
+        this.application.logger.info(
             `Configuration backups will be sent in each ${formatDistanceToNowStrict(
                 new Date(Date.now() - finalTime)
             )}`
         );
-        this.client.logger.info("Sending initial backup");
+        this.application.logger.info("Sending initial backup");
         this.sendConfigBackupCopy();
     }
 
     private systemUpdate(branch = "main") {
         if (spawnSync(`git pull origin ${branch}`).error?.message.endsWith("ENOENT")) {
-            this.client.logger.error(
+            this.application.logger.error(
                 "Cannot perform an automatic update - the system does not have Git installed and available in $PATH."
             );
             return false;
         }
 
         if (spawnSync("npm run build").error) {
-            this.client.logger.error(
+            this.application.logger.error(
                 "Cannot perform an automatic update - failed to build the project"
             );
             return false;
         }
 
         const { version } = require("../../package.json");
-        this.client.logger.success(
+        this.application.logger.success(
             `Successfully completed automatic update - system upgraded to version ${version}`
         );
         return true;
@@ -335,13 +335,13 @@ class StartupManager extends Service implements HasEventListeners {
 
             if (
                 typeof newVersion === "string" &&
-                semver.gt(newVersion, this.client.metadata.version)
+                semver.gt(newVersion, this.application.metadata.version as string)
             ) {
-                this.client.logger.info("Found update - performing an automatic update");
+                this.application.logger.info("Found update - performing an automatic update");
                 this.systemUpdate();
             }
         } catch (e) {
-            this.client.logger.error(e);
+            this.application.logger.error(e);
         }
     }
 }

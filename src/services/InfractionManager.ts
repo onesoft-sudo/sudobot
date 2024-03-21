@@ -1,21 +1,21 @@
 /*
-* This file is part of SudoBot.
-*
-* Copyright (C) 2021-2024 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 import { Infraction, InfractionType } from "@prisma/client";
 import { formatDistanceToNowStrict } from "date-fns";
@@ -23,7 +23,7 @@ import { APIEmbed, Colors, Snowflake, User } from "discord.js";
 import CommandAbortedError from "../framework/commands/CommandAbortedError";
 import { Name } from "../framework/services/Name";
 import { Service } from "../framework/services/Service";
-import { emoji } from "../utils/emoji";
+import { emoji } from "../framework/utils/emoji";
 import ConfigurationManager from "./ConfigurationManager";
 
 @Name("infractionManager")
@@ -52,7 +52,7 @@ class InfractionManager extends Service {
         }
 
         let finalReason = reason;
-        const configManager = this.client.getService(ConfigurationManager);
+        const configManager = this.application.getService(ConfigurationManager);
         const templates = configManager.config[guildId]?.infractions?.reason_templates ?? {};
         const templateWrapper =
             configManager.config[guildId]?.infractions?.reason_template_placeholder_wrapper ??
@@ -68,7 +68,7 @@ class InfractionManager extends Service {
 
             if (matches.length > 0) {
                 const abortReason = `${emoji(
-                    this.client,
+                    this.application.getClient(),
                     "error"
                 )} The following placeholders were not found in the reason: \`${matches
                     .map(m => m[0])
@@ -83,7 +83,7 @@ class InfractionManager extends Service {
     }
 
     private async notify(user: User, infraction: Infraction) {
-        const guild = this.client.guilds.cache.get(infraction.guildId);
+        const guild = this.application.getClient().guilds.cache.get(infraction.guildId);
 
         if (!guild) {
             return false;
@@ -120,7 +120,7 @@ class InfractionManager extends Service {
     }
 
     public async createBean({ moderator, user, reason, guildId }: CreateBeanPayload) {
-        const infraction = await this.client.prisma.infraction.create({
+        const infraction = await this.application.prisma.infraction.create({
             data: {
                 userId: user.id,
                 guildId,
@@ -131,7 +131,7 @@ class InfractionManager extends Service {
         });
 
         await this.notify(user, infraction);
-        this.client.emit("infractionCreate", infraction, user, moderator, false);
+        this.application.getClient().emit("infractionCreate", infraction, user, moderator, false);
         return { infraction };
     }
 }

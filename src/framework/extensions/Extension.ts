@@ -19,12 +19,12 @@
 
 import { Awaitable } from "discord.js";
 import { ZodSchema } from "zod";
-import Client from "../../core/Client";
+import Application from "../app/Application";
 
 export abstract class Extension {
     public readonly name?: string;
 
-    constructor(protected readonly client: Client) {}
+    constructor(protected readonly application: Application) {}
 
     commands(): Awaitable<string[] | null> {
         return null;

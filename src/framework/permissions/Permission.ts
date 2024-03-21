@@ -24,7 +24,7 @@ import {
     PermissionResolvable,
     PermissionsString
 } from "discord.js";
-import Client from "../../core/Client";
+import Application from "../app/Application";
 import Container from "../container/Container";
 import { Singleton } from "../types/Singleton";
 import { SystemPermissionResolvable } from "./AbstractPermissionManagerService";
@@ -76,7 +76,7 @@ abstract class Permission extends Singleton {
     }
 
     public static fromString(permission: string): Permission | undefined {
-        return Client.instance
+        return Application.current()
             .getServiceByName("permissionManager")
             .getPermissionByName(permission);
     }

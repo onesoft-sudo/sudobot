@@ -17,10 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import BaseClient from "../client/BaseClient";
+import type Application from "../app/Application";
 
-// FIXME: Using Client here is a bit of a hack, but it works for now.
-
-export abstract class HasClient {
-    public constructor(protected readonly client: BaseClient) {}
+export abstract class HasApplication {
+    public constructor(protected readonly application: Application) {}
 }

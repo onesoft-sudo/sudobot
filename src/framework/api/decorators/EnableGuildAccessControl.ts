@@ -18,7 +18,7 @@
  */
 
 import { NextFunction, Request, Response } from "express";
-import Client from "../../../core/Client";
+import Application from "../../app/Application";
 import GuildAccessControl from "../middleware/GuildAccessControl";
 import { Middleware } from "./Action";
 
@@ -31,16 +31,24 @@ export function EnableGuildAccessControl() {
         if (typeof contextOrMethodName === "string") {
             const metadata =
                 Reflect.getMetadata("gac_middleware", originalMethodOrTarget as object) ?? {};
-            const middleware = (client: Client, req: Request, res: Response, next: NextFunction) =>
-                GuildAccessControl(req, res, next);
+            const middleware = (
+                application: Application,
+                req: Request,
+                res: Response,
+                next: NextFunction
+            ) => GuildAccessControl(req, res, next);
 
             metadata[contextOrMethodName] ??= middleware;
             Reflect.defineMetadata("gac_middleware", metadata, originalMethodOrTarget as object);
         } else {
             const metadata = (contextOrMethodName.metadata?.guildAccessControlMiddleware ??
                 {}) as Record<string, Middleware>;
-            const middleware = (client: Client, req: Request, res: Response, next: NextFunction) =>
-                GuildAccessControl(req, res, next);
+            const middleware = (
+                application: Application,
+                req: Request,
+                res: Response,
+                next: NextFunction
+            ) => GuildAccessControl(req, res, next);
 
             metadata[contextOrMethodName.name as keyof typeof metadata] ??= middleware;
             (contextOrMethodName.metadata as unknown) ??= {};

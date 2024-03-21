@@ -1,10 +1,10 @@
 import { Awaitable, GuildMember, PermissionFlagsBits } from "discord.js";
-import Client from "../../core/Client";
+import Application from "../app/Application";
 import { SystemPermissionResolvable } from "./AbstractPermissionManagerService";
 import { Permission } from "./Permission";
 
 abstract class AbstractPermissionManager {
-    public constructor(protected readonly client: Client) {}
+    public constructor(protected readonly application: Application) {}
 
     public async hasPermissions(
         member: GuildMember,
@@ -22,7 +22,7 @@ abstract class AbstractPermissionManager {
             const instance = await Permission.resolve(permission);
 
             if (!instance) {
-                this.client.logger.warn(`Permission ${permission} does not exist.`);
+                this.application.logger.warn(`Permission ${permission} does not exist.`);
                 return false;
             }
 

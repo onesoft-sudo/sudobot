@@ -26,7 +26,7 @@ import type LogStreamingService from "../services/LogStreamingService";
 import PermissionManagerService from "../services/PermissionManagerService";
 import type StartupManager from "../services/StartupManager";
 
-export interface Services {
+export interface ServiceRecord {
     commandManager: CommandManager;
     configManager: ConfigurationManager;
     extensionManager: ExtensionManager;
@@ -35,4 +35,10 @@ export interface Services {
     startupManager: StartupManager;
     serviceManager: ServiceManager;
     permissionManager: PermissionManagerService;
+}
+
+interface ServiceRecordLocal extends ServiceRecord {}
+
+declare global {
+    interface ServiceRecord extends ServiceRecordLocal {}
 }

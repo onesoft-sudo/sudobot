@@ -26,7 +26,7 @@ class LayeredPermissionManager extends AbstractPermissionManager {
     public override async boot(): Promise<void> {
         this.overwrites.clear();
 
-        const overwrites = await this.client.prisma.permissionOverwrite.findMany({
+        const overwrites = await this.application.prisma.permissionOverwrite.findMany({
             orderBy: {
                 priority: "asc"
             }
@@ -42,7 +42,7 @@ class LayeredPermissionManager extends AbstractPermissionManager {
             }
         }
 
-        this.client.logger.debug("Loaded layered permission overwrites");
+        this.application.logger.debug("Loaded layered permission overwrites");
     }
 
     private addOverwrite(guildId: Snowflake, id: Snowflake, permission: PermissionOverwrite) {
@@ -114,7 +114,7 @@ class LayeredPermissionManager extends AbstractPermissionManager {
             const roleOverwrites = this.overwrites.get(`${member.guild.id}:${role.id}`);
 
             if (roleOverwrites) {
-                this.client.logger.debug(`Role ${role.name} has overwrites`);
+                this.application.logger.debug(`Role ${role.name} has overwrites`);
 
                 finalDiscordPermissions.add(
                     ...(roleOverwrites.grantedDiscordPermissions as PermissionResolvable[])
@@ -161,7 +161,7 @@ class LayeredPermissionManager extends AbstractPermissionManager {
                 const instance = Permission.fromString(permission);
 
                 if (!instance) {
-                    this.client.logger.debug(`Permission ${permission} does not exist`);
+                    this.application.logger.debug(`Permission ${permission} does not exist`);
                     continue;
                 }
 

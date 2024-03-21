@@ -1,31 +1,33 @@
 /*
-* This file is part of SudoBot.
-*
-* Copyright (C) 2021-2024 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
+import type Client from "../core/Client";
 import APIServer from "../framework/api/APIServer";
 import { Inject } from "../framework/container/Inject";
 import EventListener from "../framework/events/EventListener";
+import { Logger } from "../framework/log/Logger";
 import { Events } from "../framework/types/ClientEvents";
 import ConfigurationManager from "../services/ConfigurationManager";
 import LogStreamingService from "../services/LogStreamingService";
 import StartupManager from "../services/StartupManager";
 
-class ReadyEventListener extends EventListener<Events.Ready> {
+class ReadyEventListener extends EventListener<Events.Ready, Client> {
     public override readonly name = Events.Ready;
 
     @Inject()
@@ -40,8 +42,11 @@ class ReadyEventListener extends EventListener<Events.Ready> {
     @Inject()
     public readonly logStreamingService!: LogStreamingService;
 
+    @Inject()
+    public readonly logger!: Logger;
+
     public override async execute() {
-        this.client.logger.info(`Logged in as: ${this.client.user?.username}`);
+        this.logger.info(`Logged in as: ${this.client.user?.username}`);
 
         this.configManager.onReady();
         this.startupManager.onReady();
@@ -62,10 +67,10 @@ class ReadyEventListener extends EventListener<Events.Ready> {
                     }
                 }
 
-                this.client.logger.info("Successfully synced the emojis of home guild.");
+                this.logger.info("Successfully synced the emojis of home guild.");
             } catch (e) {
-                this.client.logger.error(e);
-                this.client.logger.warn(
+                this.logger.error(e);
+                this.logger.warn(
                     "Failed to fetch some of the emojis. The bot may not show some of the emojis in it's responses."
                 );
             }

@@ -20,12 +20,13 @@ import "dotenv/config";
 import "module-alias/register";
 import "reflect-metadata";
 
+import path from "path";
 import DiscordKernel from "./core/DiscordKernel";
 import Application from "./framework/app/Application";
 
 async function main() {
     Application.setupGlobals();
-    const application = new Application();
+    const application = new Application(path.resolve(__dirname));
     await application.run(new DiscordKernel());
 }
 

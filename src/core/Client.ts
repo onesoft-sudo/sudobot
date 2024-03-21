@@ -17,69 +17,19 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { PrismaClient } from "@prisma/client";
 import { ClientOptions } from "discord.js";
-import path from "node:path";
-import metadata from "../../package.json";
 import BaseClient from "../framework/client/BaseClient";
-import { Inject } from "../framework/container/Inject";
-import DynamicLoader from "../framework/import/DynamicLoader";
 import { Logger } from "../framework/log/Logger";
-import { Service } from "../framework/services/Service";
-import { ServiceManager } from "../framework/services/ServiceManager";
-import { Services } from "../types/Services";
-import { developmentMode } from "../utils/utils";
 
 class Client<R extends boolean = boolean> extends BaseClient<R> {
-    public readonly dynamicLoader = new DynamicLoader(this);
-
-    @Inject()
-    public readonly logger!: Logger;
-
-    @Inject()
-    public readonly serviceManager!: ServiceManager;
-
-    public readonly prisma = new PrismaClient({
-        errorFormat: "pretty",
-        log: developmentMode() ? ["error", "info", "query", "warn"] : ["error", "info", "warn"]
-    });
-
     public static override instance: Client;
 
-    public constructor(options: ClientOptions) {
+    public constructor(
+        options: ClientOptions,
+        protected readonly logger = new Logger("client", true)
+    ) {
         super(options);
         Client.instance = this;
-    }
-
-    public static get logger() {
-        return Client.instance.logger;
-    }
-
-    public get metadata() {
-        return metadata;
-    }
-
-    public async boot({
-        commands = true,
-        events = true,
-        permissions = true
-    }: { commands?: boolean; events?: boolean; permissions?: boolean } = {}) {
-        // if (this !== this.serviceManager)
-
-        await this.serviceManager.loadServices();
-
-        if (permissions) {
-            await this.dynamicLoader.loadPermissions(path.resolve(__dirname, "../permissions"));
-        }
-
-        if (events) {
-            this.setMaxListeners(50);
-            await this.dynamicLoader.loadEvents(path.resolve(__dirname, "../events"));
-        }
-
-        if (commands) {
-            await this.dynamicLoader.loadCommands(path.resolve(__dirname, "../commands"));
-        }
     }
 
     public async getHomeGuild() {
@@ -87,32 +37,6 @@ class Client<R extends boolean = boolean> extends BaseClient<R> {
             this.guilds.cache.get(process.env.HOME_GUILD_ID) ??
             (await this.guilds.fetch(process.env.HOME_GUILD_ID))
         );
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    public getService<S extends new (...args: any[]) => Service>(
-        serviceClass: S,
-        error = true
-    ): InstanceType<S> {
-        const service = this.serviceManager.getService(
-            serviceClass as unknown as new () => Service
-        ) as InstanceType<S>;
-
-        if (!service && error) {
-            throw new Error(`Service ${serviceClass.name} not found`);
-        }
-
-        return service;
-    }
-
-    public getServiceByName<N extends keyof Services>(name: N, error = true): Services[N] {
-        const service = this.serviceManager.getServiceByName(name);
-
-        if (!service && error) {
-            throw new Error(`Service ${name} not found`);
-        }
-
-        return service;
     }
 }
 

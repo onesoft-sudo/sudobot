@@ -17,17 +17,23 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Client from "../../core/Client";
+import Application from "../app/Application";
+import BaseClient from "../client/BaseClient";
 import CanBind from "../container/CanBind";
 import { ClientEvents } from "../types/ClientEvents";
 
 @CanBind
 export default abstract class EventListener<
-    K extends keyof ClientEvents | string = keyof ClientEvents
+    K extends keyof ClientEvents | string = keyof ClientEvents,
+    C extends BaseClient = BaseClient
 > {
     public abstract readonly name: K;
 
-    constructor(protected client: Client) {}
+    protected readonly client: C;
+
+    constructor(protected readonly application: Application) {
+        this.client = application.getClient() as C;
+    }
 
     abstract execute(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

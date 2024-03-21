@@ -18,7 +18,7 @@
  */
 
 import { NextFunction, Request, Response } from "express";
-import type Client from "../../../core/Client";
+import Application from "../../app/Application";
 import RequireAuthMiddleware from "../middleware/RequireAuthMiddleware";
 import { Middleware } from "./Action";
 
@@ -31,8 +31,12 @@ export function RequireAuth(fetchUser = true) {
         if (typeof contextOrMethodName === "string") {
             const metadata =
                 Reflect.getMetadata("auth_middleware", originalMethodOrTarget as object) ?? {};
-            const middleware = (client: Client, req: Request, res: Response, next: NextFunction) =>
-                RequireAuthMiddleware(client, fetchUser, req, res, next);
+            const middleware = (
+                application: Application,
+                req: Request,
+                res: Response,
+                next: NextFunction
+            ) => RequireAuthMiddleware(application, fetchUser, req, res, next);
 
             metadata[contextOrMethodName] ??= middleware;
 
@@ -42,8 +46,12 @@ export function RequireAuth(fetchUser = true) {
                 string | symbol,
                 Middleware
             >;
-            const middleware = (client: Client, req: Request, res: Response, next: NextFunction) =>
-                RequireAuthMiddleware(client, fetchUser, req, res, next);
+            const middleware = (
+                application: Application,
+                req: Request,
+                res: Response,
+                next: NextFunction
+            ) => RequireAuthMiddleware(application, fetchUser, req, res, next);
 
             metadata[contextOrMethodName.name] ??= middleware;
             (contextOrMethodName.metadata as unknown) ??= {};

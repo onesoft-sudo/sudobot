@@ -24,13 +24,21 @@ import { existsSync } from "fs";
 import { readFile } from "fs/promises";
 import path from "path";
 import { createInterface } from "readline/promises";
-import Container from "../framework/container/Container";
+import metadata from "../../package.json";
+import Container, { AnyConstructor } from "../framework/container/Container";
 import Kernel from "../framework/core/Kernel";
 import { Logger } from "../framework/log/Logger";
 import ConfigurationManager from "../services/ConfigurationManager";
 import LogStreamingService from "../services/LogStreamingService";
 import { systemPrefix } from "../utils/utils";
 import Client from "./Client";
+
+type Binding = {
+    key: string;
+    value: object;
+};
+
+export type MetadataType = typeof metadata;
 
 class DiscordKernel extends Kernel {
     protected readonly intents = [
@@ -68,6 +76,18 @@ class DiscordKernel extends Kernel {
         this.bindSelf();
     }
 
+    protected bindings(): Binding[] {
+        const application = this.getApplication();
+
+        return [
+            { key: "application", value: application },
+            { key: "client", value: application.getClient() },
+            { key: "logger", value: application.logger },
+            { key: "serviceManager", value: application.serviceManager },
+            { key: "dynamicLoader", value: application.dynamicLoader }
+        ];
+    }
+
     protected bindSelf() {
         Container.getInstance().bind(DiscordKernel, {
             factory: () => this,
@@ -81,42 +101,50 @@ class DiscordKernel extends Kernel {
         });
     }
 
-    protected createClient() {
-        return new Client({
-            intents: this.intents,
-            partials: this.partials
-        });
+    protected createClient(logger: Logger) {
+        return new Client(
+            {
+                intents: this.intents,
+                partials: this.partials
+            },
+            logger
+        );
     }
 
     protected createLogger() {
         const logger = new Logger("system", true);
 
         logger.on("log", message => {
-            const logServerEnabled = Client.instance?.getService(ConfigurationManager, false)
+            const logServerEnabled = this.getApplication()?.getService(ConfigurationManager, false)
                 ?.systemConfig?.log_server?.enabled;
 
             if (logServerEnabled) {
-                Client.instance.getService(LogStreamingService, false)?.log(message);
+                this.getApplication().getService(LogStreamingService, false)?.log(message);
             }
         });
 
         return logger;
     }
 
-    public bindings() {
-        const container = Container.getInstance();
+    public setup() {
+        const application = this.getApplication();
 
-        container.bind(Logger, {
-            factory: () => this.createLogger(),
-            singleton: true,
-            key: "logger"
-        });
+        const logger = this.createLogger();
+        const client = this.createClient(logger);
 
-        container.bind(Client, {
-            factory: () => this.createClient(),
-            singleton: true,
-            key: "client"
-        });
+        application.setLogger(logger);
+        application.setClient(client);
+        application.setMetadata(metadata);
+
+        this.bindSelf();
+
+        for (const binding of this.bindings()) {
+            application.container.bind(binding.value.constructor as AnyConstructor, {
+                factory: () => binding.value,
+                singleton: true,
+                key: binding.key
+            });
+        }
     }
 
     public getClient() {
@@ -125,7 +153,7 @@ class DiscordKernel extends Kernel {
 
     public override async boot() {
         this.logger.debug("Starting the kernel...");
-        this.bindings();
+        this.setup();
 
         if (process.env.TWO_FACTOR_AUTH_URL) {
             const key = await this.promptForCode();
@@ -138,18 +166,17 @@ class DiscordKernel extends Kernel {
 
         this.spawnNativeProcess();
 
-        this.logger.debug("Booting up the client...");
-        const client = this.getClient();
+        this.logger.debug("Booting up the application...");
 
-        this.getApplication().setClient(client);
-        await client.boot();
+        const application = this.getApplication();
+        await application.boot();
 
         if (process.env.SERVER_ONLY_MODE) {
-            await client.getServiceByName("apiServer").boot();
-            await client.getServiceByName("apiServer").start();
+            await application.getServiceByName("apiServer").boot();
+            await application.getServiceByName("apiServer").start();
         } else {
             this.logger.debug("Attempting to log into Discord...");
-            await client.login(process.env.TOKEN);
+            await application.getClient().login(process.env.TOKEN);
             this.logger.debug("Logged into Discord");
         }
     }

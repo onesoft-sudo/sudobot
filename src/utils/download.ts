@@ -22,13 +22,15 @@ import { createWriteStream } from "fs";
 import { basename, join } from "path";
 import stream from "stream";
 import { promisify } from "util";
-import Client from "../core/Client";
+import Application from "../framework/app/Application";
 import { systemPrefix } from "./utils";
 
 export const finished = promisify(stream.finished);
 
 export async function downloadFile({ url, path, name, axiosOptions }: DownloadFileOptions) {
-    Client.logger.info("Attempting to download file: " + url);
+    const logger = Application.current().getLogger();
+
+    logger.info("Attempting to download file: " + url);
 
     const storagePath = path ?? systemPrefix("storage");
     const filePath = join(storagePath, name ?? basename(url));
@@ -50,7 +52,7 @@ export async function downloadFile({ url, path, name, axiosOptions }: DownloadFi
 
     if (!writer.closed) await promisify(writer.close.bind(writer))();
 
-    Client.logger.info("Saved downloaded file to: " + filePath);
+    logger.info("Saved downloaded file to: " + filePath);
 
     return {
         filePath,

@@ -21,11 +21,11 @@ import { Awaitable } from "discord.js";
 import { Router } from "express";
 import { lstat, readdir } from "node:fs/promises";
 import path, { basename, dirname } from "node:path";
-import type Client from "../../core/Client";
 import CommandManager from "../../services/CommandManager";
 import ConfigurationManager from "../../services/ConfigurationManager";
 import APIServer from "../api/APIServer";
 import Controller from "../api/http/Controller";
+import Application from "../app/Application";
 import { Command } from "../commands/Command";
 import Container from "../container/Container";
 import EventListener from "../events/EventListener";
@@ -40,7 +40,7 @@ class DynamicLoader {
         Record<keyof ClientEvents, AnyFunction[]>
     >();
 
-    public constructor(protected readonly client: Client) {}
+    public constructor(protected readonly application: Application) {}
 
     private getContainer() {
         return Container.getInstance();
@@ -80,11 +80,11 @@ class DynamicLoader {
     }
 
     async loadController(filepath: string, router: Router) {
-        const { default: ControllerClass }: DefaultExport<Class<Controller, [Client]>> =
+        const { default: ControllerClass }: DefaultExport<Class<Controller, [Application]>> =
             await import(filepath);
-        const controller = await Container.getInstance().resolveByClass(ControllerClass);
-        this.client.getService(APIServer).loadController(controller, ControllerClass, router);
-        this.client.logger.info("Loaded Controller: ", ControllerClass.name);
+        const controller = Container.getInstance().resolveByClass(ControllerClass);
+        this.application.getService(APIServer).loadController(controller, ControllerClass, router);
+        this.application.logger.info("Loaded Controller: ", ControllerClass.name);
     }
 
     async loadEvents(directory = path.resolve(__dirname, "../events")) {
@@ -100,11 +100,13 @@ class DynamicLoader {
     }
 
     async loadEvent(filepath: string) {
-        const { default: EventListenerClass }: DefaultExport<Class<EventListener, [Client]>> =
+        const { default: EventListenerClass }: DefaultExport<Class<EventListener, [Application]>> =
             await import(filepath);
         const listener = await this.getContainer().resolveByClass(EventListenerClass);
-        this.client.addEventListener(listener.name, listener.execute.bind(listener));
-        this.client.logger.info("Loaded Event: ", listener.name);
+        this.application
+            .getClient()
+            .addEventListener(listener.name, listener.execute.bind(listener));
+        this.application.logger.info("Loaded Event: ", listener.name);
     }
 
     async loadPermissions(directory = path.resolve(__dirname, "../permissions")) {
@@ -124,8 +126,10 @@ class DynamicLoader {
             filepath
         );
         const permission = await PermissionClass.getInstance<Permission>();
-        this.client.serviceManager.getServiceByName("permissionManager").loadPermission(permission);
-        this.client.logger.info("Loaded Permission Handler: ", permission.toString());
+        this.application.serviceManager
+            .getServiceByName("permissionManager")
+            .loadPermission(permission);
+        this.application.logger.info("Loaded Permission Handler: ", permission.toString());
     }
 
     async loadServicesFromDirectory(servicesDirectory = path.resolve(__dirname, "../services")) {
@@ -136,12 +140,13 @@ class DynamicLoader {
                 continue;
             }
 
-            await this.client.serviceManager.loadService(file);
+            await this.application.serviceManager.loadService(file);
         }
     }
 
     flattenCommandGroups() {
-        const groups = this.client.getService(ConfigurationManager).systemConfig.commands.groups;
+        const groups =
+            this.application.getService(ConfigurationManager).systemConfig.commands.groups;
         const groupNames = Object.keys(groups);
 
         if (groupNames.length === 0) {
@@ -166,7 +171,7 @@ class DynamicLoader {
     ) {
         const commandFiles = await this.iterateDirectoryRecursively(commandsDirectory);
         const groups = this.flattenCommandGroups();
-        const commandManager = this.client.getService(CommandManager);
+        const commandManager = this.application.getService(CommandManager);
 
         for (const file of commandFiles) {
             if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
@@ -185,15 +190,14 @@ class DynamicLoader {
         filepath: string,
         loadMetadata = true,
         groups: Record<string, string> | null = null,
-        commandManager: CommandManager = this.client.getService(CommandManager)
+        commandManager: CommandManager = this.application.getService(CommandManager)
     ) {
-        const { default: CommandClass }: DefaultExport<Class<Command, [Client]>> = await import(
-            filepath
-        );
+        const { default: CommandClass }: DefaultExport<Class<Command, [Application]>> =
+            await import(filepath);
         const canBind = Reflect.hasMetadata("di:can-bind", CommandClass.prototype);
         const command = canBind
             ? await this.getContainer().resolveByClass(CommandClass)
-            : new CommandClass(this.client);
+            : new CommandClass(this.application);
 
         if (!canBind) {
             await this.getContainer().resolveProperties(CommandClass, command);
@@ -201,7 +205,7 @@ class DynamicLoader {
 
         const defaultGroup = basename(dirname(filepath));
         await commandManager.addCommand(command, loadMetadata, groups, defaultGroup);
-        this.client.logger.info("Loaded Command: ", command.name);
+        this.application.logger.info("Loaded Command: ", command.name);
     }
 
     async loadEventsFromMetadata(object: object, accessConstructor = true) {
@@ -227,13 +231,15 @@ class DynamicLoader {
             handlerData[listenerInfo.event as keyof typeof handlerData] ??= [] as AnyFunction[];
             handlerData[listenerInfo.event as keyof typeof handlerData].push(handler);
 
-            this.client.addEventListener(listenerInfo.event as keyof ClientEvents, handler);
+            this.application
+                .getClient()
+                .addEventListener(listenerInfo.event as keyof ClientEvents, handler);
         }
 
         this.eventHandlers.set(object, handlerData);
 
         if (metadata.eventListeners) {
-            this.client.logger.debug(
+            this.application.logger.debug(
                 `Registered ${metadata.eventListeners?.length ?? 0} event listeners`
             );
         }
@@ -246,16 +252,18 @@ class DynamicLoader {
 
         for (const event in handlerData) {
             for (const callback of handlerData[event as keyof typeof handlerData]) {
-                this.client.removeEventListener(
-                    event as keyof ClientEvents,
-                    callback as (...args: ClientEvents[keyof ClientEvents]) => unknown
-                );
+                this.application
+                    .getClient()
+                    .removeEventListener(
+                        event as keyof ClientEvents,
+                        callback as (...args: ClientEvents[keyof ClientEvents]) => unknown
+                    );
             }
 
             count += handlerData[event as keyof typeof handlerData].length;
         }
 
-        this.client.logger.debug(`Unloaded ${count} event listeners`);
+        this.application.logger.debug(`Unloaded ${count} event listeners`);
     }
 }
 

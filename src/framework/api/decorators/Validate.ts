@@ -19,7 +19,7 @@
 
 import { NextFunction, Request, Response } from "express";
 import { ZodSchema } from "zod";
-import type Client from "../../../core/Client";
+import Application from "../../app/Application";
 import ValidateMiddleware from "../middleware/ValidateMiddleware";
 
 export function Validate(schema: ZodSchema) {
@@ -32,8 +32,12 @@ export function Validate(schema: ZodSchema) {
             const metadata =
                 Reflect.getMetadata("validation_middleware", originalMethodOrTarget as object) ??
                 {};
-            const middleware = (client: Client, req: Request, res: Response, next: NextFunction) =>
-                ValidateMiddleware(schema, req, res, next);
+            const middleware = (
+                _application: Application,
+                req: Request,
+                res: Response,
+                next: NextFunction
+            ) => ValidateMiddleware(schema, req, res, next);
 
             metadata[contextOrMethodName] ??= middleware;
             Reflect.defineMetadata(
@@ -45,15 +49,19 @@ export function Validate(schema: ZodSchema) {
             const metadata = (contextOrMethodName.metadata?.validationMiddleware ?? {}) as Record<
                 string | symbol,
                 (
-                    client: Client,
+                    application: Application,
                     req: Request,
                     res: Response,
                     next: NextFunction
                 ) => ReturnType<typeof ValidateMiddleware>
             >;
 
-            const middleware = (client: Client, req: Request, res: Response, next: NextFunction) =>
-                ValidateMiddleware(schema, req, res, next);
+            const middleware = (
+                _application: Application,
+                req: Request,
+                res: Response,
+                next: NextFunction
+            ) => ValidateMiddleware(schema, req, res, next);
 
             metadata[contextOrMethodName.name] ??= middleware;
             (contextOrMethodName.metadata as unknown) ??= {};

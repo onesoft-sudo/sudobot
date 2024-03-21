@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { MetadataType } from "../../core/DiscordKernel";
 import { ChatContext, Command } from "../../framework/commands/Command";
 
 class AboutCommand extends Command {
@@ -25,11 +26,13 @@ class AboutCommand extends Command {
     public override readonly aliases = ["botinfo"];
 
     public override async execute(context: ChatContext) {
+        const metadata = this.application.metadata as MetadataType;
+
         await context.reply({
             embeds: [
                 {
                     author: {
-                        icon_url: this.client.user?.displayAvatarURL(),
+                        icon_url: this.application.getClient().user?.displayAvatarURL(),
                         name: "SudoBot"
                     },
                     description: `
@@ -41,12 +44,12 @@ class AboutCommand extends Command {
                     fields: [
                         {
                             name: "Version",
-                            value: `${this.client.metadata.version}`,
+                            value: `${metadata.version}`,
                             inline: true
                         },
                         {
                             name: "Source Code",
-                            value: `[GitHub](${this.client.metadata.repository.url})`,
+                            value: `[GitHub](${metadata.repository.url})`,
                             inline: true
                         },
                         {
@@ -56,7 +59,7 @@ class AboutCommand extends Command {
                         },
                         {
                             name: "Author",
-                            value: `[${this.client.metadata.author.name}](${this.client.metadata.author.url})`,
+                            value: `[${metadata.author.name}](${metadata.author.url})`,
                             inline: true
                         },
                         {

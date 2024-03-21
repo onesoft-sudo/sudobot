@@ -17,10 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Client from "../../../core/Client";
+import Application from "../../app/Application";
 import CanBind from "../../container/CanBind";
 
 @CanBind
 export default abstract class Controller {
-    constructor(protected client: Client) {}
+    constructor(protected readonly application: Application) {}
 }

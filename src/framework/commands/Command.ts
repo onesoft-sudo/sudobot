@@ -29,7 +29,7 @@ import {
     SlashCommandBuilder,
     User
 } from "discord.js";
-import Client from "../../core/Client";
+import Application from "../app/Application";
 import Argument from "../arguments/Argument";
 import ArgumentParser from "../arguments/ArgumentParser";
 import { Guard } from "../guards/Guard";
@@ -207,10 +207,10 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
     /**
      * Creates a new instance of the Command class.
      *
-     * @param client - The client instance.
+     * @param application - The client instance.
      */
-    public constructor(protected readonly client: Client) {
-        this.argumentParser = new ArgumentParser(client);
+    public constructor(protected readonly application: Application) {
+        this.argumentParser = new ArgumentParser(application.getClient());
     }
 
     /**
@@ -367,7 +367,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
             return;
         }
 
-        this.client.logger.debug("Computing persistent permissions for command: ", this.name);
+        this.application.logger.debug("Computing persistent permissions for command: ", this.name);
 
         const discordPermissions = new Set<PermissionResolvable>();
         this.cachedPersistentCustomPermissions = [];
@@ -375,7 +375,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
         for (const permission of this.persistentCustomPermissions) {
             const instance =
                 typeof permission === "string"
-                    ? this.client
+                    ? this.application
                           .getServiceByName("permissionManager")
                           .getPermissionByName(permission)
                     : typeof permission === "function"
@@ -383,7 +383,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
                     : permission;
 
             if (!instance) {
-                this.client.logger.debug(`Invalid permission: ${permission}: Not found`);
+                this.application.logger.debug(`Invalid permission: ${permission}: Not found`);
                 continue;
             }
 
@@ -406,7 +406,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      * @returns True if the permissions are met, false otherwise.
      */
     protected async checkPermissions(context: Context) {
-        const permissionManager = this.client.getServiceByName("permissionManager");
+        const permissionManager = this.application.getServiceByName("permissionManager");
 
         if (this.systemPermissions) {
             const me = context.guild.members.me ?? (await context.guild.members.fetchMe());
@@ -467,7 +467,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
             return;
         }
 
-        this.client.logger.debug("Computing permissions for command: ", this.name);
+        this.application.logger.debug("Computing permissions for command: ", this.name);
 
         const discordPermissions = new Set<PermissionResolvable>();
         this.cachedPermissions = [];

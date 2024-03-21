@@ -76,14 +76,14 @@ export default class ConfigurationManager extends Service {
     }
 
     async load() {
-        this.client.logger.debug(
+        this.application.logger.debug(
             `Loading system configuration from file: ${this.systemConfigPath}`
         );
         const systemConfigFileContents = await fs.readFile(this.systemConfigPath, {
             encoding: "utf-8"
         });
 
-        this.client.logger.debug(`Loading guild configuration from file: ${this.configPath}`);
+        this.application.logger.debug(`Loading guild configuration from file: ${this.configPath}`);
         const configFileContents = await fs.readFile(this.configPath, { encoding: "utf-8" });
 
         const configJSON = JSON.parse(configFileContents);
@@ -101,11 +101,11 @@ export default class ConfigurationManager extends Service {
 
         this.config = this.guildConfigContainerSchema.parse(configJSON);
         this.systemConfig = this.systemConfigSchema.parse(systemConfigJSON);
-        this.client.logger.info("Successfully loaded the configuration files");
+        this.application.logger.info("Successfully loaded the configuration files");
     }
 
     onReady() {
-        const guildIds = this.client.guilds.cache.keys();
+        const guildIds = this.application.getClient().guilds.cache.keys();
 
         if (!process.env.PRIVATE_BOT_MODE) {
             for (const id of guildIds) {
@@ -113,13 +113,13 @@ export default class ConfigurationManager extends Service {
                     continue;
                 }
 
-                this.client.logger.info(`Auto configuring default settings for guild: ${id}`);
+                this.application.logger.info(`Auto configuring default settings for guild: ${id}`);
                 this.autoConfigure(id);
             }
         }
 
         if (!process.env.NO_GENERATE_CONFIG_SCHEMA) {
-            this.client.logger.info("Generating configuration schema files");
+            this.application.logger.info("Generating configuration schema files");
             this.generateSchema();
         }
     }
@@ -146,7 +146,9 @@ export default class ConfigurationManager extends Service {
 
     async write({ guild = true, system = true } = {}) {
         if (guild) {
-            this.client.logger.debug(`Writing guild configuration to file: ${this.configPath}`);
+            this.application.logger.debug(
+                `Writing guild configuration to file: ${this.configPath}`
+            );
 
             const json = JSON.stringify(
                 {
@@ -161,7 +163,7 @@ export default class ConfigurationManager extends Service {
         }
 
         if (system) {
-            this.client.logger.debug(
+            this.application.logger.debug(
                 `Writing system configuration to file: ${this.systemConfigPath}`
             );
 
@@ -177,7 +179,7 @@ export default class ConfigurationManager extends Service {
             await writeFile(this.systemConfigPath, json, { encoding: "utf-8" });
         }
 
-        this.client.logger.info("Successfully wrote the configuration files");
+        this.application.logger.info("Successfully wrote the configuration files");
     }
 
     get<T extends GuildConfig = GuildConfig>(guildId: Snowflake): T | undefined {
@@ -193,7 +195,7 @@ export default class ConfigurationManager extends Service {
             return;
         }
 
-        this.client.logger.debug("Registering extension configuration schemas");
+        this.application.logger.debug("Registering extension configuration schemas");
 
         let finalGuildConfigSchema: AnyZodObject = this.guildConfigSchema;
         let finalSystemConfigSchema: AnyZodObject = this.systemConfigSchema;
@@ -223,7 +225,7 @@ export default class ConfigurationManager extends Service {
             4
         );
         await writeFile(this.configSchemaPath, configSchema, { encoding: "utf-8" });
-        this.client.logger.info("Successfully generated the guild configuration schema file");
+        this.application.logger.info("Successfully generated the guild configuration schema file");
 
         const systemConfigSchema = JSON.stringify(
             zodToJsonSchema(this.systemConfigSchema),
@@ -231,6 +233,6 @@ export default class ConfigurationManager extends Service {
             4
         );
         await writeFile(this.systemConfigSchemaPath, systemConfigSchema, { encoding: "utf-8" });
-        this.client.logger.info("Successfully generated the system configuration schema file");
+        this.application.logger.info("Successfully generated the system configuration schema file");
     }
 }

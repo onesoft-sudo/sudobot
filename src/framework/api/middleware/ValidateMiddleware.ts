@@ -19,7 +19,7 @@
 
 import { NextFunction, Response } from "express";
 import { ZodSchema } from "zod";
-import Client from "../../../core/Client";
+import Application from "../../app/Application";
 import Request from "../http/Request";
 
 export default async function ValidateMiddleware(
@@ -33,7 +33,7 @@ export default async function ValidateMiddleware(
         request.parsedBody = parsedBody;
         next();
     } catch (e) {
-        Client.logger.error(e);
+        Application.current().logger.error(e);
         response.status(400).json(e);
     }
 }

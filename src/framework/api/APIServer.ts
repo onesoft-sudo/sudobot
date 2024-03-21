@@ -55,7 +55,7 @@ export default class APIServer extends Service {
     private readonly logger = new Logger("server", true);
 
     public async onReady() {
-        if (this.client.getService(ConfigurationManager).systemConfig.api.enabled) {
+        if (this.application.getService(ConfigurationManager).systemConfig.api.enabled) {
             await this.boot();
             await this.start();
         }
@@ -65,10 +65,10 @@ export default class APIServer extends Service {
         this.expressApp.use(this.onError);
         this.expressApp.use(cors());
 
-        const configManager = this.client.getService(ConfigurationManager);
+        const configManager = this.application.getService(ConfigurationManager);
 
         if (configManager.systemConfig.trust_proxies !== undefined) {
-            this.client.logger.info(
+            this.application.logger.info(
                 "Set express trust proxy option value to ",
                 configManager.systemConfig.trust_proxies
             );
@@ -91,7 +91,7 @@ export default class APIServer extends Service {
 
     private async createRouter() {
         const router = express.Router();
-        await this.client.dynamicLoader.loadControllers(router);
+        await this.application.dynamicLoader.loadControllers(router);
         return router;
     }
 
@@ -168,7 +168,7 @@ export default class APIServer extends Service {
 
                 const wrappedMiddleware = middleware.map(
                     m => (request: ExpressRequest, response: ExpressResponse, next: NextFunction) =>
-                        m(this.client, request, response, next)
+                        m(this.application, request, response, next)
                 );
 
                 router[data.method.toLowerCase() as "head"].call(
@@ -178,7 +178,7 @@ export default class APIServer extends Service {
                     <Application>this.wrapControllerAction(controller, callbackName)
                 );
 
-                this.client.logger.debug(
+                this.application.logger.debug(
                     `Discovered API Route: ${data.method} ${data.path} -- in ${controllerClass.name}`
                 );
             }
@@ -203,7 +203,7 @@ export default class APIServer extends Service {
                 } else if (typeof controllerResponse === "number") {
                     response.send(controllerResponse.toString());
                 } else {
-                    this.client.logger.warn(
+                    this.application.logger.warn(
                         "Invalid value was returned from the controller. Not sending a response."
                     );
                 }
@@ -225,7 +225,7 @@ export default class APIServer extends Service {
 
     public async start() {
         this.expressServer = this.expressApp.listen(this.port, () =>
-            this.client.logger.info(`API server is listening at port ${this.port}`)
+            this.application.logger.info(`API server is listening at port ${this.port}`)
         );
     }
 }

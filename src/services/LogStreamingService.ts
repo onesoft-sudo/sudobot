@@ -32,7 +32,9 @@ export default class LogStreamingService extends Service {
     public readonly sockets: Array<Socket> = [];
 
     public override boot() {
-        if (!this.client.getService(ConfigurationManager).systemConfig.log_server?.auto_start) {
+        if (
+            !this.application.getService(ConfigurationManager).systemConfig.log_server?.auto_start
+        ) {
             return;
         }
 
@@ -90,11 +92,15 @@ export default class LogStreamingService extends Service {
             }
 
             this.connections++;
-            this.client.logger.info("New client connected to the log server", socket.id);
+            this.application.logger.info("New client connected to the log server", socket.id);
 
             socket.on("disconnect", reason => {
                 this.connections--;
-                this.client.logger.info("Client Disconnected from log server: ", socket.id, reason);
+                this.application.logger.info(
+                    "Client Disconnected from log server: ",
+                    socket.id,
+                    reason
+                );
                 const index = this.sockets.findIndex(s => s.id === socket.id);
 
                 if (index !== -1) {
@@ -103,7 +109,7 @@ export default class LogStreamingService extends Service {
             });
 
             if (!this.isAuthorized(socket)) {
-                this.client.logger.warn(
+                this.application.logger.warn(
                     "Unauthorized client attempted to connect to the log server",
                     socket.id
                 );
@@ -133,6 +139,6 @@ export default class LogStreamingService extends Service {
         port = isNaN(port) ? 3500 : port;
 
         this.io?.listen(port);
-        this.client.logger.info("The log server is running at port", port);
+        this.application.logger.info("The log server is running at port", port);
     }
 }

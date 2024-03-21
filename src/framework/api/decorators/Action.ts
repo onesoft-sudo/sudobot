@@ -18,12 +18,12 @@
  */
 
 import { NextFunction, Request, Response } from "express";
-import Client from "../../../core/Client";
+import Application from "../../app/Application";
 import { AnyFunction } from "../../types/Utils";
 import { RouteMetadata } from "../RouteMetadata";
 
 export type Middleware = (
-    client: Client,
+    application: Application,
     request: Request,
     response: Response,
     next: NextFunction

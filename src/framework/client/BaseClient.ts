@@ -27,8 +27,6 @@ import { ClientEvents } from "../types/ClientEvents";
 abstract class BaseClient<R extends boolean = boolean> extends DiscordJSClient<R> {
     public static instance: BaseClient;
 
-    abstract boot(options?: { commands?: boolean; events?: boolean }): Awaitable<void>;
-
     public addEventListener<K extends keyof ClientEvents>(
         event: K,
         listener: (...args: ClientEvents[K]) => Awaitable<unknown>
