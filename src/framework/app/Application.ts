@@ -17,19 +17,45 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type Client from "../../core/Client";
 import Container from "../container/Container";
 import { KernelInterface } from "../core/KernelInterface";
 
 class Application {
+    public static readonly KEY = "application";
     public readonly container: Container;
+    private client?: Client;
 
     public constructor() {
         this.container = Container.getInstance();
+        this.container.bind(Application, {
+            singleton: true,
+            factory: () => this,
+            key: Application.KEY
+        });
+    }
+
+    public setClient(client: Client) {
+        this.client = client;
+        return this;
+    }
+
+    public getClient() {
+        if (!this.client) {
+            throw new Error("Client is not available");
+        }
+
+        return this.client;
     }
 
     public async run(kernel: KernelInterface) {
         kernel.setApplication(this);
         await kernel.boot();
+
+        if (!this.client) {
+            throw new Error("Kernel did not set the client");
+        }
+
         return this;
     }
 

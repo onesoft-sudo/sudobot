@@ -140,6 +140,8 @@ class DiscordKernel extends Kernel {
 
         this.logger.debug("Booting up the client...");
         const client = this.getClient();
+
+        this.getApplication().setClient(client);
         await client.boot();
 
         if (process.env.SERVER_ONLY_MODE) {
