@@ -1,14 +1,13 @@
 import "reflect-metadata";
 
 import Container from "@/framework/container/Container";
-import { afterEach } from "node:test";
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 describe("container bindings", () => {
     let container: Container;
 
     beforeEach(() => {
-        container = Container.getGlobalContainer();
+        container = Container.getInstance();
     });
 
     afterEach(() => {
@@ -61,7 +60,7 @@ describe("container bindings with dependencies", () => {
     let container: Container;
 
     beforeEach(() => {
-        container = Container.getGlobalContainer();
+        container = Container.getInstance();
     });
 
     afterEach(() => {
@@ -204,7 +203,7 @@ describe("container bindings with factories", () => {
     let container: Container;
 
     beforeEach(() => {
-        container = Container.getGlobalContainer();
+        container = Container.getInstance();
     });
 
     afterEach(() => {
@@ -251,16 +250,16 @@ describe("container bindings with factories", () => {
 
 describe("global containers", () => {
     it("should return the same container instance", () => {
-        const container1 = Container.getGlobalContainer();
-        const container2 = Container.getGlobalContainer();
+        const container1 = Container.getInstance();
+        const container2 = Container.getInstance();
 
         expect(container2).toBe(container1);
     });
 
     it("should destroy the global container instance", () => {
-        const container1 = Container.getGlobalContainer();
+        const container1 = Container.getInstance();
         Container.destroyGlobalContainer();
-        const container2 = Container.getGlobalContainer();
+        const container2 = Container.getInstance();
 
         expect(container2).not.toBe(container1);
     });
@@ -270,7 +269,7 @@ describe("container property injection", () => {
     let container: Container;
 
     beforeEach(() => {
-        container = Container.getGlobalContainer();
+        container = Container.getInstance();
     });
 
     afterEach(() => {
