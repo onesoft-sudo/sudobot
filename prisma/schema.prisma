@@ -48,6 +48,26 @@ model Infraction {
     @@map("infractions")
 }
 
+model PermissionOverwrite {
+    id                        Int      @id @default(autoincrement())
+    name                      String?
+    guildId                   String
+    roles                     String[] @default([])
+    users                     String[] @default([])
+    grantedDiscordPermissions String[] @default([])
+    grantedSystemPermissions  String[] @default([])
+    priority                  Int      @default(0)
+    merge                     Boolean  @default(true)
+    disabled                  Boolean  @default(false)
+    createdAt                 DateTime @default(now())
+    updatedAt                 DateTime @default(now()) @updatedAt
+
+    @@map("permission_overwrites")
+}
+
+// The following models were used in the previous version of the bot and are no longer used.
+// They are kept here for reference and will be removed in the future.
+
 model SpamRecord {
     id        Int      @id @default(autoincrement())
     user_id   String
@@ -103,22 +123,6 @@ model ChannelLock {
     updatedAt   DateTime @default(now()) @updatedAt
 
     @@map("channel_locks")
-}
-
-model PermissionOverwrite {
-    id                        Int      @id @default(autoincrement())
-    name                      String?
-    guildId                   String
-    roles                     String[] @default([])
-    users                     String[] @default([])
-    grantedDiscordPermissions String[] @default([])
-    grantedSystemPermissions  String[] @default([])
-    priority                  Int      @default(0)
-    merge                     Boolean  @default(true)
-    createdAt                 DateTime @default(now())
-    updatedAt                 DateTime @default(now()) @updatedAt
-
-    @@map("permission_overwrites")
 }
 
 model ReactionRole {
@@ -187,6 +191,7 @@ enum PermissionLogicMode {
     AND
 }
 
+// FIXME: Refactor to support v9
 model CommandPermissionOverwrite {
     id                     Int                 @id @default(autoincrement())
     guildId                String
@@ -219,20 +224,6 @@ model Ballot {
     updatedAt DateTime @default(now()) @updatedAt
 
     @@map("ballots")
-}
-
-model PermissionLevel {
-    id                 Int      @id @default(autoincrement())
-    guildId            String
-    level              Int
-    disabled           Boolean  @default(false)
-    grantedPermissions String[] @default([])
-    roles              String[] @default([])
-    users              String[] @default([])
-    createdAt          DateTime @default(now())
-    updatedAt          DateTime @default(now()) @updatedAt
-
-    @@map("permission_levels")
 }
 
 model Review {

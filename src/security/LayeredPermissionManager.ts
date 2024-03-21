@@ -30,6 +30,9 @@ class LayeredPermissionManager extends AbstractPermissionManager {
         const overwrites = await this.application.prisma.permissionOverwrite.findMany({
             orderBy: {
                 guildId: "asc"
+            },
+            where: {
+                disabled: false
             }
         });
 
