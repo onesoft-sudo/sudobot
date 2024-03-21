@@ -67,6 +67,7 @@ class DiscordKernel extends Kernel {
         "@services/LogStreamingService",
         "@services/CommandManager",
         "@services/PermissionManagerService",
+        "@services/InfractionManager",
         "@framework/api/APIServer"
     ];
 

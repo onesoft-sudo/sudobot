@@ -25,18 +25,25 @@ enum InfractionType {
     NOTE
 }
 
+enum InfractionDeliveryStatus {
+    SUCCESS
+    FALLBACK
+    FAILED
+}
+
 model Infraction {
-    id          Int            @id @default(autoincrement())
-    type        InfractionType
-    userId      String
-    guildId     String
-    reason      String?
-    moderatorId String
-    expiresAt   DateTime?
-    metadata    Json?
-    createdAt   DateTime       @default(now())
-    updatedAt   DateTime       @default(now()) @updatedAt
-    queueId     Int?
+    id             Int                      @id @default(autoincrement())
+    type           InfractionType
+    userId         String
+    guildId        String
+    reason         String?
+    moderatorId    String
+    expiresAt      DateTime?
+    metadata       Json?
+    deliveryStatus InfractionDeliveryStatus @default(SUCCESS)
+    createdAt      DateTime                 @default(now())
+    updatedAt      DateTime                 @default(now()) @updatedAt
+    queueId        Int?
 
     @@map("infractions")
 }

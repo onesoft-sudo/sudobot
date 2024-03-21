@@ -17,13 +17,30 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Infraction, InfractionType } from "@prisma/client";
+import { Infraction, InfractionDeliveryStatus, InfractionType } from "@prisma/client";
 import { formatDistanceToNowStrict } from "date-fns";
-import { APIEmbed, Colors, Snowflake, User } from "discord.js";
+import {
+    APIEmbed,
+    CategoryChannel,
+    ChannelType,
+    Colors,
+    EmbedBuilder,
+    PermissionFlagsBits,
+    PrivateThreadChannel,
+    Snowflake,
+    TextBasedChannel,
+    User,
+    bold,
+    italic,
+    userMention
+} from "discord.js";
 import CommandAbortedError from "../framework/commands/CommandAbortedError";
+import { Inject } from "../framework/container/Inject";
 import { Name } from "../framework/services/Name";
 import { Service } from "../framework/services/Service";
 import { emoji } from "../framework/utils/emoji";
+import { GuildConfig } from "../types/GuildConfigSchema";
+import { userInfo } from "../utils/embed";
 import ConfigurationManager from "./ConfigurationManager";
 
 @Name("infractionManager")
@@ -45,6 +62,9 @@ class InfractionManager extends Service {
         [InfractionType.TIMEOUT]: "timed out",
         [InfractionType.TIMEOUT_REMOVE]: "removed timeout"
     };
+
+    @Inject()
+    private readonly configManager!: ConfigurationManager;
 
     public processReason(guildId: Snowflake, reason: string | undefined, abortOnNotFound = true) {
         if (!reason?.length) {
@@ -111,39 +131,233 @@ class InfractionManager extends Service {
             });
         }
 
+        if (this.configManager.config[guild.id]?.infractions?.send_ids_to_user) {
+            embed.fields.push({
+                name: "Infraction ID",
+                value: infraction.id.toString()
+            });
+        }
+
         try {
             await user.send({ embeds: [embed] });
-            return true;
+            return "notified";
         } catch {
-            return false;
+            return (await this.handleFallback(user, infraction, embed)) ? "fallback" : "failed";
         }
     }
 
-    public async createBean({ moderator, user, reason, guildId }: CreateBeanPayload) {
-        const infraction = await this.application.prisma.infraction.create({
-            data: {
-                userId: user.id,
-                guildId,
-                moderatorId: moderator.id,
-                type: InfractionType.BEAN,
-                reason: this.processReason(guildId, reason)
+    // FIXME: There is no implementation for auto expiration of infraction channels
+    private async handleFallback(
+        user: User,
+        infraction: Infraction,
+        embed: EmbedBuilder | APIEmbed
+    ) {
+        if (
+            (
+                [
+                    InfractionType.BAN,
+                    InfractionType.MASSBAN,
+                    InfractionType.KICK,
+                    InfractionType.MASSKICK
+                ] as InfractionType[]
+            ).includes(infraction.type)
+        ) {
+            return false;
+        }
+
+        const config = this.configManager.config[infraction.guildId]?.infractions;
+        let channel: TextBasedChannel | PrivateThreadChannel | null = null;
+
+        try {
+            if (config?.dm_fallback === "create_channel") {
+                channel = await this.createFallbackChannel(user, infraction, config);
+            } else if (config?.dm_fallback === "create_thread") {
+                channel = await this.createFallbackThread(infraction, config);
             }
+        } catch (error) {
+            this.application.logger.error(error);
+            return false;
+        }
+
+        if (!channel) {
+            return false;
+        }
+
+        await channel.send({ embeds: [embed], content: `${userMention(user.id)}` });
+        return true;
+    }
+
+    private async createFallbackChannel(
+        user: User,
+        infraction: Infraction,
+        config: InfractionConfig
+    ) {
+        const guild = this.client.guilds.cache.get(infraction.guildId);
+
+        if (!guild) {
+            return null;
+        }
+
+        return await guild.channels.create({
+            type: ChannelType.GuildText,
+            name: `infraction-${infraction.id}`,
+            topic: `DM Fallback for Infraction #${infraction.id}`,
+            parent: config.dm_fallback_parent_channel,
+            permissionOverwrites: [
+                {
+                    id: guild.id,
+                    deny: [
+                        PermissionFlagsBits.ViewChannel,
+                        PermissionFlagsBits.SendMessages,
+                        PermissionFlagsBits.ReadMessageHistory
+                    ]
+                },
+                {
+                    id: user.id,
+                    allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.ReadMessageHistory]
+                }
+            ],
+            reason: `Creating DM Fallback for Infraction #${infraction.id}`
+        });
+    }
+
+    private async createFallbackThread(infraction: Infraction, config: InfractionConfig) {
+        const guild = this.client.guilds.cache.get(infraction.guildId);
+
+        if (!guild || !config.dm_fallback_parent_channel) {
+            return null;
+        }
+
+        const channel = guild.channels.cache.get(config.dm_fallback_parent_channel);
+
+        if (
+            !channel ||
+            channel instanceof CategoryChannel ||
+            channel.isVoiceBased() ||
+            channel.isThread() ||
+            channel.type === ChannelType.GuildMedia ||
+            !channel.isTextBased()
+        ) {
+            return null;
+        }
+
+        return (await channel.threads.create({
+            name: `infraction-${infraction.id}`,
+            type: ChannelType.PrivateThread as unknown as never,
+            reason: `Creating DM Fallback for Infraction #${infraction.id}`
+        })) as PrivateThreadChannel;
+    }
+
+    public async createBean<E extends boolean>({
+        moderator,
+        user,
+        reason,
+        guildId,
+        generateOverviewEmbed
+    }: CreateBeanPayload<E>): Promise<InfractionCreateResult<E>> {
+        const infraction = await this.application.prisma.$transaction(async prisma => {
+            let infraction = await prisma.infraction.create({
+                data: {
+                    userId: user.id,
+                    guildId,
+                    moderatorId: moderator.id,
+                    type: InfractionType.BEAN,
+                    reason: this.processReason(guildId, reason)
+                }
+            });
+
+            const status = await this.notify(user, infraction);
+
+            if (status !== "notified") {
+                infraction = await prisma.infraction.update({
+                    where: { id: infraction.id },
+                    data: {
+                        deliveryStatus:
+                            status === "failed"
+                                ? InfractionDeliveryStatus.FAILED
+                                : InfractionDeliveryStatus.FALLBACK
+                    }
+                });
+            }
+
+            return infraction;
         });
 
-        await this.notify(user, infraction);
         this.application.getClient().emit("infractionCreate", infraction, user, moderator, false);
-        return { infraction };
+
+        return {
+            infraction,
+            overviewEmbed: (generateOverviewEmbed
+                ? this.createOverviewEmbed(infraction, user, moderator)
+                : undefined) as E extends true ? APIEmbed : undefined
+        };
+    }
+
+    private createOverviewEmbed(infraction: Infraction, user: User, moderator: User) {
+        const fields = [
+            {
+                name: "User",
+                value: userInfo(user)
+            },
+            {
+                name: "Moderator",
+                value: userInfo(moderator)
+            },
+            {
+                name: "Reason",
+                value: infraction.reason ?? italic("No reason provided")
+            }
+        ];
+
+        if (infraction.expiresAt) {
+            fields.push({
+                name: "Duration",
+                value: formatDistanceToNowStrict(infraction.expiresAt)
+            });
+        }
+
+        if (infraction.deliveryStatus !== InfractionDeliveryStatus.SUCCESS) {
+            fields.push({
+                name: "Notification",
+                value:
+                    infraction.deliveryStatus === InfractionDeliveryStatus.FAILED
+                        ? "Failed to deliver a DM to this user."
+                        : "Sent to fallback channel."
+            });
+        }
+
+        return {
+            title: `Infraction #${infraction.id}`,
+            author: {
+                name: user.username,
+                icon_url: user.displayAvatarURL()
+            },
+            description: `${bold(user.username)} has been ${
+                this.actionDoneNames[infraction.type]
+            }.`,
+            fields,
+            timestamp: new Date().toISOString(),
+            color: Colors.Red
+        } satisfies APIEmbed;
     }
 }
 
-type CommonOptions = {
+type InfractionConfig = NonNullable<GuildConfig["infractions"]>;
+
+type CommonOptions<E extends boolean> = {
     moderator: User;
     reason?: string;
     guildId: Snowflake;
+    generateOverviewEmbed?: E;
 };
 
-type CreateBeanPayload = CommonOptions & {
+type CreateBeanPayload<E extends boolean> = CommonOptions<E> & {
     user: User;
+};
+
+type InfractionCreateResult<E extends boolean = false> = {
+    infraction: Infraction;
+    overviewEmbed: E extends true ? APIEmbed : undefined;
 };
 
 export default InfractionManager;

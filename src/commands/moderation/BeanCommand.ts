@@ -23,6 +23,8 @@ import RestStringArgument from "../../framework/arguments/RestStringArgument";
 import UserArgument from "../../framework/arguments/UserArgument";
 import { Command, CommandMessage } from "../../framework/commands/Command";
 import Context from "../../framework/commands/Context";
+import { Inject } from "../../framework/container/Inject";
+import InfractionManager from "../../services/InfractionManager";
 import { ErrorMessages } from "../../utils/ErrorMessages";
 
 type BeanCommandArgs = {
@@ -38,15 +40,26 @@ class BeanCommand extends Command {
     public override readonly detailedDescription =
         "Sends a DM to the user telling them they've been beaned. It doesn't actually do anything.";
     public override readonly permissions = [PermissionFlagsBits.BanMembers];
+    public override readonly defer = true;
+
+    @Inject()
+    protected readonly infractionManager!: InfractionManager;
 
     public override async execute(
         context: Context<CommandMessage>,
         args: BeanCommandArgs
     ): Promise<void> {
-        console.log(args);
         const { user, reason } = args;
-        await user.send(`You've been beaned!${reason ? ` Reason: ${reason}` : ""}`);
-        await context.reply("Beaned!");
+
+        const { overviewEmbed } = await this.infractionManager.createBean({
+            guildId: context.guildId,
+            moderator: context.user,
+            reason,
+            user,
+            generateOverviewEmbed: true
+        });
+
+        await context.reply({ embeds: [overviewEmbed] });
     }
 }
 
