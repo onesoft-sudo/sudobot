@@ -1,3 +1,3 @@
 interface SystemPermissionStrings {
-    ADMINISTRATOR: "Administrator";
+    "system.admin": "system.admin";
 }

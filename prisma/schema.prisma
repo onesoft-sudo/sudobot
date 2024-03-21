@@ -65,6 +65,21 @@ model PermissionOverwrite {
     @@map("permission_overwrites")
 }
 
+model PermissionLevel {
+    id                        Int      @id @default(autoincrement())
+    guildId                   String
+    level                     Int
+    disabled                  Boolean  @default(false)
+    grantedDiscordPermissions String[] @default([])
+    grantedSystemPermissions  String[] @default([])
+    roles                     String[] @default([])
+    users                     String[] @default([])
+    createdAt                 DateTime @default(now())
+    updatedAt                 DateTime @default(now()) @updatedAt
+
+    @@map("permission_levels")
+}
+
 // The following models were used in the previous version of the bot and are no longer used.
 // They are kept here for reference and will be removed in the future.
 

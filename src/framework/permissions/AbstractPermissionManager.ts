@@ -1,12 +1,13 @@
-import { Awaitable, GuildMember, PermissionFlagsBits } from "discord.js";
+import { Awaitable, GuildMember, PermissionFlagsBits, PermissionResolvable } from "discord.js";
 import Application from "../app/Application";
+import FluentSet from "../collections/FluentSet";
 import { SystemPermissionResolvable } from "./AbstractPermissionManagerService";
 import { Permission } from "./Permission";
 
 abstract class AbstractPermissionManager {
     public constructor(protected readonly application: Application) {}
 
-    public async hasPermissions(
+    public async hasDiscordPermissions(
         member: GuildMember,
         permissions: SystemPermissionResolvable[]
     ): Promise<boolean> {
@@ -34,11 +35,56 @@ abstract class AbstractPermissionManager {
         return true;
     }
 
+    public async hasPermissions(
+        member: GuildMember,
+        permissions: SystemPermissionResolvable[]
+    ): Promise<boolean> {
+        const { grantedDiscordPermissions, grantedSystemPermissions } =
+            await this.getMemberPermissions(member);
+
+        for (const permission of permissions) {
+            const instance: PermissionResolvable | Permission | undefined =
+                typeof permission === "function"
+                    ? await permission.getInstance<Permission>()
+                    : typeof permission === "string"
+                    ? Permission.fromString(permission)
+                    : permission;
+
+            if (!instance) {
+                this.application.logger.debug(`Permission ${permission} does not exist`);
+                continue;
+            }
+
+            if (Permission.isDiscordPermission(instance)) {
+                if (
+                    !grantedDiscordPermissions.has(instance) &&
+                    !member.permissions.has(instance, true)
+                ) {
+                    return false;
+                }
+
+                continue;
+            }
+
+            if (!grantedSystemPermissions.has(instance) && !(await instance.has(member))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public canBypassAutoModeration(member: GuildMember): Awaitable<boolean> {
         return this.hasPermissions(member, [PermissionFlagsBits.ManageGuild]);
     }
 
     public boot?(): Awaitable<void>;
+    public abstract getMemberPermissions(member: GuildMember): Awaitable<MemberPermissionData>;
 }
+
+export type MemberPermissionData = {
+    grantedDiscordPermissions: FluentSet<PermissionResolvable>;
+    grantedSystemPermissions: FluentSet<Permission>;
+};
 
 export default AbstractPermissionManager;

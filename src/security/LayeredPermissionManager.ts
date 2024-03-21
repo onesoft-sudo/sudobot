@@ -1,22 +1,20 @@
 import { PermissionOverwrite } from "@prisma/client";
-import {
-    Collection,
-    GuildMember,
-    PermissionFlagsBits,
-    PermissionResolvable,
-    Snowflake
-} from "discord.js";
+import { Collection, GuildMember, PermissionResolvable, Snowflake } from "discord.js";
 import FluentSet from "../framework/collections/FluentSet";
-import AbstractPermissionManager from "../framework/permissions/AbstractPermissionManager";
-import { SystemPermissionResolvable } from "../framework/permissions/AbstractPermissionManagerService";
+import AbstractPermissionManager, {
+    MemberPermissionData
+} from "../framework/permissions/AbstractPermissionManager";
 import { Permission } from "../framework/permissions/Permission";
-import { notIn } from "../framework/utils/utils";
 
 type CachedPermissionOverwrite = Omit<PermissionOverwrite, "grantedSystemPermissions"> & {
     grantedSystemPermissions?: FluentSet<Permission>;
 };
 
-// XXX: Not tested yet
+/**
+ * A permission manager that uses layered permissions overwrites to control access to resources.
+ *
+ * @since 9.0.0
+ */
 class LayeredPermissionManager extends AbstractPermissionManager {
     protected readonly overwrites = new Collection<
         `${Snowflake}:${Snowflake}`,
@@ -41,8 +39,8 @@ class LayeredPermissionManager extends AbstractPermissionManager {
                 this.addOverwrite(overwrite.guildId, roleId, overwrite);
             }
 
-            for (const roleId of overwrite.users) {
-                this.addOverwrite(overwrite.guildId, roleId, overwrite);
+            for (const userId of overwrite.users) {
+                this.addOverwrite(overwrite.guildId, userId, overwrite);
             }
         }
 
@@ -102,15 +100,15 @@ class LayeredPermissionManager extends AbstractPermissionManager {
                 acc.users = [...new Set([...acc.users, ...curr.users])];
 
                 acc.grantedDiscordPermissions = [
-                    ...acc.grantedDiscordPermissions,
-                    ...curr.grantedDiscordPermissions
+                    ...new Set([
+                        ...acc.grantedDiscordPermissions,
+                        ...curr.grantedDiscordPermissions
+                    ])
                 ];
 
                 if (curr.grantedSystemPermissions?.size) {
                     acc.grantedSystemPermissions ??= new FluentSet<Permission>();
-                    acc.grantedSystemPermissions.add(
-                        ...(curr.grantedSystemPermissions?.toArray() ?? [])
-                    );
+                    acc.grantedSystemPermissions.combine(curr.grantedSystemPermissions);
                 }
 
                 return acc;
@@ -120,7 +118,7 @@ class LayeredPermissionManager extends AbstractPermissionManager {
     }
 
     private combinePermissions(...overwrites: Array<CachedPermissionOverwrite | undefined | null>) {
-        const discordPermissions = [];
+        const discordPermissions = new FluentSet<PermissionResolvable>();
         const system = new FluentSet<Permission>();
 
         for (const overwrite of overwrites) {
@@ -128,33 +126,32 @@ class LayeredPermissionManager extends AbstractPermissionManager {
                 continue;
             }
 
-            discordPermissions.push(...overwrite.grantedDiscordPermissions);
+            discordPermissions.add(
+                ...(overwrite.grantedDiscordPermissions as PermissionResolvable[])
+            );
 
             if (overwrite.grantedSystemPermissions?.size) {
                 system.combine(overwrite.grantedSystemPermissions);
             }
         }
-
-        const discord = FluentSet.fromArrays<PermissionResolvable>(
-            discordPermissions as PermissionResolvable[]
-        );
-
         return {
-            discord,
-            system
+            grantedDiscordPermissions: discordPermissions,
+            grantedSystemPermissions: system
         };
     }
 
-    public getMemberPermissions(member: GuildMember) {
+    public getMemberPermissions(member: GuildMember): MemberPermissionData {
         const globalUserOverwrites = this.overwrites.get(`0:${member.user.id}`);
         const globalEveryoneOverwrites = this.overwrites.get("0:0");
         const memberOverwrites = this.overwrites.get(`${member.guild.id}:${member.user.id}`);
-        const { discord: finalDiscordPermissions, system: finalSystemPermissions } =
-            this.combinePermissions(
-                memberOverwrites,
-                globalEveryoneOverwrites,
-                globalUserOverwrites
-            );
+        const {
+            grantedDiscordPermissions: finalDiscordPermissions,
+            grantedSystemPermissions: finalSystemPermissions
+        } = this.combinePermissions(
+            memberOverwrites,
+            globalEveryoneOverwrites,
+            globalUserOverwrites
+        );
 
         for (const role of member.roles.cache.values()) {
             const roleOverwrites = this.overwrites.get(`${member.guild.id}:${role.id}`);
@@ -175,62 +172,9 @@ class LayeredPermissionManager extends AbstractPermissionManager {
         finalDiscordPermissions.add(...member.permissions.toArray());
 
         return {
-            discord: finalDiscordPermissions,
-            system: finalSystemPermissions
+            grantedDiscordPermissions: finalDiscordPermissions,
+            grantedSystemPermissions: finalSystemPermissions
         };
-    }
-
-    public override async hasPermissions(
-        member: GuildMember,
-        permissions: SystemPermissionResolvable[]
-    ): Promise<boolean> {
-        const discordPermissions: PermissionResolvable[] = [];
-        const { discord, system } = this.getMemberPermissions(member);
-
-        console.log(system);
-
-        for (const permission of permissions) {
-            if (permission instanceof Permission || typeof permission === "function") {
-                const instance =
-                    typeof permission === "function"
-                        ? await permission.getInstance<Permission>()
-                        : permission;
-
-                if (!instance.canConvertToDiscordPermissions()) {
-                    if (!system.has(instance) && !(await instance.has(member))) {
-                        return false;
-                    }
-                } else {
-                    discordPermissions.push(...instance.toDiscordPermissions());
-                }
-            } else if (
-                typeof permission === "string" &&
-                notIn(PermissionFlagsBits, permission as keyof typeof PermissionFlagsBits)
-            ) {
-                const instance = Permission.fromString(permission);
-
-                if (!instance) {
-                    this.application.logger.debug(`Permission ${permission} does not exist`);
-                    continue;
-                }
-
-                if (!instance.canConvertToDiscordPermissions()) {
-                    if (!(await instance.has(member))) {
-                        return false;
-                    }
-                } else {
-                    discordPermissions.push(...instance.toDiscordPermissions());
-                }
-            } else {
-                discordPermissions.push(permission as PermissionResolvable);
-            }
-        }
-
-        if (await super.hasPermissions(member, discordPermissions)) {
-            return true;
-        }
-
-        return discord.hasAll(...discordPermissions);
     }
 }
 
