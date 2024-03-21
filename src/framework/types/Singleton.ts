@@ -46,6 +46,6 @@ export class Singleton {
 
 export class ContainerSingleton extends Singleton {
     protected static override createInstance(): Awaitable<ContainerSingleton> {
-        return Container.getGlobalContainer().resolveByClass(this) as ContainerSingleton;
+        return Container.getInstance().resolveByClass(this) as ContainerSingleton;
     }
 }

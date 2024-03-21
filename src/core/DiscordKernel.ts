@@ -69,13 +69,13 @@ class DiscordKernel extends Kernel {
     }
 
     protected bindSelf() {
-        Container.getGlobalContainer().bind(DiscordKernel, {
+        Container.getInstance().bind(DiscordKernel, {
             factory: () => this,
             singleton: true,
             key: "kernel"
         });
 
-        Container.getGlobalContainer().bind(Kernel, {
+        Container.getInstance().bind(Kernel, {
             factory: () => this,
             singleton: true
         });
@@ -104,7 +104,7 @@ class DiscordKernel extends Kernel {
     }
 
     public bindings() {
-        const container = Container.getGlobalContainer();
+        const container = Container.getInstance();
 
         container.bind(Logger, {
             factory: () => this.createLogger(),
@@ -120,7 +120,7 @@ class DiscordKernel extends Kernel {
     }
 
     public getClient() {
-        return Container.getGlobalContainer().resolveByClass(Client);
+        return Container.getInstance().resolveByClass(Client);
     }
 
     public override async boot() {

@@ -43,7 +43,7 @@ class DynamicLoader {
     public constructor(protected readonly client: Client) {}
 
     private getContainer() {
-        return Container.getGlobalContainer();
+        return Container.getInstance();
     }
 
     private async iterateDirectoryRecursively(root: string, rootArray?: string[]) {
@@ -82,7 +82,7 @@ class DynamicLoader {
     async loadController(filepath: string, router: Router) {
         const { default: ControllerClass }: DefaultExport<Class<Controller, [Client]>> =
             await import(filepath);
-        const controller = await Container.getGlobalContainer().resolveByClass(ControllerClass);
+        const controller = await Container.getInstance().resolveByClass(ControllerClass);
         this.client.getService(APIServer).loadController(controller, ControllerClass, router);
         this.client.logger.info("Loaded Controller: ", ControllerClass.name);
     }

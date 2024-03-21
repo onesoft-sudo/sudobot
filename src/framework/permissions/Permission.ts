@@ -68,7 +68,7 @@ abstract class Permission extends Singleton {
     protected validate?(member: GuildMember): Awaitable<boolean>;
 
     protected static override createInstance(): Permission {
-        return Container.getGlobalContainer().resolveByClass(
+        return Container.getInstance().resolveByClass(
             this as unknown as new () => Permission,
             undefined,
             false

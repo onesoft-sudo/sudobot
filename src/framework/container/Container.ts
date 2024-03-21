@@ -59,7 +59,7 @@ class Container {
      *
      * @since 9.0.0
      */
-    public static getGlobalContainer() {
+    public static getInstance() {
         if (!Container.instance) {
             Container.instance = new Container();
         }
