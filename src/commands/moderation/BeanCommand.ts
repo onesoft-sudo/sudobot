@@ -17,13 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { PermissionFlagsBits, User } from "discord.js";
+import { User } from "discord.js";
 import { TakesArgument } from "../../framework/arguments/ArgumentTypes";
 import RestStringArgument from "../../framework/arguments/RestStringArgument";
 import UserArgument from "../../framework/arguments/UserArgument";
 import { Command, CommandMessage } from "../../framework/commands/Command";
 import Context from "../../framework/commands/Context";
 import { Inject } from "../../framework/container/Inject";
+import SystemAdminPermission from "../../permissions/SystemAdminPermission";
 import InfractionManager from "../../services/InfractionManager";
 import { ErrorMessages } from "../../utils/ErrorMessages";
 
@@ -39,7 +40,7 @@ class BeanCommand extends Command {
     public override readonly description = "Beans a user.";
     public override readonly detailedDescription =
         "Sends a DM to the user telling them they've been beaned. It doesn't actually do anything.";
-    public override readonly permissions = [PermissionFlagsBits.BanMembers];
+    public override readonly permissions = [SystemAdminPermission];
     public override readonly defer = true;
 
     @Inject()

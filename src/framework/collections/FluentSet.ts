@@ -51,6 +51,38 @@ class FluentSet<T> extends Set<T> implements SerializableToJSON<T[]> {
 
         return this;
     }
+
+    public static fromValues<T>(...values: Array<T>) {
+        const set = new FluentSet<T>();
+
+        for (const value of values) {
+            set.add(value);
+        }
+
+        return set;
+    }
+
+    public static fromArrays<T>(...values: Array<T[] | undefined | null>) {
+        const set = new FluentSet<T>();
+
+        for (const value of values.flat()) {
+            if (!value) {
+                continue;
+            }
+
+            set.add(value);
+        }
+
+        return set;
+    }
+
+    public static fromFluentSets<T>(...values: Array<FluentSet<T> | undefined | null>) {
+        return new FluentSet<T>().combine(
+            ...values.filter(
+                (value): value is FluentSet<T> => value !== null && value !== undefined
+            )
+        );
+    }
 }
 
 export default FluentSet;

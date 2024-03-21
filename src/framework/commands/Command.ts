@@ -151,16 +151,6 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
     public readonly permissions?: CommandPermissionLike[];
 
     /**
-     * The cached discord permissions of this command. For internal use only.
-     */
-    private cachedDiscordPermissions?: PermissionResolvable[];
-
-    /**
-     * The cached custom permissions of this command. For internal use only.
-     */
-    private cachedPermissions?: Permission[];
-
-    /**
      * The persistent discord permissions for the member running this command.
      *
      * These permissions are not affected by the permission manager.
@@ -455,40 +445,6 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
         }
 
         return true;
-    }
-
-    /**
-     * Computes the permissions of the command.
-     *
-     * @returns The computed permissions.
-     */
-    private async computePermissions() {
-        if (!this.permissions) {
-            return;
-        }
-
-        this.application.logger.debug("Computing permissions for command: ", this.name);
-
-        const discordPermissions = new Set<PermissionResolvable>();
-        this.cachedPermissions = [];
-
-        for (const permission of this.permissions) {
-            if (typeof permission === "function") {
-                const instance = await permission.getInstance<Permission>();
-
-                if (instance.canConvertToDiscordPermissions()) {
-                    for (const resolved of instance.toDiscordPermissions()) {
-                        discordPermissions.add(resolved);
-                    }
-
-                    continue;
-                }
-
-                this.cachedPermissions.push(instance);
-            }
-        }
-
-        this.cachedDiscordPermissions = Array.from(discordPermissions);
     }
 
     /**

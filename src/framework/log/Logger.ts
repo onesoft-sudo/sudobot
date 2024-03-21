@@ -121,11 +121,20 @@ export class Logger {
         this.log(LogLevel.Debug, ...args);
     }
 
-    public perf(...args: unknown[]) {
+    public perfStart(id: string, ...args: unknown[]) {
+        this.perf("time", id, ...args);
+    }
+
+    public perfEnd(id: string, ...args: unknown[]) {
+        this.perf("timeEnd", id, ...args);
+    }
+
+    private perf(method: "time" | "timeEnd", id: string, ...args: unknown[]) {
         if (!developmentMode()) {
             return;
         }
 
+        console[method](id);
         this.log(LogLevel.Performance, ...args);
     }
 
