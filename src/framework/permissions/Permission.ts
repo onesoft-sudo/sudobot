@@ -17,14 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-    Awaitable,
-    GuildMember,
-    PermissionFlagsBits,
-    PermissionResolvable,
-    PermissionsString
-} from "discord.js";
+import { Awaitable, GuildMember, PermissionFlagsBits, PermissionResolvable } from "discord.js";
 import Application from "../app/Application";
+import FluentSet from "../collections/FluentSet";
 import Container from "../container/Container";
 import { Singleton } from "../types/Singleton";
 import { SystemPermissionResolvable } from "./AbstractPermissionManagerService";
@@ -36,11 +31,6 @@ abstract class Permission extends Singleton {
     protected abstract readonly name: string;
 
     /**
-     * The equivalent Discord permissions.
-     */
-    protected readonly equivalentDiscordPermissions?: PermissionsString[];
-
-    /**
      * The stringified representation of the object.
      *
      * @returns The name of the permission.
@@ -49,20 +39,8 @@ abstract class Permission extends Singleton {
         return this.name;
     }
 
-    public toDiscordPermissions(): PermissionsString[] {
-        return this.equivalentDiscordPermissions ?? [];
-    }
-
     public async has(member: GuildMember) {
-        if (this.equivalentDiscordPermissions !== undefined) {
-            return member.permissions.has(this.equivalentDiscordPermissions, true);
-        }
-
         return !!(await this.validate?.(member));
-    }
-
-    public canConvertToDiscordPermissions(): boolean {
-        return this.equivalentDiscordPermissions !== undefined;
     }
 
     protected validate?(member: GuildMember): Awaitable<boolean>;
@@ -105,6 +83,30 @@ abstract class Permission extends Singleton {
             typeof permission === "bigint" ||
             typeof permission === "number"
         );
+    }
+
+    public static async of(member: GuildMember, exclude?: Permission[]) {
+        const permissions = new FluentSet<Permission>();
+        const allPermissions = Application.current()
+            .getServiceByName("permissionManager")
+            .getAllPermissions()
+            .values();
+
+        for (const permission of allPermissions) {
+            if (exclude?.includes(permission)) {
+                continue;
+            }
+
+            if (await permission.has(member)) {
+                permissions.add(permission);
+            }
+        }
+
+        return permissions;
+    }
+
+    public getName() {
+        return this.name as keyof SystemPermissionStrings;
     }
 }
 

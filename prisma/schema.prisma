@@ -80,6 +80,29 @@ model PermissionLevel {
     @@map("permission_levels")
 }
 
+enum CommandPermissionOverwriteAction {
+    ALLOW
+    DENY
+}
+
+model CommandPermissionOverwrite {
+    id                         Int                              @id @default(autoincrement())
+    guildId                    String
+    commands                   String[]
+    requiredDiscordPermissions Json                             @default("null")
+    requiredSystemPermissions  Json                             @default("null")
+    requiredRoles              Json                             @default("null")
+    requiredUsers              Json                             @default("null")
+    requiredChannels           Json                             @default("null")
+    requiredLevel              Int?
+    disabled                   Boolean                          @default(false)
+    onMatch                    CommandPermissionOverwriteAction @default(ALLOW)
+    createdAt                  DateTime                         @default(now())
+    updatedAt                  DateTime                         @default(now()) @updatedAt
+
+    @@map("command_permission_overwrites")
+}
+
 // The following models were used in the previous version of the bot and are no longer used.
 // They are kept here for reference and will be removed in the future.
 
@@ -204,24 +227,6 @@ model AfkEntry {
 enum PermissionLogicMode {
     OR
     AND
-}
-
-// FIXME: Refactor to support v9
-model CommandPermissionOverwrite {
-    id                     Int                 @id @default(autoincrement())
-    guildId                String
-    commands               String[]
-    requiredPermissions    String[]            @default([])
-    requiredPermissionMode PermissionLogicMode @default(AND)
-    mode                   PermissionLogicMode @default(AND)
-    requiredRoles          String[]            @default([])
-    requiredUsers          String[]            @default([])
-    requiredChannels       String[]            @default([])
-    requiredLevel          Int?
-    createdAt              DateTime            @default(now())
-    updatedAt              DateTime            @default(now()) @updatedAt
-
-    @@map("command_permission_overwrites")
 }
 
 model Ballot {

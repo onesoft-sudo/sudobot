@@ -135,7 +135,7 @@ export class Logger {
         }
 
         console[method](id);
-        this.log(LogLevel.Performance, ...args);
+        this.log(LogLevel.Performance, chalk.magenta(id), ...args);
     }
 
     public info(...args: unknown[]) {

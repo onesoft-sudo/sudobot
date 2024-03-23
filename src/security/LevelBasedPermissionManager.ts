@@ -4,12 +4,13 @@ import FluentSet from "../framework/collections/FluentSet";
 import AbstractPermissionManager, {
     MemberPermissionData
 } from "../framework/permissions/AbstractPermissionManager";
+import { SystemPermissionLikeString } from "../framework/permissions/AbstractPermissionManagerService";
 import { Permission } from "../framework/permissions/Permission";
 
 type MinimalPermissionLevelInfo = {
     level: number;
     grantedDiscordPermissions: FluentSet<PermissionResolvable>;
-    grantedSystemPermissions: FluentSet<Permission>;
+    grantedSystemPermissions: FluentSet<SystemPermissionLikeString>;
 };
 
 /**
@@ -50,7 +51,7 @@ class LevelBasedPermissionManager extends AbstractPermissionManager {
         ...levels: Array<MinimalPermissionLevelInfo | undefined | null>
     ): MinimalPermissionLevelInfo {
         const grantedDiscordPermissions = new FluentSet<PermissionResolvable>();
-        const grantedSystemPermissions = new FluentSet<Permission>();
+        const grantedSystemPermissions = new FluentSet<SystemPermissionLikeString>();
         let level = 0;
 
         for (const newLevel of levels) {
@@ -71,7 +72,7 @@ class LevelBasedPermissionManager extends AbstractPermissionManager {
     }
 
     private makeCache(level: PermissionLevel) {
-        const grantedSystemPermissions = new FluentSet<Permission>();
+        const grantedSystemPermissions = new FluentSet<SystemPermissionLikeString>();
         const grantedDiscordPermissions = new FluentSet<PermissionResolvable>(
             level.grantedDiscordPermissions as PermissionResolvable[]
         );
@@ -84,11 +85,7 @@ class LevelBasedPermissionManager extends AbstractPermissionManager {
                 continue;
             }
 
-            if (instance.canConvertToDiscordPermissions()) {
-                grantedDiscordPermissions.add(...instance.toDiscordPermissions());
-            } else {
-                grantedSystemPermissions.add(instance);
-            }
+            grantedSystemPermissions.add(instance.getName());
         }
 
         const info = {
@@ -105,6 +102,7 @@ class LevelBasedPermissionManager extends AbstractPermissionManager {
             level: number;
         }
     > {
+        const permissionManager = this.application.getServiceByName("permissionManager");
         const globalUserLevel = this.levels.get(`0:${member.user.id}`);
         const globalEveryoneLevel = this.levels.get("0:0");
         const memberLevel = this.levels.get(`${member.guild.id}:${member.user.id}`);
@@ -122,7 +120,27 @@ class LevelBasedPermissionManager extends AbstractPermissionManager {
 
         const merged = this.mergeLevels(...levelsToMerge);
         merged.grantedDiscordPermissions.add(...member.permissions.toArray());
-        return merged;
+
+        const allPermissions = permissionManager.getAllPermissions().values();
+
+        for (const permission of allPermissions) {
+            const name = permission.getName();
+
+            if ((await permission.has(member)) && !merged.grantedSystemPermissions.has(name)) {
+                merged.grantedSystemPermissions.add(name);
+            }
+        }
+
+        return {
+            ...merged,
+            level: (await permissionManager.isSystemAdmin(member, merged))
+                ? Number.POSITIVE_INFINITY
+                : merged.level
+        };
+    }
+
+    public getMemberLevel(member: GuildMember): Promise<number> {
+        return this.getMemberPermissions(member).then(permissions => permissions.level);
     }
 }
 

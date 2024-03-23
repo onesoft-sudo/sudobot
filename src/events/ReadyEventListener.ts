@@ -23,6 +23,7 @@ import { Inject } from "../framework/container/Inject";
 import EventListener from "../framework/events/EventListener";
 import { Logger } from "../framework/log/Logger";
 import { Events } from "../framework/types/ClientEvents";
+import CommandManager from "../services/CommandManager";
 import ConfigurationManager from "../services/ConfigurationManager";
 import LogStreamingService from "../services/LogStreamingService";
 import StartupManager from "../services/StartupManager";
@@ -32,6 +33,9 @@ class ReadyEventListener extends EventListener<Events.Ready, Client> {
 
     @Inject()
     public readonly configManager!: ConfigurationManager;
+
+    @Inject()
+    public readonly commandManager!: CommandManager;
 
     @Inject()
     public readonly startupManager!: StartupManager;
@@ -50,7 +54,8 @@ class ReadyEventListener extends EventListener<Events.Ready, Client> {
 
         this.configManager.onReady();
         this.startupManager.onReady();
-        await this.server.onReady();
+        this.commandManager.onReady();
+        this.server.onReady();
 
         // FIXME
         // this.client.queueManager.onReady().catch(logError);

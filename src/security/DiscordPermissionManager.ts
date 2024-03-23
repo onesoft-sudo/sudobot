@@ -1,4 +1,4 @@
-import { Awaitable, GuildMember, PermissionResolvable } from "discord.js";
+import { GuildMember, PermissionResolvable } from "discord.js";
 import FluentSet from "../framework/collections/FluentSet";
 import AbstractPermissionManager, {
     MemberPermissionData
@@ -12,16 +12,19 @@ import { Permission } from "../framework/permissions/Permission";
  * @since 9.0.0
  */
 class DiscordPermissionManager extends AbstractPermissionManager {
-    public override getMemberPermissions(member: GuildMember): Awaitable<MemberPermissionData> {
+    public override async getMemberPermissions(member: GuildMember): Promise<MemberPermissionData> {
         return {
             grantedDiscordPermissions: new FluentSet(member.permissions.toArray()),
-            grantedSystemPermissions: new FluentSet()
+            grantedSystemPermissions: (await Permission.of(member)).map(permission =>
+                permission.getName()
+            )
         };
     }
 
     public override async hasPermissions(
         member: GuildMember,
-        permissions: SystemPermissionResolvable[]
+        permissions: SystemPermissionResolvable[],
+        _alreadyComputedPermissions?: MemberPermissionData
     ): Promise<boolean> {
         const discordPermissions: PermissionResolvable[] = [];
 

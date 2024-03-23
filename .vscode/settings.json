@@ -19,7 +19,16 @@
         "tests/**": true,
         "node_modules/**": true
     },
-    "cSpell.words": ["botinfo", "SOFTBAN", "softbanned"],
+    "cSpell.words": [
+        "automoderation",
+        "bitfield",
+        "botinfo",
+        "openai",
+        "SOFTBAN",
+        "softbanned",
+        "sudobot",
+        "tsbuildinfo"
+    ],
     "material-icon-theme.folders.associations": {
         "automod": "Secure",
         "framework": "Server",

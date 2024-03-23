@@ -1,7 +1,10 @@
 import { Awaitable, GuildMember, PermissionFlagsBits, PermissionResolvable } from "discord.js";
 import Application from "../app/Application";
 import FluentSet from "../collections/FluentSet";
-import { SystemPermissionResolvable } from "./AbstractPermissionManagerService";
+import {
+    SystemPermissionLikeString,
+    SystemPermissionResolvable
+} from "./AbstractPermissionManagerService";
 import { Permission } from "./Permission";
 
 abstract class AbstractPermissionManager {
@@ -37,10 +40,11 @@ abstract class AbstractPermissionManager {
 
     public async hasPermissions(
         member: GuildMember,
-        permissions: SystemPermissionResolvable[]
+        permissions: SystemPermissionResolvable[],
+        alreadyComputedPermissions?: MemberPermissionData
     ): Promise<boolean> {
         const { grantedDiscordPermissions, grantedSystemPermissions } =
-            await this.getMemberPermissions(member);
+            alreadyComputedPermissions ?? (await this.getMemberPermissions(member));
 
         for (const permission of permissions) {
             const instance: PermissionResolvable | Permission | undefined =
@@ -66,7 +70,10 @@ abstract class AbstractPermissionManager {
                 continue;
             }
 
-            if (!grantedSystemPermissions.has(instance) && !(await instance.has(member))) {
+            if (
+                !grantedSystemPermissions.has(instance.getName()) &&
+                !(await instance.has(member))
+            ) {
                 return false;
             }
         }
@@ -84,7 +91,7 @@ abstract class AbstractPermissionManager {
 
 export type MemberPermissionData = {
     grantedDiscordPermissions: FluentSet<PermissionResolvable>;
-    grantedSystemPermissions: FluentSet<Permission>;
+    grantedSystemPermissions: FluentSet<SystemPermissionLikeString>;
 };
 
 export default AbstractPermissionManager;

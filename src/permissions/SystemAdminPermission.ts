@@ -23,6 +23,14 @@ import { Logger } from "../framework/log/Logger";
 import { Permission } from "../framework/permissions/Permission";
 import type ConfigurationManager from "../services/ConfigurationManager";
 
+/**
+ * Permission that checks if a user is a system admin.
+ * This is the only permission that might be invoked
+ * twice or more in a single command execution.
+ *
+ * Therefore, it is important to not put any heavy
+ * operations in this permission.
+ */
 class SystemAdminPermission extends Permission {
     protected override readonly name = "system.admin";
 

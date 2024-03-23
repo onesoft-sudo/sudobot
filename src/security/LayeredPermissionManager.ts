@@ -4,10 +4,11 @@ import FluentSet from "../framework/collections/FluentSet";
 import AbstractPermissionManager, {
     MemberPermissionData
 } from "../framework/permissions/AbstractPermissionManager";
+import { SystemPermissionLikeString } from "../framework/permissions/AbstractPermissionManagerService";
 import { Permission } from "../framework/permissions/Permission";
 
 type CachedPermissionOverwrite = Omit<PermissionOverwrite, "grantedSystemPermissions"> & {
-    grantedSystemPermissions?: FluentSet<Permission>;
+    grantedSystemPermissions?: FluentSet<SystemPermissionLikeString>;
 };
 
 /**
@@ -62,8 +63,8 @@ class LayeredPermissionManager extends AbstractPermissionManager {
     }
 
     private makeCache(overwrite: PermissionOverwrite): CachedPermissionOverwrite {
-        const permissions = new FluentSet<Permission>();
-        const grantedDiscordPermissions = new FluentSet(...overwrite.grantedDiscordPermissions);
+        const permissions = new FluentSet<SystemPermissionLikeString>();
+        const grantedDiscordPermissions = new FluentSet(overwrite.grantedDiscordPermissions);
 
         for (const permission of overwrite.grantedSystemPermissions) {
             const instance = Permission.fromString(permission);
@@ -72,11 +73,7 @@ class LayeredPermissionManager extends AbstractPermissionManager {
                 continue;
             }
 
-            if (instance.canConvertToDiscordPermissions()) {
-                grantedDiscordPermissions.add(...instance.toDiscordPermissions());
-            } else {
-                permissions.add(instance);
-            }
+            permissions.add(instance.getName());
         }
 
         return {
@@ -107,7 +104,7 @@ class LayeredPermissionManager extends AbstractPermissionManager {
                 ];
 
                 if (curr.grantedSystemPermissions?.size) {
-                    acc.grantedSystemPermissions ??= new FluentSet<Permission>();
+                    acc.grantedSystemPermissions ??= new FluentSet<SystemPermissionLikeString>();
                     acc.grantedSystemPermissions.combine(curr.grantedSystemPermissions);
                 }
 
@@ -119,7 +116,7 @@ class LayeredPermissionManager extends AbstractPermissionManager {
 
     private combinePermissions(...overwrites: Array<CachedPermissionOverwrite | undefined | null>) {
         const discordPermissions = new FluentSet<PermissionResolvable>();
-        const system = new FluentSet<Permission>();
+        const system = new FluentSet<SystemPermissionLikeString>();
 
         for (const overwrite of overwrites) {
             if (!overwrite) {
@@ -140,7 +137,7 @@ class LayeredPermissionManager extends AbstractPermissionManager {
         };
     }
 
-    public getMemberPermissions(member: GuildMember): MemberPermissionData {
+    public async getMemberPermissions(member: GuildMember): Promise<MemberPermissionData> {
         const globalUserOverwrites = this.overwrites.get(`0:${member.user.id}`);
         const globalEveryoneOverwrites = this.overwrites.get("0:0");
         const memberOverwrites = this.overwrites.get(`${member.guild.id}:${member.user.id}`);
@@ -170,6 +167,19 @@ class LayeredPermissionManager extends AbstractPermissionManager {
         }
 
         finalDiscordPermissions.add(...member.permissions.toArray());
+
+        const allPermissions = this.application
+            .getServiceByName("permissionManager")
+            .getAllPermissions()
+            .values();
+
+        for (const permission of allPermissions) {
+            const name = permission.getName();
+
+            if ((await permission.has(member)) && !finalSystemPermissions.has(name)) {
+                finalSystemPermissions.add(name);
+            }
+        }
 
         return {
             grantedDiscordPermissions: finalDiscordPermissions,

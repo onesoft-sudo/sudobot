@@ -29,11 +29,13 @@ import {
     SlashCommandBuilder,
     User
 } from "discord.js";
+import PermissionManagerService from "../../services/PermissionManagerService";
 import Application from "../app/Application";
 import Argument from "../arguments/Argument";
 import ArgumentParser from "../arguments/ArgumentParser";
 import { Guard } from "../guards/Guard";
 import { GuardLike } from "../guards/GuardLike";
+import { MemberPermissionData } from "../permissions/AbstractPermissionManager";
 import { SystemOnlyPermissionResolvable } from "../permissions/AbstractPermissionManagerService";
 import { Permission, PermissionLike } from "../permissions/Permission";
 import { PermissionDeniedError } from "../permissions/PermissionDeniedError";
@@ -165,11 +167,6 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
     public readonly persistentCustomPermissions?: SystemOnlyPermissionResolvable[];
 
     /**
-     * The cached persistent discord permissions of this command. For internal use only.
-     */
-    private cachedPersistentDiscordPermissions?: PermissionResolvable[];
-
-    /**
      * The cached persistent custom permissions of this command. For internal use only.
      */
     private cachedPersistentCustomPermissions?: Permission[];
@@ -178,6 +175,11 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      * The required permissions for the bot system to run this command.
      */
     public readonly systemPermissions?: PermissionResolvable[];
+
+    /**
+     * Whether the command can only be run by system admins.
+     */
+    public readonly systemAdminOnly: boolean = false;
 
     /**
      * The usage(s) of the command.
@@ -195,12 +197,18 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
     private readonly argumentParser: ArgumentParser;
 
     /**
+     * The permission manager service.
+     */
+    private readonly permissionManager: PermissionManagerService;
+
+    /**
      * Creates a new instance of the Command class.
      *
      * @param application - The client instance.
      */
     public constructor(protected readonly application: Application) {
         this.argumentParser = new ArgumentParser(application.getClient());
+        this.permissionManager = application.getServiceByName("permissionManager");
     }
 
     /**
@@ -303,7 +311,11 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      * @param args - The command arguments.
      */
     public async run(context: Context) {
-        if (!(await this.checkPreconditions(context))) {
+        const state: CommandExecutionState<false> = {
+            memberPermissions: undefined
+        };
+
+        if (!(await this.checkPreconditions(context, state))) {
             return;
         }
 
@@ -335,9 +347,41 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      * @param context - The command context.
      * @returns {Promise<boolean>} True if the preconditions are met, false otherwise.
      */
-    protected async checkPreconditions(context: Context): Promise<boolean> {
+    protected async checkPreconditions(
+        context: Context,
+        state: CommandExecutionState<false>
+    ): Promise<boolean> {
+        if (!context.member) {
+            return false;
+        }
+
+        state.memberPermissions = await this.permissionManager.getMemberPermissions(context.member);
+
+        const isSystemAdmin = await this.permissionManager.isSystemAdmin(
+            context.member,
+            state.memberPermissions
+        );
+
+        this.application.logger.debug("Member permissions: ", state.memberPermissions);
+
+        if (isSystemAdmin) {
+            return true;
+        }
+
+        if (!isSystemAdmin && this.systemAdminOnly) {
+            throw new PermissionDeniedError(
+                "This command can only be used by system administrators."
+            );
+        }
+
         try {
-            if (!(await this.checkPermissions(context)) && (await this.checkGuards(context))) {
+            if (
+                !(await this.checkPermissions(
+                    context,
+                    state as unknown as CommandExecutionState<true>
+                )) &&
+                (await this.checkGuards(context))
+            ) {
                 throw new PermissionDeniedError("You don't have permission to run this command.");
             }
         } catch (error) {
@@ -358,8 +402,6 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
         }
 
         this.application.logger.debug("Computing persistent permissions for command: ", this.name);
-
-        const discordPermissions = new Set<PermissionResolvable>();
         this.cachedPersistentCustomPermissions = [];
 
         for (const permission of this.persistentCustomPermissions) {
@@ -377,16 +419,8 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
                 continue;
             }
 
-            if (instance.canConvertToDiscordPermissions()) {
-                for (const resolved of instance.toDiscordPermissions()) {
-                    discordPermissions.add(resolved);
-                }
-            } else {
-                this.cachedPersistentCustomPermissions.push(instance);
-            }
+            this.cachedPersistentCustomPermissions.push(instance);
         }
-
-        this.cachedPersistentDiscordPermissions = Array.from(discordPermissions);
     }
 
     /**
@@ -395,8 +429,8 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      * @param context - The command context.
      * @returns True if the permissions are met, false otherwise.
      */
-    protected async checkPermissions(context: Context) {
-        const permissionManager = this.application.getServiceByName("permissionManager");
+    protected async checkPermissions(context: Context, state: CommandExecutionState<true>) {
+        const permissionManager = this.permissionManager;
 
         if (this.systemPermissions) {
             const me = context.guild.members.me ?? (await context.guild.members.fetchMe());
@@ -413,33 +447,45 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
         }
 
         if (this.persistentCustomPermissions) {
-            if (
-                !this.cachedPersistentCustomPermissions ||
-                !this.cachedPersistentDiscordPermissions
-            ) {
+            if (!this.cachedPersistentCustomPermissions) {
                 this.computePersistentPermissions();
             }
+        }
 
-            if (this.cachedPersistentDiscordPermissions) {
-                if (
-                    !context.member.permissions.has(this.cachedPersistentDiscordPermissions, true)
-                ) {
-                    return false;
-                }
+        if (this.persistentDiscordPermissions) {
+            if (!context.member.permissions.has(this.persistentDiscordPermissions, true)) {
+                return false;
             }
+        }
 
-            if (this.cachedPersistentCustomPermissions) {
-                for (const permission of this.cachedPersistentCustomPermissions) {
-                    if (!(await permission.has(context.member))) {
-                        return false;
-                    }
+        if (this.cachedPersistentCustomPermissions) {
+            for (const permission of this.cachedPersistentCustomPermissions) {
+                if (!(await permission.has(context.member))) {
+                    return false;
                 }
             }
         }
 
+        const result = await this.application
+            .getServiceByName("commandManager")
+            .checkCommandPermissionOverwrites(context, this.name, state.memberPermissions);
+
+        console.log(result);
+
+        if (!result?.allow) {
+            throw new PermissionDeniedError(
+                "You don't have enough permissions to run this command."
+            );
+        }
+
         if (
+            !result.overwrite &&
             this.permissions &&
-            !(await permissionManager.hasPermissions(context.member, this.permissions))
+            !(await permissionManager.hasPermissions(
+                context.member,
+                this.permissions,
+                state.memberPermissions
+            ))
         ) {
             return false;
         }
@@ -509,5 +555,8 @@ export type AuthorizeOptions<K extends Exclude<keyof PolicyActions, number>> = {
 
 export type Arguments = Record<string | number, unknown>;
 export type ArgumentPayload = Array<Argument<unknown> | null> | [Arguments];
+export type CommandExecutionState<L extends boolean = false> = {
+    memberPermissions: MemberPermissionData | (L extends false ? undefined : never);
+};
 
 export { Command };

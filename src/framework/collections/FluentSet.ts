@@ -83,6 +83,17 @@ class FluentSet<T> extends Set<T> implements SerializableToJSON<T[]> {
             )
         );
     }
+
+    public map<U>(callback: (value: T, index: number, set: FluentSet<T>) => U) {
+        const set = new FluentSet<U>();
+        let index = 0;
+
+        for (const value of this) {
+            set.add(callback(value, index++, this));
+        }
+
+        return set;
+    }
 }
 
 export default FluentSet;
