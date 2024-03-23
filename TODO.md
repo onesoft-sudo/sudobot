@@ -13,4 +13,5 @@
 -   Reply and thread based AI chat conversation support. Storing messages in database, disk (JSON) or caching the last 100 messages in memory to send them to the AI model. Reply context will be limited to the reply and thread context will be limited to thread.
 -   Log infraction ~~creation~~/edition/deletion when using `-infraction` commands
 -   `-modmsg` command
--   Better cache management (especially for permission managers)
+-   Better cache management (especially for permission managers and command overwrites)
+-   Interaction Support
