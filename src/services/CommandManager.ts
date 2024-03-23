@@ -110,6 +110,86 @@ class CommandManager extends Service {
         );
     }
 
+    public async addCommand(
+        command: Command,
+        loadMetadata = true,
+        groups: Record<string, string> | null = null,
+        defaultGroup = "default"
+    ) {
+        const previousCommand = this.commands.get(command.name);
+        let aliasGroupSet = false;
+
+        if (loadMetadata && previousCommand) {
+            await this.application.dynamicLoader.unloadEventsFromMetadata(previousCommand);
+        }
+
+        this.commands.set(command.name, command);
+
+        for (const alias of command.aliases) {
+            this.commands.set(alias, command);
+
+            if (groups?.[alias] && !aliasGroupSet) {
+                command.group = groups?.[alias];
+                aliasGroupSet = true;
+            }
+        }
+
+        if (!aliasGroupSet || groups?.[command.name]) {
+            command.group = groups?.[command.name] ?? defaultGroup;
+        }
+
+        if (loadMetadata) {
+            await this.application.dynamicLoader.loadEventsFromMetadata(command);
+        }
+    }
+
+    public async runCommandFromMessage(message: Message<true>) {
+        const config = this.configManager.config[message.guildId!];
+
+        if (!config) {
+            return;
+        }
+
+        const prefixes = [
+            config.prefix,
+            `<@${this.application.getClient().user!.id}>`,
+            `<@!${this.application.getClient().user!.id}>`
+        ];
+        let foundPrefix;
+
+        prefixCheck: for (const prefix of prefixes) {
+            if (message.content.startsWith(prefix)) {
+                foundPrefix = prefix;
+                break prefixCheck;
+            }
+        }
+
+        if (!foundPrefix) {
+            return;
+        }
+
+        const content = message.content.slice(foundPrefix.length).trim();
+        const argv = content.split(/ +/);
+        const [commandName, ...args] = argv;
+        const command = this.commands.get(commandName);
+
+        if (!command || !command.supportsLegacy()) {
+            return false;
+        }
+
+        const context = new LegacyContext(commandName, content, message, args, argv);
+
+        try {
+            await command.run(context);
+        } catch (error) {
+            if (error instanceof CommandAbortedError) {
+                await error.sendMessage(context);
+                return;
+            }
+
+            this.application.logger.error(error);
+        }
+    }
     protected requirementCheckChannels(
         _action: CommandPermissionOverwriteAction,
         context: Context,
@@ -491,87 +571,6 @@ class CommandManager extends Service {
         }
 
         return base;
-    }
-
-    public async addCommand(
-        command: Command,
-        loadMetadata = true,
-        groups: Record<string, string> | null = null,
-        defaultGroup = "default"
-    ) {
-        const previousCommand = this.commands.get(command.name);
-        let aliasGroupSet = false;
-
-        if (loadMetadata && previousCommand) {
-            await this.application.dynamicLoader.unloadEventsFromMetadata(previousCommand);
-        }
-
-        this.commands.set(command.name, command);
-
-        for (const alias of command.aliases) {
-            this.commands.set(alias, command);
-
-            if (groups?.[alias] && !aliasGroupSet) {
-                command.group = groups?.[alias];
-                aliasGroupSet = true;
-            }
-        }
-
-        if (!aliasGroupSet || groups?.[command.name]) {
-            command.group = groups?.[command.name] ?? defaultGroup;
-        }
-
-        if (loadMetadata) {
-            await this.application.dynamicLoader.loadEventsFromMetadata(command);
-        }
-    }
-
-    public async runCommandFromMessage(message: Message<true>) {
-        const config = this.configManager.config[message.guildId!];
-
-        if (!config) {
-            return;
-        }
-
-        const prefixes = [
-            config.prefix,
-            `<@${this.application.getClient().user!.id}>`,
-            `<@!${this.application.getClient().user!.id}>`
-        ];
-        let foundPrefix;
-
-        prefixCheck: for (const prefix of prefixes) {
-            if (message.content.startsWith(prefix)) {
-                foundPrefix = prefix;
-                break prefixCheck;
-            }
-        }
-
-        if (!foundPrefix) {
-            return;
-        }
-
-        const content = message.content.slice(foundPrefix.length).trim();
-        const argv = content.split(/ +/);
-        const [commandName, ...args] = argv;
-        const command = this.commands.get(commandName);
-
-        if (!command || !command.supportsLegacy()) {
-            return false;
-        }
-
-        const context = new LegacyContext(commandName, content, message, args, argv);
-
-        try {
-            await command.run(context);
-        } catch (error) {
-            if (error instanceof CommandAbortedError) {
-                await error.sendMessage(context);
-                return;
-            }
-
-            this.application.logger.error(error);
-        }
     }
 
     public async checkCommandPermissionOverwrites(
