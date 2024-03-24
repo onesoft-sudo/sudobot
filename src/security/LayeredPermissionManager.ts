@@ -52,12 +52,12 @@ class LayeredPermissionManager extends AbstractPermissionManager {
     private addOverwrite(guildId: Snowflake, id: Snowflake, permission: PermissionOverwrite) {
         const existing = this.overwrites.get(`${guildId}:${id}`);
         const cachedPermission = this.makeCache(permission);
-        const overwrite = this.mergeOverwrites(
-            cachedPermission,
+        const overwrite =
             existing && existing.merge && permission.merge && existing.id !== permission.id
-                ? existing
-                : null
-        );
+                ? this.mergeOverwrites(cachedPermission, existing)
+                : existing && cachedPermission.priority > existing.priority
+                ? cachedPermission
+                : existing ?? cachedPermission;
 
         this.overwrites.set(`${guildId}:${id}`, overwrite);
     }
