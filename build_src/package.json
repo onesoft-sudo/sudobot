@@ -1,0 +1,17 @@
+{
+  "name": "blazebuild",
+  "module": "src/index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "chalk": "4"
+  },
+  "scripts": {
+    "dev": "bun run src/index.ts"
+  }
+}

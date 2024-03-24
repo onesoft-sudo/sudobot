@@ -1,12 +1,8 @@
 {
-    "[javascript]": {
-        "editor.formatOnSave": true
-    },
-    "[typescript]": {
-        "editor.formatOnSave": true,
-        "editor.codeActionsOnSave": {
-            "source.organizeImports": true
-        }
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true,
+        "source.fixAll": "explicit"
     },
     "typescript.tsdk": "node_modules/typescript/lib",
     "window.commandCenter": true,
@@ -23,9 +19,11 @@
         "automoderation",
         "bitfield",
         "botinfo",
+        "oclif",
         "openai",
         "SOFTBAN",
         "softbanned",
+        "Stringable",
         "sudobot",
         "tsbuildinfo"
     ],
@@ -33,6 +31,8 @@
         "automod": "Secure",
         "framework": "Server",
         "policies": "Secure",
-        "permissions": "Resolver"
+        "permissions": "Resolver",
+        "build_src": "Tools",
+        "polyfills": "Interface"
     }
 }

@@ -1,0 +1,81 @@
+import chalk from "chalk";
+import BlazeBuild from "../core/BlazeBuild";
+import IO from "../io/IO";
+
+export const LogLevel = {
+    Info: chalk.blue("[info]"),
+    Warn: chalk.yellow("[warn]"),
+    Error: chalk.red("[error]"),
+    Debug: chalk.gray("[debug]"),
+    Success: chalk.green("[success]")
+} as const;
+
+export type LogLevel = (typeof LogLevel)[keyof typeof LogLevel];
+
+class Logger {
+    public constructor(protected readonly cli: BlazeBuild) {}
+
+    private print(level: LogLevel, message: string) {
+        const methodName =
+            level === LogLevel.Error
+                ? "error"
+                : level === LogLevel.Warn
+                ? "warn"
+                : level === LogLevel.Success
+                ? "log"
+                : level === LogLevel.Debug
+                ? "debug"
+                : "info";
+
+        if (IO.shouldUseProgress()) {
+            IO.println(`${level} ${message}`);
+            return;
+        } else {
+            console[methodName].call(console, `${level}`, message);
+        }
+    }
+
+    public info(message: string) {
+        this.print(LogLevel.Info, message);
+    }
+
+    public warn(message: string) {
+        this.print(LogLevel.Warn, message);
+    }
+
+    public error(message: string) {
+        this.print(LogLevel.Error, message);
+    }
+
+    public debug(message: string) {
+        this.print(LogLevel.Debug, message);
+    }
+
+    public success(message: string) {
+        this.print(LogLevel.Success, message);
+    }
+
+    public timeElapsed() {
+        return ((Date.now() - BlazeBuild.startTime) / 1000).toFixed(2);
+    }
+
+    public showStats() {
+        console.info(
+            `${this.cli.tasks.size} task${this.cli.tasks.size === 1 ? "" : "s"} total: executed ${
+                this.cli.executedTasks.length
+            } task${this.cli.executedTasks.length === 1 ? "" : "s"} in this build`
+        );
+    }
+
+    public buildSuccess() {
+        console.info(`${chalk.greenBright("BUILD SUCCESSFUL")} in ${this.timeElapsed()}s`);
+        this.showStats();
+    }
+
+    public buildFailed() {
+        console.error(`${chalk.redBright("BUILD FAILED")} in ${this.timeElapsed()}s`);
+        this.showStats();
+    }
+}
+
+export default Logger;
