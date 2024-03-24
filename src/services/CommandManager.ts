@@ -95,8 +95,6 @@ class CommandManager extends Service {
                     continue;
                 }
 
-                console.log(actualName);
-
                 const existing = this.permissionOverwrites.get(
                     `${overwrite.guildId}:${actualName}`
                 );
@@ -602,16 +600,12 @@ class CommandManager extends Service {
             if (await this.performChecks("ALLOW", allow, context, memberPermissions)) {
                 allowMatched = true;
             }
-
-            console.log("allowMatched", allowMatched);
         }
 
         if (deny) {
             if (await this.performChecks("DENY", deny, context, memberPermissions)) {
                 denyMatched = true;
             }
-
-            console.log("denyMatched", denyMatched);
         }
 
         return { overwrite: true, allow: allowMatched && !denyMatched };

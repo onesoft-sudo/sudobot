@@ -470,8 +470,6 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
             .getServiceByName("commandManager")
             .checkCommandPermissionOverwrites(context, this.name, state.memberPermissions);
 
-        console.log(result);
-
         if (!result?.allow) {
             throw new PermissionDeniedError(
                 "You don't have enough permissions to run this command."
