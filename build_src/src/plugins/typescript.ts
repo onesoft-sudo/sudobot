@@ -5,7 +5,7 @@ import { Plugin } from "../core/Plugin";
 import IO from "../io/IO";
 
 export class TypeScriptPlugin extends Plugin {
-    public async compile() {
+    public compile() {
         const { metadata } = this.cli.projectManager;
 
         IO.println(
@@ -16,13 +16,27 @@ export class TypeScriptPlugin extends Plugin {
 
         const tscPath = existsSync("node_modules/.bin/tsc") ? "node_modules/.bin/tsc" : "tsc";
 
-        spawn(tscPath, ["-p", metadata.tsconfigPath ?? "./tsconfig.json"], {
-            stdio: "inherit",
+        const process = spawn(tscPath, ["-p", metadata.tsconfigPath ?? "./tsconfig.json"], {
+            stdio: "pipe",
             shell: true
-        }).once("close", code => {
-            if (code !== 0) {
-                IO.fail("TypeScript compilation failed");
-            }
+        });
+
+        process.stdout.on("data", data => {
+            IO.println(data.toString());
+        });
+
+        process.stderr.on("data", data => {
+            IO.println(data.toString());
+        });
+
+        return new Promise<void>(resolve => {
+            process.once("close", code => {
+                if (code !== 0) {
+                    IO.fail("TypeScript compilation failed");
+                }
+
+                resolve();
+            });
         });
     }
 }

@@ -1,4 +1,6 @@
+import { Awaitable } from "../types/Awaitable";
 import BlazeBuild from "./BlazeBuild";
+import { PackageData } from "./PackageManager";
 
 export class Plugin {
     private _cli?: BlazeBuild;
@@ -14,4 +16,6 @@ export class Plugin {
     public setCLI(cli: BlazeBuild) {
         this._cli = cli;
     }
+
+    public onPackageJSONAvailable(_data: PackageData): Awaitable<void> {}
 }

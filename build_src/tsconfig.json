@@ -2,7 +2,7 @@
     "compilerOptions": {
         "incremental": true,
         "target": "ES2022",
-        "module": "esnext",
+        "module": "CommonJS",
         "rootDir": "./src",
         "types": ["node", "bun"],
         "lib": ["ES2022", "DOM"],
@@ -12,7 +12,6 @@
         "outDir": "./build",
         "importHelpers": true,
         "newLine": "lf",
-        "noEmitHelpers": true,
         "noEmitOnError": true,
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
@@ -23,5 +22,5 @@
         "experimentalDecorators": true,
         "noImplicitOverride": true
     },
-    "exclude": ["tmp"]
+    "exclude": ["tmp", "*.d.ts", "build"]
 }

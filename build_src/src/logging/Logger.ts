@@ -15,7 +15,7 @@ export type LogLevel = (typeof LogLevel)[keyof typeof LogLevel];
 class Logger {
     public constructor(protected readonly cli: BlazeBuild) {}
 
-    private print(level: LogLevel, message: string) {
+    private print(level: LogLevel, message: string | Error) {
         const methodName =
             level === LogLevel.Error
                 ? "error"
@@ -27,7 +27,7 @@ class Logger {
                 ? "debug"
                 : "info";
 
-        if (IO.shouldUseProgress()) {
+        if (IO.getProgressBuffer()) {
             IO.println(`${level} ${message}`);
             return;
         } else {
@@ -43,7 +43,7 @@ class Logger {
         this.print(LogLevel.Warn, message);
     }
 
-    public error(message: string) {
+    public error(message: string | Error) {
         this.print(LogLevel.Error, message);
     }
 

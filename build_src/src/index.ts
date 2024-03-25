@@ -2,5 +2,9 @@ import BlazeBuild from "./core/BlazeBuild";
 
 const cli = BlazeBuild.getInstance();
 
-await cli.setup();
-await cli.run();
+async function main() {
+    await cli.setup();
+    await cli.run();
+}
+
+export default main();

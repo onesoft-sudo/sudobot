@@ -1,4 +1,4 @@
-import { dirname } from "path";
+import { basename } from "path";
 import BlazeBuild from "./BlazeBuild";
 
 type ProjectMetadata = {
@@ -8,15 +8,23 @@ type ProjectMetadata = {
     description?: string;
     srcDir: string;
     tsconfigPath?: string;
+    packageFilePath: string;
+    author?: {
+        name: string;
+        email?: string;
+        url?: string;
+    };
 };
 
 const defaultSettings: ProjectMetadata = {
     buildDir: "./build",
-    name: dirname(process.cwd()),
     srcDir: "./src",
+    packageFilePath: "./package.json",
+    name: basename(process.cwd()),
     description: undefined,
     version: undefined,
-    tsconfigPath: undefined
+    tsconfigPath: undefined,
+    author: undefined
 };
 
 export class ProjectManager {

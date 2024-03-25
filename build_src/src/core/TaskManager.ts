@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import IO from "../io/IO";
+import { Awaitable } from "../types/Awaitable";
 import { TaskHandler } from "../types/TaskHandler";
 import BlazeBuild from "./BlazeBuild";
 import { Task } from "./Task";
@@ -9,16 +10,29 @@ export class TaskManager {
 
     public register(name: string, handler: TaskHandler): void;
     public register(name: string, dependsOn: string[], handler: TaskHandler): void;
+    public register(
+        name: string,
+        dependsOn: string[],
+        handler: TaskHandler,
+        onlyIf?: (cli: BlazeBuild) => Awaitable<boolean>
+    ): void;
 
-    public register(name: string, handlerOrDeps: TaskHandler | string[], handler?: TaskHandler) {
+    public register(
+        name: string,
+        handlerOrDeps: TaskHandler | string[],
+        handler?: TaskHandler,
+        onlyIf?: (cli: BlazeBuild) => Awaitable<boolean>
+    ) {
         const finalHandler = Array.isArray(handlerOrDeps) ? handler! : handlerOrDeps;
+
         this.cli.tasks.set(
             name,
             new Task(
                 this.cli,
                 name,
                 Array.isArray(handlerOrDeps) ? handlerOrDeps : [],
-                finalHandler
+                finalHandler,
+                onlyIf
             )
         );
     }
@@ -49,16 +63,49 @@ export class TaskManager {
         return resolved;
     }
 
-    public async execute(taskName: string, ignoreCache = false) {
-        if (!ignoreCache && BlazeBuild.getInstance().executedTasks.includes(taskName)) {
-            return;
+    public async execute(taskName: string | string[], ignoreCache = false, handlers?: Handlers) {
+        const taskNames = Array.isArray(taskName) ? taskName : [taskName];
+        const tasksToRun = new Set<Task>();
+
+        for (const taskName of taskNames) {
+            const task = this.cli.tasks.get(taskName);
+
+            if (!task) {
+                IO.fail(`Task "${taskName}" is not defined`);
+            }
+
+            if (!ignoreCache && BlazeBuild.getInstance().executedTasks.includes(taskName)) {
+                continue;
+            }
+
+            if (task.onlyIf && !(await task.onlyIf(this.cli))) {
+                continue;
+            }
+
+            const tasks = this.resolveTaskDependencies(taskName);
+            tasks.forEach(task => tasksToRun.add(task));
         }
 
-        const taskToRun = this.resolveTaskDependencies(taskName);
+        await handlers?.onExecBegin?.(tasksToRun);
 
-        for (const task of taskToRun) {
+        for (const task of tasksToRun) {
+            if (task.onlyIf && !(await task.onlyIf(this.cli))) {
+                continue;
+            }
+
+            await handlers?.onTaskBegin?.(task);
             IO.println(`${chalk.bold(`:${task.name}`)}`);
             await task.execute();
+            await handlers?.onTaskEnd?.(task);
         }
+
+        await handlers?.onExecEnd?.(tasksToRun);
     }
 }
+
+type Handlers = {
+    onExecBegin?: (tasks: Set<Task>) => Awaitable<void>;
+    onExecEnd?: (tasks: Set<Task>) => Awaitable<void>;
+    onTaskBegin?: (task: Task) => Awaitable<void>;
+    onTaskEnd?: (task: Task) => Awaitable<void>;
+};

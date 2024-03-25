@@ -1,3 +1,4 @@
+import { Awaitable } from "../types/Awaitable";
 import { TaskHandler } from "../types/TaskHandler";
 import type BlazeBuild from "./BlazeBuild";
 
@@ -6,7 +7,8 @@ export class Task {
         private readonly cli: BlazeBuild,
         public readonly name: string,
         public readonly dependsOn: string[],
-        public readonly handler: TaskHandler
+        public readonly handler: TaskHandler,
+        public readonly onlyIf?: (cli: BlazeBuild) => Awaitable<boolean>
     ) {}
 
     public async execute() {

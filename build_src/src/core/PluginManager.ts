@@ -3,7 +3,10 @@ import { Plugin } from "./Plugin";
 
 export class PluginManager {
     public readonly plugins = new Set<Plugin>();
-    public constructor(protected readonly cli: BlazeBuild) {}
+    public constructor(protected readonly cli: BlazeBuild) {
+        this.add = this.add.bind(this);
+        this.load = this.load.bind(this);
+    }
 
     public add(plugins: Plugin[]): void;
     public add(...plugins: Plugin[]): void;
@@ -25,5 +28,11 @@ export class PluginManager {
     public load(plugin: Plugin) {
         plugin.setCLI(this.cli);
         this.plugins.add(plugin);
+    }
+
+    public createFunction() {
+        return (callback: (this: this, manager: this) => void) => {
+            callback.call(this, this);
+        };
     }
 }
