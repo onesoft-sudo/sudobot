@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CacheType, Interaction } from "discord.js";
+import { Interaction } from "discord.js";
 import { Inject } from "../../framework/container/Inject";
 import EventListener from "../../framework/events/EventListener";
 import { Events } from "../../framework/types/ClientEvents";
