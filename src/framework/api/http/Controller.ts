@@ -22,5 +22,5 @@ import CanBind from "../../container/CanBind";
 
 @CanBind
 export default abstract class Controller {
-    constructor(protected readonly application: Application) {}
+    public constructor(protected readonly application: Application) {}
 }

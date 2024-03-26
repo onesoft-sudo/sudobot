@@ -25,7 +25,7 @@ import { KernelInterface } from "./KernelInterface";
 export default abstract class Kernel implements KernelInterface {
     protected readonly logger = new Logger("kernel", true);
     private application?: Application;
-    abstract boot(): Awaitable<void>;
+    public abstract boot(): Awaitable<void>;
 
     public setApplication(application: Application): void {
         this.application = application;

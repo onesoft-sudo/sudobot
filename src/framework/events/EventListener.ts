@@ -31,11 +31,11 @@ export default abstract class EventListener<
 
     protected readonly client: C;
 
-    constructor(protected readonly application: Application) {
+    public constructor(protected readonly application: Application) {
         this.client = application.getClient() as C;
     }
 
-    abstract execute(
+    public abstract execute(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ...args: K extends keyof ClientEvents ? ClientEvents[K] : any[]
     ): Promise<unknown> | void;

@@ -26,17 +26,17 @@ export interface CreateResponseOptions<T = unknown> {
 }
 
 export default class Response<T = unknown> {
-    status: number;
-    body: T;
-    headers: Record<string, string | number>;
+    public status: number;
+    public body: T;
+    public headers: Record<string, string | number>;
 
-    constructor({ status, body, headers }: CreateResponseOptions) {
+    public constructor({ status, body, headers }: CreateResponseOptions) {
         this.status = status ?? 200;
         this.body = (body ?? "") as T;
         this.headers = headers ?? {};
     }
 
-    send(response: ExpressResponse) {
+    public send(response: ExpressResponse) {
         const tmp = response.status(this.status);
 
         for (const header in this.headers) tmp.header(header, this.headers[header].toString());

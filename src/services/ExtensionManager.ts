@@ -303,16 +303,16 @@ export default class ExtensionService extends Service {
         await this.loadExtensions();
     }
 
-    async onInitializationComplete(extensions: Extension[]) {
+    public async onInitializationComplete(extensions: Extension[]) {
         await this.application.getService(ConfigurationManager).registerExtensionConfig(extensions);
         return this.initializeConfigService();
     }
 
-    initializeConfigService() {
+    public initializeConfigService() {
         return this.application.getService(ConfigurationManager).manualBoot();
     }
 
-    async loadExtensionsFromIndex(extensionsIndex: string) {
+    public async loadExtensionsFromIndex(extensionsIndex: string) {
         const { extensions } = JSON.parse(await fs.readFile(extensionsIndex, "utf-8"));
         const loadInfoList = [];
         const extensionInitializers = [];
@@ -341,7 +341,7 @@ export default class ExtensionService extends Service {
         }
     }
 
-    async loadExtensions() {
+    public async loadExtensions() {
         if (!this.extensionsPath) {
             return;
         }
@@ -411,7 +411,7 @@ export default class ExtensionService extends Service {
         }
     }
 
-    async loadExtensionInitializer({
+    public async loadExtensionInitializer({
         extensionName,
         extensionId,
         extensionPath
@@ -431,7 +431,7 @@ export default class ExtensionService extends Service {
         return new ExtensionClass(this.application);
     }
 
-    async loadExtension({
+    public async loadExtension({
         commandsDirectory,
         eventsDirectory,
         commands,
@@ -499,7 +499,7 @@ export default class ExtensionService extends Service {
         }
     }
 
-    async loadEvents(extensionName: string, directory: string) {
+    public async loadEvents(extensionName: string, directory: string) {
         const files = await fs.readdir(directory);
 
         for (const file of files) {
@@ -519,7 +519,7 @@ export default class ExtensionService extends Service {
         }
     }
 
-    async loadEvent(extensionName: string, filePath: string) {
+    public async loadEvent(extensionName: string, filePath: string) {
         const {
             default: Event
         }: { default: new (application: Application) => EventListener<keyof ClientEvents> } =
@@ -533,7 +533,7 @@ export default class ExtensionService extends Service {
             );
     }
 
-    wrapHandler<K extends keyof ClientEvents>(
+    public wrapHandler<K extends keyof ClientEvents>(
         extensionName: string,
         eventName: K,
         handler: (...args: ClientEvents[K]) => unknown,
@@ -573,7 +573,7 @@ export default class ExtensionService extends Service {
         };
     }
 
-    isEnabled(extensionName: string, guildId: Snowflake) {
+    public isEnabled(extensionName: string, guildId: Snowflake) {
         const { disabled_extensions, enabled } =
             this.application.getService(ConfigurationManager).config[guildId]?.extensions ?? {};
         const { default_mode } =
@@ -623,7 +623,7 @@ export default class ExtensionService extends Service {
         });
     }
 
-    async fetchAndInstallExtension(id: string, stream?: Response) {
+    public async fetchAndInstallExtension(id: string, stream?: Response) {
         if (!this.extensionsPath) {
             const errorMessage =
                 "E: Extensions directory is not set. Please set the EXTENSIONS_DIRECTORY environment variable.\n";

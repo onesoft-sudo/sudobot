@@ -52,13 +52,13 @@ export default class ConfigurationManager extends Service {
     protected systemConfigSchema = SystemConfigSchema;
     protected guildConfigContainerSchema = this.guildConfigContainer();
 
-    config: GuildConfigContainer = {} as GuildConfigContainer;
-    systemConfig: SystemConfig = {} as SystemConfig;
+    public config: GuildConfigContainer = {} as GuildConfigContainer;
+    public systemConfig: SystemConfig = {} as SystemConfig;
 
     /**
      * This service is manually booted by the Extension Service.
      */
-    async manualBoot() {
+    public async manualBoot() {
         await this.loadOnce();
     }
 
@@ -66,7 +66,7 @@ export default class ConfigurationManager extends Service {
         return z.record(z.string(), this.guildConfigSchema.optional().or(z.undefined()));
     }
 
-    loadOnce() {
+    public loadOnce() {
         if (this.loaded) {
             return;
         }
@@ -75,7 +75,7 @@ export default class ConfigurationManager extends Service {
         return this.load();
     }
 
-    async load() {
+    public async load() {
         this.application.logger.debug(
             `Loading system configuration from file: ${this.systemConfigPath}`
         );
@@ -104,7 +104,7 @@ export default class ConfigurationManager extends Service {
         this.application.logger.info("Successfully loaded the configuration files");
     }
 
-    onReady() {
+    public onReady() {
         const guildIds = this.application.getClient().guilds.cache.keys();
 
         if (!process.env.PRIVATE_BOT_MODE) {
@@ -124,11 +124,11 @@ export default class ConfigurationManager extends Service {
         }
     }
 
-    autoConfigure(id: Snowflake) {
+    public autoConfigure(id: Snowflake) {
         this.config[id] = this.guildConfigSchema.parse({});
     }
 
-    testConfig() {
+    public testConfig() {
         const guildResult = this.guildConfigContainerSchema.safeParse(this.config);
 
         if (!guildResult.success) {
@@ -144,7 +144,7 @@ export default class ConfigurationManager extends Service {
         return null;
     }
 
-    async write({ guild = true, system = true } = {}) {
+    public async write({ guild = true, system = true } = {}) {
         if (guild) {
             this.application.logger.debug(
                 `Writing guild configuration to file: ${this.configPath}`
@@ -182,15 +182,15 @@ export default class ConfigurationManager extends Service {
         this.application.logger.info("Successfully wrote the configuration files");
     }
 
-    get<T extends GuildConfig = GuildConfig>(guildId: Snowflake): T | undefined {
+    public get<T extends GuildConfig = GuildConfig>(guildId: Snowflake): T | undefined {
         return this.config[guildId] as T | undefined;
     }
 
-    set(guildId: Snowflake, value: GuildConfig) {
+    public set(guildId: Snowflake, value: GuildConfig) {
         this.config[guildId] = value;
     }
 
-    async registerExtensionConfig(extensions: Extension[]) {
+    public async registerExtensionConfig(extensions: Extension[]) {
         if (extensions.length === 0) {
             return;
         }
@@ -218,7 +218,7 @@ export default class ConfigurationManager extends Service {
         this.guildConfigContainerSchema = this.guildConfigContainer();
     }
 
-    async generateSchema() {
+    public async generateSchema() {
         const configSchema = JSON.stringify(
             zodToJsonSchema(this.guildConfigContainerSchema),
             null,

@@ -121,7 +121,7 @@ export default class EmbedSchemaParser {
         "fields"
     ];
 
-    static parseString(string: string): [EmbedBuilder[], string] {
+    public static parseString(string: string): [EmbedBuilder[], string] {
         const length = string.length;
         const embeds = [];
         let outString = string;
@@ -204,10 +204,10 @@ export default class EmbedSchemaParser {
         return `embed::${JSON.stringify(embed)}::`;
     }
 
-    static toSchemaString(embed: EmbedType): string;
-    static toSchemaString(embeds: EmbedType[]): string;
+    public static toSchemaString(embed: EmbedType): string;
+    public static toSchemaString(embeds: EmbedType[]): string;
 
-    static toSchemaString(embed: EmbedType | EmbedType[]) {
+    public static toSchemaString(embed: EmbedType | EmbedType[]) {
         if (embed instanceof Array) {
             return embed.map(this.toSchemaStringSingle.bind(this));
         }
@@ -215,7 +215,7 @@ export default class EmbedSchemaParser {
         return this.toSchemaStringSingle(embed);
     }
 
-    static getMessageOptions<T extends GetMessageOptions>(payload: T, withContent = true) {
+    public static getMessageOptions<T extends GetMessageOptions>(payload: T, withContent = true) {
         const { content, embeds = [], ...options } = payload;
 
         type GetMessageOptionsResult = (T extends MessageCreateOptions
@@ -245,14 +245,14 @@ export default class EmbedSchemaParser {
         };
     }
 
-    static sendMessage(
+    public static sendMessage(
         sendable: TextBasedChannel | User | GuildMember,
         options: MessageCreateOptions
     ) {
         return sendable.send(EmbedSchemaParser.getMessageOptions(options));
     }
 
-    static editMessage(message: Message, options: MessageEditOptions) {
+    public static editMessage(message: Message, options: MessageEditOptions) {
         return message.edit(EmbedSchemaParser.getMessageOptions(options));
     }
 }

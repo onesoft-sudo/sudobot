@@ -24,21 +24,21 @@ import Application from "../app/Application";
 export abstract class Extension {
     public readonly name?: string;
 
-    constructor(protected readonly application: Application) {}
+    public constructor(protected readonly application: Application) {}
 
-    commands(): Awaitable<string[] | null> {
+    public commands(): Awaitable<string[] | null> {
         return null;
     }
 
-    events(): Awaitable<string[] | null> {
+    public events(): Awaitable<string[] | null> {
         return null;
     }
 
-    services(): Awaitable<string[] | null> {
+    public services(): Awaitable<string[] | null> {
         return null;
     }
 
-    guildConfig(): Awaitable<
+    public guildConfig(): Awaitable<
         | {
               [K in PropertyKey]: ZodSchema<unknown>;
           }
@@ -47,7 +47,7 @@ export abstract class Extension {
         return null;
     }
 
-    systemConfig(): Awaitable<
+    public systemConfig(): Awaitable<
         | {
               [K in PropertyKey]: ZodSchema<unknown>;
           }

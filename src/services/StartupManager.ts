@@ -49,8 +49,8 @@ const { BACKUP_CHANNEL_ID, ERROR_WEBHOOK_URL, BACKUP_STORAGE } = process.env;
 
 @Name("startupManager")
 class StartupManager extends Service implements HasEventListeners {
-    interval: Timer | undefined = undefined;
-    readonly packageJsonUrl =
+    public interval: Timer | undefined = undefined;
+    public readonly packageJsonUrl =
         "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/package.json";
 
     public override async boot() {

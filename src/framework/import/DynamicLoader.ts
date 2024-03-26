@@ -65,7 +65,7 @@ class DynamicLoader {
         return files;
     }
 
-    async loadControllers(router: Router) {
+    public async loadControllers(router: Router) {
         const controllerFiles = await this.iterateDirectoryRecursively(
             path.resolve(__dirname, "../../api/controllers")
         );
@@ -79,7 +79,7 @@ class DynamicLoader {
         }
     }
 
-    async loadController(filepath: string, router: Router) {
+    public async loadController(filepath: string, router: Router) {
         const { default: ControllerClass }: DefaultExport<Class<Controller, [Application]>> =
             await import(filepath);
         const controller = Container.getInstance().resolveByClass(ControllerClass);
@@ -87,7 +87,7 @@ class DynamicLoader {
         this.application.logger.info("Loaded Controller: ", ControllerClass.name);
     }
 
-    async loadEvents(directory = path.resolve(__dirname, "../events")) {
+    public async loadEvents(directory = path.resolve(__dirname, "../events")) {
         const eventListenerFiles = await this.iterateDirectoryRecursively(directory);
 
         for (const file of eventListenerFiles) {
@@ -99,7 +99,7 @@ class DynamicLoader {
         }
     }
 
-    async loadEvent(filepath: string) {
+    public async loadEvent(filepath: string) {
         const { default: EventListenerClass }: DefaultExport<Class<EventListener, [Application]>> =
             await import(filepath);
         const listener = await this.getContainer().resolveByClass(EventListenerClass);
@@ -109,7 +109,7 @@ class DynamicLoader {
         this.application.logger.info("Loaded Event: ", listener.name);
     }
 
-    async loadPermissions(directory = path.resolve(__dirname, "../permissions")) {
+    public async loadPermissions(directory = path.resolve(__dirname, "../permissions")) {
         const eventListenerFiles = await this.iterateDirectoryRecursively(directory);
 
         for (const file of eventListenerFiles) {
@@ -121,7 +121,7 @@ class DynamicLoader {
         }
     }
 
-    async loadPermission(filepath: string) {
+    public async loadPermission(filepath: string) {
         const { default: PermissionClass }: DefaultExport<typeof Permission> = await import(
             filepath
         );
@@ -132,7 +132,9 @@ class DynamicLoader {
         this.application.logger.info("Loaded Permission Handler: ", permission.toString());
     }
 
-    async loadServicesFromDirectory(servicesDirectory = path.resolve(__dirname, "../services")) {
+    public async loadServicesFromDirectory(
+        servicesDirectory = path.resolve(__dirname, "../services")
+    ) {
         const serviceFiles = await this.iterateDirectoryRecursively(servicesDirectory);
 
         for (const file of serviceFiles) {
@@ -144,7 +146,7 @@ class DynamicLoader {
         }
     }
 
-    flattenCommandGroups() {
+    public flattenCommandGroups() {
         const groups =
             this.application.getService(ConfigurationManager).systemConfig.commands.groups;
         const groupNames = Object.keys(groups);
@@ -164,7 +166,7 @@ class DynamicLoader {
         return flatten;
     }
 
-    async loadCommands(
+    public async loadCommands(
         commandsDirectory = path.resolve(__dirname, "../../commands"),
         loadMetadata: boolean = true,
         filter?: (path: string, name: string) => Awaitable<boolean>
@@ -186,7 +188,7 @@ class DynamicLoader {
         }
     }
 
-    async loadCommand(
+    public async loadCommand(
         filepath: string,
         loadMetadata = true,
         groups: Record<string, string> | null = null,
@@ -208,7 +210,7 @@ class DynamicLoader {
         this.application.logger.info("Loaded Command: ", command.name);
     }
 
-    async loadEventsFromMetadata(object: object, accessConstructor = true) {
+    public async loadEventsFromMetadata(object: object, accessConstructor = true) {
         const finalObject = accessConstructor ? object.constructor : object;
         const metadata =
             Symbol.metadata in finalObject
@@ -245,7 +247,7 @@ class DynamicLoader {
         }
     }
 
-    async unloadEventsFromMetadata(object: object) {
+    public async unloadEventsFromMetadata(object: object) {
         const handlerData =
             this.eventHandlers.get(object) ?? ({} as Record<keyof ClientEvents, AnyFunction[]>);
         let count = 0;
