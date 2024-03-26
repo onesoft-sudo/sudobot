@@ -17,6 +17,8 @@ import { PluginManager } from "./PluginManager";
 import { ProjectManager } from "./ProjectManager";
 import { Task } from "./Task";
 import { TaskManager } from "./TaskManager";
+import { cleanCachesTask } from "../tasks/cleanCaches";
+import { cleanDepsTask } from "../tasks/cleanDeps";
 
 class BlazeBuild {
     private static builtInTasks: BuiltInTask[] = [
@@ -24,7 +26,9 @@ class BlazeBuild {
         cleanTask,
         tasksTask,
         metadataTask,
-        dependenciesTask
+        dependenciesTask,
+        cleanCachesTask,
+        cleanDepsTask
     ];
     public readonly logger = new Logger(this);
     private static instance: BlazeBuild;
@@ -168,22 +172,22 @@ class BlazeBuild {
     public async execCommand(command: string) {
         const proc = spawn(command, {
             shell: true,
-            stdio: "pipe"
+            stdio: "inherit"
         });
-
-        proc.stdout.on("data", data => {
-            const buffer = IO.getProgressBuffer();
-            buffer?.fill();
-            process.stdout.write(data.toString());
-            buffer?.render();
-        });
-
-        proc.stderr.on("data", data => {
-            const buffer = IO.getProgressBuffer();
-            buffer?.fill();
-            process.stdout.write(data.toString());
-            buffer?.render();
-        });
+        //
+        // proc.stdout.on("data", data => {
+        //     const buffer = IO.getProgressBuffer();
+        //     buffer?.fill();
+        //     process.stdout.write(data.toString());
+        //     buffer?.render();
+        // });
+        //
+        // proc.stderr.on("data", data => {
+        //     const buffer = IO.getProgressBuffer();
+        //     buffer?.fill();
+        //     process.stdout.write(data.toString());
+        //     buffer?.render();
+        // });
 
         return new Promise<void>((resolve, reject) => {
             proc.on("close", code => {

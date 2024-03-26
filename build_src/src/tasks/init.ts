@@ -29,14 +29,17 @@ export const initTask: BuiltInTask = {
                 IO.getProgressBuffer()?.end();
             },
             onTaskEnd() {
+                IO.getProgressBuffer()?.render();
                 IO.getProgressBuffer()?.incrementProgress(1);
                 IO.getProgressBuffer()?.setStatus("<idle>");
             },
             onTaskBegin(task) {
+                IO.getProgressBuffer()?.render();
                 IO.getProgressBuffer()?.setStatus(`:${task.name}`);
             },
             onTaskCancel() {
                 IO.getProgressBuffer()?.setMax(IO.getProgressBuffer()!.getMax() - 1);
+                IO.getProgressBuffer()?.render();
             }
         });
     }
