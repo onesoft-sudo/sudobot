@@ -256,14 +256,15 @@ class InfractionManager extends Service {
         })) as PrivateThreadChannel;
     }
 
-    public async createBean<E extends boolean>({
-        moderator,
-        user,
-        reason,
-        guildId,
-        generateOverviewEmbed,
-        transformNotificationEmbed
-    }: CreateBeanPayload<E>): Promise<InfractionCreateResult<E>> {
+    public async createBean<E extends boolean>(payload: CreateBeanPayload<E>): Promise<InfractionCreateResult<E>> {
+        const {
+            moderator,
+            user,
+            reason,
+            guildId,
+            generateOverviewEmbed,
+            transformNotificationEmbed
+        } = payload;
         const infraction = await this.application.prisma.$transaction(async prisma => {
             let infraction = await prisma.infraction.create({
                 data: {

@@ -43,6 +43,7 @@ import { Service } from "../framework/services/Service";
 import LevelBasedPermissionManager from "../security/LevelBasedPermissionManager";
 import { developmentMode, pick } from "../utils/utils";
 import type ConfigurationManager from "./ConfigurationManager";
+import { ContextType } from "../framework/commands/ContextType";
 
 type MinimalCommandPermissionOverwrite = Pick<
     CommandPermissionOverwrite,
@@ -127,9 +128,8 @@ class CommandManager extends Service {
             registered = true;
         } else if (mode === "always_global") {
             await this.client.application?.commands.set(commands);
-            this.application.logger.debug(
-                "Registering global commands on every startup is not recommended, as you may hit the global rate limit. Please consider using guild commands instead, for testing purposes."
-            );
+            this.application.logger.debug("Registering global commands on every startup is not recommended, as you may hit the global rate limit.");
+            this.application.logger.debug("Please consider using guild commands instead, for testing purposes.");
             registered = true;
         } else if (
             mode === "auto_global" &&
@@ -222,10 +222,10 @@ class CommandManager extends Service {
         ];
         let foundPrefix;
 
-        prefixCheck: for (const prefix of prefixes) {
+        for (const prefix of prefixes) {
             if (message.content.startsWith(prefix)) {
                 foundPrefix = prefix;
-                break prefixCheck;
+                break;
             }
         }
 
@@ -244,8 +244,23 @@ class CommandManager extends Service {
 
         const context = new LegacyContext(commandName, content, message, args, argv);
 
+        if (command.isolatedSubcommands) {
+            const subcommandName = args[0];
+            const subcommand = this.commands.get(`${commandName}::${subcommandName}`);
+
+            if (!subcommand) {
+                return false;
+            }
+
+            return this.runSubcommand(subcommand, context);
+        }
+
+        return this.execCommand(command, context);
+    }
+
+    private async execCommand(command: Command, context: Context, subcommand = false) {
         try {
-            await command.run(context);
+            await command.run(context, subcommand);
             return true;
         } catch (error) {
             if (error instanceof CommandAbortedError) {
@@ -254,6 +269,7 @@ class CommandManager extends Service {
             }
 
             this.application.logger.error(error);
+            return false;
         }
     }
 
@@ -736,6 +752,10 @@ class CommandManager extends Service {
             ) &&
             this.requirementCheckUsers(action, context, cachedOverwrite.requiredUsers)
         );
+    }
+
+    private runSubcommand(subcommand: Command<ContextType.ChatInput | ContextType.Legacy>, context: Context) {
+        return this.execCommand(subcommand, context, true);
     }
 }
 
