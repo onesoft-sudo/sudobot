@@ -111,7 +111,7 @@ class CommandManager extends Service {
         }
 
         const commands = this.commands
-            .filter((command, key) => command.name === key && command.supportsInteraction())
+            .filter((command, key) => !command.name.includes("::") && command.name === key && command.supportsInteraction())
             .map(command => command.build().map(builder => builder.toJSON()))
             .flat();
 
@@ -244,12 +244,24 @@ class CommandManager extends Service {
 
         const context = new LegacyContext(commandName, content, message, args, argv);
 
-        if (command.isolatedSubcommands) {
+        if (command.hasSubcommands) {
             const subcommandName = args[0];
-            const subcommand = this.commands.get(`${commandName}::${subcommandName}`);
+            const subcommand = this.commands.get(command.isolatedSubcommands ? `${commandName}::${subcommandName}` : commandName);
 
             if (!subcommand) {
-                return false;
+                const errorHandler = Reflect.getMetadata("command:subcommand_not_found_error", command.constructor);
+
+                if (typeof errorHandler === "string") {
+                    return context.error(errorHandler);
+                }
+                else if (typeof errorHandler === "function") {
+                    await errorHandler(context, subcommandName, !subcommandName ? "not_specified" : "not_found");
+                    return;
+                }
+                else {
+                    await context.error(subcommandName ? "Invalid subcommand provided" : "Please provide a subcommand!");
+                    return;
+                }
             }
 
             return this.runSubcommand(subcommand, context);
@@ -275,15 +287,21 @@ class CommandManager extends Service {
 
     public async runCommandFromInteraction(interaction: CommandInteraction) {
         const { commandName } = interaction;
+        const baseCommand = this.commands.get(commandName);
+
+        if (!baseCommand || !baseCommand.supportsInteraction()) {
+            return false;
+        }
+
         const subcommand = interaction.options.data.find(
             e => e.type === ApplicationCommandOptionType.Subcommand
         )?.name;
-        console.log(subcommand);
+
         const command = this.commands.get(
-            subcommand ? `${commandName}::${subcommand}` : commandName
+            subcommand && baseCommand.isolatedSubcommands && baseCommand.hasSubcommands ? `${commandName}::${subcommand}` : commandName
         );
 
-        if (!command || !command.supportsInteraction()) {
+        if (!command || !command.supportsInteraction() || (subcommand && baseCommand.hasSubcommands && !baseCommand.subcommands.includes(subcommand))) {
             return false;
         }
 
@@ -293,7 +311,7 @@ class CommandManager extends Service {
         );
 
         try {
-            await command.run(context);
+            await command.run(context, !!subcommand && baseCommand.isolatedSubcommands && baseCommand.hasSubcommands);
             return true;
         } catch (error) {
             if (error instanceof CommandAbortedError) {

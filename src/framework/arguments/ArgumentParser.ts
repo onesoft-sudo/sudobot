@@ -25,6 +25,7 @@ import LegacyContext from "../commands/LegacyContext";
 import { HasClient } from "../types/HasClient";
 import Argument from "./Argument";
 import { ArgumentTypeOptions } from "./ArgumentTypes";
+import Application from "../app/Application";
 
 type ParseResult =
     | {
@@ -51,8 +52,9 @@ class ArgumentParser extends HasClient {
             [];
         let payload: ArgumentPayload;
         const { args, argv } = context;
+        const commandManager = Application.current().getServiceByName("commandManager");
 
-        if (isDynamic) {
+        if (isDynamic && !subcommand) {
             const paramTypes = Reflect.getMetadata(
                 "design:paramtypes",
                 command.constructor,
@@ -74,7 +76,6 @@ class ArgumentParser extends HasClient {
                 args,
                 argv,
                 paramTypes,
-                subcommand,
             );
 
             if (error) {
@@ -92,6 +93,7 @@ class ArgumentParser extends HasClient {
                 argv,
                 argTypes,
                 subcommand,
+                commandManager.commands.get(argv[0])?.subcommands ?? [],
                 command.onSubcommandNotFound?.bind(command)
                     ?? Reflect.getMetadata("command:subcommand_not_found_error", command.constructor),
                 context
@@ -125,15 +127,16 @@ class ArgumentParser extends HasClient {
         argv: string[],
         types: ArgumentTypeOptions[],
         subcommand = false,
-        onSubcommandNotFound?: string | ((context: Context, subcommand: string) => Awaitable<void>),
-        context?: Context
+        allowedSubcommands: string[] | undefined,
+        onSubcommandNotFound: string | ((context: Context, subcommand: string, errorType: "not_found" | "not_specified") => Awaitable<void>) | undefined,
+        context: Context
     ) {
         const parsedArguments: Record<string, unknown> = {};
         let lastError;
 
         if (subcommand && args[0] === undefined) {
             if (typeof onSubcommandNotFound === "function" && context) {
-                await onSubcommandNotFound(context, args[0]);
+                await onSubcommandNotFound(context, args[0], "not_specified");
 
                 return {
                     abort: true
@@ -141,12 +144,48 @@ class ArgumentParser extends HasClient {
             }
 
             return {
-                error: "A subcommand is required!"
+                error: onSubcommandNotFound as string | undefined ?? "A subcommand is required!"
             };
         }
 
-        for (let i = subcommand && types.length ? 1 : 0; i < types.length; i++) {
-            const arg = args[i];
+        if (subcommand && allowedSubcommands && !allowedSubcommands.includes(args[0])) {
+            if (typeof onSubcommandNotFound === "function" && context) {
+                await onSubcommandNotFound(context, args[0], "not_found");
+
+                return {
+                    abort: true
+                };
+            }
+
+            return {
+                error: onSubcommandNotFound as string | undefined ?? "Invalid subcommand provided."
+            };
+        }
+
+        if (subcommand) {
+            const commandManager = Application.current().getServiceByName("commandManager");
+            const command = commandManager.commands.get(`${argv[0]}::${args[0]}`);
+
+            if (!command) {
+                if (typeof onSubcommandNotFound === "function" && context) {
+                    await onSubcommandNotFound(context, args[0], "not_found");
+
+                    return {
+                        abort: true
+                    };
+                }
+
+                return {
+                    error: onSubcommandNotFound as string | undefined ?? "Invalid subcommand provided."
+                };
+            }
+
+            types = Reflect.getMetadata("command:types", command.constructor) as ArgumentTypeOptions[] ?? [];
+        }
+
+        for (let i = 0; i < types.length; i++) {
+            const argIndex = subcommand && types.length ? i + 1 : i;
+            const arg = args[argIndex];
             const expectedArgInfo = types[i];
 
             if (!arg) {
@@ -171,7 +210,7 @@ class ArgumentParser extends HasClient {
                     commandContent,
                     argv,
                     arg,
-                    i,
+                    argIndex,
                     expectedArgInfo.name,
                     expectedArgInfo.rules,
                     !expectedArgInfo.optional
@@ -203,18 +242,11 @@ class ArgumentParser extends HasClient {
         commandContent: string,
         args: string[],
         argv: string[],
-        types: unknown[],
-        subcommand = false,
+        types: unknown[]
     ) {
         const parsedArguments = [];
 
-        if (subcommand && args[0] === undefined) {
-            return {
-                error: "A subcommand is required!"
-            };
-        }
-
-        for (let i = subcommand && types.length ? 1 : 0; i < types.length; i++) {
+        for (let i = 0; i < types.length; i++) {
             const arg = args[i];
             const argType = types[i] as typeof Argument;
 

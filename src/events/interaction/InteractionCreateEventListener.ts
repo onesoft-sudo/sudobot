@@ -10,9 +10,9 @@ class InteractionCreateEventListener extends EventListener<Events.InteractionCre
     @Inject("commandManager")
     private readonly commandManager!: CommandManager;
 
-    public override async execute(interaction: Interaction<CacheType>): Promise<void> {
+    public override async execute(interaction: Interaction): Promise<void> {
         if (interaction.isCommand()) {
-            this.commandManager.runCommandFromInteraction(interaction);
+            await this.commandManager.runCommandFromInteraction(interaction);
         }
     }
 }

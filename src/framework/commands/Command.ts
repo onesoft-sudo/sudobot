@@ -321,7 +321,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      * @param args - The command arguments.
      */
     public abstract execute(context: Context, ...args: ArgumentPayload): Promise<void>;
-    public onSubcommandNotFound?(context: Context, subcommand: string): Promise<void>;
+    public onSubcommandNotFound?(context: Context, subcommand: string, errorType: "not_found" | "not_specified"): Promise<void>;
 
     /**
      * Prepares and begins to execute the command.
@@ -363,6 +363,15 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
         } else {
             await this.execute(context);
         }
+    }
+
+    /**
+     * Checks if this command has subcommands.
+     *
+     * @returns True if the command has subcommands, false otherwise.
+     */
+    public get hasSubcommands() {
+        return this.subcommands.length > 0;
     }
 
     /**
