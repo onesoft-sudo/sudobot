@@ -51,7 +51,7 @@ export type CommandMessage =
     | ChatInputCommandInteraction
     | ContextMenuCommandInteraction;
 export type ChatContext = LegacyContext | InteractionContext<ChatInputCommandInteraction>;
-export type CommandBuilders = Array<SlashCommandBuilder | ContextMenuCommandBuilder>;
+export type CommandBuilders = Array<Buildable>;
 export type AnyCommand = Command<ContextType>;
 
 export type SubcommandMeta = {
@@ -258,12 +258,30 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
         return this.supportsMessageContextMenu() || this.supportsUserContextMenu();
     }
 
+    public supportsInteraction(): this is Command<
+        ContextType.MessageContextMenu | ContextType.UserContextMenu | ContextType.ChatInput
+    > {
+        return this.supportsChatInput() || this.supportsContextMenu();
+    }
+
+    /**
+     * Builds the chat input command.
+     *
+     * @returns The chat input command builder.
+     */
+    protected buildChatInput() {
+        return new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description)
+            .setDMPermission(false);
+    }
+
     /**
      * Builds the command data.
      *
      * @returns An array of command builders.
      */
-    public build() {
+    public build(): Buildable[] {
         const data: Array<SlashCommandBuilder | ContextMenuCommandBuilder> = [];
 
         if (this.supportsMessageContextMenu()) {
@@ -285,12 +303,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
         }
 
         if (this.supportsChatInput()) {
-            data.push(
-                new SlashCommandBuilder()
-                    .setName(this.name)
-                    .setDescription(this.description)
-                    .setDMPermission(false)
-            );
+            data.push(this.buildChatInput());
         }
 
         return data;
@@ -556,5 +569,6 @@ export type ArgumentPayload = Array<Argument<unknown> | null> | [Arguments];
 export type CommandExecutionState<L extends boolean = false> = {
     memberPermissions: MemberPermissionData | (L extends false ? undefined : never);
 };
+export type Buildable = Pick<SlashCommandBuilder | ContextMenuCommandBuilder, "name" | "toJSON">;
 
 export { Command };

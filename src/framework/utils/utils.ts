@@ -26,3 +26,12 @@ export function requireNonNull<T>(value: T | null | undefined, message?: string)
 }
 
 export const notIn = <T extends object>(obj: T, key: keyof T): boolean => !(key in obj);
+
+export const letValue = <T>(value: T, fn: (value: T) => T): T => {
+    return fn(value);
+};
+
+export const also = <T>(value: T, fn: (value: T) => void): T => {
+    fn(value);
+    return value;
+};

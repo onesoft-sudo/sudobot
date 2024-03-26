@@ -97,8 +97,8 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
         return this.member?.id ?? null;
     }
 
-    abstract get userId(): Snowflake;
-    abstract get user(): User;
+    public abstract get userId(): Snowflake;
+    public abstract get user(): User;
 
     public constructor(commandName: string, commandMessage: T) {
         this.commandName = commandName;
