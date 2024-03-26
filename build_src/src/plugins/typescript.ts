@@ -11,26 +11,26 @@ export class TypeScriptPlugin extends Plugin {
         IO.println(
             `${chalk.green("COMPILE")} ${chalk.gray(`${metadata.srcDir}/**/*.ts`)} -> ${chalk.gray(
                 `${metadata.buildDir}/**/*.js`
-            )}`
+            )}`.padEnd(process.stdout.columns ?? 80, " ")
         );
 
         const tscPath = existsSync("node_modules/.bin/tsc") ? "node_modules/.bin/tsc" : "tsc";
 
-        const process = spawn(tscPath, ["-p", metadata.tsconfigPath ?? "./tsconfig.json"], {
+        const proc = spawn(tscPath, ["-p", metadata.tsconfigPath ?? "./tsconfig.json"], {
             stdio: "pipe",
             shell: true
         });
 
-        process.stdout.on("data", data => {
+        proc.stdout.on("data", data => {
             IO.println(data.toString());
         });
 
-        process.stderr.on("data", data => {
+        proc.stderr.on("data", data => {
             IO.println(data.toString());
         });
 
         return new Promise<void>(resolve => {
-            process.once("close", code => {
+            proc.once("close", code => {
                 if (code !== 0) {
                     IO.fail("TypeScript compilation failed");
                 }

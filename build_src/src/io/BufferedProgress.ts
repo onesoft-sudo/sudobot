@@ -6,7 +6,7 @@ export class BufferedProgress extends EventEmitter {
 
     public constructor(
         protected progress = 0,
-        protected readonly max: number = 100,
+        protected max: number = 100,
         protected readonly statusWidth: number = 0
     ) {
         super();
@@ -68,5 +68,14 @@ export class BufferedProgress extends EventEmitter {
 
     public fill() {
         process.stdout.write(" ".repeat((process.stdout.columns || 80) - 1) + "\r");
+    }
+
+    public setMax(max: number) {
+        this.max = max;
+        this.render();
+    }
+
+    public getMax() {
+        return this.max;
     }
 }

@@ -12,7 +12,7 @@ export const initTask: BuiltInTask = {
         }
 
         await cli.packageManager.loadPackageJSON();
-        await cli.taskManager.execute(argv, false, {
+        await cli.taskManager.execute(argv.length === 0 ? ["build"] : argv, false, {
             onExecBegin(tasks) {
                 let longestNameLength = 0;
 
@@ -22,18 +22,21 @@ export const initTask: BuiltInTask = {
                     }
                 }
 
-                const progress = new BufferedProgress(1, tasks.size + 1, longestNameLength);
+                const progress = new BufferedProgress(1, tasks.size + 1, longestNameLength + 2);
                 IO.setProgressBuffer(progress);
             },
             onExecEnd() {
                 IO.getProgressBuffer()?.end();
             },
-            async onTaskEnd() {
+            onTaskEnd() {
                 IO.getProgressBuffer()?.incrementProgress(1);
                 IO.getProgressBuffer()?.setStatus("<idle>");
             },
-            async onTaskBegin(task) {
+            onTaskBegin(task) {
                 IO.getProgressBuffer()?.setStatus(`:${task.name}`);
+            },
+            onTaskCancel() {
+                IO.getProgressBuffer()?.setMax(IO.getProgressBuffer()!.getMax() - 1);
             }
         });
     }

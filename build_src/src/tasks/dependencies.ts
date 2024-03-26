@@ -4,7 +4,10 @@ import { BuiltInTask } from "../types/BuiltInTask";
 
 export const dependenciesTask: BuiltInTask = {
     name: "dependencies",
-    if: cli => cli.packageManager.packagesNeedUpdate() || !existsSync("node_modules"),
+    if: cli =>
+        cli.packageManager.packagesNeedUpdate() ||
+        cli.cacheManager.noCacheFileFound() ||
+        !existsSync("node_modules"),
     dependsOn: ["metadata"],
     handler: async cli => {
         const packageManager = cli.packageManager.getPackageManager();
@@ -13,6 +16,6 @@ export const dependenciesTask: BuiltInTask = {
             IO.fail(`Unsupported package manager: "${packageManager}"`);
         }
 
-        cli.execCommand(`${packageManager} ${packageManager === "yarn" ? "" : "install"}`);
+        await cli.execCommand(`${packageManager} ${packageManager === "yarn" ? "" : "install"}`);
     }
 };

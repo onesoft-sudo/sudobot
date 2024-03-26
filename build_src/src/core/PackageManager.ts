@@ -1,8 +1,6 @@
 import deepmerge from "deepmerge";
-import { existsSync, readFileSync, writeFileSync } from "fs";
 import IO from "../io/IO";
 import FileSystem from "../polyfills/FileSystem";
-import BlazeBuild from "./BlazeBuild";
 import { Manager } from "./Manager";
 
 export type PackageData = {
@@ -127,47 +125,42 @@ export class PackageManager extends Manager {
 
             callback.call(this, this);
 
-            if (existsSync(BlazeBuild.buildInfoDir("deps"))) {
-                const { deps, manager } = JSON.parse(
-                    readFileSync(BlazeBuild.buildInfoDir("deps"), { encoding: "utf-8" })
-                );
+            type DepsData = {
+                dependencies: Record<string, string>;
+                devDependencies: Record<string, string>;
+                peerDependencies: Record<string, string>;
+                optionalDependencies: Record<string, string>;
+            };
 
-                if (
-                    this.packageManager !== manager ||
-                    this.compareDependencies(this.packageData.dependencies, deps.dependencies) ||
-                    this.compareDependencies(
-                        this.packageData.devDependencies,
-                        deps.devDependencies
-                    ) ||
-                    this.compareDependencies(
-                        this.packageData.peerDependencies,
-                        deps.peerDependencies
-                    ) ||
-                    this.compareDependencies(
-                        this.packageData.optionalDependencies,
-                        deps.optionalDependencies
-                    )
-                ) {
-                    this.changed = true;
-                }
+            const deps = this.cli.cacheManager.get<DepsData>("deps");
+            const manager = this.cli.cacheManager.get<PackageManagerName>("manager");
+
+            if (
+                !deps ||
+                !manager ||
+                this.packageManager !== manager ||
+                this.compareDependencies(this.packageData.dependencies, deps.dependencies) ||
+                this.compareDependencies(this.packageData.devDependencies, deps.devDependencies) ||
+                this.compareDependencies(
+                    this.packageData.peerDependencies,
+                    deps.peerDependencies
+                ) ||
+                this.compareDependencies(
+                    this.packageData.optionalDependencies,
+                    deps.optionalDependencies
+                )
+            ) {
+                this.changed = true;
             }
 
-            writeFileSync(
-                BlazeBuild.buildInfoDir("deps"),
-                JSON.stringify(
-                    {
-                        deps: {
-                            dependencies: this.packageData.dependencies,
-                            devDependencies: this.packageData.devDependencies,
-                            peerDependencies: this.packageData.peerDependencies,
-                            optionalDependencies: this.packageData.optionalDependencies
-                        },
-                        manager: this.packageManager
-                    },
-                    null,
-                    4
-                )
-            );
+            this.cli.cacheManager.set("deps", {
+                dependencies: this.packageData.dependencies,
+                devDependencies: this.packageData.devDependencies,
+                peerDependencies: this.packageData.peerDependencies,
+                optionalDependencies: this.packageData.optionalDependencies
+            });
+
+            this.cli.cacheManager.set("manager", this.packageManager);
         };
 
         const map = {

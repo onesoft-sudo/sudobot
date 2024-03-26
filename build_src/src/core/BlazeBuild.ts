@@ -1,5 +1,6 @@
 import { spawn } from "child_process";
 import { mkdirSync } from "fs";
+import { lstat } from "fs/promises";
 import path from "path";
 import IO from "../io/IO";
 import Logger from "../logging/Logger";
@@ -10,6 +11,7 @@ import { initTask } from "../tasks/init";
 import { metadataTask } from "../tasks/metadata";
 import { tasksTask } from "../tasks/tasks";
 import { BuiltInTask } from "../types/BuiltInTask";
+import { CacheManager } from "./CacheManager";
 import { PackageManager } from "./PackageManager";
 import { PluginManager } from "./PluginManager";
 import { ProjectManager } from "./ProjectManager";
@@ -33,12 +35,14 @@ class BlazeBuild {
     public readonly projectManager = new ProjectManager(this);
     public readonly pluginManager = new PluginManager(this);
     public readonly packageManager = new PackageManager(this);
+    public readonly cacheManager = new CacheManager(this);
 
     private constructor() {}
 
     public async setup() {
         process.on("beforeExit", code => {
             IO.getProgressBuffer()?.end();
+
             if (code === 0) {
                 this.logger.buildSuccess();
             } else {
@@ -81,6 +85,18 @@ class BlazeBuild {
             return import(`${process.cwd()}/build.ts`);
         }
 
+        await this.compileBuildScript();
+        return import(BlazeBuild.buildInfoDir("build.js"));
+    }
+
+    private async compileBuildScript() {
+        const stat = await lstat(`${process.cwd()}/build.ts`);
+        const cachedModTime = this.cacheManager.get<number>("build:lastmod");
+
+        if (cachedModTime && stat.mtimeMs <= cachedModTime) {
+            return;
+        }
+
         await this.execCommand(
             `npx tsc "${path.join(process.cwd(), "build.ts")}" "${BlazeBuild.buildInfoDir(
                 "build.d.ts"
@@ -89,7 +105,7 @@ class BlazeBuild {
             )}" --allowJs --types "node,bun" --module "commonjs" --target "es6" -m "commonjs" --lib "dom,es2022" --noEmitOnError --skipLibCheck --esModuleInterop`
         );
 
-        return import(BlazeBuild.buildInfoDir("build.js"));
+        this.cacheManager.set("build:lastmod", stat.mtimeMs);
     }
 
     private setupGlobals() {
@@ -106,12 +122,24 @@ class BlazeBuild {
     }
 
     public async run() {
+        await this.onStart();
+
         try {
             await this.importBuildScript();
             await this.taskManager.execute("init");
         } catch (error) {
             this.error(`${error}`);
         }
+
+        await this.onEnd();
+    }
+
+    private async onEnd() {
+        await this.cacheManager.write();
+    }
+
+    private async onStart() {
+        await this.cacheManager.read();
     }
 
     public loadBuiltInTasks() {

@@ -18,4 +18,8 @@ export class Plugin {
     }
 
     public onPackageJSONAvailable(_data: PackageData): Awaitable<void> {}
+
+    protected addTask(name: string, dependencies: string[], task: () => Awaitable<void>) {
+        this.cli.taskManager.register(name, dependencies, task);
+    }
 }

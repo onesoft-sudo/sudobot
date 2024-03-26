@@ -83,13 +83,17 @@ export class TaskManager {
             }
 
             const tasks = this.resolveTaskDependencies(taskName);
-            tasks.forEach(task => tasksToRun.add(task));
+
+            for (const task of tasks) {
+                tasksToRun.add(task);
+            }
         }
 
         await handlers?.onExecBegin?.(tasksToRun);
 
         for (const task of tasksToRun) {
             if (task.onlyIf && !(await task.onlyIf(this.cli))) {
+                await handlers?.onTaskCancel?.(task);
                 continue;
             }
 
@@ -108,4 +112,5 @@ type Handlers = {
     onExecEnd?: (tasks: Set<Task>) => Awaitable<void>;
     onTaskBegin?: (task: Task) => Awaitable<void>;
     onTaskEnd?: (task: Task) => Awaitable<void>;
+    onTaskCancel?: (task: Task) => Awaitable<void>;
 };
