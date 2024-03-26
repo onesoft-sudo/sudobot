@@ -79,10 +79,10 @@ export default class FileSystem {
      * @returns A promise that resolves when the file is written.
      * @throws An error if the file cannot be written.
      */
-    public static async writeFileContents(
+    public static async writeFileContents<J extends boolean = false>(
         path: string,
-        contents: Stringable,
-        json: boolean = false
+        contents: J extends true ? object : Stringable,
+        json: J = false as J
     ): Promise<void> {
         if (process.versions.bun) {
             await Bun.write(path, json ? JSON.stringify(contents) : contents.toString());
