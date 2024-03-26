@@ -23,7 +23,7 @@ import { Limits } from "../../constants/Limits";
 import { TakesArgument } from "../../framework/arguments/ArgumentTypes";
 import RestStringArgument from "../../framework/arguments/RestStringArgument";
 import UserArgument from "../../framework/arguments/UserArgument";
-import { Command, CommandMessage } from "../../framework/commands/Command";
+import { Buildable, Command, CommandMessage } from "../../framework/commands/Command";
 import Context from "../../framework/commands/Context";
 import { Inject } from "../../framework/container/Inject";
 import { also } from "../../framework/utils/utils";
@@ -49,7 +49,7 @@ class BeanCommand extends Command {
     @Inject()
     protected readonly infractionManager!: InfractionManager;
 
-    public override build() {
+    public override build(): Buildable[] {
         return [
             this.buildChatInput()
                 .addUserOption(option =>

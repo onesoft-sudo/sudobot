@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { ChatInputCommandInteraction } from "discord.js";
+import { Awaitable, ChatInputCommandInteraction } from "discord.js";
 import { ArgumentPayload, Command } from "../commands/Command";
 import Context from "../commands/Context";
 import InteractionContext from "../commands/InteractionContext";
@@ -30,14 +30,21 @@ type ParseResult =
     | {
           error: null | undefined;
           payload: ArgumentPayload;
+          abort: undefined;
       }
     | {
           error: string;
           payload: undefined;
+          abort: undefined;
+      }
+    | {
+          error: undefined;
+          payload: undefined;
+          abort: boolean;
       };
 
 class ArgumentParser extends HasClient {
-    public async parseArguments(context: LegacyContext, commandContent: string, command: Command) {
+    public async parseArguments(context: LegacyContext, commandContent: string, command: Command, subcommand = false) {
         const isDynamic = Reflect.getMetadata("command:dynamic", command.constructor);
         const argTypes =
             (Reflect.getMetadata("command:types", command.constructor) as ArgumentTypeOptions[]) ||
@@ -66,7 +73,8 @@ class ArgumentParser extends HasClient {
                 commandContent,
                 args,
                 argv,
-                paramTypes
+                paramTypes,
+                subcommand,
             );
 
             if (error) {
@@ -78,12 +86,22 @@ class ArgumentParser extends HasClient {
 
             payload = value!;
         } else {
-            const { error, value } = await this.parseArgumentsUsingCustomTypes(
+            const { error, value, abort } = await this.parseArgumentsUsingCustomTypes(
                 commandContent,
                 args,
                 argv,
-                argTypes
+                argTypes,
+                subcommand,
+                command.onSubcommandNotFound?.bind(command)
+                    ?? Reflect.getMetadata("command:subcommand_not_found_error", command.constructor),
+                context
             );
+
+            if (abort) {
+                return {
+                    abort: true
+                };
+            }
 
             if (error) {
                 return {
@@ -105,12 +123,29 @@ class ArgumentParser extends HasClient {
         commandContent: string,
         args: string[],
         argv: string[],
-        types: ArgumentTypeOptions[]
+        types: ArgumentTypeOptions[],
+        subcommand = false,
+        onSubcommandNotFound?: string | ((context: Context, subcommand: string) => Awaitable<void>),
+        context?: Context
     ) {
         const parsedArguments: Record<string, unknown> = {};
         let lastError;
 
-        for (let i = 0; i < types.length; i++) {
+        if (subcommand && args[0] === undefined) {
+            if (typeof onSubcommandNotFound === "function" && context) {
+                await onSubcommandNotFound(context, args[0]);
+
+                return {
+                    abort: true
+                };
+            }
+
+            return {
+                error: "A subcommand is required!"
+            };
+        }
+
+        for (let i = subcommand && types.length ? 1 : 0; i < types.length; i++) {
             const arg = args[i];
             const expectedArgInfo = types[i];
 
@@ -168,11 +203,18 @@ class ArgumentParser extends HasClient {
         commandContent: string,
         args: string[],
         argv: string[],
-        types: unknown[]
+        types: unknown[],
+        subcommand = false,
     ) {
         const parsedArguments = [];
 
-        for (let i = 0; i < types.length; i++) {
+        if (subcommand && args[0] === undefined) {
+            return {
+                error: "A subcommand is required!"
+            };
+        }
+
+        for (let i = subcommand && types.length ? 1 : 0; i < types.length; i++) {
             const arg = args[i];
             const argType = types[i] as typeof Argument;
 
@@ -210,23 +252,24 @@ class ArgumentParser extends HasClient {
     public async parse(
         context: LegacyContext | InteractionContext,
         command: Command,
-        commandContent?: string
+        commandContent?: string,
+        subcommand = false
     ): Promise<ParseResult> {
         if (context instanceof LegacyContext) {
-            return await this.parseArguments(context, commandContent!, command);
+            return await this.parseArguments(context, commandContent!, command, subcommand);
         } else if (context.isChatInput) {
             return await this.parseFromInteraction(
                 context as InteractionContext<ChatInputCommandInteraction>,
-                command
+                command,
             );
         }
 
-        return { error: null, payload: [] };
+        return { error: null, payload: [], abort: undefined };
     }
 
     public async parseFromInteraction(
         context: InteractionContext<ChatInputCommandInteraction>,
-        command: Command
+        command: Command,
     ): Promise<ParseResult> {
         const interaction = context.commandMessage as ChatInputCommandInteraction;
         const expectedArgs =
@@ -260,7 +303,8 @@ class ArgumentParser extends HasClient {
                     error:
                         expectedArgInfo.errorMessages?.Required ??
                         `${expectedArgInfo.name} is required!`,
-                    payload: undefined
+                    payload: undefined,
+                    abort: undefined
                 };
             }
 
@@ -274,7 +318,8 @@ class ArgumentParser extends HasClient {
             if (error) {
                 return {
                     error: error.message,
-                    payload: undefined
+                    payload: undefined,
+                    abort: undefined
                 };
             }
 
@@ -283,7 +328,8 @@ class ArgumentParser extends HasClient {
 
         return {
             error: null,
-            payload: [args]
+            payload: [args],
+            abort: undefined
         };
     }
 }

@@ -127,6 +127,11 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
     public readonly subcommands: string[] = [];
 
     /**
+     * Whether the subcommands of the command are isolated in their own file.
+     */
+    public readonly isolatedSubcommands: boolean = false;
+
+    /**
      * The metadata for the subcommands of the command.
      */
     public readonly subcommandMeta: Record<string, SubcommandMeta> = {};
@@ -316,14 +321,15 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      * @param args - The command arguments.
      */
     public abstract execute(context: Context, ...args: ArgumentPayload): Promise<void>;
+    public onSubcommandNotFound?(context: Context, subcommand: string): Promise<void>;
 
     /**
      * Prepares and begins to execute the command.
      *
      * @param context - The command context.
-     * @param args - The command arguments.
+     * @param subcommand
      */
-    public async run(context: Context) {
+    public async run(context: Context, subcommand = false) {
         const state: CommandExecutionState<false> = {
             memberPermissions: undefined
         };
@@ -337,14 +343,19 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
         }
 
         if (context.isLegacy || context.isChatInput) {
-            const { error, payload } = await this.argumentParser.parse(
+            const { error, payload, abort } = await this.argumentParser.parse(
                 context as LegacyContext | InteractionContext<ChatInputCommandInteraction>,
                 this as Command<ContextType.Legacy | ContextType.ChatInput>,
-                context instanceof LegacyContext ? context.commandContent : undefined
+                context instanceof LegacyContext ? context.commandContent : undefined,
+                subcommand
             );
 
+            if (abort) {
+                return;
+            }
+
             if (error) {
-                context.error(error);
+                await context.error(error);
                 return;
             }
 
@@ -358,6 +369,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      * Checks the preconditions of the command.
      *
      * @param context - The command context.
+     * @param state
      * @returns {Promise<boolean>} True if the preconditions are met, false otherwise.
      */
     protected async checkPreconditions(
@@ -440,6 +452,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      * Checks the permissions of the command.
      *
      * @param context - The command context.
+     * @param state
      * @returns True if the permissions are met, false otherwise.
      */
     protected async checkPermissions(context: Context, state: CommandExecutionState<true>) {
@@ -461,7 +474,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
 
         if (this.persistentCustomPermissions) {
             if (!this.cachedPersistentCustomPermissions) {
-                this.computePersistentPermissions();
+                await this.computePersistentPermissions();
             }
         }
 
@@ -479,26 +492,30 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
             }
         }
 
-        const result = await this.application
-            .getServiceByName("commandManager")
-            .checkCommandPermissionOverwrites(context, this.name, state.memberPermissions);
+        const configManager = this.application.getServiceByName("configManager");
+        const mode = configManager.systemConfig.default_permissions_mode;
+        let overwrite = false;
 
-        if (!result?.allow) {
-            throw new PermissionDeniedError(
-                "You don't have enough permissions to run this command."
-            );
+        if (mode !== "ignore") {
+            const result = await this.application
+                .getServiceByName("commandManager")
+                .checkCommandPermissionOverwrites(context, this.name, state.memberPermissions);
+
+            if (!result?.allow) {
+                throw new PermissionDeniedError(
+                    "You don't have enough permissions to run this command."
+                );
+            }
+
+            overwrite = result.overwrite;
         }
 
-        if (
-            !result.overwrite &&
-            this.permissions &&
-            !(await permissionManager.hasPermissions(
+        if (((!overwrite && mode === "overwrite") || mode === "check") && this.permissions) {
+            return await permissionManager.hasPermissions(
                 context.member,
                 this.permissions,
                 state.memberPermissions
-            ))
-        ) {
-            return false;
+            );
         }
 
         return true;
