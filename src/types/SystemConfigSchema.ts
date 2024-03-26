@@ -54,11 +54,14 @@ export const SystemConfigSchema = z.object({
     commands: z
         .object({
             mention_prefix: z.boolean().default(true),
-            groups: z.record(z.string(), z.array(z.string())).default({})
+            groups: z.record(z.string(), z.array(z.string())).default({}),
+            register_application_commands_on_boot: z
+                .enum(["always_global", "guild", "none", "auto_global"])
+                .default("auto_global")
         })
         .default({}),
     enable_file_filter: z.boolean().default(false),
-    default_permissions_mode: z.enum(["ignore", "overwrite", "check"]).default("check"),
+    default_permissions_mode: z.enum(["ignore", "overwrite", "check"]).default("check"), // FIXME: 9.x doesn't have this
     api: z
         .object({
             enabled: z.boolean().default(true),
@@ -101,8 +104,6 @@ export const SystemConfigSchema = z.object({
                 .optional()
         })
         .optional(),
-    sync_permission_managers_on_boot: z.boolean().default(false),
-    debug_mode: z.boolean().default(false),
     statistics: z
         .object({
             enabled: z.boolean().default(false),

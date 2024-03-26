@@ -102,7 +102,11 @@ class InfractionManager extends Service {
         return finalReason;
     }
 
-    private async notify(user: User, infraction: Infraction) {
+    private async notify(
+        user: User,
+        infraction: Infraction,
+        transformNotificationEmbed?: (embed: APIEmbed) => APIEmbed
+    ) {
         const guild = this.application.getClient().guilds.cache.get(infraction.guildId);
 
         if (!guild) {
@@ -138,11 +142,15 @@ class InfractionManager extends Service {
             });
         }
 
+        const transformed = transformNotificationEmbed ? transformNotificationEmbed(embed) : embed;
+
         try {
-            await user.send({ embeds: [embed] });
+            await user.send({ embeds: [transformed] });
             return "notified";
         } catch {
-            return (await this.handleFallback(user, infraction, embed)) ? "fallback" : "failed";
+            return (await this.handleFallback(user, infraction, transformed))
+                ? "fallback"
+                : "failed";
         }
     }
 
@@ -253,7 +261,8 @@ class InfractionManager extends Service {
         user,
         reason,
         guildId,
-        generateOverviewEmbed
+        generateOverviewEmbed,
+        transformNotificationEmbed
     }: CreateBeanPayload<E>): Promise<InfractionCreateResult<E>> {
         const infraction = await this.application.prisma.$transaction(async prisma => {
             let infraction = await prisma.infraction.create({
@@ -266,7 +275,7 @@ class InfractionManager extends Service {
                 }
             });
 
-            const status = await this.notify(user, infraction);
+            const status = await this.notify(user, infraction, transformNotificationEmbed);
 
             if (status !== "notified") {
                 infraction = await prisma.infraction.update({
@@ -296,16 +305,16 @@ class InfractionManager extends Service {
     private createOverviewEmbed(infraction: Infraction, user: User, moderator: User) {
         const fields = [
             {
+                name: "Reason",
+                value: infraction.reason ?? italic("No reason provided")
+            },
+            {
                 name: "User",
                 value: userInfo(user)
             },
             {
                 name: "Moderator",
                 value: userInfo(moderator)
-            },
-            {
-                name: "Reason",
-                value: infraction.reason ?? italic("No reason provided")
             }
         ];
 
@@ -349,6 +358,7 @@ type CommonOptions<E extends boolean> = {
     reason?: string;
     guildId: Snowflake;
     generateOverviewEmbed?: E;
+    transformNotificationEmbed?: (embed: APIEmbed) => APIEmbed;
 };
 
 type CreateBeanPayload<E extends boolean> = CommonOptions<E> & {

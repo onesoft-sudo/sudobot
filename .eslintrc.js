@@ -45,6 +45,15 @@ module.exports = {
             rules: {
                 "@typescript-eslint/no-unused-vars": "off"
             }
+        },
+        {
+            files: ["*.d.ts", "*.ts"],
+            rules: {
+                "@typescript-eslint/explicit-member-accessibility": [
+                    "error",
+                    { accessibility: "explicit" }
+                ]
+            }
         }
     ],
     ignorePatterns: [

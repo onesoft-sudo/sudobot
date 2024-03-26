@@ -18,12 +18,15 @@
  */
 
 import { User } from "discord.js";
+import { Colors } from "../../constants/Colors";
+import { Limits } from "../../constants/Limits";
 import { TakesArgument } from "../../framework/arguments/ArgumentTypes";
 import RestStringArgument from "../../framework/arguments/RestStringArgument";
 import UserArgument from "../../framework/arguments/UserArgument";
 import { Command, CommandMessage } from "../../framework/commands/Command";
 import Context from "../../framework/commands/Context";
 import { Inject } from "../../framework/container/Inject";
+import { also } from "../../framework/utils/utils";
 import SystemAdminPermission from "../../permissions/SystemAdminPermission";
 import InfractionManager from "../../services/InfractionManager";
 import { ErrorMessages } from "../../utils/ErrorMessages";
@@ -46,20 +49,36 @@ class BeanCommand extends Command {
     @Inject()
     protected readonly infractionManager!: InfractionManager;
 
+    public override build() {
+        return [
+            this.buildChatInput()
+                .addUserOption(option =>
+                    option.setName("user").setDescription("The user to bean.").setRequired(true)
+                )
+                .addStringOption(option =>
+                    option
+                        .setName("reason")
+                        .setDescription("The reason for the bean.")
+                        .setMaxLength(Limits.Reason)
+                )
+        ];
+    }
+
     public override async execute(
         context: Context<CommandMessage>,
         args: BeanCommandArgs
     ): Promise<void> {
         const { user, reason } = args;
-
         const { overviewEmbed } = await this.infractionManager.createBean({
             guildId: context.guildId,
             moderator: context.user,
             reason,
             user,
-            generateOverviewEmbed: true
+            generateOverviewEmbed: true,
+            transformNotificationEmbed: embed => also(embed, e => void (e.color = Colors.Success))
         });
 
+        overviewEmbed.color = Colors.Primary;
         await context.reply({ embeds: [overviewEmbed] });
     }
 }

@@ -19,7 +19,11 @@
 
 import { CommandPermissionOverwrite, CommandPermissionOverwriteAction } from "@prisma/client";
 import {
+    ApplicationCommandOptionType,
+    ChatInputCommandInteraction,
     Collection,
+    CommandInteraction,
+    ContextMenuCommandInteraction,
     Message,
     PermissionResolvable,
     PermissionsBitField,
@@ -29,6 +33,7 @@ import {
 import { Command } from "../framework/commands/Command";
 import CommandAbortedError from "../framework/commands/CommandAbortedError";
 import Context from "../framework/commands/Context";
+import InteractionContext from "../framework/commands/InteractionContext";
 import LegacyContext from "../framework/commands/LegacyContext";
 import { Inject } from "../framework/container/Inject";
 import { MemberPermissionData } from "../framework/permissions/AbstractPermissionManager";
@@ -36,7 +41,7 @@ import { SystemPermissionLikeString } from "../framework/permissions/AbstractPer
 import { Name } from "../framework/services/Name";
 import { Service } from "../framework/services/Service";
 import LevelBasedPermissionManager from "../security/LevelBasedPermissionManager";
-import { pick } from "../utils/utils";
+import { developmentMode, pick } from "../utils/utils";
 import type ConfigurationManager from "./ConfigurationManager";
 
 type MinimalCommandPermissionOverwrite = Pick<
@@ -80,6 +85,68 @@ class CommandManager extends Service {
     protected readonly configManager!: ConfigurationManager;
 
     public async onReady() {
+        await this.loadCommandPermissionOverwrites();
+        await this.registerApplicationCommands();
+    }
+
+    public async registerApplicationCommands() {
+        const existingApplicationCommands = await this.client.application?.commands.fetch();
+
+        if (existingApplicationCommands?.size && !developmentMode()) {
+            this.application.logger.debug(
+                "Skipped registering application commands as they're already registered"
+            );
+            return;
+        }
+
+        const mode = this.configManager.systemConfig.commands.register_application_commands_on_boot;
+
+        if (mode === "none") {
+            this.application.logger.debug(
+                "Skipped registering application commands as it's disabled"
+            );
+
+            return;
+        }
+
+        const commands = this.commands
+            .filter((command, key) => command.name === key && command.supportsInteraction())
+            .map(command => command.build().map(builder => builder.toJSON()))
+            .flat();
+
+        if (!commands.length) {
+            this.application.logger.debug("No commands to register");
+            return;
+        }
+
+        const guildId = mode === "guild" ? process.env.HOME_GUILD_ID : undefined;
+        let registered = false;
+
+        if (guildId) {
+            await this.client.application?.commands.set(commands, guildId);
+            registered = true;
+        } else if (mode === "always_global") {
+            await this.client.application?.commands.set(commands);
+            this.application.logger.debug(
+                "Registering global commands on every startup is not recommended, as you may hit the global rate limit. Please consider using guild commands instead, for testing purposes."
+            );
+            registered = true;
+        } else if (
+            mode === "auto_global" &&
+            (process.argv.includes("--update-commands") || process.argv.includes("-u"))
+        ) {
+            await this.client.application?.commands.set(commands);
+            registered = true;
+        }
+
+        if (registered) {
+            this.application.logger.info(
+                `Registered ${commands.length} application ${guildId ? "guild " : ""}commands`
+            );
+        }
+    }
+
+    public async loadCommandPermissionOverwrites() {
         const permissionOverwrites =
             await this.application.prisma.commandPermissionOverwrite.findMany({
                 where: { disabled: false }
@@ -179,15 +246,49 @@ class CommandManager extends Service {
 
         try {
             await command.run(context);
+            return true;
         } catch (error) {
             if (error instanceof CommandAbortedError) {
                 await error.sendMessage(context);
-                return;
+                return false;
             }
 
             this.application.logger.error(error);
         }
     }
+
+    public async runCommandFromInteraction(interaction: CommandInteraction) {
+        const { commandName } = interaction;
+        const subcommand = interaction.options.data.find(
+            e => e.type === ApplicationCommandOptionType.Subcommand
+        )?.name;
+        console.log(subcommand);
+        const command = this.commands.get(
+            subcommand ? `${commandName}::${subcommand}` : commandName
+        );
+
+        if (!command || !command.supportsInteraction()) {
+            return false;
+        }
+
+        const context = new InteractionContext(
+            commandName,
+            interaction as ChatInputCommandInteraction | ContextMenuCommandInteraction
+        );
+
+        try {
+            await command.run(context);
+            return true;
+        } catch (error) {
+            if (error instanceof CommandAbortedError) {
+                await error.sendMessage(context);
+                return false;
+            }
+
+            this.application.logger.error(error);
+        }
+    }
+
     protected requirementCheckChannels(
         _action: CommandPermissionOverwriteAction,
         context: Context,
