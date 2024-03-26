@@ -14,5 +14,4 @@
 -   Log infraction ~~creation~~/edition/deletion when using `-infraction` commands
 -   `-modmsg` command
 -   Better cache management (especially for permission managers and command overwrites)
--   Interaction Support
 -   Better subcommand support
