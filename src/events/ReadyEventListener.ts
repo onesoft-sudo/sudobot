@@ -26,6 +26,7 @@ import { Events } from "../framework/types/ClientEvents";
 import CommandManager from "../services/CommandManager";
 import ConfigurationManager from "../services/ConfigurationManager";
 import LogStreamingService from "../services/LogStreamingService";
+import QueueService from "../services/QueueService";
 import StartupManager from "../services/StartupManager";
 
 class ReadyEventListener extends EventListener<Events.Ready, Client> {
@@ -44,6 +45,9 @@ class ReadyEventListener extends EventListener<Events.Ready, Client> {
     public readonly server!: APIServer;
 
     @Inject()
+    public readonly queueService!: QueueService;
+
+    @Inject()
     public readonly logStreamingService!: LogStreamingService;
 
     @Inject()
@@ -55,6 +59,7 @@ class ReadyEventListener extends EventListener<Events.Ready, Client> {
         this.configManager.onReady();
         this.startupManager.onReady();
         this.commandManager.onReady();
+        this.queueService.onReady();
         this.server.onReady();
 
         // FIXME

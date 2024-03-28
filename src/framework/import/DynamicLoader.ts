@@ -31,6 +31,7 @@ import Container from "../container/Container";
 import EventListener from "../events/EventListener";
 import { EventListenerInfo } from "../events/GatewayEventListener";
 import { Permission } from "../permissions/Permission";
+import Queue from "../queues/Queue";
 import { ClientEvents } from "../types/ClientEvents";
 import { AnyFunction, Class, DefaultExport } from "../types/Utils";
 
@@ -83,6 +84,7 @@ class DynamicLoader {
         const { default: ControllerClass }: DefaultExport<Class<Controller, [Application]>> =
             await import(filepath);
         const controller = Container.getInstance().resolveByClass(ControllerClass);
+        this.loadEventsFromMetadata(controller, true);
         this.application.getService(APIServer).loadController(controller, ControllerClass, router);
         this.application.logger.info("Loaded Controller: ", ControllerClass.name);
     }
@@ -102,7 +104,7 @@ class DynamicLoader {
     public async loadEvent(filepath: string) {
         const { default: EventListenerClass }: DefaultExport<Class<EventListener, [Application]>> =
             await import(filepath);
-        const listener = await this.getContainer().resolveByClass(EventListenerClass);
+        const listener = this.getContainer().resolveByClass(EventListenerClass);
         this.application
             .getClient()
             .addEventListener(listener.name, listener.execute.bind(listener));
@@ -198,19 +200,40 @@ class DynamicLoader {
             await import(filepath);
         const canBind = Reflect.hasMetadata("di:can-bind", CommandClass.prototype);
         const command = canBind
-            ? await this.getContainer().resolveByClass(CommandClass)
+            ? this.getContainer().resolveByClass(CommandClass)
             : new CommandClass(this.application);
 
         if (!canBind) {
-            await this.getContainer().resolveProperties(CommandClass, command);
+            this.getContainer().resolveProperties(CommandClass, command);
         }
 
         const defaultGroup = basename(dirname(filepath));
         await commandManager.addCommand(command, loadMetadata, groups, defaultGroup);
+        this.loadEventsFromMetadata(command, true);
+
         this.application.logger.info("Loaded Command: ", command.name);
     }
 
-    public async loadEventsFromMetadata(object: object, accessConstructor = true) {
+    public async loadQueueClasses(directory = path.resolve(__dirname, "../../queues")) {
+        this.application.getServiceByName("queueService").onBeforeQueueRegister();
+        const queueFiles = await this.iterateDirectoryRecursively(directory);
+
+        for (const file of queueFiles) {
+            if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
+                continue;
+            }
+
+            await this.loadQueueClass(file);
+        }
+    }
+
+    public async loadQueueClass(filepath: string) {
+        const { default: QueueClass }: DefaultExport<typeof Queue> = await import(filepath);
+        this.application.getServiceByName("queueService").register(QueueClass);
+        this.application.logger.info("Loaded Queue: ", QueueClass.uniqueName);
+    }
+
+    public loadEventsFromMetadata(object: object, accessConstructor = true) {
         const finalObject = accessConstructor ? object.constructor : object;
         const metadata =
             Symbol.metadata in finalObject

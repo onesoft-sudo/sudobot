@@ -23,7 +23,8 @@ import type CommandManager from "../services/CommandManager";
 import type ConfigurationManager from "../services/ConfigurationManager";
 import type ExtensionManager from "../services/ExtensionManager";
 import type LogStreamingService from "../services/LogStreamingService";
-import PermissionManagerService from "../services/PermissionManagerService";
+import type PermissionManagerService from "../services/PermissionManagerService";
+import type QueueService from "../services/QueueService";
 import type StartupManager from "../services/StartupManager";
 
 export interface ServiceRecord {
@@ -35,6 +36,7 @@ export interface ServiceRecord {
     startupManager: StartupManager;
     serviceManager: ServiceManager;
     permissionManager: PermissionManagerService;
+    queueService: QueueService;
 }
 
 interface ServiceRecordLocal extends ServiceRecord {}

@@ -39,6 +39,7 @@ import { Inject } from "../framework/container/Inject";
 import { Name } from "../framework/services/Name";
 import { Service } from "../framework/services/Service";
 import { emoji } from "../framework/utils/emoji";
+import InfractionChannelDeleteQueue from "../queues/InfractionChannelDeleteQueue";
 import { GuildConfig } from "../types/GuildConfigSchema";
 import { userInfo } from "../utils/embed";
 import ConfigurationManager from "./ConfigurationManager";
@@ -154,7 +155,6 @@ class InfractionManager extends Service {
         }
     }
 
-    // FIXME: There is no implementation for auto expiration of infraction channels
     private async handleFallback(
         user: User,
         infraction: Infraction,
@@ -206,7 +206,7 @@ class InfractionManager extends Service {
             return null;
         }
 
-        return await guild.channels.create({
+        const channel = await guild.channels.create({
             type: ChannelType.GuildText,
             name: `infraction-${infraction.id}`,
             topic: `DM Fallback for Infraction #${infraction.id}`,
@@ -227,6 +227,21 @@ class InfractionManager extends Service {
             ],
             reason: `Creating DM Fallback for Infraction #${infraction.id}`
         });
+
+        if (config.dm_fallback_channel_expires_in && config.dm_fallback_channel_expires_in > 0) {
+            await this.application
+                .getServiceByName("queueService")
+                .create(InfractionChannelDeleteQueue, {
+                    data: {
+                        channelId: channel.id
+                    },
+                    guildId: guild.id,
+                    runsAt: new Date(Date.now() + config.dm_fallback_channel_expires_in)
+                })
+                .schedule();
+        }
+
+        return channel;
     }
 
     private async createFallbackThread(infraction: Infraction, config: InfractionConfig) {
@@ -256,7 +271,9 @@ class InfractionManager extends Service {
         })) as PrivateThreadChannel;
     }
 
-    public async createBean<E extends boolean>(payload: CreateBeanPayload<E>): Promise<InfractionCreateResult<E>> {
+    public async createBean<E extends boolean>(
+        payload: CreateBeanPayload<E>
+    ): Promise<InfractionCreateResult<E>> {
         const {
             moderator,
             user,

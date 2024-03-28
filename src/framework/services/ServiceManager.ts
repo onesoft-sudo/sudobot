@@ -88,6 +88,7 @@ class ServiceManager {
         this.services.set(ServiceClass, instance);
         this.servicesMappedByName.set(key, instance);
         await instance.boot();
+        this.application.dynamicLoader.loadEventsFromMetadata(instance, true);
         this.application.logger.info(
             `Loaded service: ${name ?? ServiceClass.name} (bound as ${key})`
         );
