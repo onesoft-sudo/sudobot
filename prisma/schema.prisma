@@ -103,6 +103,22 @@ model CommandPermissionOverwrite {
     @@map("command_permission_overwrites")
 }
 
+model Queue {
+    id        Int       @id @default(autoincrement())
+    userId    String
+    guildId   String
+    channelId String?
+    messageId String?
+    name      String
+    repeat    Boolean   @default(false)
+    data      Json      @default("{}")
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @default(now()) @updatedAt
+    runsAt    DateTime?
+
+    @@map("queues")
+}
+
 // The following models were used in the previous version of the bot and are no longer used.
 // They are kept here for reference and will be removed in the future.
 
@@ -115,21 +131,6 @@ model SpamRecord {
     updatedAt DateTime @default(now()) @updatedAt
 
     @@map("spam_records")
-}
-
-model Queue {
-    id         Int      @id @default(autoincrement())
-    user_id    String
-    guild_id   String
-    channel_id String?
-    message_id String?
-    file_name  String
-    name       String
-    args       String[] @default([])
-    createdAt  DateTime @default(now())
-    willRunAt  DateTime
-
-    @@map("queues")
 }
 
 model Snippet {
