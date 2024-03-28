@@ -33,6 +33,7 @@ import {
 import { Command } from "../framework/commands/Command";
 import CommandAbortedError from "../framework/commands/CommandAbortedError";
 import Context from "../framework/commands/Context";
+import { ContextType } from "../framework/commands/ContextType";
 import InteractionContext from "../framework/commands/InteractionContext";
 import LegacyContext from "../framework/commands/LegacyContext";
 import { Inject } from "../framework/container/Inject";
@@ -43,7 +44,6 @@ import { Service } from "../framework/services/Service";
 import LevelBasedPermissionManager from "../security/LevelBasedPermissionManager";
 import { developmentMode, pick } from "../utils/utils";
 import type ConfigurationManager from "./ConfigurationManager";
-import { ContextType } from "../framework/commands/ContextType";
 
 type MinimalCommandPermissionOverwrite = Pick<
     CommandPermissionOverwrite,
@@ -111,7 +111,12 @@ class CommandManager extends Service {
         }
 
         const commands = this.commands
-            .filter((command, key) => !command.name.includes("::") && command.name === key && command.supportsInteraction())
+            .filter(
+                (command, key) =>
+                    !command.name.includes("::") &&
+                    command.name === key &&
+                    command.supportsInteraction()
+            )
             .map(command => command.build().map(builder => builder.toJSON()))
             .flat();
 
@@ -128,8 +133,12 @@ class CommandManager extends Service {
             registered = true;
         } else if (mode === "always_global") {
             await this.client.application?.commands.set(commands);
-            this.application.logger.debug("Registering global commands on every startup is not recommended, as you may hit the global rate limit.");
-            this.application.logger.debug("Please consider using guild commands instead, for testing purposes.");
+            this.application.logger.debug(
+                "Registering global commands on every startup is not recommended, as you may hit the global rate limit."
+            );
+            this.application.logger.debug(
+                "Please consider using guild commands instead, for testing purposes."
+            );
             registered = true;
         } else if (
             mode === "auto_global" &&
@@ -246,25 +255,36 @@ class CommandManager extends Service {
 
         if (command.hasSubcommands) {
             const subcommandName = args[0];
-            const subcommand = this.commands.get(command.isolatedSubcommands ? `${commandName}::${subcommandName}` : commandName);
+            const subcommand = this.commands.get(
+                command.isolatedSubcommands ? `${commandName}::${subcommandName}` : commandName
+            );
 
             if (!subcommand) {
-                const errorHandler = Reflect.getMetadata("command:subcommand_not_found_error", command.constructor);
+                const errorHandler = Reflect.getMetadata(
+                    "command:subcommand_not_found_error",
+                    command.constructor
+                );
 
                 if (typeof errorHandler === "string") {
                     return context.error(errorHandler);
-                }
-                else if (typeof errorHandler === "function") {
-                    await errorHandler(context, subcommandName, !subcommandName ? "not_specified" : "not_found");
+                } else if (typeof errorHandler === "function") {
+                    await errorHandler(
+                        context,
+                        subcommandName,
+                        !subcommandName ? "not_specified" : "not_found"
+                    );
                     return;
-                }
-                else {
-                    await context.error(subcommandName ? "Invalid subcommand provided" : "Please provide a subcommand!");
+                } else {
+                    await context.error(
+                        subcommandName
+                            ? "Invalid subcommand provided"
+                            : "Please provide a subcommand!"
+                    );
                     return;
                 }
             }
 
-            return this.runSubcommand(subcommand, context);
+            return this.runSubcommand(command, subcommand, context);
         }
 
         return this.execCommand(command, context);
@@ -298,10 +318,18 @@ class CommandManager extends Service {
         )?.name;
 
         const command = this.commands.get(
-            subcommand && baseCommand.isolatedSubcommands && baseCommand.hasSubcommands ? `${commandName}::${subcommand}` : commandName
+            subcommand && baseCommand.isolatedSubcommands && baseCommand.hasSubcommands
+                ? `${commandName}::${subcommand}`
+                : commandName
         );
 
-        if (!command || !command.supportsInteraction() || (subcommand && baseCommand.hasSubcommands && !baseCommand.subcommands.includes(subcommand))) {
+        if (
+            !command ||
+            !command.supportsInteraction() ||
+            (subcommand &&
+                baseCommand.hasSubcommands &&
+                !baseCommand.subcommands.includes(subcommand))
+        ) {
             return false;
         }
 
@@ -311,7 +339,10 @@ class CommandManager extends Service {
         );
 
         try {
-            await command.run(context, !!subcommand && baseCommand.isolatedSubcommands && baseCommand.hasSubcommands);
+            await command.run(
+                context,
+                !!subcommand && baseCommand.isolatedSubcommands && baseCommand.hasSubcommands
+            );
             return true;
         } catch (error) {
             if (error instanceof CommandAbortedError) {
@@ -772,7 +803,17 @@ class CommandManager extends Service {
         );
     }
 
-    private runSubcommand(subcommand: Command<ContextType.ChatInput | ContextType.Legacy>, context: Context) {
+    private async runSubcommand(
+        command: Command<ContextType.ChatInput | ContextType.Legacy>,
+        subcommand: Command<ContextType.ChatInput | ContextType.Legacy>,
+        context: Context
+    ) {
+        const { passed } = await command.runPreconditions(context);
+
+        if (!passed) {
+            return false;
+        }
+
         return this.execCommand(subcommand, context, true);
     }
 }

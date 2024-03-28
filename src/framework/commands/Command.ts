@@ -321,7 +321,35 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      * @param args - The command arguments.
      */
     public abstract execute(context: Context, ...args: ArgumentPayload): Promise<void>;
-    public onSubcommandNotFound?(context: Context, subcommand: string, errorType: "not_found" | "not_specified"): Promise<void>;
+    public onSubcommandNotFound?(
+        context: Context,
+        subcommand: string,
+        errorType: "not_found" | "not_specified"
+    ): Promise<void>;
+
+    /**
+     * Runs the preconditions of the command.
+     *
+     * @param context - The command context.
+     * @returns The result of the precondition check.
+     */
+    public async runPreconditions(context: Context): Promise<PreconditionExecutionResult> {
+        const state: CommandExecutionState<false> = {
+            memberPermissions: undefined
+        };
+
+        if (!(await this.checkPreconditions(context, state))) {
+            return {
+                passed: false,
+                state: state as CommandExecutionState<boolean>
+            };
+        }
+
+        return {
+            passed: true,
+            state: state as CommandExecutionState<boolean>
+        };
+    }
 
     /**
      * Prepares and begins to execute the command.
@@ -596,5 +624,9 @@ export type CommandExecutionState<L extends boolean = false> = {
     memberPermissions: MemberPermissionData | (L extends false ? undefined : never);
 };
 export type Buildable = Pick<SlashCommandBuilder | ContextMenuCommandBuilder, "name" | "toJSON">;
+export type PreconditionExecutionResult = {
+    passed: boolean;
+    state: CommandExecutionState<boolean>;
+};
 
 export { Command };
