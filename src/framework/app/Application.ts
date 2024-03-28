@@ -95,11 +95,16 @@ class Application {
         return this.getLogger();
     }
 
+    public get client() {
+        return this.getClient();
+    }
+
     public async boot({
         commands = true,
         events = true,
-        permissions = true
-    }: { commands?: boolean; events?: boolean; permissions?: boolean } = {}) {
+        permissions = true,
+        queues = true
+    }: { commands?: boolean; events?: boolean; permissions?: boolean; queues?: boolean } = {}) {
         await this.serviceManager.loadServices();
 
         if (permissions) {
@@ -113,6 +118,10 @@ class Application {
 
         if (commands) {
             await this.dynamicLoader.loadCommands(path.resolve(this.rootPath, "commands"));
+        }
+
+        if (queues) {
+            await this.dynamicLoader.loadQueueClasses(path.resolve(this.rootPath, "queues"));
         }
     }
 
