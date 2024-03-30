@@ -24,7 +24,10 @@ import { Permission } from "../framework/permissions/Permission";
 import type ConfigurationManager from "../services/ConfigurationManager";
 
 /**
- * Permission that checks if a user is a system admin.
+ * System Administrator permission. Grants access to
+ * every resource and allows every action, ignoring
+ * all permission checks.
+ *
  * This is the only permission that might be invoked
  * twice or more in a single command execution.
  *
