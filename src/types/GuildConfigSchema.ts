@@ -50,20 +50,12 @@ export const GuildConfigSchema = z.object({
         .default({}),
     permissions: z
         .object({
-            mod_role: zSnowflake
-                .optional()
-                .describe("[DEPRECATED] Use one of the available permission systems instead"),
-            admin_role: zSnowflake
-                .optional()
-                .describe("[DEPRECATED] Use one of the available permission systems instead"),
-            staff_role: zSnowflake
-                .optional()
-                .describe("[DEPRECATED] Use one of the available permission systems instead"),
             invincible_roles: z.array(zSnowflake).default([]),
             mode: PermissionModeSchema.default("discord").optional(),
             check_discord_permissions: z
                 .enum(["both", "automod", "manual_actions", "none"])
-                .default("both")
+                .default("both"),
+            command_permission_mode: z.enum(["ignore", "overwrite", "check"]).optional()
         })
         .optional()
         .default({}),

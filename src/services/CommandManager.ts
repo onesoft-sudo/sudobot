@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { CommandPermissionOverwrite, CommandPermissionOverwriteAction } from "@prisma/client";
+import { CommandPermissionOverwriteAction } from "@prisma/client";
 import {
     ApplicationCommandOptionType,
     ChatInputCommandInteraction,
@@ -30,6 +30,11 @@ import {
     PermissionsString,
     Snowflake
 } from "discord.js";
+import CommandPermissionOverwriteCacheStore, {
+    CachedCommandPermissionOverwrites,
+    CachedMinimalCommandPermissionOverwrite,
+    CommandOverwriteLogic
+} from "../cache/CommandPermissionOverwriteCacheStore";
 import { Command } from "../framework/commands/Command";
 import CommandAbortedError from "../framework/commands/CommandAbortedError";
 import Context from "../framework/commands/Context";
@@ -42,45 +47,17 @@ import { SystemPermissionLikeString } from "../framework/permissions/AbstractPer
 import { Name } from "../framework/services/Name";
 import { Service } from "../framework/services/Service";
 import LevelBasedPermissionManager from "../security/LevelBasedPermissionManager";
-import { developmentMode, pick } from "../utils/utils";
+import { developmentMode } from "../utils/utils";
 import type ConfigurationManager from "./ConfigurationManager";
-
-type MinimalCommandPermissionOverwrite = Pick<
-    CommandPermissionOverwrite,
-    | "requiredChannels"
-    | "requiredRoles"
-    | "requiredLevel"
-    | "requiredDiscordPermissions"
-    | "requiredSystemPermissions"
-    | "requiredUsers"
->;
-
-type CommandOverwriteLogic<T> = {
-    and?: T[];
-    deepAnd?: T[][];
-};
-
-type CachedMinimalCommandPermissionOverwrite = {
-    requiredChannels: Snowflake[] | null;
-    requiredRoles: CommandOverwriteLogic<Snowflake> | null;
-    requiredLevel: number | null;
-    requiredPermissions: CommandOverwriteLogic<PermissionsString> | null;
-    requiredSystemPermissions: CommandOverwriteLogic<SystemPermissionLikeString> | null;
-    requiredUsers: CommandOverwriteLogic<Snowflake> | null;
-};
-
-type CachedCommandPermissionOverwrites = {
-    allow: CachedMinimalCommandPermissionOverwrite | null;
-    deny: CachedMinimalCommandPermissionOverwrite | null;
-};
 
 @Name("commandManager")
 class CommandManager extends Service {
     public readonly commands = new Collection<string, Command>();
-    public readonly permissionOverwrites = new Collection<
-        `${Snowflake}:${string}`,
-        CachedCommandPermissionOverwrites
-    >();
+    // public readonly permissionOverwrites = new Collection<
+    //     `${Snowflake}:${string}`,
+    //     CachedCommandPermissionOverwrites
+    // >();
+    public readonly store = new CommandPermissionOverwriteCacheStore(this);
 
     @Inject("configManager")
     protected readonly configManager!: ConfigurationManager;
@@ -155,34 +132,7 @@ class CommandManager extends Service {
         }
     }
 
-    public async loadCommandPermissionOverwrites() {
-        const permissionOverwrites =
-            await this.application.prisma.commandPermissionOverwrite.findMany({
-                where: { disabled: false }
-            });
-
-        for (const overwrite of permissionOverwrites) {
-            const cache = this.makeCache(overwrite);
-
-            for (const command of overwrite.commands) {
-                const actualName = this.commands.get(command)?.name;
-
-                if (!actualName) {
-                    continue;
-                }
-
-                const existing = this.permissionOverwrites.get(
-                    `${overwrite.guildId}:${actualName}`
-                );
-                const merged = this.mergePermissionOverwrites(overwrite.onMatch, existing, cache);
-                this.permissionOverwrites.set(`${overwrite.guildId}:${actualName}`, merged);
-            }
-        }
-
-        this.application.logger.debug(
-            `Loaded ${permissionOverwrites.length} command permission overwrites`
-        );
-    }
+    public async loadCommandPermissionOverwrites() {}
 
     public async addCommand(
         command: Command,
@@ -564,135 +514,6 @@ class CommandManager extends Service {
         return true;
     }
 
-    /**
-     * The requirement logic is structured in an array of arrays, where each
-     * array is a set of requirements that are checked with the AND operator.
-     * And, the elements inside the inner array are checked with the OR operator.
-     *
-     * [[1, 2], [3, 4], [5, 6], 7] => (1 OR 2) AND (3 OR 4) AND (5 OR 6) AND 7
-     */
-    protected makeLogicArray<T>(array: Array<T | T[]>): CommandOverwriteLogic<T> {
-        const deepAnd = [];
-        const and = new Set<T>();
-
-        for (const item of array) {
-            if (Array.isArray(item)) {
-                deepAnd.push(new Set(item));
-                continue;
-            }
-
-            and.add(item);
-        }
-
-        return {
-            and: and.size ? Array.from(and) : undefined,
-            deepAnd: deepAnd.length ? deepAnd.map(set => Array.from(set)) : undefined
-        };
-    }
-
-    protected makeCache(overwrite: CommandPermissionOverwrite) {
-        const picked = pick(overwrite, [
-            "requiredChannels",
-            "requiredRoles",
-            "requiredLevel",
-            "requiredDiscordPermissions",
-            "requiredSystemPermissions",
-            "requiredUsers"
-        ]) as {
-            [K in keyof MinimalCommandPermissionOverwrite]:
-                | MinimalCommandPermissionOverwrite[K]
-                | null;
-        };
-
-        const cache: CachedMinimalCommandPermissionOverwrite = {
-            requiredLevel: picked.requiredLevel,
-            requiredChannels: picked.requiredChannels
-                ? [...(picked.requiredChannels as Snowflake[])]
-                : null,
-            requiredRoles: picked.requiredRoles
-                ? this.makeLogicArray(picked.requiredRoles as Snowflake[][])
-                : null,
-            requiredPermissions: picked.requiredDiscordPermissions
-                ? this.makeLogicArray(picked.requiredDiscordPermissions as PermissionsString[][])
-                : null,
-            requiredSystemPermissions: picked.requiredSystemPermissions
-                ? this.makeLogicArray(
-                      picked.requiredSystemPermissions as SystemPermissionLikeString[][]
-                  )
-                : null,
-            requiredUsers: picked.requiredUsers
-                ? this.makeLogicArray(picked.requiredUsers as Snowflake[][])
-                : null
-        };
-
-        return cache;
-    }
-
-    protected logicConcat<T>(
-        a: CommandOverwriteLogic<T> | null,
-        b: CommandOverwriteLogic<T> | null
-    ) {
-        if (!a && !b) {
-            return null;
-        }
-
-        if (!a) {
-            return b;
-        }
-
-        if (!b) {
-            return a;
-        }
-
-        const and = new Set<T>();
-        const deepAnd = [];
-
-        if (a.and) {
-            for (const item of a.and) {
-                and.add(item);
-            }
-        }
-
-        if (b.and) {
-            for (const item of b.and) {
-                and.add(item);
-            }
-        }
-
-        if (a.deepAnd) {
-            for (const set of a.deepAnd) {
-                deepAnd.push(new Set(set));
-            }
-        }
-
-        if (b.deepAnd) {
-            for (const set of b.deepAnd) {
-                deepAnd.push(new Set(set));
-            }
-        }
-
-        return {
-            and: and.size ? Array.from(and) : undefined,
-            deepAnd: deepAnd.length ? deepAnd.map(set => Array.from(set)) : undefined
-        };
-    }
-
-    protected concatArrays<T>(a: T[] | null, b: T[] | null) {
-        if (!a && !b) {
-            return null;
-        }
-
-        if (!a) {
-            return b;
-        }
-
-        if (!b) {
-            return a;
-        }
-
-        return a.concat(b);
-    }
-
     protected mergePermissionOverwrites(
         onMatch: CommandPermissionOverwriteAction,
         base?: CachedCommandPermissionOverwrites,
@@ -716,21 +537,22 @@ class CommandManager extends Service {
             base[target] = other;
         } else {
             base[target] = {
-                requiredChannels: this.concatArrays(
+                ids: existing.ids.concat(other.ids),
+                requiredChannels: this.store.concatArrays(
                     other.requiredChannels,
                     existing.requiredChannels
                 ),
-                requiredRoles: this.logicConcat(other.requiredRoles, existing.requiredRoles),
+                requiredRoles: this.store.logicConcat(other.requiredRoles, existing.requiredRoles),
                 requiredLevel: other.requiredLevel ?? existing.requiredLevel,
-                requiredPermissions: this.logicConcat(
+                requiredPermissions: this.store.logicConcat(
                     other.requiredPermissions,
                     existing.requiredPermissions
                 ),
-                requiredSystemPermissions: this.logicConcat(
+                requiredSystemPermissions: this.store.logicConcat(
                     other.requiredSystemPermissions,
                     existing.requiredSystemPermissions
                 ),
-                requiredUsers: this.logicConcat(other.requiredUsers, existing.requiredUsers)
+                requiredUsers: this.store.logicConcat(other.requiredUsers, existing.requiredUsers)
             };
         }
 
@@ -747,7 +569,7 @@ class CommandManager extends Service {
         }
 
         const guildId = context.guildId;
-        const permissionOverwrite = this.permissionOverwrites.get(`${guildId}:${name}`);
+        const permissionOverwrite = await this.store.fetch(guildId, name);
 
         if (!permissionOverwrite) {
             return { overwrite: false, allow: true };

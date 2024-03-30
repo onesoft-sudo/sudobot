@@ -530,7 +530,9 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
         }
 
         const configManager = this.application.getServiceByName("configManager");
-        const mode = configManager.systemConfig.default_permissions_mode;
+        const mode =
+            configManager.config[context.guildId]?.permissions.command_permission_mode ??
+            configManager.systemConfig.command_permission_mode;
         let overwrite = false;
 
         if (mode !== "ignore") {

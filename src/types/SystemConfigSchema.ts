@@ -61,7 +61,7 @@ export const SystemConfigSchema = z.object({
         })
         .default({}),
     enable_file_filter: z.boolean().default(false),
-    default_permissions_mode: z.enum(["ignore", "overwrite", "check"]).default("overwrite"),
+    command_permission_mode: z.enum(["ignore", "overwrite", "check"]).default("overwrite"),
     api: z
         .object({
             enabled: z.boolean().default(true),
