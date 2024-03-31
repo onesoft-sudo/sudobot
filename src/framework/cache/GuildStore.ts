@@ -47,6 +47,10 @@ abstract class GuildStore<I extends string | number | bigint | boolean | null | 
         this._metadata.set(`${guildId}:${key}`, { timestamp: Date.now() });
         return this;
     }
+
+    public getMetadata(guildId: Snowflake, key: I): Metadata | undefined {
+        return this._metadata.get(`${guildId}:${key}`);
+    }
 }
 
 export default GuildStore;

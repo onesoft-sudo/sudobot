@@ -50,7 +50,7 @@ class CommandPermissionOverwriteCacheStore extends GuildStore<
     public async fetch(guildId: Snowflake, name: string) {
         const cached = this.get(guildId, name);
 
-        if (cached) {
+        if (cached && Date.now() - (this.getMetadata(guildId, name)?.timestamp ?? 0) < this.ttl) {
             return cached;
         }
 
