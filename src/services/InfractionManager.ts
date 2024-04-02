@@ -192,6 +192,27 @@ class InfractionManager extends Service {
         }
 
         await channel.send({ embeds: [embed], content: `${userMention(user.id)}` });
+
+        if (config?.dm_fallback_channel_expires_in && config.dm_fallback_channel_expires_in > 0) {
+            const guild = this.client.guilds.cache.get(infraction.guildId);
+
+            if (!guild) {
+                return false;
+            }
+
+            await this.application
+                .getServiceByName("queueService")
+                .create(InfractionChannelDeleteQueue, {
+                    data: {
+                        channelId: channel.id,
+                        type: config.dm_fallback === "create_channel" ? "channel" : "thread"
+                    },
+                    guildId: guild.id,
+                    runsAt: new Date(Date.now() + config.dm_fallback_channel_expires_in)
+                })
+                .schedule();
+        }
+
         return true;
     }
 
@@ -227,19 +248,6 @@ class InfractionManager extends Service {
             ],
             reason: `Creating DM Fallback for Infraction #${infraction.id}`
         });
-
-        if (config.dm_fallback_channel_expires_in && config.dm_fallback_channel_expires_in > 0) {
-            await this.application
-                .getServiceByName("queueService")
-                .create(InfractionChannelDeleteQueue, {
-                    data: {
-                        channelId: channel.id
-                    },
-                    guildId: guild.id,
-                    runsAt: new Date(Date.now() + config.dm_fallback_channel_expires_in)
-                })
-                .schedule();
-        }
 
         return channel;
     }
