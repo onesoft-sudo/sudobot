@@ -5,7 +5,7 @@ import { BuiltInTask } from "../types/BuiltInTask";
 export const initTask: BuiltInTask = {
     name: "init",
     handler: async cli => {
-        const argv = process.argv.slice(1);
+        const argv = process.argv.slice(1).filter(arg => !arg.startsWith("-"));
 
         if (process.argv[0] === process.execPath) {
             argv.shift();

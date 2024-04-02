@@ -1,7 +1,12 @@
 {
     "name": "sudobot",
-    "description": "A Discord bot for moderation purposes.",
     "version": "9.0.0-alpha.1",
+    "description": "A Discord bot for moderation purposes.",
+    "author": {
+        "name": "Ar Rakin",
+        "email": "rakinar2@onesoftnet.eu.org",
+        "url": "https://virtual-designer.github.io"
+    },
     "main": "build/index.js",
     "license": "AGPL-3.0-or-later",
     "keywords": [
@@ -17,11 +22,6 @@
     "homepage": "https://github.com/onesoft-sudo/sudobot",
     "icon": "https://res.cloudinary.com/rakinar2/image/upload/v1659628446/SudoBot-new_cvwphw.png",
     "readme": "https://github.com/onesoft-sudo/sudobot#readme",
-    "author": {
-        "name": "Ar Rakin",
-        "email": "rakinar2@onesoftnet.eu.org",
-        "url": "https://virtual-designer.github.io"
-    },
     "repository": {
         "type": "git",
         "url": "https://github.com/onesoft-sudo/sudobot"
@@ -29,6 +29,23 @@
     "bugs": {
         "url": "https://github.com/onesoft-sudo/sudobot/issues",
         "email": "sudobot@onesoftnet.eu.org"
+    },
+    "scripts": {
+        "start": "node build/index.js",
+        "start:bun": "bun --tsconfig-override=tsconfig.bun.json src/bun.ts",
+        "prepare": "husky install",
+        "dev": "bun run src/bun.ts",
+        "lint": "eslint src/ --ext .ts",
+        "lint:fix": "eslint src/ --ext .ts --fix",
+        "build": "tsc && mv build/src _build && rm -fr build && mv _build build",
+        "start:prod": "pm2 start ./ecosystem.config.js",
+        "deploy": "node scripts/deploy-commands.js",
+        "gen:schema": "node scripts/generate-config-schema.js",
+        "clean": "rm -frv build tsconfig.tsbuildinfo; make clean",
+        "test": "vitest"
+    },
+    "_moduleAliases": {
+        "@sudobot": "build"
     },
     "dependencies": {
         "@google/generative-ai": "^0.3.0",
@@ -95,28 +112,13 @@
         "eslint": "^8.57.0",
         "husky": "latest",
         "prisma": "^5.11.0",
-        "typescript": "^5.4.2",
+        "typescript": "^5.4.3",
         "vitest": "^1.3.1",
-        "zod-to-json-schema": "^3.22.5"
+        "zod-to-json-schema": "^3.22.5",
+        "blazebuild": "file:./build_src"
     },
+    "peerDependencies": {},
     "optionalDependencies": {
         "openai": "^4.26.0"
-    },
-    "scripts": {
-        "start": "node build/index.js",
-        "start:bun": "bun --tsconfig-override=tsconfig.bun.json src/bun.ts",
-        "prepare": "husky install",
-        "dev": "bun run src/bun.ts",
-        "lint": "eslint src/ --ext .ts",
-        "lint:fix": "eslint src/ --ext .ts --fix",
-        "build": "tsc",
-        "start:prod": "pm2 start ./ecosystem.config.js",
-        "deploy": "node scripts/deploy-commands.js",
-        "gen:schema": "node scripts/generate-config-schema.js",
-        "clean": "rm -frv build tsconfig.tsbuildinfo; make clean",
-        "test": "vitest"
-    },
-    "_moduleAliases": {
-        "@sudobot": "build"
     }
 }

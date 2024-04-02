@@ -84,8 +84,12 @@ export class TaskManager {
 
             const tasks = this.resolveTaskDependencies(taskName);
 
-            for (const task of tasks) {
-                tasksToRun.add(task);
+            for (const dep of tasks) {
+                if (dep.onlyIf && !(await dep.onlyIf(this.cli))) {
+                    continue;
+                }
+
+                tasksToRun.add(dep);
             }
         }
 

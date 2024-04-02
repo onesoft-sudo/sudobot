@@ -6,6 +6,8 @@ import IO from "../io/IO";
 import Logger from "../logging/Logger";
 import FileSystem from "../polyfills/FileSystem";
 import { cleanTask } from "../tasks/clean";
+import { cleanCachesTask } from "../tasks/cleanCaches";
+import { cleanDepsTask } from "../tasks/cleanDeps";
 import { dependenciesTask } from "../tasks/dependencies";
 import { initTask } from "../tasks/init";
 import { metadataTask } from "../tasks/metadata";
@@ -17,8 +19,6 @@ import { PluginManager } from "./PluginManager";
 import { ProjectManager } from "./ProjectManager";
 import { Task } from "./Task";
 import { TaskManager } from "./TaskManager";
-import { cleanCachesTask } from "../tasks/cleanCaches";
-import { cleanDepsTask } from "../tasks/cleanDeps";
 
 class BlazeBuild {
     private static builtInTasks: BuiltInTask[] = [
@@ -57,6 +57,7 @@ class BlazeBuild {
         const errorHandler = (error: unknown) => {
             IO.getProgressBuffer()?.end();
             this.logger.error(error as Error);
+            console.error(error);
             this.logger.buildFailed();
             process.exit(-1);
         };
@@ -79,22 +80,22 @@ class BlazeBuild {
     }
 
     private async importBuildScript() {
-        if (!(await FileSystem.exists("build.ts"))) {
+        if (!(await FileSystem.exists("build.blaze.ts"))) {
             this.error("No build script found.");
         }
 
         this.setupGlobals();
 
         if (process.isBun) {
-            return import(`${process.cwd()}/build.ts`);
+            return import(`${process.cwd()}/build.blaze.ts`);
         }
 
         await this.compileBuildScript();
-        return import(BlazeBuild.buildInfoDir("build.js"));
+        return import(BlazeBuild.buildInfoDir("build.blaze.js"));
     }
 
     private async compileBuildScript() {
-        const stat = await lstat(`${process.cwd()}/build.ts`);
+        const stat = await lstat(`${process.cwd()}/build.blaze.ts`);
         const cachedModTime = this.cacheManager.get<number>("build:lastmod");
 
         if (cachedModTime && stat.mtimeMs <= cachedModTime) {
@@ -102,7 +103,7 @@ class BlazeBuild {
         }
 
         await this.execCommand(
-            `npx tsc "${path.join(process.cwd(), "build.ts")}" "${BlazeBuild.buildInfoDir(
+            `npx tsc "${path.join(process.cwd(), "build.blaze.ts")}" "${BlazeBuild.buildInfoDir(
                 "build.d.ts"
             )}" --outDir "${BlazeBuild.buildInfoDir(
                 ""
@@ -132,7 +133,9 @@ class BlazeBuild {
             await this.importBuildScript();
             await this.taskManager.execute("init");
         } catch (error) {
-            this.error(`${error}`);
+            IO.println("An error occurred while running the build script.");
+            console.error(error);
+            IO.fail(`${error}`);
         }
 
         await this.onEnd();

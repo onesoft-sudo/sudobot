@@ -62,6 +62,7 @@ module.exports = {
         "./extensions/**",
         "./docs/**",
         "./*.bak/**",
-        "./tests/**"
+        "./tests/**",
+        "*.blaze.ts"
     ]
 };

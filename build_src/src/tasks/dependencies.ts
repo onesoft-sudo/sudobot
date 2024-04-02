@@ -4,12 +4,16 @@ import { BuiltInTask } from "../types/BuiltInTask";
 
 export const dependenciesTask: BuiltInTask = {
     name: "dependencies",
-    if: cli =>
-        cli.packageManager.packagesNeedUpdate() ||
-        cli.cacheManager.noCacheFileFound() ||
-        !existsSync("node_modules"),
     dependsOn: ["metadata"],
     handler: async cli => {
+        if (
+            !cli.packageManager.packagesNeedUpdate() &&
+            !cli.cacheManager.noCacheFileFound() &&
+            existsSync("node_modules")
+        ) {
+            return;
+        }
+
         const packageManager = cli.packageManager.getPackageManager();
 
         if (!["bun", "npm", "yarn", "pnpm"].includes(packageManager)) {

@@ -83,10 +83,27 @@ export class PackageManager extends Manager {
     public async writePackageData() {
         const { metadata } = this.cli.projectManager;
         const path = metadata.packageFilePath;
+        const data = this.packageData ?? PackageManager.defaults;
+        const { dependencies, devDependencies, peerDependencies, optionalDependencies, ...rest } =
+            data;
 
         await FileSystem.writeFileContents(
             path,
-            JSON.stringify(this.packageData ?? PackageManager.defaults, null, 4),
+            JSON.stringify(
+                {
+                    name: metadata.name,
+                    version: metadata.version,
+                    description: metadata.description,
+                    author: metadata.author,
+                    ...rest,
+                    dependencies,
+                    devDependencies,
+                    peerDependencies,
+                    optionalDependencies
+                } satisfies typeof data,
+                null,
+                4
+            ),
             false
         );
     }
@@ -191,7 +208,7 @@ export class PackageManager extends Manager {
                     version = splitted[splitted.length === 3 ? 2 : 1];
                     namespace = splitted.length === 3 ? splitted[0] : undefined;
                 } else if (args.length === 2) {
-                    const splitted = args[0].split(" ");
+                    const splitted = args[0].split(":");
                     name = splitted[splitted.length === 2 ? 1 : 0];
                     namespace = splitted.length === 2 ? splitted[0] : undefined;
                     version = args[1];

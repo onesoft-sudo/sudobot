@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# This script is used to build the Blaze library. It is called by the main build script.
+
+# shellcheck disable=SC2068
+bun build_src/src/index.ts $@

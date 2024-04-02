@@ -1,10 +1,10 @@
 import chalk from "chalk";
 import { spawn } from "child_process";
 import { existsSync } from "fs";
-import { Plugin } from "../core/Plugin";
+import { SystemPlugin } from "../core/SystemPlugin";
 import IO from "../io/IO";
 
-export class TypeScriptPlugin extends Plugin {
+export class TypeScriptPlugin extends SystemPlugin {
     public compile() {
         const { metadata } = this.cli.projectManager;
 

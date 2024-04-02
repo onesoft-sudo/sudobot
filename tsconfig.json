@@ -3,7 +3,7 @@
         "incremental": true,
         "target": "ES2022",
         "module": "CommonJS",
-        "rootDir": "./src",
+        "baseUrl": ".",
         "types": ["node", "bun"],
         "lib": ["ES2022", "DOM"],
         "resolveJsonModule": true,
@@ -18,10 +18,15 @@
         "forceConsistentCasingInFileNames": true,
         "strict": true,
         "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "noImplicitOverride": true,
-        "importsNotUsedAsValues": "remove"
+        "importsNotUsedAsValues": "remove",
+        "paths": {
+            "@blazebuild/*": ["./build_src/*"],
+            "@build/*": ["./.blaze/*"]
+        }
     },
     "include": ["./src/types/globals.d.ts", "src/**/*.ts"],
     "exclude": [
@@ -35,6 +40,7 @@
         "./docs",
         "./docs/**",
         "./src.bak/**",
-        "./src.bak"
+        "./src.bak",
+        ".blaze/index.d.ts"
     ]
 }

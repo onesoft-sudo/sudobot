@@ -2,7 +2,7 @@ import { Awaitable } from "../types/Awaitable";
 import BlazeBuild from "./BlazeBuild";
 import { PackageData } from "./PackageManager";
 
-export class Plugin {
+export class SystemPlugin {
     private _cli?: BlazeBuild;
 
     protected get cli() {

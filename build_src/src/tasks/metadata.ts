@@ -11,7 +11,7 @@ export const metadataTask: BuiltInTask = {
         }
 
         const packageStat = await lstat(cli.projectManager.metadata.packageFilePath);
-        const buildFileStat = await lstat("build.ts");
+        const buildFileStat = await lstat("build.blaze.ts");
 
         return (
             isNaN(lastUpdate) ||
