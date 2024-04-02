@@ -186,6 +186,10 @@ class BlazeBuild {
     }
 
     public async execCommand(command: string) {
+        if (!process.stdin.isTTY) {
+            console.log(`Running command: ${command}`);
+        }
+
         const proc = spawn(command, {
             shell: true,
             stdio: "inherit"
