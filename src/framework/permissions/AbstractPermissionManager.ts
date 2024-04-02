@@ -1,32 +1,32 @@
 /*
-* This file is part of SudoBot.
-*
-* Copyright (C) 2021-2024 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 import { Awaitable, GuildMember, PermissionFlagsBits, PermissionResolvable } from "discord.js";
 import Application from "../app/Application";
-import FluentSet from "../collections/FluentSet";
 import {
-    SystemPermissionLikeString,
-    SystemPermissionResolvable
-} from "./AbstractPermissionManagerService";
+    MemberPermissionData,
+    PermissionManagerInterface
+} from "../contracts/PermissionManagerInterface";
+import { SystemPermissionResolvable } from "./AbstractPermissionManagerService";
 import { Permission } from "./Permission";
 
-abstract class AbstractPermissionManager {
+abstract class AbstractPermissionManager implements PermissionManagerInterface {
     public constructor(protected readonly application: Application) {}
 
     public async hasDiscordPermissions(
@@ -107,10 +107,5 @@ abstract class AbstractPermissionManager {
     public boot?(): Awaitable<void>;
     public abstract getMemberPermissions(member: GuildMember): Awaitable<MemberPermissionData>;
 }
-
-export type MemberPermissionData = {
-    grantedDiscordPermissions: FluentSet<PermissionResolvable>;
-    grantedSystemPermissions: FluentSet<SystemPermissionLikeString>;
-};
 
 export default AbstractPermissionManager;

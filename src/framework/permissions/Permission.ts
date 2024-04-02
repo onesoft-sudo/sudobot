@@ -21,6 +21,7 @@ import { Awaitable, GuildMember, PermissionFlagsBits, PermissionResolvable } fro
 import Application from "../app/Application";
 import FluentSet from "../collections/FluentSet";
 import Container from "../container/Container";
+import { PermissionManagerServiceInterface } from "../contracts/PermissionManagerServiceInterface";
 import { Singleton } from "../types/Singleton";
 import { SystemPermissionResolvable } from "./AbstractPermissionManagerService";
 
@@ -54,9 +55,10 @@ abstract class Permission extends Singleton {
     }
 
     public static fromString(permission: string): Permission | undefined {
-        return Application.current()
-            .getServiceByName("permissionManager")
-            .getPermissionByName(permission);
+        const permissionManager = Application.current().getServiceByName(
+            "permissionManager"
+        ) satisfies PermissionManagerServiceInterface;
+        return permissionManager.getPermissionByName(permission);
     }
 
     public static async resolve(
@@ -87,10 +89,10 @@ abstract class Permission extends Singleton {
 
     public static async of(member: GuildMember, exclude?: Permission[]) {
         const permissions = new FluentSet<Permission>();
-        const allPermissions = Application.current()
-            .getServiceByName("permissionManager")
-            .getAllPermissions()
-            .values();
+        const permissionManager = Application.current().getServiceByName(
+            "permissionManager"
+        ) satisfies PermissionManagerServiceInterface;
+        const allPermissions = permissionManager.getAllPermissions().values();
 
         for (const permission of allPermissions) {
             if (exclude?.includes(permission)) {

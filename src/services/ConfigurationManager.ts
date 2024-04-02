@@ -22,6 +22,7 @@ import fs, { writeFile } from "fs/promises";
 import path from "path";
 import { AnyZodObject, z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
+import { ConfigurationManagerServiceInterface } from "../framework/contracts/ConfigurationManagerServiceInterface";
 import type { Extension } from "../framework/extensions/Extension";
 import { Name } from "../framework/services/Name";
 import { Service } from "../framework/services/Service";
@@ -36,7 +37,10 @@ export type GuildConfigContainer = {
 };
 
 @Name("configManager")
-export default class ConfigurationManager extends Service {
+export default class ConfigurationManager
+    extends Service
+    implements ConfigurationManagerServiceInterface
+{
     public readonly configPath = systemPrefix("config/config.json");
     public readonly systemConfigPath = systemPrefix("config/system.json");
     public readonly schemaDirectory = systemPrefix("config/schema", true);

@@ -29,13 +29,15 @@ import {
     SlashCommandBuilder,
     User
 } from "discord.js";
-import PermissionManagerService from "../../services/PermissionManagerService";
 import Application from "../app/Application";
 import Argument from "../arguments/Argument";
 import ArgumentParser from "../arguments/ArgumentParser";
+import type { CommandManagerServiceInterface } from "../contracts/CommandManagerServiceInterface";
+import { ConfigurationManagerServiceInterface } from "../contracts/ConfigurationManagerServiceInterface";
+import { MemberPermissionData } from "../contracts/PermissionManagerInterface";
+import { PermissionManagerServiceInterface } from "../contracts/PermissionManagerServiceInterface";
 import { Guard } from "../guards/Guard";
 import { GuardLike } from "../guards/GuardLike";
-import { MemberPermissionData } from "../permissions/AbstractPermissionManager";
 import { SystemOnlyPermissionResolvable } from "../permissions/AbstractPermissionManagerService";
 import { Permission, PermissionLike } from "../permissions/Permission";
 import { PermissionDeniedError } from "../permissions/PermissionDeniedError";
@@ -204,7 +206,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
     /**
      * The permission manager service.
      */
-    private readonly permissionManager: PermissionManagerService;
+    private readonly permissionManager: PermissionManagerServiceInterface;
 
     /**
      * Creates a new instance of the Command class.
@@ -213,7 +215,9 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      */
     public constructor(protected readonly application: Application) {
         this.argumentParser = new ArgumentParser(application.getClient());
-        this.permissionManager = application.getServiceByName("permissionManager");
+        this.permissionManager = application.getServiceByName(
+            "permissionManager"
+        ) satisfies PermissionManagerServiceInterface;
     }
 
     /**
@@ -321,6 +325,14 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      * @param args - The command arguments.
      */
     public abstract execute(context: Context, ...args: ArgumentPayload): Promise<void>;
+
+    /**
+     * Handles the case when a subcommand is not found.
+     *
+     * @param context - The command context.
+     * @param subcommand - The subcommand that was not found.
+     * @param errorType - The type of error that occurred.
+     */
     public onSubcommandNotFound?(
         context: Context,
         subcommand: string,
@@ -469,9 +481,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
         for (const permission of this.persistentCustomPermissions) {
             const instance =
                 typeof permission === "string"
-                    ? this.application
-                          .getServiceByName("permissionManager")
-                          .getPermissionByName(permission)
+                    ? this.permissionManager.getPermissionByName(permission)
                     : typeof permission === "function"
                     ? await permission.getInstance<Permission>()
                     : permission;
@@ -529,16 +539,23 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
             }
         }
 
-        const configManager = this.application.getServiceByName("configManager");
+        const configManager = this.application.getServiceByName(
+            "configManager"
+        ) satisfies ConfigurationManagerServiceInterface;
         const mode =
             configManager.config[context.guildId]?.permissions.command_permission_mode ??
             configManager.systemConfig.command_permission_mode;
         let overwrite = false;
 
         if (mode !== "ignore") {
-            const result = await this.application
-                .getServiceByName("commandManager")
-                .checkCommandPermissionOverwrites(context, this.name, state.memberPermissions);
+            const commandManager = this.application.getServiceByName(
+                "commandManager"
+            ) satisfies CommandManagerServiceInterface;
+            const result = await commandManager.checkCommandPermissionOverwrites(
+                context,
+                this.name,
+                state.memberPermissions
+            );
 
             if (!result?.allow) {
                 throw new PermissionDeniedError(

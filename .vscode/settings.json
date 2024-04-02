@@ -31,11 +31,12 @@
         "tsbuildinfo"
     ],
     "material-icon-theme.folders.associations": {
-        "automod": "Secure",
-        "framework": "Server",
-        "policies": "Secure",
+        "automod": "Server",
+        "framework": "Lib",
+        "policies": "Controller",
         "permissions": "Resolver",
         "build_src": "Tools",
-        "polyfills": "Interface"
+        "polyfills": "Interface",
+        "arguments": "Messages"
     }
 }

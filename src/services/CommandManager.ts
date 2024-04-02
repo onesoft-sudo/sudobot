@@ -42,7 +42,8 @@ import { ContextType } from "../framework/commands/ContextType";
 import InteractionContext from "../framework/commands/InteractionContext";
 import LegacyContext from "../framework/commands/LegacyContext";
 import { Inject } from "../framework/container/Inject";
-import { MemberPermissionData } from "../framework/permissions/AbstractPermissionManager";
+import { CommandManagerServiceInterface } from "../framework/contracts/CommandManagerServiceInterface";
+import { MemberPermissionData } from "../framework/contracts/PermissionManagerInterface";
 import { SystemPermissionLikeString } from "../framework/permissions/AbstractPermissionManagerService";
 import { Name } from "../framework/services/Name";
 import { Service } from "../framework/services/Service";
@@ -51,12 +52,8 @@ import { developmentMode } from "../utils/utils";
 import type ConfigurationManager from "./ConfigurationManager";
 
 @Name("commandManager")
-class CommandManager extends Service {
+class CommandManager extends Service implements CommandManagerServiceInterface {
     public readonly commands = new Collection<string, Command>();
-    // public readonly permissionOverwrites = new Collection<
-    //     `${Snowflake}:${string}`,
-    //     CachedCommandPermissionOverwrites
-    // >();
     public readonly store = new CommandPermissionOverwriteCacheStore(this);
 
     @Inject("configManager")

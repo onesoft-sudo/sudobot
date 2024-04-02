@@ -20,7 +20,8 @@
         "skipLibCheck": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
-        "noImplicitOverride": true
+        "noImplicitOverride": true,
+        "importsNotUsedAsValues": "remove"
     },
     "include": ["./src/types/globals.d.ts", "src/**/*.ts"],
     "exclude": [
