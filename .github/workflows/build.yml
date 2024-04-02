@@ -85,5 +85,8 @@ jobs:
               with:
                   bun-version: latest
 
+            - name: Set up BlazeBuild
+              run: ln -s $(pwd)/build_src node_modules/blazebuild
+
             - name: Build with BlazeBuild
               run: ./blazew build
