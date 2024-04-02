@@ -9,7 +9,7 @@ export const dependenciesTask: BuiltInTask = {
         if (
             !cli.packageManager.packagesNeedUpdate() &&
             !cli.cacheManager.noCacheFileFound() &&
-            existsSync("node_modules")
+            (existsSync("node_modules") || !existsSync(".blaze/cache.json"))
         ) {
             return;
         }
