@@ -86,7 +86,7 @@ jobs:
                   bun-version: latest
 
             - name: Set up BlazeBuild
-              run: mkdir -p node_modules && ln -s $(pwd)/build_src node_modules/blazebuild
+              run: ./blazew --setup
 
             - name: Build with BlazeBuild
               run: ./blazew build

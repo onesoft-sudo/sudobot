@@ -1,6 +1,30 @@
 #!/usr/bin/env bash
 
-# This script is used to build the Blaze library. It is called by the main build script.
+setup=0
+argsetup=0
 
-# shellcheck disable=SC2068
+for arg in "$@"; do
+    if [ "$arg" == "--setup" ]; then
+        setup=1
+        argsetup=1
+        break
+    fi
+done
+
+if [ ! -d "build_src/node_modules" ]; then
+    setup=1
+fi
+
+if [ $setup -eq 1 ]; then
+    echo "blazew: Setting up BlazeBuild..."
+    rm -rf build_src/node_modules
+    cd build_src
+    bun install
+    cd ..
+fi
+
+if [ $argsetup -eq 1 ]; then
+    exit 0
+fi
+
 bun build_src/src/index.ts $@
