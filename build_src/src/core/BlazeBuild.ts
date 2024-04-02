@@ -122,6 +122,19 @@ class BlazeBuild {
         };
         record.project = this.projectManager.createProxy();
         record.plugins = this.pluginManager.createFunction();
+        record.x = (command: string) => {
+            const packageManager = this.packageManager.getPackageManager();
+
+            return this.execCommand(
+                `${
+                    packageManager === "pnpm"
+                        ? "pnpm exec"
+                        : packageManager === "bun"
+                        ? "bun x"
+                        : "npx"
+                } ${command}`
+            );
+        };
 
         this.packageManager.createFunctions(record);
     }
