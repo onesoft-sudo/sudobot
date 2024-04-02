@@ -3,7 +3,7 @@
 
 name: Build
 
-on: [ push, pull_request ]
+on: [push, pull_request]
 
 jobs:
     build:
@@ -11,7 +11,7 @@ jobs:
             matrix:
                 node-version: [20.x, 21.x]
                 os: [ubuntu-latest, macos-latest]
-       
+
         runs-on: ${{ matrix.os }}
 
         steps:
@@ -48,7 +48,7 @@ jobs:
               run: npx prisma generate
 
             - name: "ESLint"
-              run: npm run lint -- --max-warnings=0 
+              run: npm run lint -- --max-warnings=0
 
             - name: "Build (TypeScript)"
               run: npm run build --if-present
@@ -62,5 +62,28 @@ jobs:
             - name: Upload coverage reports to Codecov
               uses: codecov/codecov-action@v4.0.1
               with:
-                token: ${{ secrets.CODECOV_TOKEN }}
-                slug: onesoft-sudo/sudobot
+                  token: ${{ secrets.CODECOV_TOKEN }}
+                  slug: onesoft-sudo/sudobot
+
+    blazebuild:
+        strategy:
+            matrix:
+                node-version: [20.x, 21.x]
+                os: [ubuntu-latest, macos-latest]
+
+        runs-on: ${{ matrix.os }}
+
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node-version }}
+
+            - uses: oven-sh/setup-bun@v1
+              with:
+                  bun-version: latest
+
+            - name: Build with BlazeBuild
+              run: ./blazew build

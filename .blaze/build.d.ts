@@ -31,4 +31,5 @@ declare global {
     function optionalNodeModule(namespace: string, name: string, version: string): void;
 
     function println(message: string): void;
+    function x(command: string): Promise<void>;
 }
