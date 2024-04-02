@@ -1,4 +1,3 @@
-import "module-alias/register";
 import BlazeBuild from "./core/BlazeBuild";
 
 const cli = BlazeBuild.getInstance();
