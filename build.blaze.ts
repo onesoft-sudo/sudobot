@@ -22,6 +22,14 @@ plugins(({ add }) => {
     add([typescript]);
 });
 
+tasks.register("afterDependencies", async () => {
+    await x("prisma generate");
+});
+
+tasks.register("lint", ["dependencies"], async () => {
+    await x("eslint --ext .ts src  --max-warnings=0");
+});
+
 tasks.register("compile", ["dependencies"], async () => {
     await typescript.compile();
 });
