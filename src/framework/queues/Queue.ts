@@ -31,7 +31,7 @@ abstract class Queue<T extends StorableData = StorableData> extends HasApplicati
     private _createdAt?: Date;
     private _updatedAt?: Date;
     private _id?: number;
-    private _timeout?: Timer;
+    private _timeout?: Timer | number;
 
     public constructor(application: Application, options: QueueOptions<T>) {
         super(application);
@@ -53,11 +53,11 @@ abstract class Queue<T extends StorableData = StorableData> extends HasApplicati
         this._updatedAt = options.updatedAt;
     }
 
-    public abstract execute(): Promise<void>;
+    public abstract execute(data: T): Promise<void>;
 
     public async run() {
         try {
-            await this.execute();
+            await this.execute(this.data);
         } catch (error) {
             this.application.logger.error(error);
         }
