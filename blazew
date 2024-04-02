@@ -11,7 +11,7 @@ for arg in "$@"; do
     fi
 done
 
-if [ ! -d "build_src/node_modules" ]; then
+if [ ! -d "build_src/node_modules" ] || [ ! -d "node_modules/blazebuild" ]; then
     setup=1
 fi
 
@@ -21,6 +21,8 @@ if [ $setup -eq 1 ]; then
     cd build_src
     bun install
     cd ..
+    mkdir -p node_modules
+    ln -s $(pwd)/build_src node_modules/blazebuild
 fi
 
 if [ $argsetup -eq 1 ]; then

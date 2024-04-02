@@ -1,16 +1,17 @@
 {
-    "name": "blazebuild",
-    "module": "src/index.ts",
-    "devDependencies": {
-        "@types/bun": "latest"
-    },
-    "peerDependencies": {
-        "typescript": "^5.0.0"
-    },
-    "dependencies": {
-        "chalk": "4"
-    },
-    "scripts": {
-        "dev": "bun run src/index.ts"
-    }
+  "name": "blazebuild",
+  "module": "src/index.ts",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "chalk": "4",
+    "deepmerge": "^4.3.1"
+  },
+  "scripts": {
+    "dev": "bun run src/index.ts"
+  }
 }
