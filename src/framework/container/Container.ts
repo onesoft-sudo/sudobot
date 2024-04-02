@@ -270,4 +270,5 @@ class Container {
     }
 }
 
+export const container = Container.getInstance();
 export default Container;
