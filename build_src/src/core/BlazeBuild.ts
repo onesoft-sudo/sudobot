@@ -165,13 +165,9 @@ class BlazeBuild {
     public loadBuiltInTasks() {
         for (const task of BlazeBuild.builtInTasks) {
             const handler = () => task.handler(this);
-
-            if (task.dependsOn) {
-                this.taskManager.register(task.name, task.dependsOn, handler, task.if);
-                continue;
-            }
-
-            this.taskManager.register(task.name, [], handler, task.if);
+            this.taskManager.register(task.name, task.dependsOn ?? [], handler, task.if, {
+                onEnd: task.onEnd
+            });
         }
     }
 

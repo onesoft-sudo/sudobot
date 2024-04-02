@@ -3,7 +3,7 @@ import IO from "../io/IO";
 import { Awaitable } from "../types/Awaitable";
 import { TaskHandler } from "../types/TaskHandler";
 import BlazeBuild from "./BlazeBuild";
-import { Task } from "./Task";
+import { Task, TaskRegisterOptions } from "./Task";
 
 export class TaskManager {
     public constructor(private readonly cli: BlazeBuild) {}
@@ -14,14 +14,16 @@ export class TaskManager {
         name: string,
         dependsOn: string[],
         handler: TaskHandler,
-        onlyIf?: (cli: BlazeBuild) => Awaitable<boolean>
+        onlyIf?: (cli: BlazeBuild) => Awaitable<boolean>,
+        options?: TaskRegisterOptions
     ): void;
 
     public register(
         name: string,
         handlerOrDeps: TaskHandler | string[],
         handler?: TaskHandler,
-        onlyIf?: (cli: BlazeBuild) => Awaitable<boolean>
+        onlyIf?: (cli: BlazeBuild) => Awaitable<boolean>,
+        options?: TaskRegisterOptions
     ) {
         const finalHandler = Array.isArray(handlerOrDeps) ? handler! : handlerOrDeps;
 
@@ -32,7 +34,8 @@ export class TaskManager {
                 name,
                 Array.isArray(handlerOrDeps) ? handlerOrDeps : [],
                 finalHandler,
-                onlyIf
+                onlyIf,
+                options
             )
         );
     }
@@ -55,8 +58,8 @@ export class TaskManager {
                 continue;
             }
 
-            resolved.add(task);
             this.resolveTaskDependencies(dep, resolved);
+            resolved.add(task);
         }
 
         resolved.add(task);
@@ -96,6 +99,10 @@ export class TaskManager {
         await handlers?.onExecBegin?.(tasksToRun);
 
         for (const task of tasksToRun) {
+            if (this.cli.executedTasks.includes(task.name)) {
+                continue;
+            }
+
             if (task.onlyIf && !(await task.onlyIf(this.cli))) {
                 await handlers?.onTaskCancel?.(task);
                 continue;
@@ -105,6 +112,7 @@ export class TaskManager {
             IO.println(`${chalk.bold(`:${task.name}`)}`);
             await task.execute();
             await handlers?.onTaskEnd?.(task);
+            await task.options?.onEnd?.(this.cli);
         }
 
         await handlers?.onExecEnd?.(tasksToRun);

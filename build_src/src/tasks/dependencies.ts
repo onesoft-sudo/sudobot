@@ -21,7 +21,8 @@ export const dependenciesTask: BuiltInTask = {
         }
 
         await cli.execCommand(`${packageManager} ${packageManager === "yarn" ? "" : "install"}`);
-
+    },
+    async onEnd(cli) {
         if (cli.tasks.has("afterDependencies")) {
             await cli.taskManager.execute("afterDependencies");
         }
