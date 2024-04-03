@@ -12,37 +12,45 @@ export const initTask: BuiltInTask = {
         }
 
         await cli.packageManager.loadPackageJSON();
-        await cli.taskManager.execute(argv.length === 0 ? ["build"] : argv, false, {
-            onExecBegin(tasks) {
-                let longestNameLength = 0;
+        await cli.taskManager.execute(
+            ["dumpTypes", ...(argv.length === 0 ? ["build"] : argv)],
+            false,
+            {
+                onExecBegin(tasks) {
+                    let longestNameLength = 0;
 
-                for (const task of tasks) {
-                    if (task.name.length > longestNameLength) {
-                        longestNameLength = task.name.length;
+                    for (const task of tasks) {
+                        if (task.name.length > longestNameLength) {
+                            longestNameLength = task.name.length;
+                        }
                     }
-                }
 
-                if (process.stdout.isTTY) {
-                    const progress = new BufferedProgress(1, tasks.size + 1, longestNameLength + 2);
-                    IO.setProgressBuffer(progress);
+                    if (process.stdout.isTTY) {
+                        const progress = new BufferedProgress(
+                            1,
+                            tasks.size + 1,
+                            longestNameLength + 2
+                        );
+                        IO.setProgressBuffer(progress);
+                    }
+                },
+                onExecEnd() {
+                    IO.getProgressBuffer()?.end();
+                },
+                onTaskEnd() {
+                    IO.getProgressBuffer()?.render();
+                    IO.getProgressBuffer()?.incrementProgress(1);
+                    IO.getProgressBuffer()?.setStatus("<idle>");
+                },
+                onTaskBegin(task) {
+                    IO.getProgressBuffer()?.render();
+                    IO.getProgressBuffer()?.setStatus(`:${task.name}`);
+                },
+                onTaskCancel() {
+                    IO.getProgressBuffer()?.setMax(IO.getProgressBuffer()!.getMax() - 1);
+                    IO.getProgressBuffer()?.render();
                 }
-            },
-            onExecEnd() {
-                IO.getProgressBuffer()?.end();
-            },
-            onTaskEnd() {
-                IO.getProgressBuffer()?.render();
-                IO.getProgressBuffer()?.incrementProgress(1);
-                IO.getProgressBuffer()?.setStatus("<idle>");
-            },
-            onTaskBegin(task) {
-                IO.getProgressBuffer()?.render();
-                IO.getProgressBuffer()?.setStatus(`:${task.name}`);
-            },
-            onTaskCancel() {
-                IO.getProgressBuffer()?.setMax(IO.getProgressBuffer()!.getMax() - 1);
-                IO.getProgressBuffer()?.render();
             }
-        });
+        );
     }
 };

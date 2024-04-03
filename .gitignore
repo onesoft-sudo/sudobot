@@ -26,3 +26,4 @@ setup.sh
 /coverage
 /src.bak
 /docs/.vscode
+/.fleet

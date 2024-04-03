@@ -9,6 +9,7 @@ import { cleanTask } from "../tasks/clean";
 import { cleanCachesTask } from "../tasks/cleanCaches";
 import { cleanDepsTask } from "../tasks/cleanDeps";
 import { dependenciesTask } from "../tasks/dependencies";
+import { dumpTypesTask } from "../tasks/dumpTypes";
 import { initTask } from "../tasks/init";
 import { metadataTask } from "../tasks/metadata";
 import { tasksTask } from "../tasks/tasks";
@@ -28,7 +29,8 @@ class BlazeBuild {
         metadataTask,
         dependenciesTask,
         cleanCachesTask,
-        cleanDepsTask
+        cleanDepsTask,
+        dumpTypesTask
     ];
     public readonly logger = new Logger(this);
     private static instance: BlazeBuild;

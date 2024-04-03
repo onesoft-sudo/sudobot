@@ -2,6 +2,8 @@ import { existsSync } from "fs";
 import IO from "../io/IO";
 import { BuiltInTask } from "../types/BuiltInTask";
 
+let ran = false;
+
 export const dependenciesTask: BuiltInTask = {
     name: "dependencies",
     dependsOn: ["metadata"],
@@ -21,9 +23,10 @@ export const dependenciesTask: BuiltInTask = {
         }
 
         await cli.execCommand(`${packageManager} ${packageManager === "yarn" ? "" : "install"}`);
+        ran = true;
     },
     async onEnd(cli) {
-        if (cli.tasks.has("afterDependencies")) {
+        if (ran && cli.tasks.has("afterDependencies")) {
             await cli.taskManager.execute("afterDependencies");
         }
     }

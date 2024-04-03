@@ -22,5 +22,5 @@
         "experimentalDecorators": true,
         "noImplicitOverride": true
     },
-    "exclude": ["tmp", "*.d.ts", "build"]
+    "exclude": ["tmp", "*.d.ts", "build", "templates"]
 }

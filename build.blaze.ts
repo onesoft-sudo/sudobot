@@ -30,9 +30,11 @@ tasks.register("lint", ["dependencies"], async () => {
     await x("eslint --ext .ts src  --max-warnings=0");
 });
 
-tasks.register("compile", ["dependencies"], async () => {
+tasks.register("compileTypeScript", ["dependencies"], async () => {
     await typescript.compile();
 });
+
+tasks.register("compile", ["compileTypeScript"], () => {});
 
 tasks.register("build", ["compile"], async () => {
     const tmpBuildDir = path.resolve(`${project.buildDir}/../_build.tmp`);
