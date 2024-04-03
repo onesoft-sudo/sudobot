@@ -1,5 +1,31 @@
 #!/usr/bin/env bash
 
+VERSION="1.0.0-alpha.1"
+
+argv_0=$0
+
+startup() {
+    echo -e "\033[1;34mBlazeBuild Wrapper version $VERSION\033[0m\n"
+}
+
+print() {
+    echo -en "\033[${1}m$2\033[0m"
+    echo -e "   $3"
+}
+
+help() {
+    startup
+    echo "Usage: $argv_0 [options] [tasks...]"
+    echo "Options:"
+    echo "  --setup   Setup BlazeBuild"
+    echo "  --help    Show this help message"
+    echo "  --version Show the version of BlazeBuild"
+    echo "Tasks:"
+    echo "  Any arguments or task names that should"
+    echo "  be passed to BlazeBuild."
+    exit 0
+}
+
 setup=0
 argsetup=0
 
@@ -7,7 +33,11 @@ for arg in "$@"; do
     if [ "$arg" == "--setup" ]; then
         setup=1
         argsetup=1
-        break
+    elif [ "$arg" == "--help" ]; then
+        help
+    elif [ "$arg" == "--version" ]; then
+        startup
+        exit 0
     fi
 done
 
@@ -15,14 +45,39 @@ if [ ! -d "build_src/node_modules" ] || [ ! -d "node_modules/blazebuild" ]; then
     setup=1
 fi
 
+has_bun=$(command -v bun)
+cmd="npm"
+
+if [ ! -z "$has_bun" ]; then
+    cmd="bun"
+fi
+
 if [ $setup -eq 1 ]; then
-    echo "blazew: Setting up BlazeBuild..."
+    startup
+    print 34 "info   " "Setting up BlazeBuild..."
     rm -rf build_src/node_modules
     cd build_src
-    bun install
+
+    print 34 "info   " "Installing dependencies for BlazeBuild..."
+    print 36 "command" "$cmd install"
+    command $cmd install
     cd ..
+
+    print 34 "info   " "Finishing up..."
     mkdir -p node_modules
-    ln -s $(pwd)/build_src node_modules/blazebuild
+
+    if [ ! -e node_modules/blazebuild ]; then
+        ln -s $(pwd)/build_src node_modules/blazebuild
+    fi
+
+    if [ -z "$has_bun" ]; then
+        print 34 "info   " "Building BlazeBuild (for node)..."
+        cd build_src
+        npx tsc
+        cd ..
+    fi
+
+    print "1;32" "success" "Setup completed."
 fi
 
 if [ $argsetup -eq 1 ]; then
