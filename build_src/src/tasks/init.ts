@@ -22,8 +22,10 @@ export const initTask: BuiltInTask = {
                     }
                 }
 
-                const progress = new BufferedProgress(1, tasks.size + 1, longestNameLength + 2);
-                IO.setProgressBuffer(progress);
+                if (process.stdout.isTTY) {
+                    const progress = new BufferedProgress(1, tasks.size + 1, longestNameLength + 2);
+                    IO.setProgressBuffer(progress);
+                }
             },
             onExecEnd() {
                 IO.getProgressBuffer()?.end();
