@@ -40,5 +40,6 @@
         "build_src": "Tools",
         "polyfills": "Interface",
         "arguments": "Messages"
-    }
+    },
+    "typescript.preferences.importModuleSpecifier": "relative"
 }
