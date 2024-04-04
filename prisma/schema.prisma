@@ -13,8 +13,6 @@ enum InfractionType {
     MUTE
     WARNING
     MASSBAN
-    TEMPBAN
-    SOFTBAN
     MASSKICK
     UNBAN
     UNMUTE
