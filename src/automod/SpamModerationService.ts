@@ -21,7 +21,7 @@ class SpamModerationService extends Service implements AutoModServiceContract {
             return;
         }
 
-        const config = this.configFor(message.guildId!);
+        const _config = this.configFor(message.guildId!);
 
         // TODO: Implement spam moderation
     }
