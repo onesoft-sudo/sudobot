@@ -95,7 +95,7 @@ if [ $setup -eq 1 ]; then
         rm "$projectdir/node_modules/blazebuild" || exit 1
     fi
 
-    ln -s "$(realpath "$projectdir/build_src")" "$projectdir/node_modules/blazebuild" || exit 1
+    ln -s "$(readlink -f "$projectdir/build_src")" "$projectdir/node_modules/blazebuild" || exit 1
 
     if [ -z "$has_bun" ]; then
         print 34 "info   " "Building BlazeBuild (for node)..."
