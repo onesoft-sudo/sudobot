@@ -42,6 +42,15 @@ class QueueManager extends HasApplication {
 
         return new QueueClass(this.application, options);
     }
+
+    public async bulkCancel<T extends StorableData>(type: QueueClass<T>, filter: (queue: Queue<NoInfer<T>>) => boolean) {
+        for (const queue of this.scheduledQueues.values()) {
+            // noinspection SuspiciousTypeOfGuard
+            if (queue instanceof type && filter(queue as Queue<NoInfer<T>>)) {
+                await queue.cancel();
+            }
+        }
+    }
 }
 
 export default QueueManager;

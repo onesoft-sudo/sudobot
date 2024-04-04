@@ -20,13 +20,14 @@ export type QueueOptions<T extends StorableData> = {
 
 abstract class Queue<T extends StorableData = StorableData> extends HasApplication {
     public static readonly uniqueName: string = "";
-    protected readonly data: T;
+    public readonly data: T;
     protected readonly guildId: Snowflake;
     protected readonly userId: Snowflake;
     protected readonly channelId?: Snowflake;
     protected readonly messageId?: Snowflake;
     protected readonly runsAt: Date;
     protected readonly repeat?: boolean;
+    private _isExecuting: boolean = false;
 
     private _createdAt?: Date;
     private _updatedAt?: Date;
@@ -56,15 +57,23 @@ abstract class Queue<T extends StorableData = StorableData> extends HasApplicati
     public abstract execute(data: T): Promise<void>;
 
     public async run() {
+        this._isExecuting = true;
+
         try {
             await this.execute(this.data);
         } catch (error) {
             this.application.logger.error(error);
         }
 
+        this._isExecuting = false;
+
         if (!this.repeat) {
             await this.delete();
         }
+    }
+
+    public get isExecuting() {
+        return this._isExecuting;
     }
 
     public get id() {
@@ -134,12 +143,22 @@ abstract class Queue<T extends StorableData = StorableData> extends HasApplicati
         (this.repeat ? clearInterval : clearTimeout)(this._timeout);
     }
 
+    /**
+     * Schedules this queue to run at the specified time.
+     *
+     * @returns The ID of the queue
+     */
     public async schedule() {
         const id = await this.save();
         this.setTimeout();
         return id;
     }
 
+    /**
+     * Cancels this queue.
+     *
+     * @returns The ID of the queue
+     */
     public cancel() {
         this.clearTimeout();
         return this.delete();
