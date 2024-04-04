@@ -71,6 +71,7 @@ import type Command from "./Command";
 import DynamicLoader from "./DynamicLoader";
 import Service from "./Service";
 import ServiceManager from "./ServiceManager";
+import type SurveyService from "../services/SurveyService";
 
 class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
     public static instance: Client;
@@ -127,6 +128,7 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
         "@services/ReportService",
         "@services/StatsService",
         "@services/ImageRecognitionService",
+        "@services/SurveyService",
 
         "@automod/MessageFilter",
         "@automod/Antispam",
@@ -176,6 +178,7 @@ class Client<R extends boolean = boolean> extends DiscordJSClient<R> {
     commandPermissionOverwriteManager!: CommandPermissionOverwriteManager;
     statsService!: StatsService;
     imageRecognitionService!: ImageRecognitionService;
+    surveyService!: SurveyService;
 
     constructor(options: ClientOptions) {
         super(options);
