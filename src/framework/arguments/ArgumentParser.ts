@@ -26,7 +26,6 @@ import { HasClient } from "../types/HasClient";
 import Argument from "./Argument";
 import { ArgumentTypeOptions } from "./ArgumentTypes";
 import Application from "../app/Application";
-import { ErrorType } from "./InvalidArgumentError";
 import { notIn } from "../utils/utils";
 
 type ParseResult =

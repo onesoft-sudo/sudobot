@@ -1,6 +1,5 @@
 import { Snowflake } from "discord.js";
 import Queue from "../framework/queues/Queue";
-import { fetchChannel } from "../framework/utils/entities";
 import { safeUserFetch } from "../utils/fetch";
 
 type UnbanQueuePayload = {

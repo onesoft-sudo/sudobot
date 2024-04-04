@@ -18,12 +18,7 @@
  */
 
 import cors from "cors";
-import express, {
-    Application,
-    Request as ExpressRequest,
-    Response as ExpressResponse,
-    NextFunction
-} from "express";
+import express, { Application, NextFunction, Request as ExpressRequest, Response as ExpressResponse } from "express";
 import ratelimiter from "express-rate-limit";
 import { Router } from "express-serve-static-core";
 import { Server as HttpServer } from "http";

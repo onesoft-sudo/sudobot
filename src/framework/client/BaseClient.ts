@@ -17,11 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-    Awaitable,
-    ClientEvents as DiscordClientEvents,
-    Client as DiscordJSClient
-} from "discord.js";
+import { Awaitable, Client as DiscordJSClient, ClientEvents as DiscordClientEvents } from "discord.js";
 import { ClientEvents } from "../types/ClientEvents";
 
 abstract class BaseClient<R extends boolean = boolean> extends DiscordJSClient<R> {

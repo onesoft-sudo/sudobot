@@ -20,12 +20,14 @@
 import { Infraction, InfractionDeliveryStatus, InfractionType, PrismaClient } from "@prisma/client";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
-    APIEmbed, Awaitable,
+    APIEmbed,
+    Awaitable,
     bold,
     CategoryChannel,
     ChannelType,
     Colors,
-    EmbedBuilder, GuildMember,
+    EmbedBuilder,
+    GuildMember,
     italic,
     PermissionFlagsBits,
     PrivateThreadChannel,

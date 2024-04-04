@@ -23,13 +23,13 @@ import chalk from "chalk";
 import { spawnSync } from "child_process";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
-    APIEmbed,
     ActivityType,
+    APIEmbed,
     Attachment,
     AttachmentBuilder,
     Colors,
-    WebhookClient,
-    escapeCodeBlock
+    escapeCodeBlock,
+    WebhookClient
 } from "discord.js";
 import figlet from "figlet";
 import { rm } from "fs/promises";

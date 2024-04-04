@@ -25,8 +25,8 @@ import {
     EmbedBuilder,
     Guild,
     Message,
-    User,
-    resolveColor
+    resolveColor,
+    User
 } from "discord.js";
 
 export function generateEmbed(options: ChatInputCommandInteraction["options"]) {

@@ -19,10 +19,7 @@
 
 import { Awaitable, GuildMember, PermissionFlagsBits, PermissionResolvable } from "discord.js";
 import Application from "../app/Application";
-import {
-    MemberPermissionData,
-    PermissionManagerInterface
-} from "../contracts/PermissionManagerInterface";
+import { MemberPermissionData, PermissionManagerInterface } from "../contracts/PermissionManagerInterface";
 import { SystemPermissionResolvable } from "./AbstractPermissionManagerService";
 import { Permission } from "./Permission";
 

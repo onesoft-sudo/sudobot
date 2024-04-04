@@ -17,8 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { User, PermissionFlagsBits } from "discord.js";
-import { Colors } from "../../constants/Colors";
+import { PermissionFlagsBits, User } from "discord.js";
 import { Limits } from "../../constants/Limits";
 import { TakesArgument } from "../../framework/arguments/ArgumentTypes";
 import RestStringArgument from "../../framework/arguments/RestStringArgument";
@@ -26,7 +25,7 @@ import UserArgument from "../../framework/arguments/UserArgument";
 import { Buildable, Command, CommandMessage } from "../../framework/commands/Command";
 import Context from "../../framework/commands/Context";
 import { Inject } from "../../framework/container/Inject";
-import { also } from "../../framework/utils/utils"
+import { also } from "../../framework/utils/utils";
 import InfractionManager from "../../services/InfractionManager";
 import IntegerArgument from "../../framework/arguments/IntegerArgument";
 import { ErrorType } from "../../framework/arguments/InvalidArgumentError";
