@@ -28,6 +28,7 @@ export type Meta = {
     position: number;
     type: ErrorType;
     cause?: unknown;
+    noSkip?: boolean;
 };
 
 export class InvalidArgumentError extends Error {

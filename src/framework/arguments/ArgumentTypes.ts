@@ -38,27 +38,28 @@ export type Rule = {
     rules: ArgumentRules;
 };
 
-export type ArgumentTypeOptions<T = unknown, N extends string = string> = {
+export type ArgumentTypeOptions<T = unknown, N extends string[] = string[]> = {
     types: Array<ArgumentConstructor<T>> | ArgumentConstructor<T>;
     interactionType?: ArgumentConstructor<T>;
+    interactionName?: string;
     optional?: boolean;
     default?: unknown;
-    errorMessages?: {
+    errorMessages?: Array<{
         [key in ErrorType]?: string;
-    };
-    name: N;
+    }>;
+    names: N;
     rules?: {
         [K in keyof ArgumentRules]?: ArgumentRules[K];
     };
 };
 
-export type ArgumentOptionsFor<T, N extends keyof T = keyof T> = {
-    [K in N]: ArgumentTypeOptions<T[K], K extends string ? K : never>;
-}[N];
+export type ArgumentOptionsFor<T> = {
+    [K in keyof T]: ArgumentTypeOptions<T[K]>;
+}[keyof T];
 
 export type ArrayOfArguments<T> = {
     [K: number]: {
-        [K in keyof T]: ArgumentTypeOptions<T[K], K extends string ? K : never>;
+        [K in keyof T]: ArgumentTypeOptions<T[K], K extends string ? K[] : never>;
     }[keyof T];
 };
 
@@ -74,30 +75,28 @@ export function ArgumentTypes<T = Record<string, unknown>>(types: ArrayOfArgumen
     };
 }
 
-export function TakesArgument<T, N extends keyof T = keyof T>(
-    type: ArgumentOptionsFor<T, N>
+export function TakesArgument<T>(
+    type: ArgumentTypeOptions<T[keyof T]>
 ): ClassDecorator & MethodDecorator;
 
 export function TakesArgument<
     T,
-    N extends keyof T = keyof T,
-    _O extends ArgumentOptionsFor<T, N> = ArgumentOptionsFor<T, N>
+    _O extends ArgumentOptionsFor<T> = ArgumentOptionsFor<T>
 >(
-    name: _O["name"],
+    names: _O["names"],
     types: _O["types"],
     optional?: _O["optional"],
-    errors?: _O["errorMessages"]
+    errors?: _O["errorMessages"][]
 ): ClassDecorator & MethodDecorator;
 
 export function TakesArgument<
     T,
-    N extends keyof T = keyof T,
-    _O extends ArgumentOptionsFor<T, N> = ArgumentOptionsFor<T, N>
+    _O extends ArgumentOptionsFor<T> = ArgumentOptionsFor<T>
 >(
-    typeOrName: _O | _O["name"],
+    typeOrName: _O | _O["names"],
     types?: _O["types"],
     optional?: _O["optional"],
-    errors?: _O["errorMessages"]
+    errors?: NonNullable<_O["errorMessages"]>[]
 ) {
     return (target: object, _key?: unknown, _descriptor?: unknown) => {
         const metadata =
@@ -105,16 +104,17 @@ export function TakesArgument<
             [];
 
         metadata.unshift(
-            typeof typeOrName === "string"
+            (Array.isArray(typeOrName) && typeof typeOrName[0] === "string" || typeof typeOrName === "string")
                 ? {
-                      name: typeOrName,
+                      names: Array.isArray(typeOrName) ? typeOrName : [typeOrName] as string[],
                       types: requireNonNull(types),
                       optional: optional,
-                      errorMessages: errors
+                      errorMessages: errors as ArgumentTypeOptions["errorMessages"] ?? [],
                   }
-                : typeOrName
+                : typeOrName as _O
         );
 
+        console.debug(metadata);
         Reflect.defineMetadata("command:types", metadata, target);
     };
 }

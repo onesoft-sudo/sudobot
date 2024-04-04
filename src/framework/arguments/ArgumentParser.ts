@@ -26,6 +26,8 @@ import { HasClient } from "../types/HasClient";
 import Argument from "./Argument";
 import { ArgumentTypeOptions } from "./ArgumentTypes";
 import Application from "../app/Application";
+import { ErrorType } from "./InvalidArgumentError";
+import { notIn } from "../utils/utils";
 
 type ParseResult =
     | {
@@ -187,17 +189,27 @@ class ArgumentParser extends HasClient {
             const argIndex = subcommand && types.length ? i + 1 : i;
             const arg = args[argIndex];
             const expectedArgInfo = types[i];
+            const names = Array.isArray(expectedArgInfo.names) ? expectedArgInfo.names : [expectedArgInfo.names];
+
+            if (names.length === 0) {
+                throw new Error("Argument names must be provided");
+            }
 
             if (!arg) {
                 if (expectedArgInfo.default !== undefined || expectedArgInfo.optional) {
-                    parsedArguments[expectedArgInfo.name] = expectedArgInfo.default ?? null;
+                    for (const name of names) {
+                        if (notIn(parsedArguments, name)) {
+                            parsedArguments[name] = expectedArgInfo.default ?? null;
+                        }
+                    }
+
                     continue;
                 }
 
                 return {
                     error:
-                        expectedArgInfo.errorMessages?.Required ??
-                        `${expectedArgInfo.name} is required!`
+                        expectedArgInfo.errorMessages?.[0]?.Required ??
+                        `${expectedArgInfo.names.join(", or ")} is required!`
                 };
             }
 
@@ -205,29 +217,37 @@ class ArgumentParser extends HasClient {
                 ? expectedArgInfo.types
                 : [expectedArgInfo.types];
 
+            let argTypeIndex = 0;
+
             for (const argType of argTypes) {
                 const { error, value } = await argType.performCast(
                     commandContent,
                     argv,
                     arg,
                     argIndex,
-                    expectedArgInfo.name,
+                    names[argTypeIndex],
                     expectedArgInfo.rules,
                     !expectedArgInfo.optional
                 );
 
-                if (value) {
-                    parsedArguments[expectedArgInfo.name] = value.getValue();
+                if (value && !error) {
+                    parsedArguments[names[argTypeIndex]] = value.getValue();
                     lastError = undefined;
                     break;
                 }
 
                 lastError = error;
+
+                if (error && error.meta.noSkip) {
+                    break;
+                }
+
+                argTypeIndex++;
             }
 
             if (lastError) {
                 return {
-                    error: expectedArgInfo.errorMessages?.[lastError.meta.type] ?? lastError.message
+                    error: expectedArgInfo.errorMessages?.[argTypeIndex]?.[lastError.meta.type] ?? lastError.message
                 };
             }
         }
@@ -322,19 +342,28 @@ class ArgumentParser extends HasClient {
                     ? expectedArgInfo.types[0]
                     : expectedArgInfo.types);
 
+            if (expectedArgInfo.names.length === 0) {
+                throw new Error("Argument names must be provided");
+            }
+            else if (expectedArgInfo.names.length > 1) {
+                throw new Error("Only 1 argument name is allowed for auto-parsing!");
+            }
+
+            const name = expectedArgInfo.interactionName ?? expectedArgInfo.names[0];
+
             if (
                 !expectedArgInfo.rules?.["interaction:no_required_check"] &&
-                !interaction.options.get(expectedArgInfo.name)
+                !interaction.options.get(name)
             ) {
                 if (expectedArgInfo.optional || expectedArgInfo.default !== undefined) {
-                    args[expectedArgInfo.name] = expectedArgInfo.default ?? null;
+                    args[name] = expectedArgInfo.default ?? null;
                     continue;
                 }
 
                 return {
                     error:
-                        expectedArgInfo.errorMessages?.Required ??
-                        `${expectedArgInfo.name} is required!`,
+                        expectedArgInfo.errorMessages?.[0]?.Required ??
+                        `${name} is required!`,
                     payload: undefined,
                     abort: undefined
                 };
@@ -342,7 +371,7 @@ class ArgumentParser extends HasClient {
 
             const { error, value } = await type.performCastFromInteraction(
                 interaction,
-                expectedArgInfo.name,
+                name,
                 expectedArgInfo.rules,
                 !expectedArgInfo.optional
             );
@@ -355,7 +384,7 @@ class ArgumentParser extends HasClient {
                 };
             }
 
-            args[expectedArgInfo.name] = value?.getValue();
+            args[name] = value?.getValue();
         }
 
         return {
