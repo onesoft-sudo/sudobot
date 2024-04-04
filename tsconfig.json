@@ -28,7 +28,6 @@
     "exclude": [
         "./backup",
         "./tmp",
-        "./tmp/**",
         "./scripts",
         "./tests",
         "./build",
