@@ -86,13 +86,13 @@ if [ $setup -eq 1 ]; then
     print 34 "info   " "Installing dependencies for BlazeBuild..."
     print 36 "command" "$cmd install"
     command $cmd install
-    popd  > /dev/null 2>&1  || exit 1
+    popd > /dev/null 2>&1  || exit 1
 
     print 34 "info   " "Finishing up..."
     mkdir -p "$projectdir/node_modules"
 
     if [ -L "$projectdir/node_modules/blazebuild" ] || [ -d "$projectdir/node_modules/blazebuild" ]; then
-        rmdir "$projectdir/node_modules/blazebuild"
+        rmdir "$projectdir/node_modules/blazebuild" || exit 1
     fi
 
     ln -s "$projectdir/build_src" "$projectdir/node_modules/blazebuild" || exit 1
