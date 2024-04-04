@@ -92,7 +92,7 @@ if [ $setup -eq 1 ]; then
     mkdir -p "$projectdir/node_modules"
 
     if [ -L "$projectdir/node_modules/blazebuild" ] || [ -d "$projectdir/node_modules/blazebuild" ]; then
-        rmdir "$projectdir/node_modules/blazebuild" || exit 1
+        rm "$projectdir/node_modules/blazebuild" || exit 1
     fi
 
     ln -s "$projectdir/build_src" "$projectdir/node_modules/blazebuild" || exit 1
