@@ -18,9 +18,8 @@
  */
 
 import { z } from "zod";
-import { MessageRuleSchema } from "./MessageRuleSchema";
 import { zSnowflake } from "./SnowflakeSchema";
-import { TriggerSchema } from "./TriggerSchema";
+import { ModerationAction } from "./ModerationAction";
 
 export const PermissionModeSchema = z.union([
     z.literal("discord"),
@@ -76,7 +75,20 @@ export const GuildConfigSchema = z.object({
             reason_template_placeholder_wrapper: z.string().default("{{%name%}}")
         })
         .optional(),
-    muting: z
+    antispam: z.object({
+        enabled: z.boolean().optional().default(false),
+        limit: z.number().int().min(1),
+        timeframe: z.number().int().min(1),
+        actions: z.array(ModerationAction)
+    }).optional(),
+    extensions: z
+        .object({
+            enabled: z.boolean().optional(),
+            installed_extensions: z.array(z.string()).default([]),
+            disabled_extensions: z.array(z.string()).default([])
+        })
+        .optional(),
+    /* muting: z
         .object({
             role: zSnowflake.optional()
         })
@@ -373,13 +385,6 @@ export const GuildConfigSchema = z.object({
                 .default({})
         })
         .optional(),
-    extensions: z
-        .object({
-            enabled: z.boolean().optional(),
-            installed_extensions: z.array(z.string()).default([]),
-            disabled_extensions: z.array(z.string()).default([])
-        })
-        .optional(),
     bump_reminder: z
         .object({
             enabled: z.boolean().optional(),
@@ -448,7 +453,7 @@ export const GuildConfigSchema = z.object({
         .object({
             enabled: z.boolean().default(false)
         })
-        .optional()
+        .optional() */
 });
 
 export type GuildConfig = z.infer<typeof GuildConfigSchema>;

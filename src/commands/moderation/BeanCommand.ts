@@ -36,8 +36,8 @@ type BeanCommandArgs = {
     reason?: string;
 };
 
-@TakesArgument<BeanCommandArgs>("user", UserArgument<true>, false, UserArgument.defaultErrors)
-@TakesArgument<BeanCommandArgs>("reason", RestStringArgument, true, ErrorMessages.reason)
+@TakesArgument<BeanCommandArgs>("user", UserArgument<true>, false, [UserArgument.defaultErrors])
+@TakesArgument<BeanCommandArgs>("reason", RestStringArgument, true, [ErrorMessages.reason])
 class BeanCommand extends Command {
     public override readonly name = "bean";
     public override readonly description = "Beans a user.";
@@ -69,7 +69,7 @@ class BeanCommand extends Command {
         args: BeanCommandArgs
     ): Promise<void> {
         const { user, reason } = args;
-        const { overviewEmbed } = await this.infractionManager.createBean({
+        const { overviewEmbed, status } = await this.infractionManager.createBean({
             guildId: context.guildId,
             moderator: context.user,
             reason,
@@ -77,6 +77,11 @@ class BeanCommand extends Command {
             generateOverviewEmbed: true,
             transformNotificationEmbed: embed => also(embed, e => void (e.color = Colors.Success))
         });
+
+        if (status === "failed") {
+            await context.error("Failed to bean user.");
+            return;
+        }
 
         overviewEmbed.color = Colors.Primary;
         await context.reply({ embeds: [overviewEmbed] });

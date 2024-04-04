@@ -1,50 +1,38 @@
 import { Snowflake } from "discord.js";
 import Queue from "../framework/queues/Queue";
 import { fetchChannel } from "../framework/utils/entities";
+import { safeUserFetch } from "../utils/fetch";
 
-type InfractionChannelDeleteQueuePayload = {
-    channelId: Snowflake;
-    type: "channel" | "thread";
+type UnbanQueuePayload = {
+    userId: Snowflake;
+    guildId: Snowflake;
 };
 
-class InfractionChannelDeleteQueue extends Queue<InfractionChannelDeleteQueuePayload> {
-    public static override readonly uniqueName = "infraction_channel_delete";
+class UnbanQueue extends Queue<UnbanQueuePayload> {
+    public static override readonly uniqueName = "unban";
 
-    public async execute({ channelId, type }: InfractionChannelDeleteQueuePayload) {
-        const guild = this.application.client.guilds.cache.get(this.guildId);
+    public async execute({ guildId, userId }: UnbanQueuePayload) {
+        const guild = this.application.client.guilds.cache.get(guildId);
 
         if (!guild) {
             return;
         }
 
-        const config =
-            this.application.getServiceByName("configManager").config[this.guildId]?.infractions;
+        const user = await safeUserFetch(this.application.client, userId);
 
-        if (!config || config.dm_fallback === "none") {
+        if (!user) {
             return;
         }
 
-        if (type === "channel") {
-            const channel = await fetchChannel(this.guildId, channelId);
-
-            if (channel && channel.parentId === config.dm_fallback_parent_channel) {
-                await channel.delete("Deleting infraction channel after expiration");
-            }
-        } else {
-            const channel = await fetchChannel(this.guildId, channelId);
-
-            if (!channel || !("threads" in channel)) {
-                return;
-            }
-
-            try {
-                const thread = await channel.threads.fetch(channelId);
-                thread?.delete("Deleting infraction thread after expiration");
-            } catch {
-                return;
-            }
-        }
+        await this.application.getServiceByName("infractionManager")
+            .createUnban({
+                guildId: guild.id,
+                moderator: this.application.client.user!,
+                reason: "Automatic unban after temporary ban expiration",
+                user
+            })
+            .catch(console.error);
     }
 }
 
-export default InfractionChannelDeleteQueue;
+export default UnbanQueue;

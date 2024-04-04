@@ -26,6 +26,7 @@ import type LogStreamingService from "../services/LogStreamingService";
 import type PermissionManagerService from "../services/PermissionManagerService";
 import type QueueService from "../services/QueueService";
 import type StartupManager from "../services/StartupManager";
+import type InfractionManager from "../services/InfractionManager";
 
 export interface ServiceRecord {
     commandManager: CommandManager;
@@ -37,6 +38,7 @@ export interface ServiceRecord {
     serviceManager: ServiceManager;
     permissionManager: PermissionManagerService;
     queueService: QueueService;
+    infractionManager: InfractionManager;
 }
 
 interface ServiceRecordLocal extends ServiceRecord {}

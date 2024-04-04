@@ -17,21 +17,21 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Infraction, InfractionDeliveryStatus, InfractionType } from "@prisma/client";
+import { Infraction, InfractionDeliveryStatus, InfractionType, PrismaClient } from "@prisma/client";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
-    APIEmbed,
+    APIEmbed, Awaitable,
+    bold,
     CategoryChannel,
     ChannelType,
     Colors,
-    EmbedBuilder,
+    EmbedBuilder, GuildMember,
+    italic,
     PermissionFlagsBits,
     PrivateThreadChannel,
     Snowflake,
     TextBasedChannel,
     User,
-    bold,
-    italic,
     userMention
 } from "discord.js";
 import CommandAbortedError from "../framework/commands/CommandAbortedError";
@@ -43,6 +43,8 @@ import InfractionChannelDeleteQueue from "../queues/InfractionChannelDeleteQueue
 import { GuildConfig } from "../types/GuildConfigSchema";
 import { userInfo } from "../utils/embed";
 import ConfigurationManager from "./ConfigurationManager";
+import QueueService from "./QueueService";
+import UnbanQueue from "../queues/UnbanQueue";
 
 @Name("infractionManager")
 class InfractionManager extends Service {
@@ -51,14 +53,12 @@ class InfractionManager extends Service {
         [InfractionType.MASSKICK]: "kicked",
         [InfractionType.KICK]: "kicked",
         [InfractionType.MUTE]: "muted",
-        [InfractionType.SOFTBAN]: "softbanned",
         [InfractionType.WARNING]: "warned",
         [InfractionType.MASSBAN]: "banned",
         [InfractionType.BAN]: "banned",
         [InfractionType.UNBAN]: "unbanned",
         [InfractionType.UNMUTE]: "unmuted",
         [InfractionType.BULK_DELETE_MESSAGE]: "bulk deleted messages",
-        [InfractionType.TEMPBAN]: "temporarily banned",
         [InfractionType.NOTE]: "noted",
         [InfractionType.TIMEOUT]: "timed out",
         [InfractionType.TIMEOUT_REMOVE]: "removed timeout"
@@ -66,6 +66,9 @@ class InfractionManager extends Service {
 
     @Inject()
     private readonly configManager!: ConfigurationManager;
+
+    @Inject()
+    private readonly queueService!: QueueService;
 
     public processReason(guildId: Snowflake, reason: string | undefined, abortOnNotFound = true) {
         if (!reason?.length) {
@@ -85,7 +88,7 @@ class InfractionManager extends Service {
         }
 
         if (abortOnNotFound) {
-            const matches = [...finalReason.matchAll(/\{\{[A-Za-z0-9_-]+\}\}/gi)];
+            const matches = [...finalReason.matchAll(/\{\{[A-Za-z0-9_-]+}}/gi)];
 
             if (matches.length > 0) {
                 const abortReason = `${emoji(
@@ -114,9 +117,10 @@ class InfractionManager extends Service {
             return false;
         }
 
+        const actionDoneName = this.actionDoneNames[infraction.type];
         const embed = {
             author: {
-                name: `You've been ${this.actionDoneNames[infraction.type]} in ${guild.name}`,
+                name: `You have been ${actionDoneName} in ${guild.name}`,
                 icon_url: guild.iconURL() ?? undefined
             },
             fields: [
@@ -125,7 +129,7 @@ class InfractionManager extends Service {
                     value: infraction.reason ?? "No reason provided"
                 }
             ],
-            color: Colors.Red,
+            color: actionDoneName === "bean" || actionDoneName.startsWith("un") ? Colors.Green : Colors.Red,
             timestamp: new Date().toISOString()
         } satisfies APIEmbed;
 
@@ -227,7 +231,7 @@ class InfractionManager extends Service {
             return null;
         }
 
-        const channel = await guild.channels.create({
+        return await guild.channels.create({
             type: ChannelType.GuildText,
             name: `infraction-${infraction.id}`,
             topic: `DM Fallback for Infraction #${infraction.id}`,
@@ -248,8 +252,6 @@ class InfractionManager extends Service {
             ],
             reason: `Creating DM Fallback for Infraction #${infraction.id}`
         });
-
-        return channel;
     }
 
     private async createFallbackThread(infraction: Infraction, config: InfractionConfig) {
@@ -279,25 +281,18 @@ class InfractionManager extends Service {
         })) as PrivateThreadChannel;
     }
 
-    public async createBean<E extends boolean>(
-        payload: CreateBeanPayload<E>
-    ): Promise<InfractionCreateResult<E>> {
-        const {
-            moderator,
-            user,
-            reason,
-            guildId,
-            generateOverviewEmbed,
-            transformNotificationEmbed
-        } = payload;
+    private async createInfraction<E extends boolean>(options: InfractionCreateOptions<E>): Promise<Infraction> {
+        const { callback, guildId, moderator, reason, transformNotificationEmbed, payload, type } = options;
+        const user = "member" in options ? options.member.user : options.user;
         const infraction = await this.application.prisma.$transaction(async prisma => {
             let infraction = await prisma.infraction.create({
                 data: {
                     userId: user.id,
                     guildId,
                     moderatorId: moderator.id,
-                    type: InfractionType.BEAN,
-                    reason: this.processReason(guildId, reason)
+                    reason: this.processReason(guildId, reason),
+                    type,
+                    ...payload
                 }
             });
 
@@ -315,12 +310,175 @@ class InfractionManager extends Service {
                 });
             }
 
+            callback?.(infraction);
             return infraction;
         });
 
-        this.application.getClient().emit("infractionCreate", infraction, user, moderator, false);
+        this.application.getClient().emit("infractionCreate", infraction, user, moderator);
+        return infraction;
+    }
+
+    private getGuild(guildId: Snowflake) {
+        return this.client.guilds.cache.get(guildId);
+    }
+
+    public async createBean<E extends boolean>(
+        payload: CreateBeanPayload<E>
+    ): Promise<InfractionCreateResult<E>> {
+        const {
+            moderator,
+            user,
+            reason,
+            guildId,
+            generateOverviewEmbed,
+            transformNotificationEmbed
+        } = payload;
+        const infraction: Infraction = await this.createInfraction({
+            guildId,
+            moderator,
+            reason,
+            transformNotificationEmbed,
+            type: InfractionType.BEAN,
+            user
+        });
 
         return {
+            status: "success",
+            infraction,
+            overviewEmbed: (generateOverviewEmbed
+                ? this.createOverviewEmbed(infraction, user, moderator)
+                : undefined) as E extends true ? APIEmbed : undefined
+        };
+    }
+
+    public async createBan<E extends boolean>(
+        payload: CreateBanPayload<E>
+    ): Promise<InfractionCreateResult<E>> {
+        const guild = this.getGuild(payload.guildId);
+
+        if (!guild) {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+            };
+        }
+
+        const {
+            moderator,
+            user,
+            reason,
+            guildId,
+            generateOverviewEmbed,
+            transformNotificationEmbed
+        } = payload;
+        const infraction: Infraction = await this.createInfraction({
+            guildId,
+            moderator,
+            reason,
+            transformNotificationEmbed,
+            type: InfractionType.BAN,
+            user,
+            payload: {
+                expiresAt: payload.duration
+                    ? new Date(Date.now() + payload.duration)
+                    : undefined,
+                metadata: {
+                    deletionTimeframe: payload.deletionTimeframe,
+                    duration: payload.duration
+                }
+            },
+        });
+
+        try {
+            await guild.bans.create(user, {
+                reason: `${moderator.username} - ${infraction.reason ?? "No reason provided"}`,
+                deleteMessageSeconds: payload.deletionTimeframe ? Math.floor(payload.deletionTimeframe / 1000) : undefined
+            });
+
+            await this.queueService.bulkCancel(UnbanQueue, queue => {
+                return queue.data.userId === user.id && queue.data.guildId === guild.id;
+            });
+
+            if (payload.duration) {
+                await this.queueService.create(UnbanQueue, {
+                    data: {
+                        guildId,
+                        userId: user.id
+                    },
+                    guildId: guild.id,
+                    runsAt: new Date(Date.now() + payload.duration)
+                }).schedule();
+            }
+        }
+        catch (error) {
+            this.application.logger.error(error);
+
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+            };
+        }
+
+        return {
+            status: "success",
+            infraction,
+            overviewEmbed: (generateOverviewEmbed
+                ? this.createOverviewEmbed(infraction, user, moderator)
+                : undefined) as E extends true ? APIEmbed : undefined
+        };
+    }
+
+    public async createUnban<E extends boolean>(
+        payload: CreateUnbanPayload<E>
+    ): Promise<InfractionCreateResult<E>> {
+        const guild = this.getGuild(payload.guildId);
+
+        if (!guild) {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+            };
+        }
+
+        const {
+            moderator,
+            user,
+            reason,
+            guildId,
+            generateOverviewEmbed,
+            transformNotificationEmbed
+        } = payload;
+        const infraction: Infraction = await this.createInfraction({
+            guildId,
+            moderator,
+            reason,
+            transformNotificationEmbed,
+            type: InfractionType.UNBAN,
+            user
+        });
+
+        try {
+            await guild.bans.remove(user, `${moderator.username} - ${infraction.reason ?? "No reason provided"}`);
+
+            await this.queueService.bulkCancel(UnbanQueue, queue => {
+                return queue.data.userId === user.id && queue.data.guildId === guild.id && !queue.isExecuting;
+            });
+        }
+        catch (error) {
+            this.application.logger.error(error);
+
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+            };
+        }
+
+        return {
+            status: "success",
             infraction,
             overviewEmbed: (generateOverviewEmbed
                 ? this.createOverviewEmbed(infraction, user, moderator)
@@ -361,6 +519,8 @@ class InfractionManager extends Service {
             });
         }
 
+        const actionDoneName = this.actionDoneNames[infraction.type];
+
         return {
             title: `Infraction #${infraction.id}`,
             author: {
@@ -368,11 +528,11 @@ class InfractionManager extends Service {
                 icon_url: user.displayAvatarURL()
             },
             description: `${bold(user.username)} has been ${
-                this.actionDoneNames[infraction.type]
+                actionDoneName
             }.`,
             fields,
             timestamp: new Date().toISOString(),
-            color: Colors.Red
+            color: actionDoneName.startsWith("un") || actionDoneName === "bean" ? Colors.Green : Colors.Red
         } satisfies APIEmbed;
     }
 }
@@ -391,9 +551,34 @@ type CreateBeanPayload<E extends boolean> = CommonOptions<E> & {
     user: User;
 };
 
+type CreateUnbanPayload<E extends boolean> = CommonOptions<E> & {
+    user: User;
+};
+
+type CreateBanPayload<E extends boolean> = CommonOptions<E> & {
+    user: User;
+    deletionTimeframe?: number;
+    duration?: number;
+};
+
 type InfractionCreateResult<E extends boolean = false> = {
+    status: "success";
     infraction: Infraction;
     overviewEmbed: E extends true ? APIEmbed : undefined;
+} | {
+    status: "failed";
+    infraction: null;
+    overviewEmbed: null;
 };
+
+type InfractionCreatePrismaPayload = Parameters<PrismaClient["infraction"]["create"]>[0]["data"];
+
+type InfractionCreateOptions<E extends boolean> = CommonOptions<E> & {
+    payload?: Partial<Omit<InfractionCreatePrismaPayload, "type">>;
+    type: InfractionType;
+    callback?: (infraction: Infraction) => Awaitable<void>;
+} & (
+    { user: User } | { member: GuildMember }
+);
 
 export default InfractionManager;

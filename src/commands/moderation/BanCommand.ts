@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { User } from "discord.js";
+import { User, PermissionFlagsBits } from "discord.js";
 import { Colors } from "../../constants/Colors";
 import { Limits } from "../../constants/Limits";
 import { TakesArgument } from "../../framework/arguments/ArgumentTypes";
@@ -26,24 +26,76 @@ import UserArgument from "../../framework/arguments/UserArgument";
 import { Buildable, Command, CommandMessage } from "../../framework/commands/Command";
 import Context from "../../framework/commands/Context";
 import { Inject } from "../../framework/container/Inject";
-import { also } from "../../framework/utils/utils";
-import SystemAdminPermission from "../../permissions/SystemAdminPermission";
+import { also } from "../../framework/utils/utils"
 import InfractionManager from "../../services/InfractionManager";
-import { ErrorMessages } from "../../utils/ErrorMessages";
+import IntegerArgument from "../../framework/arguments/IntegerArgument";
+import { ErrorType } from "../../framework/arguments/InvalidArgumentError";
+import { formatDistanceToNowStrict } from "date-fns";
 
-type BeanCommandArgs = {
+type BanCommandArgs = {
     user: User;
     reason?: string;
+    duration?: number;
+    deletionTimeframe?: number;
 };
 
-@TakesArgument<BeanCommandArgs>("user", UserArgument<true>, false, UserArgument.defaultErrors)
-@TakesArgument<BeanCommandArgs>("reason", RestStringArgument, true, ErrorMessages.reason)
-class BeanCommand extends Command {
-    public override readonly name = "bean";
-    public override readonly description = "Beans a user.";
-    public override readonly detailedDescription =
-        "Sends a DM to the user telling them they've been beaned. It doesn't actually do anything.";
-    public override readonly permissions = [SystemAdminPermission];
+@TakesArgument<BanCommandArgs>({
+    names: ["user"],
+    types: [UserArgument<true>],
+    optional: false,
+    rules: {
+        "interaction:no_required_check": true
+    },
+    errorMessages: [
+        {
+            [ErrorType.EntityNotFound]: "The user you provided was not found.",
+            [ErrorType.InvalidType]: "Invalid user provided.",
+            [ErrorType.Required]: "You must provide a user to ban."
+        }
+    ],
+    interactionName: "user"
+})
+@TakesArgument<BanCommandArgs>({
+    names: ["duration", "reason"],
+    types: [IntegerArgument, RestStringArgument],
+    optional: true,
+    errorMessages: [
+        {
+            [ErrorType.InvalidType]: "Invalid reason or duration provided."
+        }
+    ],
+    interactionName: "duration",
+    interactionType: IntegerArgument
+})
+@TakesArgument<BanCommandArgs>({
+    names: ["deletionTimeframe", "reason"],
+    types: [IntegerArgument, RestStringArgument],
+    optional: true,
+    errorMessages: [
+        {
+            [ErrorType.InvalidType]: "Invalid reason or message deletion timeframe provided."
+        }
+    ],
+    interactionName: "deletion_timeframe",
+    interactionType: IntegerArgument
+})
+@TakesArgument<BanCommandArgs>({
+    names: ["reason"],
+    types: [RestStringArgument],
+    optional: true,
+    errorMessages: [
+        {
+            [ErrorType.InvalidType]: "Invalid reason provided."
+        }
+    ],
+    interactionName: "reason",
+    interactionType: RestStringArgument
+})
+class BanCommand extends Command {
+    public override readonly name = "ban";
+    public override readonly description = "Bans a user.";
+    public override readonly detailedDescription = "Bans a user from the server.";
+    public override readonly permissions = [PermissionFlagsBits.BanMembers];
     public override readonly defer = true;
 
     @Inject()
@@ -53,7 +105,7 @@ class BeanCommand extends Command {
         return [
             this.buildChatInput()
                 .addUserOption(option =>
-                    option.setName("user").setDescription("The user to bean.").setRequired(true)
+                    option.setName("user").setDescription("The user to ban.").setRequired(true)
                 )
                 .addStringOption(option =>
                     option
@@ -61,26 +113,51 @@ class BeanCommand extends Command {
                         .setDescription("The reason for the bean.")
                         .setMaxLength(Limits.Reason)
                 )
+                .addIntegerOption(option =>
+                    option
+                        .setName("duration")
+                        .setDescription("The duration of the bean.")
+                        .setRequired(false)
+                )
+                .addIntegerOption(option =>
+                    option
+                        .setName("deletion_timeframe")
+                        .setDescription("The message deletion timeframe.")
+                        .setRequired(false)
+                ),
         ];
     }
 
     public override async execute(
         context: Context<CommandMessage>,
-        args: BeanCommandArgs
+        args: BanCommandArgs
     ): Promise<void> {
+        console.log(args);
         const { user, reason } = args;
-        const { overviewEmbed } = await this.infractionManager.createBean({
+        const { overviewEmbed, status } = await this.infractionManager.createBan({
             guildId: context.guildId,
             moderator: context.user,
             reason,
             user,
             generateOverviewEmbed: true,
-            transformNotificationEmbed: embed => also(embed, e => void (e.color = Colors.Success))
+            duration: args.duration,
+            deletionTimeframe: args.deletionTimeframe
         });
 
-        overviewEmbed.color = Colors.Primary;
-        await context.reply({ embeds: [overviewEmbed] });
+        if (status === "failed") {
+            await context.error("Failed to ban user. Maybe I don't have the permissions to do so.");
+            return;
+        }
+
+        await context.reply({
+            embeds: [
+                also(overviewEmbed, embed => void embed.fields?.push({
+                    name: "Message Deletion Timeframe",
+                    value: args.deletionTimeframe ? formatDistanceToNowStrict(new Date(Date.now() - args.deletionTimeframe)) : "N/A",
+                }))
+            ]
+        });
     }
 }
 
-export default BeanCommand;
+export default BanCommand;

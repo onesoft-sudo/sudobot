@@ -76,6 +76,10 @@ class QueueService extends Service implements HasEventListeners {
     ): Queue<T> {
         return this.queueManager.create(queue, options);
     }
+
+    public bulkCancel<T extends StorableData>(type: QueueClass<T>, filter: (queue: Queue<NoInfer<T>>) => boolean) {
+        return this.queueManager.bulkCancel(type, filter);
+    }
 }
 
 export default QueueService;
