@@ -26,7 +26,7 @@ export const dependenciesTask: BuiltInTask = {
         ran = true;
     },
     async onEnd(cli) {
-        if (ran && cli.tasks.has("afterDependencies")) {
+        if (ran && cli.taskManager.tasks.has("afterDependencies")) {
             await cli.taskManager.execute("afterDependencies");
         }
     }

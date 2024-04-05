@@ -18,7 +18,6 @@ import { CacheManager } from "./CacheManager";
 import { PackageManager } from "./PackageManager";
 import { PluginManager } from "./PluginManager";
 import { ProjectManager } from "./ProjectManager";
-import { Task } from "./Task";
 import { TaskManager } from "./TaskManager";
 
 class BlazeBuild {
@@ -35,8 +34,6 @@ class BlazeBuild {
     public readonly logger = new Logger(this);
     private static instance: BlazeBuild;
     public static readonly startTime = Date.now();
-    public readonly tasks = new Map<string, Task>();
-    public readonly executedTasks: string[] = [];
     public readonly taskManager = new TaskManager(this);
     public readonly projectManager = new ProjectManager(this);
     public readonly pluginManager = new PluginManager(this);
@@ -167,8 +164,15 @@ class BlazeBuild {
     public loadBuiltInTasks() {
         for (const task of BlazeBuild.builtInTasks) {
             const handler = () => task.handler(this);
-            this.taskManager.register(task.name, task.dependsOn ?? [], handler, task.if, {
-                onEnd: task.onEnd
+
+            this.taskManager.register(task.name, handler, {
+                dependencies: task.dependsOn,
+                doLast() {
+                    return task.onEnd?.(this.blaze);
+                },
+                condition() {
+                    return task.if?.(this.blaze) ?? true;
+                }
             });
         }
     }

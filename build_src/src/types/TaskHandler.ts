@@ -1,3 +1,5 @@
-import { Awaitable } from "./Awaitable";
+import AbstractTask, { TaskFunction } from "../core/AbstractTask";
 
-export type TaskHandler = () => Awaitable<void>;
+export type TaskHandler<T extends typeof AbstractTask<object> = typeof AbstractTask<object>> =
+    | TaskFunction
+    | T;

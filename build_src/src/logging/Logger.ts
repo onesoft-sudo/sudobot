@@ -61,9 +61,11 @@ class Logger {
 
     public showStats() {
         console.info(
-            `${this.cli.tasks.size} task${this.cli.tasks.size === 1 ? "" : "s"} total: executed ${
-                this.cli.executedTasks.length
-            } task${this.cli.executedTasks.length === 1 ? "" : "s"} in this build`
+            `${this.cli.taskManager.tasks.size} task${
+                this.cli.taskManager.tasks.size === 1 ? "" : "s"
+            } total: executed ${this.cli.taskManager.completedTasks.size} task${
+                this.cli.taskManager.completedTasks.size === 1 ? "" : "s"
+            } in this build`
         );
     }
 

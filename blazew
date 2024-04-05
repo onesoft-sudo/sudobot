@@ -50,11 +50,11 @@ fi
 
 has_bun=$(command -v bun)
 cmd="npm"
-file="$projectdir/build_src/build/index.js"
+file="$projectdir/node_modules/blazebuild/build/index.js"
 
 if [ ! -z "$has_bun" ]; then
     cmd="bun"
-    file="$projectdir/build_src/src/index.ts"
+    file="$projectdir/node_modules/blazebuild/src/index.ts"
 fi
 
 blaze_cmd() {

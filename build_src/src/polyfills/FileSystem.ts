@@ -21,7 +21,7 @@ export default class FileSystem {
      * @param options - The options for reading the file.
      * @returns A promise that resolves to the contents of the file.
      */
-    static async readFileContents<T extends boolean = false>(
+    public static async readFileContents<T extends boolean = false>(
         path: string,
         { json }: ReadFileContentOptions<T> = {}
     ): Promise<ReadFileResult<T, unknown>> {
@@ -47,7 +47,7 @@ export default class FileSystem {
      * @param filePath - The path of the file to check.
      * @returns A promise that resolves to a boolean indicating if the file exists.
      */
-    static async exists(filePath: string) {
+    public static async exists(filePath: string) {
         if (process.versions.bun) {
             return Bun.file(filePath).exists();
         } else {
@@ -63,7 +63,7 @@ export default class FileSystem {
      * @returns A promise that resolves when the file is written.
      * @throws An error if the file cannot be written.
      */
-    static async writeFileContents<J extends boolean = false>(
+    public static async writeFileContents<J extends boolean = false>(
         path: string,
         contents: J extends true ? object : Stringable,
         json: J = false as J

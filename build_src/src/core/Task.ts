@@ -1,28 +1,20 @@
 import { Awaitable } from "../types/Awaitable";
-import { TaskHandler } from "../types/TaskHandler";
+import { AbstractTaskClass } from "./AbstractTask";
 import type BlazeBuild from "./BlazeBuild";
 
-export type TaskRegisterOptions = {
-    onEnd?: (cli: BlazeBuild) => Awaitable<void>;
+export type TaskRegisterOptions<T extends AbstractTaskClass<object> = AbstractTaskClass<object>> = {
+    doLast?: (this: T) => Awaitable<void>;
+    doFirst?: (this: T) => Awaitable<void>;
+    dependencies?: string[];
+    condition?: (this: T) => Awaitable<boolean>;
 };
 
-export class Task {
-    public constructor(
-        private readonly cli: BlazeBuild,
-        public readonly name: string,
-        public readonly dependsOn: string[],
-        public readonly handler: TaskHandler,
-        public readonly onlyIf?: (cli: BlazeBuild) => Awaitable<boolean>,
-        public readonly options?: TaskRegisterOptions
-    ) {}
+export type TaskResolvable = string | AbstractTaskClass<object>;
 
-    public async execute() {
-        this.cli.executedTasks.push(this.name);
-
-        for (const taskName of this.dependsOn) {
-            this.cli.taskManager.execute(taskName);
-        }
-
-        await this.handler.call(this);
-    }
+export interface Task {
+    name: string;
+    dependsOn: string[];
+    handler: AbstractTaskClass<object>;
+    onlyIf?: (cli: BlazeBuild) => Awaitable<boolean>;
+    options?: TaskRegisterOptions;
 }

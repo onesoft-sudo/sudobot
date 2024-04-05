@@ -26,37 +26,63 @@ tasks.register("afterDependencies", async () => {
     await x("prisma generate");
 });
 
-tasks.register("lint", ["dependencies"], async () => {
-    await x("eslint --ext .ts src  --max-warnings=0");
-});
-
-tasks.register("compileTypeScript", ["dependencies"], async () => {
-    await typescript.compile();
-});
-
-tasks.register("compile", ["compileTypeScript"], () => {});
-
-tasks.register("build", ["compile"], async () => {
-    const tmpBuildDir = path.resolve(`${project.buildDir}/../_build.tmp`);
-    const targetDir = `${project.buildDir}/src`;
-    if (existsSync(tmpBuildDir)) {
-        await fs.rm(tmpBuildDir, { recursive: true, force: true });
+tasks.register(
+    "lint",
+    async () => {
+        await x("eslint --ext .ts src  --max-warnings=0");
+    },
+    {
+        dependencies: ["dependencies"]
     }
-    await fs.rename(targetDir, tmpBuildDir);
-    await fs.rm(project.buildDir, { recursive: true, force: true });
-    await fs.rename(tmpBuildDir, project.buildDir);
+);
+
+tasks.register(
+    "compileTypeScript",
+    async () => {
+        await typescript.compile();
+    },
+    {
+        dependencies: ["dependencies"]
+    }
+);
+
+tasks.register("compile", () => {}, {
+    dependencies: ["compileTypeScript"]
 });
 
-tasks.register("run", ["metadata"], () => {
-    setTimeout(async () => {
-        if (process.argv.includes("--node")) {
-            await tasks.execute("build");
-            spawnSync("node", [`${project.buildDir}/index.js`], { stdio: "inherit" });
-        } else {
-            spawnSync("bun", [`${project.srcDir}/bun.ts`], { stdio: "inherit" });
+tasks.register(
+    "build",
+    async () => {
+        const tmpBuildDir = path.resolve(`${project.buildDir}/../_build.tmp`);
+        const targetDir = `${project.buildDir}/src`;
+        if (existsSync(tmpBuildDir)) {
+            await fs.rm(tmpBuildDir, { recursive: true, force: true });
         }
-    }, 1000);
-});
+        await fs.rename(targetDir, tmpBuildDir);
+        await fs.rm(project.buildDir, { recursive: true, force: true });
+        await fs.rename(tmpBuildDir, project.buildDir);
+    },
+    {
+        dependencies: ["compile"]
+    }
+);
+
+tasks.register(
+    "run",
+    () => {
+        setTimeout(async () => {
+            if (process.argv.includes("--node")) {
+                await tasks.execute("build");
+                spawnSync("node", [`${project.buildDir}/index.js`], { stdio: "inherit" });
+            } else {
+                spawnSync("bun", [`${project.srcDir}/bun.ts`], { stdio: "inherit" });
+            }
+        }, 1000);
+    },
+    {
+        dependencies: ["metadata"]
+    }
+);
 
 dependencies(() => {
     nodeModule("@google/generative-ai", "^0.3.0");

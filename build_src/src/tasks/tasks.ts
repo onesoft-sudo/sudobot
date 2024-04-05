@@ -4,7 +4,7 @@ import { BuiltInTask } from "../types/BuiltInTask";
 export const tasksTask: BuiltInTask = {
     name: "tasks",
     handler: async cli => {
-        const { tasks } = cli;
+        const { tasks } = cli.taskManager;
         const taskNames = Array.from(tasks.keys()).sort((a, b) => a.localeCompare(b));
 
         IO.println("Available tasks:");
