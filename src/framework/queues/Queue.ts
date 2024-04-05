@@ -3,6 +3,7 @@ import { Snowflake } from "discord.js";
 import Application from "../app/Application";
 import { HasApplication } from "../types/HasApplication";
 import { requireNonNull } from "../utils/utils";
+import QueueManager from "./QueueManager";
 
 export type StorableData = Prisma.InputJsonValue | typeof Prisma.JsonNull;
 export type QueueOptions<T extends StorableData> = {
@@ -25,6 +26,7 @@ abstract class Queue<T extends StorableData = StorableData> extends HasApplicati
     protected readonly userId: Snowflake;
     protected readonly channelId?: Snowflake;
     protected readonly messageId?: Snowflake;
+    protected readonly manager: QueueManager;
     protected readonly runsAt: Date;
     protected readonly repeat?: boolean;
     private _isExecuting: boolean = false;
@@ -34,7 +36,7 @@ abstract class Queue<T extends StorableData = StorableData> extends HasApplicati
     private _id?: number;
     private _timeout?: Timer | number;
 
-    public constructor(application: Application, options: QueueOptions<T>) {
+    public constructor(application: Application, manager: QueueManager, options: QueueOptions<T>) {
         super(application);
 
         if ("uniqueName" in this.constructor && this.constructor.uniqueName === "") {
@@ -42,6 +44,7 @@ abstract class Queue<T extends StorableData = StorableData> extends HasApplicati
         }
 
         this.data = options.data;
+        this.manager = manager;
         this.guildId = options.guildId;
         this.userId = options.userId ?? this.application.getClient().user!.id;
         this.channelId = options.channelId;
@@ -108,18 +111,22 @@ abstract class Queue<T extends StorableData = StorableData> extends HasApplicati
         this._createdAt = createdAt;
         this._updatedAt = updatedAt;
 
+        this.manager.add(this);
+
         return id;
     }
 
     public async delete() {
         requireNonNull(this._id, "Queue ID must be set to delete");
 
-        await this.application.prisma.queue.delete({
+        this.application.logger.debug("Delete result", await this.application.prisma.queue.delete({
             where: {
                 id: this._id,
                 guildId: this.guildId
             }
-        });
+        }));
+
+        this.manager.remove(this);
     }
 
     public setTimeout() {
@@ -160,6 +167,7 @@ abstract class Queue<T extends StorableData = StorableData> extends HasApplicati
      * @returns The ID of the queue
      */
     public cancel() {
+        this.application.logger.debug(`Canceling queue: ${this._id}`);
         this.clearTimeout();
         return this.delete();
     }

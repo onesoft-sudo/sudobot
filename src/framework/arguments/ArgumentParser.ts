@@ -77,6 +77,7 @@ class ArgumentParser extends HasClient {
                 args,
                 argv,
                 paramTypes,
+                context,
             );
 
             if (error) {
@@ -219,7 +220,12 @@ class ArgumentParser extends HasClient {
             let argTypeIndex = 0;
 
             for (const argType of argTypes) {
+                if (names[argTypeIndex] in parsedArguments) {
+                    break;
+                }
+
                 const { error, value } = await argType.performCast(
+                    context,
                     commandContent,
                     argv,
                     arg,
@@ -261,7 +267,8 @@ class ArgumentParser extends HasClient {
         commandContent: string,
         args: string[],
         argv: string[],
-        types: unknown[]
+        types: unknown[],
+        context: Context,
     ) {
         const parsedArguments = [];
 
@@ -276,6 +283,7 @@ class ArgumentParser extends HasClient {
             }
 
             const { error, value } = await argType.performCast(
+                context,
                 commandContent,
                 argv,
                 arg,
@@ -369,6 +377,7 @@ class ArgumentParser extends HasClient {
             }
 
             const { error, value } = await type.performCastFromInteraction(
+                context,
                 interaction,
                 name,
                 expectedArgInfo.rules,

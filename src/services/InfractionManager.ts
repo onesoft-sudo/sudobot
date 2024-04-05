@@ -47,6 +47,7 @@ import { userInfo } from "../utils/embed";
 import ConfigurationManager from "./ConfigurationManager";
 import QueueService from "./QueueService";
 import UnbanQueue from "../queues/UnbanQueue";
+import UnmuteQueue from "../queues/UnmuteQueue";
 
 @Name("infractionManager")
 class InfractionManager extends Service {
@@ -294,22 +295,25 @@ class InfractionManager extends Service {
                     moderatorId: moderator.id,
                     reason: this.processReason(guildId, reason),
                     type,
+                    deliveryStatus: type === InfractionType.UNBAN ? InfractionDeliveryStatus.FAILED : InfractionDeliveryStatus.SUCCESS,
                     ...payload
                 }
             });
 
-            const status = await this.notify(user, infraction, transformNotificationEmbed);
+            if (type !== InfractionType.UNBAN) {
+                const status = await this.notify(user, infraction, transformNotificationEmbed);
 
-            if (status !== "notified") {
-                infraction = await prisma.infraction.update({
-                    where: { id: infraction.id },
-                    data: {
-                        deliveryStatus:
-                            status === "failed"
-                                ? InfractionDeliveryStatus.FAILED
-                                : InfractionDeliveryStatus.FALLBACK
-                    }
-                });
+                if (status !== "notified") {
+                    infraction = await prisma.infraction.update({
+                        where: { id: infraction.id },
+                        data: {
+                            deliveryStatus:
+                                status === "failed"
+                                    ? InfractionDeliveryStatus.FAILED
+                                    : InfractionDeliveryStatus.FALLBACK
+                        }
+                    });
+                }
             }
 
             callback?.(infraction);
@@ -488,6 +492,324 @@ class InfractionManager extends Service {
         };
     }
 
+    public async createKick<E extends boolean>(
+        payload: CreateKickPayload<E>
+    ): Promise<InfractionCreateResult<E>> {
+        const {
+            moderator,
+            member,
+            reason,
+            guildId,
+            generateOverviewEmbed,
+            transformNotificationEmbed
+        } = payload;
+
+        const guild = this.getGuild(payload.guildId);
+
+        if (!guild || !member.kickable) {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+            };
+        }
+
+        const infraction: Infraction = await this.createInfraction({
+            guildId,
+            moderator,
+            reason,
+            transformNotificationEmbed,
+            type: InfractionType.KICK,
+            user: member.user
+        });
+
+        try {
+            await member.kick(`${moderator.username} - ${infraction.reason ?? "No reason provided"}`);
+        }
+        catch (error) {
+            this.application.logger.error(error);
+
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+            };
+        }
+
+        return {
+            status: "success",
+            infraction,
+            overviewEmbed: (generateOverviewEmbed
+                ? this.createOverviewEmbed(infraction, member.user, moderator)
+                : undefined) as E extends true ? APIEmbed : undefined
+        };
+    }
+
+    public async createMute<E extends boolean>(
+        payload: CreateMutePayload<E>
+    ): Promise<InfractionCreateResult<E>> {
+        const {
+            moderator,
+            member,
+            reason,
+            guildId,
+            duration,
+            generateOverviewEmbed,
+            transformNotificationEmbed
+        } = payload;
+        let { mode } = payload;
+        const guild = this.getGuild(payload.guildId);
+
+        if (!guild) {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+            };
+        }
+
+        const config = this.configManager.config[guildId]?.muting;
+        const role = config?.role && mode !== "timeout" ? config?.role : undefined;
+
+        if (!role && mode === "role") {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+                errorType: "role_not_found",
+                errorDescription: "Muted role not found"
+            };
+        }
+
+        mode ??= role ? "role" : "timeout";
+
+        if (mode === "timeout" && !member.moderatable) {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+                errorType: "cannot_moderate",
+                errorDescription: "This member cannot be moderated by me"
+            };
+        }
+
+        if (mode === "timeout" && !duration) {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+                errorType: "invalid_duration",
+                errorDescription: "Must provide duration when timing out"
+            };
+        }
+
+        if (mode === "timeout" && (duration ?? 0) >= (28 * 24 * 60 * 60 * 1000)) {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+                errorType: "invalid_duration",
+                errorDescription: "Duration must be less than 28 days when timing out"
+            };
+        }
+
+        if (mode === "role" && !member.manageable) {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+                errorType: "cannot_manage",
+                errorDescription: "This member cannot be managed by me"
+            };
+        }
+
+        if ((mode === "role" && member.roles.cache.has(role!)) || (mode === "timeout" && member.communicationDisabledUntilTimestamp)) {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+                errorType: "already_muted",
+                errorDescription: "This member is already muted."
+            };
+        }
+
+        const infraction: Infraction = await this.createInfraction({
+            guildId,
+            moderator,
+            reason,
+            transformNotificationEmbed,
+            type: InfractionType.MUTE,
+            user: member.user,
+            payload: {
+                metadata: {
+                    type: role ? "role" : "timeout",
+                    duration
+                },
+                expiresAt: duration
+                    ? new Date(Date.now() + duration)
+                    : undefined,
+            }
+        });
+
+        try {
+            if (mode === "timeout" && duration) {
+                await member.timeout(duration, `${moderator.username} - ${infraction.reason}`);
+            }
+            else if (mode === "role" && role) {
+                await member.roles.add(role, `${moderator.username} - ${infraction.reason}`);
+
+                await this.queueService.bulkCancel(UnmuteQueue, queue => {
+                    const q = queue.data.memberId === member.id && queue.data.guildId === guild.id && !queue.isExecuting;
+
+                    if (q) {
+                        console.debug("Removed", queue.id);
+                    }
+
+                    return q;
+                });
+
+                if (duration) {
+                    await this.queueService.create(UnmuteQueue, {
+                        data: {
+                            guildId,
+                            memberId: member.id
+                        },
+                        guildId: guild.id,
+                        runsAt: new Date(Date.now() + duration)
+                    }).schedule();
+                }
+            }
+            else {
+                throw new Error("Unreachable");
+            }
+        }
+        catch (error) {
+            this.application.logger.error(error);
+
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+            };
+        }
+
+        return {
+            status: "success",
+            infraction,
+            overviewEmbed: (generateOverviewEmbed
+                ? this.createOverviewEmbed(infraction, member.user, moderator)
+                : undefined) as E extends true ? APIEmbed : undefined
+        };
+    }
+
+    public async createUnmute<E extends boolean>(
+        payload: CreateUnmutePayload<E>
+    ): Promise<InfractionCreateResult<E>> {
+        const guild = this.getGuild(payload.guildId);
+
+        if (!guild) {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+            };
+        }
+
+        const {
+            moderator,
+            member,
+            reason,
+            guildId,
+            generateOverviewEmbed,
+            transformNotificationEmbed
+        } = payload;
+        const { mode = "both" } = payload;
+
+        if (mode != "timeout" && !member.manageable) {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+                errorType: "permission",
+                errorDescription: "Member is not manageable"
+            };
+        }
+
+        if (mode != "role" && !member.moderatable) {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+                errorType: "permission",
+                errorDescription: "Member is not moderatable"
+            };
+        }
+
+        const config = this.configManager.config[guildId]?.muting;
+        const role = config?.role && mode !== "timeout" ? config?.role : undefined;
+
+        if (!role && mode !== "timeout") {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+                errorType: "role_not_found",
+                errorDescription: "Muted role not found"
+            };
+        }
+
+        const infraction: Infraction = await this.createInfraction({
+            guildId,
+            moderator,
+            reason,
+            transformNotificationEmbed,
+            type: InfractionType.UNMUTE,
+            user: member.user,
+            payload: {
+                metadata: {
+                    mode
+                }
+            }
+        });
+
+        try {
+            if (mode != "role" && member.communicationDisabledUntilTimestamp && member.moderatable) {
+                await member.disableCommunicationUntil(null, `${moderator.username} - ${infraction.reason}`);
+            }
+
+            if (mode !== "timeout" && role && member.roles.cache.has(role)) {
+                await member.roles.remove(role, `${moderator.username} - ${infraction.reason}`);
+            }
+
+            await this.queueService.bulkCancel(UnmuteQueue, queue => {
+                const q = queue.data.memberId === member.id && queue.data.guildId === guild.id && !queue.isExecuting;
+
+                if (q) {
+                    console.debug("Removed", queue.id);
+                }
+
+                return q;
+            });
+        }
+        catch (error) {
+            this.application.logger.error(error);
+
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+            };
+        }
+
+        return {
+            status: "success",
+            infraction,
+            overviewEmbed: (generateOverviewEmbed
+                ? this.createOverviewEmbed(infraction, member.user, moderator)
+                : undefined) as E extends true ? APIEmbed : undefined
+        };
+    }
+
     private createOverviewEmbed(infraction: Infraction, user: User, moderator: User) {
         const fields = [
             {
@@ -557,6 +879,21 @@ type CreateUnbanPayload<E extends boolean> = CommonOptions<E> & {
     user: User;
 };
 
+type CreateUnmutePayload<E extends boolean> = CommonOptions<E> & {
+    member: GuildMember;
+    mode?: "role" | "timeout" | "both";
+};
+
+type CreateKickPayload<E extends boolean> = CommonOptions<E> & {
+    member: GuildMember;
+};
+
+type CreateMutePayload<E extends boolean> = CommonOptions<E> & {
+    member: GuildMember;
+    duration?: number;
+    mode?: "role" | "timeout";
+};
+
 type CreateBanPayload<E extends boolean> = CommonOptions<E> & {
     user: User;
     deletionTimeframe?: number;
@@ -571,6 +908,8 @@ type InfractionCreateResult<E extends boolean = false> = {
     status: "failed";
     infraction: null;
     overviewEmbed: null;
+    errorType?: string;
+    errorDescription?: string;
 };
 
 type InfractionCreatePrismaPayload = Parameters<PrismaClient["infraction"]["create"]>[0]["data"];

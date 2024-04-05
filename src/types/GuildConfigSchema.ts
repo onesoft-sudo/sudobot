@@ -88,11 +88,12 @@ export const GuildConfigSchema = z.object({
             disabled_extensions: z.array(z.string()).default([])
         })
         .optional(),
-    /* muting: z
+    muting: z
         .object({
             role: zSnowflake.optional()
         })
         .optional(),
+    /*
     quickmute: z
         .object({
             enabled: z.boolean().optional().default(false),

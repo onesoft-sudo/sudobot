@@ -21,6 +21,7 @@ import { Awaitable, ChatInputCommandInteraction } from "discord.js";
 import { ArgumentInterface } from "./ArgumentInterface";
 import { ArgumentTypeOptions } from "./ArgumentTypes";
 import { ErrorType, InvalidArgumentError } from "./InvalidArgumentError";
+import Context from "../commands/Context";
 
 export type Casted<T> = {
     value?: Argument<T>;
@@ -44,6 +45,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
     protected isRequired = false;
 
     public constructor(
+        protected readonly context: Context,
         commandContent: string,
         argv: string[],
         value: string,
@@ -83,13 +85,14 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
     ): Awaitable<T>;
 
     public static async performCastFromInteraction(
+        context: Context,
         interaction: ChatInputCommandInteraction,
         name: string,
         rules?: NonNullable<ArgumentTypeOptions["rules"]>,
         isRequired = false
     ) {
         try {
-            const casted = this.castFrom("", [], "", 0, name, rules, interaction).setRequired(
+            const casted = this.castFrom(context, "", [], "", 0, name, rules, interaction).setRequired(
                 isRequired
             );
 
@@ -163,6 +166,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
     }
 
     public static async performCast(
+        context: Context,
         commandContent: string,
         argv: string[],
         value: string,
@@ -173,6 +177,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
     ): Promise<Casted<unknown>> {
         try {
             const casted = await this.castFrom(
+                context,
                 commandContent,
                 argv,
                 value,
@@ -206,6 +211,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
     }
 
     public static castFrom(
+        context: Context,
         commandContent: string,
         argv: string[],
         value: string,
@@ -216,6 +222,6 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
     ) {
         return new (this as unknown as new (
             ...args: ConstructorParameters<typeof Argument<unknown>>
-        ) => Argument<unknown>)(commandContent, argv, value, position, name, rules, interaction);
+        ) => Argument<unknown>)(context, commandContent, argv, value, position, name, rules, interaction);
     }
 }

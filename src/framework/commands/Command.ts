@@ -47,6 +47,7 @@ import Context, { ContextOf } from "./Context";
 import { ContextType } from "./ContextType";
 import InteractionContext from "./InteractionContext";
 import LegacyContext from "./LegacyContext";
+import CommandAbortedError from "./CommandAbortedError";
 
 export type CommandMessage =
     | Message<true>
@@ -403,6 +404,16 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
         } else {
             await this.execute(context);
         }
+    }
+
+    /**
+     * Aborts the execution of a command.
+     *
+     * @throws CommandAbortedError
+     * @param reason The reason for aborting
+     */
+    protected abort(reason?: string): never {
+        throw new CommandAbortedError(reason);
     }
 
     /**

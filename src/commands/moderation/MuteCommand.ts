@@ -17,30 +17,27 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { PermissionFlagsBits, User } from "discord.js";
+import { GuildMember, PermissionFlagsBits } from "discord.js";
 import { Limits } from "../../constants/Limits";
 import { TakesArgument } from "../../framework/arguments/ArgumentTypes";
 import RestStringArgument from "../../framework/arguments/RestStringArgument";
-import UserArgument from "../../framework/arguments/UserArgument";
 import { Buildable, Command, CommandMessage } from "../../framework/commands/Command";
 import Context from "../../framework/commands/Context";
 import { Inject } from "../../framework/container/Inject";
-import { also } from "../../framework/utils/utils";
 import InfractionManager from "../../services/InfractionManager";
 import IntegerArgument from "../../framework/arguments/IntegerArgument";
 import { ErrorType } from "../../framework/arguments/InvalidArgumentError";
-import { formatDistanceToNowStrict } from "date-fns";
+import GuildMemberArgument from "../../framework/arguments/GuildMemberArgument";
 
-type BanCommandArgs = {
-    user: User;
+type MuteCommandArgs = {
+    member: GuildMember;
     reason?: string;
     duration?: number;
-    deletionTimeframe?: number;
 };
 
-@TakesArgument<BanCommandArgs>({
-    names: ["user"],
-    types: [UserArgument<true>],
+@TakesArgument<MuteCommandArgs>({
+    names: ["member"],
+    types: [GuildMemberArgument<true>],
     optional: false,
     rules: {
         "interaction:no_required_check": true
@@ -49,12 +46,12 @@ type BanCommandArgs = {
         {
             [ErrorType.EntityNotFound]: "The user you provided was not found.",
             [ErrorType.InvalidType]: "Invalid user provided.",
-            [ErrorType.Required]: "You must provide a user to ban."
+            [ErrorType.Required]: "You must provide a user to mute."
         }
     ],
-    interactionName: "user"
+    interactionName: "member"
 })
-@TakesArgument<BanCommandArgs>({
+@TakesArgument<MuteCommandArgs>({
     names: ["duration", "reason"],
     types: [IntegerArgument, RestStringArgument],
     optional: true,
@@ -66,19 +63,7 @@ type BanCommandArgs = {
     interactionName: "duration",
     interactionType: IntegerArgument
 })
-@TakesArgument<BanCommandArgs>({
-    names: ["deletionTimeframe", "reason"],
-    types: [IntegerArgument, RestStringArgument],
-    optional: true,
-    errorMessages: [
-        {
-            [ErrorType.InvalidType]: "Invalid reason or message deletion timeframe provided."
-        }
-    ],
-    interactionName: "deletion_timeframe",
-    interactionType: IntegerArgument
-})
-@TakesArgument<BanCommandArgs>({
+@TakesArgument<MuteCommandArgs>({
     names: ["reason"],
     types: [RestStringArgument],
     optional: true,
@@ -90,16 +75,15 @@ type BanCommandArgs = {
     interactionName: "reason",
     interactionType: RestStringArgument
 })
-class BanCommand extends Command {
-    public override readonly name = "ban";
-    public override readonly description = "Bans a user.";
-    public override readonly detailedDescription = "Bans a user from the server.";
-    public override readonly permissions = [PermissionFlagsBits.BanMembers];
+class MuteCommand extends Command {
+    public override readonly name = "mute";
+    public override readonly description = "Mutes a user.";
+    public override readonly detailedDescription = "Mutes a user and prevents them from talking, while still allowing them in the server.";
+    public override readonly permissions = [PermissionFlagsBits.ModerateMembers];
     public override readonly defer = true;
     public override readonly usage = [
         "<user: User> [reason: RestString]",
         "<user: User> <duration: Duration> [reason: RestString]",
-        "<user: User> <duration: Duration> <message_deletion_timeframe: Duration> [reason: RestString]",
     ];
 
     @Inject()
@@ -109,7 +93,10 @@ class BanCommand extends Command {
         return [
             this.buildChatInput()
                 .addUserOption(option =>
-                    option.setName("user").setDescription("The user to ban.").setRequired(true)
+                    option
+                        .setName("member")
+                        .setDescription("The member to mute.")
+                        .setRequired(true)
                 )
                 .addStringOption(option =>
                     option
@@ -121,47 +108,43 @@ class BanCommand extends Command {
                     option
                         .setName("duration")
                         .setDescription("The duration of the bean.")
-                        .setRequired(false)
                 )
-                .addIntegerOption(option =>
-                    option
-                        .setName("deletion_timeframe")
-                        .setDescription("The message deletion timeframe.")
-                        .setRequired(false)
-                ),
         ];
     }
 
     public override async execute(
         context: Context<CommandMessage>,
-        args: BanCommandArgs
+        args: MuteCommandArgs
     ): Promise<void> {
-        console.log(args);
-        const { user, reason } = args;
-        const { overviewEmbed, status } = await this.infractionManager.createBan({
+        const { member, reason, duration } = args;
+        const result = await this.infractionManager.createMute({
             guildId: context.guildId,
             moderator: context.user,
             reason,
-            user,
+            member,
             generateOverviewEmbed: true,
-            duration: args.duration,
-            deletionTimeframe: args.deletionTimeframe
+            duration,
         });
+        const { overviewEmbed, status } = result;
 
         if (status === "failed") {
-            await context.error("Failed to ban user. Maybe I don't have the permissions to do so.");
+            this.application.logger.debug(result);
+
+            if (result.errorType === "already_muted") {
+                await context.error("This user is already muted.");
+                return;
+            }
+
+            await context.error("Failed to mute the user. Maybe I don't have the permissions to do so.");
             return;
         }
 
         await context.reply({
             embeds: [
-                also(overviewEmbed, embed => void embed.fields?.push({
-                    name: "Message Deletion Timeframe",
-                    value: args.deletionTimeframe ? formatDistanceToNowStrict(new Date(Date.now() - args.deletionTimeframe)) : "N/A",
-                }))
+                overviewEmbed
             ]
         });
     }
 }
 
-export default BanCommand;
+export default MuteCommand;

@@ -45,6 +45,9 @@ class BeanCommand extends Command {
         "Sends a DM to the user telling them they've been beaned. It doesn't actually do anything.";
     public override readonly permissions = [SystemAdminPermission];
     public override readonly defer = true;
+    public override readonly usage = [
+        "<user: User> [reason: RestString]",
+    ];
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;

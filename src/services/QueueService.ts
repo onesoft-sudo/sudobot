@@ -59,12 +59,17 @@ class QueueService extends Service implements HasEventListeners {
                 updatedAt
             });
 
+            this.application.logger.debug(queue.id);
+
             if (runsAt.getTime() <= Date.now()) {
                 queue.run().catch(this.application.logger.error);
+                this.application.logger.debug("Immediate run", queue.id);
                 continue;
             }
 
             queue.setTimeout();
+            this.queueManager.add(queue);
+            this.application.logger.debug("Queued", queue.id);
         }
 
         this.application.logger.info(`Synced ${queues.length} queued jobs`);

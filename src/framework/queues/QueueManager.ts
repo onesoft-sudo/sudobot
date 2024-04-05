@@ -40,7 +40,7 @@ class QueueManager extends HasApplication {
             throw new Error(`Queue with name ${queue} not found`);
         }
 
-        return new QueueClass(this.application, options);
+        return new QueueClass(this.application, this, options);
     }
 
     public async bulkCancel<T extends StorableData>(type: QueueClass<T>, filter: (queue: Queue<NoInfer<T>>) => boolean) {
@@ -50,6 +50,26 @@ class QueueManager extends HasApplication {
                 await queue.cancel();
             }
         }
+    }
+
+    public add(queue: Queue) {
+        const id = queue.id;
+
+        if (!id) {
+            throw new Error("Queue ID is undefined/null");
+        }
+
+        this.scheduledQueues.set(id, queue);
+    }
+
+    public remove(queue: Queue) {
+        const id = queue.id;
+
+        if (!id) {
+            throw new Error("Queue ID is undefined/null");
+        }
+
+        this.scheduledQueues.delete(id);
     }
 }
 

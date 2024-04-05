@@ -114,7 +114,6 @@ export function TakesArgument<
                 : typeOrName as _O
         );
 
-        console.debug(metadata);
         Reflect.defineMetadata("command:types", metadata, target);
     };
 }
