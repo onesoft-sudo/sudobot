@@ -27,41 +27,6 @@ plugins(({ add }) => {
     add([typescript]);
 });
 
-tasks.register("afterDependencies", async () => {
-    await x("prisma generate");
-});
-
-tasks.register(
-    "lint",
-    async () => {
-        await x("eslint --ext .ts src  --max-warnings=0");
-    },
-    {
-        dependencies: ["dependencies"]
-    }
-);
-
-tasks.register("compile", () => {}, {
-    dependencies: ["compileTypeScript"]
-});
-
-tasks.register(
-    "run",
-    () => {
-        setTimeout(async () => {
-            if (process.argv.includes("--node")) {
-                await tasks.execute("build");
-                spawnSync("node", [`${project.buildDir}/index.js`], { stdio: "inherit" });
-            } else {
-                spawnSync("bun", [`${project.srcDir}/bun.ts`], { stdio: "inherit" });
-            }
-        }, 1000);
-    },
-    {
-        dependencies: ["metadata"]
-    }
-);
-
 class BuildTask extends AbstractTask {
     public override readonly name = "build";
 
@@ -84,7 +49,14 @@ class BuildTask extends AbstractTask {
     }
 
     @Caching(CachingMode.Incremental)
-    @Dependencies("dependencies", "compileTypeScript")
+    @Task({ name: "compile", noPrefix: true })
+    @Dependencies("compileTypeScript")
+    public async compile(): Promise<void> {
+        await this.resultIO();
+    }
+
+    @Caching(CachingMode.Incremental)
+    @Dependencies("dependencies", "compile")
     public override async execute() {
         const tmpBuildDir = path.resolve(`${project.buildDir}/../_build.tmp`);
         const targetDir = `${project.buildDir}/src`;
@@ -103,6 +75,34 @@ class BuildTask extends AbstractTask {
 }
 
 tasks.register(BuildTask);
+tasks.register("afterDependencies", async () => {
+    await x("prisma generate");
+});
+tasks.register(
+    "lint",
+    async () => {
+        await x("eslint --ext .ts src  --max-warnings=0");
+    },
+    {
+        dependencies: ["dependencies"]
+    }
+);
+tasks.register(
+    "run",
+    () => {
+        setTimeout(async () => {
+            if (process.argv.includes("--node")) {
+                await tasks.execute("build");
+                spawnSync("node", [`${project.buildDir}/index.js`], { stdio: "inherit" });
+            } else {
+                spawnSync("bun", [`${project.srcDir}/bun.ts`], { stdio: "inherit" });
+            }
+        }, 1000);
+    },
+    {
+        dependencies: ["metadata"]
+    }
+);
 
 dependencies(() => {
     nodeModule("@google/generative-ai", "^0.3.0");
