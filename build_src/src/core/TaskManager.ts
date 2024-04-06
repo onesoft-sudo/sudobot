@@ -12,6 +12,7 @@ export class TaskManager {
     public readonly tasks = new Map<string, Task>();
     public readonly completedTasks = new Set<string>();
     public readonly upToDateTasks = new Set<string>();
+    public readonly actionableTasks = new Set<string>();
 
     public constructor(private readonly cli: BlazeBuild) {}
 
@@ -130,24 +131,28 @@ export class TaskManager {
 
             const { handler } = task;
 
-            if (handler.isUpToDate(task.name)) {
-                this.upToDateTasks.add(task.name);
+            if (handler.precondition && !(await handler.precondition())) {
                 continue;
             }
 
-            if (handler.precondition && !(await handler.precondition())) {
+            this.actionableTasks.add(task.name);
+
+            if (handler.isUpToDate(task.name)) {
+                this.upToDateTasks.add(task.name);
                 continue;
             }
 
             const dependencies = this.resolveTaskDependencies(taskName);
 
             for (const dependency of dependencies) {
-                if (dependency.handler.isUpToDate(dependency.name)) {
-                    this.upToDateTasks.add(dependency.name);
+                if (dependency.handler.precondition && !(await dependency.handler.precondition())) {
                     continue;
                 }
 
-                if (dependency.handler.precondition && !(await dependency.handler.precondition())) {
+                this.actionableTasks.add(task.name);
+
+                if (dependency.handler.isUpToDate(dependency.name)) {
+                    this.upToDateTasks.add(dependency.name);
                     continue;
                 }
 
@@ -162,13 +167,15 @@ export class TaskManager {
                 continue;
             }
 
-            if (task.handler.isUpToDate(task.name)) {
-                this.upToDateTasks.add(task.name);
+            if (task.handler.precondition && !(await task.handler.precondition())) {
+                await handlers?.onTaskCancel?.(task);
                 continue;
             }
 
-            if (task.handler.precondition && !(await task.handler.precondition())) {
-                await handlers?.onTaskCancel?.(task);
+            this.actionableTasks.add(task.name);
+
+            if (task.handler.isUpToDate(task.name)) {
+                this.upToDateTasks.add(task.name);
                 continue;
             }
 
