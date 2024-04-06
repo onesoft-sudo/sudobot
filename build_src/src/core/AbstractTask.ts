@@ -18,6 +18,8 @@ abstract class AbstractTask<C extends object | never = never> {
     private _config?: C;
     public readonly dependencies: Array<TaskResolvable> = [];
     public readonly hooks: Record<HookName, HookFunction[]> = { pre: [], post: [] };
+    private _preconditionResult?: boolean;
+    protected readonly cachePrecondition: boolean = true;
 
     public constructor(public readonly blaze: BlazeBuild) {
         this.name ??=
@@ -133,6 +135,18 @@ abstract class AbstractTask<C extends object | never = never> {
      * Runs after the task has completed.
      */
     public doLast?(): Awaitable<void>;
+
+    public async runPrecondition() {
+        if (this.cachePrecondition && this._preconditionResult !== undefined) {
+            return this._preconditionResult;
+        }
+
+        if (this.precondition !== undefined) {
+            this._preconditionResult = await this.precondition();
+        }
+
+        return this._preconditionResult ?? true;
+    }
 
     public async runHooks(name: HookName) {
         const hooks = this.hooks[name];

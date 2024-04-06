@@ -31,6 +31,15 @@ export class PackageManager extends Manager {
     private changed = false;
     private packageManager: PackageManagerName = "npm";
 
+    public setUpdateRequired(required = true) {
+        this.changed = required;
+    }
+
+    public reset() {
+        this.packageData = PackageManager.defaults;
+        this.changed = false;
+    }
+
     public async readPackageJSON(): Promise<PackageData> {
         const metadata = this.cli.projectManager.metadata;
         const path = metadata.packageFilePath;

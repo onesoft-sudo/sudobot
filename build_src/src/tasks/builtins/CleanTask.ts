@@ -17,6 +17,12 @@ class CleanTask extends AbstractTask {
         if (existsSync(cacheFile)) {
             await this.blaze.cacheManager.rmFile();
             this.blaze.cacheManager.clear();
+            this.blaze.packageManager.reset();
+        }
+
+        if (existsSync(BlazeBuild.buildInfoDir("files.json"))) {
+            await rm(BlazeBuild.buildInfoDir("files.json"));
+            this.blaze.fileSystemManager.removeAllCaches();
         }
     }
 

@@ -129,33 +129,11 @@ export class TaskManager {
                 continue;
             }
 
-            const { handler } = task;
-
-            if (handler.precondition && !(await handler.precondition())) {
-                continue;
-            }
-
             this.actionableTasks.add(task.name);
-
-            if (handler.isUpToDate(task.name)) {
-                this.upToDateTasks.add(task.name);
-                continue;
-            }
-
             const dependencies = this.resolveTaskDependencies(taskName);
 
             for (const dependency of dependencies) {
-                if (dependency.handler.precondition && !(await dependency.handler.precondition())) {
-                    continue;
-                }
-
                 this.actionableTasks.add(task.name);
-
-                if (dependency.handler.isUpToDate(dependency.name)) {
-                    this.upToDateTasks.add(dependency.name);
-                    continue;
-                }
-
                 tasksToRun.add(dependency);
             }
         }
@@ -167,15 +145,15 @@ export class TaskManager {
                 continue;
             }
 
-            if (task.handler.precondition && !(await task.handler.precondition())) {
-                await handlers?.onTaskCancel?.(task);
-                continue;
-            }
-
             this.actionableTasks.add(task.name);
 
             if (task.handler.isUpToDate(task.name)) {
                 this.upToDateTasks.add(task.name);
+                continue;
+            }
+
+            if (!(await task.handler.runPrecondition())) {
+                await handlers?.onTaskCancel?.(task);
                 continue;
             }
 

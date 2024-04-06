@@ -2,21 +2,27 @@ import { existsSync } from "fs";
 import AbstractTask from "../../core/AbstractTask";
 import { Caching, CachingMode } from "../../decorators/Caching";
 import IO from "../../io/IO";
+import { Awaitable } from "../../types/Awaitable";
 
 @Caching(CachingMode.None)
 class DependenciesTask extends AbstractTask {
     public override readonly name = "dependencies";
     protected ran = false;
 
-    public override async execute() {
+    public override precondition(): Awaitable<boolean> {
         if (
             !this.blaze.packageManager.packagesNeedUpdate() &&
             !this.blaze.cacheManager.noCacheFileFound() &&
-            (existsSync("node_modules") || !existsSync(".blaze/cache.json"))
+            existsSync("node_modules") &&
+            existsSync(".blaze/cache.json")
         ) {
-            return;
+            return false;
         }
 
+        return true;
+    }
+
+    public override async execute() {
         const packageManager = this.blaze.packageManager.getPackageManager();
 
         if (!["bun", "npm", "yarn", "pnpm"].includes(packageManager)) {

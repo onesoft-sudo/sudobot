@@ -19,6 +19,13 @@ export class FileSystemManager extends Manager {
         tasksRan: []
     };
 
+    public removeAllCaches() {
+        this._cache = {
+            data: {},
+            tasksRan: []
+        };
+    }
+
     public async readCacheFile() {
         const cacheFile = File.of(".blaze/files.json");
 
