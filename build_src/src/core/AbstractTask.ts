@@ -3,6 +3,10 @@ import { FileResolvable } from "../io/File";
 import { TaskOutput } from "../io/TaskOutput";
 import { Awaitable } from "../types/Awaitable";
 import BlazeBuild from "./BlazeBuild";
+import { TaskResolvable } from "./Task";
+
+type HookName = "pre" | "post";
+type HookFunction = (this: AbstractTask<object>) => Awaitable<void>;
 
 abstract class AbstractTask<C extends object | never = never> {
     public readonly name: string;
@@ -10,6 +14,8 @@ abstract class AbstractTask<C extends object | never = never> {
     private _outputs: FileResolvable[] = [];
     private _taskNames?: string[];
     private _config?: C;
+    public readonly dependencies: Array<TaskResolvable> = [];
+    public readonly hooks: Record<HookName, HookFunction[]> = { pre: [], post: [] };
 
     public constructor(public readonly blaze: BlazeBuild) {
         this.name ??=
@@ -71,6 +77,37 @@ abstract class AbstractTask<C extends object | never = never> {
      */
     public execute?(): ReturnType<TaskFunction>;
 
+    /**
+     * Checks if the task should run.
+     *
+     * @returns {boolean} Whether the task should run.
+     */
+    public precondition?(): Awaitable<boolean>;
+
+    /**
+     * Runs after the task has completed.
+     */
+    public doLast?(): Awaitable<void>;
+
+    public async runHooks(name: HookName) {
+        const hooks = this.hooks[name];
+
+        if (name === "pre") {
+            await this.doFirst?.();
+        } else if (name === "post") {
+            await this.doLast?.();
+        }
+
+        for (const hook of hooks) {
+            await hook.call(this);
+        }
+    }
+
+    /**
+     * Runs before the task runs.
+     */
+    public doFirst?(): Awaitable<void>;
+
     public getAllTasks() {
         if (this._taskNames !== undefined) {
             return this._taskNames;
@@ -82,7 +119,7 @@ abstract class AbstractTask<C extends object | never = never> {
             tasks.push(this.name);
         }
 
-        const metadata = (Reflect.getMetadata("task_names", this) as TaskMetadata[]) ?? [];
+        const metadata = (Reflect.getMetadata("task:names", this) as TaskMetadata[]) ?? [];
 
         for (const { key, name, noPrefix } of metadata) {
             if (
@@ -90,7 +127,7 @@ abstract class AbstractTask<C extends object | never = never> {
                 key in this &&
                 typeof this[key as keyof this] === "function"
             ) {
-                tasks.push(noPrefix ? name : `${this.name}:${name}`);
+                tasks.push(noPrefix ? name ?? key : `${this.name}:${name ?? key}`);
             }
         }
 
@@ -105,13 +142,42 @@ abstract class AbstractTask<C extends object | never = never> {
         >
     ) {
         const key = this.name === name ? "execute" : name;
+        const methodName =
+            key !== "execute"
+                ? Reflect.getMetadata("task:names", this).find((info: TaskMetadata) => {
+                      return (
+                          `${!info.noPrefix ? this.name + ":" : ""}${info.name ?? info.key}` === key
+                      );
+                  })?.key
+                : key;
 
-        if (typeof this[key] !== "function") {
-            throw new Error(`Task "${name}" does not exist on ${this.constructor.name}`);
+        if (typeof this[methodName as keyof this] !== "function") {
+            throw new Error(
+                `Task "${name}" does not exist on ${this.constructor.name} (looking for ${methodName})`
+            );
         }
 
-        const fn = this[key] as TaskFunction;
+        const fn = this[methodName as keyof this] as TaskFunction;
         return await fn.call(this);
+    }
+
+    public getDependencies(
+        name = "execute" as Extract<
+            keyof (this & { [K in keyof this]: (...args: unknown[]) => unknown }),
+            string
+        >
+    ) {
+        const key = this.name === name ? "execute" : name;
+        const dependencies = key === "execute" ? [...this.dependencies] : [];
+
+        if (Reflect.hasMetadata("task:dependencies", this.constructor.prototype)) {
+            dependencies.push(
+                ...(Reflect.getMetadata("task:dependencies", this.constructor.prototype)?.[key] ??
+                    [])
+            );
+        }
+
+        return dependencies;
     }
 }
 

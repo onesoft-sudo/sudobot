@@ -5,15 +5,13 @@ import path from "path";
 import IO from "../io/IO";
 import Logger from "../logging/Logger";
 import FileSystem from "../polyfills/FileSystem";
-import { cleanTask } from "../tasks/clean";
-import { cleanCachesTask } from "../tasks/cleanCaches";
-import { cleanDepsTask } from "../tasks/cleanDeps";
-import { dependenciesTask } from "../tasks/dependencies";
-import { dumpTypesTask } from "../tasks/dumpTypes";
-import { initTask } from "../tasks/init";
-import { metadataTask } from "../tasks/metadata";
-import { tasksTask } from "../tasks/tasks";
-import { BuiltInTask } from "../types/BuiltInTask";
+import CleanDependenciesTask from "../tasks/builtins/CleanDependenciesTask";
+import CleanTask from "../tasks/builtins/CleanTask";
+import DependenciesTask from "../tasks/builtins/DependenciesTask";
+import InitTask from "../tasks/builtins/InitTask";
+import MetadataTask from "../tasks/builtins/MetadataTask";
+import TasksTask from "../tasks/builtins/TasksTask";
+import { AbstractTaskClass } from "./AbstractTask";
 import { CacheManager } from "./CacheManager";
 import { PackageManager } from "./PackageManager";
 import { PluginManager } from "./PluginManager";
@@ -21,15 +19,14 @@ import { ProjectManager } from "./ProjectManager";
 import { TaskManager } from "./TaskManager";
 
 class BlazeBuild {
-    private static builtInTasks: BuiltInTask[] = [
-        initTask,
-        cleanTask,
-        tasksTask,
-        metadataTask,
-        dependenciesTask,
-        cleanCachesTask,
-        cleanDepsTask,
-        dumpTypesTask
+    private static coreTasks: (typeof AbstractTaskClass)[] = [
+        InitTask,
+        MetadataTask,
+        DependenciesTask,
+        // CleanCachesTask,
+        CleanDependenciesTask,
+        CleanTask,
+        TasksTask
     ];
     public readonly logger = new Logger(this);
     private static instance: BlazeBuild;
@@ -162,18 +159,8 @@ class BlazeBuild {
     }
 
     public loadBuiltInTasks() {
-        for (const task of BlazeBuild.builtInTasks) {
-            const handler = () => task.handler(this);
-
-            this.taskManager.register(task.name, handler, {
-                dependencies: task.dependsOn,
-                doLast() {
-                    return task.onEnd?.(this.blaze);
-                },
-                condition() {
-                    return task.if?.(this.blaze) ?? true;
-                }
-            });
+        for (const Task of BlazeBuild.coreTasks) {
+            this.taskManager.register(Task);
         }
     }
 

@@ -38,7 +38,7 @@ export class TaskManager {
                 ? new (class extends AbstractTask {
                       public override readonly name: string;
 
-                      public constructor(blaze: BlazeBuild) {
+                      public constructor(public override readonly blaze: BlazeBuild) {
                           super(blaze);
                           this.name =
                               typeof handlerOrName === "string"
@@ -66,12 +66,10 @@ export class TaskManager {
 
             this.tasks.set(finalName, {
                 name: finalName,
-                dependsOn: options?.dependencies ?? [],
                 handler: instance,
                 options: (typeof handlerOrName === "string"
                     ? options
-                    : handlerOrOptions) as TaskRegisterOptions,
-                onlyIf: options?.condition
+                    : handlerOrOptions) as TaskRegisterOptions
             });
         }
     }
@@ -83,18 +81,30 @@ export class TaskManager {
             IO.fail(`Task "${taskName}" is not defined`);
         }
 
-        for (const dep of task.dependsOn) {
-            const task = this.tasks.get(dep);
+        for (const dependency of [
+            ...task.handler.getDependencies(taskName as keyof typeof task.handler),
+            ...(task.options?.dependencies || [])
+        ]) {
+            let name = dependency;
+
+            if (typeof name !== "string") {
+                const instance = new (name as new (blaze: BlazeBuild) => InstanceType<
+                    Exclude<typeof name, string>
+                >)(this.cli);
+                name = instance.name;
+            }
+
+            const task = this.tasks.get(name);
 
             if (!task) {
-                IO.fail(`Task "${dep}" is not defined`);
+                IO.fail(`Task "${name}" is not defined`);
             }
 
             if (resolved.has(task)) {
                 continue;
             }
 
-            this.resolveTaskDependencies(dep, resolved);
+            this.resolveTaskDependencies(name, resolved);
             resolved.add(task);
         }
 
@@ -117,18 +127,20 @@ export class TaskManager {
                 continue;
             }
 
-            if (task.onlyIf && !(await task.onlyIf(this.cli))) {
+            const { handler } = task;
+
+            if (handler.precondition && !(await handler.precondition())) {
                 continue;
             }
 
-            const tasks = this.resolveTaskDependencies(taskName);
+            const dependencies = this.resolveTaskDependencies(taskName);
 
-            for (const dep of tasks) {
-                if (dep.onlyIf && !(await dep.onlyIf(this.cli))) {
+            for (const dependency of dependencies) {
+                if (dependency.handler.precondition && !(await dependency.handler.precondition())) {
                     continue;
                 }
 
-                tasksToRun.add(dep);
+                tasksToRun.add(dependency);
             }
         }
 
@@ -139,19 +151,22 @@ export class TaskManager {
                 continue;
             }
 
-            if (task.onlyIf && !(await task.onlyIf(this.cli))) {
+            if (task.handler.precondition && !(await task.handler.precondition())) {
                 await handlers?.onTaskCancel?.(task);
                 continue;
             }
 
+            const { doFirst, doLast } = task.options ?? {};
+
             await handlers?.onTaskBegin?.(task);
-            await task.options?.doFirst?.call(task.handler);
+            await doFirst?.call(task.handler);
 
             IO.println(`${chalk.bold(`:${task.name}`)}`);
 
             await this.execHandler(task.handler, task.name);
+
             await handlers?.onTaskEnd?.(task);
-            await task.options?.doLast?.call(task.handler);
+            await doLast?.call(task.handler);
 
             this.completedTasks.add(task.name);
         }
