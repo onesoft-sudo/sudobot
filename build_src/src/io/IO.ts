@@ -24,6 +24,12 @@ export default class IO {
         console.info(message);
     }
 
+    public static debug(message: string) {
+        if (process.env.BLAZE_DEBUG) {
+            this.println(message);
+        }
+    }
+
     public static setProgressBuffer(progressBar: BufferedProgress) {
         IO.progressBar = progressBar;
 

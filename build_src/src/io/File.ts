@@ -1,5 +1,5 @@
 import { Stats, existsSync, realpathSync, statSync } from "fs";
-import { basename } from "path";
+import { basename, resolve } from "path";
 import FileSystem from "../polyfills/FileSystem";
 
 export type FileResolvable = string | File;
@@ -13,8 +13,11 @@ type Cache = {
 
 export class File {
     private cache: Cache = {};
+    public readonly path: string;
 
-    public constructor(public readonly path: string) {}
+    public constructor(path: string) {
+        this.path = resolve(path);
+    }
 
     public get exists(): boolean {
         return this.attribute("exists", () => existsSync(this.path));
@@ -26,6 +29,10 @@ export class File {
 
     public get realpath(): string {
         return this.attribute("realpath", () => realpathSync(this.path));
+    }
+
+    public get lastModified(): number {
+        return this.stat.mtimeMs;
     }
 
     public get size(): number {
@@ -69,10 +76,10 @@ export class File {
     }
 
     public static of(resolvable: FileResolvable): File {
-        if (resolvable instanceof File) {
-            return resolvable.clearCache();
+        if (typeof resolvable === "string") {
+            return new File(resolvable);
         }
 
-        return new File(resolvable);
+        return resolvable.clearCache();
     }
 }

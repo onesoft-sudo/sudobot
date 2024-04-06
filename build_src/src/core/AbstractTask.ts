@@ -1,3 +1,5 @@
+import { glob } from "glob";
+import { CachingMode } from "../decorators/Caching";
 import { TaskMetadata } from "../decorators/Task";
 import { FileResolvable } from "../io/File";
 import { TaskOutput } from "../io/TaskOutput";
@@ -50,6 +52,28 @@ abstract class AbstractTask<C extends object | never = never> {
         return this._outputs;
     }
 
+    public async addOutputsByGlob(
+        patterns: string | string[],
+        options?: Parameters<typeof glob>[1]
+    ) {
+        return this.addOutputs(
+            ...(await (options ? glob(patterns, options) : glob(patterns))).map(path =>
+                typeof path === "string" ? path : path.path
+            )
+        );
+    }
+
+    public async addInputsByGlob(
+        patterns: string | string[],
+        options?: Parameters<typeof glob>[1]
+    ) {
+        return this.addInputs(
+            ...(await (options ? glob(patterns, options) : glob(patterns))).map(path =>
+                typeof path === "string" ? path : path.path
+            )
+        );
+    }
+
     protected getConfig<K extends keyof C>(key: K): C[K] {
         if (this._config === undefined) {
             throw new Error("Task configuration has not been set");
@@ -61,6 +85,27 @@ abstract class AbstractTask<C extends object | never = never> {
     public setConfig(config: C): this {
         this._config = config;
         return this;
+    }
+
+    public isUpToDate(name = "execute"): boolean {
+        const methodName = this.getMethodName(name);
+        const cacheMode: Record<keyof this, CachingMode> = {
+            ...(Reflect.getMetadata("task:caching", this.constructor.prototype) || {}),
+            ...(Reflect.getMetadata("task:caching", this.constructor) || {})
+        };
+
+        if (
+            !cacheMode[methodName as keyof this] ||
+            cacheMode[methodName as keyof this] === CachingMode.None
+        ) {
+            return false;
+        }
+
+        if (!this.blaze.fileSystemManager.isTaskUpToDate(name, "both")) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -135,13 +180,8 @@ abstract class AbstractTask<C extends object | never = never> {
         return tasks;
     }
 
-    public async run(
-        name = "execute" as Extract<
-            keyof (this & { [K in keyof this]: (...args: unknown[]) => unknown }),
-            string
-        >
-    ) {
-        const key = this.name === name ? "execute" : name;
+    protected getMethodName(taskName = "execute") {
+        const key = this.name === taskName ? "execute" : taskName;
         const methodName =
             key !== "execute"
                 ? Reflect.getMetadata("task:names", this).find((info: TaskMetadata) => {
@@ -153,12 +193,30 @@ abstract class AbstractTask<C extends object | never = never> {
 
         if (typeof this[methodName as keyof this] !== "function") {
             throw new Error(
-                `Task "${name}" does not exist on ${this.constructor.name} (looking for ${methodName})`
+                `Task "${taskName}" does not exist on ${this.constructor.name} (looking for ${methodName})`
             );
         }
 
+        return methodName as string;
+    }
+
+    public async run(
+        name = "execute" as Extract<
+            keyof (this & { [K in keyof this]: (...args: unknown[]) => unknown }),
+            string
+        >
+    ) {
+        this.blaze.fileSystemManager.clearFiles(name);
+
+        const methodName = this.getMethodName(name);
         const fn = this[methodName as keyof this] as TaskFunction;
-        return await fn.call(this);
+        this.blaze.fileSystemManager.markAsRan(name);
+        const result = await fn.call(this);
+
+        this.blaze.fileSystemManager.addFiles(name, "input", ...this.inputs);
+        this.blaze.fileSystemManager.addFiles(name, "output", ...this.outputs);
+
+        return result;
     }
 
     public getDependencies(

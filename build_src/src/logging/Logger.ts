@@ -65,7 +65,10 @@ class Logger {
                 this.cli.taskManager.tasks.size === 1 ? "" : "s"
             } total: executed ${this.cli.taskManager.completedTasks.size} task${
                 this.cli.taskManager.completedTasks.size === 1 ? "" : "s"
-            } in this build`
+            }` +
+                (this.cli.taskManager.upToDateTasks.size > 0
+                    ? `, ${this.cli.taskManager.upToDateTasks.size} up-to-date`
+                    : "")
         );
     }
 

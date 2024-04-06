@@ -1,3 +1,8 @@
+import { AbstractTask } from "blazebuild/src/core/AbstractTask";
+import { Caching, CachingMode } from "blazebuild/src/decorators/Caching.ts";
+import { Dependencies } from "blazebuild/src/decorators/Dependencies.ts";
+import { Task } from "blazebuild/src/decorators/Task.ts";
+import { File } from "blazebuild/src/io/File.ts";
 import { typescript } from "blazebuild/src/plugins/typescript";
 import { spawnSync } from "child_process";
 import { existsSync } from "fs";
@@ -36,36 +41,9 @@ tasks.register(
     }
 );
 
-tasks.register(
-    "compileTypeScript",
-    async () => {
-        await typescript.compile();
-    },
-    {
-        dependencies: ["dependencies"]
-    }
-);
-
 tasks.register("compile", () => {}, {
     dependencies: ["compileTypeScript"]
 });
-
-tasks.register(
-    "build",
-    async () => {
-        const tmpBuildDir = path.resolve(`${project.buildDir}/../_build.tmp`);
-        const targetDir = `${project.buildDir}/src`;
-        if (existsSync(tmpBuildDir)) {
-            await fs.rm(tmpBuildDir, { recursive: true, force: true });
-        }
-        await fs.rename(targetDir, tmpBuildDir);
-        await fs.rm(project.buildDir, { recursive: true, force: true });
-        await fs.rename(tmpBuildDir, project.buildDir);
-    },
-    {
-        dependencies: ["compile"]
-    }
-);
 
 tasks.register(
     "run",
@@ -83,6 +61,48 @@ tasks.register(
         dependencies: ["metadata"]
     }
 );
+
+class BuildTask extends AbstractTask {
+    public override readonly name = "build";
+
+    private async resultIO() {
+        await this.addInputsByGlob(`${project.srcDir}/**/*.ts`);
+        await this.addOutputsByGlob(
+            this.inputs.map(input =>
+                File.of(input)
+                    .path.replace(project.srcDir, project.buildDir)
+                    .replace(/\.ts$/, ".js")
+            )
+        );
+    }
+
+    @Caching(CachingMode.Incremental)
+    @Task({ name: "compileTypeScript", noPrefix: true })
+    public async compileTypeScript(): Promise<void> {
+        await typescript.compile();
+        await this.resultIO();
+    }
+
+    @Caching(CachingMode.Incremental)
+    @Dependencies("dependencies", "compileTypeScript")
+    public override async execute() {
+        const tmpBuildDir = path.resolve(`${project.buildDir}/../_build.tmp`);
+        const targetDir = `${project.buildDir}/src`;
+
+        if (existsSync(tmpBuildDir)) {
+            await fs.rm(tmpBuildDir, { recursive: true, force: true });
+        }
+
+        await fs.rename(targetDir, tmpBuildDir);
+        await fs.rm(project.buildDir, { recursive: true, force: true });
+        await fs.rename(tmpBuildDir, project.buildDir);
+
+        await this.resultIO();
+        this.addOutputs(project.buildDir);
+    }
+}
+
+tasks.register(BuildTask);
 
 dependencies(() => {
     nodeModule("@google/generative-ai", "^0.3.0");

@@ -13,6 +13,7 @@ import MetadataTask from "../tasks/builtins/MetadataTask";
 import TasksTask from "../tasks/builtins/TasksTask";
 import { AbstractTaskClass } from "./AbstractTask";
 import { CacheManager } from "./CacheManager";
+import { FileSystemManager } from "./FileSystemManager";
 import { PackageManager } from "./PackageManager";
 import { PluginManager } from "./PluginManager";
 import { ProjectManager } from "./ProjectManager";
@@ -36,6 +37,7 @@ class BlazeBuild {
     public readonly pluginManager = new PluginManager(this);
     public readonly packageManager = new PackageManager(this);
     public readonly cacheManager = new CacheManager(this);
+    public readonly fileSystemManager = new FileSystemManager(this);
 
     private constructor() {}
 
@@ -152,10 +154,12 @@ class BlazeBuild {
 
     private async onEnd() {
         await this.cacheManager.write();
+        await this.fileSystemManager.writeFileCache();
     }
 
     private async onStart() {
         await this.cacheManager.read();
+        await this.fileSystemManager.readCacheFile();
     }
 
     public loadBuiltInTasks() {

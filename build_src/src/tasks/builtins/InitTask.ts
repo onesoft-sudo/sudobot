@@ -1,6 +1,5 @@
 import AbstractTask from "../../core/AbstractTask";
 import { Caching, CachingMode } from "../../decorators/Caching";
-import { Task } from "../../decorators/Task";
 import { BufferedProgress } from "../../io/BufferedProgress";
 import IO from "../../io/IO";
 
@@ -58,9 +57,6 @@ class InitTask extends AbstractTask {
             }
         );
     }
-
-    @Task({ name: "test2", noPrefix: true })
-    public test() {}
 }
 
 export default InitTask;

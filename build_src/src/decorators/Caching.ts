@@ -3,8 +3,10 @@ export enum CachingMode {
     Incremental = "Incremental"
 }
 
-export function Caching(mode: CachingMode): ClassDecorator {
-    return target => {
-        Reflect.defineMetadata("task:caching", mode, target);
+export function Caching(mode: CachingMode) {
+    return (target: object, key?: unknown) => {
+        const existing = Reflect.getMetadata("task:caching", target) ?? {};
+        existing[key === undefined ? "execute" : String(key)] = mode;
+        Reflect.defineMetadata("task:caching", existing, target);
     };
 }

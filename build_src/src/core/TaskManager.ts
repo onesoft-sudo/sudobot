@@ -11,6 +11,7 @@ import { Task, TaskRegisterOptions } from "./Task";
 export class TaskManager {
     public readonly tasks = new Map<string, Task>();
     public readonly completedTasks = new Set<string>();
+    public readonly upToDateTasks = new Set<string>();
 
     public constructor(private readonly cli: BlazeBuild) {}
 
@@ -129,6 +130,11 @@ export class TaskManager {
 
             const { handler } = task;
 
+            if (handler.isUpToDate(task.name)) {
+                this.upToDateTasks.add(task.name);
+                continue;
+            }
+
             if (handler.precondition && !(await handler.precondition())) {
                 continue;
             }
@@ -136,6 +142,11 @@ export class TaskManager {
             const dependencies = this.resolveTaskDependencies(taskName);
 
             for (const dependency of dependencies) {
+                if (dependency.handler.isUpToDate(dependency.name)) {
+                    this.upToDateTasks.add(dependency.name);
+                    continue;
+                }
+
                 if (dependency.handler.precondition && !(await dependency.handler.precondition())) {
                     continue;
                 }
@@ -148,6 +159,11 @@ export class TaskManager {
 
         for (const task of tasksToRun) {
             if (this.completedTasks.has(task.name)) {
+                continue;
+            }
+
+            if (task.handler.isUpToDate(task.name)) {
+                this.upToDateTasks.add(task.name);
                 continue;
             }
 

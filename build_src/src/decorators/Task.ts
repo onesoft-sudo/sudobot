@@ -1,5 +1,3 @@
-import { TaskFunction } from "../core/AbstractTask";
-
 export type TaskOptions = {
     name?: string;
     noPrefix?: boolean;
@@ -8,11 +6,7 @@ export type TaskOptions = {
 export type TaskMetadata = TaskOptions & { key: string; name: string };
 
 export const Task = (options?: TaskOptions) => {
-    type Target<K extends string> = {
-        [key in NoInfer<K>]: TaskFunction;
-    };
-
-    return <K extends string>(target: Target<K>, key: K) => {
+    return (target: object, key: unknown) => {
         const taskNames = Reflect.getMetadata("task:names", target) ?? [];
 
         taskNames.push({
