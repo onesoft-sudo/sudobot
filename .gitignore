@@ -1,29 +1,42 @@
-.env
+# Node modules and lock files
 node_modules/
-.idea/
-src/commands/test/
-yarn-error.log
-build/
-logs/
 package-lock.json
-tmp/
-fly.toml
-fly-2.toml
-setup.sh
-.gitpodsetup.sh
-.devcontainer/
-/backup
-/.env.docker
-/.idea
-/storage
-*.bak
-*.traineddata
-/credentials_api
-/.env*
 /bun.lockb
-*.tsbuildinfo
-.extbuild
-/coverage
-/src.bak
+
+# Error logs
+yarn-error.log
+
+# Environment variables
+.env
+/.env*
+/.env.docker
+
+# IDEs and editors
+.idea/
 /docs/.vscode
 /.fleet
+
+# Build directory
+build/
+
+# Logs and temporary files
+logs/
+tmp/
+/.blaze
+*.tsbuildinfo
+.extbuild
+
+# Test coverage
+/coverage
+
+# Other files
+src/commands/test/
+fly.toml
+/storage
+
+# Backup files
+*.bak
+/backup
+
+# AI model data
+*.traineddata
