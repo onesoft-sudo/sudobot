@@ -18,8 +18,8 @@
  */
 
 import { z } from "zod";
-import { zSnowflake } from "./SnowflakeSchema";
 import { ModerationAction } from "./ModerationAction";
+import { zSnowflake } from "./SnowflakeSchema";
 
 export const PermissionModeSchema = z.union([
     z.literal("discord"),
@@ -75,12 +75,20 @@ export const GuildConfigSchema = z.object({
             reason_template_placeholder_wrapper: z.string().default("{{%name%}}")
         })
         .optional(),
-    antispam: z.object({
-        enabled: z.boolean().optional().default(false),
-        limit: z.number().int().min(1),
-        timeframe: z.number().int().min(1),
-        actions: z.array(ModerationAction)
-    }).optional(),
+    antispam: z
+        .object({
+            enabled: z.boolean().optional().default(false),
+            limit: z.number().int().min(1),
+            timeframe: z.number().int().min(1),
+            channels: z
+                .object({
+                    list: z.array(zSnowflake).default([]),
+                    mode: z.enum(["exclude", "include"]).default("exclude")
+                })
+                .default({}),
+            actions: z.array(ModerationAction)
+        })
+        .optional(),
     extensions: z
         .object({
             enabled: z.boolean().optional(),
@@ -92,7 +100,7 @@ export const GuildConfigSchema = z.object({
         .object({
             role: zSnowflake.optional()
         })
-        .optional(),
+        .optional()
     /*
     quickmute: z
         .object({

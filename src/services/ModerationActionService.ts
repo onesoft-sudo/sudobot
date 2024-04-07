@@ -1,12 +1,11 @@
+import { Infraction } from "@prisma/client";
+import { Guild, GuildMember, Message, TextChannel, User } from "discord.js";
+import { Inject } from "../framework/container/Inject";
 import { Service } from "../framework/services/Service";
 import { ModerationAction } from "../types/ModerationAction";
-import { Guild, GuildMember, User } from "discord.js";
-import { Inject } from "../framework/container/Inject";
 import type InfractionManager from "./InfractionManager";
-import { Infraction } from "@prisma/client";
-import { TODO } from "../framework/utils/devflow";
 
-type MemberOnlyAction = Extract<ModerationAction, { type: "kick" | "mute" | "clear" }>
+type MemberOnlyAction = Extract<ModerationAction, { type: "kick" | "mute" | "role" | "warn" }>;
 
 type TakeActionResult = {
     failedActions: ModerationAction["type"][];
@@ -17,34 +16,38 @@ class ModerationActionService extends Service {
     @Inject("infractionManager")
     private readonly infractionManager!: InfractionManager;
 
-    public takeActions(guild: Guild, target: User, actions: ModerationAction[]): Promise<TakeActionResult>;
-    public takeActions(guild: Guild, target: GuildMember, actions: MemberOnlyAction[]): Promise<TakeActionResult>;
-
-    public async takeActions(guild: Guild, target: GuildMember | User, actions: ModerationAction[]) {
-        member:
-        if (target instanceof GuildMember) {
-            for (const action of actions) {
-                if (!["kick", "mute", "clear"].includes(action.type)) {
-                    break member;
-                }
-
-                // const result = await this.takeActionOnMember(guild, target, action as MemberOnlyAction);
-                // TODO
-            }
-
-            return;
-        }
-
+    public async takeActions(
+        guild: Guild,
+        target: GuildMember | User,
+        actions: ModerationAction[],
+        channel?: TextChannel
+    ): Promise<TakeActionResult> {
         const failedActions: ModerationAction["type"][] = [];
         const infractions: Infraction[] = [];
+        const user = target instanceof GuildMember ? target.user : target;
 
         for (const action of actions) {
-            const result = await this.takeActionOnUser(guild, target instanceof GuildMember ? target.user : target, action);
+            const isMemberOnlyAction = ["kick", "mute", "role", "warn"].includes(action.type);
+
+            if (isMemberOnlyAction && target instanceof User) {
+                this.application.logger.warn(
+                    `Skipping member-only action on user: ${target.id}, action: ${action.type}`
+                );
+                continue;
+            }
+
+            const result =
+                isMemberOnlyAction && target instanceof GuildMember
+                    ? await this.takeActionOnMember(guild, target, action as MemberOnlyAction)
+                    : await this.takeActionOnUser(guild, user, action, channel);
+
+            if (result instanceof Message) {
+                continue;
+            }
 
             if (result?.status !== "success") {
                 failedActions.push(action.type);
-            }
-            else {
+            } else if (result && "infraction" in result) {
                 infractions.push(result.infraction);
             }
         }
@@ -55,11 +58,63 @@ class ModerationActionService extends Service {
         };
     }
 
-    public async takeActionOnMember(_guild: Guild, _target: GuildMember, _action: MemberOnlyAction) {
-        TODO();
+    private async takeActionOnMember(guild: Guild, target: GuildMember, action: MemberOnlyAction) {
+        switch (action.type) {
+            case "kick":
+                return await this.infractionManager.createKick({
+                    moderator: this.application.client.user!,
+                    member: target,
+                    reason: action.reason,
+                    guildId: guild.id,
+                    notify: action.notify
+                });
+
+            case "mute":
+                return await this.infractionManager.createMute({
+                    moderator: this.application.client.user!,
+                    member: target,
+                    reason: action.reason,
+                    duration: action.duration,
+                    guildId: guild.id,
+                    notify: action.notify
+                });
+
+            case "role":
+                try {
+                    if (action.mode === "give") {
+                        await target.roles.add(action.roles, `Automated action: ${action.reason}`);
+                    } else {
+                        await target.roles.remove(
+                            action.roles,
+                            `Automated action: ${action.reason}`
+                        );
+                    }
+                } catch (error) {
+                    this.application.logger.error(error);
+                }
+
+                return null;
+
+            case "warn":
+                return await this.infractionManager.createWarning({
+                    moderator: this.application.client.user!,
+                    member: target,
+                    reason: action.reason,
+                    guildId: guild.id,
+                    notify: action.notify
+                });
+
+            default:
+                throw new Error(`Invalid action type: ${action}`);
+        }
     }
 
-    private async takeActionOnUser(guild: Guild, target: User, action: ModerationAction) {
+    private async takeActionOnUser(
+        guild: Guild,
+        target: User,
+        action: ModerationAction,
+        channel?: TextChannel
+    ) {
         switch (action.type) {
             case "ban":
                 return await this.infractionManager.createBan({
@@ -69,6 +124,31 @@ class ModerationActionService extends Service {
                     deletionTimeframe: action.delete_timeframe,
                     guildId: guild.id,
                     duration: action.duration
+                });
+
+            case "verbal_warn":
+                return await channel
+                    ?.send({
+                        content: `${target}, you have received a verbal warning for: ${action.reason}`
+                    })
+                    .catch(this.application.logger.error);
+
+            case "none":
+                break;
+
+            case "clear":
+                if (!channel) {
+                    throw new Error("Channel is required for clear action");
+                }
+
+                return await this.infractionManager.createClearMessages({
+                    moderator: this.application.client.user!,
+                    user: target,
+                    reason: action.reason,
+                    guildId: guild.id,
+                    count: action.count,
+                    channel,
+                    respond: true
                 });
 
             default:

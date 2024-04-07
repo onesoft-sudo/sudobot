@@ -356,7 +356,8 @@ class InfractionManager extends Service {
             reason,
             guildId,
             generateOverviewEmbed,
-            transformNotificationEmbed
+            transformNotificationEmbed,
+            notify = true
         } = payload;
         const infraction: Infraction = await this.createInfraction({
             guildId,
@@ -364,7 +365,8 @@ class InfractionManager extends Service {
             reason,
             transformNotificationEmbed,
             type: InfractionType.BEAN,
-            user
+            user,
+            notify
         });
 
         return {
@@ -395,7 +397,8 @@ class InfractionManager extends Service {
             reason,
             guildId,
             generateOverviewEmbed,
-            transformNotificationEmbed
+            transformNotificationEmbed,
+            notify = true
         } = payload;
         const infraction: Infraction = await this.createInfraction({
             guildId,
@@ -404,6 +407,7 @@ class InfractionManager extends Service {
             transformNotificationEmbed,
             type: InfractionType.BAN,
             user,
+            notify,
             payload: {
                 expiresAt: payload.duration ? new Date(Date.now() + payload.duration) : undefined,
                 metadata: {
@@ -528,7 +532,8 @@ class InfractionManager extends Service {
             reason,
             guildId,
             generateOverviewEmbed,
-            transformNotificationEmbed
+            transformNotificationEmbed,
+            notify = true
         } = payload;
 
         const guild = this.getGuild(payload.guildId);
@@ -547,7 +552,8 @@ class InfractionManager extends Service {
             reason,
             transformNotificationEmbed,
             type: InfractionType.KICK,
-            user: member.user
+            user: member.user,
+            notify
         });
 
         try {
@@ -585,7 +591,8 @@ class InfractionManager extends Service {
             clearMessagesCount,
             channel,
             generateOverviewEmbed,
-            transformNotificationEmbed
+            transformNotificationEmbed,
+            notify = true
         } = payload;
         let { mode } = payload;
         const guild = this.getGuild(payload.guildId);
@@ -677,6 +684,7 @@ class InfractionManager extends Service {
             transformNotificationEmbed,
             type: InfractionType.MUTE,
             user: member.user,
+            notify,
             payload: {
                 metadata: {
                     type: role ? "role" : "timeout",
@@ -764,7 +772,8 @@ class InfractionManager extends Service {
             reason,
             guildId,
             generateOverviewEmbed,
-            transformNotificationEmbed
+            transformNotificationEmbed,
+            notify = true
         } = payload;
         const { mode = "both" } = payload;
 
@@ -801,6 +810,19 @@ class InfractionManager extends Service {
             };
         }
 
+        if (
+            (role !== "timeout" && role && !member.roles.cache.has(role)) ||
+            (mode !== "role" && !member.communicationDisabledUntilTimestamp)
+        ) {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+                errorType: "not_muted",
+                errorDescription: "This member is not muted"
+            };
+        }
+
         const infraction: Infraction = await this.createInfraction({
             guildId,
             moderator,
@@ -808,6 +830,7 @@ class InfractionManager extends Service {
             transformNotificationEmbed,
             type: InfractionType.UNMUTE,
             user: member.user,
+            notify,
             payload: {
                 metadata: {
                     mode
@@ -957,6 +980,48 @@ class InfractionManager extends Service {
         };
     }
 
+    public async createWarning<E extends boolean>(
+        payload: CreateWarningPayload<E>
+    ): Promise<InfractionCreateResult<E>> {
+        const {
+            moderator,
+            member,
+            reason,
+            guildId,
+            generateOverviewEmbed,
+            transformNotificationEmbed,
+            notify = true
+        } = payload;
+
+        const guild = this.getGuild(payload.guildId);
+
+        if (!guild) {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null
+            };
+        }
+
+        const infraction: Infraction = await this.createInfraction({
+            guildId,
+            moderator,
+            reason,
+            transformNotificationEmbed,
+            type: InfractionType.WARNING,
+            user: member.user,
+            notify
+        });
+
+        return {
+            status: "success",
+            infraction,
+            overviewEmbed: (generateOverviewEmbed
+                ? this.createOverviewEmbed(infraction, member.user, moderator)
+                : undefined) as E extends true ? APIEmbed : undefined
+        };
+    }
+
     private createOverviewEmbed(infraction: Infraction, user: User, moderator: User) {
         const fields = [
             {
@@ -986,7 +1051,9 @@ class InfractionManager extends Service {
                 value:
                     infraction.deliveryStatus === InfractionDeliveryStatus.FAILED
                         ? "Failed to deliver a DM to this user."
-                        : "Sent to fallback channel."
+                        : infraction.deliveryStatus === InfractionDeliveryStatus.FALLBACK
+                        ? "Sent to fallback channel."
+                        : "Not delivered."
             });
         }
 
@@ -1017,13 +1084,14 @@ type CommonOptions<E extends boolean> = {
     guildId: Snowflake;
     generateOverviewEmbed?: E;
     transformNotificationEmbed?: (embed: APIEmbed) => APIEmbed;
+    notify?: boolean;
 };
 
 type CreateBeanPayload<E extends boolean> = CommonOptions<E> & {
     user: User;
 };
 
-type CreateUnbanPayload<E extends boolean> = CommonOptions<E> & {
+type CreateUnbanPayload<E extends boolean> = Omit<CommonOptions<E>, "notify"> & {
     user: User;
 };
 
@@ -1036,7 +1104,11 @@ type CreateKickPayload<E extends boolean> = CommonOptions<E> & {
     member: GuildMember;
 };
 
-type CreateClearMessagesPayload<E extends boolean> = CommonOptions<E> & {
+type CreateWarningPayload<E extends boolean> = CommonOptions<E> & {
+    member: GuildMember;
+};
+
+type CreateClearMessagesPayload<E extends boolean> = Omit<CommonOptions<E>, "notify"> & {
     user?: User;
     channel: TextChannel;
     count?: number;
