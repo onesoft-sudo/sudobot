@@ -27,6 +27,7 @@ enum InfractionDeliveryStatus {
     SUCCESS
     FALLBACK
     FAILED
+    NOT_DELIVERED
 }
 
 model Infraction {

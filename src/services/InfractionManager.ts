@@ -22,18 +22,20 @@ import { formatDistanceToNowStrict } from "date-fns";
 import {
     APIEmbed,
     Awaitable,
-    bold,
     CategoryChannel,
     ChannelType,
     Colors,
     EmbedBuilder,
     GuildMember,
-    italic,
+    Message,
     PermissionFlagsBits,
     PrivateThreadChannel,
     Snowflake,
     TextBasedChannel,
+    TextChannel,
     User,
+    bold,
+    italic,
     userMention
 } from "discord.js";
 import CommandAbortedError from "../framework/commands/CommandAbortedError";
@@ -42,12 +44,12 @@ import { Name } from "../framework/services/Name";
 import { Service } from "../framework/services/Service";
 import { emoji } from "../framework/utils/emoji";
 import InfractionChannelDeleteQueue from "../queues/InfractionChannelDeleteQueue";
+import UnbanQueue from "../queues/UnbanQueue";
+import UnmuteQueue from "../queues/UnmuteQueue";
 import { GuildConfig } from "../types/GuildConfigSchema";
 import { userInfo } from "../utils/embed";
 import ConfigurationManager from "./ConfigurationManager";
 import QueueService from "./QueueService";
-import UnbanQueue from "../queues/UnbanQueue";
-import UnmuteQueue from "../queues/UnmuteQueue";
 
 @Name("infractionManager")
 class InfractionManager extends Service {
@@ -132,7 +134,10 @@ class InfractionManager extends Service {
                     value: infraction.reason ?? "No reason provided"
                 }
             ],
-            color: actionDoneName === "bean" || actionDoneName.startsWith("un") ? Colors.Green : Colors.Red,
+            color:
+                actionDoneName === "bean" || actionDoneName.startsWith("un")
+                    ? Colors.Green
+                    : Colors.Red,
             timestamp: new Date().toISOString()
         } satisfies APIEmbed;
 
@@ -284,8 +289,19 @@ class InfractionManager extends Service {
         })) as PrivateThreadChannel;
     }
 
-    private async createInfraction<E extends boolean>(options: InfractionCreateOptions<E>): Promise<Infraction> {
-        const { callback, guildId, moderator, reason, transformNotificationEmbed, payload, type } = options;
+    private async createInfraction<E extends boolean>(
+        options: InfractionCreateOptions<E>
+    ): Promise<Infraction> {
+        const {
+            callback,
+            guildId,
+            moderator,
+            reason,
+            transformNotificationEmbed,
+            payload,
+            type,
+            notify = true
+        } = options;
         const user = "member" in options ? options.member.user : options.user;
         const infraction = await this.application.prisma.$transaction(async prisma => {
             let infraction = await prisma.infraction.create({
@@ -295,12 +311,15 @@ class InfractionManager extends Service {
                     moderatorId: moderator.id,
                     reason: this.processReason(guildId, reason),
                     type,
-                    deliveryStatus: type === InfractionType.UNBAN ? InfractionDeliveryStatus.FAILED : InfractionDeliveryStatus.SUCCESS,
+                    deliveryStatus:
+                        type === InfractionType.UNBAN || !notify
+                            ? InfractionDeliveryStatus.NOT_DELIVERED
+                            : InfractionDeliveryStatus.SUCCESS,
                     ...payload
                 }
             });
 
-            if (type !== InfractionType.UNBAN) {
+            if (type !== InfractionType.UNBAN && notify) {
                 const status = await this.notify(user, infraction, transformNotificationEmbed);
 
                 if (status !== "notified") {
@@ -366,7 +385,7 @@ class InfractionManager extends Service {
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null,
+                overviewEmbed: null
             };
         }
 
@@ -386,20 +405,20 @@ class InfractionManager extends Service {
             type: InfractionType.BAN,
             user,
             payload: {
-                expiresAt: payload.duration
-                    ? new Date(Date.now() + payload.duration)
-                    : undefined,
+                expiresAt: payload.duration ? new Date(Date.now() + payload.duration) : undefined,
                 metadata: {
                     deletionTimeframe: payload.deletionTimeframe,
                     duration: payload.duration
                 }
-            },
+            }
         });
 
         try {
             await guild.bans.create(user, {
                 reason: `${moderator.username} - ${infraction.reason ?? "No reason provided"}`,
-                deleteMessageSeconds: payload.deletionTimeframe ? Math.floor(payload.deletionTimeframe / 1000) : undefined
+                deleteMessageSeconds: payload.deletionTimeframe
+                    ? Math.floor(payload.deletionTimeframe / 1000)
+                    : undefined
             });
 
             await this.queueService.bulkCancel(UnbanQueue, queue => {
@@ -407,23 +426,24 @@ class InfractionManager extends Service {
             });
 
             if (payload.duration) {
-                await this.queueService.create(UnbanQueue, {
-                    data: {
-                        guildId,
-                        userId: user.id
-                    },
-                    guildId: guild.id,
-                    runsAt: new Date(Date.now() + payload.duration)
-                }).schedule();
+                await this.queueService
+                    .create(UnbanQueue, {
+                        data: {
+                            guildId,
+                            userId: user.id
+                        },
+                        guildId: guild.id,
+                        runsAt: new Date(Date.now() + payload.duration)
+                    })
+                    .schedule();
             }
-        }
-        catch (error) {
+        } catch (error) {
             this.application.logger.error(error);
 
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null,
+                overviewEmbed: null
             };
         }
 
@@ -445,7 +465,7 @@ class InfractionManager extends Service {
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null,
+                overviewEmbed: null
             };
         }
 
@@ -463,23 +483,30 @@ class InfractionManager extends Service {
             reason,
             transformNotificationEmbed,
             type: InfractionType.UNBAN,
-            user
+            user,
+            notify: false
         });
 
         try {
-            await guild.bans.remove(user, `${moderator.username} - ${infraction.reason ?? "No reason provided"}`);
+            await guild.bans.remove(
+                user,
+                `${moderator.username} - ${infraction.reason ?? "No reason provided"}`
+            );
 
             await this.queueService.bulkCancel(UnbanQueue, queue => {
-                return queue.data.userId === user.id && queue.data.guildId === guild.id && !queue.isExecuting;
+                return (
+                    queue.data.userId === user.id &&
+                    queue.data.guildId === guild.id &&
+                    !queue.isExecuting
+                );
             });
-        }
-        catch (error) {
+        } catch (error) {
             this.application.logger.error(error);
 
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null,
+                overviewEmbed: null
             };
         }
 
@@ -510,7 +537,7 @@ class InfractionManager extends Service {
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null,
+                overviewEmbed: null
             };
         }
 
@@ -524,15 +551,16 @@ class InfractionManager extends Service {
         });
 
         try {
-            await member.kick(`${moderator.username} - ${infraction.reason ?? "No reason provided"}`);
-        }
-        catch (error) {
+            await member.kick(
+                `${moderator.username} - ${infraction.reason ?? "No reason provided"}`
+            );
+        } catch (error) {
             this.application.logger.error(error);
 
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null,
+                overviewEmbed: null
             };
         }
 
@@ -554,17 +582,23 @@ class InfractionManager extends Service {
             reason,
             guildId,
             duration,
+            clearMessagesCount,
+            channel,
             generateOverviewEmbed,
             transformNotificationEmbed
         } = payload;
         let { mode } = payload;
         const guild = this.getGuild(payload.guildId);
 
+        if ((channel && !clearMessagesCount) || (clearMessagesCount && !channel)) {
+            throw new Error("Must provide both channel and clearMessagesCount");
+        }
+
         if (!guild) {
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null,
+                overviewEmbed: null
             };
         }
 
@@ -603,7 +637,7 @@ class InfractionManager extends Service {
             };
         }
 
-        if (mode === "timeout" && (duration ?? 0) >= (28 * 24 * 60 * 60 * 1000)) {
+        if (mode === "timeout" && (duration ?? 0) >= 28 * 24 * 60 * 60 * 1000) {
             return {
                 status: "failed",
                 infraction: null,
@@ -623,7 +657,10 @@ class InfractionManager extends Service {
             };
         }
 
-        if ((mode === "role" && member.roles.cache.has(role!)) || (mode === "timeout" && member.communicationDisabledUntilTimestamp)) {
+        if (
+            (mode === "role" && member.roles.cache.has(role!)) ||
+            (mode === "timeout" && member.communicationDisabledUntilTimestamp)
+        ) {
             return {
                 status: "failed",
                 infraction: null,
@@ -645,52 +682,58 @@ class InfractionManager extends Service {
                     type: role ? "role" : "timeout",
                     duration
                 },
-                expiresAt: duration
-                    ? new Date(Date.now() + duration)
-                    : undefined,
+                expiresAt: duration ? new Date(Date.now() + duration) : undefined
             }
         });
 
         try {
             if (mode === "timeout" && duration) {
                 await member.timeout(duration, `${moderator.username} - ${infraction.reason}`);
-            }
-            else if (mode === "role" && role) {
+            } else if (mode === "role" && role) {
                 await member.roles.add(role, `${moderator.username} - ${infraction.reason}`);
 
                 await this.queueService.bulkCancel(UnmuteQueue, queue => {
-                    const q = queue.data.memberId === member.id && queue.data.guildId === guild.id && !queue.isExecuting;
-
-                    if (q) {
-                        console.debug("Removed", queue.id);
-                    }
-
-                    return q;
+                    return (
+                        queue.data.memberId === member.id &&
+                        queue.data.guildId === guild.id &&
+                        !queue.isExecuting
+                    );
                 });
 
                 if (duration) {
-                    await this.queueService.create(UnmuteQueue, {
-                        data: {
-                            guildId,
-                            memberId: member.id
-                        },
-                        guildId: guild.id,
-                        runsAt: new Date(Date.now() + duration)
-                    }).schedule();
+                    await this.queueService
+                        .create(UnmuteQueue, {
+                            data: {
+                                guildId,
+                                memberId: member.id
+                            },
+                            guildId: guild.id,
+                            runsAt: new Date(Date.now() + duration)
+                        })
+                        .schedule();
                 }
-            }
-            else {
+            } else {
                 throw new Error("Unreachable");
             }
-        }
-        catch (error) {
+        } catch (error) {
             this.application.logger.error(error);
 
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null,
+                overviewEmbed: null
             };
+        }
+
+        if (clearMessagesCount && channel) {
+            await this.createClearMessages({
+                guildId,
+                moderator,
+                user: member.user,
+                reason: infraction.reason ?? undefined,
+                channel,
+                respond: true
+            });
         }
 
         return {
@@ -711,7 +754,7 @@ class InfractionManager extends Service {
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null,
+                overviewEmbed: null
             };
         }
 
@@ -725,7 +768,7 @@ class InfractionManager extends Service {
         } = payload;
         const { mode = "both" } = payload;
 
-        if (mode != "timeout" && !member.manageable) {
+        if (mode !== "timeout" && !member.manageable) {
             return {
                 status: "failed",
                 infraction: null,
@@ -735,7 +778,7 @@ class InfractionManager extends Service {
             };
         }
 
-        if (mode != "role" && !member.moderatable) {
+        if (mode !== "role" && !member.moderatable) {
             return {
                 status: "failed",
                 infraction: null,
@@ -773,8 +816,15 @@ class InfractionManager extends Service {
         });
 
         try {
-            if (mode != "role" && member.communicationDisabledUntilTimestamp && member.moderatable) {
-                await member.disableCommunicationUntil(null, `${moderator.username} - ${infraction.reason}`);
+            if (
+                mode !== "role" &&
+                member.communicationDisabledUntilTimestamp &&
+                member.moderatable
+            ) {
+                await member.disableCommunicationUntil(
+                    null,
+                    `${moderator.username} - ${infraction.reason}`
+                );
             }
 
             if (mode !== "timeout" && role && member.roles.cache.has(role)) {
@@ -782,22 +832,19 @@ class InfractionManager extends Service {
             }
 
             await this.queueService.bulkCancel(UnmuteQueue, queue => {
-                const q = queue.data.memberId === member.id && queue.data.guildId === guild.id && !queue.isExecuting;
-
-                if (q) {
-                    console.debug("Removed", queue.id);
-                }
-
-                return q;
+                return (
+                    queue.data.memberId === member.id &&
+                    queue.data.guildId === guild.id &&
+                    !queue.isExecuting
+                );
             });
-        }
-        catch (error) {
+        } catch (error) {
             this.application.logger.error(error);
 
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null,
+                overviewEmbed: null
             };
         }
 
@@ -807,6 +854,106 @@ class InfractionManager extends Service {
             overviewEmbed: (generateOverviewEmbed
                 ? this.createOverviewEmbed(infraction, member.user, moderator)
                 : undefined) as E extends true ? APIEmbed : undefined
+        };
+    }
+
+    public async createClearMessages(
+        payload: CreateClearMessagesPayload<false>
+    ): Promise<MessageBulkDeleteResult> {
+        const {
+            moderator,
+            user,
+            reason,
+            guildId,
+            transformNotificationEmbed,
+            channel,
+            count,
+            respond = true,
+            filters = []
+        } = payload;
+
+        if (!user && !count) {
+            throw new Error("Must provide either user or count");
+        }
+
+        if (count && count > 100) {
+            throw new Error("Cannot bulk delete more than 100 messages at once");
+        }
+
+        const guild = this.getGuild(payload.guildId);
+
+        if (!guild) {
+            return {
+                status: "failed",
+                overviewEmbed: null
+            };
+        }
+
+        if (user) {
+            await this.createInfraction({
+                guildId,
+                moderator,
+                reason,
+                transformNotificationEmbed,
+                type: InfractionType.BULK_DELETE_MESSAGE,
+                user,
+                notify: false
+            });
+        }
+
+        const finalFilters = [...filters];
+        let finalCount: number = 0;
+
+        if (user) {
+            finalFilters.push((message: Message) => message.author.id === user.id);
+        }
+
+        try {
+            const messages = await channel.messages.fetch({ limit: count ?? 100 });
+            const messagesToDelete = [];
+
+            for (const message of messages.values()) {
+                for (const filter of finalFilters) {
+                    if (await filter(message)) {
+                        messagesToDelete.push(message);
+                        break;
+                    }
+                }
+            }
+
+            if (messagesToDelete.length > 0) {
+                finalCount = (await channel.bulkDelete(messagesToDelete, true)).size;
+            }
+        } catch (error) {
+            this.application.logger.error(error);
+
+            return {
+                status: "failed",
+                overviewEmbed: null
+            };
+        }
+
+        if (respond) {
+            const message = await channel
+                .send({
+                    content: `${emoji(this.application.getClient(), "check")} Cleared ${bold(
+                        finalCount.toString()
+                    )} messages${user ? ` from user ${bold(user.username)}` : ""}`
+                })
+                .catch(this.application.logger.error);
+
+            if (message?.deletable) {
+                setTimeout(() => {
+                    if (message?.deletable) {
+                        message.delete().catch(this.application.logger.error);
+                    }
+                }, 6000);
+            }
+        }
+
+        return {
+            status: "success",
+            count: finalCount
         };
     }
 
@@ -851,12 +998,13 @@ class InfractionManager extends Service {
                 name: user.username,
                 icon_url: user.displayAvatarURL()
             },
-            description: `${bold(user.username)} has been ${
-                actionDoneName
-            }.`,
+            description: `${bold(user.username)} has been ${actionDoneName}.`,
             fields,
             timestamp: new Date().toISOString(),
-            color: actionDoneName.startsWith("un") || actionDoneName === "bean" ? Colors.Green : Colors.Red
+            color:
+                actionDoneName.startsWith("un") || actionDoneName === "bean"
+                    ? Colors.Green
+                    : Colors.Red
         } satisfies APIEmbed;
     }
 }
@@ -888,10 +1036,22 @@ type CreateKickPayload<E extends boolean> = CommonOptions<E> & {
     member: GuildMember;
 };
 
+type CreateClearMessagesPayload<E extends boolean> = CommonOptions<E> & {
+    user?: User;
+    channel: TextChannel;
+    count?: number;
+    filters?: Array<MessageFilter>;
+    respond?: boolean;
+};
+
+type MessageFilter = (message: Message) => Awaitable<boolean>;
+
 type CreateMutePayload<E extends boolean> = CommonOptions<E> & {
     member: GuildMember;
     duration?: number;
     mode?: "role" | "timeout";
+    clearMessagesCount?: number;
+    channel?: TextChannel;
 };
 
 type CreateBanPayload<E extends boolean> = CommonOptions<E> & {
@@ -900,17 +1060,26 @@ type CreateBanPayload<E extends boolean> = CommonOptions<E> & {
     duration?: number;
 };
 
-type InfractionCreateResult<E extends boolean = false> = {
-    status: "success";
-    infraction: Infraction;
-    overviewEmbed: E extends true ? APIEmbed : undefined;
-} | {
-    status: "failed";
-    infraction: null;
-    overviewEmbed: null;
-    errorType?: string;
-    errorDescription?: string;
-};
+type InfractionCreateResult<E extends boolean = false> =
+    | {
+          status: "success";
+          infraction: Infraction;
+          overviewEmbed: E extends true ? APIEmbed : undefined;
+      }
+    | {
+          status: "failed";
+          infraction: null;
+          overviewEmbed: null;
+          errorType?: string;
+          errorDescription?: string;
+      };
+
+type MessageBulkDeleteResult =
+    | {
+          status: "success";
+          count: number;
+      }
+    | Omit<Extract<InfractionCreateResult<false>, { status: "failed" }>, "infraction">;
 
 type InfractionCreatePrismaPayload = Parameters<PrismaClient["infraction"]["create"]>[0]["data"];
 
@@ -918,8 +1087,8 @@ type InfractionCreateOptions<E extends boolean> = CommonOptions<E> & {
     payload?: Partial<Omit<InfractionCreatePrismaPayload, "type">>;
     type: InfractionType;
     callback?: (infraction: Infraction) => Awaitable<void>;
-} & (
-    { user: User } | { member: GuildMember }
-);
+    notify?: boolean;
+    sendLog?: boolean;
+} & ({ user: User } | { member: GuildMember });
 
 export default InfractionManager;
