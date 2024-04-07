@@ -1,3 +1,12 @@
+## [8.31.1](https://github.com/onesoft-sudo/sudobot/compare/v8.31.0...v8.31.1) (2024-04-07)
+
+
+### Bug Fixes
+
+* message delete logging issues ([e60bae4](https://github.com/onesoft-sudo/sudobot/commit/e60bae447944cd97673a93593342a3473e98f5a2))
+
+
+
 # [8.31.0](https://github.com/onesoft-sudo/sudobot/compare/v8.29.3...v8.31.0) (2024-04-04)
 
 
@@ -41,20 +50,6 @@
 ### Bug Fixes
 
 * **commands:ai:** gemini api ([f6d08ea](https://github.com/onesoft-sudo/sudobot/commit/f6d08eaddb65331e9b00a9aa06b7e60678562575))
-
-
-
-# [8.29.0](https://github.com/onesoft-sudo/sudobot/compare/v8.28.2...v8.29.0) (2024-03-12)
-
-
-### Bug Fixes
-
-* **searchbar:** shortcut border color ([5a6739b](https://github.com/onesoft-sudo/sudobot/commit/5a6739b5204e0bbf3b3b1a405db7ac6d07a4fe98))
-
-
-### Features
-
-* nested pages/routes ([ae60584](https://github.com/onesoft-sudo/sudobot/commit/ae60584a758b09744709cffc24d9168e00ba1bc9))
 
 
 
