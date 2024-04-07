@@ -23,8 +23,8 @@ export class CacheManager extends Manager {
         this._cache.clear();
     }
 
-    public async write() {
-        if (this._removed) {
+    public async write(force = false) {
+        if (this._removed && !force) {
             return;
         }
 

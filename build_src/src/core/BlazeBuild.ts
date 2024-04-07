@@ -153,7 +153,7 @@ class BlazeBuild {
     }
 
     private async onEnd() {
-        await this.cacheManager.write();
+        await this.cacheManager.write(true);
         await this.fileSystemManager.writeFileCache();
     }
 

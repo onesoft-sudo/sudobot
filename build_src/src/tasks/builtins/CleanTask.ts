@@ -18,6 +18,7 @@ class CleanTask extends AbstractTask {
             await this.blaze.cacheManager.rmFile();
             this.blaze.cacheManager.clear();
             this.blaze.packageManager.reset();
+            this.blaze.packageManager.loadPackageJSON();
         }
 
         if (existsSync(BlazeBuild.buildInfoDir("files.json"))) {
