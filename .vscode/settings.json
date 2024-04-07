@@ -22,7 +22,11 @@
         "blazew",
         "botinfo",
         "Buildable",
+        "kickable",
+        "MASSBAN",
+        "MASSKICK",
         "Memoizable",
+        "moderatable",
         "oclif",
         "openai",
         "SOFTBAN",
@@ -30,7 +34,8 @@
         "Stringable",
         "sudobot",
         "Sweeped",
-        "tsbuildinfo"
+        "tsbuildinfo",
+        "Unban"
     ],
     "material-icon-theme.folders.associations": {
         "automod": "Server",
