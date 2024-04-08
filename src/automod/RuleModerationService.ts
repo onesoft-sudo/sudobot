@@ -3,7 +3,7 @@ import { MessageAutoModServiceContract } from "../contracts/MessageAutoModServic
 import { Service } from "../framework/services/Service";
 
 class RuleModerationService extends Service implements MessageAutoModServiceContract {
-    public moderate(message: Message<boolean>): Promise<void> {
+    public moderate(_message: Message<boolean>): Promise<void> {
         throw new Error("Method not implemented.");
     }
 }
