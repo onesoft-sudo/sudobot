@@ -20,6 +20,7 @@
 import { GuildMember } from "discord.js";
 import Application from "../framework/app/Application";
 import FluentSet from "../framework/collections/FluentSet";
+import { Inject } from "../framework/container/Inject";
 import { MemberPermissionData } from "../framework/contracts/PermissionManagerInterface";
 import AbstractPermissionManager from "../framework/permissions/AbstractPermissionManager";
 import {
@@ -32,9 +33,13 @@ import DiscordPermissionManager from "../security/DiscordPermissionManager";
 import LayeredPermissionManager from "../security/LayeredPermissionManager";
 import LevelBasedPermissionManager from "../security/LevelBasedPermissionManager";
 import { PermissionMode } from "../types/GuildConfigSchema";
+import ConfigurationManager from "./ConfigurationManager";
 
 @Name("permissionManager")
 class PermissionManagerService extends AbstractPermissionManagerService {
+    @Inject("configManager")
+    private readonly configurationManager!: ConfigurationManager;
+
     public readonly managers: OptionalRecord<PermissionMode, AbstractPermissionManager> = {};
 
     public constructor(application: Application) {
@@ -108,6 +113,52 @@ class PermissionManagerService extends AbstractPermissionManagerService {
         }
 
         return this.managers[mode]!;
+    }
+
+    protected async shouldModerate(member: GuildMember, moderator: GuildMember) {
+        if (member.id === moderator.id) {
+            return false;
+        }
+
+        const moderatorIsSystemAdmin = await this.isSystemAdmin(member);
+
+        if (moderatorIsSystemAdmin) {
+            return true;
+        }
+
+        if (member.guild.ownerId === member.id) {
+            return false;
+        }
+
+        if (member.guild.ownerId === moderator.id) {
+            return true;
+        }
+
+        const { invincible, check_discord_permissions = "always" } =
+            this.configurationManager.config[member.guild.id]?.permissions ?? {};
+
+        if (
+            invincible?.users?.includes(member.id) ||
+            invincible?.roles?.some(role => member.roles.cache.has(role))
+        ) {
+            return false;
+        }
+
+        if (
+            (check_discord_permissions === "during_manual_actions" ||
+                check_discord_permissions === "always") &&
+            member.roles.highest.position >= moderator.roles.highest.position
+        ) {
+            return false;
+        }
+
+        const manager = await this.getManager(member.guild.id);
+
+        if (!manager.shouldModerate) {
+            return true;
+        }
+
+        return await manager.shouldModerate(member, moderator);
     }
 }
 

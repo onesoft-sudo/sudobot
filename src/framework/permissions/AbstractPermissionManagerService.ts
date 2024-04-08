@@ -90,23 +90,9 @@ abstract class AbstractPermissionManagerService
         alreadyComputedPermissions?: MemberPermissionData
     ): Awaitable<boolean>;
 
-    public async isSystemAdmin(member: GuildMember, permissionData?: MemberPermissionData) {
+    public async isSystemAdmin(member: GuildMember) {
         const systemAdminPermission = await this.getSystemAdminPermission();
-
-        if (await systemAdminPermission.has(member)) {
-            return true;
-        }
-
-        const mode =
-            this.application.getServiceByName("configManager").config[member.guild.id]?.permissions
-                .mode ?? "discord";
-
-        if (mode !== "discord") {
-            permissionData ??= await this.getMemberPermissions(member);
-            return permissionData.grantedSystemPermissions.has(systemAdminPermission.getName());
-        }
-
-        return false;
+        return await systemAdminPermission.has(member);
     }
 
     public async canBypassGuildRestrictions(member: GuildMember) {

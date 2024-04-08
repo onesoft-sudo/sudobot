@@ -48,11 +48,16 @@ export const GuildConfigSchema = z.object({
         .default({}),
     permissions: z
         .object({
-            invincible_roles: z.array(zSnowflake).default([]),
+            invincible: z
+                .object({
+                    roles: z.array(zSnowflake).default([]),
+                    users: z.array(zSnowflake).default([])
+                })
+                .optional(),
             mode: PermissionModeSchema.default("discord").optional(),
             check_discord_permissions: z
-                .enum(["both", "automod", "manual_actions", "none"])
-                .default("both"),
+                .enum(["always", "during_automod", "during_manual_actions", "never"])
+                .default("always"),
             command_permission_mode: z.enum(["ignore", "overwrite", "check"]).optional()
         })
         .optional()

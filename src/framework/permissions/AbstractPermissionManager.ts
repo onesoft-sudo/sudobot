@@ -19,12 +19,17 @@
 
 import { Awaitable, GuildMember, PermissionFlagsBits, PermissionResolvable } from "discord.js";
 import Application from "../app/Application";
-import { MemberPermissionData, PermissionManagerInterface } from "../contracts/PermissionManagerInterface";
+import {
+    MemberPermissionData,
+    PermissionManagerInterface
+} from "../contracts/PermissionManagerInterface";
 import { SystemPermissionResolvable } from "./AbstractPermissionManagerService";
 import { Permission } from "./Permission";
 
 abstract class AbstractPermissionManager implements PermissionManagerInterface {
     public constructor(protected readonly application: Application) {}
+
+    public shouldModerate?(member: GuildMember, moderator: GuildMember): Awaitable<boolean>;
 
     public async hasDiscordPermissions(
         member: GuildMember,
