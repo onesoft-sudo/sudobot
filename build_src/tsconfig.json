@@ -10,7 +10,6 @@
         "moduleResolution": "node",
         "declaration": true,
         "outDir": "./build",
-        "importHelpers": true,
         "newLine": "lf",
         "noEmitOnError": true,
         "allowSyntheticDefaultImports": true,
