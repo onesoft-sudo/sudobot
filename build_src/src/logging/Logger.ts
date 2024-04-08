@@ -60,13 +60,15 @@ class Logger {
     }
 
     public showStats() {
+        const actionableTasks = this.cli.taskManager.actionableTasks.size;
+        const completedTasks = this.cli.taskManager.completedTasks.size;
+        const upToDateTasks = Math.max(0, actionableTasks - completedTasks);
+
         console.info(
-            `${this.cli.taskManager.actionableTasks.size} actionable task${
-                this.cli.taskManager.actionableTasks.size === 1 ? "" : "s"
-            }: ${this.cli.taskManager.completedTasks.size} executed` +
-                (this.cli.taskManager.upToDateTasks.size > 0
-                    ? `, ${this.cli.taskManager.upToDateTasks.size} up-to-date`
-                    : "")
+            `${actionableTasks} actionable task${
+                actionableTasks === 1 ? "" : "s"
+            }: ${completedTasks} executed` +
+                (upToDateTasks > 0 ? `, ${upToDateTasks} up-to-date` : "")
         );
     }
 
