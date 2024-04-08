@@ -9,6 +9,7 @@ type ProjectMetadata = {
     srcDir: string;
     tsconfigPath?: string;
     packageFilePath: string;
+    testsDir?: string;
     author?: {
         name: string;
         email?: string;
@@ -22,6 +23,7 @@ const defaultSettings: ProjectMetadata = {
     packageFilePath: "./package.json",
     name: basename(process.cwd()),
     description: undefined,
+    testsDir: undefined,
     version: undefined,
     tsconfigPath: undefined,
     author: undefined

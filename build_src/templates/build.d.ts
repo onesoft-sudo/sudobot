@@ -2,6 +2,7 @@ import type { PackageManager, PackageManagerName } from "blazebuild/src/core/Pac
 import type { PluginManager } from "blazebuild/src/core/PluginManager";
 import type { ProjectManager } from "blazebuild/src/core/ProjectManager";
 import type { TaskManager } from "blazebuild/src/core/TaskManager";
+import type { SpawnOptions } from "child_process";
 
 type Callback<T> = (this: T, manager: T) => void;
 type FinalPluginManager = PluginManager;
@@ -31,5 +32,5 @@ declare global {
     function optionalNodeModule(namespace: string, name: string, version: string): void;
 
     function println(message: string): void;
-    function x(command: string): Promise<void>;
+    function x(command: string, options?: SpawnOptions): Promise<void>;
 }

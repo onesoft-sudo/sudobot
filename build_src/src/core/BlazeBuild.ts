@@ -1,4 +1,4 @@
-import { spawn } from "child_process";
+import { SpawnOptions, spawn } from "child_process";
 import { mkdirSync } from "fs";
 import { lstat } from "fs/promises";
 import path from "path";
@@ -120,7 +120,7 @@ class BlazeBuild {
         };
         record.project = this.projectManager.createProxy();
         record.plugins = this.pluginManager.createFunction();
-        record.x = (command: string) => {
+        record.x = (command: string, options?: SpawnOptions) => {
             const packageManager = this.packageManager.getPackageManager();
 
             return this.execCommand(
@@ -130,7 +130,8 @@ class BlazeBuild {
                         : packageManager === "bun"
                         ? "bun x"
                         : "npx"
-                } ${command}`
+                } ${command}`,
+                options
             );
         };
 
@@ -178,14 +179,15 @@ class BlazeBuild {
         return path.resolve(dir, file);
     }
 
-    public async execCommand(command: string) {
+    public async execCommand(command: string, options?: SpawnOptions) {
         if (!process.stdin.isTTY) {
             console.log(`Running command: ${command}`);
         }
 
         const proc = spawn(command, {
             shell: true,
-            stdio: "inherit"
+            stdio: "inherit",
+            ...options
         });
         //
         // proc.stdout.on("data", data => {
@@ -202,14 +204,18 @@ class BlazeBuild {
         //     buffer?.render();
         // });
 
-        return new Promise<void>((resolve, reject) => {
-            proc.on("close", code => {
-                if (code === 0) {
-                    resolve();
-                } else {
-                    reject(new Error(`Command exited with code ${code}`));
-                }
-            });
+        return new Promise<typeof proc>((resolve, reject) => {
+            if (!options?.stdio) {
+                proc.on("close", code => {
+                    if (code === 0) {
+                        resolve(proc);
+                    } else {
+                        reject(new Error(`Command exited with code ${code}`));
+                    }
+                });
+            } else {
+                resolve(proc);
+            }
         });
     }
 }
