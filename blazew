@@ -62,7 +62,7 @@ setup_nvm() {
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-    
+
     source_bashrc
 }
 
@@ -121,7 +121,7 @@ has_bun=$(command -v bun)
 cmd="npm"
 file="$projectdir/node_modules/blazebuild/build/index.js"
 
-if [ ! -z "$has_bun" ] || [ $setup_done -eq 0 ]; then
+if [ ! -z "$has_bun" ] || [ $setup_done -eq 1 ]; then
     cmd="bun"
     file="$projectdir/node_modules/blazebuild/src/index.ts"
 fi
