@@ -125,6 +125,11 @@ file="$projectdir/node_modules/blazebuild/build/index.js"
 
 if [ ! -z "$has_bun" ] || [ $setup_done -eq 1 ]; then
     cmd="bun"
+
+    if [ $setup_done -eq 1 ]; then
+        cmd="~/.bun/bin/bun"
+    fi
+
     file="$projectdir/node_modules/blazebuild/src/index.ts"
 fi
 
