@@ -15,6 +15,7 @@ yarn-error.log
 .idea/
 /docs/.vscode
 /.fleet
+/.devcontainer
 
 # Build directory
 build/

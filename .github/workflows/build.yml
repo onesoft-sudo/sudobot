@@ -68,22 +68,12 @@ jobs:
     blazebuild:
         strategy:
             matrix:
-                # node-version: [20.x, 21.x]
                 os: [ubuntu-latest, macos-latest]
 
         runs-on: ${{ matrix.os }}
 
         steps:
             - uses: actions/checkout@v3
-
-            # - name: Use Node.js ${{ matrix.node-version }}
-            #   uses: actions/setup-node@v3
-            #   with:
-            #       node-version: ${{ matrix.node-version }}
-
-            # - uses: oven-sh/setup-bun@v1
-            #   with:
-            #       bun-version: latest
 
             - name: Build with BlazeBuild
               run: ./blazew build
