@@ -125,6 +125,7 @@ file="$projectdir/node_modules/blazebuild/build/index.js"
 
 if [ ! -z "$has_bun" ] || [ $setup_done -eq 1 ]; then
     cmd="bun"
+    has_bun=1
 
     if [ $setup_done -eq 1 ]; then
         cmd="~/.bun/bin/bun"
@@ -137,7 +138,7 @@ blaze_cmd() {
     if [ -z "$has_bun" ]; then
         node $file $@
     else
-        bun $file $@
+        command $cmd $file $@
     fi
 }
 
