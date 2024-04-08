@@ -43,11 +43,11 @@ import { Permission, PermissionLike } from "../permissions/Permission";
 import { PermissionDeniedError } from "../permissions/PermissionDeniedError";
 import { Policy } from "../policies/Policy";
 import Builder from "../types/Builder";
+import CommandAbortedError from "./CommandAbortedError";
 import Context, { ContextOf } from "./Context";
 import { ContextType } from "./ContextType";
 import InteractionContext from "./InteractionContext";
 import LegacyContext from "./LegacyContext";
-import CommandAbortedError from "./CommandAbortedError";
 
 export type CommandMessage =
     | Message<true>
@@ -207,7 +207,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
     /**
      * The permission manager service.
      */
-    private readonly permissionManager: PermissionManagerServiceInterface;
+    private readonly internalPermissionManager: PermissionManagerServiceInterface;
 
     /**
      * Creates a new instance of the Command class.
@@ -216,7 +216,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      */
     public constructor(protected readonly application: Application) {
         this.argumentParser = new ArgumentParser(application.getClient());
-        this.permissionManager = application.getServiceByName(
+        this.internalPermissionManager = application.getServiceByName(
             "permissionManager"
         ) satisfies PermissionManagerServiceInterface;
     }
@@ -440,9 +440,11 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
             return false;
         }
 
-        state.memberPermissions = await this.permissionManager.getMemberPermissions(context.member);
+        state.memberPermissions = await this.internalPermissionManager.getMemberPermissions(
+            context.member
+        );
 
-        const isSystemAdmin = await this.permissionManager.isSystemAdmin(
+        const isSystemAdmin = await this.internalPermissionManager.isSystemAdmin(
             context.member,
             state.memberPermissions
         );
@@ -492,7 +494,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
         for (const permission of this.persistentCustomPermissions) {
             const instance =
                 typeof permission === "string"
-                    ? this.permissionManager.getPermissionByName(permission)
+                    ? this.internalPermissionManager.getPermissionByName(permission)
                     : typeof permission === "function"
                     ? await permission.getInstance<Permission>()
                     : permission;
@@ -514,7 +516,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      * @returns True if the permissions are met, false otherwise.
      */
     protected async checkPermissions(context: Context, state: CommandExecutionState<true>) {
-        const permissionManager = this.permissionManager;
+        const permissionManager = this.internalPermissionManager;
 
         if (this.systemPermissions) {
             const me = context.guild.members.me ?? (await context.guild.members.fetchMe());

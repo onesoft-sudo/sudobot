@@ -17,30 +17,33 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { PermissionFlagsBits, User } from "discord.js";
+import { formatDistanceToNowStrict } from "date-fns";
+import { GuildMember, PermissionFlagsBits, User } from "discord.js";
 import { Limits } from "../../constants/Limits";
 import { TakesArgument } from "../../framework/arguments/ArgumentTypes";
+import GuildMemberArgument from "../../framework/arguments/GuildMemberArgument";
+import IntegerArgument from "../../framework/arguments/IntegerArgument";
+import { ErrorType } from "../../framework/arguments/InvalidArgumentError";
 import RestStringArgument from "../../framework/arguments/RestStringArgument";
 import UserArgument from "../../framework/arguments/UserArgument";
 import { Buildable, Command, CommandMessage } from "../../framework/commands/Command";
 import Context from "../../framework/commands/Context";
 import { Inject } from "../../framework/container/Inject";
+import { fetchMember } from "../../framework/utils/entities";
 import { also } from "../../framework/utils/utils";
 import InfractionManager from "../../services/InfractionManager";
-import IntegerArgument from "../../framework/arguments/IntegerArgument";
-import { ErrorType } from "../../framework/arguments/InvalidArgumentError";
-import { formatDistanceToNowStrict } from "date-fns";
+import PermissionManagerService from "../../services/PermissionManagerService";
 
 type BanCommandArgs = {
-    user: User;
+    userOrMember: User | GuildMember;
     reason?: string;
     duration?: number;
     deletionTimeframe?: number;
 };
 
 @TakesArgument<BanCommandArgs>({
-    names: ["user"],
-    types: [UserArgument<true>],
+    names: ["userOrMember"],
+    types: [GuildMemberArgument<true>, UserArgument<true>],
     optional: false,
     rules: {
         "interaction:no_required_check": true
@@ -99,11 +102,14 @@ class BanCommand extends Command {
     public override readonly usage = [
         "<user: User> [reason: RestString]",
         "<user: User> <duration: Duration> [reason: RestString]",
-        "<user: User> <duration: Duration> <message_deletion_timeframe: Duration> [reason: RestString]",
+        "<user: User> <duration: Duration> <message_deletion_timeframe: Duration> [reason: RestString]"
     ];
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;
+
+    @Inject()
+    protected readonly permissionManager!: PermissionManagerService;
 
     public override build(): Buildable[] {
         return [
@@ -128,7 +134,7 @@ class BanCommand extends Command {
                         .setName("deletion_timeframe")
                         .setDescription("The message deletion timeframe.")
                         .setRequired(false)
-                ),
+                )
         ];
     }
 
@@ -137,12 +143,35 @@ class BanCommand extends Command {
         args: BanCommandArgs
     ): Promise<void> {
         console.log(args);
-        const { user, reason } = args;
+        const { reason } = args;
+        let { userOrMember } = args;
+
+        if (!context.isLegacy) {
+            if (userOrMember instanceof User) {
+                const member = await fetchMember(context.guild, userOrMember.id);
+
+                if (member) {
+                    userOrMember = member;
+                }
+            }
+        }
+
+        if (userOrMember instanceof GuildMember) {
+            if (
+                !userOrMember.bannable ||
+                !context.member ||
+                !(await this.permissionManager.canModerate(userOrMember, context.member))
+            ) {
+                await context.error("You don't have permission to ban this user.");
+                return;
+            }
+        }
+
         const { overviewEmbed, status } = await this.infractionManager.createBan({
             guildId: context.guildId,
             moderator: context.user,
             reason,
-            user,
+            user: userOrMember instanceof GuildMember ? userOrMember.user : userOrMember,
             generateOverviewEmbed: true,
             duration: args.duration,
             deletionTimeframe: args.deletionTimeframe
@@ -155,10 +184,18 @@ class BanCommand extends Command {
 
         await context.reply({
             embeds: [
-                also(overviewEmbed, embed => void embed.fields?.push({
-                    name: "Message Deletion Timeframe",
-                    value: args.deletionTimeframe ? formatDistanceToNowStrict(new Date(Date.now() - args.deletionTimeframe)) : "N/A",
-                }))
+                also(
+                    overviewEmbed,
+                    embed =>
+                        void embed.fields?.push({
+                            name: "Message Deletion Timeframe",
+                            value: args.deletionTimeframe
+                                ? formatDistanceToNowStrict(
+                                      new Date(Date.now() - args.deletionTimeframe)
+                                  )
+                                : "N/A"
+                        })
+                )
             ]
         });
     }

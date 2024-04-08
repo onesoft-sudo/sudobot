@@ -115,7 +115,7 @@ class PermissionManagerService extends AbstractPermissionManagerService {
         return this.managers[mode]!;
     }
 
-    protected async shouldModerate(member: GuildMember, moderator: GuildMember) {
+    public async canModerate(member: GuildMember, moderator: GuildMember) {
         if (member.id === moderator.id) {
             return false;
         }
@@ -154,11 +154,11 @@ class PermissionManagerService extends AbstractPermissionManagerService {
 
         const manager = await this.getManager(member.guild.id);
 
-        if (!manager.shouldModerate) {
+        if (!manager.canModerate) {
             return true;
         }
 
-        return await manager.shouldModerate(member, moderator);
+        return await manager.canModerate(member, moderator);
     }
 }
 

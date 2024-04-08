@@ -17,26 +17,29 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { User } from "discord.js";
+import { GuildMember } from "discord.js";
 import { Colors } from "../../constants/Colors";
 import { Limits } from "../../constants/Limits";
 import { TakesArgument } from "../../framework/arguments/ArgumentTypes";
+import GuildMemberArgument from "../../framework/arguments/GuildMemberArgument";
 import RestStringArgument from "../../framework/arguments/RestStringArgument";
-import UserArgument from "../../framework/arguments/UserArgument";
 import { Buildable, Command, CommandMessage } from "../../framework/commands/Command";
 import Context from "../../framework/commands/Context";
 import { Inject } from "../../framework/container/Inject";
 import { also } from "../../framework/utils/utils";
 import SystemAdminPermission from "../../permissions/SystemAdminPermission";
 import InfractionManager from "../../services/InfractionManager";
+import PermissionManagerService from "../../services/PermissionManagerService";
 import { ErrorMessages } from "../../utils/ErrorMessages";
 
 type BeanCommandArgs = {
-    user: User;
+    member: GuildMember;
     reason?: string;
 };
 
-@TakesArgument<BeanCommandArgs>("user", UserArgument<true>, false, [UserArgument.defaultErrors])
+@TakesArgument<BeanCommandArgs>("member", GuildMemberArgument, false, [
+    GuildMemberArgument.defaultErrors
+])
 @TakesArgument<BeanCommandArgs>("reason", RestStringArgument, true, [ErrorMessages.reason])
 class BeanCommand extends Command {
     public override readonly name = "bean";
@@ -45,12 +48,13 @@ class BeanCommand extends Command {
         "Sends a DM to the user telling them they've been beaned. It doesn't actually do anything.";
     public override readonly permissions = [SystemAdminPermission];
     public override readonly defer = true;
-    public override readonly usage = [
-        "<user: User> [reason: RestString]",
-    ];
+    public override readonly usage = ["<user: User> [reason: RestString]"];
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;
+
+    @Inject()
+    protected readonly permissionManager!: PermissionManagerService;
 
     public override build(): Buildable[] {
         return [
@@ -71,12 +75,21 @@ class BeanCommand extends Command {
         context: Context<CommandMessage>,
         args: BeanCommandArgs
     ): Promise<void> {
-        const { user, reason } = args;
+        const { member, reason } = args;
+
+        if (
+            !context.member ||
+            !(await this.permissionManager.canModerate(member, context.member))
+        ) {
+            await context.error("You don't have permission to bean this user!");
+            return;
+        }
+
         const { overviewEmbed, status } = await this.infractionManager.createBean({
             guildId: context.guildId,
             moderator: context.user,
             reason,
-            user,
+            user: member.user,
             generateOverviewEmbed: true,
             transformNotificationEmbed: embed => also(embed, e => void (e.color = Colors.Success))
         });

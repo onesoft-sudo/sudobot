@@ -20,14 +20,15 @@
 import { GuildMember, PermissionFlagsBits } from "discord.js";
 import { Limits } from "../../constants/Limits";
 import { TakesArgument } from "../../framework/arguments/ArgumentTypes";
+import GuildMemberArgument from "../../framework/arguments/GuildMemberArgument";
+import IntegerArgument from "../../framework/arguments/IntegerArgument";
+import { ErrorType } from "../../framework/arguments/InvalidArgumentError";
 import RestStringArgument from "../../framework/arguments/RestStringArgument";
 import { Buildable, Command, CommandMessage } from "../../framework/commands/Command";
 import Context from "../../framework/commands/Context";
 import { Inject } from "../../framework/container/Inject";
 import InfractionManager from "../../services/InfractionManager";
-import IntegerArgument from "../../framework/arguments/IntegerArgument";
-import { ErrorType } from "../../framework/arguments/InvalidArgumentError";
-import GuildMemberArgument from "../../framework/arguments/GuildMemberArgument";
+import PermissionManagerService from "../../services/PermissionManagerService";
 
 type MuteCommandArgs = {
     member: GuildMember;
@@ -78,25 +79,26 @@ type MuteCommandArgs = {
 class MuteCommand extends Command {
     public override readonly name = "mute";
     public override readonly description = "Mutes a user.";
-    public override readonly detailedDescription = "Mutes a user and prevents them from talking, while still allowing them in the server.";
+    public override readonly detailedDescription =
+        "Mutes a user and prevents them from talking, while still allowing them in the server.";
     public override readonly permissions = [PermissionFlagsBits.ModerateMembers];
     public override readonly defer = true;
     public override readonly usage = [
         "<user: User> [reason: RestString]",
-        "<user: User> <duration: Duration> [reason: RestString]",
+        "<user: User> <duration: Duration> [reason: RestString]"
     ];
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;
 
+    @Inject()
+    protected readonly permissionManager!: PermissionManagerService;
+
     public override build(): Buildable[] {
         return [
             this.buildChatInput()
                 .addUserOption(option =>
-                    option
-                        .setName("member")
-                        .setDescription("The member to mute.")
-                        .setRequired(true)
+                    option.setName("member").setDescription("The member to mute.").setRequired(true)
                 )
                 .addStringOption(option =>
                     option
@@ -105,9 +107,7 @@ class MuteCommand extends Command {
                         .setMaxLength(Limits.Reason)
                 )
                 .addIntegerOption(option =>
-                    option
-                        .setName("duration")
-                        .setDescription("The duration of the bean.")
+                    option.setName("duration").setDescription("The duration of the bean.")
                 )
         ];
     }
@@ -117,13 +117,22 @@ class MuteCommand extends Command {
         args: MuteCommandArgs
     ): Promise<void> {
         const { member, reason, duration } = args;
+
+        if (
+            !context.member ||
+            !(await this.permissionManager.canModerate(member, context.member))
+        ) {
+            await context.error("You don't have permission to mute this user!");
+            return;
+        }
+
         const result = await this.infractionManager.createMute({
             guildId: context.guildId,
             moderator: context.user,
             reason,
             member,
             generateOverviewEmbed: true,
-            duration,
+            duration
         });
         const { overviewEmbed, status } = result;
 
@@ -135,14 +144,14 @@ class MuteCommand extends Command {
                 return;
             }
 
-            await context.error("Failed to mute the user. Maybe I don't have the permissions to do so.");
+            await context.error(
+                "Failed to mute the user. Maybe I don't have the permissions to do so."
+            );
             return;
         }
 
         await context.reply({
-            embeds: [
-                overviewEmbed
-            ]
+            embeds: [overviewEmbed]
         });
     }
 }

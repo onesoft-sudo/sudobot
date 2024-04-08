@@ -29,7 +29,7 @@ import { Permission } from "./Permission";
 abstract class AbstractPermissionManager implements PermissionManagerInterface {
     public constructor(protected readonly application: Application) {}
 
-    public shouldModerate?(member: GuildMember, moderator: GuildMember): Awaitable<boolean>;
+    public canModerate?(member: GuildMember, moderator: GuildMember): Awaitable<boolean>;
 
     public async hasDiscordPermissions(
         member: GuildMember,
