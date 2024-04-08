@@ -103,6 +103,10 @@ done
 
 if [ ! -d "$projectdir/build_src/node_modules" ] || [ ! -d "$projectdir/node_modules/blazebuild" ] || [ -z "$(command -v node)" ] || [ -z "$(command -v bun)" ]; then
     setup=1
+
+    if [ -z "$(command -v node)" ] || [ -z "$(command -v bun)" ]; then
+        setup_runtime
+    fi
 fi
 
 has_bun=$(command -v bun)
@@ -159,10 +163,6 @@ if [ $setup -eq 1 ]; then
         pushd "$projectdir/build_src" > /dev/null 2>&1 || exit 1
         npx tsc
         popd > /dev/null 2>&1 || exit 1
-    fi
-
-    if [ -z "$(command -v node)" ] || [ -z "$(command -v bun)" ]; then
-        setup_runtime
     fi
 
     print "1;32" "success" "Setup completed."
