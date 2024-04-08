@@ -2,6 +2,7 @@ import "reflect-metadata";
 
 import Container from "@/framework/container/Container";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import crypto from "crypto";
 
 describe("container bindings", () => {
     let container: Container;
