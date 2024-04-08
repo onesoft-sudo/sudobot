@@ -101,11 +101,14 @@ for arg in "$@"; do
     fi
 done
 
+setup_done=0
+
 if [ ! -d "$projectdir/build_src/node_modules" ] || [ ! -d "$projectdir/node_modules/blazebuild" ] || [ -z "$(command -v node)" ] || [ -z "$(command -v bun)" ]; then
     setup=1
 
     if [ -z "$(command -v node)" ] || [ -z "$(command -v bun)" ]; then
         setup_runtime
+        setup_done=1
     fi
 fi
 
@@ -113,7 +116,7 @@ has_bun=$(command -v bun)
 cmd="npm"
 file="$projectdir/node_modules/blazebuild/build/index.js"
 
-if [ ! -z "$has_bun" ]; then
+if [ ! -z "$has_bun" ] || [ $setup_done -eq 0 ]; then
     cmd="bun"
     file="$projectdir/node_modules/blazebuild/src/index.ts"
 fi
