@@ -151,7 +151,7 @@ class LevelBasedPermissionManager extends AbstractPermissionManager {
 
         return {
             ...merged,
-            level: (await permissionManager.isSystemAdmin(member, merged))
+            level: (await permissionManager.isSystemAdmin(member))
                 ? Number.POSITIVE_INFINITY
                 : merged.level
         };
