@@ -37,7 +37,11 @@ getprop() {
 }
 
 source_bashrc() {
-    echo $PATH
+    if [ -f "$HOME/.bashrc" ]; then
+        source "$HOME/.bashrc"
+    elif [ -f "$HOME/.bash_profile" ]; then
+        source "$HOME/.bash_profile"
+    fi
 }
 
 setup_nvm() {
