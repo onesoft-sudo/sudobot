@@ -18,6 +18,9 @@
  */
 
 import { Message, MessageType } from "discord.js";
+import RuleModerationService from "../../automod/RuleModerationService";
+import SpamModerationService from "../../automod/SpamModerationService";
+import { MessageAutoModServiceContract } from "../../contracts/MessageAutoModServiceContract";
 import { Inject } from "../../framework/container/Inject";
 import EventListener from "../../framework/events/EventListener";
 import { Logger } from "../../framework/log/Logger";
@@ -27,13 +30,24 @@ import { safeMemberFetch } from "../../utils/fetch";
 
 class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
     public override readonly name = Events.MessageCreate;
-    protected readonly types = [MessageType.Default, MessageType.Reply];
+    private readonly types = [MessageType.Default, MessageType.Reply];
 
     @Inject()
-    protected readonly commandManager!: CommandManager;
+    private readonly logger!: Logger;
 
     @Inject()
-    protected readonly logger!: Logger;
+    private readonly commandManager!: CommandManager;
+
+    @Inject()
+    private readonly ruleModerationService!: RuleModerationService;
+
+    @Inject()
+    private readonly spamModerationService!: SpamModerationService;
+
+    private readonly listeners: MessageAutoModServiceContract["moderate"][] = [
+        this.spamModerationService.moderate.bind(this.spamModerationService),
+        this.ruleModerationService.moderate.bind(this.ruleModerationService)
+    ];
 
     public override async execute(message: Message<boolean>) {
         if (message.author.bot || !message.inGuild() || !this.types.includes(message.type)) {
@@ -42,6 +56,12 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
 
         if (!message.member) {
             Reflect.set(message, "member", await safeMemberFetch(message.guild, message.author.id));
+        }
+
+        for (const listener of this.listeners) {
+            if ((await listener(message)) === false) {
+                return;
+            }
         }
 
         const value = await this.commandManager.runCommandFromMessage(message);

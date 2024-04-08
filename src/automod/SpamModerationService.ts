@@ -1,5 +1,5 @@
 import { Collection, Message, Snowflake, TextChannel } from "discord.js";
-import { AutoModServiceContract } from "../contracts/AutoModServiceContract";
+import { MessageAutoModServiceContract } from "../contracts/MessageAutoModServiceContract";
 import { Inject } from "../framework/container/Inject";
 import { Service } from "../framework/services/Service";
 import { HasEventListeners } from "../framework/types/HasEventListeners";
@@ -11,7 +11,10 @@ type Cache = {
     timeout: ReturnType<typeof setTimeout> | null;
 };
 
-class SpamModerationService extends Service implements AutoModServiceContract, HasEventListeners {
+class SpamModerationService
+    extends Service
+    implements MessageAutoModServiceContract, HasEventListeners
+{
     private readonly cache = new Collection<`${Snowflake}_${Snowflake}`, Cache>();
 
     @Inject("configManager")
