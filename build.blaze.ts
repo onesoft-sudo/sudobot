@@ -15,6 +15,7 @@ project.description = "A Discord bot for moderation purposes.";
 project.version = "9.0.0-alpha.1";
 project.srcDir = "src";
 project.buildDir = "build";
+project.testsDir = "tests";
 project.author = {
     name: "Ar Rakin",
     email: "rakinar2@onesoftnet.eu.org",
@@ -56,7 +57,7 @@ class BuildTask extends AbstractTask {
     }
 
     @Caching(CachingMode.Incremental)
-    @Dependencies("dependencies", "compile")
+    @Dependencies("dependencies", "compile", "test")
     public override async execute() {
         const tmpBuildDir = path.resolve(`${project.buildDir}/../_build.tmp`);
         const targetDir = `${project.buildDir}/src`;
@@ -74,10 +75,28 @@ class BuildTask extends AbstractTask {
     }
 }
 
+class TestTask extends AbstractTask {
+    public override readonly name = "test";
+
+    @Caching(CachingMode.Incremental)
+    @Dependencies("dependencies")
+    public override async execute() {
+        if (!project.testsDir) {
+            throw new Error("No tests directory specified.");
+        }
+
+        await this.addInputsByGlob(`${project.testsDir}/**/*.ts`);
+        await x("vitest --run");
+    }
+}
+
 tasks.register(BuildTask);
+tasks.register(TestTask);
+
 tasks.register("afterDependencies", async () => {
     await x("prisma generate");
 });
+
 tasks.register(
     "lint",
     async () => {
@@ -87,6 +106,7 @@ tasks.register(
         dependencies: ["dependencies"]
     }
 );
+
 tasks.register(
     "run",
     () => {
