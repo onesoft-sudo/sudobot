@@ -17,16 +17,69 @@ print() {
 help() {
     startup
     echo "Usage: $argv_0 [options] [tasks...]"
+    echo ""
     echo "Options:"
     echo "  --setup   Setup BlazeBuild"
     echo "  --help    Show this help message"
     echo "  --version Show the version of BlazeBuild"
+    echo ""
     echo "Tasks:"
     echo "  Any arguments or task names that should"
     echo "  be passed to BlazeBuild."
     echo "  Run \`$argv_0 tasks' to see a list of"
     echo "  available tasks."
     exit 0
+}
+
+getprop() {
+   value=$(cat "$projectdir/blaze/blaze_wrapper.properties" | grep "$1" | cut -d'=' -f2)
+   echo $value
+}
+
+source_bashrc() {
+    echo $PATH
+}
+
+setup_nvm() {
+    has_curl=$(command -v curl)
+    has_wget=$(command -v wget)
+
+    print 34 "info   " "Installing NVM..."
+
+    if [ ! -z "$has_curl" ]; then
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+    elif [ ! -z "$has_wget" ]; then
+        wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+    else
+        print "1;31" "error  " "No curl or wget found."
+        exit 1
+    fi
+
+    source_bashrc
+}
+
+setup_runtime() {
+    setup_nvm
+
+    has_curl=$(command -v curl)
+    has_wget=$(command -v wget)
+
+    version=$(getprop "node.version")
+
+    print 34 "info   " "Installing up Node.js ($version)..."
+    echo install "$version"
+
+    print 34 "info   " "Installing up Bun..."
+    if [ ! -z "$has_curl" ]; then
+        curl -fsSL https://bun.sh/install | bash
+    elif [ ! -z "$has_wget" ]; then
+        wget -qO- https://bun.sh/install | bash
+    else
+        print "1;31" "error  " "No curl or wget found."
+        exit 1
+    fi
+
+    source_bashrc
 }
 
 setup=0
@@ -44,7 +97,7 @@ for arg in "$@"; do
     fi
 done
 
-if [ ! -d "$projectdir/build_src/node_modules" ] || [ ! -d "$projectdir/node_modules/blazebuild" ]; then
+if [ ! -d "$projectdir/build_src/node_modules" ] || [ ! -d "$projectdir/node_modules/blazebuild" ] || [ -z "$(command -v node)" ] || [ -z "$(command -v bun)" ]; then
     setup=1
 fi
 
@@ -102,6 +155,10 @@ if [ $setup -eq 1 ]; then
         pushd "$projectdir/build_src" > /dev/null 2>&1 || exit 1
         npx tsc
         popd > /dev/null 2>&1 || exit 1
+    fi
+
+    if [ -z "$(command -v node)" ] || [ -z "$(command -v bun)" ]; then
+        setup_runtime
     fi
 
     print "1;32" "success" "Setup completed."

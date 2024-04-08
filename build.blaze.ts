@@ -1,8 +1,8 @@
 import { AbstractTask } from "blazebuild/src/core/AbstractTask";
-import { Caching, CachingMode } from "blazebuild/src/decorators/Caching.ts";
-import { Dependencies } from "blazebuild/src/decorators/Dependencies.ts";
-import { Task } from "blazebuild/src/decorators/Task.ts";
-import { File } from "blazebuild/src/io/File.ts";
+import { Caching, CachingMode } from "blazebuild/src/decorators/Caching";
+import { Dependencies } from "blazebuild/src/decorators/Dependencies";
+import { Task } from "blazebuild/src/decorators/Task";
+import { File } from "blazebuild/src/io/File";
 import { typescript } from "blazebuild/src/plugins/typescript";
 import { spawnSync } from "child_process";
 import { existsSync } from "fs";
