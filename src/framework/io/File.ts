@@ -25,8 +25,11 @@ export class File implements Disposable, AsyncDisposable {
     public readonly path: string;
     private _state: FileState = FileState.Closed;
 
-    public constructor(path: string) {
-        this.path = resolve(path);
+    public constructor(path: string);
+    public constructor(resolvable: FileResolvable);
+
+    public constructor(resolvable: string | FileResolvable) {
+        this.path = typeof resolvable === "string" ? resolve(resolvable) : resolvable.path;
     }
 
     public get state() {
@@ -169,8 +172,12 @@ export class File implements Disposable, AsyncDisposable {
         return this;
     }
 
-    public async readLines() {
-        this.cache.handle?.readFile();
+    public async readLines(): Promise<Iterable<string> | AsyncIterable<string>> {
+        if (this.cache.handle) {
+            return this.cache.handle?.readLines();
+        }
+
+        return (await this.readContents()).split("\n");
     }
 
     public [Symbol.dispose]() {
