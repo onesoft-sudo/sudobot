@@ -1,4 +1,4 @@
-import { Awaitable, Message } from "discord.js";
+import { Message } from "discord.js";
 import { MessageAutoModServiceContract } from "../contracts/MessageAutoModServiceContract";
 import { Name } from "../framework/services/Name";
 import { Service } from "../framework/services/Service";
