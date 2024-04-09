@@ -5,8 +5,8 @@ import { Service } from "../framework/services/Service";
 
 @Name("ruleModerationService")
 class RuleModerationService extends Service implements MessageAutoModServiceContract {
-    public moderate(_message: Message<boolean>): Awaitable<void> {
-        // throw new Error("Method not implemented.");
+    public async moderate(_message: Message<boolean>): Promise<void> {
+        
     }
 }
 
