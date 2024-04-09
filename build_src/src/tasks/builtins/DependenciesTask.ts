@@ -29,9 +29,11 @@ class DependenciesTask extends AbstractTask {
             IO.fail(`Unsupported package manager: "${packageManager}"`);
         }
 
+        await this.blaze.packageManager.writePackageData();
         await this.blaze.execCommand(
             `${packageManager} ${packageManager === "yarn" ? "" : "install"}`
         );
+
         this.ran = true;
     }
 
