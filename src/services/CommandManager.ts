@@ -141,7 +141,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         let aliasGroupSet = false;
 
         if (loadMetadata && previousCommand) {
-            await this.application.dynamicLoader.unloadEventsFromMetadata(previousCommand);
+            await this.application.classLoader.unloadEventsFromMetadata(previousCommand);
         }
 
         this.commands.set(command.name, command);
@@ -160,7 +160,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         }
 
         if (loadMetadata) {
-            await this.application.dynamicLoader.loadEventsFromMetadata(command);
+            await this.application.classLoader.loadEventsFromMetadata(command);
         }
     }
 

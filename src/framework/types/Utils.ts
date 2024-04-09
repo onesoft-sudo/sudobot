@@ -21,7 +21,7 @@ export type DefaultExport<T> = {
     default: T;
 };
 
-export type Class<I, A extends Array<unknown>> = new (...a: A) => I;
+export type Class<I = unknown, A extends Array<unknown> = unknown[]> = new (...a: A) => I;
 
 export type AnyFunction<A extends unknown[] = unknown[], R = unknown> = (...args: A) => R;
 

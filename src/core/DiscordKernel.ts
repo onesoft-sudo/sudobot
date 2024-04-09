@@ -87,7 +87,7 @@ class DiscordKernel extends Kernel {
             { key: "client", value: application.getClient() },
             { key: "logger", value: application.logger },
             { key: "serviceManager", value: application.serviceManager },
-            { key: "dynamicLoader", value: application.dynamicLoader }
+            { key: "dynamicLoader", value: application.classLoader }
         ];
     }
 

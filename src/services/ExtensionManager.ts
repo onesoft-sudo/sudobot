@@ -469,16 +469,16 @@ export default class ExtensionService extends Service {
         if (commandPaths === null) {
             if (commandsDirectory) {
                 if (existsSync(commandsDirectory)) {
-                    await this.application.dynamicLoader.loadCommands(commandsDirectory);
+                    await this.application.classLoader.loadCommands(commandsDirectory);
                 }
             } else if (commands) {
                 for (const commandPath of commands) {
-                    await this.application.dynamicLoader.loadCommand(commandPath);
+                    await this.application.classLoader.loadCommand(commandPath);
                 }
             }
         } else {
             for (const commandPath of commandPaths) {
-                await this.application.dynamicLoader.loadCommand(commandPath);
+                await this.application.classLoader.loadCommand(commandPath);
             }
         }
 

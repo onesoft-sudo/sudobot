@@ -88,14 +88,14 @@ class ServiceManager {
         this.services.set(ServiceClass, instance);
         this.servicesMappedByName.set(key, instance);
         await instance.boot();
-        this.application.dynamicLoader.loadEventsFromMetadata(instance, true);
+        this.application.classLoader.loadEventsFromMetadata(instance, true);
         this.application.logger.info(
             `Loaded service: ${name ?? ServiceClass.name} (bound as ${key})`
         );
     }
 
     public loadServicesFromDirectory(servicesDirectory: string) {
-        return this.application.dynamicLoader.loadServicesFromDirectory(servicesDirectory);
+        return this.application.classLoader.loadServicesFromDirectory(servicesDirectory);
     }
 
     public getService<S extends new () => Service>(serviceClass: S): InstanceType<S> {

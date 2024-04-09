@@ -30,18 +30,30 @@ import { Command } from "../commands/Command";
 import Container from "../container/Container";
 import EventListener from "../events/EventListener";
 import { EventListenerInfo } from "../events/GatewayEventListener";
+import { File } from "../io/File";
 import { Permission } from "../permissions/Permission";
 import Queue from "../queues/Queue";
 import { ClientEvents } from "../types/ClientEvents";
 import { AnyFunction, Class, DefaultExport } from "../types/Utils";
+import InvalidClassFileError from "./InvalidClassFileError";
+import NoClassDefFoundError from "./NoClassDefFoundError";
 
-class DynamicLoader {
+class ClassLoader {
     protected readonly eventHandlers = new WeakMap<
         object,
         Record<keyof ClientEvents, AnyFunction[]>
     >();
+    private static instance: ClassLoader;
 
-    public constructor(protected readonly application: Application) {}
+    private constructor(protected readonly application: Application) {}
+
+    public static getInstance(application: Application) {
+        if (!ClassLoader.instance) {
+            ClassLoader.instance = new ClassLoader(application);
+        }
+
+        return ClassLoader.instance;
+    }
 
     private getContainer() {
         return Container.getInstance();
@@ -64,6 +76,72 @@ class DynamicLoader {
         }
 
         return files;
+    }
+
+    public static getSystemClassLoader() {
+        if (!this.instance) {
+            this.instance = new ClassLoader(Container.getInstance().resolveByClass(Application));
+        }
+
+        return this.instance;
+    }
+
+    public getResource(name: string) {
+        const filePath = path.resolve(this.application.rootPath, "../../resources/", name);
+        const file = File.of(filePath);
+
+        if (!file.exists) {
+            return null;
+        }
+
+        return file;
+    }
+
+    /**
+     * Load a class from a file.
+     *
+     * @param resolvable The file to load the class from.
+     * @returns {Promise<Class<unknown>>} The class object.
+     * @throws {InvalidClassFileError} If the file is not a TypeScript or JavaScript file.
+     * @throws {NoClassDefFoundError} If no class definition is found in the file.
+     */
+    public async loadClass(resolvable: File | string): Promise<Class<unknown>> {
+        const classPath = typeof resolvable === "string" ? resolvable : resolvable.path;
+
+        if (!classPath.endsWith(".ts") && !classPath.endsWith(".js")) {
+            throw new InvalidClassFileError("Class file must be a TypeScript or JavaScript file");
+        }
+
+        const { default: classObject }: DefaultExport<Class<unknown>> = await import(classPath);
+
+        if (!classObject) {
+            throw new NoClassDefFoundError("No class definition found in file");
+        }
+
+        return classObject;
+    }
+
+    /**
+     * Load all classes from a directory.
+     *
+     * @param directory The directory to load classes from.
+     * @returns {Promise<Array<Class<unknown>>>} An array of class objects.
+     * @throws {InvalidClassFileError} If a file is not a TypeScript or JavaScript file.
+     * @throws {NoClassDefFoundError} If no class definition is found in a file.
+     */
+    public async loadClassesFromDirectory(directory: string): Promise<Array<Class<unknown>>> {
+        const classFiles = await this.iterateDirectoryRecursively(directory);
+        const results = [];
+
+        for (const file of classFiles) {
+            if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
+                continue;
+            }
+
+            results.push(await this.loadClass(file));
+        }
+
+        return results;
     }
 
     public async loadControllers(router: Router) {
@@ -292,4 +370,4 @@ class DynamicLoader {
     }
 }
 
-export default DynamicLoader;
+export default ClassLoader;

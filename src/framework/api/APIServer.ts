@@ -18,7 +18,12 @@
  */
 
 import cors from "cors";
-import express, { Application, NextFunction, Request as ExpressRequest, Response as ExpressResponse } from "express";
+import express, {
+    Application,
+    Request as ExpressRequest,
+    Response as ExpressResponse,
+    NextFunction
+} from "express";
 import ratelimiter from "express-rate-limit";
 import { Router } from "express-serve-static-core";
 import { Server as HttpServer } from "http";
@@ -86,7 +91,7 @@ export default class APIServer extends Service {
 
     private async createRouter() {
         const router = express.Router();
-        await this.application.dynamicLoader.loadControllers(router);
+        await this.application.classLoader.loadControllers(router);
         return router;
     }
 

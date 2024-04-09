@@ -23,7 +23,7 @@ import { developmentMode } from "../../utils/utils";
 import BaseClient from "../client/BaseClient";
 import Container from "../container/Container";
 import { KernelInterface } from "../core/KernelInterface";
-import DynamicLoader from "../import/DynamicLoader";
+import ClassLoader from "../import/ClassLoader";
 import { Logger } from "../log/Logger";
 import { Service } from "../services/Service";
 import { ServiceManager, ServiceName } from "../services/ServiceManager";
@@ -41,10 +41,10 @@ class Application {
         log: developmentMode() ? ["error", "info", "query", "warn"] : ["error", "info", "warn"]
     });
 
-    public readonly dynamicLoader = new DynamicLoader(this);
+    public readonly classLoader = ClassLoader.getInstance(this);
     public readonly serviceManager = new ServiceManager(this);
 
-    public constructor(protected readonly rootPath: string) {
+    public constructor(public readonly rootPath: string) {
         this.container = Container.getInstance();
     }
 
@@ -108,20 +108,20 @@ class Application {
         await this.serviceManager.loadServices();
 
         if (permissions) {
-            await this.dynamicLoader.loadPermissions(path.resolve(this.rootPath, "permissions"));
+            await this.classLoader.loadPermissions(path.resolve(this.rootPath, "permissions"));
         }
 
         if (events) {
             this.getClient().setMaxListeners(50);
-            await this.dynamicLoader.loadEvents(path.resolve(this.rootPath, "events"));
+            await this.classLoader.loadEvents(path.resolve(this.rootPath, "events"));
         }
 
         if (commands) {
-            await this.dynamicLoader.loadCommands(path.resolve(this.rootPath, "commands"));
+            await this.classLoader.loadCommands(path.resolve(this.rootPath, "commands"));
         }
 
         if (queues) {
-            await this.dynamicLoader.loadQueueClasses(path.resolve(this.rootPath, "queues"));
+            await this.classLoader.loadQueueClasses(path.resolve(this.rootPath, "queues"));
         }
     }
 
