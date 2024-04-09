@@ -70,7 +70,9 @@ class DiscordKernel extends Kernel {
         "@services/InfractionManager",
         "@services/QueueService",
         "@framework/api/APIServer",
-        "@automod/SpamModerationService"
+        "@automod/SpamModerationService",
+        "@automod/RuleModerationService",
+        "@services/ModerationActionService"
     ];
 
     public constructor() {

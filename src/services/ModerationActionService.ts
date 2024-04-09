@@ -1,6 +1,7 @@
 import { Infraction } from "@prisma/client";
 import { Guild, GuildMember, Message, TextChannel, User } from "discord.js";
 import { Inject } from "../framework/container/Inject";
+import { Name } from "../framework/services/Name";
 import { Service } from "../framework/services/Service";
 import { ModerationAction } from "../types/ModerationAction";
 import type InfractionManager from "./InfractionManager";
@@ -12,6 +13,7 @@ type TakeActionResult = {
     infractions: Infraction[];
 };
 
+@Name("moderationActionService")
 class ModerationActionService extends Service {
     @Inject("infractionManager")
     private readonly infractionManager!: InfractionManager;

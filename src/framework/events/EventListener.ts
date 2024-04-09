@@ -35,6 +35,8 @@ export default abstract class EventListener<
         this.client = application.getClient() as C;
     }
 
+    public onInitialize?(): Promise<void> | void;
+
     public abstract execute(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ...args: K extends keyof ClientEvents ? ClientEvents[K] : any[]

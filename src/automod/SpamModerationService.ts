@@ -1,6 +1,7 @@
 import { Collection, Message, Snowflake, TextChannel } from "discord.js";
 import { MessageAutoModServiceContract } from "../contracts/MessageAutoModServiceContract";
 import { Inject } from "../framework/container/Inject";
+import { Name } from "../framework/services/Name";
 import { Service } from "../framework/services/Service";
 import { HasEventListeners } from "../framework/types/HasEventListeners";
 import type ConfigurationManager from "../services/ConfigurationManager";
@@ -11,6 +12,7 @@ type Cache = {
     timeout: ReturnType<typeof setTimeout> | null;
 };
 
+@Name("spamModerationService")
 class SpamModerationService
     extends Service
     implements MessageAutoModServiceContract, HasEventListeners

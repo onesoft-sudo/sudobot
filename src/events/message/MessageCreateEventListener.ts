@@ -18,36 +18,38 @@
  */
 
 import { Message, MessageType } from "discord.js";
-import RuleModerationService from "../../automod/RuleModerationService";
-import SpamModerationService from "../../automod/SpamModerationService";
+import type RuleModerationService from "../../automod/RuleModerationService";
+import type SpamModerationService from "../../automod/SpamModerationService";
 import { MessageAutoModServiceContract } from "../../contracts/MessageAutoModServiceContract";
 import { Inject } from "../../framework/container/Inject";
 import EventListener from "../../framework/events/EventListener";
-import { Logger } from "../../framework/log/Logger";
+import type { Logger } from "../../framework/log/Logger";
 import { Events } from "../../framework/types/ClientEvents";
-import CommandManager from "../../services/CommandManager";
+import type CommandManager from "../../services/CommandManager";
 import { safeMemberFetch } from "../../utils/fetch";
 
 class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
     public override readonly name = Events.MessageCreate;
     private readonly types = [MessageType.Default, MessageType.Reply];
 
-    @Inject()
+    @Inject("logger")
     private readonly logger!: Logger;
 
-    @Inject()
+    @Inject("commandManager")
     private readonly commandManager!: CommandManager;
 
-    @Inject()
+    @Inject("ruleModerationService")
     private readonly ruleModerationService!: RuleModerationService;
 
-    @Inject()
+    @Inject("spamModerationService")
     private readonly spamModerationService!: SpamModerationService;
 
-    private readonly listeners: MessageAutoModServiceContract["moderate"][] = [
-        this.spamModerationService.moderate.bind(this.spamModerationService),
-        this.ruleModerationService.moderate.bind(this.ruleModerationService)
-    ];
+    private readonly listeners: MessageAutoModServiceContract["moderate"][] = [];
+
+    public override async onInitialize() {
+        this.listeners.push(this.ruleModerationService.moderate.bind(this.ruleModerationService));
+        this.listeners.push(this.spamModerationService.moderate.bind(this.spamModerationService));
+    }
 
     public override async execute(message: Message<boolean>) {
         if (message.author.bot || !message.inGuild() || !this.types.includes(message.type)) {

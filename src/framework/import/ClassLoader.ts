@@ -183,6 +183,7 @@ class ClassLoader {
         const { default: EventListenerClass }: DefaultExport<Class<EventListener, [Application]>> =
             await import(filepath);
         const listener = this.getContainer().resolveByClass(EventListenerClass);
+        await listener.onInitialize?.();
         this.application
             .getClient()
             .addEventListener(listener.name, listener.execute.bind(listener));
