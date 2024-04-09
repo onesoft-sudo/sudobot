@@ -1,5 +1,6 @@
 import { Message } from "discord.js";
 import { vi } from "vitest";
+import { createManager } from "./manager.mock";
 
 export function createMessage(content: string, userId: string, guildId: string) {
     const mocks = {
@@ -21,7 +22,8 @@ export function createMessage(content: string, userId: string, guildId: string) 
         reply: mocks.reply,
         guildId,
         guild: {
-            id: guildId
+            id: guildId,
+            members: createManager()
         }
     } as unknown as Message;
 
