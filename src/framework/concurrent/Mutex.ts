@@ -1,7 +1,8 @@
 import { EventEmitter } from "events";
+import { promiseWithResolvers } from "../polyfills/Promise";
 
 type MutexOptions = {
-    ignoreExtraneousReleases?: boolean;
+    ignoreExtraneousUnlocks?: boolean;
 };
 
 enum MutexState {
@@ -11,16 +12,16 @@ enum MutexState {
 
 class Mutex<T extends MutexState = MutexState> extends EventEmitter {
     private _state: T = MutexState.Unlocked as T;
-    private readonly ignoreExtraneousReleases: boolean;
+    private readonly ignoreExtraneousUnlocks: boolean;
 
-    public constructor({ ignoreExtraneousReleases = false }: MutexOptions) {
+    public constructor({ ignoreExtraneousUnlocks = true }: MutexOptions = {}) {
         super();
-        this.ignoreExtraneousReleases = ignoreExtraneousReleases;
+        this.ignoreExtraneousUnlocks = ignoreExtraneousUnlocks;
     }
 
     public async lock() {
         if (this.isLocked()) {
-            const { promise, resolve } = Promise.withResolvers<void>();
+            const { promise, resolve } = promiseWithResolvers<void>();
             this.once("release", resolve);
             return promise;
         }
@@ -30,7 +31,7 @@ class Mutex<T extends MutexState = MutexState> extends EventEmitter {
     }
 
     public unlock() {
-        if (!this.isLocked() && !this.ignoreExtraneousReleases) {
+        if (!this.isLocked() && !this.ignoreExtraneousUnlocks) {
             throw new Error("This mutex is not locked yet.");
         }
 
