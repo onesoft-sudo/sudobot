@@ -31,9 +31,10 @@ plugins(({ add }) => {
 class BuildTask extends AbstractTask {
     public override readonly name = "build";
 
-    private async resultIO() {
-        await this.addInputsByGlob(`${project.srcDir}/**/*.ts`);
-        await this.addOutputsByGlob(
+    private async resultIO(task?: string) {
+        await this.addInputsByGlobForTask(task ?? this.name, `${project.srcDir}/**/*.ts`);
+        await this.addOutputsByGlobForTask(
+            task ?? this.name,
             this.inputs.map(input =>
                 File.of(input)
                     .path.replace(project.srcDir, project.buildDir)
@@ -46,29 +47,24 @@ class BuildTask extends AbstractTask {
     @Task({ name: "compileTypeScript", noPrefix: true })
     public async compileTypeScript(): Promise<void> {
         await typescript.compile();
-        await this.resultIO();
+        await this.resultIO("compileTypeScript");
     }
 
     @Caching(CachingMode.Incremental)
-    @Task({ name: "compile", noPrefix: true })
-    @Dependencies("compileTypeScript")
-    public async compile(): Promise<void> {
-        await this.resultIO();
-    }
-
-    @Caching(CachingMode.Incremental)
-    @Dependencies("dependencies", "compile", "test")
+    @Dependencies("dependencies", "compileTypeScript", "test")
     public override async execute() {
-        const tmpBuildDir = path.resolve(`${project.buildDir}/../_build.tmp`);
-        const targetDir = `${project.buildDir}/src`;
+        if (!this.blaze.taskManager.upToDateTasks.has("compileTypeScript")) {
+            const tmpBuildDir = path.resolve(`${project.buildDir}/../_build.tmp`);
+            const targetDir = `${project.buildDir}/src`;
 
-        if (existsSync(tmpBuildDir)) {
-            await fs.rm(tmpBuildDir, { recursive: true, force: true });
+            if (existsSync(tmpBuildDir)) {
+                await fs.rm(tmpBuildDir, { recursive: true, force: true });
+            }
+
+            await fs.rename(targetDir, tmpBuildDir);
+            await fs.rm(project.buildDir, { recursive: true, force: true });
+            await fs.rename(tmpBuildDir, project.buildDir);
         }
-
-        await fs.rename(targetDir, tmpBuildDir);
-        await fs.rm(project.buildDir, { recursive: true, force: true });
-        await fs.rename(tmpBuildDir, project.buildDir);
 
         await this.resultIO();
         this.addOutputs(project.buildDir);
