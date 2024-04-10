@@ -18,25 +18,32 @@
  */
 
 import { z } from "zod";
+import { ModerationAction } from "./ModerationAction";
 import { zSnowflake } from "./SnowflakeSchema";
-
-export const MessageRuleAction = z.enum(["delete", "verbal_warn", "warn", "mute", "clear"]);
 
 const hasStringArrayData = {
     data: z.array(z.string()).default([])
 };
 
 const Common = {
-    disabled_channels: z.array(zSnowflake).default([]),
-    immune_roles: z.array(zSnowflake).default([]),
-    immune_users: z.array(zSnowflake).default([]),
-    actions: z.array(MessageRuleAction).default([]),
-    verbal_warning_reason: z.string().optional(),
-    warning_reason: z.string().optional(),
-    mute_reason: z.string().optional(),
-    common_reason: z.string().optional(),
-    mute_duration: z.number().int().default(-1),
-    mode: z.enum(["normal", "inverse"]).default("normal")
+    actions: z.array(ModerationAction).default([]),
+    mode: z.enum(["normal", "invert"]).default("normal"),
+    enabled: z.boolean().default(true),
+    bail: z.boolean().default(true),
+    for: z
+        .object({
+            roles: z.array(zSnowflake).optional(),
+            users: z.array(zSnowflake).optional(),
+            channels: z.array(zSnowflake).optional()
+        })
+        .optional(),
+    exceptions: z
+        .object({
+            roles: z.array(zSnowflake).optional(),
+            users: z.array(zSnowflake).optional(),
+            channels: z.array(zSnowflake).optional()
+        })
+        .optional()
 };
 
 export const DomainRule = z.object({
@@ -68,13 +75,18 @@ export const AntiInviteRule = z.object({
 export const RegexFilterRule = z.object({
     ...Common,
     type: z.literal("regex_filter"),
-    patterns: z.array(z.string().or(z.tuple([z.string(), z.string()]))).default([])
-});
-
-export const RegexMustMatchRule = z.object({
-    ...Common,
-    type: z.literal("regex_must_match"),
-    patterns: z.array(z.string().or(z.tuple([z.string(), z.string()]))).default([])
+    patterns: z
+        .array(
+            z
+                .string()
+                .or(
+                    z.tuple([
+                        z.string().describe("The pattern"),
+                        z.string().describe("The flags for this regex pattern")
+                    ])
+                )
+        )
+        .default([])
 });
 
 export const BlockRepeatedTextRule = z.object({
@@ -136,6 +148,14 @@ export const NSFWFilter = z
     })
     .describe("Experimental. Use at your own risk.");
 
+export const WordFilter = z.object({
+    ...Common,
+    type: z.literal("word_filter"),
+    tokens: z.array(z.string()).default([]),
+    words: z.array(z.string()).default([]),
+    normalize: z.boolean().default(true)
+});
+
 export const MessageRuleSchema = z.union([
     DomainRule,
     BlockedMimeTypeRule,
@@ -144,11 +164,11 @@ export const MessageRuleSchema = z.union([
     RegexFilterRule,
     BlockRepeatedTextRule,
     BlockMassMentionRule,
-    RegexMustMatchRule,
     ImageRule,
     EmbedRule,
     URLCrawlRule,
-    NSFWFilter
+    NSFWFilter,
+    WordFilter
 ]);
 
 export type MessageRuleType = z.infer<typeof MessageRuleSchema>;

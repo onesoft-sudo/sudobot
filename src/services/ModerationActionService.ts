@@ -13,6 +13,11 @@ type TakeActionResult = {
     infractions: Infraction[];
 };
 
+type TakeActionPayload = {
+    channel?: TextChannel;
+    message?: Message;
+};
+
 @Name("moderationActionService")
 class ModerationActionService extends Service {
     @Inject("infractionManager")
@@ -22,7 +27,7 @@ class ModerationActionService extends Service {
         guild: Guild,
         target: GuildMember | User,
         actions: ModerationAction[],
-        channel?: TextChannel
+        payload: TakeActionPayload = {}
     ): Promise<TakeActionResult> {
         const failedActions: ModerationAction["type"][] = [];
         const infractions: Infraction[] = [];
@@ -41,7 +46,7 @@ class ModerationActionService extends Service {
             const result =
                 isMemberOnlyAction && target instanceof GuildMember
                     ? await this.takeActionOnMember(guild, target, action as MemberOnlyAction)
-                    : await this.takeActionOnUser(guild, user, action, channel);
+                    : await this.takeActionOnUser(guild, user, action, payload);
 
             if (result instanceof Message) {
                 continue;
@@ -95,6 +100,8 @@ class ModerationActionService extends Service {
                     this.application.logger.error(error);
                 }
 
+                // TODO: Duration
+
                 return null;
 
             case "warn":
@@ -115,7 +122,7 @@ class ModerationActionService extends Service {
         guild: Guild,
         target: User,
         action: ModerationAction,
-        channel?: TextChannel
+        { channel, message }: TakeActionPayload
     ) {
         switch (action.type) {
             case "ban":
@@ -152,6 +159,17 @@ class ModerationActionService extends Service {
                     channel,
                     respond: true
                 });
+
+            case "delete_message":
+                if (!message) {
+                    throw new Error("Message is required for delete_message action");
+                }
+
+                if (message.deletable) {
+                    return await message.delete().catch(this.application.logger.error);
+                }
+
+                break;
 
             default:
                 throw new Error(`Invalid action type: ${action.type}`);

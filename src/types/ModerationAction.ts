@@ -50,6 +50,9 @@ export const ModerationAction = z.union([
         ...CommonOptions,
         type: z.literal("clear"),
         count: z.number().int().min(1).default(20)
+    }),
+    z.object({
+        type: z.literal("delete_message")
     })
 ]);
 

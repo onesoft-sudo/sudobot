@@ -6,6 +6,8 @@ import { Service } from "../framework/services/Service";
 import { HasEventListeners } from "../framework/types/HasEventListeners";
 import type ConfigurationManager from "../services/ConfigurationManager";
 import type ModerationActionService from "../services/ModerationActionService";
+import type PermissionManagerService from "../services/PermissionManagerService";
+import { safeMemberFetch } from "../utils/fetch";
 
 type Cache = {
     timestamps: number[];
@@ -25,15 +27,36 @@ class SpamModerationService
     @Inject("moderationActionService")
     private readonly moderationActionService!: ModerationActionService;
 
+    @Inject("permissionManager")
+    private readonly permissionManagerService!: PermissionManagerService;
+
     private configFor(guildId: Snowflake) {
         return this.configurationManager.config[guildId!]?.antispam;
     }
 
-    private shouldModerate(message: Message) {
-        return !message.author.bot && this.configFor(message.guildId!)?.enabled;
+    private async shouldModerate(message: Message) {
+        if (message.author.bot || !this.configFor(message.guildId!)?.enabled) {
+            return false;
+        }
+
+        let { member } = message;
+
+        if (!member) {
+            member = await safeMemberFetch(message.guild!, message.author.id);
+        }
+
+        if (!member) {
+            throw new Error("Member not found");
+        }
+
+        return this.permissionManagerService.canAutoModerate(member);
     }
 
     public onMessageCreate(message: Message<boolean>) {
+        if (message.author.bot) {
+            return;
+        }
+
         const config = this.configFor(message.guildId!);
 
         if (!config?.enabled) {
@@ -53,7 +76,12 @@ class SpamModerationService
     }
 
     public async moderate(message: Message): Promise<void> {
-        if (!this.shouldModerate(message)) {
+        if (!(await this.shouldModerate(message))) {
+            this.application.logger.debug(
+                "Spam moderation is disabled for this user",
+                message.author.id
+            );
+
             return;
         }
 
@@ -89,12 +117,10 @@ class SpamModerationService
             reason: "reason" in action && action.reason ? "Spam detected" : undefined
         }));
 
-        await this.moderationActionService.takeActions(
-            message.guild!,
-            message.member!,
-            actions,
-            message.channel as TextChannel
-        );
+        await this.moderationActionService.takeActions(message.guild!, message.member!, actions, {
+            channel: message.channel as TextChannel,
+            message
+        });
     }
 }
 

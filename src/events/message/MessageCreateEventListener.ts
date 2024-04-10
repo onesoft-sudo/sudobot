@@ -20,7 +20,6 @@
 import { Message, MessageType } from "discord.js";
 import type RuleModerationService from "../../automod/RuleModerationService";
 import type SpamModerationService from "../../automod/SpamModerationService";
-import { MessageAutoModServiceContract } from "../../contracts/MessageAutoModServiceContract";
 import { Inject } from "../../framework/container/Inject";
 import EventListener from "../../framework/events/EventListener";
 import type { Logger } from "../../framework/log/Logger";
@@ -44,11 +43,13 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
     @Inject("spamModerationService")
     private readonly spamModerationService!: SpamModerationService;
 
-    private readonly listeners: MessageAutoModServiceContract["moderate"][] = [];
+    private readonly listeners: Array<(message: Message) => unknown> = [];
 
     public override async onInitialize() {
-        this.listeners.push(this.ruleModerationService.moderate.bind(this.ruleModerationService));
-        this.listeners.push(this.spamModerationService.moderate.bind(this.spamModerationService));
+        this.listeners.push(
+            this.ruleModerationService.onMessageCreate.bind(this.ruleModerationService),
+            this.spamModerationService.onMessageCreate.bind(this.spamModerationService)
+        );
     }
 
     public override async execute(message: Message<boolean>) {

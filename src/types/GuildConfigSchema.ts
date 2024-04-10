@@ -18,6 +18,7 @@
  */
 
 import { z } from "zod";
+import { MessageRuleSchema } from "./MessageRuleSchema";
 import { ModerationAction } from "./ModerationAction";
 import { zSnowflake } from "./SnowflakeSchema";
 
@@ -104,6 +105,37 @@ export const GuildConfigSchema = z.object({
     muting: z
         .object({
             role: zSnowflake.optional()
+        })
+        .optional(),
+    rule_moderation: z
+        .object({
+            enabled: z.boolean().default(false),
+            rules: z.array(MessageRuleSchema).default([]),
+            global_disabled_channels: z.array(zSnowflake).default([])
+        })
+        .optional(),
+    logging: z
+        .object({
+            enabled: z.boolean().default(false),
+            bulk_delete_send_json: z.boolean().default(true),
+            primary_channel: zSnowflake.optional(),
+            message_logging_channel: zSnowflake.optional(),
+            infraction_logging_channel: zSnowflake.optional(),
+            join_leave_channel: zSnowflake.optional(),
+            saved_messages_channel: zSnowflake.optional(),
+            events: z
+                .object({
+                    system: z
+                        .object({
+                            automod: z
+                                .object({
+                                    moderation_rules: z.boolean().default(true)
+                                })
+                                .optional()
+                        })
+                        .optional()
+                })
+                .optional()
         })
         .optional()
     /*

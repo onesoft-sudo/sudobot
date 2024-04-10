@@ -115,6 +115,30 @@ class PermissionManagerService extends AbstractPermissionManagerService {
         return this.managers[mode]!;
     }
 
+    public async canAutoModerate(member: GuildMember) {
+        const moderatorIsSystemAdmin = await this.isSystemAdmin(member);
+
+        if (moderatorIsSystemAdmin) {
+            return false;
+        }
+
+        if (member.guild.ownerId === member.id) {
+            return false;
+        }
+
+        const { invincible } = this.configurationManager.config[member.guild.id]?.permissions ?? {};
+
+        if (
+            invincible?.users?.includes(member.id) ||
+            invincible?.roles?.some(role => member.roles.cache.has(role))
+        ) {
+            return false;
+        }
+
+        const manager = await this.getManager(member.guild.id);
+        return !(await manager.canBypassAutoModeration(member));
+    }
+
     public async canModerate(member: GuildMember, moderator: GuildMember) {
         if (member.id === moderator.id) {
             return false;
