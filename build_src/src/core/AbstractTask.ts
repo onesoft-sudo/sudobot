@@ -9,11 +9,12 @@ import { TaskResolvable } from "./Task";
 
 type HookName = "pre" | "post";
 type HookFunction = (this: AbstractTask<object>) => Awaitable<void>;
+type IoRecord = Record<string, FileResolvable[]>;
 
 abstract class AbstractTask<C extends object | never = never> {
     public readonly name: string;
-    private _inputs: FileResolvable[] = [];
-    private _outputs: FileResolvable[] = [];
+    private _inputs: IoRecord = {};
+    private _outputs: IoRecord = {};
     private _taskNames?: string[];
     private _config?: C;
     public readonly dependencies: Array<TaskResolvable> = [];
@@ -26,39 +27,43 @@ abstract class AbstractTask<C extends object | never = never> {
             this.constructor.name.charAt(0).toLowerCase() + this.constructor.name.slice(1);
     }
 
-    protected addInputs(...files: FileResolvable[]): this {
-        this._inputs.push(...files);
+    protected addInputs(task: string, ...files: FileResolvable[]): this {
+        this._inputs[task] ??= [];
+        this._inputs[task].push(...files);
         return this;
     }
 
-    protected addOutputs(...files: FileResolvable[]): this {
-        this._outputs.push(...files);
+    protected addOutputs(task: string, ...files: FileResolvable[]): this {
+        this._outputs[task] ??= [];
+        this._outputs[task].push(...files);
         return this;
     }
 
-    protected setInputs(...files: FileResolvable[]): this {
-        this._inputs = files;
+    protected setInputs(task: string, ...files: FileResolvable[]): this {
+        this._inputs[task] = files;
         return this;
     }
 
-    protected setOutputs(...files: FileResolvable[]): this {
-        this._outputs = files;
+    protected setOutputs(task: string, ...files: FileResolvable[]): this {
+        this._outputs[task] = files;
         return this;
     }
 
     public get inputs(): FileResolvable[] {
-        return this._inputs;
+        return this._inputs[this.name] ?? [];
     }
 
     public get outputs(): FileResolvable[] {
-        return this._outputs;
+        return this._outputs[this.name] ?? [];
     }
 
     public async addOutputsByGlob(
         patterns: string | string[],
-        options?: Parameters<typeof glob>[1]
+        options?: Parameters<typeof glob>[1],
+        task?: string
     ) {
         return this.addOutputs(
+            task ?? this.name,
             ...(await (options ? glob(patterns, options) : glob(patterns))).map(path =>
                 typeof path === "string" ? path : path.path
             )
@@ -67,13 +72,31 @@ abstract class AbstractTask<C extends object | never = never> {
 
     public async addInputsByGlob(
         patterns: string | string[],
-        options?: Parameters<typeof glob>[1]
+        options?: Parameters<typeof glob>[1],
+        task?: string
     ) {
         return this.addInputs(
+            task ?? this.name,
             ...(await (options ? glob(patterns, options) : glob(patterns))).map(path =>
                 typeof path === "string" ? path : path.path
             )
         );
+    }
+
+    public async addInputsByGlobForTask(
+        task: string,
+        patterns: string | string[],
+        options?: Parameters<typeof glob>[1]
+    ) {
+        return this.addInputsByGlob(patterns, options, task);
+    }
+
+    public async addOutputsByGlobForTask(
+        task: string,
+        patterns: string | string[],
+        options?: Parameters<typeof glob>[1]
+    ) {
+        return this.addOutputsByGlob(patterns, options, task);
     }
 
     protected getConfig<K extends keyof C>(key: K): C[K] {
@@ -227,8 +250,13 @@ abstract class AbstractTask<C extends object | never = never> {
         this.blaze.fileSystemManager.markAsRan(name);
         const result = await fn.call(this);
 
-        this.blaze.fileSystemManager.addFiles(name, "input", ...this.inputs);
-        this.blaze.fileSystemManager.addFiles(name, "output", ...this.outputs);
+        for (const task in this._inputs) {
+            this.blaze.fileSystemManager.addFiles(task, "input", ...this._inputs[task]);
+        }
+
+        for (const task in this._outputs) {
+            this.blaze.fileSystemManager.addFiles(task, "output", ...this._outputs[task]);
+        }
 
         return result;
     }

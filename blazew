@@ -2,6 +2,12 @@
 
 VERSION="1.0.0-alpha.1"
 
+set +e
+
+if [ -z "$DEBUG" ]; then
+    set +x
+fi
+
 argv_0=$0
 projectdir=$(dirname $0)
 projectdir=$(readlink -f "$projectdir")
@@ -247,7 +253,7 @@ blaze_cmd() {
     if [ -z "$has_bun" ]; then
         export PATH="$final_path":$PATH:"$final_path" && bash -c "$node $file $@"
     else
-        export PATH="$final_path":$PATH:"$final_path" && bash -c "$cmd $file $@"
+        export PATH="$final_path":$PATH:"$final_path" && bash -c "$cmd $file $*"
     fi
 }
 

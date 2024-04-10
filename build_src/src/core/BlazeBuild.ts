@@ -8,6 +8,7 @@ import FileSystem from "../polyfills/FileSystem";
 import CleanDependenciesTask from "../tasks/builtins/CleanDependenciesTask";
 import CleanTask from "../tasks/builtins/CleanTask";
 import DependenciesTask from "../tasks/builtins/DependenciesTask";
+import DumpTypesTask from "../tasks/builtins/DumpTypesTask";
 import InitTask from "../tasks/builtins/InitTask";
 import MetadataTask from "../tasks/builtins/MetadataTask";
 import TasksTask from "../tasks/builtins/TasksTask";
@@ -24,10 +25,10 @@ class BlazeBuild {
         InitTask,
         MetadataTask,
         DependenciesTask,
-        // CleanCachesTask,
         CleanDependenciesTask,
         CleanTask,
-        TasksTask
+        TasksTask,
+        DumpTypesTask
     ];
     public readonly logger = new Logger(this);
     private static instance: BlazeBuild;
@@ -128,8 +129,8 @@ class BlazeBuild {
                     packageManager === "pnpm"
                         ? "pnpm exec"
                         : packageManager === "bun"
-                        ? "bun x"
-                        : "npx"
+                          ? "bun x"
+                          : "npx"
                 } ${command}`,
                 options
             );

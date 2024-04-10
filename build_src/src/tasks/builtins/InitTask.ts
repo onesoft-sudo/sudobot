@@ -16,8 +16,7 @@ class InitTask extends AbstractTask {
 
         await this.blaze.packageManager.loadPackageJSON();
         await this.blaze.taskManager.execute(
-            // ["dumpTypes", ...(argv.length === 0 ? ["build"] : argv)],
-            [...(argv.length === 0 ? ["build"] : argv)],
+            ["dumpTypes", ...(argv.length === 0 ? ["build"] : argv)],
             false,
             {
                 onExecBegin(tasks) {

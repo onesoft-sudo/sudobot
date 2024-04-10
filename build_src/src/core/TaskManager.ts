@@ -90,9 +90,9 @@ export class TaskManager {
             let name = dependency;
 
             if (typeof name !== "string") {
-                const instance = new (name as new (blaze: BlazeBuild) => InstanceType<
-                    Exclude<typeof name, string>
-                >)(this.cli);
+                const instance = new (name as new (
+                    blaze: BlazeBuild
+                ) => InstanceType<Exclude<typeof name, string>>)(this.cli);
                 name = instance.name;
             }
 
