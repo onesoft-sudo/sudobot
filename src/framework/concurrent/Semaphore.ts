@@ -16,7 +16,7 @@ class Semaphore {
 
     public async acquire() {
         if (this.count >= this.max) {
-            const { promise, resolve } = Promise.withResolvers();
+            const { promise, resolve } = Promise.withResolvers<void>();
             this.resolvers.push(resolve);
             this.count++;
             return promise;
