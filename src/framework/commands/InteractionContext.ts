@@ -40,8 +40,8 @@ class InteractionContext<
             commandMessage instanceof ChatInputCommandInteraction
                 ? ContextType.ChatInput
                 : commandMessage instanceof MessageContextMenuCommandInteraction
-                ? ContextType.MessageContextMenu
-                : ContextType.UserContextMenu;
+                  ? ContextType.MessageContextMenu
+                  : ContextType.UserContextMenu;
     }
 
     public override get userId(): string {
@@ -50,6 +50,10 @@ class InteractionContext<
 
     public override get user(): User {
         return this.commandMessage.user;
+    }
+
+    public get options(): T["options"] {
+        return this.commandMessage.options;
     }
 }
 

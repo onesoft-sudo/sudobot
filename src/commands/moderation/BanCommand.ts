@@ -38,7 +38,6 @@ type BanCommandArgs = {
     userOrMember: User | GuildMember;
     reason?: string;
     duration?: number;
-    deletionTimeframe?: number;
 };
 
 @TakesArgument<BanCommandArgs>({
@@ -70,18 +69,6 @@ type BanCommandArgs = {
     interactionType: IntegerArgument
 })
 @TakesArgument<BanCommandArgs>({
-    names: ["deletionTimeframe", "reason"],
-    types: [IntegerArgument, RestStringArgument],
-    optional: true,
-    errorMessages: [
-        {
-            [ErrorType.InvalidType]: "Invalid reason or message deletion timeframe provided."
-        }
-    ],
-    interactionName: "deletion_timeframe",
-    interactionType: IntegerArgument
-})
-@TakesArgument<BanCommandArgs>({
     names: ["reason"],
     types: [RestStringArgument],
     optional: true,
@@ -101,8 +88,7 @@ class BanCommand extends Command {
     public override readonly defer = true;
     public override readonly usage = [
         "<user: User> [reason: RestString]",
-        "<user: User> <duration: Duration> [reason: RestString]",
-        "<user: User> <duration: Duration> <message_deletion_timeframe: Duration> [reason: RestString]"
+        "<user: User> <duration: Duration> [reason: RestString]"
     ];
 
     @Inject()
@@ -167,6 +153,26 @@ class BanCommand extends Command {
             }
         }
 
+        const deletionTimeframeString = context.isChatInput()
+            ? context.options.getString("deletion_timeframe") ?? undefined
+            : undefined;
+        const deletionTimeframe = deletionTimeframeString
+            ? parseInt(deletionTimeframeString)
+            : undefined;
+
+        if (deletionTimeframe !== undefined && isNaN(deletionTimeframe)) {
+            await context.error("Invalid deletion timeframe provided.");
+            return;
+        }
+
+        if (
+            deletionTimeframe !== undefined &&
+            (deletionTimeframe < 0 || deletionTimeframe > 1000 * 60 * 60 * 24 * 7)
+        ) {
+            await context.error("Deletion timeframe must be between 0 and 7 days.");
+            return;
+        }
+
         const { overviewEmbed, status } = await this.infractionManager.createBan({
             guildId: context.guildId,
             moderator: context.user,
@@ -174,7 +180,7 @@ class BanCommand extends Command {
             user: userOrMember instanceof GuildMember ? userOrMember.user : userOrMember,
             generateOverviewEmbed: true,
             duration: args.duration,
-            deletionTimeframe: args.deletionTimeframe
+            deletionTimeframe
         });
 
         if (status === "failed") {
@@ -189,9 +195,9 @@ class BanCommand extends Command {
                     embed =>
                         void embed.fields?.push({
                             name: "Message Deletion Timeframe",
-                            value: args.deletionTimeframe
+                            value: deletionTimeframe
                                 ? formatDistanceToNowStrict(
-                                      new Date(Date.now() - args.deletionTimeframe)
+                                      new Date(Date.now() - deletionTimeframe)
                                   )
                                 : "N/A"
                         })

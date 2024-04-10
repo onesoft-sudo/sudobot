@@ -18,15 +18,19 @@
  */
 
 import {
+    ChatInputCommandInteraction,
+    ContextMenuCommandInteraction,
     Guild,
     GuildMember,
     GuildTextBasedChannel,
     InteractionDeferReplyOptions,
     InteractionReplyOptions,
     Message,
+    MessageContextMenuCommandInteraction,
     MessageCreateOptions,
     Snowflake,
-    User
+    User,
+    UserContextMenuCommandInteraction
 } from "discord.js";
 import Application from "../app/Application";
 import { emoji } from "../utils/emoji";
@@ -53,26 +57,26 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
     public readonly commandMessage: T;
     public abstract readonly type: ContextType;
 
-    public get isLegacy() {
+    public isLegacy(): this is LegacyContext {
         return this.type === ContextType.Legacy;
     }
 
-    public get isChatInput() {
+    public isChatInput(): this is InteractionContext<ChatInputCommandInteraction> {
         return this.type === ContextType.ChatInput;
     }
 
-    public get isContextMenu() {
+    public isContextMenu(): this is InteractionContext<ContextMenuCommandInteraction> {
         return (
             this.type === ContextType.MessageContextMenu ||
             this.type === ContextType.UserContextMenu
         );
     }
 
-    public get isMessageContextMenu() {
+    public isMessageContextMenu(): this is InteractionContext<MessageContextMenuCommandInteraction> {
         return this.type === ContextType.MessageContextMenu;
     }
 
-    public get isUserContextMenu() {
+    public isUserContextMenu(): this is InteractionContext<UserContextMenuCommandInteraction> {
         return this.type === ContextType.UserContextMenu;
     }
 
