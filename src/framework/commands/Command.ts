@@ -383,7 +383,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
             await context.defer({ ephemeral: this.ephemeral });
         }
 
-        if (context.isLegacy || context.isChatInput) {
+        if (context.isLegacy() || context.isChatInput()) {
             const { error, payload, abort } = await this.argumentParser.parse(
                 context as LegacyContext | InteractionContext<ChatInputCommandInteraction>,
                 this as Command<ContextType.Legacy | ContextType.ChatInput>,
@@ -496,8 +496,8 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
                 typeof permission === "string"
                     ? this.internalPermissionManager.getPermissionByName(permission)
                     : typeof permission === "function"
-                    ? await permission.getInstance<Permission>()
-                    : permission;
+                      ? await permission.getInstance<Permission>()
+                      : permission;
 
             if (!instance) {
                 this.application.logger.debug(`Invalid permission: ${permission}: Not found`);

@@ -1,32 +1,32 @@
 /*
-* This file is part of SudoBot.
-*
-* Copyright (C) 2021-2024 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 import { Awaitable, ChatInputCommandInteraction } from "discord.js";
+import Application from "../app/Application";
 import { ArgumentPayload, Command } from "../commands/Command";
 import Context from "../commands/Context";
 import InteractionContext from "../commands/InteractionContext";
 import LegacyContext from "../commands/LegacyContext";
 import { HasClient } from "../types/HasClient";
+import { notIn } from "../utils/utils";
 import Argument from "./Argument";
 import { ArgumentTypeOptions } from "./ArgumentTypes";
-import Application from "../app/Application";
-import { notIn } from "../utils/utils";
 
 type ParseResult =
     | {
@@ -46,7 +46,12 @@ type ParseResult =
       };
 
 class ArgumentParser extends HasClient {
-    public async parseArguments(context: LegacyContext, commandContent: string, command: Command, subcommand = false) {
+    public async parseArguments(
+        context: LegacyContext,
+        commandContent: string,
+        command: Command,
+        subcommand = false
+    ) {
         const isDynamic = Reflect.getMetadata("command:dynamic", command.constructor);
         const argTypes =
             (Reflect.getMetadata("command:types", command.constructor) as ArgumentTypeOptions[]) ||
@@ -77,7 +82,7 @@ class ArgumentParser extends HasClient {
                 args,
                 argv,
                 paramTypes,
-                context,
+                context
             );
 
             if (error) {
@@ -96,8 +101,8 @@ class ArgumentParser extends HasClient {
                 argTypes,
                 subcommand,
                 commandManager.commands.get(argv[0])?.subcommands ?? [],
-                command.onSubcommandNotFound?.bind(command)
-                    ?? Reflect.getMetadata("command:subcommand_not_found_error", command.constructor),
+                command.onSubcommandNotFound?.bind(command) ??
+                    Reflect.getMetadata("command:subcommand_not_found_error", command.constructor),
                 context
             );
 
@@ -130,7 +135,14 @@ class ArgumentParser extends HasClient {
         types: ArgumentTypeOptions[],
         subcommand = false,
         allowedSubcommands: string[] | undefined,
-        onSubcommandNotFound: string | ((context: Context, subcommand: string, errorType: "not_found" | "not_specified") => Awaitable<void>) | undefined,
+        onSubcommandNotFound:
+            | string
+            | ((
+                  context: Context,
+                  subcommand: string,
+                  errorType: "not_found" | "not_specified"
+              ) => Awaitable<void>)
+            | undefined,
         context: Context
     ) {
         const parsedArguments: Record<string, unknown> = {};
@@ -146,7 +158,7 @@ class ArgumentParser extends HasClient {
             }
 
             return {
-                error: onSubcommandNotFound as string | undefined ?? "A subcommand is required!"
+                error: (onSubcommandNotFound as string | undefined) ?? "A subcommand is required!"
             };
         }
 
@@ -160,7 +172,8 @@ class ArgumentParser extends HasClient {
             }
 
             return {
-                error: onSubcommandNotFound as string | undefined ?? "Invalid subcommand provided."
+                error:
+                    (onSubcommandNotFound as string | undefined) ?? "Invalid subcommand provided."
             };
         }
 
@@ -178,18 +191,26 @@ class ArgumentParser extends HasClient {
                 }
 
                 return {
-                    error: onSubcommandNotFound as string | undefined ?? "Invalid subcommand provided."
+                    error:
+                        (onSubcommandNotFound as string | undefined) ??
+                        "Invalid subcommand provided."
                 };
             }
 
-            types = Reflect.getMetadata("command:types", command.constructor) as ArgumentTypeOptions[] ?? [];
+            types =
+                (Reflect.getMetadata(
+                    "command:types",
+                    command.constructor
+                ) as ArgumentTypeOptions[]) ?? [];
         }
 
         for (let i = 0; i < types.length; i++) {
             const argIndex = subcommand && types.length ? i + 1 : i;
             const arg = args[argIndex];
             const expectedArgInfo = types[i];
-            const names = Array.isArray(expectedArgInfo.names) ? expectedArgInfo.names : [expectedArgInfo.names];
+            const names = Array.isArray(expectedArgInfo.names)
+                ? expectedArgInfo.names
+                : [expectedArgInfo.names];
 
             if (names.length === 0) {
                 throw new Error("Argument names must be provided");
@@ -252,7 +273,9 @@ class ArgumentParser extends HasClient {
 
             if (lastError) {
                 return {
-                    error: expectedArgInfo.errorMessages?.[argTypeIndex]?.[lastError.meta.type] ?? lastError.message
+                    error:
+                        expectedArgInfo.errorMessages?.[argTypeIndex]?.[lastError.meta.type] ??
+                        lastError.message
                 };
             }
         }
@@ -268,7 +291,7 @@ class ArgumentParser extends HasClient {
         args: string[],
         argv: string[],
         types: unknown[],
-        context: Context,
+        context: Context
     ) {
         const parsedArguments = [];
 
@@ -316,10 +339,10 @@ class ArgumentParser extends HasClient {
     ): Promise<ParseResult> {
         if (context instanceof LegacyContext) {
             return await this.parseArguments(context, commandContent!, command, subcommand);
-        } else if (context.isChatInput) {
+        } else if (context.isChatInput()) {
             return await this.parseFromInteraction(
                 context as InteractionContext<ChatInputCommandInteraction>,
-                command,
+                command
             );
         }
 
@@ -328,7 +351,7 @@ class ArgumentParser extends HasClient {
 
     public async parseFromInteraction(
         context: InteractionContext<ChatInputCommandInteraction>,
-        command: Command,
+        command: Command
     ): Promise<ParseResult> {
         const interaction = context.commandMessage as ChatInputCommandInteraction;
         const expectedArgs =
@@ -351,8 +374,7 @@ class ArgumentParser extends HasClient {
 
             if (expectedArgInfo.names.length === 0) {
                 throw new Error("Argument names must be provided");
-            }
-            else if (expectedArgInfo.names.length > 1) {
+            } else if (expectedArgInfo.names.length > 1) {
                 throw new Error("Only 1 argument name is allowed for auto-parsing!");
             }
 
@@ -368,9 +390,7 @@ class ArgumentParser extends HasClient {
                 }
 
                 return {
-                    error:
-                        expectedArgInfo.errorMessages?.[0]?.Required ??
-                        `${name} is required!`,
+                    error: expectedArgInfo.errorMessages?.[0]?.Required ?? `${name} is required!`,
                     payload: undefined,
                     abort: undefined
                 };
