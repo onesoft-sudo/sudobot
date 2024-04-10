@@ -24,11 +24,14 @@
         "blazew",
         "botinfo",
         "Buildable",
+        "commitlint",
+        "deepmerge",
         "kickable",
         "MASSBAN",
         "MASSKICK",
         "Memoizable",
         "moderatable",
+        "nsfwjs",
         "oclif",
         "openai",
         "SOFTBAN",
@@ -37,8 +40,11 @@
         "subkey",
         "sudobot",
         "Sweeped",
+        "tesseract",
+        "tfjs",
         "tsbuildinfo",
-        "Unban"
+        "Unban",
+        "undici"
     ],
     "material-icon-theme.folders.associations": {
         "automod": "Server",
