@@ -45,6 +45,8 @@
         "./blaze",
         "./blazebuild",
         "./blazebuild/**",
+        "./build_src",
+        "./build_src/**",
         "./node_modules"
     ]
 }
