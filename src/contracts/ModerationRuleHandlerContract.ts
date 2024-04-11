@@ -31,6 +31,8 @@ export type RuleExecResult = {
     fields?: APIEmbed["fields"];
 };
 
-interface ModerationRuleHandlerContract extends HandlerRecord {}
+interface ModerationRuleHandlerContract extends HandlerRecord {
+    boot?(): Awaitable<void>;
+}
 
 export default ModerationRuleHandlerContract;

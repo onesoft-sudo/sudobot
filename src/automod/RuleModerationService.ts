@@ -30,7 +30,15 @@ class RuleModerationService
     @Inject("permissionManager")
     private readonly permissionManagerService!: PermissionManagerService;
 
-    private readonly ruleHandler = this.createRuleHandler();
+    private _ruleHandler?: ModerationRuleHandlerContract;
+
+    private get ruleHandler() {
+        return this._ruleHandler!;
+    }
+
+    public override async boot(): Promise<void> {
+        this._ruleHandler = await this.createRuleHandler();
+    }
 
     private configFor(guildId: Snowflake) {
         return this.configurationManager.config[guildId!]?.rule_moderation;
@@ -54,8 +62,10 @@ class RuleModerationService
         return this.permissionManagerService.canAutoModerate(member);
     }
 
-    private createRuleHandler(): ModerationRuleHandlerContract {
-        return new ModerationRuleHandler(this.application);
+    private async createRuleHandler(): Promise<ModerationRuleHandlerContract> {
+        const instance = new ModerationRuleHandler(this.application);
+        await instance.boot?.();
+        return instance;
     }
 
     public onMessageCreate(message: Message<boolean>) {

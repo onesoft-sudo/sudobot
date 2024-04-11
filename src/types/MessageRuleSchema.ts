@@ -91,33 +91,33 @@ export const RegexFilterRule = z.object({
         .default([])
 });
 
-export const BlockRepeatedTextRule = z.object({
+export const RepeatedTextFilterRule = z.object({
     ...Common,
-    type: z.literal("block_repeated_text"),
+    type: z.literal("repeated_text_filter"),
     max_repeated_chars: z.number().int().default(20),
     max_repeated_words: z.number().int().default(15)
 });
 
-export const BlockMassMentionRule = z.object({
+export const MassMentionFilterRule = z.object({
     ...Common,
-    type: z.literal("block_mass_mention"),
+    type: z.literal("mass_mention_filter"),
     max_mentions: z.number().int().default(15),
     max_user_mentions: z.number().int().default(-1),
     max_role_mentions: z.number().int().default(-1)
 });
 
-export const ImageRule = z.object({
+export const ImageFilterRule = z.object({
     ...Common,
-    type: z.literal("image"),
+    type: z.literal("image_filter"),
     tokens: z.array(z.string()).default([]),
     words: z.array(z.string()).default([]),
     inherit_from_word_filter: z.boolean().default(false),
     scan_embeds: z.boolean().default(false)
 });
 
-export const EmbedRule = z.object({
+export const EmbedFilterRule = z.object({
     ...Common,
-    type: z.literal("embed"),
+    type: z.literal("embed_filter"),
     tokens: z.array(z.string()).default([]),
     words: z.array(z.string()).default([]),
     inherit_from_word_filter: z.boolean().default(false)
@@ -164,10 +164,10 @@ export const MessageRuleSchema = z.union([
     FileExtensionFilterRule,
     AntiInviteRule,
     RegexFilterRule,
-    BlockRepeatedTextRule,
-    BlockMassMentionRule,
-    ImageRule,
-    EmbedRule,
+    RepeatedTextFilterRule,
+    MassMentionFilterRule,
+    ImageFilterRule,
+    EmbedFilterRule,
     URLCrawlRule,
     NSFWFilter,
     WordFilter
