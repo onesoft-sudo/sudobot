@@ -87,22 +87,16 @@ class ModerationActionService extends Service {
                 });
 
             case "role":
-                try {
-                    if (action.mode === "give") {
-                        await target.roles.add(action.roles, `Automated action: ${action.reason}`);
-                    } else {
-                        await target.roles.remove(
-                            action.roles,
-                            `Automated action: ${action.reason}`
-                        );
-                    }
-                } catch (error) {
-                    this.application.logger.error(error);
-                }
-
-                // TODO: Duration
-
-                return null;
+                return await this.infractionManager.createRoleModification({
+                    moderator: this.application.client.user!,
+                    member: target,
+                    reason: action.reason,
+                    guildId: guild.id,
+                    roles: action.roles,
+                    notify: action.notify,
+                    mode: action.mode,
+                    duration: action.duration
+                });
 
             case "warn":
                 return await this.infractionManager.createWarning({

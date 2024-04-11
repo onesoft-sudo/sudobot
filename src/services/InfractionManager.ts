@@ -30,6 +30,7 @@ import {
     Message,
     PermissionFlagsBits,
     PrivateThreadChannel,
+    RoleResolvable,
     Snowflake,
     TextBasedChannel,
     TextChannel,
@@ -44,6 +45,7 @@ import { Name } from "../framework/services/Name";
 import { Service } from "../framework/services/Service";
 import { emoji } from "../framework/utils/emoji";
 import InfractionChannelDeleteQueue from "../queues/InfractionChannelDeleteQueue";
+import RoleQueue from "../queues/RoleQueue";
 import UnbanQueue from "../queues/UnbanQueue";
 import UnmuteQueue from "../queues/UnmuteQueue";
 import { GuildConfig } from "../types/GuildConfigSchema";
@@ -66,7 +68,8 @@ class InfractionManager extends Service {
         [InfractionType.BULK_DELETE_MESSAGE]: "bulk deleted messages",
         [InfractionType.NOTE]: "noted",
         [InfractionType.TIMEOUT]: "timed out",
-        [InfractionType.TIMEOUT_REMOVE]: "removed timeout"
+        [InfractionType.TIMEOUT_REMOVE]: "removed timeout",
+        [InfractionType.ROLE]: "modified roles"
     };
 
     @Inject()
@@ -125,7 +128,10 @@ class InfractionManager extends Service {
         const actionDoneName = this.actionDoneNames[infraction.type];
         const embed = {
             author: {
-                name: `You have been ${actionDoneName} in ${guild.name}`,
+                name:
+                    infraction.type === InfractionType.ROLE
+                        ? `Your role(s) have been changed in ${guild.name}`
+                        : `You have been ${actionDoneName} in ${guild.name}`,
                 icon_url: guild.iconURL() ?? undefined
             },
             fields: [
@@ -880,6 +886,100 @@ class InfractionManager extends Service {
         };
     }
 
+    public async createRoleModification<E extends boolean>(
+        payload: CreateRoleModificationPayload<E>
+    ): Promise<InfractionCreateResult<E>> {
+        const guild = this.getGuild(payload.guildId);
+
+        if (!guild) {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null
+            };
+        }
+
+        const {
+            moderator,
+            member,
+            reason,
+            guildId,
+            generateOverviewEmbed,
+            transformNotificationEmbed,
+            notify = true,
+            mode,
+            roles,
+            duration
+        } = payload;
+
+        if (!member.manageable) {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+                errorType: "permission",
+                errorDescription: "Member is not manageable"
+            };
+        }
+
+        const infraction: Infraction = await this.createInfraction({
+            guildId,
+            moderator,
+            reason,
+            transformNotificationEmbed,
+            type: InfractionType.ROLE,
+            user: member.user,
+            notify,
+            payload: {
+                metadata: {
+                    mode,
+                    roles,
+                    duration
+                }
+            }
+        });
+
+        try {
+            if (mode === "give") {
+                await member.roles.add(roles, `${moderator.username} - ${infraction.reason}`);
+            } else {
+                await member.roles.remove(roles, `${moderator.username} - ${infraction.reason}`);
+            }
+
+            if (duration !== undefined) {
+                await this.queueService
+                    .create(RoleQueue, {
+                        data: {
+                            memberId: member.id,
+                            guildId: guild.id,
+                            roleIds: roles.map(role => (typeof role === "string" ? role : role.id)),
+                            mode: mode === "give" ? "remove" : "add",
+                            reason: `${moderator.username} - ${infraction.reason}`
+                        },
+                        guildId: guild.id,
+                        runsAt: new Date(Date.now() + duration)
+                    })
+                    .schedule();
+            }
+        } catch (error) {
+            this.application.logger.error(error);
+
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null
+            };
+        }
+
+        return {
+            status: "success",
+            infraction,
+            overviewEmbed: (generateOverviewEmbed
+                ? this.createOverviewEmbed(infraction, member.user, moderator)
+                : undefined) as E extends true ? APIEmbed : undefined
+        };
+    }
+
     public async createClearMessages(
         payload: CreateClearMessagesPayload<false>
     ): Promise<MessageBulkDeleteResult> {
@@ -1052,8 +1152,8 @@ class InfractionManager extends Service {
                     infraction.deliveryStatus === InfractionDeliveryStatus.FAILED
                         ? "Failed to deliver a DM to this user."
                         : infraction.deliveryStatus === InfractionDeliveryStatus.FALLBACK
-                        ? "Sent to fallback channel."
-                        : "Not delivered."
+                          ? "Sent to fallback channel."
+                          : "Not delivered."
             });
         }
 
@@ -1065,7 +1165,10 @@ class InfractionManager extends Service {
                 name: user.username,
                 icon_url: user.displayAvatarURL()
             },
-            description: `${bold(user.username)} has been ${actionDoneName}.`,
+            description:
+                infraction.type === InfractionType.ROLE
+                    ? `Roles for ${bold(user.username)} have been updated.`
+                    : `${bold(user.username)} has been ${actionDoneName}.`,
             fields,
             timestamp: new Date().toISOString(),
             color:
@@ -1129,6 +1232,13 @@ type CreateMutePayload<E extends boolean> = CommonOptions<E> & {
 type CreateBanPayload<E extends boolean> = CommonOptions<E> & {
     user: User;
     deletionTimeframe?: number;
+    duration?: number;
+};
+
+type CreateRoleModificationPayload<E extends boolean> = CommonOptions<E> & {
+    member: GuildMember;
+    mode: "give" | "take";
+    roles: RoleResolvable[];
     duration?: number;
 };
 

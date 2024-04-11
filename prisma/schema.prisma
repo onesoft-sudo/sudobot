@@ -21,6 +21,7 @@ enum InfractionType {
     TIMEOUT_REMOVE
     BEAN
     NOTE
+    ROLE
 }
 
 enum InfractionDeliveryStatus {
