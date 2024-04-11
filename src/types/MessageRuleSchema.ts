@@ -46,12 +46,14 @@ const Common = {
         .optional()
 };
 
-export const DomainFilterRule = z.object({
-    ...Common,
-    type: z.literal("domain_filter"),
-    domains: z.array(z.string()).default([]),
-    scan_links_only: z.boolean().default(false)
-});
+export const DomainFilterRule = z
+    .object({
+        ...Common,
+        type: z.literal("domain_filter"),
+        domains: z.array(z.string()).default([]),
+        scan_links_only: z.boolean().default(false)
+    })
+    .describe("[DEPRECATED] Use RegexFilterRule instead.");
 
 export const BlockedMimeTypeRule = z.object({
     ...Common,
