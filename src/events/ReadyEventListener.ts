@@ -62,9 +62,6 @@ class ReadyEventListener extends EventListener<Events.Ready, Client> {
         this.queueService.onReady();
         this.server.onReady();
 
-        // FIXME
-        // this.client.queueManager.onReady().catch(logError);
-
         const homeGuild = await this.client.getHomeGuild();
 
         if (this.configManager.systemConfig.sync_emojis) {
