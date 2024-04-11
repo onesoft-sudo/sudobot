@@ -1,0 +1,20 @@
+{
+    "name": "neko",
+    "version": "1.0.0",
+    "main": "build/index.js",
+    "author": "Ryan Mello",
+    "license": "AGPL-3.0-or-later",
+    "dependencies": {
+        "sudobot": "file:../.."
+    },
+    "devDependencies": {
+        "@types/node": "^20.11.17",
+        "typescript": "^5.3.3"
+    },
+    "_moduleAliases": {
+        "@sudobot": "node_modules/sudobot/build"
+    },
+    "scripts": {
+        "build": "tsc"
+    }
+}
