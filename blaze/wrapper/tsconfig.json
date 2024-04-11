@@ -1,15 +1,14 @@
 {
     "compilerOptions": {
         "incremental": true,
-        "target": "ES2022",
-        "module": "CommonJS",
-        "rootDir": "src",
         "types": ["node", "bun"],
         "lib": ["ES2022", "DOM"],
         "resolveJsonModule": true,
         "declaration": true,
         "noEmit": true,
+        "importHelpers": true,
         "newLine": "lf",
+        "noEmitHelpers": true,
         "noEmitOnError": true,
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
@@ -17,9 +16,6 @@
         "strict": true,
         "skipLibCheck": true,
         "skipDefaultLibCheck": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "noImplicitOverride": true,
-        "importsNotUsedAsValues": "remove"
+        "allowJs": true
     }
 }

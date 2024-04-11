@@ -1,31 +1,21 @@
-import { existsSync } from "fs";
 import AbstractTask from "../../core/AbstractTask";
 import { Caching, CachingMode } from "../../decorators/Caching";
 import IO from "../../io/IO";
-import { Awaitable } from "../../types/Awaitable";
 
-@Caching(CachingMode.None)
+@Caching(CachingMode.Incremental)
 class DependenciesTask extends AbstractTask {
     public override readonly name = "dependencies";
     public override readonly defaultDescription: string = "Resolves the project dependencies";
     public override readonly defaultGroup: string = "Dependencies";
     protected ran = false;
 
-    public override precondition(): Awaitable<boolean> {
-        if (
-            !this.blaze.packageManager.packagesNeedUpdate() &&
-            !this.blaze.cacheManager.noCacheFileFound() &&
-            existsSync("node_modules") &&
-            existsSync(".blaze/cache.json")
-        ) {
-            return false;
-        }
-
-        return true;
+    public override async precondition(): Promise<boolean> {
+        return this.blaze.packageManager.packagesNeedUpdate();
     }
 
     public override async execute() {
         const packageManager = this.blaze.packageManager.getPackageManager();
+        const registry = this.blaze.repositoryManager.getRepository();
 
         if (!["bun", "npm", "yarn", "pnpm"].includes(packageManager)) {
             IO.fail(`Unsupported package manager: "${packageManager}"`);
@@ -33,10 +23,14 @@ class DependenciesTask extends AbstractTask {
 
         await this.blaze.packageManager.writePackageData();
         await this.blaze.execCommand(
-            `${packageManager} ${packageManager === "yarn" ? "" : "install"}`
+            `${packageManager} ${packageManager === "yarn" ? "" : "install"}` +
+                (packageManager === "bun" ? "" : ` --registry="${registry.replace(/"/g, '\\"')}"`)
         );
 
         this.ran = true;
+
+        this.addInputs(this.name, this.blaze.buildScriptPath);
+        this.addOutputs(this.name, `${process.cwd()}/node_modules`);
     }
 
     public override async doLast() {

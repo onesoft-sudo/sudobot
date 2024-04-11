@@ -4,7 +4,7 @@ import type { ProjectManager } from "blazebuild/src/core/ProjectManager";
 import type { TaskManager } from "blazebuild/src/core/TaskManager";
 import type { SpawnOptions } from "child_process";
 
-type Callback<T> = (this: T, manager: T) => void;
+type Builder<T> = (this: T, manager: T) => void;
 type FinalPluginManager = PluginManager;
 
 declare global {
@@ -12,25 +12,30 @@ declare global {
     const tasks: Pick<TaskManager, "register" | "execute">;
 
     function packageManager(manager: PackageManagerName): void;
-    function plugins(callback: Callback<FinalPluginManager>): void;
-    function dependencies(callback: Callback<PackageManager>): void;
+    function plugins(builder: Builder<FinalPluginManager>): void;
+    function dependencies(builder: Builder<PackageManager>): void;
 
-    function nodeModule(expression: string): void;
-    function nodeModule(nameExpression: string, version: string): void;
-    function nodeModule(namespace: string, name: string, version: string): void;
+    function requiredModule(expression: string): void;
+    function requiredModule(nameExpression: string, version: string): void;
+    function requiredModule(namespace: string, name: string, version: string): void;
 
-    function devNodeModule(expression: string): void;
-    function devNodeModule(nameExpression: string, version: string): void;
-    function devNodeModule(namespace: string, name: string, version: string): void;
+    function devModule(expression: string): void;
+    function devModule(nameExpression: string, version: string): void;
+    function devModule(namespace: string, name: string, version: string): void;
 
-    function peerNodeModule(expression: string): void;
-    function peerNodeModule(nameExpression: string, version: string): void;
-    function peerNodeModule(namespace: string, name: string, version: string): void;
+    function peerModule(expression: string): void;
+    function peerModule(nameExpression: string, version: string): void;
+    function peerModule(namespace: string, name: string, version: string): void;
 
-    function optionalNodeModule(expression: string): void;
-    function optionalNodeModule(nameExpression: string, version: string): void;
-    function optionalNodeModule(namespace: string, name: string, version: string): void;
+    function optionalModule(expression: string): void;
+    function optionalModule(nameExpression: string, version: string): void;
+    function optionalModule(namespace: string, name: string, version: string): void;
 
     function println(message: string): void;
     function x(command: string, options?: SpawnOptions): Promise<void>;
+
+    function repositories(builder: Builder<RepositoryManager>): void;
+    function npm(name: string, url: string): void;
+    function npm(url: string): void;
+    function npmMain(): void;
 }

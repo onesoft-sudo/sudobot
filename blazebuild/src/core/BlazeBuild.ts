@@ -18,6 +18,7 @@ import { FileSystemManager } from "./FileSystemManager";
 import { PackageManager } from "./PackageManager";
 import { PluginManager } from "./PluginManager";
 import { ProjectManager } from "./ProjectManager";
+import RepositoryManager from "./RepositoryManager";
 import { TaskManager } from "./TaskManager";
 
 class BlazeBuild {
@@ -37,8 +38,10 @@ class BlazeBuild {
     public readonly projectManager = new ProjectManager(this);
     public readonly pluginManager = new PluginManager(this);
     public readonly packageManager = new PackageManager(this);
+    public readonly repositoryManager = new RepositoryManager(this);
     public readonly cacheManager = new CacheManager(this);
     public readonly fileSystemManager = new FileSystemManager(this);
+    public readonly buildScriptPath: string = `${process.cwd()}/build.blaze.ts`;
 
     private constructor() {}
 
@@ -79,14 +82,14 @@ class BlazeBuild {
     }
 
     private async importBuildScript() {
-        if (!(await FileSystem.exists("build.blaze.ts"))) {
+        if (!(await FileSystem.exists(this.buildScriptPath))) {
             this.error("No build script found.");
         }
 
         this.setupGlobals();
 
         if (process.isBun) {
-            return import(`${process.cwd()}/build.blaze.ts`);
+            return import(this.buildScriptPath);
         }
 
         await this.compileBuildScript();
@@ -94,7 +97,7 @@ class BlazeBuild {
     }
 
     private async compileBuildScript() {
-        const stat = await lstat(`${process.cwd()}/build.blaze.ts`);
+        const stat = await lstat(this.buildScriptPath);
         const cachedModTime = this.cacheManager.get<number>("build:lastmod");
 
         if (cachedModTime && stat.mtimeMs <= cachedModTime) {
@@ -137,6 +140,7 @@ class BlazeBuild {
         };
 
         this.packageManager.createFunctions(record);
+        this.repositoryManager.createGlobalFunctions(record);
     }
 
     public async run() {

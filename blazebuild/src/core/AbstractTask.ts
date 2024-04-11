@@ -70,9 +70,14 @@ abstract class AbstractTask<C extends object | never = never> implements Stringi
         options?: Parameters<typeof glob>[1],
         task?: string
     ) {
+        const g = glob as unknown as (
+            pattern: string[] | string,
+            options?: Parameters<typeof glob>[1]
+        ) => Promise<string[]>;
+
         return this.addOutputs(
             task ?? this.name,
-            ...(await (options ? glob(patterns, options) : glob(patterns))).map(
+            ...((await (options ? g(patterns, options) : g(patterns))) as string[]).map(
                 (path: string | { path: string }) => (typeof path === "string" ? path : path.path)
             )
         );
@@ -83,9 +88,14 @@ abstract class AbstractTask<C extends object | never = never> implements Stringi
         options?: Parameters<typeof glob>[1],
         task?: string
     ) {
+        const g = glob as unknown as (
+            pattern: string[] | string,
+            options?: Parameters<typeof glob>[1]
+        ) => Promise<string[]>;
+
         return this.addInputs(
             task ?? this.name,
-            ...(await (options ? glob(patterns, options) : glob(patterns))).map(
+            ...((await (options ? g(patterns, options) : g(patterns))) as string[]).map(
                 (path: string | { path: string }) => (typeof path === "string" ? path : path.path)
             )
         );

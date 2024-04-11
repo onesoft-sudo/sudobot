@@ -24,7 +24,7 @@ mkdir -p "$tmp_dir"
 mkdir -p "$nvm_home"
 
 getprop() {
-   value=$(cat "$projectdir/blaze/blaze_wrapper.properties" | grep "$1" | cut -d'=' -f2)
+   value=$(cat "$projectdir/blaze/wrapper/blaze_wrapper.properties" | grep "$1" | cut -d'=' -f2)
    echo $value
 }
 
@@ -195,9 +195,11 @@ setup_bun() {
 
         if [ "$bun_version_installed" != "$bun_version" ]; then
             setup_bun=1
+        else
+            bun="$(command -v bun)"
         fi
     fi
-
+        
     if [ $setup_bun -eq 1 ]; then
         print 34 "info   " "Installing Bun ($bun_version)..."
         args=()
@@ -212,6 +214,8 @@ setup_bun() {
         setup_done=1
 
         print 34 "info   " "Bun version: $($bun -v)"
+    elif [ -d "$bun_dir" ]; then 
+        bun=$(readlink -f "$bun_dir/bin/bun")
     else 
         bun=$(command -v bun)
     fi
@@ -232,11 +236,6 @@ for arg in "$@"; do
     if [ "$arg" == "--setup" ]; then
         setup=1
         argsetup=1
-    elif [ "$arg" == "--help" ]; then
-        help
-    elif [ "$arg" == "--version" ]; then
-        startup
-        exit 0
     fi
 done
 
@@ -254,8 +253,7 @@ if [ "$node" == "node" ]; then
 fi
 
 file="$blaze_srcpath/build/index.js"
-
-if [ ! -z "$has_bun" ] || [ $setup_done -eq 1 ]; then
+if [ ! -z "$has_bun" ] || [ $setup_done -eq 1 ] || [ -x "$bun" ]; then
     cmd=$bun
     has_bun=1
     file="$blaze_srcpath/src/index.ts"
@@ -264,11 +262,14 @@ fi
 blaze_cmd() {
     node_path=$(dirname "$node")
     final_path=$(readlink -f $node_path)
+    wrapper=$(readlink -f "$projectdir/blaze/wrapper/blaze_wrapper.mjs")
 
     if [ -z "$has_bun" ]; then
-        export PATH="$final_path":$PATH:"$final_path" && bash -c "$node $file $@"
+        print "1;31" "error  " "Bun not found. Please install Bun to use BlazeBuild."
+        exit 1
+        export PATH="$final_path":$PATH:"$final_path" && bash -c "exec -a \"$argv_0\" $node $wrapper $file --- $*"
     else
-        export PATH="$final_path":$PATH:"$final_path" && bash -c "$cmd $file $*"
+        export PATH="$final_path":$PATH:"$final_path" && bash -c "exec -a \"$argv_0\" $cmd $wrapper $file --- $*"
     fi
 }
 
@@ -299,7 +300,7 @@ if [ $setup -eq 1 ]; then
     mkdir -p "$projectdir/node_modules"
 
     if [ -L "$projectdir/node_modules/blazebuild" ] || [ -d "$projectdir/node_modules/blazebuild" ]; then
-        rm "$projectdir/node_modules/blazebuild" || exit 1
+        rm -rf "$projectdir/node_modules/blazebuild" || exit 1
     fi
 
     ln -s "$(readlink -f "$blaze_srcpath")" "$projectdir/node_modules/blazebuild" || exit 1

@@ -190,10 +190,10 @@ export class PackageManager extends Manager {
         };
 
         const map = {
-            nodeModule: "dependencies",
-            devNodeModule: "devDependencies",
-            optionalNodeModule: "optionalDependencies",
-            peerNodeModule: "peerDependencies"
+            requiredModule: "dependencies",
+            devModule: "devDependencies",
+            optionalModule: "optionalDependencies",
+            peerModule: "peerDependencies"
         };
 
         for (const fn in map) {
