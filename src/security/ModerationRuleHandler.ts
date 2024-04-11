@@ -7,7 +7,76 @@ import { HasApplication } from "../framework/types/HasApplication";
 
 // FIXME: This class is not complete and is only a placeholder for the actual implementation.
 class ModerationRuleHandler extends HasApplication implements ModerationRuleHandlerContract {
-    public domain(_context: MessageRuleContext) {
+    public domain_filter(context: MessageRuleContext<"message", { type: "domain_filter" }>) {
+        const { message, rule } = context;
+        const invert = rule.mode === "invert";
+        const content = message.content.toLowerCase();
+        const scanLinksOnly = rule.scan_links_only;
+
+        if (scanLinksOnly) {
+            const links = message.content.match(/https?:\/\/[^\s]+/g);
+
+            if (links) {
+                const domain = links
+                    .map(l => new URL(l).hostname)
+                    .find(d => rule.domains.includes(d));
+
+                if (!invert && domain) {
+                    return {
+                        matched: true,
+                        reason: "Message contains a blocked domain.",
+                        fields: [
+                            {
+                                name: "Domain",
+                                value: `${spoiler(domain)}`
+                            }
+                        ]
+                    };
+                }
+
+                if (invert && !domain) {
+                    return {
+                        matched: true,
+                        reason: "Message does not contain a required domain.",
+                        fields: [
+                            {
+                                name: "Domain",
+                                value: `${spoiler(rule.domains[0])}`
+                            }
+                        ]
+                    };
+                }
+            }
+        } else {
+            const domain = rule.domains.find(d => content.includes(d));
+
+            if (!invert && domain) {
+                return {
+                    matched: true,
+                    reason: "Message contains a blocked domain.",
+                    fields: [
+                        {
+                            name: "Domain",
+                            value: `${spoiler(domain)}`
+                        }
+                    ]
+                };
+            }
+
+            if (invert && !domain) {
+                return {
+                    matched: true,
+                    reason: "Message does not contain a required domain.",
+                    fields: [
+                        {
+                            name: "Domain",
+                            value: `${spoiler(rule.domains[0])}`
+                        }
+                    ]
+                };
+            }
+        }
+
         return {
             matched: false
         };
