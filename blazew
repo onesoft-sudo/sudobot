@@ -15,11 +15,13 @@ tmp_dir="$projectdir/.blaze"
 nvm_dir="$tmp_dir/nvm"
 node_dir="$tmp_dir/nvm/versions/node"
 bun_dir="$tmp_dir/bun"
+nvm_home="$tmp_dir/nvm_home"
 bun="bun"
 node="node"
 npm="npm"
 
 mkdir -p "$tmp_dir"
+mkdir -p "$nvm_home"
 
 getprop() {
    value=$(cat "$projectdir/blaze/blaze_wrapper.properties" | grep "$1" | cut -d'=' -f2)
@@ -102,9 +104,9 @@ setup_nvm() {
     fi
 
     if [ ! -z "$has_curl" ]; then
-        (export NVM_DIR=$nvm_dir && (curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash)) > /dev/null 2>&1
+        (export NVM_DIR="$nvm_dir" && export HOME="$nvm_home" && (curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash)) > /dev/null 2>&1
     elif [ ! -z "$has_wget" ]; then
-        (export NVM_DIR=$nvm_dir && (wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash)) > /dev/null 2>&1
+        (export NVM_DIR="$nvm_dir" && export HOME="$nvm_home" && (wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash)) > /dev/null 2>&1
     else
         print "1;31" "error  " "No curl or wget found."
         exit 1
@@ -205,7 +207,7 @@ setup_bun() {
         fi
 
         mkdir -p "$bun_dir"
-        export BUN_INSTALL="$bun_dir" && export PATH="$BUN_INSTALL":"$PATH":"$BUN_INSTALL" && curl -fsSL https://bun.sh/install | bash $args > /dev/null 2>&1
+        export BUN_INSTALL="$bun_dir" && export PATH="$BUN_INSTALL":"$PATH":"$BUN_INSTALL" && export SHELL=blazew && curl -fsSL https://bun.sh/install | bash $args > /dev/null 2>&1
         bun=$(readlink -f "$bun_dir/bin/bun")
         setup_done=1
 
