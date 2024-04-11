@@ -1,14 +1,10 @@
-import { AbstractTask } from "blazebuild/src/core/AbstractTask";
-import { Caching, CachingMode } from "blazebuild/src/decorators/Caching";
-import { Dependencies } from "blazebuild/src/decorators/Dependencies";
-import { Task } from "blazebuild/src/decorators/Task";
-import { File } from "blazebuild/src/io/File";
-import { typescript } from "blazebuild/src/plugins/typescript";
-import { spawnSync } from "child_process";
-import { existsSync } from "fs";
-import fs from "fs/promises";
-import path from "path";
-import "./.blaze/build.d.ts";
+import "@blazebuild/globals";
+
+import { typescript } from "@blazebuild/plugins/typescript";
+import BuildTask from "@buildSrc/tasks/BuildTask";
+import LintTask from "@buildSrc/tasks/LintTask";
+import RunTask from "@buildSrc/tasks/RunTask";
+import TestTask from "@buildSrc/tasks/TestTask";
 
 project.name = "sudobot";
 project.description = "A Discord bot for moderation purposes.";
@@ -28,97 +24,14 @@ plugins(({ add }) => {
     add([typescript]);
 });
 
-class BuildTask extends AbstractTask {
-    public override readonly name = "build";
-
-    private async resultIO(task?: string) {
-        await this.addInputsByGlobForTask(task ?? this.name, `${project.srcDir}/**/*.ts`);
-        await this.addOutputsByGlobForTask(
-            task ?? this.name,
-            this.inputs.map(input =>
-                File.of(input)
-                    .path.replace(project.srcDir, project.buildDir)
-                    .replace(/\.ts$/, ".js")
-            )
-        );
-    }
-
-    @Caching(CachingMode.Incremental)
-    @Task({ name: "compileTypeScript", noPrefix: true })
-    public async compileTypeScript(): Promise<void> {
-        await typescript.compile();
-        await this.resultIO("compileTypeScript");
-    }
-
-    @Caching(CachingMode.Incremental)
-    @Dependencies("dependencies", "compileTypeScript", "test")
-    public override async execute() {
-        if (!this.blaze.taskManager.upToDateTasks.has("compileTypeScript")) {
-            const tmpBuildDir = path.resolve(`${project.buildDir}/../_build.tmp`);
-            const targetDir = `${project.buildDir}/src`;
-
-            if (existsSync(tmpBuildDir)) {
-                await fs.rm(tmpBuildDir, { recursive: true, force: true });
-            }
-
-            await fs.rename(targetDir, tmpBuildDir);
-            await fs.rm(project.buildDir, { recursive: true, force: true });
-            await fs.rename(tmpBuildDir, project.buildDir);
-        }
-
-        await this.resultIO();
-        this.addOutputs(project.buildDir);
-    }
-}
-
-class TestTask extends AbstractTask {
-    public override readonly name = "test";
-
-    @Caching(CachingMode.Incremental)
-    @Dependencies("dependencies")
-    public override async execute() {
-        if (!project.testsDir) {
-            throw new Error("No tests directory specified.");
-        }
-
-        await this.addInputsByGlob(`${project.testsDir}/**/*.ts`);
-        await x("vitest --run");
-    }
-}
-
 tasks.register(BuildTask);
 tasks.register(TestTask);
+tasks.register(RunTask);
+tasks.register(LintTask);
 
 tasks.register("afterDependencies", async () => {
     await x("prisma generate");
 });
-
-tasks.register(
-    "lint",
-    async () => {
-        await x("eslint --ext .ts src  --max-warnings=0");
-    },
-    {
-        dependencies: ["dependencies"]
-    }
-);
-
-tasks.register(
-    "run",
-    () => {
-        setTimeout(async () => {
-            if (process.argv.includes("--node")) {
-                await tasks.execute("build");
-                spawnSync("node", [`${project.buildDir}/index.js`], { stdio: "inherit" });
-            } else {
-                spawnSync("bun", [`${project.srcDir}/bun.ts`], { stdio: "inherit" });
-            }
-        }, 1000);
-    },
-    {
-        dependencies: ["metadata"]
-    }
-);
 
 dependencies(() => {
     nodeModule("@google/generative-ai", "^0.3.0");
