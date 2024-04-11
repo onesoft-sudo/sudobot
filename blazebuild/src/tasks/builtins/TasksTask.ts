@@ -13,12 +13,13 @@ class TasksTask extends AbstractTask {
 
     public override async execute(): Promise<void> {
         const { tasks } = this.blaze.taskManager;
-        const sortedTasks = Array.from(tasks.values());
+        const tasksArray = Array.from(tasks.values());
         const groupedTasks: Record<string | symbol, Task[]> = {};
         let maxLength = 0;
 
-        for (const task of sortedTasks) {
-            const group = task.handler.defaultGroup ?? TasksTask.UNGROUPED;
+        for (const task of tasksArray) {
+            const group =
+                task.metadata?.defaultGroup ?? task.handler.defaultGroup ?? TasksTask.UNGROUPED;
             groupedTasks[group] ??= [];
             groupedTasks[group].push(task);
 
@@ -35,9 +36,17 @@ class TasksTask extends AbstractTask {
         IO.println(chalk.white.bold("Available Tasks:"));
         IO.println("");
 
-        for (const group of [TasksTask.UNGROUPED, ...Object.keys(groupedTasks)].sort((a, b) =>
-            a.toString().localeCompare(b.toString())
-        )) {
+        for (const group of [TasksTask.UNGROUPED, ...Object.keys(groupedTasks)].sort((a, b) => {
+            if (a === TasksTask.UNGROUPED) {
+                return 1;
+            }
+
+            if (b === TasksTask.UNGROUPED) {
+                return -1;
+            }
+
+            return a.toString().localeCompare(b.toString());
+        })) {
             const groupString = `  ${(group as string | symbol) === TasksTask.UNGROUPED ? "Ungrouped" : group.toString()}`;
             IO.println(chalk.white.bold(groupString));
             IO.println("  " + chalk.white.dim("-".repeat(maxLength)));

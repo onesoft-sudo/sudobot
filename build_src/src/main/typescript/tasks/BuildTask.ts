@@ -30,7 +30,12 @@ class BuildTask extends AbstractTask {
     }
 
     @Caching(CachingMode.Incremental)
-    @Task({ name: "compileTypeScript", noPrefix: true })
+    @Task({
+        name: "compileTypeScript",
+        noPrefix: true,
+        defaultDescription: "Compiles TypeScript files",
+        defaultGroup: "Build"
+    })
     public async compileTypeScript(): Promise<void> {
         await typescript.compile();
         await this.resultIO("compileTypeScript");
@@ -38,6 +43,12 @@ class BuildTask extends AbstractTask {
 
     @Caching(CachingMode.Incremental)
     @Dependencies("dependencies", "compileTypeScript", "test")
+    @Task({
+        name: "build",
+        noPrefix: true,
+        defaultDescription: "Builds the project",
+        defaultGroup: "Build"
+    })
     public override async execute() {
         if (!this.blaze.taskManager.upToDateTasks.has("compileTypeScript")) {
             const tmpBuildDir = path.resolve(

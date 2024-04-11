@@ -17,6 +17,7 @@ export const Task = (options?: TaskOptions) => {
 
         taskNames.push({
             key,
+            noPrefix: options?.noPrefix ?? true,
             ...options
         });
 
