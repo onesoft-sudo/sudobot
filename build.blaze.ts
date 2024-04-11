@@ -101,7 +101,7 @@ dependencies(() => {
     devNodeModule("vitest", "^1.3.1");
     devNodeModule("zod-to-json-schema", "^3.22.5");
     devNodeModule("prettier", "^3.2.5");
-    devNodeModule("blazebuild", "file:./build_src");
+    devNodeModule("blazebuild", "file:./blazebuild");
 
     optionalNodeModule("openai", "^4.26.0");
 });

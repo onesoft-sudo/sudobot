@@ -43,6 +43,6 @@
         "./src.bak",
         "./.blaze",
         "./blaze",
-        "./blazebuild"
+        "./blazebuild/**/*.ts"
     ]
 }
