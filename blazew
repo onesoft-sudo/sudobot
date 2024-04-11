@@ -21,13 +21,31 @@ npm="npm"
 
 mkdir -p "$tmp_dir"
 
-startup() {
-    echo -e "\033[1;34mBlazeBuild Wrapper version $VERSION\033[0m\n"
+getprop() {
+   value=$(cat "$projectdir/blaze/blaze_wrapper.properties" | grep "$1" | cut -d'=' -f2)
+   echo $value
 }
 
 print() {
     echo -en "\033[${1}m$2\033[0m"
     echo -e "   $3"
+}
+
+blaze_srcpath=$(getprop "blaze.srcpath")
+
+if [ -z "$blaze_srcpath" ]; then
+    blaze_srcpath="build_src"
+fi
+
+blaze_srcpath="$projectdir/$blaze_srcpath"
+
+if [ ! -d "$blaze_srcpath" ]; then
+    print "1;31" "error  " "BlazeBuild source path \"$blaze_srcpath\" not found."
+    exit 1
+fi
+
+startup() {
+    echo -e "\033[1;34mBlazeBuild Wrapper version $VERSION\033[0m\n"
 }
 
 help() {
@@ -45,11 +63,6 @@ help() {
     echo "  Run \`$argv_0 tasks' to see a list of"
     echo "  available tasks."
     exit 0
-}
-
-getprop() {
-   value=$(cat "$projectdir/blaze/blaze_wrapper.properties" | grep "$1" | cut -d'=' -f2)
-   echo $value
 }
 
 source_bashrc() {
@@ -225,7 +238,7 @@ for arg in "$@"; do
     fi
 done
 
-if [ ! -d "$projectdir/build_src/node_modules" ] || [ ! -d "$projectdir/node_modules/blazebuild" ]; then
+if [ ! -d "$blaze_srcpath/node_modules" ] || [ ! -d "$projectdir/node_modules/blazebuild" ]; then
     setup=1
 fi
 
@@ -238,12 +251,12 @@ if [ "$node" == "node" ]; then
     cmd="npm"
 fi
 
-file="$projectdir/node_modules/blazebuild/build/index.js"
+file="$blaze_srcpath/build/index.js"
 
 if [ ! -z "$has_bun" ] || [ $setup_done -eq 1 ]; then
     cmd=$bun
     has_bun=1
-    file="$projectdir/node_modules/blazebuild/src/index.ts"
+    file="$blaze_srcpath/src/index.ts"
 fi
 
 blaze_cmd() {
@@ -260,7 +273,7 @@ blaze_cmd() {
 if [ ! -e "$projectdir/.blaze/build.d.ts" ]; then
     print 34 "info   " "Creating $projectdir/.blaze/build.d.ts..."
     mkdir -p "$projectdir/.blaze"
-    cp "$projectdir/build_src/templates/build.d.ts" "$projectdir/.blaze/build.d.ts"
+    cp "$blaze_srcpath/templates/build.d.ts" "$projectdir/.blaze/build.d.ts"
 
     if [ $? -ne 0 ]; then
         print "1;31" "error  " "Failed to create build.d.ts."
@@ -270,11 +283,11 @@ fi
 
 if [ $setup -eq 1 ]; then
     print 34 "info   " "Project directory: $projectdir"
-    print 34 "info   " "Setting up BlazeBuild..."
-    rm -rf "$projectdir/build_src/node_modules"
+    print 34 "info   " "Setting up BlazeBuild in: $blaze_srcpath"
+    rm -rf "$blaze_srcpath/node_modules"
 
     path=$(readlink -f "$cmd")
-    pushd "$projectdir/build_src" > /dev/null 2>&1 || exit 1
+    pushd "$blaze_srcpath" > /dev/null 2>&1 || exit 1
     print 34 "info   " "Installing dependencies for BlazeBuild..."
     print 36 "command" "$path install"
     $path install
@@ -287,11 +300,11 @@ if [ $setup -eq 1 ]; then
         rm "$projectdir/node_modules/blazebuild" || exit 1
     fi
 
-    ln -s "$(readlink -f "$projectdir/build_src")" "$projectdir/node_modules/blazebuild" || exit 1
+    ln -s "$(readlink -f "$blaze_srcpath")" "$projectdir/node_modules/blazebuild" || exit 1
 
     if [ -z "$has_bun" ]; then
         print 34 "info   " "Building BlazeBuild (for node)..."
-        pushd "$projectdir/build_src" > /dev/null 2>&1 || exit 1
+        pushd "$blaze_srcpath" > /dev/null 2>&1 || exit 1
         npx tsc
         popd > /dev/null 2>&1 || exit 1
     fi

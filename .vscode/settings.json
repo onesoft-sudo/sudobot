@@ -53,7 +53,8 @@
         "permissions": "Resolver",
         "build_src": "Tools",
         "polyfills": "Interface",
-        "arguments": "Messages"
+        "arguments": "Messages",
+        "blazebuild": "Project"
     },
     "typescript.preferences.importModuleSpecifier": "relative"
 }

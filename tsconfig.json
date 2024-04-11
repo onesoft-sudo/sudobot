@@ -36,6 +36,8 @@
         "./docs/**",
         "./src.bak/**",
         "./src.bak",
-        ".blaze/index.d.ts"
+        "./.blaze",
+        "./blaze",
+        "./blazebuild"
     ]
 }
