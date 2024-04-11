@@ -1,4 +1,5 @@
 import chalk from "chalk";
+import { TaskMetadata } from "../decorators/Task";
 import IO from "../io/IO";
 import { TaskOutput } from "../io/TaskOutput";
 import { Awaitable } from "../types/Awaitable";
@@ -71,7 +72,10 @@ export class TaskManager {
                 handler: instance,
                 options: (typeof handlerOrName === "string"
                     ? options
-                    : handlerOrOptions) as TaskRegisterOptions
+                    : handlerOrOptions) as TaskRegisterOptions,
+                metadata: Reflect.getMetadata("task:data", instance.constructor.prototype)?.find(
+                    (e: TaskMetadata) => e.name === finalName
+                )
             });
         }
     }
@@ -142,6 +146,7 @@ export class TaskManager {
 
         for (const task of tasksToRun) {
             if (this.completedTasks.has(task.name)) {
+                await handlers?.onTaskCancel?.(task);
                 continue;
             }
 
@@ -149,6 +154,7 @@ export class TaskManager {
 
             if (task.handler.isUpToDate(task.name)) {
                 this.upToDateTasks.add(task.name);
+                await handlers?.onTaskCancel?.(task);
                 continue;
             }
 
@@ -162,7 +168,7 @@ export class TaskManager {
             await handlers?.onTaskBegin?.(task);
             await doFirst?.call(task.handler);
 
-            IO.println(`${chalk.bold(`:${task.name}`)}`);
+            IO.println(`> ${chalk.white.dim("Task")} ${chalk.bold(`:${task.name}`)}`);
 
             await this.execHandler(task.handler, task.name);
 

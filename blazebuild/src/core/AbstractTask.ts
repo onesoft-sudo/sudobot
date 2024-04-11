@@ -4,6 +4,7 @@ import { TaskMetadata } from "../decorators/Task";
 import { FileResolvable } from "../io/File";
 import { TaskOutput } from "../io/TaskOutput";
 import { Awaitable } from "../types/Awaitable";
+import { Stringifiable } from "../types/Stringifiable";
 import BlazeBuild from "./BlazeBuild";
 import { TaskResolvable } from "./Task";
 
@@ -11,7 +12,7 @@ type HookName = "pre" | "post";
 type HookFunction = (this: AbstractTask<object>) => Awaitable<void>;
 type IoRecord = Record<string, FileResolvable[]>;
 
-abstract class AbstractTask<C extends object | never = never> {
+abstract class AbstractTask<C extends object | never = never> implements Stringifiable {
     public readonly name: string;
     private _inputs: IoRecord = {};
     private _outputs: IoRecord = {};
@@ -21,10 +22,17 @@ abstract class AbstractTask<C extends object | never = never> {
     public readonly hooks: Record<HookName, HookFunction[]> = { pre: [], post: [] };
     private _preconditionResult?: boolean;
     protected readonly cachePrecondition: boolean = true;
+    public readonly defaultDescription?: string;
+    public readonly defaultGroup?: string;
+    public readonly defaultHidden: boolean = false;
 
     public constructor(public readonly blaze: BlazeBuild) {
         this.name ??=
             this.constructor.name.charAt(0).toLowerCase() + this.constructor.name.slice(1);
+    }
+
+    public toString() {
+        return this.name;
     }
 
     protected addInputs(task: string, ...files: FileResolvable[]): this {
@@ -64,8 +72,8 @@ abstract class AbstractTask<C extends object | never = never> {
     ) {
         return this.addOutputs(
             task ?? this.name,
-            ...(await (options ? glob(patterns, options) : glob(patterns))).map(path =>
-                typeof path === "string" ? path : path.path
+            ...(await (options ? glob(patterns, options) : glob(patterns))).map(
+                (path: string | { path: string }) => (typeof path === "string" ? path : path.path)
             )
         );
     }
@@ -77,8 +85,8 @@ abstract class AbstractTask<C extends object | never = never> {
     ) {
         return this.addInputs(
             task ?? this.name,
-            ...(await (options ? glob(patterns, options) : glob(patterns))).map(path =>
-                typeof path === "string" ? path : path.path
+            ...(await (options ? glob(patterns, options) : glob(patterns))).map(
+                (path: string | { path: string }) => (typeof path === "string" ? path : path.path)
             )
         );
     }
@@ -201,7 +209,7 @@ abstract class AbstractTask<C extends object | never = never> {
             tasks.push(this.name);
         }
 
-        const metadata = (Reflect.getMetadata("task:names", this) as TaskMetadata[]) ?? [];
+        const metadata = (Reflect.getMetadata("task:data", this) as TaskMetadata[]) ?? [];
 
         for (const { key, name, noPrefix } of metadata) {
             if (
@@ -221,7 +229,7 @@ abstract class AbstractTask<C extends object | never = never> {
         const key = this.name === taskName ? "execute" : taskName;
         const methodName =
             key !== "execute"
-                ? Reflect.getMetadata("task:names", this).find((info: TaskMetadata) => {
+                ? Reflect.getMetadata("task:data", this).find((info: TaskMetadata) => {
                       return (
                           `${!info.noPrefix ? this.name + ":" : ""}${info.name ?? info.key}` === key
                       );

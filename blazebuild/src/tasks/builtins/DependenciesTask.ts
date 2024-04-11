@@ -7,6 +7,8 @@ import { Awaitable } from "../../types/Awaitable";
 @Caching(CachingMode.None)
 class DependenciesTask extends AbstractTask {
     public override readonly name = "dependencies";
+    public override readonly defaultDescription: string = "Resolves the project dependencies";
+    public override readonly defaultGroup: string = "Dependencies";
     protected ran = false;
 
     public override precondition(): Awaitable<boolean> {

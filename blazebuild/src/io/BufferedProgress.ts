@@ -10,6 +10,15 @@ export class BufferedProgress extends EventEmitter {
         protected readonly statusWidth: number = 0
     ) {
         super();
+        this.onResize = this.onResize.bind(this);
+    }
+
+    public onResize() {
+        this.render();
+    }
+
+    public initialize() {
+        process.stdout.on("resize", this.onResize);
     }
 
     /**
@@ -44,11 +53,13 @@ export class BufferedProgress extends EventEmitter {
         const progress = this.progress;
         const progressBar = "=".repeat(Math.floor((progressWidth * progress) / this.max));
         const progressText = `${
-            this.status ? chalk.bold(this.status.padEnd(this.statusWidth, " ")) + " | " : ""
-        }[${progressBar
-            .concat(progressBar.length < progressWidth ? ">" : "")
-            .padEnd(progressWidth)}] ${progress.toString()}/${this.max}`;
-        process.stdout.write(`${progressText}\r`);
+            this.status ? chalk.blue.bold(this.status.padEnd(this.statusWidth, " ")) + " " : ""
+        }${chalk.white.bold("[")}${chalk.white.dim(
+            progressBar.concat(progressBar.length < progressWidth ? ">" : "").padEnd(progressWidth)
+        )}${chalk.white.bold("]")} ${chalk.white.bold("[")}${chalk.white.dim(`${progress.toString()}/${this.max}`)}${chalk.white.bold("]")}`;
+        process.stdout.write(
+            `${progressText}${" ".repeat(process.stdout.columns - progressText.replace(/(\033)\[[\d;]+m/gim, "").length)}\r`
+        );
     }
 
     public getProgressWidth() {
@@ -59,6 +70,7 @@ export class BufferedProgress extends EventEmitter {
     public end() {
         this.fill();
         this.emit("end");
+        process.stdout.off("resize", this.onResize);
     }
 
     public setStatus(status?: string) {

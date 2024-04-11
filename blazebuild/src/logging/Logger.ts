@@ -20,12 +20,12 @@ class Logger {
             level === LogLevel.Error
                 ? "error"
                 : level === LogLevel.Warn
-                ? "warn"
-                : level === LogLevel.Success
-                ? "log"
-                : level === LogLevel.Debug
-                ? "debug"
-                : "info";
+                  ? "warn"
+                  : level === LogLevel.Success
+                    ? "log"
+                    : level === LogLevel.Debug
+                      ? "debug"
+                      : "info";
 
         if (IO.getProgressBuffer()) {
             IO.println(`${level} ${message}`);
@@ -73,12 +73,12 @@ class Logger {
     }
 
     public buildSuccess() {
-        console.info(`${chalk.greenBright("BUILD SUCCESSFUL")} in ${this.timeElapsed()}s`);
+        console.info(`\n${chalk.greenBright("BUILD SUCCESSFUL")} in ${this.timeElapsed()}s`);
         this.showStats();
     }
 
     public buildFailed() {
-        console.error(`${chalk.redBright("BUILD FAILED")} in ${this.timeElapsed()}s`);
+        console.error(`\n${chalk.redBright("BUILD FAILED")} in ${this.timeElapsed()}s`);
         this.showStats();
     }
 }

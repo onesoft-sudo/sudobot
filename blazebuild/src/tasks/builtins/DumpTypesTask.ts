@@ -9,6 +9,9 @@ import { Awaitable } from "../../types/Awaitable";
 @Caching(CachingMode.None)
 class DumpTypesTask extends AbstractTask {
     public override readonly name = "dumpTypes";
+    public override readonly defaultDescription: string =
+        "Dumps the build types for the build scripts";
+    public override readonly defaultGroup: string = "Core";
 
     public override precondition(): Awaitable<boolean> {
         return !existsSync(BlazeBuild.buildInfoDir("build.d.ts"));

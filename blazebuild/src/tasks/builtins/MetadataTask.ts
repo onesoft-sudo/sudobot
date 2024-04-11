@@ -5,6 +5,8 @@ import { Caching, CachingMode } from "../../decorators/Caching";
 @Caching(CachingMode.None)
 class MetadataTask extends AbstractTask {
     public override readonly name = "metadata";
+    public override readonly defaultDescription: string = "Builds metadata cache for the project";
+    public override readonly defaultGroup: string = "Core";
 
     public override async precondition(): Promise<boolean> {
         const lastUpdate = this.blaze.cacheManager.get<number | undefined>("metadata:lastupdate");

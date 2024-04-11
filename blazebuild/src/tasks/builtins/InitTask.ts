@@ -1,3 +1,5 @@
+import chalk from "chalk";
+import { setTimeout } from "timers/promises";
 import AbstractTask from "../../core/AbstractTask";
 import { Caching, CachingMode } from "../../decorators/Caching";
 import { BufferedProgress } from "../../io/BufferedProgress";
@@ -6,8 +8,11 @@ import IO from "../../io/IO";
 @Caching(CachingMode.None)
 class InitTask extends AbstractTask {
     public override readonly name = "init";
+    public override readonly defaultDescription: string = "Initializes the build system";
+    public override readonly defaultGroup: string = "Core";
 
     public override async execute(): Promise<void> {
+        const IDLE_STATUS = chalk.white.dim("<idle>");
         const argv = process.argv.slice(1).filter(arg => !arg.startsWith("-"));
 
         if (process.argv[0] === process.execPath) {
@@ -34,23 +39,27 @@ class InitTask extends AbstractTask {
                             tasks.size + 1,
                             longestNameLength + 2
                         );
+
+                        progress.setStatus(IDLE_STATUS);
+                        progress.initialize();
                         IO.setProgressBuffer(progress);
                     }
                 },
-                onExecEnd() {
+                async onExecEnd() {
+                    await setTimeout(350);
                     IO.getProgressBuffer()?.end();
                 },
                 onTaskEnd() {
                     IO.getProgressBuffer()?.render();
                     IO.getProgressBuffer()?.incrementProgress(1);
-                    IO.getProgressBuffer()?.setStatus("<idle>");
+                    IO.getProgressBuffer()?.setStatus(IDLE_STATUS);
                 },
-                onTaskBegin(task) {
+                async onTaskBegin(task) {
                     IO.getProgressBuffer()?.render();
-                    IO.getProgressBuffer()?.setStatus(`:${task.name}`);
+                    IO.getProgressBuffer()?.setStatus(`Task :${task.name}`);
                 },
-                onTaskCancel() {
-                    IO.getProgressBuffer()?.setMax(IO.getProgressBuffer()!.getMax() - 1);
+                async onTaskCancel() {
+                    IO.getProgressBuffer()?.incrementProgress(1);
                     IO.getProgressBuffer()?.render();
                 }
             }

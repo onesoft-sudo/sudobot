@@ -1,3 +1,4 @@
+import { TaskMetadata } from "../decorators/Task";
 import { Awaitable } from "../types/Awaitable";
 import { AbstractTaskClass } from "./AbstractTask";
 
@@ -13,4 +14,5 @@ export interface Task {
     name: string;
     handler: AbstractTaskClass<object>;
     options?: TaskRegisterOptions;
+    metadata?: TaskMetadata;
 }

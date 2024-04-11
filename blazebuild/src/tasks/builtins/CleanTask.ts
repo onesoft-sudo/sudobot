@@ -9,8 +9,14 @@ import { Task } from "../../decorators/Task";
 @Caching(CachingMode.None)
 class CleanTask extends AbstractTask {
     public override readonly name = "clean";
+    public override readonly defaultDescription: string = "Cleans the build directory";
+    public override readonly defaultGroup: string = "Build";
 
-    @Task({ name: "cleanCaches", noPrefix: true })
+    @Task({
+        name: "cleanCaches",
+        noPrefix: true,
+        defaultDescription: "Cleans the cache files"
+    })
     public async caches(): Promise<void> {
         const cacheFile = BlazeBuild.buildInfoDir("cache.json");
 
