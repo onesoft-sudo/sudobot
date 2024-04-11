@@ -55,10 +55,10 @@ export const DomainFilterRule = z
     })
     .describe("[DEPRECATED] Use RegexFilterRule instead.");
 
-export const BlockedMimeTypeRule = z.object({
+export const MimeTypeFilterRule = z.object({
     ...Common,
     ...hasStringArrayData,
-    type: z.literal("blocked_mime_type")
+    type: z.literal("mime_type_filter")
 });
 
 export const BlockedFileExtensionRule = z.object({
@@ -160,7 +160,7 @@ export const WordFilter = z.object({
 
 export const MessageRuleSchema = z.union([
     DomainFilterRule,
-    BlockedMimeTypeRule,
+    MimeTypeFilterRule,
     BlockedFileExtensionRule,
     AntiInviteRule,
     RegexFilterRule,

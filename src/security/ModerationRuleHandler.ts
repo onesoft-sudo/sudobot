@@ -82,7 +82,41 @@ class ModerationRuleHandler extends HasApplication implements ModerationRuleHand
         };
     }
 
-    public blocked_mime_type(_context: MessageRuleContext) {
+    public mime_type_filter(context: MessageRuleContext<"message", { type: "mime_type_filter" }>) {
+        const { message, rule } = context;
+        const invert = rule.mode === "invert";
+        const attachments = message.attachments.filter(a => a.contentType);
+
+        if (attachments.size) {
+            const attachment = attachments.find(a => rule.data.includes(a.contentType!));
+
+            if (!invert && attachment) {
+                return {
+                    matched: true,
+                    reason: "Message attachments were found to have a blocked MIME type.",
+                    fields: [
+                        {
+                            name: "MIME Type",
+                            value: `${spoiler(attachment.contentType!)}`
+                        }
+                    ]
+                };
+            }
+
+            if (invert && !attachment) {
+                return {
+                    matched: true,
+                    reason: "Message attachments were not found to have a required MIME type.",
+                    fields: [
+                        {
+                            name: "MIME Type",
+                            value: `${spoiler(rule.data[0])}`
+                        }
+                    ]
+                };
+            }
+        }
+
         return {
             matched: false
         };
