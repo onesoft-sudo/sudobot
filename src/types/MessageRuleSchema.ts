@@ -61,10 +61,10 @@ export const MimeTypeFilterRule = z.object({
     type: z.literal("mime_type_filter")
 });
 
-export const BlockedFileExtensionRule = z.object({
+export const FileExtensionFilterRule = z.object({
     ...Common,
     ...hasStringArrayData,
-    type: z.literal("blocked_file_extension")
+    type: z.literal("file_extension_filter")
 });
 
 export const AntiInviteRule = z.object({
@@ -161,7 +161,7 @@ export const WordFilter = z.object({
 export const MessageRuleSchema = z.union([
     DomainFilterRule,
     MimeTypeFilterRule,
-    BlockedFileExtensionRule,
+    FileExtensionFilterRule,
     AntiInviteRule,
     RegexFilterRule,
     BlockRepeatedTextRule,

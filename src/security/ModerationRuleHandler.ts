@@ -6,6 +6,9 @@ import ModerationRuleHandlerContract, {
 import { HasApplication } from "../framework/types/HasApplication";
 
 // FIXME: This class is not complete and is only a placeholder for the actual implementation.
+
+type MessageContext<T> = MessageRuleContext<"message", { type: T }>;
+
 class ModerationRuleHandler extends HasApplication implements ModerationRuleHandlerContract {
     public domain_filter(context: MessageRuleContext<"message", { type: "domain_filter" }>) {
         const { message, rule } = context;
@@ -122,7 +125,42 @@ class ModerationRuleHandler extends HasApplication implements ModerationRuleHand
         };
     }
 
-    public blocked_file_extension(_context: MessageRuleContext) {
+    public file_extension_filter(context: MessageContext<"file_extension_filter">) {
+        const { message, rule } = context;
+        const invert = rule.mode === "invert";
+        const { attachments } = message;
+
+        if (attachments.size) {
+            for (const attachment of attachments.values()) {
+                const ext = attachment.name.split(".").pop();
+                const includes = !ext ? false : rule.data.includes(ext);
+
+                if (includes && !invert) {
+                    return {
+                        matched: true,
+                        reason: "Message attachments were found to have a blocked file extension.",
+                        fields: [
+                            {
+                                name: "Extension",
+                                value: `${ext ? spoiler(ext) : "Unavailable"}`
+                            }
+                        ]
+                    };
+                } else if (invert && !includes) {
+                    return {
+                        matched: true,
+                        reason: "Message attachments were not found to have a required file extension.",
+                        fields: [
+                            {
+                                name: "Extension",
+                                value: `${ext ? spoiler(ext) : "Unavailable"}`
+                            }
+                        ]
+                    };
+                }
+            }
+        }
+
         return {
             matched: false
         };
