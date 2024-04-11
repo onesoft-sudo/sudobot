@@ -195,9 +195,11 @@ setup_bun() {
 
         if [ "$bun_version_installed" != "$bun_version" ]; then
             setup_bun=1
+        else
+            bun="$(command -v bun)"
         fi
     fi
-
+        
     if [ $setup_bun -eq 1 ]; then
         print 34 "info   " "Installing Bun ($bun_version)..."
         args=()
@@ -212,6 +214,8 @@ setup_bun() {
         setup_done=1
 
         print 34 "info   " "Bun version: $($bun -v)"
+    elif [ -d "$bun_dir" ]; then 
+        bun=$(readlink -f "$bun_dir/bin/bun")
     else 
         bun=$(command -v bun)
     fi
@@ -253,9 +257,9 @@ if [ "$node" == "node" ]; then
     cmd="npm"
 fi
 
+echo $bun
 file="$blaze_srcpath/build/index.js"
-
-if [ ! -z "$has_bun" ] || [ $setup_done -eq 1 ]; then
+if [ ! -z "$has_bun" ] || [ $setup_done -eq 1 ] || [ -x "$bun" ]; then
     cmd=$bun
     has_bun=1
     file="$blaze_srcpath/src/index.ts"
