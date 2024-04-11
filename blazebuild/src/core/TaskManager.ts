@@ -17,7 +17,7 @@ export class TaskManager {
 
     public constructor(private readonly cli: BlazeBuild) {}
 
-    public register<T extends typeof AbstractTask>(handler: T, options?: TaskRegisterOptions): void;
+    public register<T extends typeof AbstractTask>(task: T, options?: TaskRegisterOptions): void;
     public register<T extends typeof AbstractTask>(
         name: string,
         handler?: TaskHandler<T>,
