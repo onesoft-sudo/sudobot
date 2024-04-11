@@ -43,6 +43,8 @@
         "./src.bak",
         "./.blaze",
         "./blaze",
-        "./blazebuild/**/*.ts"
+        "./blazebuild",
+        "./blazebuild/**",
+        "./node_modules"
     ]
 }

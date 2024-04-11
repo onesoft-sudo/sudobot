@@ -267,9 +267,9 @@ blaze_cmd() {
     if [ -z "$has_bun" ]; then
         print "1;31" "error  " "Bun not found. Please install Bun to use BlazeBuild."
         exit 1
-        export PATH="$final_path":$PATH:"$final_path" && bash -c "exec -a \"$argv_0\" $node $wrapper $file -- $*"
+        export PATH="$final_path":$PATH:"$final_path" && bash -c "exec -a \"$argv_0\" $node $wrapper $file --- $*"
     else
-        export PATH="$final_path":$PATH:"$final_path" && bash -c "exec -a \"$argv_0\" $cmd $wrapper $file -- $*"
+        export PATH="$final_path":$PATH:"$final_path" && bash -c "exec -a \"$argv_0\" $cmd $wrapper $file --- $*"
     fi
 }
 

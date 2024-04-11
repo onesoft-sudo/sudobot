@@ -18,7 +18,7 @@ function getVersion() {
 }
 
 function usage() {
-    console.log("Usage: bun %s [file] -- [args...]", process.argv0);
+    console.log("Usage: %s [file] --- [args...]", process.argv0);
     process.exit(1);
 }
 
@@ -31,10 +31,7 @@ function startup() {
 function help() {
     startup();
 
-    console.log(
-        `${colors.bold}Usage:${colors.reset}\n  bun %s [file] -- [args...]\n`,
-        process.argv0
-    );
+    console.log(`${colors.bold}Usage:${colors.reset}\n  %s [file] --- [args...]\n`, process.argv0);
 
     console.log(`${colors.bold}Options:${colors.reset}`);
     console.log("  --help, -h       Show this help message and exit.");
@@ -100,7 +97,7 @@ function getBunPath() {
  * @param {...string} args
  */
 function execute(file, ...args) {
-    const { status } = spawnSync(getBunPath(), [file, args.join(" ")], {
+    const { status } = spawnSync(getBunPath(), [file, ...args], {
         stdio: process.env.BLAZE_QUIET === "1" ? "ignore" : "inherit"
     });
 
@@ -120,7 +117,7 @@ function main() {
         usage();
     }
 
-    const index = process.argv.indexOf("--");
+    const index = process.argv.indexOf("---");
 
     if (index === -1) {
         usage();
