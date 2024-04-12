@@ -14,7 +14,7 @@ export default class URLFishService extends Service {
         "https://raw.githubusercontent.com/mitchellkrogza/Phishing.Database/master/phishing-domains-ACTIVE.txt";
     private _list: string[] = [];
     private readonly patterns = [
-        /\[steamcommunity.com\/gift\/([^\/]+)\]\(.+?\)/gim
+        /\[steamcommunity\.com\/gift\/([^\/]+)\]\(.+?\)/gim
     ];
 
     async boot() {
