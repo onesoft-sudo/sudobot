@@ -74,7 +74,7 @@ export default class URLFishService extends Service {
         for (const pattern of this.patterns) {
             if (pattern.test(message.content)) {
                 await this.takeAction(message, config);
-                await this.logMessage(message, config, [pattern], config.action);
+                await this.logMessage(message, config, [pattern.toString()], config.action);
                 return;
             }
         }
