@@ -71,10 +71,10 @@ export default class URLFishService extends Service {
             return;
         }
 
-        for (const pattern in this.patterns) {
+        for (const pattern of this.patterns) {
             if (pattern.test(message.content)) {
                 await this.takeAction(message, config);
-                await this.logMessage(message, config, links, config.action);
+                await this.logMessage(message, config, [pattern], config.action);
                 return;
             }
         }
