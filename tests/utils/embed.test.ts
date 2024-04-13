@@ -1,3 +1,4 @@
+import { generateEmbed, guildInfo, userInfo } from "@/utils/embed";
 import { faker } from "@faker-js/faker";
 import {
     ChatInputCommandInteraction,
@@ -7,7 +8,6 @@ import {
     User
 } from "discord.js";
 import { beforeEach, describe, expect, it } from "vitest";
-import { generateEmbed, guildInfo, userInfo } from "../../src/utils/embed";
 import { createClient } from "../mocks/client.mock";
 import { createGuild, createInvite } from "../mocks/guild.mock";
 import { randomSnowflake } from "../mocks/snowflakes";

@@ -1,8 +1,8 @@
 import "reflect-metadata";
 
+import Client from "@/core/Client";
 import { ClientUser } from "discord.js";
 import { vi } from "vitest";
-import Client from "../../src/core/Client";
 import { randomSnowflake } from "./snowflakes";
 
 vi.mock("@prisma/client", () => {

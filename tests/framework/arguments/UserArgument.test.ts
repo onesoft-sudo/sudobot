@@ -1,15 +1,15 @@
+import { Casted } from "@framework/arguments/Argument";
+import UserArgument from "@framework/arguments/UserArgument";
+import BaseClient from "@framework/client/BaseClient";
+import * as entityUtils from "@framework/utils/entities";
 import { Snowflake, User } from "discord.js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { Casted } from "../../../src/framework/arguments/Argument";
-import UserArgument from "../../../src/framework/arguments/UserArgument";
-import BaseClient from "../../../src/framework/client/BaseClient";
-import * as fetchUtils from "../../../src/utils/fetch";
 import { createApplication } from "../../mocks/application.mock";
 import { randomSnowflake } from "../../mocks/snowflakes";
 import { initialize } from "./ArgumentTestUtils";
 
-const safeUserFetch = vi
-    .spyOn(fetchUtils, "safeUserFetch")
+const fetchUser = vi
+    .spyOn(entityUtils, "fetchUser")
     .mockImplementation(async (client: BaseClient<boolean>, userId: Snowflake) => {
         if (userId === "11111111111111111") {
             return null;
@@ -34,7 +34,7 @@ describe("UserArgument", () => {
     });
 
     afterEach(() => {
-        safeUserFetch.mockClear();
+        fetchUser.mockClear();
     });
 
     it("should parse a user argument with mentions", async () => {
@@ -59,8 +59,8 @@ describe("UserArgument", () => {
         expect(result.value?.getRawValue()).toBe(`<@${userId}>`);
         expect(result.value?.getValue().id).toBe(userId);
         expect(result.error).toBeUndefined();
-        expect(safeUserFetch).toBeCalledWith(client, userId);
-        expect(safeUserFetch).toBeCalledTimes(1);
+        expect(fetchUser).toBeCalledWith(client, userId);
+        expect(fetchUser).toBeCalledTimes(1);
     });
 
     it("should parse a user argument with snowflake IDs", async () => {
@@ -85,7 +85,7 @@ describe("UserArgument", () => {
         expect(result.value?.getRawValue()).toBe(`${userId}`);
         expect(result.value?.getValue().id).toBe(userId);
         expect(result.error).toBeUndefined();
-        expect(safeUserFetch).toBeCalledWith(client, userId);
-        expect(safeUserFetch).toBeCalledTimes(1);
+        expect(fetchUser).toBeCalledWith(client, userId);
+        expect(fetchUser).toBeCalledTimes(1);
     });
 });

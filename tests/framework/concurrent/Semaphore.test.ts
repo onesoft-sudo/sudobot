@@ -1,6 +1,6 @@
+import Semaphore from "@framework/concurrent/Semaphore";
 import { setTimeout } from "timers/promises";
 import { describe, expect, it } from "vitest";
-import Semaphore from "../../../src/framework/concurrent/Semaphore";
 
 describe("Semaphore", () => {
     describe("basic usage", () => {

@@ -1,5 +1,5 @@
+import RestStringArgument from "@framework/arguments/RestStringArgument";
 import { beforeEach, describe, expect, it } from "vitest";
-import RestStringArgument from "../../../src/framework/arguments/RestStringArgument";
 import { createApplication } from "../../mocks/application.mock";
 import { initialize } from "./ArgumentTestUtils";
 

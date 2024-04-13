@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
+import StringArgument from "@framework/arguments/StringArgument";
 import { beforeEach, describe, expect, it } from "vitest";
-import StringArgument from "../../../src/framework/arguments/StringArgument";
 import { createApplication } from "../../mocks/application.mock";
 import { initialize } from "./ArgumentTestUtils";
 

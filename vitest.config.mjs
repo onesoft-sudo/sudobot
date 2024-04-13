@@ -14,8 +14,9 @@ export default defineConfig({
     plugins: [],
     resolve: {
         alias: {
-            "@": path.resolve(import.meta.dirname, "./src"),
-            "@framework": path.resolve(import.meta.dirname, "./src/framework")
+            "@": path.resolve(import.meta.dirname, "./src/main/typescript"),
+            "@framework": path.resolve(import.meta.dirname, "./src/framework/typescript"),
+            "@main": path.resolve(import.meta.dirname, "./src/main/typescript"),
         }
     }
 });

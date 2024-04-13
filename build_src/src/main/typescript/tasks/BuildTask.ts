@@ -55,6 +55,7 @@ class BuildTask extends AbstractTask {
                 `${this.blaze.projectManager.metadata.buildDir}/../_build.tmp`
             );
             const targetDir = `${this.blaze.projectManager.metadata.buildDir}/src`;
+            const tscOutput = `${this.blaze.projectManager.metadata.buildDir}/out`;
 
             if (existsSync(tmpBuildDir)) {
                 await fs.rm(tmpBuildDir, { recursive: true, force: true });
@@ -65,7 +66,13 @@ class BuildTask extends AbstractTask {
                 recursive: true,
                 force: true
             });
-            await fs.rename(tmpBuildDir, this.blaze.projectManager.metadata.buildDir);
+
+            await fs.mkdir(tscOutput, {
+                recursive: true
+            });
+
+            await fs.rename(tmpBuildDir, tscOutput);
+            await this.blaze.taskManager.execute("processCoverageReports");
         }
 
         await this.resultIO();

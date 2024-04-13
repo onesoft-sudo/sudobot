@@ -31,10 +31,11 @@
         "email": "sudobot@onesoftnet.eu.org"
     },
     "scripts": {
-        "start": "node build/index.js",
+        "start": "node build/main/typescript/index.js",
         "start:bun": "bun --tsconfig-override=tsconfig.bun.json src/bun.ts",
         "prepare": "husky",
-        "dev": "bun run src/bun.ts",
+        "dev": "bun run src/main/typescript/bun.ts",
+        "start:blazew": "node build/out/main/typescript/bun.ts",
         "lint": "eslint src/ --ext .ts",
         "lint:fix": "eslint src/ --ext .ts --fix",
         "build": "tsc && mv build/src _build && rm -fr build && mv _build build",
@@ -45,7 +46,9 @@
         "test": "vitest"
     },
     "_moduleAliases": {
-        "@sudobot": "build"
+        "@sudobot": "build",
+        "@framework": "build/framework/typescript",
+        "@main": "build/main/typescript"
     },
     "trustedDependencies": [
         "core-js"

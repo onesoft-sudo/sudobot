@@ -1,5 +1,5 @@
+import * as cache from "@framework/cache/GlobalStore";
 import { afterEach, describe, expect, it } from "vitest";
-import * as cache from "../../../src/framework/cache/GlobalStore";
 import { createApplication } from "../../mocks/application.mock";
 
 describe("GlobalStore", () => {

@@ -17,8 +17,8 @@
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "paths": {
-            "@/*": ["../src/*"],
-            "@framework/*": ["../src/framework/*"]
+            "@/*": ["../src/main/typescript/*"],
+            "@framework/*": ["../src/framework/typescript/*"]
         }
     },
     "include": ["./**/*.ts", "../src/**/*.ts"]

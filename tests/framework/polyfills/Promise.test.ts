@@ -1,8 +1,5 @@
+import { PromiseWithResolversReturn, promiseWithResolvers } from "@framework/polyfills/Promise";
 import { describe, expect, it } from "vitest";
-import {
-    PromiseWithResolversReturn,
-    promiseWithResolvers
-} from "../../../src/framework/polyfills/Promise";
 
 declare global {
     interface PromiseConstructor {

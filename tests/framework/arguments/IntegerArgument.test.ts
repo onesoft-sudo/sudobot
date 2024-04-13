@@ -1,5 +1,5 @@
+import IntegerArgument from "@framework/arguments/IntegerArgument";
 import { describe, expect, it } from "vitest";
-import IntegerArgument from "../../../src/framework/arguments/IntegerArgument";
 import { createApplication } from "../../mocks/application.mock";
 import { initialize } from "./ArgumentTestUtils";
 

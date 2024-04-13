@@ -4,6 +4,7 @@ import { AbstractTask } from "blazebuild/src/core/AbstractTask";
 import { Caching, CachingMode } from "blazebuild/src/decorators/Caching";
 import { Dependencies } from "blazebuild/src/decorators/Dependencies";
 import { Task } from "blazebuild/src/decorators/Task";
+import { rename } from "fs/promises";
 
 class TestTask extends AbstractTask {
     public override readonly name = "test";
@@ -22,6 +23,22 @@ class TestTask extends AbstractTask {
 
         await this.addInputsByGlob(`${project.testsDir}/**/*.ts`);
         await x("vitest --run");
+    }
+
+    @Caching(CachingMode.Incremental)
+    @Dependencies("test")
+    @Task({
+        name: "processCoverageReports",
+        noPrefix: true,
+        defaultDescription: "Runs after the test task",
+        defaultGroup: "Testing"
+    })
+    public async afterTest(): Promise<void> {
+        const input = `${project.testsDir}/../coverage`;
+        const output = `${project.buildDir}/coverage`;
+        await rename(input, output);
+        this.addInputs("processCoverageReports", input);
+        this.addOutputs("processCoverageReports", output);
     }
 }
 

@@ -56,5 +56,5 @@
         "arguments": "Messages",
         "blazebuild": "Project"
     },
-    "typescript.preferences.importModuleSpecifier": "relative"
+    "typescript.preferences.importModuleSpecifier": "non-relative"
 }

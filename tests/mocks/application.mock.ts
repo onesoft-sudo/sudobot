@@ -1,6 +1,6 @@
+import Application from "@framework/app/Application";
+import { Logger } from "@framework/log/Logger";
 import path from "path";
-import Application from "../../src/framework/app/Application";
-import { Logger } from "../../src/framework/log/Logger";
 import { createClient } from "./client.mock";
 
 export const createApplication = () => {

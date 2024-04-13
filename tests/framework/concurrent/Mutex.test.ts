@@ -1,6 +1,6 @@
+import Mutex from "@framework/concurrent/Mutex";
 import { setTimeout } from "timers/promises";
 import { describe, expect, it } from "vitest";
-import Mutex from "../../../src/framework/concurrent/Mutex";
 
 describe("Mutex", () => {
     describe("basic usage", () => {

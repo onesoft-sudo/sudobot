@@ -1,5 +1,5 @@
+import LegacyContext from "@framework/commands/LegacyContext";
 import { Message } from "discord.js";
-import LegacyContext from "../../../src/framework/commands/LegacyContext";
 import { createMessage } from "../../mocks/message.mock";
 
 export const initialize = ({

@@ -1,8 +1,8 @@
 import "reflect-metadata";
 
-import Container from "@/framework/container/Container";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import Container from "@framework/container/Container";
 import crypto from "crypto";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 describe("container bindings", () => {
     let container: Container;
@@ -91,7 +91,10 @@ describe("container bindings with dependencies", () => {
         class MyClass2 {}
 
         class MyDependentClass {
-            public constructor(public myClass: MyClass, public myClass2: MyClass2) {}
+            public constructor(
+                public myClass: MyClass,
+                public myClass2: MyClass2
+            ) {}
         }
 
         Reflect.defineMetadata("design:paramtypes", [MyClass, MyClass2], MyDependentClass);
@@ -122,13 +125,19 @@ describe("container bindings with dependencies", () => {
         Reflect.defineMetadata("design:paramtypes", [Level0Dep0], Level1Dep0);
 
         class Level1Dep1 {
-            public constructor(public level0Dep0: Level0Dep0, public level0Dep1: Level0Dep1) {}
+            public constructor(
+                public level0Dep0: Level0Dep0,
+                public level0Dep1: Level0Dep1
+            ) {}
         }
 
         Reflect.defineMetadata("design:paramtypes", [Level0Dep0, Level0Dep1], Level1Dep1);
 
         class Level2Dep0 {
-            public constructor(public level1Dep0: Level1Dep0, public level0Dep1: Level0Dep1) {}
+            public constructor(
+                public level1Dep0: Level1Dep0,
+                public level0Dep1: Level0Dep1
+            ) {}
         }
 
         Reflect.defineMetadata("design:paramtypes", [Level1Dep0, Level0Dep1], Level2Dep0);
@@ -148,7 +157,10 @@ describe("container bindings with dependencies", () => {
         );
 
         class Application {
-            public constructor(public level2Dep1: Level2Dep1, public level2Dep0: Level2Dep0) {}
+            public constructor(
+                public level2Dep1: Level2Dep1,
+                public level2Dep0: Level2Dep0
+            ) {}
         }
 
         Reflect.defineMetadata("design:paramtypes", [Level2Dep1, Level2Dep0], Application);

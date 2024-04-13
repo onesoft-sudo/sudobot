@@ -1,5 +1,5 @@
-import { emoji } from "@/framework/utils/emoji";
 import type BaseClient from "@framework/client/BaseClient";
+import { emoji } from "@framework/utils/emoji";
 import { Collection, GuildEmoji } from "discord.js";
 import { beforeEach, describe, expect, it } from "vitest";
 import { createClient } from "../mocks/client.mock";
