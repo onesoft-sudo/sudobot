@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import { PropsWithChildren } from "react";
 import "../styles/globals.css";
 import Providers from "./providers";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
     return (
         <html lang="en" className="dark">
             <body className={inter.className}>
+                <Script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7605999007195732" crossOrigin="anonymous" />
                 <Providers>
                     <Navbar />
                     <Progress />
