@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import FeatureFlagManager from "@framework/cluster/FeatureFlagManager";
 import { DiscordKernelClassInterface } from "@framework/core/DiscordKernelClassInterface";
 import { KernelInterface } from "@framework/core/KernelInterface";
 import { isDevelopmentMode } from "@framework/utils/utils";
@@ -43,9 +44,14 @@ class Application {
     });
 
     public readonly classLoader = ClassLoader.getInstance(this);
+    public readonly featureFlagManager = new FeatureFlagManager(this);
+
     private _serviceManager?: ServiceManager;
 
-    public constructor(public readonly rootPath: string, public readonly projectRootPath: string) {
+    public constructor(
+        public readonly rootPath: string,
+        public readonly projectRootPath: string
+    ) {
         this.container = Container.getInstance();
     }
 
@@ -114,6 +120,7 @@ class Application {
         permissions = true,
         queues = true
     }: { commands?: boolean; events?: boolean; permissions?: boolean; queues?: boolean } = {}) {
+        await this.featureFlagManager.boot();
         await this.serviceManager.loadServices();
 
         if (permissions) {
