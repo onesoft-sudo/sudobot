@@ -44,6 +44,7 @@ class ClassLoader {
         Record<keyof ClientEvents, AnyFunction[]>
     >();
     private static instance: ClassLoader;
+    private readonly modules: string[] = [];
 
     private constructor(protected readonly application: Application) {}
 
@@ -86,15 +87,46 @@ class ClassLoader {
         return this.instance;
     }
 
-    public getResource(name: string) {
-        const filePath = path.resolve(this.application.rootPath, "../../resources/", name);
-        const file = File.of(filePath);
-
-        if (!file.exists) {
-            return null;
+    private async loadModules() {
+        if (this.modules.length > 0) {
+            return this.modules;
         }
 
-        return file;
+        const srcDir = path.resolve(this.application.projectRootPath, "src");
+        const modules = await readdir(srcDir);
+
+        for (const module of modules) {
+            if (module.startsWith(".")) {
+                continue;
+            }
+
+            const stat = await lstat(path.resolve(srcDir, module));
+
+            if (!stat.isDirectory()) {
+                continue;
+            }
+
+            this.modules.push(module);
+        }
+
+        return modules;
+    }
+
+    public async getResource(name: string, module?: string) {
+        const modules = module ? [module] : await this.loadModules();
+
+        for (const moduleName of modules) {
+            const filePath = path.resolve(moduleName, "/resources/", name);
+            const file = File.of(filePath);
+
+            if (!file.exists) {
+                continue;
+            }
+
+            return file;
+        }
+
+        return null;
     }
 
     /**

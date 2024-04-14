@@ -26,7 +26,7 @@ import DiscordKernel from "./core/DiscordKernel";
 
 async function main() {
     Application.setupGlobals();
-    const application = new Application(path.resolve(__dirname));
+    const application = new Application(path.resolve(__dirname), path.resolve(__dirname, "../../.."));
     await application.run(new DiscordKernel());
 }
 

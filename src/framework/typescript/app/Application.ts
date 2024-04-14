@@ -45,7 +45,7 @@ class Application {
     public readonly classLoader = ClassLoader.getInstance(this);
     private _serviceManager?: ServiceManager;
 
-    public constructor(public readonly rootPath: string) {
+    public constructor(public readonly rootPath: string, public readonly projectRootPath: string) {
         this.container = Container.getInstance();
     }
 
