@@ -353,7 +353,8 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      */
     public async runPreconditions(context: Context): Promise<PreconditionExecutionResult> {
         const state: CommandExecutionState<false> = {
-            memberPermissions: undefined
+            memberPermissions: undefined,
+            isSystemAdmin: undefined
         };
 
         if (!(await this.checkPreconditions(context, state))) {
@@ -376,21 +377,28 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      * @param subcommand
      */
     public async run(context: Context, subcommand = false) {
-        const ratelimiter = (
-            this.application.getServiceByName("commandManager") as CommandManagerServiceInterface
-        ).getRateLimiter();
-
-        if (await ratelimiter.isRateLimitedWithHit(this.name, context.guildId, context.userId)) {
-            await context.error("You're being rate limited. Please try again later.");
-            return;
-        }
-
         const state: CommandExecutionState<false> = {
-            memberPermissions: undefined
+            memberPermissions: undefined,
+            isSystemAdmin: undefined
         };
 
         if (!(await this.checkPreconditions(context, state))) {
             return;
+        }
+
+        if (!state.isSystemAdmin) {
+            const ratelimiter = (
+                this.application.getServiceByName(
+                    "commandManager"
+                ) as CommandManagerServiceInterface
+            ).getRateLimiter();
+
+            if (
+                await ratelimiter.isRateLimitedWithHit(this.name, context.guildId, context.userId)
+            ) {
+                await context.error("You're being rate limited. Please try again later.");
+                return;
+            }
         }
 
         if (this.defer) {
@@ -463,6 +471,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
             state.memberPermissions
         );
 
+        state.isSystemAdmin = isSystemAdmin;
         this.application.logger.debug("Member permissions: ", state.memberPermissions);
 
         if (isSystemAdmin) {
@@ -668,6 +677,7 @@ export type Arguments = Record<string | number, unknown>;
 export type ArgumentPayload = Array<Argument<unknown> | null> | [Arguments];
 export type CommandExecutionState<L extends boolean = false> = {
     memberPermissions: MemberPermissionData | (L extends false ? undefined : never);
+    isSystemAdmin: boolean | (L extends false ? undefined : never);
 };
 export type Buildable = Pick<SlashCommandBuilder | ContextMenuCommandBuilder, "name" | "toJSON">;
 export type PreconditionExecutionResult = {
