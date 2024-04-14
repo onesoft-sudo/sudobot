@@ -1,3 +1,21 @@
+## [8.32.2](https://github.com/onesoft-sudo/sudobot/compare/v8.32.1...v8.32.2) (2024-04-14)
+
+
+### Bug Fixes
+
+* googleapis causing crash on bun ([7b3a80a](https://github.com/onesoft-sudo/sudobot/commit/7b3a80a21c2f4a47477cd913a1d70eb4c3945b77))
+
+
+
+## [8.32.1](https://github.com/onesoft-sudo/sudobot/compare/v8.31.1...v8.32.1) (2024-04-14)
+
+
+### Bug Fixes
+
+* googleapis crash when ran using bun ([a023f01](https://github.com/onesoft-sudo/sudobot/commit/a023f015e491f56d70a3bbcc21539e4953eafde1))
+
+
+
 ## [8.31.1](https://github.com/onesoft-sudo/sudobot/compare/v8.31.0...v8.31.1) (2024-04-07)
 
 
@@ -7,7 +25,7 @@
 
 
 
-# [8.31.0](https://github.com/onesoft-sudo/sudobot/compare/v8.29.3...v8.31.0) (2024-04-04)
+# [8.31.0](https://github.com/onesoft-sudo/sudobot/compare/v8.30.0...v8.31.0) (2024-04-04)
 
 
 ### Bug Fixes
@@ -21,35 +39,16 @@
 ### Features
 
 * bump release minor version ([f62bfbf](https://github.com/onesoft-sudo/sudobot/commit/f62bfbf721a73c7704e6570bf707b0d4b1a25543))
-* **commands:ai:** support custom model names ([68d2b42](https://github.com/onesoft-sudo/sudobot/commit/68d2b4248a053e47d4cdf3e1dc50cf05bb0ff0e4))
 * survey forms ([f42c46f](https://github.com/onesoft-sudo/sudobot/commit/f42c46f212d86fa1019382945d46d114205a1b10))
 
 
 
-## [8.29.3](https://github.com/onesoft-sudo/sudobot/compare/v8.29.2...v8.29.3) (2024-03-13)
+# [8.30.0](https://github.com/onesoft-sudo/sudobot/compare/v8.29.3...v8.30.0) (2024-03-13)
 
 
-### Bug Fixes
+### Features
 
-* ai command ([025f94a](https://github.com/onesoft-sudo/sudobot/commit/025f94a1474add7884ed2e7f5ff9089e0f6f41ed))
-
-
-
-## [8.29.2](https://github.com/onesoft-sudo/sudobot/compare/v8.29.1...v8.29.2) (2024-03-13)
-
-
-### Bug Fixes
-
-* ai command ([523af9f](https://github.com/onesoft-sudo/sudobot/commit/523af9f74fee0b94e364a3c5bb1b0fb169d02529))
-
-
-
-## [8.29.1](https://github.com/onesoft-sudo/sudobot/compare/v8.29.0...v8.29.1) (2024-03-13)
-
-
-### Bug Fixes
-
-* **commands:ai:** gemini api ([f6d08ea](https://github.com/onesoft-sudo/sudobot/commit/f6d08eaddb65331e9b00a9aa06b7e60678562575))
+* **commands:ai:** support custom model names ([68d2b42](https://github.com/onesoft-sudo/sudobot/commit/68d2b4248a053e47d4cdf3e1dc50cf05bb0ff0e4))
 
 
 
