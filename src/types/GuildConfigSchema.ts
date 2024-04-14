@@ -22,6 +22,16 @@ import { MessageRuleSchema } from "./MessageRuleSchema";
 import { zSnowflake } from "./SnowflakeSchema";
 import { TriggerSchema } from "./TriggerSchema";
 
+const SurveyQuestion = z.object({
+    type: z.enum(["paragraph", "short"]),
+    question: z.string(),
+    required: z.boolean().default(true),
+    maxLength: z.number().int().optional(),
+    minLength: z.number().int().optional(),
+    placeholder: z.string().optional(),
+    default_value: z.string().optional()
+});
+
 /**
  * The configuration object schema. Times are in milliseconds.
  */
@@ -42,15 +52,23 @@ export const GuildConfigSchema = z.object({
         .default({}),
     permissions: z
         .object({
-            mod_role: zSnowflake.optional().describe("[DEPRECATED] Use one of the available permission systems instead"),
-            admin_role: zSnowflake.optional().describe("[DEPRECATED] Use one of the available permission systems instead"),
-            staff_role: zSnowflake.optional().describe("[DEPRECATED] Use one of the available permission systems instead"),
+            mod_role: zSnowflake
+                .optional()
+                .describe("[DEPRECATED] Use one of the available permission systems instead"),
+            admin_role: zSnowflake
+                .optional()
+                .describe("[DEPRECATED] Use one of the available permission systems instead"),
+            staff_role: zSnowflake
+                .optional()
+                .describe("[DEPRECATED] Use one of the available permission systems instead"),
             invincible_roles: z.array(zSnowflake).default([]),
             mode: z
                 .union([z.literal("discord"), z.literal("levels"), z.literal("layered")])
                 .default("discord")
                 .optional(),
-            check_discord_permissions: z.enum(["both", "automod", "manual_actions", "none"]).default("both")
+            check_discord_permissions: z
+                .enum(["both", "automod", "manual_actions", "none"])
+                .default("both")
         })
         .optional()
         .default({}),
@@ -130,7 +148,15 @@ export const GuildConfigSchema = z.object({
                     kick: z.array(z.string()).default(["KickMembers"]),
                     mute: z.array(z.string()).default(["or", "ModerateMembers", "ManageMessages"]),
                     warn: z.array(z.string()).default(["or", "ModerateMembers", "ManageMessages"]),
-                    ignore: z.array(z.string()).default(["or", "ModerateMembers", "ManageMessages", "BanMembers", "KickMembers"])
+                    ignore: z
+                        .array(z.string())
+                        .default([
+                            "or",
+                            "ModerateMembers",
+                            "ManageMessages",
+                            "BanMembers",
+                            "KickMembers"
+                        ])
                 })
                 .default({})
         })
@@ -244,18 +270,38 @@ export const GuildConfigSchema = z.object({
                 .default(null),
             channel: zSnowflake,
             embed: z.boolean().optional().default(true),
-            color: z.number().int().min(0x000000).max(0xffffff).default(0x007bff).or(z.string().startsWith("#"))
+            color: z
+                .number()
+                .int()
+                .min(0x000000)
+                .max(0xffffff)
+                .default(0x007bff)
+                .or(z.string().startsWith("#"))
         })
         .optional(),
     profile_filter: z
         .object({
             enabled: z.boolean().optional().default(false),
-            scan: z.array(z.literal("status").or(z.literal("nickname")).or(z.literal("username"))).default([]),
+            scan: z
+                .array(z.literal("status").or(z.literal("nickname")).or(z.literal("username")))
+                .default([]),
             actions: z
                 .object({
-                    status: z.literal("mute").or(z.literal("warn")).or(z.literal("none")).default("none"),
-                    nickname: z.literal("mute").or(z.literal("warn")).or(z.literal("none")).default("none"),
-                    username: z.literal("mute").or(z.literal("warn")).or(z.literal("none")).default("none")
+                    status: z
+                        .literal("mute")
+                        .or(z.literal("warn"))
+                        .or(z.literal("none"))
+                        .default("none"),
+                    nickname: z
+                        .literal("mute")
+                        .or(z.literal("warn"))
+                        .or(z.literal("none"))
+                        .default("none"),
+                    username: z
+                        .literal("mute")
+                        .or(z.literal("warn"))
+                        .or(z.literal("none"))
+                        .default("none")
                 })
                 .default({})
                 .optional(),
@@ -392,7 +438,11 @@ export const GuildConfigSchema = z.object({
                     })
                 ])
                 .optional(),
-            max_attempts: z.number().int().default(0).describe("Set this to 0 to allow every attempt"),
+            max_attempts: z
+                .number()
+                .int()
+                .default(0)
+                .describe("Set this to 0 to allow every attempt"),
             max_time: z
                 .number()
                 .int()
@@ -411,6 +461,33 @@ export const GuildConfigSchema = z.object({
     statistics: z
         .object({
             enabled: z.boolean().default(false)
+        })
+        .optional(),
+    survey: z
+        .object({
+            enabled: z.boolean().default(false),
+            default_log_channel: zSnowflake.optional(),
+            surveys: z
+                .record(
+                    z.string().regex(/^[a-z0-9_-]+$/i),
+                    z.object({
+                        name: z.string(),
+                        questions: z.array(SurveyQuestion).nonempty(),
+                        required_channels: z.array(zSnowflake).default([]),
+                        required_roles: z.array(zSnowflake).default([]),
+                        required_permissions: z.array(z.string()).default([]),
+                        required_users: z.array(zSnowflake).default([]),
+                        description: z.string().optional(),
+                        end_message: z.string().optional(),
+                        log_channel: zSnowflake.optional()
+                    })
+                )
+                .describe(
+                    `
+            A record of surveys. The key is the interaction custom ID of the survey, and the value is the survey itself.
+            `
+                )
+                .default({})
         })
         .optional()
 });

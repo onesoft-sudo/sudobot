@@ -43,6 +43,7 @@ export default class MessageDeleteEvent extends EventListener<Events.MessageDele
             const auditLogEntry = auditLogEntries?.entries.find(
                 e =>
                     e.createdAt.getTime() - deletedTimestamp <= 2_000 &&
+                    Date.now() - e.createdAt.getTime() <= 2_000 &&
                     e.targetId === message.author.id &&
                     e.executorId !== message.author.id
             );
@@ -54,6 +55,6 @@ export default class MessageDeleteEvent extends EventListener<Events.MessageDele
             }
 
             await this.client.loggerService.logMessageDelete(message, moderator);
-        }, 1000);
+        }, 2000);
     }
 }
