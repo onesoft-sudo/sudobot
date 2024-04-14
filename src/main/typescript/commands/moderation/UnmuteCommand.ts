@@ -19,7 +19,6 @@
 
 import { TakesArgument } from "@framework/arguments/ArgumentTypes";
 import GuildMemberArgument from "@framework/arguments/GuildMemberArgument";
-import IntegerArgument from "@framework/arguments/IntegerArgument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
@@ -30,13 +29,12 @@ import { Limits } from "../../constants/Limits";
 import InfractionManager from "../../services/InfractionManager";
 import PermissionManagerService from "../../services/PermissionManagerService";
 
-type MuteCommandArgs = {
+type UnmuteCommandArgs = {
     member: GuildMember;
     reason?: string;
-    duration?: number;
 };
 
-@TakesArgument<MuteCommandArgs>({
+@TakesArgument<UnmuteCommandArgs>({
     names: ["member"],
     types: [GuildMemberArgument<true>],
     optional: false,
@@ -47,24 +45,12 @@ type MuteCommandArgs = {
         {
             [ErrorType.EntityNotFound]: "The user you provided was not found.",
             [ErrorType.InvalidType]: "Invalid user provided.",
-            [ErrorType.Required]: "You must provide a user to mute."
+            [ErrorType.Required]: "You must provide a user to unmute."
         }
     ],
     interactionName: "member"
 })
-@TakesArgument<MuteCommandArgs>({
-    names: ["duration", "reason"],
-    types: [IntegerArgument, RestStringArgument],
-    optional: true,
-    errorMessages: [
-        {
-            [ErrorType.InvalidType]: "Invalid reason or duration provided."
-        }
-    ],
-    interactionName: "duration",
-    interactionType: IntegerArgument
-})
-@TakesArgument<MuteCommandArgs>({
+@TakesArgument<UnmuteCommandArgs>({
     names: ["reason"],
     types: [RestStringArgument],
     optional: true,
@@ -76,17 +62,14 @@ type MuteCommandArgs = {
     interactionName: "reason",
     interactionType: RestStringArgument
 })
-class MuteCommand extends Command {
-    public override readonly name = "mute";
-    public override readonly description = "Mutes a user.";
+class UnmuteCommand extends Command {
+    public override readonly name = "unmute";
+    public override readonly description = "Unmutes a a user.";
     public override readonly detailedDescription =
-        "Mutes a user and prevents them from talking, while still allowing them in the server.";
+        "Revokes the mute on a user, allowing them to speak again.";
     public override readonly permissions = [PermissionFlagsBits.ModerateMembers];
     public override readonly defer = true;
-    public override readonly usage = [
-        "<member: GuildMember> [reason: RestString]",
-        "<member: GuildMember> <duration: Duration> [reason: RestString]"
-    ];
+    public override readonly usage = ["<member: GuildMember> [reason: RestString]"];
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;
@@ -98,55 +81,55 @@ class MuteCommand extends Command {
         return [
             this.buildChatInput()
                 .addUserOption(option =>
-                    option.setName("member").setDescription("The member to mute.").setRequired(true)
+                    option
+                        .setName("member")
+                        .setDescription("The member to unmute.")
+                        .setRequired(true)
                 )
                 .addStringOption(option =>
                     option
                         .setName("reason")
-                        .setDescription("The reason for the mute.")
+                        .setDescription("The reason for the unmute.")
                         .setMaxLength(Limits.Reason)
-                )
-                .addIntegerOption(option =>
-                    option.setName("duration").setDescription("The duration of the mute.")
                 )
         ];
     }
 
     public override async execute(
         context: Context<CommandMessage>,
-        args: MuteCommandArgs
+        args: UnmuteCommandArgs
     ): Promise<void> {
-        const { member, reason, duration } = args;
+        const { member, reason } = args;
 
         if (
             !context.member ||
             !(await this.permissionManager.canModerate(member, context.member))
         ) {
-            await context.error("You don't have permission to mute this user!");
+            await context.error("You don't have permission to unmute this user!");
             return;
         }
 
-        const result = await this.infractionManager.createMute({
+        const result = await this.infractionManager.createUnmute({
             guildId: context.guildId,
             moderator: context.user,
             reason,
             member,
-            generateOverviewEmbed: true,
-            duration
+            generateOverviewEmbed: true
         });
         const { overviewEmbed, status } = result;
 
         if (status === "failed") {
             this.application.logger.debug(result);
 
-            if (result.errorType === "already_muted") {
-                await context.error("This user is already muted.");
+            if (result.errorType === "not_muted") {
+                await context.error("This user was not muted.");
                 return;
             }
 
             await context.error(
-                "Failed to mute the user. Maybe I don't have the permissions to do so."
+                `Failed to mute the user. Maybe I don't have the permissions to do so. Error code: ${result.errorType}`
             );
+            
             return;
         }
 
@@ -156,4 +139,4 @@ class MuteCommand extends Command {
     }
 }
 
-export default MuteCommand;
+export default UnmuteCommand;

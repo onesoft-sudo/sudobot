@@ -44,7 +44,8 @@
         "tfjs",
         "tsbuildinfo",
         "Unban",
-        "undici"
+        "undici",
+        "Unmutes"
     ],
     "material-icon-theme.folders.associations": {
         "automod": "Server",
