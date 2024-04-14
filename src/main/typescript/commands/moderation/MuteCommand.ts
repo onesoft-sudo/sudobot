@@ -87,6 +87,7 @@ class MuteCommand extends Command {
         "<member: GuildMember> [reason: RestString]",
         "<member: GuildMember> <duration: Duration> [reason: RestString]"
     ];
+    public override readonly cooldown = 5_000;
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;

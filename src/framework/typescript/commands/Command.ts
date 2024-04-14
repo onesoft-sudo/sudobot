@@ -155,6 +155,11 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
     public readonly cooldown?: number;
 
     /**
+     * The maximum number of attempts for the command, during the cooldown period.
+     */
+    public readonly maxAttempts: number = 1;
+
+    /**
      * The required permissions for the member running this command.
      * Can be modified or removed by the permission manager.
      */
@@ -371,6 +376,15 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      * @param subcommand
      */
     public async run(context: Context, subcommand = false) {
+        const ratelimiter = (
+            this.application.getServiceByName("commandManager") as CommandManagerServiceInterface
+        ).getRateLimiter();
+
+        if (await ratelimiter.isRateLimitedWithHit(this.name, context.guildId, context.userId)) {
+            await context.error("You're being rate limited. Please try again later.");
+            return;
+        }
+
         const state: CommandExecutionState<false> = {
             memberPermissions: undefined
         };

@@ -1,4 +1,5 @@
 import { Command } from "@framework/commands/Command";
+import CommandRateLimiterContract from "@framework/contracts/CommandRateLimiterContract";
 import { Awaitable } from "discord.js";
 import Context from "../commands/Context";
 import { MemberPermissionData } from "./PermissionManagerInterface";
@@ -20,4 +21,6 @@ export interface CommandManagerServiceInterface {
         groups: Record<string, string> | null,
         defaultGroup?: string
     ): Awaitable<void>;
+    getCommand(name: string): Command | null;
+    getRateLimiter(): CommandRateLimiterContract;
 }

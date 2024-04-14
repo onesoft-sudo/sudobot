@@ -44,7 +44,26 @@ export const GuildConfigSchema = z.object({
             fakeban_safe: z.array(zSnowflake).default([]),
             echo_mentions: z.boolean().default(false),
             moderation_command_behaviour: z.enum(["delete", "default"]).default("default"),
-            rerun_on_edit: z.boolean().default(false)
+            rerun_on_edit: z.boolean().default(false),
+            ratelimiting: z
+                .object({
+                    enabled: z.boolean().default(true),
+                    timeframe: z.number().int().default(7000),
+                    max_attempts: z.number().int().default(5),
+                    block_duration: z.number().int().default(1_000),
+                    overrides: z
+                        .record(
+                            z.string(),
+                            z.object({
+                                enabled: z.boolean().default(true),
+                                timeframe: z.number().int().default(7000),
+                                max_attempts: z.number().int().default(5),
+                                block_duration: z.number().int().default(1_000)
+                            })
+                        )
+                        .default({})
+                })
+                .optional()
         })
         .default({}),
     permissions: z

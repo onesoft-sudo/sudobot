@@ -29,6 +29,7 @@ import { MemberPermissionData } from "@framework/contracts/PermissionManagerInte
 import { SystemPermissionLikeString } from "@framework/permissions/AbstractPermissionManagerService";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
+import CommandRateLimiter from "@main/security/CommandRateLimiter";
 import { CommandPermissionOverwriteAction } from "@prisma/client";
 import {
     ApplicationCommandOptionType,
@@ -55,12 +56,12 @@ import type ConfigurationManager from "./ConfigurationManager";
 class CommandManager extends Service implements CommandManagerServiceInterface {
     public readonly commands = new Collection<string, Command>();
     public readonly store = new CommandPermissionOverwriteCacheStore(this);
+    public readonly ratelimiter = new CommandRateLimiter(this.application);
 
     @Inject("configManager")
     protected readonly configManager!: ConfigurationManager;
 
     public async onReady() {
-        await this.loadCommandPermissionOverwrites();
         await this.registerApplicationCommands();
     }
 
@@ -129,7 +130,13 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         }
     }
 
-    public async loadCommandPermissionOverwrites() {}
+    public getCommand(name: string): Command | null {
+        return this.commands.get(name) ?? null;
+    }
+
+    public getRateLimiter() {
+        return this.ratelimiter;
+    }
 
     public async addCommand(
         command: Command,
