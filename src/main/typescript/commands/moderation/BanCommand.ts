@@ -35,25 +35,20 @@ import InfractionManager from "../../services/InfractionManager";
 import PermissionManagerService from "../../services/PermissionManagerService";
 
 type BanCommandArgs = {
-    userOrMember: User | GuildMember;
+    member?: GuildMember;
     reason?: string;
     duration?: number;
+    user: User;
 };
 
 @TakesArgument<BanCommandArgs>({
-    names: ["userOrMember"],
+    names: ["member", "user"],
     types: [GuildMemberArgument<true>, UserArgument<true>],
     optional: false,
     rules: {
         "interaction:no_required_check": true
     },
-    errorMessages: [
-        {
-            [ErrorType.EntityNotFound]: "The user you provided was not found.",
-            [ErrorType.InvalidType]: "Invalid user provided.",
-            [ErrorType.Required]: "You must provide a user to ban."
-        }
-    ],
+    errorMessages: [GuildMemberArgument.defaultErrors, UserArgument.defaultErrors],
     interactionName: "user"
 })
 @TakesArgument<BanCommandArgs>({
@@ -128,25 +123,26 @@ class BanCommand extends Command {
         context: Context<CommandMessage>,
         args: BanCommandArgs
     ): Promise<void> {
-        console.log(args);
+        console.log(args.member?.id, args.user?.id);
         const { reason } = args;
-        let { userOrMember } = args;
+        let { member } = args;
+        const { user } = args;
 
-        if (!context.isLegacy) {
-            if (userOrMember instanceof User) {
-                const member = await fetchMember(context.guild, userOrMember.id);
+        if (!context.isLegacy()) {
+            if (!member) {
+                const fetchedMember = await fetchMember(context.guild, user.id);
 
-                if (member) {
-                    userOrMember = member;
+                if (fetchedMember) {
+                    member = fetchedMember;
                 }
             }
         }
 
-        if (userOrMember instanceof GuildMember) {
+        if (member) {
             if (
-                !userOrMember.bannable ||
+                !member.bannable ||
                 !context.member ||
-                !(await this.permissionManager.canModerate(userOrMember, context.member))
+                !(await this.permissionManager.canModerate(member, context.member))
             ) {
                 await context.error("You don't have permission to ban this user.");
                 return;
@@ -177,7 +173,7 @@ class BanCommand extends Command {
             guildId: context.guildId,
             moderator: context.user,
             reason,
-            user: userOrMember instanceof GuildMember ? userOrMember.user : userOrMember,
+            user: member?.user ?? user,
             generateOverviewEmbed: true,
             duration: args.duration,
             deletionTimeframe

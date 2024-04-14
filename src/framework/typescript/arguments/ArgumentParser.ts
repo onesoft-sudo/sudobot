@@ -241,7 +241,9 @@ class ArgumentParser extends HasClient {
             let argTypeIndex = 0;
 
             for (const argType of argTypes) {
-                if (names[argTypeIndex] in parsedArguments) {
+                const name = names[argTypeIndex] ?? names.at(-1);
+
+                if (name in parsedArguments) {
                     break;
                 }
 
@@ -251,13 +253,13 @@ class ArgumentParser extends HasClient {
                     argv,
                     arg,
                     argIndex,
-                    names[argTypeIndex],
+                    name,
                     expectedArgInfo.rules,
                     !expectedArgInfo.optional
                 );
 
                 if (value && !error) {
-                    parsedArguments[names[argTypeIndex]] = value.getValue();
+                    parsedArguments[name] = value.getValue();
                     lastError = undefined;
                     break;
                 }
@@ -274,7 +276,8 @@ class ArgumentParser extends HasClient {
             if (lastError) {
                 return {
                     error:
-                        expectedArgInfo.errorMessages?.[argTypeIndex]?.[lastError.meta.type] ??
+                        (expectedArgInfo.errorMessages?.[argTypeIndex] ??
+                            expectedArgInfo.errorMessages?.at(-1))?.[lastError.meta.type] ??
                         lastError.message
                 };
             }

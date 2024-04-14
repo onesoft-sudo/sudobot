@@ -17,6 +17,11 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import CommandAbortedError from "@framework/commands/CommandAbortedError";
+import { Inject } from "@framework/container/Inject";
+import { Name } from "@framework/services/Name";
+import { Service } from "@framework/services/Service";
+import { emoji } from "@framework/utils/emoji";
 import { Infraction, InfractionDeliveryStatus, InfractionType, PrismaClient } from "@prisma/client";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
@@ -39,11 +44,6 @@ import {
     italic,
     userMention
 } from "discord.js";
-import CommandAbortedError from "@framework/commands/CommandAbortedError";
-import { Inject } from "@framework/container/Inject";
-import { Name } from "@framework/services/Name";
-import { Service } from "@framework/services/Service";
-import { emoji } from "@framework/utils/emoji";
 import InfractionChannelDeleteQueue from "../queues/InfractionChannelDeleteQueue";
 import RoleQueue from "../queues/RoleQueue";
 import UnbanQueue from "../queues/UnbanQueue";
@@ -308,7 +308,10 @@ class InfractionManager extends Service {
             type,
             notify = true
         } = options;
-        const user = "member" in options ? options.member.user : options.user;
+        const user =
+            "member" in options && options.member
+                ? options.member.user
+                : (options as { user: User }).user;
         const infraction = await this.application.prisma.$transaction(async prisma => {
             let infraction = await prisma.infraction.create({
                 data: {
@@ -396,6 +399,8 @@ class InfractionManager extends Service {
                 overviewEmbed: null
             };
         }
+
+        console.log("createBan", payload.user.id);
 
         const {
             moderator,
