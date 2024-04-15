@@ -4,7 +4,7 @@ import axios from "axios";
 import { Collection } from "discord.js";
 
 class FeatureFlagManager extends HasApplication implements Bootable {
-    protected static readonly CentralAPI = "https://features.sudobot.org/api/v1/flags/global";
+    protected static readonly CentralAPI = "https://proxy.sudobot.org/api/v1/flags/global";
     protected readonly flags = new Collection<string, string>();
 
     public async boot() {
@@ -15,7 +15,11 @@ class FeatureFlagManager extends HasApplication implements Bootable {
 
         if (flagCentralApiUrl) {
             try {
-                const response = await axios.get(flagCentralApiUrl);
+                const response = await axios.get(flagCentralApiUrl, {
+                    headers: {
+                        "Content-Encoding": "identity"
+                    }
+                });
 
                 if (response.status !== 200) {
                     throw new Error(
@@ -26,12 +30,13 @@ class FeatureFlagManager extends HasApplication implements Bootable {
                 const flags = response.data?.flags as Record<
                     string,
                     {
-                        value: string;
+                        treatment: string;
+                        treatments: Record<string, string>;
                     }
                 >;
 
                 for (const key in flags) {
-                    this.flags.set(key, flags[key].value);
+                    this.flags.set(key, flags[key].treatment);
                 }
             } catch (error) {
                 this.application.logger.error("Failed to fetch feature flags from the central API");

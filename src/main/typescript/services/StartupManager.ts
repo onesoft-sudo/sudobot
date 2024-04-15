@@ -54,6 +54,8 @@ class StartupManager extends Service implements HasEventListeners {
         "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/package.json";
 
     public override async boot() {
+        this.setupEnvironment();
+        await this.application.featureFlagManager.boot();
         return new Promise<void>((resolve, reject) => {
             figlet.text(
                 "SudoBot",
@@ -72,6 +74,10 @@ class StartupManager extends Service implements HasEventListeners {
                 }
             );
         });
+    }
+
+    public setupEnvironment() {
+        axios.defaults.headers.common["Accept-Encoding"] = "gzip";
     }
 
     public async onReady() {

@@ -120,7 +120,6 @@ class Application {
         permissions = true,
         queues = true
     }: { commands?: boolean; events?: boolean; permissions?: boolean; queues?: boolean } = {}) {
-        await this.featureFlagManager.boot();
         await this.serviceManager.loadServices();
 
         if (permissions) {
