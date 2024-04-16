@@ -86,6 +86,7 @@ class BlazeBuild {
             this.error("No build script found.");
         }
 
+        process.env.PATH = `${process.cwd()}/node_modules/.bin:${process.env.PATH}`;
         this.setupGlobals();
 
         if (process.isBun) {
