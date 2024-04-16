@@ -78,8 +78,7 @@ class Logger {
     }
 
     public buildFailed() {
-        console.error(`\n${chalk.redBright("BUILD FAILED")} in ${this.timeElapsed()}s`);
-        this.showStats();
+        console.error(`\n${chalk.redBright("BUILD FAILED")} in ${this.timeElapsed()}s`);'
     }
 }
 
