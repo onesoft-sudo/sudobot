@@ -400,8 +400,6 @@ class InfractionManager extends Service {
             };
         }
 
-        console.log("createBan", payload.user.id);
-
         const {
             moderator,
             user,
@@ -820,8 +818,6 @@ class InfractionManager extends Service {
                 errorDescription: "Muted role not found"
             };
         }
-
-        console.log(role, mode);
 
         if (
             (role !== "timeout" && role && !member.roles.cache.has(role)) ||

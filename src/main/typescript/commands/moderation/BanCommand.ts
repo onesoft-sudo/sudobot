@@ -48,7 +48,7 @@ type BanCommandArgs = {
     rules: {
         "interaction:no_required_check": true
     },
-    errorMessages: [GuildMemberArgument.defaultErrors, UserArgument.defaultErrors],
+    errorMessages: [UserArgument.defaultErrors],
     interactionName: "user"
 })
 @TakesArgument<BanCommandArgs>({
@@ -123,10 +123,8 @@ class BanCommand extends Command {
         context: Context<CommandMessage>,
         args: BanCommandArgs
     ): Promise<void> {
-        console.log(args.member?.id, args.user?.id);
-        const { reason } = args;
+        const { reason, user } = args;
         let { member } = args;
-        const { user } = args;
 
         if (!context.isLegacy()) {
             if (!member) {
