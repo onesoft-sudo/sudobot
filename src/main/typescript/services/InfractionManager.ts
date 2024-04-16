@@ -429,12 +429,12 @@ class InfractionManager extends Service {
         });
 
         try {
-            await guild.bans.create(user, {
-                reason: `${moderator.username} - ${infraction.reason ?? "No reason provided"}`,
-                deleteMessageSeconds: payload.deletionTimeframe
-                    ? Math.floor(payload.deletionTimeframe / 1000)
-                    : undefined
-            });
+            // await guild.bans.create(user, {
+            //     reason: `${moderator.username} - ${infraction.reason ?? "No reason provided"}`,
+            //     deleteMessageSeconds: payload.deletionTimeframe
+            //         ? Math.floor(payload.deletionTimeframe / 1000)
+            //         : undefined
+            // });
 
             await this.queueService.bulkCancel(UnbanQueue, queue => {
                 return queue.data.userId === user.id && queue.data.guildId === guild.id;
@@ -821,9 +821,11 @@ class InfractionManager extends Service {
             };
         }
 
+        console.log(role, mode);
+
         if (
             (role !== "timeout" && role && !member.roles.cache.has(role)) ||
-            (mode !== "role" && !member.communicationDisabledUntilTimestamp)
+            (mode === "timeout" && !member.communicationDisabledUntilTimestamp)
         ) {
             return {
                 status: "failed",
