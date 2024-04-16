@@ -102,19 +102,25 @@ class BanCommand extends Command {
                 .addStringOption(option =>
                     option
                         .setName("reason")
-                        .setDescription("The reason for the bean.")
+                        .setDescription("The reason for the ban.")
                         .setMaxLength(Limits.Reason)
                 )
                 .addStringOption(option =>
                     option
                         .setName("duration")
-                        .setDescription("The duration of the bean.")
+                        .setDescription("The duration of the ban.")
                         .setRequired(false)
                 )
                 .addStringOption(option =>
                     option
                         .setName("deletion_timeframe")
-                        .setDescription("The message deletion timeframe.")
+                        .setDescription("The message deletion timeframe. Defaults to none.")
+                        .setRequired(false)
+                )
+                .addBooleanOption(option =>
+                    option
+                        .setName("notify")
+                        .setDescription("Whether to notify the user. Defaults to true.")
                         .setRequired(false)
                 )
         ];
@@ -183,7 +189,8 @@ class BanCommand extends Command {
             user: member?.user ?? user,
             generateOverviewEmbed: true,
             duration: args.duration,
-            deletionTimeframe
+            deletionTimeframe,
+            notify: !context.isChatInput() || context.options.getBoolean("notify") !== false
         });
 
         if (status === "failed") {

@@ -92,6 +92,12 @@ class UnmuteCommand extends Command {
                         .setDescription("The reason for the unmute.")
                         .setMaxLength(Limits.Reason)
                 )
+                .addBooleanOption(option =>
+                    option
+                        .setName("notify")
+                        .setDescription("Whether to notify the user. Defaults to true.")
+                        .setRequired(false)
+                )
         ];
     }
 
@@ -114,7 +120,8 @@ class UnmuteCommand extends Command {
             moderator: context.user,
             reason,
             member,
-            generateOverviewEmbed: true
+            generateOverviewEmbed: true,
+            notify: !context.isChatInput() || context.options.getBoolean("notify") !== false
         });
         const { overviewEmbed, status } = result;
 
@@ -129,7 +136,7 @@ class UnmuteCommand extends Command {
             await context.error(
                 `Failed to mute the user. Maybe I don't have the permissions to do so. Error code: ${result.errorType}`
             );
-            
+
             return;
         }
 

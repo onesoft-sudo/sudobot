@@ -70,6 +70,12 @@ class KickCommand extends Command {
                         .setDescription("The reason for the kick.")
                         .setMaxLength(Limits.Reason)
                 )
+                .addBooleanOption(option =>
+                    option
+                        .setName("notify")
+                        .setDescription("Whether to notify the user. Defaults to true.")
+                        .setRequired(false)
+                )
         ];
     }
 
@@ -92,7 +98,8 @@ class KickCommand extends Command {
             moderator: context.user,
             reason,
             member,
-            generateOverviewEmbed: true
+            generateOverviewEmbed: true,
+            notify: !context.isChatInput() || context.options.getBoolean("notify") !== false
         });
 
         if (status === "failed") {

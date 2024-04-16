@@ -72,6 +72,12 @@ class BeanCommand extends Command {
                         .setDescription("The reason for the bean.")
                         .setMaxLength(Limits.Reason)
                 )
+                .addBooleanOption(option =>
+                    option
+                        .setName("notify")
+                        .setDescription("Whether to notify the user. Defaults to true.")
+                        .setRequired(false)
+                )
         ];
     }
 
@@ -95,6 +101,7 @@ class BeanCommand extends Command {
             reason,
             user: member.user,
             generateOverviewEmbed: true,
+            notify: !context.isChatInput() || context.options.getBoolean("notify") !== false,
             transformNotificationEmbed: embed => also(embed, e => void (e.color = Colors.Success))
         });
 

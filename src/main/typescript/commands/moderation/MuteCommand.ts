@@ -110,6 +110,12 @@ class MuteCommand extends Command {
                 .addStringOption(option =>
                     option.setName("duration").setDescription("The duration of the mute.")
                 )
+                .addBooleanOption(option =>
+                    option
+                        .setName("notify")
+                        .setDescription("Whether to notify the user. Defaults to true.")
+                        .setRequired(false)
+                )
         ];
     }
 
@@ -133,7 +139,8 @@ class MuteCommand extends Command {
             reason,
             member,
             generateOverviewEmbed: true,
-            duration
+            duration,
+            notify: !context.isChatInput() || context.options.getBoolean("notify") !== false
         });
         const { overviewEmbed, status } = result;
 
