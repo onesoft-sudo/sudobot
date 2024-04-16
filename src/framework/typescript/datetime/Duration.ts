@@ -245,6 +245,22 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<SerializedDurat
         return this._totalMilliseconds;
     }
 
+    public fromNow(): Date {
+        return new Date(this.fromNowMilliseconds());
+    }
+
+    public fromNowMilliseconds(): number {
+        return Date.now() + this.toMilliseconds();
+    }
+
+    public beforeNow(): Date {
+        return new Date(this.beforeNowMilliseconds());
+    }
+
+    public beforeNowMilliseconds(): number {
+        return Date.now() - this.toMilliseconds();
+    }
+
     /**
      * Returns a string representation of the duration.
      *

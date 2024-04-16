@@ -18,13 +18,14 @@
  */
 
 import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import DurationArgument from "@framework/arguments/DurationArgument";
 import GuildMemberArgument from "@framework/arguments/GuildMemberArgument";
-import IntegerArgument from "@framework/arguments/IntegerArgument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import Duration from "@framework/datetime/Duration";
 import { GuildMember, PermissionFlagsBits } from "discord.js";
 import { Limits } from "../../constants/Limits";
 import InfractionManager from "../../services/InfractionManager";
@@ -33,7 +34,7 @@ import PermissionManagerService from "../../services/PermissionManagerService";
 type MuteCommandArgs = {
     member: GuildMember;
     reason?: string;
-    duration?: number;
+    duration?: Duration;
 };
 
 @TakesArgument<MuteCommandArgs>({
@@ -54,7 +55,7 @@ type MuteCommandArgs = {
 })
 @TakesArgument<MuteCommandArgs>({
     names: ["duration", "reason"],
-    types: [IntegerArgument, RestStringArgument],
+    types: [DurationArgument, RestStringArgument],
     optional: true,
     errorMessages: [
         {
@@ -62,7 +63,7 @@ type MuteCommandArgs = {
         }
     ],
     interactionName: "duration",
-    interactionType: IntegerArgument
+    interactionType: DurationArgument
 })
 @TakesArgument<MuteCommandArgs>({
     names: ["reason"],
@@ -87,7 +88,6 @@ class MuteCommand extends Command {
         "<member: GuildMember> [reason: RestString]",
         "<member: GuildMember> <duration: Duration> [reason: RestString]"
     ];
-    public override readonly cooldown = 5_000;
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;
@@ -107,7 +107,7 @@ class MuteCommand extends Command {
                         .setDescription("The reason for the mute.")
                         .setMaxLength(Limits.Reason)
                 )
-                .addIntegerOption(option =>
+                .addStringOption(option =>
                     option.setName("duration").setDescription("The duration of the mute.")
                 )
         ];

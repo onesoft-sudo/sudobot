@@ -30,7 +30,6 @@ import Duration from "@framework/datetime/Duration";
 import DurationParseError from "@framework/datetime/DurationParseError";
 import { fetchMember } from "@framework/utils/entities";
 import { also } from "@framework/utils/utils";
-import { formatDistanceToNowStrict } from "date-fns";
 import { GuildMember, PermissionFlagsBits, User } from "discord.js";
 import { Limits } from "../../constants/Limits";
 import InfractionManager from "../../services/InfractionManager";
@@ -152,11 +151,11 @@ class BanCommand extends Command {
         const deletionTimeframeString = context.isChatInput()
             ? context.options.getString("deletion_timeframe") ?? undefined
             : undefined;
-        let deletionTimeframe: number | undefined;
+        let deletionTimeframe: Duration | undefined;
 
         try {
             deletionTimeframe = deletionTimeframeString
-                ? Duration.fromDurationStringExpression(deletionTimeframeString, true)
+                ? Duration.fromDurationStringExpression(deletionTimeframeString)
                 : undefined;
         } catch (error) {
             if (error instanceof DurationParseError) {
@@ -167,9 +166,11 @@ class BanCommand extends Command {
             throw error;
         }
 
+        const deletionTimeframeMs = deletionTimeframe?.toMilliseconds();
+
         if (
-            deletionTimeframe !== undefined &&
-            (deletionTimeframe < 0 || deletionTimeframe > 1000 * 60 * 60 * 24 * 7)
+            deletionTimeframeMs !== undefined &&
+            (deletionTimeframeMs < 0 || deletionTimeframeMs > 1000 * 60 * 60 * 24 * 7)
         ) {
             await context.error("Deletion timeframe must be between 0 and 7 days.");
             return;
@@ -181,7 +182,7 @@ class BanCommand extends Command {
             reason,
             user: member?.user ?? user,
             generateOverviewEmbed: true,
-            duration: args.duration?.toMilliseconds(),
+            duration: args.duration,
             deletionTimeframe
         });
 
@@ -197,11 +198,7 @@ class BanCommand extends Command {
                     embed =>
                         void embed.fields?.push({
                             name: "Message Deletion Timeframe",
-                            value: deletionTimeframe
-                                ? formatDistanceToNowStrict(
-                                      new Date(Date.now() - deletionTimeframe)
-                                  )
-                                : "N/A"
+                            value: deletionTimeframe?.toString() ?? "N/A"
                         })
                 )
             ]

@@ -19,6 +19,7 @@
 
 import CommandAbortedError from "@framework/commands/CommandAbortedError";
 import { Inject } from "@framework/container/Inject";
+import Duration from "@framework/datetime/Duration";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { emoji } from "@framework/utils/emoji";
@@ -418,10 +419,10 @@ class InfractionManager extends Service {
             user,
             notify,
             payload: {
-                expiresAt: payload.duration ? new Date(Date.now() + payload.duration) : undefined,
+                expiresAt: payload.duration?.fromNow(),
                 metadata: {
-                    deletionTimeframe: payload.deletionTimeframe,
-                    duration: payload.duration
+                    deletionTimeframe: payload.deletionTimeframe?.fromNowMilliseconds(),
+                    duration: payload.duration?.fromNowMilliseconds()
                 }
             }
         });
@@ -446,7 +447,7 @@ class InfractionManager extends Service {
                             userId: user.id
                         },
                         guildId: guild.id,
-                        runsAt: new Date(Date.now() + payload.duration)
+                        runsAt: payload.duration.fromNow()
                     })
                     .schedule();
             }
@@ -653,7 +654,7 @@ class InfractionManager extends Service {
             };
         }
 
-        if (mode === "timeout" && (duration ?? 0) >= 28 * 24 * 60 * 60 * 1000) {
+        if (mode === "timeout" && (duration?.toMilliseconds() ?? 0) >= 28 * 24 * 60 * 60 * 1000) {
             return {
                 status: "failed",
                 infraction: null,
@@ -697,15 +698,18 @@ class InfractionManager extends Service {
             payload: {
                 metadata: {
                     type: role ? "role" : "timeout",
-                    duration
+                    duration: duration?.fromNowMilliseconds()
                 },
-                expiresAt: duration ? new Date(Date.now() + duration) : undefined
+                expiresAt: duration ? duration.fromNow() : undefined
             }
         });
 
         try {
             if (mode === "timeout" && duration) {
-                await member.timeout(duration, `${moderator.username} - ${infraction.reason}`);
+                await member.timeout(
+                    duration.toMilliseconds(),
+                    `${moderator.username} - ${infraction.reason}`
+                );
             } else if (mode === "role" && role) {
                 await member.roles.add(role, `${moderator.username} - ${infraction.reason}`);
 
@@ -725,7 +729,7 @@ class InfractionManager extends Service {
                                 memberId: member.id
                             },
                             guildId: guild.id,
-                            runsAt: new Date(Date.now() + duration)
+                            runsAt: duration.fromNow()
                         })
                         .schedule();
                 }
@@ -960,7 +964,7 @@ class InfractionManager extends Service {
                             reason: `${moderator.username} - ${infraction.reason}`
                         },
                         guildId: guild.id,
-                        runsAt: new Date(Date.now() + duration)
+                        runsAt: duration.fromNow()
                     })
                     .schedule();
             }
@@ -1226,7 +1230,7 @@ type MessageFilter = (message: Message) => Awaitable<boolean>;
 
 type CreateMutePayload<E extends boolean> = CommonOptions<E> & {
     member: GuildMember;
-    duration?: number;
+    duration?: Duration;
     mode?: "role" | "timeout";
     clearMessagesCount?: number;
     channel?: TextChannel;
@@ -1234,15 +1238,15 @@ type CreateMutePayload<E extends boolean> = CommonOptions<E> & {
 
 type CreateBanPayload<E extends boolean> = CommonOptions<E> & {
     user: User;
-    deletionTimeframe?: number;
-    duration?: number;
+    deletionTimeframe?: Duration;
+    duration?: Duration;
 };
 
 type CreateRoleModificationPayload<E extends boolean> = CommonOptions<E> & {
     member: GuildMember;
     mode: "give" | "take";
     roles: RoleResolvable[];
-    duration?: number;
+    duration?: Duration;
 };
 
 type InfractionCreateResult<E extends boolean = false> =
