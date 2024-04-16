@@ -581,26 +581,24 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
         const mode =
             configManager.config[context.guildId]?.permissions.command_permission_mode ??
             configManager.systemConfig.command_permission_mode;
-        let overwrite = false;
 
-        if (mode !== "ignore") {
-            const commandManager = this.application.getServiceByName(
-                "commandManager"
-            ) satisfies CommandManagerServiceInterface;
-            const result = await commandManager.checkCommandPermissionOverwrites(
-                context,
-                this.name,
-                state.memberPermissions
+        const commandManager = this.application.getServiceByName(
+            "commandManager"
+        ) satisfies CommandManagerServiceInterface;
+
+        const result = await commandManager.checkCommandPermissionOverwrites(
+            context,
+            this.name,
+            state.memberPermissions
+        );
+
+        if (!result?.allow) {
+            throw new PermissionDeniedError(
+                "You don't have enough permissions to run this command."
             );
-
-            if (!result?.allow) {
-                throw new PermissionDeniedError(
-                    "You don't have enough permissions to run this command."
-                );
-            }
-
-            overwrite = result.overwrite;
         }
+
+        const { overwrite } = result;
 
         if (((!overwrite && mode === "overwrite") || mode === "check") && this.permissions) {
             return await permissionManager.hasPermissions(
