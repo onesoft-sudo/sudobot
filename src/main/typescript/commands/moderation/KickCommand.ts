@@ -23,20 +23,18 @@ import RestStringArgument from "@framework/arguments/RestStringArgument";
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
-import { also } from "@framework/utils/utils";
 import { GuildMember, PermissionFlagsBits } from "discord.js";
-import { Colors } from "../../constants/Colors";
 import { Limits } from "../../constants/Limits";
 import InfractionManager from "../../services/InfractionManager";
 import PermissionManagerService from "../../services/PermissionManagerService";
 import { ErrorMessages } from "../../utils/ErrorMessages";
 
-type BeanCommandArgs = {
+type KickCommandArgs = {
     member: GuildMember;
     reason?: string;
 };
 
-@TakesArgument<BeanCommandArgs>({
+@TakesArgument<KickCommandArgs>({
     names: ["member"],
     types: [GuildMemberArgument<true>],
     optional: false,
@@ -44,13 +42,13 @@ type BeanCommandArgs = {
     interactionName: "member",
     interactionType: GuildMemberArgument<true>
 })
-@TakesArgument<BeanCommandArgs>("reason", RestStringArgument, true, [ErrorMessages.reason])
-class BeanCommand extends Command {
-    public override readonly name = "bean";
-    public override readonly description = "Beans a member.";
-    public override readonly detailedDescription =
-        "Sends a DM to the member telling them they've been beaned. It doesn't actually do anything.";
-    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+@TakesArgument<KickCommandArgs>("reason", RestStringArgument, true, [ErrorMessages.reason])
+class KickCommand extends Command {
+    public override readonly name = "kick";
+    public override readonly description: string = "Kicks a member from the server.";
+    public override readonly detailedDescription: string =
+        "Kicks a member from the server. They can rejoin if they want to.";
+    public override readonly permissions = [PermissionFlagsBits.KickMembers];
     public override readonly defer = true;
     public override readonly usage = ["<member: GuildMember> [reason: RestString]"];
 
@@ -64,12 +62,12 @@ class BeanCommand extends Command {
         return [
             this.buildChatInput()
                 .addUserOption(option =>
-                    option.setName("member").setDescription("The member to bean.").setRequired(true)
+                    option.setName("member").setDescription("The member to kick.").setRequired(true)
                 )
                 .addStringOption(option =>
                     option
                         .setName("reason")
-                        .setDescription("The reason for the bean.")
+                        .setDescription("The reason for the kick.")
                         .setMaxLength(Limits.Reason)
                 )
         ];
@@ -77,7 +75,7 @@ class BeanCommand extends Command {
 
     public override async execute(
         context: Context<CommandMessage>,
-        args: BeanCommandArgs
+        args: KickCommandArgs
     ): Promise<void> {
         const { member, reason } = args;
 
@@ -85,27 +83,25 @@ class BeanCommand extends Command {
             !context.member ||
             !(await this.permissionManager.canModerate(member, context.member))
         ) {
-            await context.error("You don't have permission to bean this member!");
+            await context.error("You don't have permission to kick this member!");
             return;
         }
 
-        const { overviewEmbed, status } = await this.infractionManager.createBean({
+        const { overviewEmbed, status } = await this.infractionManager.createKick({
             guildId: context.guildId,
             moderator: context.user,
             reason,
-            user: member.user,
-            generateOverviewEmbed: true,
-            transformNotificationEmbed: embed => also(embed, e => void (e.color = Colors.Success))
+            member,
+            generateOverviewEmbed: true
         });
 
         if (status === "failed") {
-            await context.error("Failed to bean member.");
+            await context.error("Failed to kick member.");
             return;
         }
 
-        overviewEmbed.color = Colors.Primary;
         await context.reply({ embeds: [overviewEmbed] });
     }
 }
 
-export default BeanCommand;
+export default KickCommand;
