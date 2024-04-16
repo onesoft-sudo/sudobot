@@ -375,10 +375,12 @@ class ArgumentParser extends HasClient {
                     ? expectedArgInfo.types[0]
                     : expectedArgInfo.types);
 
-            if (expectedArgInfo.names.length === 0) {
-                throw new Error("Argument names must be provided");
-            } else if (expectedArgInfo.names.length > 1) {
-                throw new Error("Only 1 argument name is allowed for auto-parsing!");
+            if (!expectedArgInfo.interactionName) {
+                if (expectedArgInfo.names.length === 0) {
+                    throw new Error("Argument names must be provided");
+                } else if (expectedArgInfo.names.length > 1) {
+                    throw new Error("Only 1 argument name is allowed for auto-parsing!");
+                }
             }
 
             const name = expectedArgInfo.interactionName ?? expectedArgInfo.names[0];
