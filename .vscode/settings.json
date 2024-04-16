@@ -26,6 +26,7 @@
         "botinfo",
         "Buildable",
         "commitlint",
+        "datetime",
         "deepmerge",
         "kickable",
         "MASSBAN",

@@ -18,14 +18,16 @@
  */
 
 import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import DurationArgument from "@framework/arguments/DurationArgument";
 import GuildMemberArgument from "@framework/arguments/GuildMemberArgument";
-import IntegerArgument from "@framework/arguments/IntegerArgument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
 import UserArgument from "@framework/arguments/UserArgument";
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import Duration from "@framework/datetime/Duration";
+import DurationParseError from "@framework/datetime/DurationParseError";
 import { fetchMember } from "@framework/utils/entities";
 import { also } from "@framework/utils/utils";
 import { formatDistanceToNowStrict } from "date-fns";
@@ -37,7 +39,7 @@ import PermissionManagerService from "../../services/PermissionManagerService";
 type BanCommandArgs = {
     member?: GuildMember;
     reason?: string;
-    duration?: number;
+    duration?: Duration;
     user: User;
 };
 
@@ -53,7 +55,7 @@ type BanCommandArgs = {
 })
 @TakesArgument<BanCommandArgs>({
     names: ["duration", "reason"],
-    types: [IntegerArgument, RestStringArgument],
+    types: [DurationArgument, RestStringArgument],
     optional: true,
     errorMessages: [
         {
@@ -61,7 +63,7 @@ type BanCommandArgs = {
         }
     ],
     interactionName: "duration",
-    interactionType: IntegerArgument
+    interactionType: DurationArgument
 })
 @TakesArgument<BanCommandArgs>({
     names: ["reason"],
@@ -104,13 +106,13 @@ class BanCommand extends Command {
                         .setDescription("The reason for the bean.")
                         .setMaxLength(Limits.Reason)
                 )
-                .addIntegerOption(option =>
+                .addStringOption(option =>
                     option
                         .setName("duration")
                         .setDescription("The duration of the bean.")
                         .setRequired(false)
                 )
-                .addIntegerOption(option =>
+                .addStringOption(option =>
                     option
                         .setName("deletion_timeframe")
                         .setDescription("The message deletion timeframe.")
@@ -150,13 +152,19 @@ class BanCommand extends Command {
         const deletionTimeframeString = context.isChatInput()
             ? context.options.getString("deletion_timeframe") ?? undefined
             : undefined;
-        const deletionTimeframe = deletionTimeframeString
-            ? parseInt(deletionTimeframeString)
-            : undefined;
+        let deletionTimeframe: number | undefined;
 
-        if (deletionTimeframe !== undefined && isNaN(deletionTimeframe)) {
-            await context.error("Invalid deletion timeframe provided.");
-            return;
+        try {
+            deletionTimeframe = deletionTimeframeString
+                ? Duration.fromDurationStringExpression(deletionTimeframeString, true)
+                : undefined;
+        } catch (error) {
+            if (error instanceof DurationParseError) {
+                await context.error("Invalid deletion timeframe provided.");
+                return;
+            }
+
+            throw error;
         }
 
         if (
@@ -173,7 +181,7 @@ class BanCommand extends Command {
             reason,
             user: member?.user ?? user,
             generateOverviewEmbed: true,
-            duration: args.duration,
+            duration: args.duration?.toMilliseconds(),
             deletionTimeframe
         });
 

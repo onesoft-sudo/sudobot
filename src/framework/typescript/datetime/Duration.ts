@@ -111,8 +111,10 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<SerializedDurat
         });
     }
 
-    public static fromDurationStringExpression(expression: string, retMs: true): number;
-    public static fromDurationStringExpression(expression: string, retMs?: false): Duration;
+    public static fromDurationStringExpression<T extends boolean = false>(
+        expression: string,
+        retMs?: T
+    ): T extends true ? number : Duration;
 
     public static fromDurationStringExpression(
         expression: string,

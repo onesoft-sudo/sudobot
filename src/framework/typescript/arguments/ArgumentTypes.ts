@@ -1,21 +1,21 @@
 /*
-* This file is part of SudoBot.
-*
-* Copyright (C) 2021-2024 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 import { requireNonNull } from "../utils/utils";
 import { ArgumentConstructor } from "./Argument";
@@ -79,20 +79,14 @@ export function TakesArgument<T>(
     type: ArgumentTypeOptions<T[keyof T]>
 ): ClassDecorator & MethodDecorator;
 
-export function TakesArgument<
-    T,
-    _O extends ArgumentOptionsFor<T> = ArgumentOptionsFor<T>
->(
+export function TakesArgument<T, _O extends ArgumentOptionsFor<T> = ArgumentOptionsFor<T>>(
     names: _O["names"],
     types: _O["types"],
     optional?: _O["optional"],
     errors?: _O["errorMessages"][]
 ): ClassDecorator & MethodDecorator;
 
-export function TakesArgument<
-    T,
-    _O extends ArgumentOptionsFor<T> = ArgumentOptionsFor<T>
->(
+export function TakesArgument<T, _O extends ArgumentOptionsFor<T> = ArgumentOptionsFor<T>>(
     typeOrName: _O | _O["names"],
     types?: _O["types"],
     optional?: _O["optional"],
@@ -104,14 +98,15 @@ export function TakesArgument<
             [];
 
         metadata.unshift(
-            (Array.isArray(typeOrName) && typeof typeOrName[0] === "string" || typeof typeOrName === "string")
+            (Array.isArray(typeOrName) && typeof typeOrName[0] === "string") ||
+                typeof typeOrName === "string"
                 ? {
-                      names: Array.isArray(typeOrName) ? typeOrName : [typeOrName] as string[],
+                      names: Array.isArray(typeOrName) ? typeOrName : ([typeOrName] as string[]),
                       types: requireNonNull(types),
                       optional: optional,
-                      errorMessages: errors as ArgumentTypeOptions["errorMessages"] ?? [],
+                      errorMessages: (errors as ArgumentTypeOptions["errorMessages"]) ?? []
                   }
-                : typeOrName as _O
+                : (typeOrName as _O)
         );
 
         Reflect.defineMetadata("command:types", metadata, target);
