@@ -106,6 +106,12 @@ tasks.register(TestTask);
 tasks.register(RunTask);
 tasks.register(LintTask);
 
-tasks.register("afterDependencies", async () => {
-    await x("prisma generate");
-});
+tasks.register(
+    "afterDependencies",
+    async () => {
+        await x("prisma generate");
+    },
+    {
+        hidden: true
+    }
+);

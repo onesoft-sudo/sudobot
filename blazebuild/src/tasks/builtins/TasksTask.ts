@@ -18,6 +18,10 @@ class TasksTask extends AbstractTask {
         let maxLength = 0;
 
         for (const task of tasksArray) {
+            if (task.hidden) {
+                continue;
+            }
+
             const group =
                 task.metadata?.defaultGroup ?? task.handler.defaultGroup ?? TasksTask.UNGROUPED;
             groupedTasks[group] ??= [];
@@ -47,6 +51,10 @@ class TasksTask extends AbstractTask {
 
             return a.toString().localeCompare(b.toString());
         })) {
+            if (!groupedTasks[group]) {
+                continue;
+            }
+
             const groupString = `  ${(group as string | symbol) === TasksTask.UNGROUPED ? "Ungrouped" : group.toString()}`;
             IO.println(chalk.white.bold(groupString));
             IO.println("  " + chalk.white.dim("-".repeat(maxLength)));

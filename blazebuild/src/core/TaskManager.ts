@@ -67,15 +67,18 @@ export class TaskManager {
                 );
             }
 
+            const metadata = Reflect.getMetadata("task:data", instance.constructor.prototype)?.find(
+                (e: TaskMetadata) => e.name === finalName
+            );
+
             this.tasks.set(finalName, {
                 name: finalName,
                 handler: instance,
                 options: (typeof handlerOrName === "string"
                     ? options
                     : handlerOrOptions) as TaskRegisterOptions,
-                metadata: Reflect.getMetadata("task:data", instance.constructor.prototype)?.find(
-                    (e: TaskMetadata) => e.name === finalName
-                )
+                metadata,
+                hidden: options?.hidden ?? metadata?.defaultHidden ?? false
             });
         }
     }
