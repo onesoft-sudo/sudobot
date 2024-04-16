@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 import { Snowflake } from "discord.js";
 import Application from "../app/Application";
 import { HasApplication } from "../types/HasApplication";
-import { requireNonNull } from "../utils/utils";
+import { isDevelopmentMode, requireNonNull } from "../utils/utils";
 import QueueManager from "./QueueManager";
 
 export type StorableData = Prisma.InputJsonValue | typeof Prisma.JsonNull;
@@ -119,12 +119,15 @@ abstract class Queue<T extends StorableData = StorableData> extends HasApplicati
     public async delete() {
         requireNonNull(this._id, "Queue ID must be set to delete");
 
-        this.application.logger.debug("Delete result", await this.application.prisma.queue.delete({
-            where: {
-                id: this._id,
-                guildId: this.guildId
-            }
-        }));
+        this.application.logger.debug(
+            "Delete result",
+            await this.application.prisma.queue.delete({
+                where: {
+                    id: this._id,
+                    guildId: this.guildId
+                }
+            })
+        );
 
         this.manager.remove(this);
     }
@@ -144,7 +147,11 @@ abstract class Queue<T extends StorableData = StorableData> extends HasApplicati
 
     public clearTimeout() {
         if (!this._timeout) {
-            throw new Error("Timeout not set");
+            if (isDevelopmentMode()) {
+                throw new Error("Timeout not set");
+            }
+
+            return;
         }
 
         (this.repeat ? clearInterval : clearTimeout)(this._timeout);
