@@ -1,4 +1,5 @@
 import { Inject } from "@framework/container/Inject";
+import Duration from "@framework/datetime/Duration";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { Infraction } from "@prisma/client";
@@ -81,7 +82,9 @@ class ModerationActionService extends Service {
                     moderator: this.application.client.user!,
                     member: target,
                     reason: action.reason,
-                    duration: action.duration,
+                    duration: action.duration
+                        ? Duration.fromMilliseconds(action.duration)
+                        : undefined,
                     guildId: guild.id,
                     notify: action.notify
                 });
@@ -96,6 +99,8 @@ class ModerationActionService extends Service {
                     notify: action.notify,
                     mode: action.mode,
                     duration: action.duration
+                        ? Duration.fromMilliseconds(action.duration)
+                        : undefined
                 });
 
             case "warn":
@@ -124,9 +129,13 @@ class ModerationActionService extends Service {
                     moderator: this.application.client.user!,
                     user: target,
                     reason: action.reason,
-                    deletionTimeframe: action.delete_timeframe,
+                    deletionTimeframe: action.delete_timeframe
+                        ? Duration.fromMilliseconds(action.delete_timeframe)
+                        : undefined,
                     guildId: guild.id,
                     duration: action.duration
+                        ? Duration.fromMilliseconds(action.duration)
+                        : undefined
                 });
 
             case "verbal_warn":
