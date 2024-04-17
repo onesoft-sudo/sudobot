@@ -86,10 +86,12 @@ dependencies(() => {
     devModule("@types/semver", "^7.5.4");
     devModule("@types/tar", "^6.1.11");
     devModule("@types/uuid", "^9.0.2");
-    devModule("@typescript-eslint/eslint-plugin", "^7.1.1");
-    devModule("@typescript-eslint/parser", "^7.1.1");
+    devModule("typescript-eslint", "^7.7.0");
+    devModule("@typescript-eslint/eslint-plugin", "^7.7.0");
+    devModule("@typescript-eslint/parser", "^7.7.0");
     devModule("@vitest/coverage-v8", "^1.3.1");
     devModule("eslint", "^8.57.0");
+    devModule("eslint-plugin-osn", "^1.0.3");
     devModule("husky", "latest");
     devModule("prisma", "^5.11.0");
     devModule("typescript", "^5.4.3");

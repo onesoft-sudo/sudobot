@@ -16,7 +16,7 @@ class LintTask extends AbstractTask {
         defaultGroup: "Other"
     })
     public override async execute() {
-        await x("eslint --ext .ts src  --max-warnings=0");
+        await x(`eslint "${project.srcDir}"`);
     }
 }
 
