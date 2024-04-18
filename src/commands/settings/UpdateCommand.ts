@@ -567,7 +567,8 @@ export default class UpdateCommand extends Command {
                 shell: true
             });
 
-            if (!gitStatus) {
+            if (gitStatus !== 0) {
+                this.client.logger.error("Git command returned non-zero status code");
                 return false;
             }
 
