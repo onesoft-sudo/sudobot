@@ -103,7 +103,7 @@ class InfractionManager extends Service {
                 const abortReason = `${emoji(
                     this.application.getClient(),
                     "error"
-                )} The following placeholders were not found in the reason: \`${matches
+                )} The following placeholders were not defined but used in the reason: \`${matches
                     .map(m => m[0])
                     .join("`, `")}\`
                         `;

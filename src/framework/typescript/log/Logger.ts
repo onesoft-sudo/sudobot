@@ -71,7 +71,7 @@ export class Logger {
         this.print(methodName, beginning, ...args);
 
         if (level === LogLevel.Fatal) {
-            console.log("Critical error occurred. Exiting.");
+            console.error("Critical error occurred. Exiting.");
             process.exit(-1);
         }
     }

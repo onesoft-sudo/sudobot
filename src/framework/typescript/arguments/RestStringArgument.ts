@@ -30,8 +30,6 @@ class RestStringArgument extends Argument<string> {
         let content = this.commandContent.trim();
         let i = 0;
 
-        console.log(content);
-
         for (const arg of this.argv) {
             content = content.slice(arg.length).trimStart();
 
