@@ -1,3 +1,12 @@
+## [8.32.6](https://github.com/onesoft-sudo/sudobot/compare/v8.32.5...v8.32.6) (2024-04-18)
+
+
+### Bug Fixes
+
+* **commands:system:** initial ping shows `-1` ([dedface](https://github.com/onesoft-sudo/sudobot/commit/dedface694d1bc520461bdfe64458b70d1f965e5))
+
+
+
 ## [8.32.5](https://github.com/onesoft-sudo/sudobot/compare/v8.32.4...v8.32.5) (2024-04-18)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * googleapis causing crash on bun ([7b3a80a](https://github.com/onesoft-sudo/sudobot/commit/7b3a80a21c2f4a47477cd913a1d70eb4c3945b77))
-
-
-
-## [8.32.1](https://github.com/onesoft-sudo/sudobot/compare/v8.31.1...v8.32.1) (2024-04-14)
-
-
-### Bug Fixes
-
-* googleapis crash when ran using bun ([a023f01](https://github.com/onesoft-sudo/sudobot/commit/a023f015e491f56d70a3bbcc21539e4953eafde1))
 
 
 
