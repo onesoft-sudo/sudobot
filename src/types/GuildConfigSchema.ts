@@ -118,6 +118,7 @@ export const GuildConfigSchema = z.object({
             infraction_logging_channel: zSnowflake.optional(),
             join_leave_channel: zSnowflake.optional(),
             saved_messages_channel: zSnowflake.optional(),
+            excluded_channels: z.array(zSnowflake).default([]),
             events: z
                 .object({
                     message_edit: z.boolean().default(true),
