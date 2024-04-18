@@ -80,7 +80,7 @@ export default class SystemCommand extends Command {
                         },
                         {
                             name: "API Latency",
-                            value: (emoji(this.client.ws.ping) + " " + this.client.ws.ping + "ms").trimStart()
+                            value: (emoji(this.client.ws.ping) + " " + (this.client.ws.ping === -1 ? "`<Yet to compute>`" : (this.client.ws.ping + "ms"))).trimStart()
                         },
                         {
                             name: "Memory Usage",
