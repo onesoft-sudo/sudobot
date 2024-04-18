@@ -342,14 +342,19 @@ export default class UpdateCommand extends Command {
     }
 
     async installUpdate({ unpackedDirectory, version }: { unpackedDirectory: string; version: string }) {
-        const { error, dirpairs } = await this.backupCurrentSystem([
-            "build",
+        const dirs = [
             "src",
             "prisma",
             "scripts",
             "package.json",
             "tsconfig.json"
-        ]);
+        ];
+
+        if (!process.isBun) {
+            dirs.push("build");
+        }
+        
+        const { error, dirpairs } = await this.backupCurrentSystem();
 
         if (error) {
             return false;
@@ -455,43 +460,58 @@ export default class UpdateCommand extends Command {
     }
 
     buildNewInstallation(dirpairs: Array<readonly [string, string]>) {
-        const { status: rmStatus } = spawnSync("rm -fr build tsconfig.tsbuildinfo", {
-            stdio: "inherit",
-            cwd: path.join(__dirname, "../../.."),
-            encoding: "utf-8",
-            shell: true
-        });
-
-        if (rmStatus !== 0) {
-            logError("Failed to remove the old build directory. Rolling back");
-            return this.rollbackUpdate(dirpairs);
+        if (process.isBun) {
+            const { status: installStatus } = spawnSync("bun install -D", {
+                stdio: "inherit",
+                cwd: path.join(__dirname, "../../.."),
+                encoding: "utf-8",
+                shell: true
+            });
+    
+            if (installStatus !== 0) {
+                logError("Failed to install the new dependencies. Rolling back");
+                return this.rollbackUpdate(dirpairs);
+            }
+        }
+        else {
+            const { status: rmStatus } = spawnSync("rm -fr build tsconfig.tsbuildinfo", {
+                stdio: "inherit",
+                cwd: path.join(__dirname, "../../.."),
+                encoding: "utf-8",
+                shell: true
+            });
+    
+            if (rmStatus !== 0) {
+                logError("Failed to remove the old build directory. Rolling back");
+                return this.rollbackUpdate(dirpairs);
+            }
+    
+            const { status: installStatus } = spawnSync("npm install -D", {
+                stdio: "inherit",
+                cwd: path.join(__dirname, "../../.."),
+                encoding: "utf-8",
+                shell: true
+            });
+    
+            if (installStatus !== 0) {
+                logError("Failed to install the new dependencies. Rolling back");
+                return this.rollbackUpdate(dirpairs);
+            }
+    
+            const { status: buildStatus } = spawnSync("npm run build", {
+                stdio: "inherit",
+                cwd: path.join(__dirname, "../../.."),
+                encoding: "utf-8",
+                shell: true
+            });
+    
+            if (buildStatus !== 0) {
+                logError("Failed to build the update. Rolling back");
+                return this.rollbackUpdate(dirpairs);
+            }
         }
 
-        const { status: installStatus } = spawnSync("npm install -D", {
-            stdio: "inherit",
-            cwd: path.join(__dirname, "../../.."),
-            encoding: "utf-8",
-            shell: true
-        });
-
-        if (installStatus !== 0) {
-            logError("Failed to install the new dependencies. Rolling back");
-            return this.rollbackUpdate(dirpairs);
-        }
-
-        const { status: buildStatus } = spawnSync("npm run build", {
-            stdio: "inherit",
-            cwd: path.join(__dirname, "../../.."),
-            encoding: "utf-8",
-            shell: true
-        });
-
-        if (buildStatus !== 0) {
-            logError("Failed to build the update. Rolling back");
-            return this.rollbackUpdate(dirpairs);
-        }
-
-        const { status: dbPushStatus } = spawnSync("npx prisma db push", {
+        const { status: dbPushStatus } = spawnSync((process.isBun ? "bunx" : "npx") + " prisma db push", {
             stdio: "inherit",
             cwd: path.join(__dirname, "../../.."),
             encoding: "utf-8",
@@ -503,7 +523,7 @@ export default class UpdateCommand extends Command {
             return this.rollbackUpdate(dirpairs);
         }
 
-        const { status: slashCommandStatus } = spawnSync("npm run deploy", {
+        const { status: slashCommandStatus } = spawnSync((process.isBun ? "bun" : "npm") + " run deploy", {
             stdio: "inherit",
             cwd: path.join(__dirname, "../../.."),
             encoding: "utf-8",
