@@ -99,7 +99,7 @@ class WarnCommand extends Command {
 
         if (
             !context.member ||
-            !(await this.permissionManager.canModerate(member, context.member, true))
+            !(await this.permissionManager.canModerate(member, context.member))
         ) {
             await context.error("You don't have permission to warn this member!");
             return;
