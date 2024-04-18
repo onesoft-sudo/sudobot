@@ -245,6 +245,11 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<SerializedDurat
         return this._totalMilliseconds;
     }
 
+    public toSeconds(roundStrategy?: "floor" | "ceil" | "round"): number {
+        const result = this.toMilliseconds() / Duration.SECOND_MS;
+        return roundStrategy ? Math[roundStrategy].call(Math, result) : result;
+    }
+
     public fromNow(): Date {
         return new Date(this.fromNowMilliseconds());
     }

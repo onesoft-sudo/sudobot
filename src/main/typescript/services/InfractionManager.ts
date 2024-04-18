@@ -296,7 +296,7 @@ class InfractionManager extends Service {
         })) as PrivateThreadChannel;
     }
 
-    private async createInfraction<E extends boolean>(
+    public async createInfraction<E extends boolean>(
         options: InfractionCreateOptions<E>
     ): Promise<Infraction> {
         const {
@@ -307,7 +307,8 @@ class InfractionManager extends Service {
             transformNotificationEmbed,
             payload,
             type,
-            notify = true
+            notify = true,
+            processReason = true
         } = options;
         const user =
             "member" in options && options.member
@@ -319,7 +320,7 @@ class InfractionManager extends Service {
                     userId: user.id,
                     guildId,
                     moderatorId: moderator.id,
-                    reason: this.processReason(guildId, reason),
+                    reason: processReason ? this.processReason(guildId, reason) : reason,
                     type,
                     deliveryStatus:
                         type === InfractionType.UNBAN || !notify
@@ -428,12 +429,12 @@ class InfractionManager extends Service {
         });
 
         try {
-            // await guild.bans.create(user, {
-            //     reason: `${moderator.username} - ${infraction.reason ?? "No reason provided"}`,
-            //     deleteMessageSeconds: payload.deletionTimeframe
-            //         ? Math.floor(payload.deletionTimeframe / 1000)
-            //         : undefined
-            // });
+            await guild.bans.create(user, {
+                reason: `${moderator.username} - ${infraction.reason ?? "No reason provided"}`,
+                deleteMessageSeconds: payload.deletionTimeframe
+                    ? payload.deletionTimeframe.toSeconds("floor")
+                    : undefined
+            });
 
             await this.queueService.bulkCancel(UnbanQueue, queue => {
                 return queue.data.userId === user.id && queue.data.guildId === guild.id;
@@ -486,11 +487,29 @@ class InfractionManager extends Service {
         const {
             moderator,
             user,
-            reason,
+            reason: rawReason,
             guildId,
             generateOverviewEmbed,
             transformNotificationEmbed
         } = payload;
+        const reason = this.processReason(guildId, rawReason) ?? rawReason;
+
+        try {
+            await guild.bans.remove(
+                user,
+                `${moderator.username} - ${reason ?? "No reason provided"}`
+            );
+        } catch (error) {
+            this.application.logger.error(error);
+
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+                errorType: "unban_failed"
+            };
+        }
+
         const infraction: Infraction = await this.createInfraction({
             guildId,
             moderator,
@@ -498,15 +517,11 @@ class InfractionManager extends Service {
             transformNotificationEmbed,
             type: InfractionType.UNBAN,
             user,
-            notify: false
+            notify: false,
+            processReason: false
         });
 
         try {
-            await guild.bans.remove(
-                user,
-                `${moderator.username} - ${infraction.reason ?? "No reason provided"}`
-            );
-
             await this.queueService.bulkCancel(UnbanQueue, queue => {
                 return (
                     queue.data.userId === user.id &&
@@ -520,7 +535,8 @@ class InfractionManager extends Service {
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null
+                overviewEmbed: null,
+                errorType: "queue_cancel_failed"
             };
         }
 
@@ -595,7 +611,7 @@ class InfractionManager extends Service {
         const {
             moderator,
             member,
-            reason,
+            reason: rawReason,
             guildId,
             duration,
             clearMessagesCount,
@@ -687,31 +703,16 @@ class InfractionManager extends Service {
             };
         }
 
-        const infraction: Infraction = await this.createInfraction({
-            guildId,
-            moderator,
-            reason,
-            transformNotificationEmbed,
-            type: InfractionType.MUTE,
-            user: member.user,
-            notify,
-            payload: {
-                metadata: {
-                    type: role ? "role" : "timeout",
-                    duration: duration?.fromNowMilliseconds()
-                },
-                expiresAt: duration ? duration.fromNow() : undefined
-            }
-        });
+        const reason = this.processReason(guildId, rawReason) ?? rawReason;
 
         try {
             if (mode === "timeout" && duration) {
                 await member.timeout(
                     duration.toMilliseconds(),
-                    `${moderator.username} - ${infraction.reason}`
+                    `${moderator.username} - ${reason}`
                 );
             } else if (mode === "role" && role) {
-                await member.roles.add(role, `${moderator.username} - ${infraction.reason}`);
+                await member.roles.add(role, `${moderator.username} - ${reason}`);
 
                 await this.queueService.bulkCancel(UnmuteQueue, queue => {
                     return (
@@ -745,6 +746,24 @@ class InfractionManager extends Service {
                 overviewEmbed: null
             };
         }
+
+        const infraction: Infraction = await this.createInfraction({
+            guildId,
+            moderator,
+            reason,
+            transformNotificationEmbed,
+            type: InfractionType.MUTE,
+            user: member.user,
+            notify,
+            payload: {
+                metadata: {
+                    type: role ? "role" : "timeout",
+                    duration: duration?.fromNowMilliseconds()
+                },
+                expiresAt: duration ? duration.fromNow() : undefined
+            },
+            processReason: false
+        });
 
         if (clearMessagesCount && channel) {
             await this.createClearMessages({
@@ -782,7 +801,7 @@ class InfractionManager extends Service {
         const {
             moderator,
             member,
-            reason,
+            reason: rawReason,
             guildId,
             generateOverviewEmbed,
             transformNotificationEmbed,
@@ -836,20 +855,7 @@ class InfractionManager extends Service {
             };
         }
 
-        const infraction: Infraction = await this.createInfraction({
-            guildId,
-            moderator,
-            reason,
-            transformNotificationEmbed,
-            type: InfractionType.UNMUTE,
-            user: member.user,
-            notify,
-            payload: {
-                metadata: {
-                    mode
-                }
-            }
-        });
+        const reason = this.processReason(guildId, rawReason) ?? rawReason;
 
         try {
             if (
@@ -857,14 +863,11 @@ class InfractionManager extends Service {
                 member.communicationDisabledUntilTimestamp &&
                 member.moderatable
             ) {
-                await member.disableCommunicationUntil(
-                    null,
-                    `${moderator.username} - ${infraction.reason}`
-                );
+                await member.disableCommunicationUntil(null, `${moderator.username} - ${reason}`);
             }
 
             if (mode !== "timeout" && role && member.roles.cache.has(role)) {
-                await member.roles.remove(role, `${moderator.username} - ${infraction.reason}`);
+                await member.roles.remove(role, `${moderator.username} - ${reason}`);
             }
 
             await this.queueService.bulkCancel(UnmuteQueue, queue => {
@@ -883,6 +886,22 @@ class InfractionManager extends Service {
                 overviewEmbed: null
             };
         }
+
+        const infraction: Infraction = await this.createInfraction({
+            guildId,
+            moderator,
+            reason,
+            transformNotificationEmbed,
+            type: InfractionType.UNMUTE,
+            user: member.user,
+            notify,
+            payload: {
+                metadata: {
+                    mode
+                }
+            },
+            processReason: false
+        });
 
         return {
             status: "success",
@@ -909,7 +928,7 @@ class InfractionManager extends Service {
         const {
             moderator,
             member,
-            reason,
+            reason: rawReason,
             guildId,
             generateOverviewEmbed,
             transformNotificationEmbed,
@@ -929,28 +948,13 @@ class InfractionManager extends Service {
             };
         }
 
-        const infraction: Infraction = await this.createInfraction({
-            guildId,
-            moderator,
-            reason,
-            transformNotificationEmbed,
-            type: InfractionType.ROLE,
-            user: member.user,
-            notify,
-            payload: {
-                metadata: {
-                    mode,
-                    roles,
-                    duration
-                }
-            }
-        });
+        const reason = this.processReason(guildId, rawReason) ?? rawReason;
 
         try {
             if (mode === "give") {
-                await member.roles.add(roles, `${moderator.username} - ${infraction.reason}`);
+                await member.roles.add(roles, `${moderator.username} - ${reason}`);
             } else {
-                await member.roles.remove(roles, `${moderator.username} - ${infraction.reason}`);
+                await member.roles.remove(roles, `${moderator.username} - ${reason}`);
             }
 
             if (duration !== undefined) {
@@ -961,7 +965,7 @@ class InfractionManager extends Service {
                             guildId: guild.id,
                             roleIds: roles.map(role => (typeof role === "string" ? role : role.id)),
                             mode: mode === "give" ? "remove" : "add",
-                            reason: `${moderator.username} - ${infraction.reason}`
+                            reason: `${moderator.username} - ${reason}`
                         },
                         guildId: guild.id,
                         runsAt: duration.fromNow()
@@ -977,6 +981,24 @@ class InfractionManager extends Service {
                 overviewEmbed: null
             };
         }
+
+        const infraction: Infraction = await this.createInfraction({
+            guildId,
+            moderator,
+            reason,
+            transformNotificationEmbed,
+            type: InfractionType.ROLE,
+            user: member.user,
+            notify,
+            payload: {
+                metadata: {
+                    mode,
+                    roles,
+                    duration
+                }
+            },
+            processReason: false
+        });
 
         return {
             status: "success",
@@ -1278,6 +1300,7 @@ type InfractionCreateOptions<E extends boolean> = CommonOptions<E> & {
     callback?: (infraction: Infraction) => Awaitable<void>;
     notify?: boolean;
     sendLog?: boolean;
+    processReason?: boolean;
 } & ({ user: User } | { member: GuildMember });
 
 export default InfractionManager;
