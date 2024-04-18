@@ -470,6 +470,17 @@ export default class InfractionManager extends Service {
     ) {
         reason = this.processInfractionReason(guild.id, reason, abortOnTemplateNotFound) ?? reason;
 
+        try {
+            await guild.bans.create(user, {
+                reason,
+                deleteMessageSeconds
+            });
+        } catch (e) {
+            logError(e);
+            await this.autoRemoveUnbanQueue(guild, user).catch(logError);
+            return null;
+        }
+
         const infraction = await this.client.prisma.infraction.create({
             data: {
                 type: duration ? InfractionType.TEMPBAN : InfractionType.BAN,
@@ -516,37 +527,26 @@ export default class InfractionManager extends Service {
             }).catch(logError);
         }
 
-        try {
-            await guild.bans.create(user, {
-                reason,
-                deleteMessageSeconds
-            });
+        log("Seconds: " + deleteMessageSeconds);
 
-            log("Seconds: " + deleteMessageSeconds);
+        if (duration) {
+            log("Added unban queue");
 
-            if (duration) {
-                log("Added unban queue");
-
-                await this.client.queueManager.add(
-                    new QueueEntry({
-                        args: [user.id],
-                        client: this.client,
-                        filePath: path.resolve(__dirname, "../queues/UnbanQueue"),
-                        guild,
-                        name: "UnbanQueue",
-                        createdAt: new Date(),
-                        userId: user.id,
-                        willRunAt: new Date(Date.now() + duration)
-                    })
-                );
-            }
-
-            return infraction;
-        } catch (e) {
-            logError(e);
-            await this.autoRemoveUnbanQueue(guild, user).catch(logError);
-            return null;
+            await this.client.queueManager.add(
+                new QueueEntry({
+                    args: [user.id],
+                    client: this.client,
+                    filePath: path.resolve(__dirname, "../queues/UnbanQueue"),
+                    guild,
+                    name: "UnbanQueue",
+                    createdAt: new Date(),
+                    userId: user.id,
+                    willRunAt: new Date(Date.now() + duration)
+                })
+            );
         }
+
+        return infraction;
     }
 
     async createUserFakeBan(
@@ -659,7 +659,6 @@ export default class InfractionManager extends Service {
         }: CommonOptions & { autoRemoveQueue?: boolean }
     ) {
         reason = this.processInfractionReason(guild.id, reason, abortOnTemplateNotFound) ?? reason;
-        if (autoRemoveQueue) await this.autoRemoveUnbanQueue(guild, user);
 
         try {
             await guild.bans.remove(user, reason);
@@ -674,6 +673,8 @@ export default class InfractionManager extends Service {
                 infraction: null
             };
         }
+
+        if (autoRemoveQueue) await this.autoRemoveUnbanQueue(guild, user);
 
         const infraction = await this.client.prisma.infraction.create({
             data: {
@@ -704,6 +705,14 @@ export default class InfractionManager extends Service {
         if (!member.kickable) return null;
 
         reason = this.processInfractionReason(guild.id, reason, abortOnTemplateNotFound) ?? reason;
+
+        try {
+            await member.kick(reason);
+        } catch (e) {
+            logError(e);
+            return null;
+        }
+
         const infraction = await this.client.prisma.infraction.create({
             data: {
                 type: InfractionType.KICK,
@@ -730,13 +739,7 @@ export default class InfractionManager extends Service {
             });
         }
 
-        try {
-            await member.kick(reason);
-            return infraction;
-        } catch (e) {
-            logError(e);
-            return null;
-        }
+        return infraction;
     }
 
     async createMemberWarn(
