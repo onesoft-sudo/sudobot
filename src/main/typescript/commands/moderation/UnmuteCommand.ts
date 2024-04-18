@@ -64,7 +64,7 @@ type UnmuteCommandArgs = {
 })
 class UnmuteCommand extends Command {
     public override readonly name = "unmute";
-    public override readonly description = "Unmutes a a user.";
+    public override readonly description = "Unmutes a user.";
     public override readonly detailedDescription =
         "Revokes the mute on a user, allowing them to speak again.";
     public override readonly permissions = [PermissionFlagsBits.ModerateMembers];

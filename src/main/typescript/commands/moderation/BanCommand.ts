@@ -86,6 +86,7 @@ class BanCommand extends Command {
         "<user: User> [reason: RestString]",
         "<user: User> <duration: Duration> [reason: RestString]"
     ];
+    public override readonly systemPermissions = [PermissionFlagsBits.BanMembers];
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;

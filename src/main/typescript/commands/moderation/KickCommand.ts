@@ -51,6 +51,7 @@ class KickCommand extends Command {
     public override readonly permissions = [PermissionFlagsBits.KickMembers];
     public override readonly defer = true;
     public override readonly usage = ["<member: GuildMember> [reason: RestString]"];
+    public override readonly systemPermissions = [PermissionFlagsBits.KickMembers];
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;
