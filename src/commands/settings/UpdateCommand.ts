@@ -354,7 +354,7 @@ export default class UpdateCommand extends Command {
             dirs.push("build");
         }
         
-        const { error, dirpairs } = await this.backupCurrentSystem();
+        const { error, dirpairs } = await this.backupCurrentSystem(dirs);
 
         if (error) {
             return false;
@@ -548,7 +548,13 @@ export default class UpdateCommand extends Command {
             existsSync(path.join(__dirname, "../../..", ".git")) &&
             (existsSync("/usr/bin/git") || existsSync("/usr/local/bin/git") || existsSync("/bin/git"))
         ) {
-            const { error, dirpairs } = await this.backupCurrentSystem(["build", "src", "prisma", "scripts"]);
+            const dirs = ["src", "prisma", "scripts"];
+
+            if (!process.isBun) {
+                dirs.push("build");
+            }
+            
+            const { error, dirpairs } = await this.backupCurrentSystem(dirs);
 
             if (error) {
                 return false;
