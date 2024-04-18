@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import { spawn } from "child_process";
 import { existsSync } from "fs";
 import { SystemPlugin } from "../core/SystemPlugin";
@@ -8,11 +7,11 @@ export class TypeScriptPlugin extends SystemPlugin {
     public compile() {
         const { metadata } = this.cli.projectManager;
 
-        IO.println(
-            `${chalk.green("COMPILE")} ${chalk.gray(`${metadata.srcDir}/**/*.ts`)} -> ${chalk.gray(
-                `${metadata.buildDir}/**/*.js`
-            )}`.padEnd(process.stdout.columns ?? 80, " ")
-        );
+        // IO.println(
+        //     `${chalk.green("COMPILE")} ${chalk.gray(`${metadata.srcDir}/**/*.ts`)} -> ${chalk.gray(
+        //         `${metadata.buildDir}/**/*.js`
+        //     )}`.padEnd(process.stdout.columns ?? 80, " ")
+        // );
 
         const tscPath = existsSync("node_modules/.bin/tsc") ? "node_modules/.bin/tsc" : "tsc";
 
