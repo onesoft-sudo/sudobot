@@ -139,8 +139,12 @@ class PermissionManagerService extends AbstractPermissionManagerService {
         return !(await manager.canBypassAutoModeration(member));
     }
 
-    public async canModerate(member: GuildMember, moderator: GuildMember) {
-        if (member.id === moderator.id) {
+    public async canModerate(
+        member: GuildMember,
+        moderator: GuildMember,
+        forceNoSameMemberCheck?: boolean
+    ) {
+        if (member.id === moderator.id && !forceNoSameMemberCheck) {
             return false;
         }
 
