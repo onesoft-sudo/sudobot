@@ -1,4 +1,0 @@
-{
-    "$schema": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/config/schema/system.json",
-    "system_admins": ["owner_id"]
-}
