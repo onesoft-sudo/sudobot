@@ -1,3 +1,12 @@
+## [8.32.3](https://github.com/onesoft-sudo/sudobot/compare/v8.32.2...v8.32.3) (2024-04-18)
+
+
+### Bug Fixes
+
+* add missing `excluded_channels` option to GuildConfigSchema.ts ([ac048d5](https://github.com/onesoft-sudo/sudobot/commit/ac048d50e810bc01464b56d47a795454d2e6a027))
+
+
+
 ## [8.32.2](https://github.com/onesoft-sudo/sudobot/compare/v8.32.1...v8.32.2) (2024-04-14)
 
 
@@ -40,15 +49,6 @@
 
 * bump release minor version ([f62bfbf](https://github.com/onesoft-sudo/sudobot/commit/f62bfbf721a73c7704e6570bf707b0d4b1a25543))
 * survey forms ([f42c46f](https://github.com/onesoft-sudo/sudobot/commit/f42c46f212d86fa1019382945d46d114205a1b10))
-
-
-
-# [8.30.0](https://github.com/onesoft-sudo/sudobot/compare/v8.29.3...v8.30.0) (2024-03-13)
-
-
-### Features
-
-* **commands:ai:** support custom model names ([68d2b42](https://github.com/onesoft-sudo/sudobot/commit/68d2b4248a053e47d4cdf3e1dc50cf05bb0ff0e4))
 
 
 
