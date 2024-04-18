@@ -27,34 +27,35 @@ class AboutCommand extends Command {
 
     public override async execute(context: ChatContext) {
         const metadata = this.application.metadata as MetadataType;
+        const avatar = this.application.getClient().user?.displayAvatarURL();
+        const emoji = context.emoji("sudobot");
+        const codeName = metadata._meta.release_codename;
+        const shortCodeName = metadata._meta.release_short_codename;
 
         await context.reply({
             embeds: [
                 {
-                    author: {
-                        icon_url: this.application.getClient().user?.displayAvatarURL(),
-                        name: "SudoBot"
-                    },
+                    thumbnail: avatar
+                        ? {
+                              url: avatar
+                          }
+                        : undefined,
                     description: `
-                        __**A free and open source Discord moderation bot**__.\n
-                        This bot is free software, and you are welcome to redistribute it under certain conditions.
+                        ## ${emoji ? emoji.toString() + " " : ""}SudoBot ${shortCodeName}\n
+                        ### A free and open source Discord moderation bot.\n
+                        This bot is **free software**, and you are welcome to redistribute it under certain conditions.
                         See the [GNU Affero General Public License v3](https://www.gnu.org/licenses/agpl-3.0.en.html) for more detailed information.
                     `.replaceAll(/\n([ \t]+)/gm, "\n"),
                     color: 0x007bff,
                     fields: [
                         {
                             name: "Version",
-                            value: `${metadata.version}`,
+                            value: `**${metadata.version}** (${codeName})`,
                             inline: true
                         },
                         {
                             name: "Source Code",
                             value: `[GitHub](${metadata.repository.url})`,
-                            inline: true
-                        },
-                        {
-                            name: "Licensed Under",
-                            value: "[GNU Affero General Public License v3](https://www.gnu.org/licenses/agpl-3.0.en.html)",
                             inline: true
                         },
                         {
@@ -64,7 +65,12 @@ class AboutCommand extends Command {
                         },
                         {
                             name: "Support",
-                            value: "rakinar2@onesoftnet.eu.org",
+                            value: "[Contact Us](https://docs.sudobot.org/getting-started#help--support)",
+                            inline: true
+                        },
+                        {
+                            name: "Documentation",
+                            value: "[SudoBot Docs](https://docs.sudobot.org)",
                             inline: true
                         }
                     ],

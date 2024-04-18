@@ -30,6 +30,10 @@
         "url": "https://github.com/onesoft-sudo/sudobot/issues",
         "email": "sudobot@onesoftnet.eu.org"
     },
+    "_meta": {
+        "release_codename": "Chocolate Cake",
+        "release_short_codename": "Cake"
+    },
     "scripts": {
         "start": "node build/main/typescript/index.js",
         "start:bun": "bun --tsconfig-override=tsconfig.bun.json src/bun.ts",
