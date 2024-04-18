@@ -1,0 +1,37 @@
+.main {
+    background: rgba(200, 200, 200, 0.18);
+    box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.25);
+    display: block;
+    cursor: pointer;
+    text-decoration: none;
+    padding: 5px;
+    border-radius: 5px;
+    transition: 0.2s;
+}
+
+.main:hover {
+    background: rgba(200, 200, 200, 0.3);
+}
+
+.repo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-size: 0.75em;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.stats > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    color: #ccc;
+    font-size: 0.7em;
+}

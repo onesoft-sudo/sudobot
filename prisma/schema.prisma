@@ -1,0 +1,302 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DB_URL")
+}
+
+enum InfractionType {
+    BAN
+    KICK
+    MUTE
+    WARNING
+    MASSBAN
+    MASSKICK
+    UNBAN
+    UNMUTE
+    BULK_DELETE_MESSAGE
+    TIMEOUT
+    TIMEOUT_REMOVE
+    BEAN
+    NOTE
+    ROLE
+}
+
+enum InfractionDeliveryStatus {
+    SUCCESS
+    FALLBACK
+    FAILED
+    NOT_DELIVERED
+}
+
+model Infraction {
+    id             Int                      @id @default(autoincrement())
+    type           InfractionType
+    userId         String
+    guildId        String
+    reason         String?
+    moderatorId    String
+    expiresAt      DateTime?
+    metadata       Json?
+    deliveryStatus InfractionDeliveryStatus @default(SUCCESS)
+    createdAt      DateTime                 @default(now())
+    updatedAt      DateTime                 @default(now()) @updatedAt
+    queueId        Int?
+
+    @@map("infractions")
+}
+
+model PermissionOverwrite {
+    id                        Int      @id @default(autoincrement())
+    name                      String?
+    guildId                   String
+    roles                     String[] @default([])
+    users                     String[] @default([])
+    grantedDiscordPermissions String[] @default([])
+    grantedSystemPermissions  String[] @default([])
+    priority                  Int      @default(0)
+    merge                     Boolean  @default(true)
+    disabled                  Boolean  @default(false)
+    createdAt                 DateTime @default(now())
+    updatedAt                 DateTime @default(now()) @updatedAt
+
+    @@map("permission_overwrites")
+}
+
+model PermissionLevel {
+    id                        Int      @id @default(autoincrement())
+    guildId                   String
+    level                     Int
+    disabled                  Boolean  @default(false)
+    grantedDiscordPermissions String[] @default([])
+    grantedSystemPermissions  String[] @default([])
+    roles                     String[] @default([])
+    users                     String[] @default([])
+    createdAt                 DateTime @default(now())
+    updatedAt                 DateTime @default(now()) @updatedAt
+
+    @@map("permission_levels")
+}
+
+enum CommandPermissionOverwriteAction {
+    ALLOW
+    DENY
+}
+
+model CommandPermissionOverwrite {
+    id                         Int                              @id @default(autoincrement())
+    guildId                    String
+    commands                   String[]
+    requiredDiscordPermissions Json                             @default("null")
+    requiredSystemPermissions  Json                             @default("null")
+    requiredRoles              Json                             @default("null")
+    requiredUsers              Json                             @default("null")
+    requiredChannels           Json                             @default("null")
+    requiredLevel              Int?
+    disabled                   Boolean                          @default(false)
+    onMatch                    CommandPermissionOverwriteAction @default(ALLOW)
+    createdAt                  DateTime                         @default(now())
+    updatedAt                  DateTime                         @default(now()) @updatedAt
+
+    @@map("command_permission_overwrites")
+}
+
+model Queue {
+    id        Int       @id @default(autoincrement())
+    userId    String
+    guildId   String
+    channelId String?
+    messageId String?
+    name      String
+    repeat    Boolean   @default(false)
+    data      Json      @default("{}")
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @default(now()) @updatedAt
+    runsAt    DateTime?
+
+    @@map("queues")
+}
+
+// The following models were used in the previous version of the bot and are no longer used.
+// They are kept here for reference and will be removed in the future.
+
+model SpamRecord {
+    id        Int      @id @default(autoincrement())
+    user_id   String
+    guild_id  String
+    level     Int      @default(1)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    @@map("spam_records")
+}
+
+model Snippet {
+    id             Int                 @id @default(autoincrement())
+    name           String
+    user_id        String
+    guild_id       String
+    roles          String[]            @default([])
+    channels       String[]            @default([])
+    users          String[]            @default([])
+    attachments    String[]            @default([])
+    content        String[]            @default([])
+    randomize      Boolean             @default(false)
+    permissions    String[]            @default([])
+    permissionMode PermissionLogicMode @default(AND)
+    level          Int?
+    createdAt      DateTime            @default(now())
+    updatedAt      DateTime            @default(now()) @updatedAt
+
+    @@map("snippets")
+}
+
+model ChannelLock {
+    id          Int      @id @default(autoincrement())
+    guild_id    String
+    channel_id  String
+    permissions Json
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @default(now()) @updatedAt
+
+    @@map("channel_locks")
+}
+
+model ReactionRole {
+    id                  Int      @id @default(autoincrement())
+    emoji               String
+    isBuiltInEmoji      Boolean
+    guildId             String
+    channelId           String
+    messageId           String
+    roles               String[]
+    requiredRoles       String[] @default([])
+    blacklistedUsers    String[] @default([])
+    requiredPermissions String[] @default([])
+    level               Int?
+    single              Boolean  @default(false)
+    createdAt           DateTime @default(now())
+    updatedAt           DateTime @default(now()) @updatedAt
+
+    @@map("reaction_roles")
+}
+
+model User {
+    id                     Int       @id @default(autoincrement())
+    name                   String?
+    username               String
+    discordId              String
+    guilds                 String[]  @default([])
+    password               String
+    token                  String?
+    recoveryToken          String?
+    recoveryCode           String?
+    recoveryAttempts       Int       @default(0)
+    recoveryTokenExpiresAt DateTime?
+    createdAt              DateTime  @default(now())
+    tokenExpiresAt         DateTime?
+    updatedAt              DateTime  @default(now()) @updatedAt
+
+    @@map("users")
+}
+
+model BoostRoleEntries {
+    id        Int      @id @default(autoincrement())
+    role_id   String
+    user_id   String
+    guild_id  String
+    createdAt DateTime @default(now())
+
+    @@map("boost_role_entries")
+}
+
+model AfkEntry {
+    id        Int      @id @default(autoincrement())
+    reason    String?
+    userId    String
+    guildId   String
+    mentions  String[] @default([])
+    global    Boolean  @default(false)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    @@map("afk_entries")
+}
+
+enum PermissionLogicMode {
+    OR
+    AND
+}
+
+model Ballot {
+    id        Int      @id @default(autoincrement())
+    guildId   String
+    channelId String
+    messageId String
+    userId    String
+    content   String
+    anonymous Boolean  @default(false)
+    files     String[] @default([])
+    upvotes   String[] @default([])
+    downvotes String[] @default([])
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    @@map("ballots")
+}
+
+model Review {
+    id            Int      @id @default(autoincrement())
+    reviewer      String?
+    content       String
+    rating        Int
+    discordId     String?
+    email         String?
+    aboutReviewer String?
+    approved      Boolean  @default(false)
+    ip            String?
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @default(now()) @updatedAt
+
+    @@map("reviews")
+}
+
+model VerificationEntry {
+    id        Int      @id @default(autoincrement())
+    userId    String
+    token     String   @unique
+    guildId   String
+    attempts  Int      @default(0)
+    meta      Json?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    @@map("verification_entries")
+}
+
+model GlobalUserBan {
+    id         Int      @id @default(autoincrement())
+    userId     String   @unique
+    reason     String?
+    executorId String
+    notified   Boolean  @default(false)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @default(now()) @updatedAt
+
+    @@map("global_user_bans")
+}
+
+model UserStatistics {
+    id              Int      @id @default(autoincrement())
+    userId          String
+    guildId         String
+    messagesSent    Int      @default(0)
+    messagesEdited  Int      @default(0)
+    messagesDeleted Int      @default(0)
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @default(now()) @updatedAt
+
+    @@map("user_statistics")
+}

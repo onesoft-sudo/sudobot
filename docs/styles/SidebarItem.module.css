@@ -1,0 +1,17 @@
+.root {
+    margin: 5px 0;
+}
+
+.anchor {
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 5px;
+}
+
+.root.active > .anchor,
+.anchor.active,
+.anchor:hover {
+    background: rgba(255, 255, 255, 0.1);
+}

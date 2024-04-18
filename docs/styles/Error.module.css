@@ -1,0 +1,10 @@
+.main {
+    margin: 10px;
+    text-align: center;
+}
+
+@media (min-width: 971px) {
+    .main {
+        margin: 20px;
+    }
+}

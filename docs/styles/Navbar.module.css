@@ -1,0 +1,83 @@
+.nav {
+    background: #000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    z-index: 10000;
+}
+
+.logoWrapper img {
+    height: 35px;
+    width: 35px;
+}
+
+.logoWrapper {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.logoWrapper span {
+    margin-left: 10px;
+    font-size: 1.1rem;
+}
+
+.ul {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ul li {
+    margin-left: 20px;
+}
+
+.ul li:first-child {
+    margin-left: 0;
+}
+
+.ul li a {
+    color: #ddd;
+}
+
+.ul li a.active,
+.ul li a:hover {
+    color: #fff;
+}
+
+@media (min-width: 1350px) {
+    .nav {
+        padding: 10px 20px;
+    }
+}
+
+@media (min-width: 971px) {
+    .logoWrapper span {
+        font-size: 1.2rem;
+    }
+
+    .logoWrapper img {
+        height: 40px;
+        width: 40px;
+    }
+
+    .nav {
+        background: rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(20px);
+        display: grid;
+        grid-template-columns: 5fr 20fr 5fr;
+    }
+}
+
+@media (min-width: 971px) and (max-width: 1350px) {
+    .nav {
+        padding: 10px 10%;
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "sort_as": ["welcome", "getting-started"],
+    "entries": [
+        {
+            "type": "page",
+            "name": "welcome",
+            "children": [],
+            "href": "/",
+            "data": {
+                "title": "Welcome to the SudoBot Docs",
+                "short_name": "Welcome"
+            }
+        }
+    ]
+}

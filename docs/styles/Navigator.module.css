@@ -1,0 +1,57 @@
+.navigationControl {
+    display: grid;
+    align-items: center;
+    box-shadow: 0 0 1px 1px rgba(var(--shadow-color));
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    --shadow-color: 255, 255, 255, 0.2;
+}
+
+.navigationControl:hover {
+    --shadow-color: 66, 135, 245, 0.8;
+}
+
+.navigationControl:hover .text span,
+.navigationControl:hover svg {
+    color: #2d90fa;
+}
+
+.iconWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.navigationControlBack {
+    grid-template-columns: 30px auto;
+    justify-items: end;
+    text-align: right;
+}
+
+.navigationControlNext {
+    grid-template-columns: auto 30px;
+}
+
+.text > * {
+    display: block;
+}
+
+.text small {
+    color: #bbb;
+}
+
+.root {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin: 20px 0;
+    width: 100%;
+}
+
+@media (min-width: 971px) {
+    .root:not([data-wrap="true"]) {
+        grid-template-columns: 1fr 1fr;
+    }
+}

@@ -1,0 +1,36 @@
+---
+title: "Command: `remind` - SudoBot"
+short_name: remind
+---
+
+import Modes from "@/components/MDX/Modes";
+
+# `remind`
+
+Sets a reminder. The bot will remind you after the specified time interval.
+
+## Notes
+
+If you don't specify a unit of time like s, m, h, etc, it will default to seconds. So if you put 100 by itself, it will put it down as 100 seconds.
+
+### Syntax
+
+```
+-remind <time_interval> [reason]
+/remind time_interval: [time_interval] message: [reason] (OPTIONAL)
+```
+
+### Required Permissions
+
+`None`
+
+### Modes
+
+<Modes modes={["legacy", "interaction"]} />
+
+### Examples
+
+```
+-remind 10m Start coding again!
+/remind time_interval: 10h content: Sleep!
+```

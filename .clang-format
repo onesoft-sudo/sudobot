@@ -1,0 +1,8 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+IndentCaseLabels: true
+AlignAfterOpenBracket: AlwaysBreak
+BreakAfterAttributes: Always
+BreakBeforeBraces: Allman
+SpaceAfterCStyleCast: true
+AlignArrayOfStructures: Left

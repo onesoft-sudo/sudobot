@@ -1,0 +1,80 @@
+.aside {
+    width: 70vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    background: #000;
+    box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.1);
+    z-index: 1000;
+    transition: 0.2s;
+    overflow-x: hidden;
+}
+
+.overlay {
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(255, 255, 255, 0.1);
+    z-index: 999;
+    backdrop-filter: blur(2px);
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 10px;
+    background: rgb(0, 0, 0, 0.1);
+}
+
+.controls[data-expanded="true"] {
+    justify-content: space-between;
+}
+
+.list {
+    padding: 5px;
+    margin: 10px 15px;
+}
+
+.listItem {
+    margin: 5px 0;
+}
+
+.listItemAnchor {
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 5px;
+}
+
+.listItem.active .listItemAnchor,
+.listItemAnchor.active,
+.listItemAnchor:hover {    
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.open {
+    left: 0;
+}
+
+.closed {
+    left: -70vw;
+}
+
+.closedOverlay {
+    display: none;
+}
+
+.openOverlay {
+    display: block;
+}
+
+@media (max-width: 970px) {
+    .aside {
+        background: rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(50px);
+    }
+}

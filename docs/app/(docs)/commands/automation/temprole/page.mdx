@@ -1,0 +1,36 @@
+---
+title: "Command: `temprole` - SudoBot"
+short_name: temprole
+---
+
+import Modes from "@/components/MDX/Modes";
+
+# `temprole`
+
+Temporarily gives a role to a member.
+
+## Notes
+
+If you don't specify a unit of time like s, m, h, etc, it will default to seconds. So if you put 100 by itself, it will put it down as 100 seconds.
+
+### Syntax
+
+```
+-temprole [time] [user] [role]
+/temprole member: [member] role: [role] duration: [how long you want user to have role for] start_after: [time] (OPTIONAL)
+```
+
+### Required Permissions
+
+`ManageRoles`
+
+### Modes
+
+<Modes modes={["legacy", "interaction"]} />
+
+### Examples
+
+```
+-temprole 10m @ninsacc @Role 1
+/temprole member: @ninsacc role: @Role 2 duration: 10m start_after: 1m
+```
