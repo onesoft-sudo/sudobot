@@ -317,6 +317,7 @@ export default class StartupManager extends Service implements HasEventListeners
     }
 
     boot() {
+        axios.defaults.headers.common["Accept-Encoding"] = "gzip";
         return new Promise<void>((resolve, reject) => {
             figlet.text(
                 "SudoBot",
