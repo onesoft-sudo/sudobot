@@ -223,6 +223,12 @@ export default class LoggerService extends Service {
         isInsult?: boolean;
         isProfanity?: boolean;
     }) {
+        const excluded = this.client.configManager.config[message.guildId!]?.logging?.excluded_channels ?? [];
+        
+        if (excluded?.includes(message.channelId) || excluded?.includes(message.channel?.parentId)) {
+            return;
+        }
+        
         const {
             max_severe_toxicity,
             max_threat,
@@ -344,7 +350,18 @@ export default class LoggerService extends Service {
         if (newChannel?.id === oldChannel?.id) {
             return;
         }
+        
+        const excluded = this.client.configManager.config[message.guildId!]?.logging?.excluded_channels ?? [];
 
+        if (
+            excluded?.includes(newChannel?.id) ||
+            excluded?.includes(oldChannel?.id) ||
+            excluded?.includes(newChannel?.parentId) ||
+            excluded?.includes(oldChannel?.parentId)
+        ) {
+            return;
+        }
+        
         if (oldChannel) {
             await this.sendLogEmbed(oldChannel.guild, {
                 title: "Member left voice channel",
@@ -387,6 +404,12 @@ export default class LoggerService extends Service {
         moderator?: User;
         channel: VoiceChannel;
     }) {
+        const excluded = this.client.configManager.config[message.guildId!]?.logging?.excluded_channels ?? [];
+        
+        if (excluded?.includes(channel.id) || excluded?.includes(channel.parentId)) {
+            return;
+        }
+        
         await this.sendLogEmbed(guild, {
             title: "Member disconnected",
             color: Colors.Red,
@@ -421,6 +444,12 @@ export default class LoggerService extends Service {
         moderator?: User;
         channel: VoiceChannel;
     }) {
+        const excluded = this.client.configManager.config[message.guildId!]?.logging?.excluded_channels ?? [];
+        
+        if (excluded?.includes(channel.id) || excluded?.includes(channel.parentId)) {
+            return;
+        }
+        
         await this.sendLogEmbed(guild, {
             title: "Member deafened",
             color: Colors.Red,
@@ -455,6 +484,12 @@ export default class LoggerService extends Service {
         moderator?: User;
         channel: VoiceChannel;
     }) {
+        const excluded = this.client.configManager.config[message.guildId!]?.logging?.excluded_channels ?? [];
+        
+        if (excluded?.includes(channel.id) || excluded?.includes(channel.parentId)) {
+            return;
+        }
+        
         await this.sendLogEmbed(guild, {
             title: "Member undeafened",
             color: Colors.Green,
@@ -489,6 +524,12 @@ export default class LoggerService extends Service {
         moderator?: User;
         channel: VoiceChannel;
     }) {
+        const excluded = this.client.configManager.config[message.guildId!]?.logging?.excluded_channels ?? [];
+        
+        if (excluded?.includes(channel.id) || excluded?.includes(channel.parentId)) {
+            return;
+        }
+        
         await this.sendLogEmbed(guild, {
             title: "Member voice muted",
             color: Colors.Red,
@@ -523,6 +564,12 @@ export default class LoggerService extends Service {
         moderator?: User;
         channel: VoiceChannel;
     }) {
+        const excluded = this.client.configManager.config[message.guildId!]?.logging?.excluded_channels ?? [];
+        
+        if (excluded?.includes(channel.id) || excluded?.includes(channel.parentId)) {
+            return;
+        }
+        
         await this.sendLogEmbed(guild, {
             title: "Member unmuted",
             color: Colors.Green,
@@ -559,6 +606,12 @@ export default class LoggerService extends Service {
         newChannel: VoiceState["channel"];
         oldChannel: VoiceState["channel"];
     }) {
+        const excluded = this.client.configManager.config[message.guildId!]?.logging?.excluded_channels ?? [];
+        
+        if (excluded?.includes(channel.id) || excluded?.includes(channel.parentId)) {
+            return;
+        }
+        
         await this.sendLogEmbed(guild, {
             title: "Member moved to a new voice channel",
             color: Colors.Blurple,
@@ -597,6 +650,12 @@ export default class LoggerService extends Service {
         rule: MessageRuleType["type"];
     }) {
         log("Actions", actions);
+        
+        const excluded = this.client.configManager.config[message.guildId!]?.logging?.excluded_channels ?? [];
+        
+        if (excluded?.includes(message.channelId) || excluded?.includes(message.channel?.parentId)) {
+            return;
+        }
 
         await this.sendLogEmbed(message.guild!, {
             color: Colors.Red,
@@ -631,7 +690,13 @@ export default class LoggerService extends Service {
             hash,
             url
         }: { hash: string; url: string; name?: string; contentType?: string | null }
-    ) {
+    ) {        
+        const excluded = this.client.configManager.config[message.guildId!]?.logging?.excluded_channels ?? [];
+        
+        if (excluded?.includes(message.channelId) || excluded?.includes(message.channel?.parentId)) {
+            return;
+        }
+        
         await this.sendLogEmbed(message.guild!, {
             title: "Blocked file detected",
             color: Colors.Red,
@@ -1148,7 +1213,13 @@ export default class LoggerService extends Service {
         if (!this.client.configManager.config[newMessage.guildId!]?.logging?.events.message_edit) {
             return;
         }
-
+        
+        const excluded = this.client.configManager.config[newMessage.guildId!]?.logging?.excluded_channels ?? [];
+        
+        if (excluded?.includes(newMessage.channelId) || excluded?.includes(newMessage.channel?.parentId)) {
+            return;
+        }
+        
         const changedEmbeds = [];
         const mainArray =
             oldMessage.embeds.length > newMessage.embeds.length
@@ -1256,6 +1327,12 @@ export default class LoggerService extends Service {
 
     async logMessageDelete(message: Message, moderator?: User | null) {
         if (!this.client.configManager.config[message.guildId!]?.logging?.events.message_delete) {
+            return;
+        }
+        
+        const excluded = this.client.configManager.config[message.guildId!]?.logging?.excluded_channels ?? [];
+        
+        if (excluded?.includes(message.channelId) || excluded?.includes(message.channel?.parentId)) {
             return;
         }
 
@@ -1617,6 +1694,11 @@ export default class LoggerService extends Service {
         channel
     }: LogMessageBulkDelete) {
         const sendJSON = this.client.configManager.config[guild.id]?.logging?.bulk_delete_send_json;
+        const excluded = this.client.configManager.config[guild.id]?.logging?.excluded_channels ?? [];
+        
+        if (excluded?.includes(channel.id) || excluded?.includes(channel.parentId)) {
+            return;
+        }
 
         const message = await this.sendLogEmbed(
             guild,
