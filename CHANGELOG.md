@@ -1,3 +1,13 @@
+## [8.32.8](https://github.com/onesoft-sudo/sudobot/compare/v8.32.7...v8.32.8) (2024-04-18)
+
+
+### Bug Fixes
+
+* git update fails on bun ([02ff3f4](https://github.com/onesoft-sudo/sudobot/commit/02ff3f41f69d008393459c059636006b25cb6d69))
+* support bun to execute update command correctly ([1dcdea9](https://github.com/onesoft-sudo/sudobot/commit/1dcdea9e6cbbcc44900c6601ad48d552ac9931cf))
+
+
+
 ## [8.32.7](https://github.com/onesoft-sudo/sudobot/compare/v8.32.6...v8.32.7) (2024-04-18)
 
 
@@ -32,15 +42,6 @@
 
 * exclusions of logger (partial 1/2) ([338e8a1](https://github.com/onesoft-sudo/sudobot/commit/338e8a1f801f2a843c34b7c3f6dcafdb74197d1b))
 * logger exclusions (partial 2/2) ([812e3e5](https://github.com/onesoft-sudo/sudobot/commit/812e3e5ccf561a68429a2a099b2af7df332ac2e5))
-
-
-
-## [8.32.3](https://github.com/onesoft-sudo/sudobot/compare/v8.32.2...v8.32.3) (2024-04-18)
-
-
-### Bug Fixes
-
-* add missing `excluded_channels` option to GuildConfigSchema.ts ([ac048d5](https://github.com/onesoft-sudo/sudobot/commit/ac048d50e810bc01464b56d47a795454d2e6a027))
 
 
 
