@@ -38,6 +38,7 @@
         "openai",
         "ratelimiter",
         "ratelimiting",
+        "resolvables",
         "SOFTBAN",
         "softbanned",
         "Stringable",

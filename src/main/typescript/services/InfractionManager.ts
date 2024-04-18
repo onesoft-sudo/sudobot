@@ -995,17 +995,37 @@ class InfractionManager extends Service {
                     mode,
                     roles,
                     duration
-                }
+                },
+                expiresAt: duration ? duration.fromNow() : undefined
             },
             processReason: false
+        });
+
+        const overviewEmbed = generateOverviewEmbed
+            ? this.createOverviewEmbed(infraction, member.user, moderator)
+            : undefined;
+
+        const summaryOfRoles =
+            roles
+                .slice(0, 8)
+                .reduce((acc: string, role) => {
+                    if (typeof role === "string") {
+                        return `${acc}, <@&${role}>`;
+                    }
+
+                    return `${acc}, <@&${role.id}>`;
+                }, "")
+                .slice(2) + (roles.length > 8 ? " **+ " + (roles.length - 8) + " more**" : "");
+
+        overviewEmbed?.fields.push({
+            name: `${mode === "give" ? "Added" : "Removed"} Roles`,
+            value: summaryOfRoles
         });
 
         return {
             status: "success",
             infraction,
-            overviewEmbed: (generateOverviewEmbed
-                ? this.createOverviewEmbed(infraction, member.user, moderator)
-                : undefined) as E extends true ? APIEmbed : undefined
+            overviewEmbed: overviewEmbed as E extends true ? APIEmbed : undefined
         };
     }
 
