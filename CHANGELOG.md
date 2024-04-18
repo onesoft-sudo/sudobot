@@ -1,3 +1,12 @@
+## [8.32.7](https://github.com/onesoft-sudo/sudobot/compare/v8.32.6...v8.32.7) (2024-04-18)
+
+
+### Bug Fixes
+
+* axios brotli decompress not supported in Bun ([e4c144b](https://github.com/onesoft-sudo/sudobot/commit/e4c144b8106b7ab8462528b61730614c4250a9d3))
+
+
+
 ## [8.32.6](https://github.com/onesoft-sudo/sudobot/compare/v8.32.5...v8.32.6) (2024-04-18)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * add missing `excluded_channels` option to GuildConfigSchema.ts ([ac048d5](https://github.com/onesoft-sudo/sudobot/commit/ac048d50e810bc01464b56d47a795454d2e6a027))
-
-
-
-## [8.32.2](https://github.com/onesoft-sudo/sudobot/compare/v8.32.1...v8.32.2) (2024-04-14)
-
-
-### Bug Fixes
-
-* googleapis causing crash on bun ([7b3a80a](https://github.com/onesoft-sudo/sudobot/commit/7b3a80a21c2f4a47477cd913a1d70eb4c3945b77))
 
 
 
