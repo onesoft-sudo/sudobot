@@ -1,3 +1,12 @@
+## [8.32.5](https://github.com/onesoft-sudo/sudobot/compare/v8.32.4...v8.32.5) (2024-04-18)
+
+
+### Bug Fixes
+
+* infractions being logged in advance ([30ebea2](https://github.com/onesoft-sudo/sudobot/commit/30ebea25c49fd400ef9acdc235676858cc63662e))
+
+
+
 ## [8.32.4](https://github.com/onesoft-sudo/sudobot/compare/v8.32.3...v8.32.4) (2024-04-18)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * googleapis crash when ran using bun ([a023f01](https://github.com/onesoft-sudo/sudobot/commit/a023f015e491f56d70a3bbcc21539e4953eafde1))
-
-
-
-## [8.31.1](https://github.com/onesoft-sudo/sudobot/compare/v8.31.0...v8.31.1) (2024-04-07)
-
-
-### Bug Fixes
-
-* message delete logging issues ([e60bae4](https://github.com/onesoft-sudo/sudobot/commit/e60bae447944cd97673a93593342a3473e98f5a2))
 
 
 
