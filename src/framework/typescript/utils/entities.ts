@@ -16,6 +16,14 @@ export async function fetchChannel(guildId: Snowflake, channelId: Snowflake) {
     }
 }
 
+export async function fetchRole(guild: Guild, roleId: Snowflake) {
+    try {
+        return guild.roles.cache.get(roleId) ?? (await guild.roles.fetch(roleId));
+    } catch {
+        return null;
+    }
+}
+
 export async function fetchMember(guild: Guild, memberId: Snowflake) {
     try {
         return guild.members.cache.get(memberId) ?? (await guild.members.fetch(memberId));

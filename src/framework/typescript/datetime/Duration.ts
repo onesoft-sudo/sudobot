@@ -113,12 +113,14 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<SerializedDurat
 
     public static fromDurationStringExpression<T extends boolean = false>(
         expression: string,
-        retMs?: T
+        retMs?: T,
+        implicitUnit?: boolean
     ): T extends true ? number : Duration;
 
     public static fromDurationStringExpression(
         expression: string,
-        retMs?: boolean
+        retMs?: boolean,
+        implicitUnit: boolean = false
     ): Duration | number {
         if (expression.length === 0) {
             throw new DurationParseError("Duration expression cannot be empty");
@@ -170,7 +172,11 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<SerializedDurat
             }
 
             if (unit === "") {
-                unit = "s";
+                if (implicitUnit) {
+                    unit = "s";
+                } else {
+                    throw new DurationParseError(`Expected unit at position ${i} in expression`);
+                }
             } else {
                 i--;
             }
