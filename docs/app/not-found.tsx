@@ -23,8 +23,8 @@ export default function NotFound() {
                 <span className="font-mono text-white font-bold">
                     {headers().get("x-invoke-url")}
                 </span>{" "}
-                was not found on this server. Are you sure the URL you've tried
-                to access is right?
+                was not found on this server. Are you sure the URL you&lsquo;ve
+                tried to access is right?
             </p>
             <p className="text-[#aaa] mb-5">
                 If you think this should not happen, then please contact the
