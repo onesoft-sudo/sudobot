@@ -360,6 +360,12 @@ class InfractionManager extends Service {
         });
     }
 
+    public async deleteById(id: number): Promise<Infraction | null> {
+        return await this.application.prisma.infraction.delete({
+            where: { id }
+        });
+    }
+
     private getGuild(guildId: Snowflake) {
         return this.client.guilds.cache.get(guildId);
     }
