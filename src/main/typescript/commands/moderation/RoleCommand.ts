@@ -82,6 +82,7 @@ class RoleCommand extends Command {
     public override readonly permissions = [PermissionFlagsBits.ManageRoles];
     public override readonly defer = true;
     public override readonly usage = ["<member: GuildMember> <...Roles: Role[]>"];
+    public override readonly aliases = ["giverole", "takerole", "temprole"];
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;
@@ -156,6 +157,11 @@ class RoleCommand extends Command {
             return;
         }
 
+        if (context.commandName === "temprole" && !duration) {
+            await context.error("You must specify a valid duration to perform this action!");
+            return;
+        }
+
         const { overviewEmbed, status } = await this.infractionManager.createRoleModification({
             guildId: context.guildId,
             moderator: context.user,
@@ -167,7 +173,9 @@ class RoleCommand extends Command {
             notify: context.isChatInput() && !!context.options.getBoolean("notify"),
             mode: context.isChatInput()
                 ? (context.options.getString("mode") as "give" | "take" | null) ?? "give"
-                : "give",
+                : context.commandName === "takerole"
+                  ? "take"
+                  : "give",
             roles,
             duration
         });
