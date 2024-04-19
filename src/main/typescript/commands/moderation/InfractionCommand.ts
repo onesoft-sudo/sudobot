@@ -21,7 +21,7 @@ class InfractionCommand extends Command {
         "create",
         "delete",
         "view",
-        "reason",
+        "reason", // TODO: Add "reason" subcommand
         "list",
         "ls",
         "s"
