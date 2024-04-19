@@ -17,7 +17,15 @@ class InfractionCommand extends Command {
     public override readonly defer = true;
     public override readonly usage = ["<user: User> [reason: RestString]"];
     public override readonly aliases = ["inf", "infs", "infractions"];
-    public override readonly subcommands = ["create", "delete", "view", "reason"];
+    public override readonly subcommands = [
+        "create",
+        "delete",
+        "view",
+        "reason",
+        "list",
+        "ls",
+        "s"
+    ];
     public override readonly isolatedSubcommands = true;
     public override readonly subcommandMeta: Record<string, SubcommandMeta> = {
         create: {
@@ -98,6 +106,17 @@ class InfractionCommand extends Command {
                         .setDescription("View an infraction.")
                         .addIntegerOption(option =>
                             option.setName("id").setDescription("The ID of the infraction to view.")
+                        )
+                )
+                .addSubcommand(option =>
+                    option
+                        .setName("list")
+                        .setDescription("List infractions for a user.")
+                        .addUserOption(option =>
+                            option
+                                .setName("user")
+                                .setDescription("The target user")
+                                .setRequired(true)
                         )
                 )
                 .addSubcommand(option =>

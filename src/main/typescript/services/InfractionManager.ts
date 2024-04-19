@@ -366,6 +366,45 @@ class InfractionManager extends Service {
         });
     }
 
+    public async getUserInfractions(id: Snowflake): Promise<Infraction[]> {
+        return await this.application.prisma.infraction.findMany({
+            where: { userId: id }
+        });
+    }
+
+    public prettifyInfractionType(type: InfractionType) {
+        switch (type) {
+            case InfractionType.BAN:
+                return "Ban";
+            case InfractionType.MASSBAN:
+                return "Mass Ban";
+            case InfractionType.KICK:
+                return "Kick";
+            case InfractionType.MASSKICK:
+                return "Mass Kick";
+            case InfractionType.MUTE:
+                return "Mute";
+            case InfractionType.UNMUTE:
+                return "Unmute";
+            case InfractionType.WARNING:
+                return "Warning";
+            case InfractionType.BEAN:
+                return "Bean";
+            case InfractionType.NOTE:
+                return "Note";
+            case InfractionType.BULK_DELETE_MESSAGE:
+                return "Bulk Message Deletion";
+            case InfractionType.TIMEOUT:
+                return "Timeout";
+            case InfractionType.TIMEOUT_REMOVE:
+                return "Timeout Remove";
+            case InfractionType.ROLE:
+                return "Role Modification";
+            default:
+                return "Unknown";
+        }
+    }
+
     private getGuild(guildId: Snowflake) {
         return this.client.guilds.cache.get(guildId);
     }
