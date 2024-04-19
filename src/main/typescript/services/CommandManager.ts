@@ -180,6 +180,10 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         }
     }
 
+    public getCanonicalName(name: string) {
+        return this.getCommand(name)?.name ?? name;
+    }
+
     public async runCommandFromMessage(message: Message<true>) {
         const config = this.configManager.config[message.guildId!];
 
@@ -217,9 +221,11 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         const context = new LegacyContext(commandName, content, message, args, argv);
 
         if (command.hasSubcommands) {
-            const subcommandName = args[0];
+            const subcommandName = argv[1];
             const subcommand = this.commands.get(
-                command.isolatedSubcommands ? `${commandName}::${subcommandName}` : commandName
+                command.isolatedSubcommands
+                    ? `${this.getCanonicalName(commandName)}::${subcommandName}`
+                    : commandName
             );
 
             if (!subcommand) {
