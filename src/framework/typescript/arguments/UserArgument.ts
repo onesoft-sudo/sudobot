@@ -17,9 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Awaitable, ChatInputCommandInteraction, User } from "discord.js";
+import type { Awaitable, ChatInputCommandInteraction, User } from "discord.js";
 import Application from "../app/Application";
-import { If } from "../types/Utils";
+import type { If } from "../types/Utils";
 import { fetchUser } from "../utils/entities";
 import EntityArgument from "./EntityArgument";
 import { ErrorType } from "./InvalidArgumentError";

@@ -1085,6 +1085,11 @@ class InfractionManager extends Service {
             const messagesToDelete = [];
 
             for (const message of messages.values()) {
+                if (finalFilters.length === 0) {
+                    messagesToDelete.push(message);
+                    continue;
+                }
+
                 for (const filter of finalFilters) {
                     if (await filter(message)) {
                         messagesToDelete.push(message);

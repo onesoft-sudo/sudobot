@@ -18,8 +18,8 @@
  */
 
 import { requireNonNull } from "../utils/utils";
-import { ArgumentConstructor } from "./Argument";
-import { ErrorType } from "./InvalidArgumentError";
+import type { ArgumentConstructor } from "./Argument";
+import type { ErrorType } from "./InvalidArgumentError";
 
 declare global {
     interface ArgumentRules {

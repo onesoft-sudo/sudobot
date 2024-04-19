@@ -18,12 +18,13 @@
  */
 
 import FluentSet from "@framework/collections/FluentSet";
-import { MemberPermissionData } from "@framework/contracts/PermissionManagerInterface";
+import type { MemberPermissionData } from "@framework/contracts/PermissionManagerInterface";
 import AbstractPermissionManager from "@framework/permissions/AbstractPermissionManager";
-import { SystemPermissionLikeString } from "@framework/permissions/AbstractPermissionManagerService";
+import type { SystemPermissionLikeString } from "@framework/permissions/AbstractPermissionManagerService";
 import { Permission } from "@framework/permissions/Permission";
-import { PermissionOverwrite } from "@prisma/client";
-import { Collection, GuildMember, PermissionResolvable, Snowflake } from "discord.js";
+import type { PermissionOverwrite } from "@prisma/client";
+import type { GuildMember, PermissionResolvable, Snowflake } from "discord.js";
+import { Collection } from "discord.js";
 
 type CachedPermissionOverwrite = Omit<PermissionOverwrite, "grantedSystemPermissions"> & {
     grantedSystemPermissions?: FluentSet<SystemPermissionLikeString>;

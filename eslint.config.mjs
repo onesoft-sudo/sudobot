@@ -33,6 +33,10 @@ export default tseslint.config(
             ],
             semi: ["warn", "always"],
             "@typescript-eslint/no-var-requires": "off",
+            "@typescript-eslint/consistent-type-imports": [
+                "error",
+                { disallowTypeAnnotations: false }
+            ],
             "@typescript-eslint/no-misused-promises": [
                 "warn",
                 {

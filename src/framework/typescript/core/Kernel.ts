@@ -17,10 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Awaitable } from "discord.js";
+import type { Awaitable } from "discord.js";
 import type Application from "../app/Application";
 import { Logger } from "../log/Logger";
-import { KernelInterface } from "./KernelInterface";
+import type { KernelInterface } from "./KernelInterface";
 
 export default abstract class Kernel implements KernelInterface {
     protected readonly logger = new Logger("kernel", true);

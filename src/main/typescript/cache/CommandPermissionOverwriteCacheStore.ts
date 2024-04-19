@@ -1,10 +1,10 @@
 import GuildStore from "@framework/cache/GuildStore";
-import { SystemPermissionLikeString } from "@framework/permissions/AbstractPermissionManagerService";
+import type { SystemPermissionLikeString } from "@framework/permissions/AbstractPermissionManagerService";
 import { prisma } from "@framework/utils/helpers";
 import { pick } from "@framework/utils/objects";
-import { CommandPermissionOverwrite, CommandPermissionOverwriteAction } from "@prisma/client";
-import { PermissionsString, Snowflake } from "discord.js";
-import CommandManager from "../services/CommandManager";
+import type { CommandPermissionOverwrite, CommandPermissionOverwriteAction } from "@prisma/client";
+import type { PermissionsString, Snowflake } from "discord.js";
+import type CommandManager from "../services/CommandManager";
 
 export type MinimalCommandPermissionOverwrite = Pick<
     CommandPermissionOverwrite,

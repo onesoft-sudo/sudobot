@@ -17,11 +17,11 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Awaitable, ChatInputCommandInteraction } from "discord.js";
-import { ArgumentInterface } from "./ArgumentInterface";
-import { ArgumentTypeOptions } from "./ArgumentTypes";
+import type { Awaitable, ChatInputCommandInteraction } from "discord.js";
+import type { ArgumentInterface } from "./ArgumentInterface";
+import type { ArgumentTypeOptions } from "./ArgumentTypes";
 import { ErrorType, InvalidArgumentError } from "./InvalidArgumentError";
-import Context from "../commands/Context";
+import type Context from "../commands/Context";
 
 export type Casted<T> = {
     value?: Argument<T>;

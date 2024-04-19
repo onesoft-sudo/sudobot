@@ -1,3 +1,3 @@
-import { Collection } from "discord.js";
+import type { Collection } from "discord.js";
 
 export type ReadonlyCollection<K, V> = Omit<Collection<K, V>, "set" | "delete" | "clear" | "sweep">;

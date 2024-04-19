@@ -17,7 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Container, { AnyConstructor } from "@framework/container/Container";
+import type { AnyConstructor } from "@framework/container/Container";
+import Container from "@framework/container/Container";
 import Kernel from "@framework/core/Kernel";
 import { Logger } from "@framework/log/Logger";
 import axios from "axios";

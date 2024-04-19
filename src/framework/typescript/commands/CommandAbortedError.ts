@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import Context from "./Context";
+import type Context from "./Context";
 
 export default class CommandAbortedError extends Error {
     public sendMessage(context: Context) {

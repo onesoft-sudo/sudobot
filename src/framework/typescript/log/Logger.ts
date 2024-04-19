@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
-import { AnyFunction } from "@framework/types/Utils";
 import { isDevelopmentMode } from "@framework/utils/utils";
 import chalk from "chalk";
 import { EventEmitter } from "events";
@@ -44,11 +43,20 @@ export class Logger {
         private readonly name: string,
         private readonly logTime: boolean = false
     ) {
-        for (const key in this) {
-            if (typeof this[key] === "function") {
-                (this[key] as AnyFunction) = (this[key] as AnyFunction).bind(this);
-            }
-        }
+        this.log = this.log.bind(this);
+        this.print = this.print.bind(this);
+        this.colorize = this.colorize.bind(this);
+        this.debug = this.debug.bind(this);
+        this.perfStart = this.perfStart.bind(this);
+        this.perfEnd = this.perfEnd.bind(this);
+        this.perf = this.perf.bind(this);
+        this.info = this.info.bind(this);
+        this.warn = this.warn.bind(this);
+        this.error = this.error.bind(this);
+        this.fatal = this.fatal.bind(this);
+        this.critical = this.critical.bind(this);
+        this.success = this.success.bind(this);
+        this.event = this.event.bind(this);
     }
 
     public on(event: "log", listener: (message: string) => void) {

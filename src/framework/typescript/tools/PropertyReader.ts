@@ -1,5 +1,6 @@
-import { z } from "zod";
-import { File, FileResolvable } from "../io/File";
+import type { z } from "zod";
+import type { FileResolvable } from "../io/File";
+import { File } from "../io/File";
 import PropertySyntaxError from "./PropertySyntaxError";
 
 type Schema = z.ZodObject<Record<string, z.ZodType<unknown>>>;

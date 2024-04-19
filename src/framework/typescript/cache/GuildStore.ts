@@ -1,5 +1,6 @@
-import { Collection, Snowflake } from "discord.js";
-import { ReadonlyCollection } from "../collections/ReadonlyCollection";
+import type { Snowflake } from "discord.js";
+import { Collection } from "discord.js";
+import type { ReadonlyCollection } from "../collections/ReadonlyCollection";
 import { application } from "../utils/helpers";
 
 export type Metadata = {

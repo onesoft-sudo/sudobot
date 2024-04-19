@@ -17,13 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Awaitable, GuildMember, PermissionFlagsBits, PermissionResolvable } from "discord.js";
-import Application from "../app/Application";
-import {
+import type { Awaitable, GuildMember, PermissionResolvable } from "discord.js";
+import { PermissionFlagsBits } from "discord.js";
+import type Application from "../app/Application";
+import type {
     MemberPermissionData,
     PermissionManagerInterface
 } from "../contracts/PermissionManagerInterface";
-import { SystemPermissionResolvable } from "./AbstractPermissionManagerService";
+import type { SystemPermissionResolvable } from "./AbstractPermissionManagerService";
 import { Permission } from "./Permission";
 
 abstract class AbstractPermissionManager implements PermissionManagerInterface {

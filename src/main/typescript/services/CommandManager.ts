@@ -29,6 +29,7 @@ import { MemberPermissionData } from "@framework/contracts/PermissionManagerInte
 import { SystemPermissionLikeString } from "@framework/permissions/AbstractPermissionManagerService";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
+import { isDevelopmentMode } from "@framework/utils/utils";
 import CommandRateLimiter from "@main/security/CommandRateLimiter";
 import { CommandPermissionOverwriteAction } from "@prisma/client";
 import {
@@ -100,7 +101,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             return;
         }
 
-        const guildId = mode === "guild" ? process.env.HOME_GUILD_ID : undefined;
+        let guildId = mode === "guild" ? process.env.HOME_GUILD_ID : undefined;
         let registered = false;
 
         if (guildId) {
@@ -119,7 +120,15 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             mode === "auto_global" &&
             (process.argv.includes("--update-commands") || process.argv.includes("-u"))
         ) {
-            await this.client.application?.commands.set(commands);
+            if (isDevelopmentMode()) {
+                this.client.guilds.cache
+                    .find(g => g.id === process.env.HOME_GUILD_ID!)
+                    ?.commands.set(commands);
+                guildId = process.env.HOME_GUILD_ID;
+            } else {
+                await this.client.application?.commands.set(commands);
+            }
+
             registered = true;
         }
 

@@ -17,7 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Awaitable, Collection } from "discord.js";
+import type { Awaitable} from "discord.js";
+import { Collection } from "discord.js";
 import { isDeepStrictEqual } from "util";
 import Application from "../app/Application";
 

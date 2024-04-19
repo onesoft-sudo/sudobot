@@ -1,8 +1,8 @@
-import { Command } from "@framework/commands/Command";
-import CommandRateLimiterContract from "@framework/contracts/CommandRateLimiterContract";
-import { Awaitable } from "discord.js";
-import Context from "../commands/Context";
-import { MemberPermissionData } from "./PermissionManagerInterface";
+import type { Command } from "@framework/commands/Command";
+import type CommandRateLimiterContract from "@framework/contracts/CommandRateLimiterContract";
+import type { Awaitable } from "discord.js";
+import type Context from "../commands/Context";
+import type { MemberPermissionData } from "./PermissionManagerInterface";
 
 export type CommandPermissionCheckResult = {
     allow: boolean;

@@ -17,12 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Awaitable } from "discord.js";
+import type { Awaitable } from "discord.js";
 import type { Command } from "../commands/Command";
-import { ContextOf } from "../commands/Context";
-import { ContextType } from "../commands/ContextType";
+import type { ContextOf } from "../commands/Context";
+import type { ContextType } from "../commands/ContextType";
 import Container from "../container/Container";
-import { GuardLike } from "./GuardLike";
+import type { GuardLike } from "./GuardLike";
 
 abstract class Guard implements GuardLike {
     private static instance: Guard | null = null;

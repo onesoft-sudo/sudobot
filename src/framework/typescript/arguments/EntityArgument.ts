@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { GuildMember, Role, Snowflake, TextChannel, User } from "discord.js";
+import type { GuildMember, Role, Snowflake, TextChannel, User } from "discord.js";
 import { isSnowflake } from "../utils/utils";
 import Argument from "./Argument";
 import { ErrorType } from "./InvalidArgumentError";

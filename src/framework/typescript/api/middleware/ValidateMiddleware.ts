@@ -17,10 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { NextFunction, Response } from "express";
-import { ZodSchema } from "zod";
+import type { NextFunction, Response } from "express";
+import type { ZodSchema } from "zod";
 import Application from "../../app/Application";
-import Request from "../http/Request";
+import type Request from "../http/Request";
 
 export default async function ValidateMiddleware(
     schema: ZodSchema,

@@ -1,9 +1,9 @@
-import { Prisma } from "@prisma/client";
-import { Snowflake } from "discord.js";
-import Application from "../app/Application";
+import type { Prisma } from "@prisma/client";
+import type { Snowflake } from "discord.js";
+import type Application from "../app/Application";
 import { HasApplication } from "../types/HasApplication";
 import { isDevelopmentMode, requireNonNull } from "../utils/utils";
-import QueueManager from "./QueueManager";
+import type QueueManager from "./QueueManager";
 
 export type StorableData = Prisma.InputJsonValue | typeof Prisma.JsonNull;
 export type QueueOptions<T extends StorableData> = {

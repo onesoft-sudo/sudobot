@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import BaseClient from "../client/BaseClient";
+import type BaseClient from "../client/BaseClient";
 
 export abstract class HasClient {
     public constructor(protected readonly client: BaseClient) {}

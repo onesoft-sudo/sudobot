@@ -1,5 +1,5 @@
 import Queue from "@framework/queues/Queue";
-import { Snowflake } from "discord.js";
+import type { Snowflake } from "discord.js";
 import { safeMemberFetch } from "../utils/fetch";
 
 type RoleQueuePayload = {

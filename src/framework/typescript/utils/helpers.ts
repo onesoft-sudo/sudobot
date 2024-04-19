@@ -18,10 +18,10 @@
  */
 
 import type Application from "../app/Application";
-import BaseClient from "../client/BaseClient";
+import type BaseClient from "../client/BaseClient";
 import Container from "../container/Container";
-import { Service } from "../services/Service";
-import { ServiceName } from "../services/ServiceManager";
+import type { Service } from "../services/Service";
+import type { ServiceName } from "../services/ServiceManager";
 
 export const container = () => Container.getInstance();
 export const application = () => container().resolve<typeof Application>("application");

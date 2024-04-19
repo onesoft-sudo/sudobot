@@ -1,4 +1,4 @@
-import { MessageRuleContextType } from "../contracts/ModerationRuleHandlerContract";
+import type { MessageRuleContextType } from "../contracts/ModerationRuleHandlerContract";
 
 export function AcceptsMessageRuleContextType(type: MessageRuleContextType) {
     return (target: object, key: string) => {

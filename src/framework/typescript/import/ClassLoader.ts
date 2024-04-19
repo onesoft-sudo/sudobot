@@ -17,24 +17,24 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { CommandManagerServiceInterface } from "@framework/contracts/CommandManagerServiceInterface";
-import { ConfigurationManagerServiceInterface } from "@framework/contracts/ConfigurationManagerServiceInterface";
-import { Awaitable } from "discord.js";
-import { Router } from "express";
+import type { CommandManagerServiceInterface } from "@framework/contracts/CommandManagerServiceInterface";
+import type { ConfigurationManagerServiceInterface } from "@framework/contracts/ConfigurationManagerServiceInterface";
+import type { Awaitable } from "discord.js";
+import type { Router } from "express";
 import { lstat, readdir } from "node:fs/promises";
 import path, { basename, dirname } from "node:path";
 import APIServer from "../api/APIServer";
-import Controller from "../api/http/Controller";
+import type Controller from "../api/http/Controller";
 import Application from "../app/Application";
-import { Command } from "../commands/Command";
+import type { Command } from "../commands/Command";
 import Container from "../container/Container";
-import EventListener from "../events/EventListener";
-import { EventListenerInfo } from "../events/GatewayEventListener";
+import type EventListener from "../events/EventListener";
+import type { EventListenerInfo } from "../events/GatewayEventListener";
 import { File } from "../io/File";
-import { Permission } from "../permissions/Permission";
-import Queue from "../queues/Queue";
-import { ClientEvents } from "../types/ClientEvents";
-import { AnyFunction, Class, DefaultExport } from "../types/Utils";
+import type { Permission } from "../permissions/Permission";
+import type Queue from "../queues/Queue";
+import type { ClientEvents } from "../types/ClientEvents";
+import type { AnyFunction, Class, DefaultExport } from "../types/Utils";
 import InvalidClassFileError from "./InvalidClassFileError";
 import NoClassDefFoundError from "./NoClassDefFoundError";
 

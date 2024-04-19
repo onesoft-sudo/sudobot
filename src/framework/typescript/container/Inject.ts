@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { AnyConstructor } from "./Container";
+import type { AnyConstructor } from "./Container";
 
 export function Inject<R extends AnyConstructor>(ref?: R | string) {
     return (target: object, key: string | symbol, _descriptor?: PropertyDescriptor) => {

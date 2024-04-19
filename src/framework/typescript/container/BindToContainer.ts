@@ -18,7 +18,7 @@
 */
 
 import CanBind from "./CanBind";
-import { AnyConstructor, ContainerBindOptions as DIBindOptions } from "./Container";
+import type { AnyConstructor, ContainerBindOptions as DIBindOptions } from "./Container";
 
 type BindOptions<T extends AnyConstructor> = Omit<DIBindOptions<T>, "value" | "factory">;
 

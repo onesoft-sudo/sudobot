@@ -18,7 +18,7 @@
 */
 
 import type { Command } from "../commands/Command";
-import Context from "../commands/Context";
+import type Context from "../commands/Context";
 
 export type ErrorMessages = {
     notSpecified?: string | ((subcommand: string) => string);

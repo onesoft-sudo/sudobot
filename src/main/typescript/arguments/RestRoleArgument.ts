@@ -2,7 +2,7 @@ import Argument from "@framework/arguments/Argument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import { fetchRole } from "@framework/utils/entities";
 import { isSnowflake } from "@framework/utils/utils";
-import { ChatInputCommandInteraction, If, Role, Snowflake } from "discord.js";
+import type { ChatInputCommandInteraction, If, Role, Snowflake } from "discord.js";
 
 declare global {
     interface ArgumentRules {

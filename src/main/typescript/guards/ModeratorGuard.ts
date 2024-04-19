@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { AnyCommand } from "@framework/commands/Command";
-import { AnyContext } from "@framework/commands/Context";
+import type { AnyCommand } from "@framework/commands/Command";
+import type { AnyContext } from "@framework/commands/Context";
 import { Guard } from "@framework/guards/Guard";
 
 class ModeratorGuard extends Guard {

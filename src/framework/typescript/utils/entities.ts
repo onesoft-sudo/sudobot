@@ -1,5 +1,5 @@
-import BaseClient from "@framework/client/BaseClient";
-import { Guild, Snowflake } from "discord.js";
+import type BaseClient from "@framework/client/BaseClient";
+import type { Guild, Snowflake } from "discord.js";
 import { client } from "./helpers";
 
 export async function fetchChannel(guildId: Snowflake, channelId: Snowflake) {

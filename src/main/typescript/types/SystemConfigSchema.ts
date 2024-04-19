@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ActivityType } from "discord.js";
+import type { ActivityType } from "discord.js";
 import { z } from "zod";
 import { zSnowflake } from "./SnowflakeSchema";
 

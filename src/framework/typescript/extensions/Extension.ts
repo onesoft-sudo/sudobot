@@ -17,9 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Awaitable } from "discord.js";
-import { ZodSchema } from "zod";
-import Application from "../app/Application";
+import type { Awaitable } from "discord.js";
+import type { ZodSchema } from "zod";
+import type Application from "../app/Application";
 
 export abstract class Extension {
     public readonly name?: string;

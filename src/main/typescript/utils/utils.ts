@@ -17,18 +17,21 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import axios, { AxiosRequestConfig } from "axios";
-import {
+import type { AxiosRequestConfig } from "axios";
+import axios from "axios";
+import type {
     Channel,
-    ChannelType,
     GuildMember,
     NewsChannel,
     PermissionOverwrites,
     PermissionResolvable,
-    PermissionsBitField,
     TextBasedChannel,
     TextChannel,
     ThreadChannel
+} from "discord.js";
+import {
+    ChannelType,
+    PermissionsBitField
 } from "discord.js";
 import { mkdirSync } from "fs";
 import path from "path";

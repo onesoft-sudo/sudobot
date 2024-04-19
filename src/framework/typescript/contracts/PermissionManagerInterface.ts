@@ -1,6 +1,6 @@
-import { Awaitable, GuildMember, PermissionResolvable } from "discord.js";
-import FluentSet from "../collections/FluentSet";
-import {
+import type { Awaitable, GuildMember, PermissionResolvable } from "discord.js";
+import type FluentSet from "../collections/FluentSet";
+import type {
     SystemPermissionLikeString,
     SystemPermissionResolvable
 } from "../permissions/AbstractPermissionManagerService";

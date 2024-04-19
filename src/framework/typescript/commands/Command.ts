@@ -17,36 +17,39 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-    ApplicationCommandType,
+import type {
     Awaitable,
     ChatInputCommandInteraction,
-    ContextMenuCommandBuilder,
     ContextMenuCommandInteraction,
     Message,
     PermissionResolvable,
     PermissionsString,
-    SlashCommandBuilder,
     User
 } from "discord.js";
-import Application from "../app/Application";
-import Argument from "../arguments/Argument";
+import {
+    ApplicationCommandType,
+    ContextMenuCommandBuilder,
+    SlashCommandBuilder
+} from "discord.js";
+import type Application from "../app/Application";
+import type Argument from "../arguments/Argument";
 import ArgumentParser from "../arguments/ArgumentParser";
 import type { CommandManagerServiceInterface } from "../contracts/CommandManagerServiceInterface";
-import { ConfigurationManagerServiceInterface } from "../contracts/ConfigurationManagerServiceInterface";
-import { MemberPermissionData } from "../contracts/PermissionManagerInterface";
-import { PermissionManagerServiceInterface } from "../contracts/PermissionManagerServiceInterface";
-import { Guard } from "../guards/Guard";
-import { GuardLike } from "../guards/GuardLike";
-import { SystemOnlyPermissionResolvable } from "../permissions/AbstractPermissionManagerService";
-import { Permission, PermissionLike } from "../permissions/Permission";
+import type { ConfigurationManagerServiceInterface } from "../contracts/ConfigurationManagerServiceInterface";
+import type { MemberPermissionData } from "../contracts/PermissionManagerInterface";
+import type { PermissionManagerServiceInterface } from "../contracts/PermissionManagerServiceInterface";
+import type { Guard } from "../guards/Guard";
+import type { GuardLike } from "../guards/GuardLike";
+import type { SystemOnlyPermissionResolvable } from "../permissions/AbstractPermissionManagerService";
+import type { Permission, PermissionLike } from "../permissions/Permission";
 import { PermissionDeniedError } from "../permissions/PermissionDeniedError";
-import { Policy } from "../policies/Policy";
-import Builder from "../types/Builder";
+import type { Policy } from "../policies/Policy";
+import type Builder from "../types/Builder";
 import CommandAbortedError from "./CommandAbortedError";
-import Context, { ContextOf } from "./Context";
+import type { ContextOf } from "./Context";
+import Context from "./Context";
 import { ContextType } from "./ContextType";
-import InteractionContext from "./InteractionContext";
+import type InteractionContext from "./InteractionContext";
 import LegacyContext from "./LegacyContext";
 
 export type CommandMessage =

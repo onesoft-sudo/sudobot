@@ -1,8 +1,9 @@
 import type Application from "@framework/app/Application";
-import { CommandManagerServiceInterface } from "@framework/contracts/CommandManagerServiceInterface";
-import CommandRateLimiterContract from "@framework/contracts/CommandRateLimiterContract";
+import type { CommandManagerServiceInterface } from "@framework/contracts/CommandManagerServiceInterface";
+import type CommandRateLimiterContract from "@framework/contracts/CommandRateLimiterContract";
 import { HasApplication } from "@framework/types/HasApplication";
-import { Collection, Snowflake } from "discord.js";
+import type { Snowflake } from "discord.js";
+import { Collection } from "discord.js";
 
 class CommandRateLimiter extends HasApplication implements CommandRateLimiterContract {
     private static readonly INTERVAL = 1000 * 60 * 30; // 30 minutes

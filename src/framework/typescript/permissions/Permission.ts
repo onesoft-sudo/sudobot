@@ -17,13 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Awaitable, GuildMember, PermissionFlagsBits, PermissionResolvable } from "discord.js";
+import type { Awaitable, GuildMember, PermissionResolvable } from "discord.js";
+import { PermissionFlagsBits } from "discord.js";
 import Application from "../app/Application";
 import FluentSet from "../collections/FluentSet";
 import Container from "../container/Container";
-import { PermissionManagerServiceInterface } from "../contracts/PermissionManagerServiceInterface";
+import type { PermissionManagerServiceInterface } from "../contracts/PermissionManagerServiceInterface";
 import { Singleton } from "../types/Singleton";
-import { SystemPermissionResolvable } from "./AbstractPermissionManagerService";
+import type { SystemPermissionResolvable } from "./AbstractPermissionManagerService";
 
 abstract class Permission extends Singleton {
     /**

@@ -18,7 +18,8 @@
  */
 
 import Application from "@framework/app/Application";
-import axios, { AxiosRequestConfig } from "axios";
+import type { AxiosRequestConfig } from "axios";
+import axios from "axios";
 import { createWriteStream } from "fs";
 import { basename, join } from "path";
 import stream from "stream";

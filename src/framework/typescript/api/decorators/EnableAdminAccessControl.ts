@@ -17,10 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { NextFunction, Request, Response } from "express";
-import Application from "../../app/Application";
+import type { NextFunction, Request, Response } from "express";
+import type Application from "../../app/Application";
 import AdminAccessControl from "../middleware/AdminAccessControl";
-import { Middleware } from "./Action";
+import type { Middleware } from "./Action";
 
 export function EnableAdminAccessControl() {
     return (

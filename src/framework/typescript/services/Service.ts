@@ -17,9 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Awaitable } from "discord.js";
+import type { Awaitable } from "discord.js";
 import type Application from "../app/Application";
-import BaseClient from "../client/BaseClient";
+import type BaseClient from "../client/BaseClient";
 import { HasApplication } from "../types/HasApplication";
 
 abstract class Service extends HasApplication {

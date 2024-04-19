@@ -1,5 +1,6 @@
 import Queue from "@framework/queues/Queue";
-import { italic, Snowflake } from "discord.js";
+import type { Snowflake } from "discord.js";
+import { italic } from "discord.js";
 import { safeMemberFetch } from "../utils/fetch";
 
 type UnmuteQueuePayload = {

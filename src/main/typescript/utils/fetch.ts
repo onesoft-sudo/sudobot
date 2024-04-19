@@ -18,8 +18,8 @@
  */
 
 import Application from "@framework/app/Application";
-import BaseClient from "@framework/client/BaseClient";
-import { Guild, Snowflake, TextBasedChannel } from "discord.js";
+import type BaseClient from "@framework/client/BaseClient";
+import type { Guild, Snowflake, TextBasedChannel } from "discord.js";
 
 export async function safeMemberFetch(guild: Guild, id: Snowflake) {
     try {

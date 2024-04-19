@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Response as ExpressResponse } from "express";
+import type { Response as ExpressResponse } from "express";
 
 export interface CreateResponseOptions<T = unknown> {
     status?: number;

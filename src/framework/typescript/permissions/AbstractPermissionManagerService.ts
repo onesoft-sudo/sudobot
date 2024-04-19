@@ -17,16 +17,18 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
+import type {
     Awaitable,
-    Collection,
     GuildMember,
-    PermissionFlagsBits,
     PermissionResolvable,
     PermissionsString
 } from "discord.js";
-import { MemberPermissionData } from "../contracts/PermissionManagerInterface";
-import { PermissionManagerServiceInterface } from "../contracts/PermissionManagerServiceInterface";
+import {
+    Collection,
+    PermissionFlagsBits
+} from "discord.js";
+import type { MemberPermissionData } from "../contracts/PermissionManagerInterface";
+import type { PermissionManagerServiceInterface } from "../contracts/PermissionManagerServiceInterface";
 import { Service } from "../services/Service";
 import { Permission } from "./Permission";
 

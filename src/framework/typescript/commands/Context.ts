@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
+import type {
     ChatInputCommandInteraction,
     ContextMenuCommandInteraction,
     Guild,
@@ -25,19 +25,21 @@ import {
     GuildTextBasedChannel,
     InteractionDeferReplyOptions,
     InteractionReplyOptions,
-    Message,
     MessageContextMenuCommandInteraction,
     MessageCreateOptions,
     Snowflake,
     User,
     UserContextMenuCommandInteraction
 } from "discord.js";
+import {
+    Message
+} from "discord.js";
 import Application from "../app/Application";
 import { emoji } from "../utils/emoji";
-import { AnyCommand, Command, CommandMessage } from "./Command";
+import type { AnyCommand, Command, CommandMessage } from "./Command";
 import { ContextType } from "./ContextType";
-import InteractionContext from "./InteractionContext";
-import LegacyContext from "./LegacyContext";
+import type InteractionContext from "./InteractionContext";
+import type LegacyContext from "./LegacyContext";
 
 export type ContextOf<T extends Command<ContextType>> =
     T extends Command<infer U>

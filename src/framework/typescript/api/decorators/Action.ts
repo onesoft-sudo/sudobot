@@ -17,10 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { NextFunction, Request, Response } from "express";
-import Application from "../../app/Application";
-import { AnyFunction } from "../../types/Utils";
-import { RouteMetadata } from "../RouteMetadata";
+import type { NextFunction, Request, Response } from "express";
+import type Application from "../../app/Application";
+import type { AnyFunction } from "../../types/Utils";
+import type { RouteMetadata } from "../RouteMetadata";
 
 export type Middleware = (
     application: Application,

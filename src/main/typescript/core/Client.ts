@@ -19,7 +19,7 @@
 
 import BaseClient from "@framework/client/BaseClient";
 import { Logger } from "@framework/log/Logger";
-import { ClientOptions } from "discord.js";
+import type { ClientOptions } from "discord.js";
 
 class Client<R extends boolean = boolean> extends BaseClient<R> {
     public static override instance: Client;

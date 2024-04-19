@@ -1,5 +1,7 @@
-import { Stats, close, closeSync, constants, existsSync, lstatSync, realpathSync } from "fs";
-import { FileHandle, lstat, open, realpath } from "fs/promises";
+import type { Stats} from "fs";
+import { close, closeSync, constants, existsSync, lstatSync, realpathSync } from "fs";
+import type { FileHandle} from "fs/promises";
+import { lstat, open, realpath } from "fs/promises";
 import { basename, resolve } from "path";
 import FileSystem from "../polyfills/FileSystem";
 

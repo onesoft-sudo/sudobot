@@ -17,16 +17,18 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
+import type {
     Channel,
-    ChannelType,
     ChatInputCommandInteraction,
     ColorResolvable,
-    EmbedBuilder,
     Guild,
     Message,
-    resolveColor,
     User
+} from "discord.js";
+import {
+    ChannelType,
+    EmbedBuilder,
+    resolveColor
 } from "discord.js";
 
 export function generateEmbed(options: ChatInputCommandInteraction["options"]) {

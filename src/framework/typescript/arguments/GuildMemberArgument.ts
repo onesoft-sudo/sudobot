@@ -18,8 +18,8 @@
  */
 
 import { fetchMember } from "@framework/utils/entities";
-import { Awaitable, ChatInputCommandInteraction, GuildMember } from "discord.js";
-import { If } from "../types/Utils";
+import type { Awaitable, ChatInputCommandInteraction, GuildMember } from "discord.js";
+import type { If } from "../types/Utils";
 import EntityArgument from "./EntityArgument";
 import { ErrorType } from "./InvalidArgumentError";
 

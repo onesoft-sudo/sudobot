@@ -18,11 +18,10 @@
  */
 
 import Application from "@framework/app/Application";
-import {
+import type {
     APIEmbed,
     APIMessage,
     Embed,
-    EmbedBuilder,
     GuildMember,
     JSONEncodable,
     Message,
@@ -30,6 +29,9 @@ import {
     MessageEditOptions,
     TextBasedChannel,
     User
+} from "discord.js";
+import {
+    EmbedBuilder
 } from "discord.js";
 import JSON5 from "json5";
 import { z } from "zod";

@@ -1,4 +1,4 @@
-import { Bootable } from "@framework/contracts/Bootable";
+import type { Bootable } from "@framework/contracts/Bootable";
 import { HasApplication } from "@framework/types/HasApplication";
 import axios from "axios";
 import { Collection } from "discord.js";

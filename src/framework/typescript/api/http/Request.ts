@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { User } from "@prisma/client";
-import { Request as ExpressRequest } from "express";
+import type { User } from "@prisma/client";
+import type { Request as ExpressRequest } from "express";
 
 interface Request extends ExpressRequest {
     parsedBody?: Record<string, string>;

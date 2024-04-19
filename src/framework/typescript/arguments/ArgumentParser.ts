@@ -17,16 +17,16 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Awaitable, ChatInputCommandInteraction } from "discord.js";
+import type { Awaitable, ChatInputCommandInteraction } from "discord.js";
 import Application from "../app/Application";
-import { ArgumentPayload, Command } from "../commands/Command";
+import type { ArgumentPayload, Command } from "../commands/Command";
 import Context from "../commands/Context";
-import InteractionContext from "../commands/InteractionContext";
+import type InteractionContext from "../commands/InteractionContext";
 import LegacyContext from "../commands/LegacyContext";
 import { HasClient } from "../types/HasClient";
 import { notIn } from "../utils/utils";
-import Argument from "./Argument";
-import { ArgumentTypeOptions } from "./ArgumentTypes";
+import type Argument from "./Argument";
+import type { ArgumentTypeOptions } from "./ArgumentTypes";
 
 type ParseResult =
     | {

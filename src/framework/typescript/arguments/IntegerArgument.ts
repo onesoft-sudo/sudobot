@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Awaitable, ChatInputCommandInteraction } from "discord.js";
+import type { Awaitable, ChatInputCommandInteraction } from "discord.js";
 import { ErrorType } from "./InvalidArgumentError";
 import NumberArgument from "./NumberArgument";
 

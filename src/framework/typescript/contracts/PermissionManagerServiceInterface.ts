@@ -1,10 +1,10 @@
-import { Awaitable, Collection, GuildMember } from "discord.js";
-import {
+import type { Awaitable, Collection, GuildMember } from "discord.js";
+import type {
     SystemPermissionLikeString,
     SystemPermissionResolvable
 } from "../permissions/AbstractPermissionManagerService";
-import { Permission } from "../permissions/Permission";
-import { MemberPermissionData } from "./PermissionManagerInterface";
+import type { Permission } from "../permissions/Permission";
+import type { MemberPermissionData } from "./PermissionManagerInterface";
 
 export interface PermissionManagerServiceInterface {
     isSystemAdmin(member: GuildMember, permissionData?: MemberPermissionData): Awaitable<boolean>;

@@ -17,8 +17,8 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Awaitable, User } from "discord.js";
-import { OptionalRecord } from "../types/OptionalRecord";
+import type { Awaitable, User } from "discord.js";
+import type { OptionalRecord } from "../types/OptionalRecord";
 import { ContainerSingleton } from "../types/Singleton";
 
 declare global {

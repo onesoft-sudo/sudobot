@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { NextFunction, Response } from "express";
-import Request from "../http/Request";
+import type { NextFunction, Response } from "express";
+import type Request from "../http/Request";
 
 export default async function GuildAccessControl(
     request: Request,

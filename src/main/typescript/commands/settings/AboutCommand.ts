@@ -17,8 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ChatContext, Command } from "@framework/commands/Command";
-import { MetadataType } from "../../core/DiscordKernel";
+import type { ChatContext} from "@framework/commands/Command";
+import { Command } from "@framework/commands/Command";
+import type { MetadataType } from "../../core/DiscordKernel";
 
 class AboutCommand extends Command {
     public override readonly name = "about";

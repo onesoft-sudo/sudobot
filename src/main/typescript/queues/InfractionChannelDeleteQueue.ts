@@ -1,6 +1,6 @@
 import Queue from "@framework/queues/Queue";
 import { fetchChannel } from "@framework/utils/entities";
-import { Snowflake } from "discord.js";
+import type { Snowflake } from "discord.js";
 
 type InfractionChannelDeleteQueuePayload = {
     channelId: Snowflake;

@@ -17,11 +17,13 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type {
+    ContextMenuCommandInteraction,
+    User
+} from "discord.js";
 import {
     ChatInputCommandInteraction,
-    ContextMenuCommandInteraction,
-    MessageContextMenuCommandInteraction,
-    User
+    MessageContextMenuCommandInteraction
 } from "discord.js";
 import Context from "./Context";
 import { ContextType } from "./ContextType";

@@ -17,10 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { NextFunction, Response } from "express";
+import type { NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
-import Application from "../../app/Application";
-import Request from "../http/Request";
+import type Application from "../../app/Application";
+import type Request from "../http/Request";
 
 export default async function RequireAuthMiddleware(
     application: Application,

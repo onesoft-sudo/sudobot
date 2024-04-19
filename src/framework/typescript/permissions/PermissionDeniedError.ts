@@ -17,7 +17,7 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { CommandPermissionLike } from "../commands/Command";
+import type { CommandPermissionLike } from "../commands/Command";
 
 export class PermissionDeniedError extends Error {
     private permissions: CommandPermissionLike[] = [];

@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Command, CommandMessage } from "@framework/commands/Command";
-import Context from "@framework/commands/Context";
+import type { Command, CommandMessage } from "@framework/commands/Command";
+import type Context from "@framework/commands/Context";
 
 declare global {
     interface ClientEvents {

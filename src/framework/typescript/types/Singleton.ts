@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Awaitable } from "discord.js";
+import type { Awaitable } from "discord.js";
 import Container from "../container/Container";
 
 type ThisType = {

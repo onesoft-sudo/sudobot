@@ -1,5 +1,6 @@
 import { HasApplication } from "../types/HasApplication";
-import Queue, { QueueOptions, StorableData } from "./Queue";
+import type { QueueOptions, StorableData } from "./Queue";
+import type Queue from "./Queue";
 
 export type QueueClass<T extends StorableData = StorableData> = typeof Queue<T>;
 export type QueueConstructor<T extends StorableData = StorableData> = new (

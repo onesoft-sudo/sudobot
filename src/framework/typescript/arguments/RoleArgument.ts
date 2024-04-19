@@ -19,8 +19,8 @@
 
 import { fetchRole } from "@framework/utils/entities";
 import { isSnowflake } from "@framework/utils/utils";
-import { Awaitable, ChatInputCommandInteraction, Role } from "discord.js";
-import { If } from "../types/Utils";
+import type { Awaitable, ChatInputCommandInteraction, Role } from "discord.js";
+import type { If } from "../types/Utils";
 import EntityArgument from "./EntityArgument";
 import { ErrorType } from "./InvalidArgumentError";
 

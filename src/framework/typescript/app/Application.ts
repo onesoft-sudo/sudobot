@@ -18,17 +18,18 @@
  */
 
 import FeatureFlagManager from "@framework/cluster/FeatureFlagManager";
-import { DiscordKernelClassInterface } from "@framework/core/DiscordKernelClassInterface";
-import { KernelInterface } from "@framework/core/KernelInterface";
+import type { DiscordKernelClassInterface } from "@framework/core/DiscordKernelClassInterface";
+import type { KernelInterface } from "@framework/core/KernelInterface";
 import { isDevelopmentMode } from "@framework/utils/utils";
 import { PrismaClient } from "@prisma/client";
 import path from "node:path";
-import BaseClient from "../client/BaseClient";
+import type BaseClient from "../client/BaseClient";
 import Container from "../container/Container";
 import ClassLoader from "../import/ClassLoader";
-import { Logger } from "../log/Logger";
-import { Service } from "../services/Service";
-import { ServiceManager, ServiceName } from "../services/ServiceManager";
+import type { Logger } from "../log/Logger";
+import type { Service } from "../services/Service";
+import type { ServiceName } from "../services/ServiceManager";
+import { ServiceManager } from "../services/ServiceManager";
 
 class Application {
     public static readonly KEY = "application";

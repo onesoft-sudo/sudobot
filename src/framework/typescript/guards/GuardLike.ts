@@ -17,10 +17,10 @@
 * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Awaitable } from "discord.js";
-import { Command } from "../commands/Command";
-import { ContextOf } from "../commands/Context";
-import { ContextType } from "../commands/ContextType";
+import type { Awaitable } from "discord.js";
+import type { Command } from "../commands/Command";
+import type { ContextOf } from "../commands/Context";
+import type { ContextType } from "../commands/ContextType";
 
 export interface GuardLike {
     check<T extends Command<ContextType>>(command: T, context: ContextOf<T>): Awaitable<boolean>;
