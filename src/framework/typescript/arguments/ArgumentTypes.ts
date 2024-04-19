@@ -76,7 +76,7 @@ export function ArgumentTypes<T = Record<string, unknown>>(types: ArrayOfArgumen
 }
 
 export function TakesArgument<T>(
-    type: ArgumentTypeOptions<T[keyof T]>
+    options: ArgumentTypeOptions<T[keyof T]>
 ): ClassDecorator & MethodDecorator;
 
 export function TakesArgument<T, _O extends ArgumentOptionsFor<T> = ArgumentOptionsFor<T>>(
