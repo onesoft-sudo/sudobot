@@ -26,11 +26,7 @@ import type {
     PermissionsString,
     User
 } from "discord.js";
-import {
-    ApplicationCommandType,
-    ContextMenuCommandBuilder,
-    SlashCommandBuilder
-} from "discord.js";
+import { ApplicationCommandType, ContextMenuCommandBuilder, SlashCommandBuilder } from "discord.js";
 import type Application from "../app/Application";
 import type Argument from "../arguments/Argument";
 import ArgumentParser from "../arguments/ArgumentParser";
