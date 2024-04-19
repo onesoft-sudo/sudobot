@@ -16,9 +16,7 @@ type DurationOptions = {
     milliseconds?: number;
 };
 
-type SerializedDuration = Required<DurationOptions>;
-
-class Duration implements BehavesLikePrimitive, JSONSerializable<SerializedDuration> {
+class Duration implements BehavesLikePrimitive, JSONSerializable<number> {
     public static readonly SECOND_MS: number = 1_000;
     public static readonly MINUTE_MS: number = Duration.SECOND_MS * 60;
     public static readonly HOUR_MS: number = Duration.MINUTE_MS * 60;
@@ -291,20 +289,11 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<SerializedDurat
     /**
      * Returns the JSON representation of the duration.
      *
-     * @returns A serializable plain object.
+     * @returns A number representing the duration in milliseconds.
      */
     @Override
-    public toJSON(): Required<DurationOptions> {
-        return {
-            years: this.years,
-            months: this.months,
-            weeks: this.weeks,
-            days: this.days,
-            hours: this.hours,
-            minutes: this.minutes,
-            seconds: this.seconds,
-            milliseconds: this.milliseconds
-        };
+    public toJSON(): number {
+        return this.toMilliseconds();
     }
 
     /**
