@@ -49,16 +49,17 @@ describe("Duration", () => {
                 seconds: 7,
                 milliseconds: 8
             });
-            expect(duration.toJSON()).toEqual({
-                years: 1,
-                months: 2,
-                weeks: 3,
-                days: 4,
-                hours: 5,
-                minutes: 6,
-                seconds: 7,
-                milliseconds: 8
-            });
+
+            expect(duration.toJSON()).toBe(
+                1 * 31536000000 +
+                    2 * 2592000000 +
+                    3 * 604800000 +
+                    4 * 86400000 +
+                    5 * 3600000 +
+                    6 * 60000 +
+                    7 * 1000 +
+                    8
+            );
         });
     });
 
