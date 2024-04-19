@@ -354,6 +354,12 @@ class InfractionManager extends Service {
         return infraction;
     }
 
+    public async getById(id: number): Promise<Infraction | null> {
+        return await this.application.prisma.infraction.findFirst({
+            where: { id }
+        });
+    }
+
     private getGuild(guildId: Snowflake) {
         return this.client.guilds.cache.get(guildId);
     }

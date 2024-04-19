@@ -7,12 +7,11 @@ import { Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import Duration from "@framework/datetime/Duration";
-import { userInfo } from "@framework/utils/embeds";
-import { Colors } from "@main/constants/Colors";
+import InfractionViewCommand from "@main/commands/moderation/InfractionViewCommand";
 import InfractionManager from "@main/services/InfractionManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
 import { Infraction, InfractionType } from "@prisma/client";
-import { User, italic, time } from "discord.js";
+import { User } from "discord.js";
 
 type InfractionCreateCommandArgs = {
     user: User;
@@ -103,75 +102,8 @@ class InfractionCreateCommand extends Command {
             }
         });
 
-        const fields = [
-            {
-                name: "Type",
-                value: infraction.type
-                    .split("_")
-                    .map(s => s[0].toUpperCase() + s.slice(1).toLowerCase())
-                    .join(" ")
-            },
-            {
-                name: "User",
-                value: userInfo(user),
-                inline: true
-            },
-            {
-                name: "Moderator",
-                value: userInfo(context.user),
-                inline: true
-            },
-            {
-                name: "Reason",
-                value: infraction.reason ?? italic("No reason provided")
-            },
-            {
-                name: "Created At",
-                value: time(infraction.createdAt, "R"),
-                inline: true
-            },
-            {
-                name: "Updated At",
-                value: time(infraction.updatedAt, "R"),
-                inline: true
-            }
-        ];
-
-        if (infraction.expiresAt) {
-            fields.push({
-                name: "Expires At",
-                value: time(infraction.expiresAt, "R"),
-                inline: true
-            });
-        }
-
-        fields.push({
-            name: "Notification Status",
-            value: infraction.deliveryStatus
-                .split("_")
-                .map(s => s[0].toUpperCase() + s.slice(1).toLowerCase())
-                .join(" ")
-        });
-
         await context.reply({
-            embeds: [
-                {
-                    title: `Infraction #${infraction.id}`,
-                    author: {
-                        name: user.username,
-                        icon_url: user.displayAvatarURL()
-                    },
-                    thumbnail: {
-                        url: user.displayAvatarURL()
-                    },
-                    fields,
-                    color: Colors.Primary,
-                    timestamp: new Date().toISOString(),
-                    footer: {
-                        text: "Created"
-                    }
-                }
-            ]
+            embeds: [InfractionViewCommand.buildEmbed(infraction, user, context.user, "Created")]
         });
     }
 }
