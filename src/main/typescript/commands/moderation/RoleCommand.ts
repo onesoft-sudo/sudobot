@@ -148,16 +148,6 @@ class RoleCommand extends Command {
     ): Promise<void> {
         const { member, roles, duration } = args;
 
-        this.application.logger.debug("RoleCommand is being executed");
-        this.application.logger.debug("-----------------------------");
-        this.application.logger.debug("Member: ");
-        this.application.logger.debug(member?.user.username);
-        this.application.logger.debug("Roles: ");
-        this.application.logger.debug(roles.map(r => r?.name));
-        this.application.logger.debug("Duration: ");
-        this.application.logger.debug(duration);
-        this.application.logger.debug("-----------------------------");
-
         if (
             !context.member ||
             !(await this.permissionManager.canModerate(member, context.member))
