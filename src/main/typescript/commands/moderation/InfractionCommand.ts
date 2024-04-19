@@ -55,7 +55,7 @@ class InfractionCommand extends Command {
                                     ...Object.keys(InfractionType).map((key: string) => ({
                                         name: key
                                             .split("_")
-                                            .map(s => s[0].toUpperCase() + s.slice(1))
+                                            .map(s => s[0].toUpperCase() + s.slice(1).toLowerCase())
                                             .join(" "),
                                         value: key
                                     }))

@@ -7,6 +7,7 @@ import { Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import Duration from "@framework/datetime/Duration";
+import { userInfo } from "@framework/utils/embeds";
 import { Colors } from "@main/constants/Colors";
 import InfractionManager from "@main/services/InfractionManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
@@ -107,17 +108,17 @@ class InfractionCreateCommand extends Command {
                 name: "Type",
                 value: infraction.type
                     .split("_")
-                    .map(s => s[0].toUpperCase() + s.slice(1))
+                    .map(s => s[0].toUpperCase() + s.slice(1).toLowerCase())
                     .join(" ")
             },
             {
                 name: "User",
-                value: infraction.userId,
+                value: userInfo(user),
                 inline: true
             },
             {
                 name: "Moderator",
-                value: infraction.moderatorId,
+                value: userInfo(context.user),
                 inline: true
             },
             {
@@ -148,7 +149,7 @@ class InfractionCreateCommand extends Command {
             name: "Notification Status",
             value: infraction.deliveryStatus
                 .split("_")
-                .map(s => s[0].toUpperCase() + s.slice(1))
+                .map(s => s[0].toUpperCase() + s.slice(1).toLowerCase())
                 .join(" ")
         });
 
@@ -156,9 +157,19 @@ class InfractionCreateCommand extends Command {
             embeds: [
                 {
                     title: `Infraction #${infraction.id}`,
+                    author: {
+                        name: user.username,
+                        icon_url: user.displayAvatarURL()
+                    },
+                    thumbnail: {
+                        url: user.displayAvatarURL()
+                    },
                     fields,
                     color: Colors.Primary,
-                    timestamp: new Date().toISOString()
+                    timestamp: new Date().toISOString(),
+                    footer: {
+                        text: "Created"
+                    }
                 }
             ]
         });
