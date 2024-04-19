@@ -87,6 +87,7 @@ class BanCommand extends Command {
         "<user: User> <duration: Duration> [reason: RestString]"
     ];
     public override readonly systemPermissions = [PermissionFlagsBits.BanMembers];
+    public override readonly aliases = ["cleanban", "tempban"];
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;
@@ -155,6 +156,11 @@ class BanCommand extends Command {
             }
         }
 
+        if (context.commandName === "tempban" && !args.duration) {
+            await context.error("You must provide a valid duration for a temporary ban.");
+            return;
+        }
+
         const deletionTimeframeString = context.isChatInput()
             ? context.options.getString("deletion_timeframe") ?? undefined
             : undefined;
@@ -163,7 +169,11 @@ class BanCommand extends Command {
         try {
             deletionTimeframe = deletionTimeframeString
                 ? Duration.fromDurationStringExpression(deletionTimeframeString)
-                : undefined;
+                : context.isLegacy()
+                  ? context.commandName === "cleanban"
+                      ? new Duration({ days: 7 })
+                      : undefined
+                  : undefined;
         } catch (error) {
             if (error instanceof DurationParseError) {
                 await context.error("Invalid deletion timeframe provided.");
