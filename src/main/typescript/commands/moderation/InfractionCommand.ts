@@ -1,10 +1,5 @@
-import {
-    Buildable,
-    Command,
-    CommandMessage,
-    type SubcommandMeta
-} from "@framework/commands/Command";
-import Context from "@framework/commands/Context";
+import type { Buildable } from "@framework/commands/Command";
+import { Command, type SubcommandMeta } from "@framework/commands/Command";
 import { InfractionType } from "@prisma/client";
 import { PermissionFlagsBits } from "discord.js";
 
@@ -139,7 +134,7 @@ class InfractionCommand extends Command {
         ];
     }
 
-    public override async execute(context: Context<CommandMessage>): Promise<void> {}
+    public override async execute(): Promise<void> {}
 }
 
 export default InfractionCommand;
