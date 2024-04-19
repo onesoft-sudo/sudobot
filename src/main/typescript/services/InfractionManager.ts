@@ -1176,7 +1176,55 @@ class InfractionManager extends Service {
         };
     }
 
-    private createOverviewEmbed(infraction: Infraction, user: User, moderator: User) {
+    public async createNote<E extends boolean>(
+        payload: CreateNotePayload<E>
+    ): Promise<InfractionCreateResult<E>> {
+        const {
+            moderator,
+            user,
+            reason,
+            guildId,
+            generateOverviewEmbed,
+            transformNotificationEmbed
+        } = payload;
+
+        const guild = this.getGuild(payload.guildId);
+
+        if (!guild) {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null
+            };
+        }
+
+        const infraction: Infraction = await this.createInfraction({
+            guildId,
+            moderator,
+            reason,
+            transformNotificationEmbed,
+            type: InfractionType.NOTE,
+            user,
+            notify: false
+        });
+
+        return {
+            status: "success",
+            infraction,
+            overviewEmbed: (generateOverviewEmbed
+                ? this.createOverviewEmbed(infraction, user, moderator, {
+                      includeNotificationStatusInEmbed: false
+                  })
+                : undefined) as E extends true ? APIEmbed : undefined
+        };
+    }
+
+    private createOverviewEmbed(
+        infraction: Infraction,
+        user: User,
+        moderator: User,
+        options?: CreateOverviewOptions
+    ) {
         const fields = [
             {
                 name: "Reason",
@@ -1191,6 +1239,7 @@ class InfractionManager extends Service {
                 value: userInfo(moderator)
             }
         ];
+        const { includeNotificationStatusInEmbed = true } = options ?? {};
 
         if (infraction.expiresAt) {
             fields.push({
@@ -1199,7 +1248,10 @@ class InfractionManager extends Service {
             });
         }
 
-        if (infraction.deliveryStatus !== InfractionDeliveryStatus.SUCCESS) {
+        if (
+            infraction.deliveryStatus !== InfractionDeliveryStatus.SUCCESS &&
+            includeNotificationStatusInEmbed
+        ) {
             fields.push({
                 name: "Notification",
                 value:
@@ -1235,6 +1287,10 @@ class InfractionManager extends Service {
 
 type InfractionConfig = NonNullable<GuildConfig["infractions"]>;
 
+type CreateOverviewOptions = {
+    includeNotificationStatusInEmbed?: boolean;
+};
+
 type CommonOptions<E extends boolean> = {
     moderator: User;
     reason?: string;
@@ -1249,6 +1305,10 @@ type CreateBeanPayload<E extends boolean> = CommonOptions<E> & {
 };
 
 type CreateUnbanPayload<E extends boolean> = Omit<CommonOptions<E>, "notify"> & {
+    user: User;
+};
+
+type CreateNotePayload<E extends boolean> = Omit<CommonOptions<E>, "notify"> & {
     user: User;
 };
 
