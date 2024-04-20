@@ -63,5 +63,6 @@
         "arguments": "Messages",
         "blazebuild": "Project"
     },
-    "typescript.preferences.importModuleSpecifier": "non-relative"
+    "typescript.preferences.importModuleSpecifier": "non-relative",
+    "eslint.experimental.useFlatConfig": true
 }

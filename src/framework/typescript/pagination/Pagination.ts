@@ -1,12 +1,8 @@
 import Application from "@framework/app/Application";
-import BaseClient from "@framework/client/BaseClient";
+import type BaseClient from "@framework/client/BaseClient";
 import { emoji } from "@framework/utils/emoji";
-import {
-    ActionRowBuilder,
+import type {
     Awaitable,
-    ButtonBuilder,
-    ButtonStyle,
-    Events,
     Interaction,
     InteractionUpdateOptions,
     Message,
@@ -14,6 +10,7 @@ import {
     MessageEditOptions,
     MessagePayload
 } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Events } from "discord.js";
 
 type FetcherReturn<T> = {
     data: Iterable<T>;
