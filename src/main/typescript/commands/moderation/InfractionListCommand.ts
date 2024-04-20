@@ -3,6 +3,7 @@ import UserArgument from "@framework/arguments/UserArgument";
 import { Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import Pagination from "@framework/pagination/Pagination";
 import { Colors } from "@main/constants/Colors";
 import InfractionManager from "@main/services/InfractionManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
@@ -45,31 +46,40 @@ class InfractionListCommand extends Command {
             return;
         }
 
-        let description = "";
+        const pagination: Pagination<Infraction> = Pagination.withData(infractions)
+            .setData(infractions)
+            .setLimit(3)
+            .setMaxTimeout(Pagination.DEFAULT_TIMEOUT)
+            .setMessageOptionsBuilder(({ data, maxPages, page }) => {
+                let description = "";
 
-        for (const infraction of infractions) {
-            description += `### Infraction #${infraction.id}\n`;
-            description += `**Type:** ${this.infractionManager.prettifyInfractionType(infraction.type)}\n`;
-            description += `***Moderator:** ${infraction.moderatorId ? `<@${infraction.moderatorId}> (${infraction.moderatorId})` : italic("Unknown")}\n`;
-            description += `**Reason:**\n${infraction.reason ? infraction.reason.slice(0, 150) + (infraction.reason.length > 150 ? "\n..." : "") : italic("No reason provided")}\n`;
-            description += `**Created at:** ${time(infraction.createdAt)}\n\n`;
-        }
-
-        await context.reply({
-            embeds: [
-                {
-                    author: {
-                        name: `Infractions for ${args.user.username}`,
-                        icon_url: args.user.displayAvatarURL()
-                    },
-                    color: Colors.Primary,
-                    description,
-                    footer: {
-                        text: `Total infractions: ${infractions.length}`
-                    }
+                for (const infraction of data) {
+                    description += `### Infraction #${infraction.id}\n`;
+                    description += `**Type:** ${this.infractionManager.prettifyInfractionType(infraction.type)}\n`;
+                    description += `**Moderator:** ${infraction.moderatorId ? `<@${infraction.moderatorId}> (${infraction.moderatorId})` : italic("Unknown")}\n`;
+                    description += `**Reason:**\n${infraction.reason ? infraction.reason.slice(0, 150) + (infraction.reason.length > 150 ? "\n..." : "") : italic("No reason provided")}\n`;
+                    description += `**Created at:** ${time(infraction.createdAt)}\n\n`;
                 }
-            ]
-        });
+
+                return {
+                    embeds: [
+                        {
+                            author: {
+                                name: `Infractions for ${args.user.username}`,
+                                icon_url: args.user.displayAvatarURL()
+                            },
+                            color: Colors.Primary,
+                            description,
+                            footer: {
+                                text: `Page ${page} of ${maxPages} • ${infractions.length} infractions total`
+                            }
+                        }
+                    ]
+                };
+            });
+
+        const reply = await context.reply(await pagination.getMessageOptions());
+        pagination.setInitialMessage(reply);
     }
 }
 
