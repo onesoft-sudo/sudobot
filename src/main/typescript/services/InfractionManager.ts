@@ -360,10 +360,32 @@ class InfractionManager extends Service {
         });
     }
 
+    public async updateReasonById(id: number, reason: string): Promise<boolean> {
+        return (
+            (
+                await this.application.prisma.infraction.updateMany({
+                    where: { id },
+                    data: { reason }
+                })
+            ).count > 0
+        );
+    }
+
     public async deleteById(id: number): Promise<Infraction | null> {
         return await this.application.prisma.infraction.delete({
             where: { id }
         });
+    }
+
+    public async deleteForUser(userId: string, type?: InfractionType): Promise<number> {
+        return (
+            await this.application.prisma.infraction.deleteMany({
+                where: {
+                    userId,
+                    type: type ? { equals: type } : undefined
+                }
+            })
+        ).count;
     }
 
     public async getUserInfractions(id: Snowflake): Promise<Infraction[]> {

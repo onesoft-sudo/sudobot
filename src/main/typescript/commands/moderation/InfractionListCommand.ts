@@ -37,6 +37,10 @@ class InfractionListCommand extends Command {
         context: Context<CommandMessage>,
         args: InfractionListCommandArgs
     ): Promise<void> {
+        await context.defer({
+            ephemeral: true
+        });
+
         const infractions: Infraction[] = await this.infractionManager.getUserInfractions(
             args.user.id
         );

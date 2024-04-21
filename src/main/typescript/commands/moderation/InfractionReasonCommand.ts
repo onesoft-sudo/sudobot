@@ -1,18 +1,19 @@
 import { TakesArgument } from "@framework/arguments/ArgumentTypes";
 import IntegerArgument from "@framework/arguments/IntegerArgument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
+import RestStringArgument from "@framework/arguments/RestStringArgument";
 import { Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import InfractionManager from "@main/services/InfractionManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
-import { Infraction } from "@prisma/client";
 
-type InfractionDeleteCommandArgs = {
+type InfractionReasonCommandArgs = {
     id: number;
+    reason: string;
 };
 
-@TakesArgument<InfractionDeleteCommandArgs>({
+@TakesArgument<InfractionReasonCommandArgs>({
     names: ["id"],
     types: [IntegerArgument],
     optional: false,
@@ -25,9 +26,22 @@ type InfractionDeleteCommandArgs = {
     interactionName: "id",
     interactionType: IntegerArgument
 })
-class InfractionDeleteCommand extends Command {
-    public override readonly name = "infraction::delete";
-    public override readonly description: string = "Delete an infraction.";
+@TakesArgument<InfractionReasonCommandArgs>({
+    names: ["reason"],
+    types: [RestStringArgument],
+    optional: false,
+    errorMessages: [
+        {
+            [ErrorType.InvalidType]: "Invalid reason provided.",
+            [ErrorType.Required]: "Reason is required."
+        }
+    ],
+    interactionName: "reason",
+    interactionType: RestStringArgument
+})
+class InfractionReasonCommand extends Command {
+    public override readonly name = "infraction::reason";
+    public override readonly description: string = "Update the reason of an infraction.";
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;
@@ -37,21 +51,23 @@ class InfractionDeleteCommand extends Command {
 
     public override async execute(
         context: Context<CommandMessage>,
-        args: InfractionDeleteCommandArgs
+        args: InfractionReasonCommandArgs
     ): Promise<void> {
         await context.defer({
             ephemeral: true
         });
 
-        const infraction: Infraction | null = await this.infractionManager.deleteById(args.id);
+        const { id, reason } = args;
 
-        if (!infraction) {
+        const isSuccess = await this.infractionManager.updateReasonById(id, reason);
+
+        if (!isSuccess) {
             await context.error("No infraction found with that ID.");
             return;
         }
 
-        await context.success(`Infraction with ID **${infraction.id}** has been deleted.`);
+        await context.success(`Reason of infraction with ID **${id}** has been updated.`);
     }
 }
 
-export default InfractionDeleteCommand;
+export default InfractionReasonCommand;

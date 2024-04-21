@@ -66,6 +66,10 @@ class InfractionCreateCommand extends Command {
         context: Context<CommandMessage>,
         args: InfractionCreateCommandArgs
     ): Promise<void> {
+        await context.defer({
+            ephemeral: true
+        });
+
         const { type: rawType, user, reason } = args;
         const type = rawType.toUpperCase();
 

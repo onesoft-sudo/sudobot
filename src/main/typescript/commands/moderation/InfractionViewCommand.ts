@@ -123,6 +123,10 @@ class InfractionViewCommand extends Command {
         context: Context<CommandMessage>,
         args: InfractionViewCommandArgs
     ): Promise<void> {
+        await context.defer({
+            ephemeral: true
+        });
+
         const infraction: Infraction | null = await this.infractionManager.getById(args.id);
 
         if (!infraction) {

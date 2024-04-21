@@ -9,8 +9,7 @@ class InfractionCommand extends Command {
     public override readonly detailedDescription: string =
         "Manage infractions for users. This command allows you to view, create, and delete infractions.";
     public override readonly permissions = [PermissionFlagsBits.ManageMessages];
-    public override readonly defer = true;
-    public override readonly usage = ["<user: User> [reason: RestString]"];
+    public override readonly usage = ["<subcommand: String> [...args: Any[]]"];
     public override readonly aliases = ["inf", "infs", "infractions"];
     public override readonly subcommands = [
         "create",
@@ -19,7 +18,8 @@ class InfractionCommand extends Command {
         "reason", // TODO: Add "reason" subcommand
         "list",
         "ls",
-        "s"
+        "s",
+        "clear"
     ];
     public override readonly isolatedSubcommands = true;
     public override readonly subcommandMeta: Record<string, SubcommandMeta> = {
@@ -38,6 +38,14 @@ class InfractionCommand extends Command {
     };
 
     public override build(): Buildable[] {
+        const types = Object.keys(InfractionType).map((key: string) => ({
+            name: key
+                .split("_")
+                .map(s => s[0].toUpperCase() + s.slice(1).toLowerCase())
+                .join(" "),
+            value: key
+        }));
+
         return [
             this.buildChatInput()
                 .addSubcommand(option =>
@@ -54,15 +62,8 @@ class InfractionCommand extends Command {
                             option
                                 .setName("type")
                                 .setDescription("The type of infraction to create")
-                                .setChoices(
-                                    ...Object.keys(InfractionType).map((key: string) => ({
-                                        name: key
-                                            .split("_")
-                                            .map(s => s[0].toUpperCase() + s.slice(1).toLowerCase())
-                                            .join(" "),
-                                        value: key
-                                    }))
-                                )
+                                .setChoices(...types)
+
                                 .setRequired(true)
                         )
                         .addStringOption(option =>
@@ -112,6 +113,23 @@ class InfractionCommand extends Command {
                                 .setName("user")
                                 .setDescription("The target user")
                                 .setRequired(true)
+                        )
+                )
+                .addSubcommand(option =>
+                    option
+                        .setName("clear")
+                        .setDescription("Clear all infractions of a user.")
+                        .addUserOption(option =>
+                            option
+                                .setName("user")
+                                .setDescription("The target user")
+                                .setRequired(true)
+                        )
+                        .addStringOption(option =>
+                            option
+                                .setName("type")
+                                .setDescription("The type of infraction to clear.")
+                                .setChoices(...types)
                         )
                 )
                 .addSubcommand(option =>
