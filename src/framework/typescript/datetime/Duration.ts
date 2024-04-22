@@ -37,11 +37,11 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<number> {
     private _totalMilliseconds: number | null = null;
     private static readonly _keys = {
         y: "years",
-        m: "months",
+        mo: "months",
         w: "weeks",
         d: "days",
         h: "hours",
-        i: "minutes",
+        m: "minutes",
         s: "seconds",
         ms: "milliseconds",
         years: "years",
