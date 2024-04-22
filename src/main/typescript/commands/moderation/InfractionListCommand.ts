@@ -8,7 +8,7 @@ import { Colors } from "@main/constants/Colors";
 import InfractionManager from "@main/services/InfractionManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
 import { Infraction } from "@prisma/client";
-import { User, italic, time } from "discord.js";
+import { PermissionFlagsBits, User, italic, time } from "discord.js";
 
 type InfractionListCommandArgs = {
     user: User;
@@ -26,6 +26,8 @@ class InfractionListCommand extends Command {
     public override readonly name = "infraction::list";
     public override readonly description: string = "List infractions for a user.";
     public override readonly aliases = ["infraction::ls", "infraction::s"];
+    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly usage = ["<user: User>"];
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;

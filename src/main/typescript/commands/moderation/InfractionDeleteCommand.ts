@@ -7,6 +7,7 @@ import { Inject } from "@framework/container/Inject";
 import InfractionManager from "@main/services/InfractionManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
 import { Infraction } from "@prisma/client";
+import { PermissionFlagsBits } from "discord.js";
 
 type InfractionDeleteCommandArgs = {
     id: number;
@@ -28,6 +29,8 @@ type InfractionDeleteCommandArgs = {
 class InfractionDeleteCommand extends Command {
     public override readonly name = "infraction::delete";
     public override readonly description: string = "Delete an infraction.";
+    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly usage = ["<id: number>"];
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;

@@ -10,7 +10,7 @@ import { Colors } from "@main/constants/Colors";
 import InfractionManager from "@main/services/InfractionManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
 import { Infraction } from "@prisma/client";
-import { APIEmbed, User, italic, time } from "discord.js";
+import { APIEmbed, PermissionFlagsBits, User, italic, time } from "discord.js";
 
 type InfractionViewCommandArgs = {
     id: number;
@@ -32,6 +32,8 @@ type InfractionViewCommandArgs = {
 class InfractionViewCommand extends Command {
     public override readonly name = "infraction::view";
     public override readonly description: string = "View an infraction.";
+    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly usage = ["<id: number>"];
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;

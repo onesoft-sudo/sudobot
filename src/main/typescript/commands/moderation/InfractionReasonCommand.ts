@@ -7,6 +7,7 @@ import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import InfractionManager from "@main/services/InfractionManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
+import { PermissionFlagsBits } from "discord.js";
 
 type InfractionReasonCommandArgs = {
     id: number;
@@ -42,6 +43,8 @@ type InfractionReasonCommandArgs = {
 class InfractionReasonCommand extends Command {
     public override readonly name = "infraction::reason";
     public override readonly description: string = "Update the reason of an infraction.";
+    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly usage = ["<id: number> <reason: string>"];
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;

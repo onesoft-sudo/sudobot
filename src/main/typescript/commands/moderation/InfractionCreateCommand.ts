@@ -11,7 +11,7 @@ import InfractionViewCommand from "@main/commands/moderation/InfractionViewComma
 import InfractionManager from "@main/services/InfractionManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
 import { Infraction, InfractionType } from "@prisma/client";
-import { User } from "discord.js";
+import { PermissionFlagsBits, User } from "discord.js";
 
 type InfractionCreateCommandArgs = {
     user: User;
@@ -55,6 +55,8 @@ type InfractionCreateCommandArgs = {
 class InfractionCreateCommand extends Command {
     public override readonly name = "infraction::create";
     public override readonly description: string = "Create a new infraction.";
+    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly usage = ["<user: User> <type: InfractionType> [reason: string]"];
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;
