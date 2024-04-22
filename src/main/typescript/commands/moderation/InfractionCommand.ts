@@ -19,7 +19,9 @@ class InfractionCommand extends Command {
         "list",
         "ls",
         "s",
-        "clear"
+        "clear",
+        "d",
+        "duration"
     ];
     public override readonly isolatedSubcommands = true;
     public override readonly subcommandMeta: Record<string, SubcommandMeta> = {
@@ -147,6 +149,37 @@ class InfractionCommand extends Command {
                             option
                                 .setName("reason")
                                 .setDescription("The new reason for the infraction.")
+                        )
+                        .addBooleanOption(option =>
+                            option
+                                .setName("notify")
+                                .setDescription(
+                                    "Whether to notify the user of the updated reason. Defaults to true."
+                                )
+                        )
+                )
+                .addSubcommand(option =>
+                    option
+                        .setName("duration")
+                        .setDescription("Change the duration of an infraction.")
+                        .addIntegerOption(option =>
+                            option
+                                .setName("id")
+                                .setDescription(
+                                    "The ID of the infraction to change the duration for."
+                                )
+                        )
+                        .addStringOption(option =>
+                            option
+                                .setName("duration")
+                                .setDescription("The new duration for the infraction.")
+                        )
+                        .addBooleanOption(option =>
+                            option
+                                .setName("notify")
+                                .setDescription(
+                                    "Whether to notify the user of the updated duration. Defaults to true."
+                                )
                         )
                 )
         ];

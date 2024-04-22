@@ -5,6 +5,7 @@ import { safeUserFetch } from "../utils/fetch";
 type UnbanQueuePayload = {
     userId: Snowflake;
     guildId: Snowflake;
+    infractionId: number;
 };
 
 class UnbanQueue extends Queue<UnbanQueuePayload> {

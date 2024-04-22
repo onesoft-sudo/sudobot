@@ -6,12 +6,15 @@ import { safeMemberFetch } from "../utils/fetch";
 type UnmuteQueuePayload = {
     memberId: Snowflake;
     guildId: Snowflake;
+    infractionId: number;
 };
 
 class UnmuteQueue extends Queue<UnmuteQueuePayload> {
     public static override readonly uniqueName = "unmute";
 
     public async execute({ guildId, memberId }: UnmuteQueuePayload) {
+        this.application.logger.debug("Unmuting member");
+
         const guild = this.application.client.guilds.cache.get(guildId);
 
         if (!guild) {
@@ -24,7 +27,7 @@ class UnmuteQueue extends Queue<UnmuteQueuePayload> {
             return;
         }
 
-        await this.application
+        const result = await this.application
             .getServiceByName("infractionManager")
             .createUnmute({
                 guildId: guild.id,
@@ -33,6 +36,12 @@ class UnmuteQueue extends Queue<UnmuteQueuePayload> {
                 member
             })
             .catch(console.error);
+
+        if (result?.status === "success") {
+            this.application.logger.debug("Member unmuted");
+        } else {
+            this.application.logger.debug("Failed to unmute member");
+        }
     }
 }
 

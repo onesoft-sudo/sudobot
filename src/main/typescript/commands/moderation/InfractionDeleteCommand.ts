@@ -46,7 +46,10 @@ class InfractionDeleteCommand extends Command {
             ephemeral: true
         });
 
-        const infraction: Infraction | null = await this.infractionManager.deleteById(args.id);
+        const infraction: Infraction | null = await this.infractionManager.deleteById(
+            context.guildId!,
+            args.id
+        );
 
         if (!infraction) {
             await context.error("No infraction found with that ID.");

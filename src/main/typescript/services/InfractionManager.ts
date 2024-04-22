@@ -23,6 +23,7 @@ import Duration from "@framework/datetime/Duration";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { emoji } from "@framework/utils/emoji";
+import { fetchUser } from "@framework/utils/entities";
 import { Infraction, InfractionDeliveryStatus, InfractionType, PrismaClient } from "@prisma/client";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
@@ -31,9 +32,10 @@ import {
     CategoryChannel,
     ChannelType,
     Colors,
-    EmbedBuilder,
     GuildMember,
     Message,
+    MessageCreateOptions,
+    MessagePayload,
     PermissionFlagsBits,
     PrivateThreadChannel,
     RoleResolvable,
@@ -115,7 +117,33 @@ class InfractionManager extends Service {
         return finalReason;
     }
 
-    private async notify(
+    private async sendDirectMessage(
+        user: User,
+        guildId: Snowflake,
+        options: MessagePayload | MessageCreateOptions,
+        infraction?: Infraction
+    ) {
+        const guild = this.application.getClient().guilds.cache.get(guildId);
+
+        if (!guild) {
+            return false;
+        }
+
+        try {
+            await user.send(options);
+            return "notified";
+        } catch {
+            if (infraction) {
+                return (await this.handleFallback(user, infraction, options))
+                    ? "fallback"
+                    : "failed";
+            }
+
+            return "failed";
+        }
+    }
+
+    private notify(
         user: User,
         infraction: Infraction,
         transformNotificationEmbed?: (embed: APIEmbed) => APIEmbed
@@ -163,21 +191,18 @@ class InfractionManager extends Service {
         }
 
         const transformed = transformNotificationEmbed ? transformNotificationEmbed(embed) : embed;
-
-        try {
-            await user.send({ embeds: [transformed] });
-            return "notified";
-        } catch {
-            return (await this.handleFallback(user, infraction, transformed))
-                ? "fallback"
-                : "failed";
-        }
+        return this.sendDirectMessage(
+            user,
+            infraction.guildId,
+            { embeds: [transformed] },
+            infraction
+        );
     }
 
     private async handleFallback(
         user: User,
         infraction: Infraction,
-        embed: EmbedBuilder | APIEmbed
+        options: MessagePayload | MessageCreateOptions
     ) {
         if (
             (
@@ -210,7 +235,12 @@ class InfractionManager extends Service {
             return false;
         }
 
-        await channel.send({ embeds: [embed], content: `${userMention(user.id)}` });
+        await channel.send({
+            ...(options as MessageCreateOptions),
+            content:
+                `${userMention(user.id)}` +
+                ("content" in options && options.content ? " " + options.content : "")
+        });
 
         if (config?.dm_fallback_channel_expires_in && config.dm_fallback_channel_expires_in > 0) {
             const guild = this.client.guilds.cache.get(infraction.guildId);
@@ -354,43 +384,300 @@ class InfractionManager extends Service {
         return infraction;
     }
 
-    public async getById(id: number): Promise<Infraction | null> {
+    public async getById(guildId: Snowflake, id: number): Promise<Infraction | null> {
         return await this.application.prisma.infraction.findFirst({
-            where: { id }
+            where: { id, guildId }
         });
     }
 
-    public async updateReasonById(id: number, reason: string): Promise<boolean> {
+    public async updateReasonById(
+        guildId: Snowflake,
+        id: number,
+        reason: string,
+        notify = true
+    ): Promise<boolean> {
+        reason = this.processReason(guildId, reason) ?? reason;
+
+        const infraction: Infraction | null = await this.getById(guildId, id);
+
+        if (!infraction) {
+            return false;
+        }
+
+        if (notify) {
+            const user = await fetchUser(this.application.getClient(), infraction.userId);
+            const guild = this.getGuild(guildId);
+
+            if (user && guild) {
+                await this.sendDirectMessage(
+                    user,
+                    infraction.guildId,
+                    {
+                        embeds: [
+                            {
+                                author: {
+                                    name: `Your ${this.prettifyInfractionType(infraction.type).toLowerCase()} has been updated in ${guild.name}`,
+                                    icon_url: guild.iconURL() ?? undefined
+                                },
+                                color: Colors.Red,
+                                fields: [
+                                    {
+                                        name: "New Reason",
+                                        value: reason
+                                    }
+                                ],
+                                timestamp: new Date().toISOString()
+                            }
+                        ]
+                    },
+                    infraction
+                ).catch(this.application.logger.debug);
+            }
+        }
+
         return (
             (
                 await this.application.prisma.infraction.updateMany({
-                    where: { id },
+                    where: { id, guildId },
                     data: { reason }
                 })
             ).count > 0
         );
     }
 
-    public async deleteById(id: number): Promise<Infraction | null> {
+    private async updateInfractionQueues(
+        infraction: Infraction,
+        duration: Duration | null
+    ): Promise<void> {
+        if (!infraction.expiresAt && !duration) {
+            return;
+        }
+
+        const guild = this.getGuild(infraction.guildId);
+
+        if (!guild) {
+            return;
+        }
+
+        if (infraction.expiresAt) {
+            switch (infraction.type) {
+                case InfractionType.BAN:
+                    await this.queueService.bulkCancel(UnbanQueue, queue => {
+                        return (
+                            queue.data.userId === infraction.userId &&
+                            queue.data.guildId === guild.id &&
+                            queue.data.infractionId === infraction.id
+                        );
+                    });
+
+                    break;
+                case InfractionType.MUTE:
+                    await this.queueService.bulkCancel(UnmuteQueue, queue => {
+                        return (
+                            queue.data.memberId === infraction.userId &&
+                            queue.data.guildId === guild.id &&
+                            queue.data.infractionId === infraction.id
+                        );
+                    });
+
+                    break;
+                case InfractionType.ROLE:
+                    await this.queueService.bulkCancel(RoleQueue, queue => {
+                        return (
+                            queue.data.memberId === infraction.userId &&
+                            queue.data.guildId === guild.id &&
+                            queue.data.infractionId === infraction.id
+                        );
+                    });
+
+                    break;
+
+                default:
+                    throw new Error("Invalid infraction type");
+            }
+        }
+
+        if (duration) {
+            switch (infraction.type) {
+                case InfractionType.BAN:
+                    await this.queueService
+                        .create(UnbanQueue, {
+                            data: {
+                                guildId: guild.id,
+                                userId: infraction.userId,
+                                infractionId: infraction.id
+                            },
+                            guildId: guild.id,
+                            runsAt: duration.fromNow()
+                        })
+                        .schedule();
+
+                    break;
+                case InfractionType.MUTE:
+                    await this.queueService
+                        .create(UnmuteQueue, {
+                            data: {
+                                guildId: guild.id,
+                                memberId: infraction.userId,
+                                infractionId: infraction.id
+                            },
+                            guildId: guild.id,
+                            runsAt: duration.fromNow()
+                        })
+                        .schedule();
+
+                    break;
+                case InfractionType.ROLE:
+                    {
+                        const metadata = infraction.metadata as {
+                            roleIds: Snowflake[];
+                            mode: "add" | "remove";
+                        };
+
+                        await this.queueService
+                            .create(RoleQueue, {
+                                data: {
+                                    guildId: guild.id,
+                                    memberId: infraction.userId,
+                                    roleIds: metadata.roleIds,
+                                    mode: metadata.mode,
+                                    infractionId: infraction.id,
+                                    reason: infraction.reason
+                                        ? `<@${infraction.moderatorId}> - ${infraction.reason}`
+                                        : undefined
+                                },
+                                guildId: guild.id,
+                                runsAt: duration.fromNow()
+                            })
+                            .schedule();
+                    }
+                    break;
+
+                default:
+                    throw new Error("Invalid infraction type");
+            }
+        }
+    }
+
+    public async updateDurationById(
+        guildId: Snowflake,
+        id: number,
+        duration: Duration | null,
+        notify: boolean
+    ): Promise<DurationUpdateResult> {
+        const infraction: Infraction | null = await this.getById(guildId, id);
+
+        if (!infraction || infraction.guildId !== guildId) {
+            return {
+                success: false,
+                error: "infraction_not_found",
+                infraction: undefined
+            };
+        }
+
+        if (
+            !([InfractionType.BAN, InfractionType.MUTE, InfractionType.ROLE] as string[]).includes(
+                infraction.type
+            )
+        ) {
+            return {
+                success: false,
+                error: "invalid_infraction_type",
+                infraction
+            };
+        }
+
+        if (infraction.expiresAt && Date.now() >= infraction.expiresAt.getTime()) {
+            return {
+                success: false,
+                error: "infraction_expired",
+                infraction
+            };
+        }
+
+        if (infraction.type === InfractionType.MUTE && duration) {
+            const config = this.configManager.config[guildId]?.muting;
+
+            if (!config?.role && duration.toMilliseconds() > 28 * 24 * 60 * 60 * 1000) {
+                return {
+                    success: false,
+                    error: "invalid_duration",
+                    infraction
+                };
+            }
+        }
+
+        await this.updateInfractionQueues(infraction, duration);
+        const updatedInfraction: Infraction = await this.application.prisma.infraction.update({
+            where: { id, guildId },
+            data: {
+                expiresAt: duration?.fromNow() ?? null,
+                metadata: { duration: duration?.toMilliseconds() ?? undefined }
+            }
+        });
+
+        if (notify) {
+            const user = await fetchUser(this.application.getClient(), infraction.userId);
+            const guild = this.getGuild(guildId);
+
+            if (user && guild) {
+                await this.sendDirectMessage(
+                    user,
+                    infraction.guildId,
+                    {
+                        embeds: [
+                            {
+                                author: {
+                                    name: `Your ${this.prettifyInfractionType(infraction.type).toLowerCase()} has been updated in ${guild.name}`,
+                                    icon_url: guild.iconURL() ?? undefined
+                                },
+                                color: Colors.Red,
+                                fields: [
+                                    {
+                                        name: "New Duration",
+                                        value: duration?.toString() ?? "Indefinite"
+                                    }
+                                ],
+                                timestamp: new Date().toISOString()
+                            }
+                        ]
+                    },
+                    infraction
+                ).catch(this.application.logger.debug);
+            }
+        }
+
+        return {
+            success: true,
+            infraction: updatedInfraction
+        };
+    }
+
+    public async deleteById(guildId: Snowflake, id: number): Promise<Infraction | null> {
         return await this.application.prisma.infraction.delete({
-            where: { id }
+            where: { id, guildId }
         });
     }
 
-    public async deleteForUser(userId: string, type?: InfractionType): Promise<number> {
+    public async deleteForUser(
+        guildId: Snowflake,
+        userId: string,
+        type?: InfractionType
+    ): Promise<number> {
         return (
             await this.application.prisma.infraction.deleteMany({
                 where: {
                     userId,
+                    guildId,
                     type: type ? { equals: type } : undefined
                 }
             })
         ).count;
     }
 
-    public async getUserInfractions(id: Snowflake): Promise<Infraction[]> {
+    public async getUserInfractions(guildId: Snowflake, id: Snowflake): Promise<Infraction[]> {
         return await this.application.prisma.infraction.findMany({
-            where: { userId: id }
+            where: { userId: id, guildId }
         });
     }
 
@@ -518,7 +805,8 @@ class InfractionManager extends Service {
                     .create(UnbanQueue, {
                         data: {
                             guildId,
-                            userId: user.id
+                            userId: user.id,
+                            infractionId: infraction.id
                         },
                         guildId: guild.id,
                         runsAt: payload.duration.fromNow()
@@ -539,7 +827,9 @@ class InfractionManager extends Service {
             status: "success",
             infraction,
             overviewEmbed: (generateOverviewEmbed
-                ? this.createOverviewEmbed(infraction, user, moderator)
+                ? this.createOverviewEmbed(infraction, user, moderator, {
+                      duration: payload.duration
+                  })
                 : undefined) as E extends true ? APIEmbed : undefined
         };
     }
@@ -786,27 +1076,6 @@ class InfractionManager extends Service {
                 );
             } else if (mode === "role" && role) {
                 await member.roles.add(role, `${moderator.username} - ${reason}`);
-
-                await this.queueService.bulkCancel(UnmuteQueue, queue => {
-                    return (
-                        queue.data.memberId === member.id &&
-                        queue.data.guildId === guild.id &&
-                        !queue.isExecuting
-                    );
-                });
-
-                if (duration) {
-                    await this.queueService
-                        .create(UnmuteQueue, {
-                            data: {
-                                guildId,
-                                memberId: member.id
-                            },
-                            guildId: guild.id,
-                            runsAt: duration.fromNow()
-                        })
-                        .schedule();
-                }
             } else {
                 throw new Error("Unreachable");
             }
@@ -849,11 +1118,37 @@ class InfractionManager extends Service {
             });
         }
 
+        if (mode === "role" && role) {
+            await this.queueService.bulkCancel(UnmuteQueue, queue => {
+                return (
+                    queue.data.memberId === member.id &&
+                    queue.data.guildId === guild.id &&
+                    !queue.isExecuting
+                );
+            });
+
+            if (duration) {
+                await this.queueService
+                    .create(UnmuteQueue, {
+                        data: {
+                            guildId,
+                            memberId: member.id,
+                            infractionId: infraction.id
+                        },
+                        guildId: guild.id,
+                        runsAt: duration.fromNow()
+                    })
+                    .schedule();
+            }
+        }
+
         return {
             status: "success",
             infraction,
             overviewEmbed: (generateOverviewEmbed
-                ? this.createOverviewEmbed(infraction, member.user, moderator)
+                ? this.createOverviewEmbed(infraction, member.user, moderator, {
+                      duration
+                  })
                 : undefined) as E extends true ? APIEmbed : undefined
         };
     }
@@ -880,9 +1175,12 @@ class InfractionManager extends Service {
             transformNotificationEmbed,
             notify = true
         } = payload;
-        const { mode = "both" } = payload;
+        const { mode = "auto" } = payload;
+        const config = this.configManager.config[guildId]?.muting;
+        const role = config?.role && mode !== "timeout" ? config?.role : undefined;
+        const finalMode = mode === "auto" ? (role ? "role" : "timeout") : mode;
 
-        if (mode !== "timeout" && !member.manageable) {
+        if (finalMode === "role" && !member.manageable) {
             return {
                 status: "failed",
                 infraction: null,
@@ -892,7 +1190,7 @@ class InfractionManager extends Service {
             };
         }
 
-        if (mode !== "role" && !member.moderatable) {
+        if (finalMode === "timeout" && !member.moderatable) {
             return {
                 status: "failed",
                 infraction: null,
@@ -902,10 +1200,7 @@ class InfractionManager extends Service {
             };
         }
 
-        const config = this.configManager.config[guildId]?.muting;
-        const role = config?.role && mode !== "timeout" ? config?.role : undefined;
-
-        if (!role && mode !== "timeout") {
+        if (!role && finalMode === "role") {
             return {
                 status: "failed",
                 infraction: null,
@@ -916,8 +1211,8 @@ class InfractionManager extends Service {
         }
 
         if (
-            (role !== "timeout" && role && !member.roles.cache.has(role)) ||
-            (mode === "timeout" && !member.communicationDisabledUntilTimestamp)
+            (finalMode === "role" && role && !member.roles.cache.has(role)) ||
+            (finalMode === "timeout" && !member.communicationDisabledUntilTimestamp)
         ) {
             return {
                 status: "failed",
@@ -932,14 +1227,14 @@ class InfractionManager extends Service {
 
         try {
             if (
-                mode !== "role" &&
+                finalMode === "timeout" &&
                 member.communicationDisabledUntilTimestamp &&
                 member.moderatable
             ) {
                 await member.disableCommunicationUntil(null, `${moderator.username} - ${reason}`);
             }
 
-            if (mode !== "timeout" && role && member.roles.cache.has(role)) {
+            if (finalMode === "role" && role && member.roles.cache.has(role)) {
                 await member.roles.remove(role, `${moderator.username} - ${reason}`);
             }
 
@@ -970,7 +1265,7 @@ class InfractionManager extends Service {
             notify,
             payload: {
                 metadata: {
-                    mode
+                    finalMode
                 }
             },
             processReason: false
@@ -1029,22 +1324,6 @@ class InfractionManager extends Service {
             } else {
                 await member.roles.remove(roles, `${moderator.username} - ${reason}`);
             }
-
-            if (duration !== undefined) {
-                await this.queueService
-                    .create(RoleQueue, {
-                        data: {
-                            memberId: member.id,
-                            guildId: guild.id,
-                            roleIds: roles.map(role => (typeof role === "string" ? role : role.id)),
-                            mode: mode === "give" ? "remove" : "add",
-                            reason: `${moderator.username} - ${reason}`
-                        },
-                        guildId: guild.id,
-                        runsAt: duration.fromNow()
-                    })
-                    .schedule();
-            }
         } catch (error) {
             this.application.logger.error(error);
 
@@ -1074,8 +1353,27 @@ class InfractionManager extends Service {
             processReason: false
         });
 
+        if (duration !== undefined) {
+            await this.queueService
+                .create(RoleQueue, {
+                    data: {
+                        memberId: member.id,
+                        guildId: guild.id,
+                        roleIds: roles.map(role => (typeof role === "string" ? role : role.id)),
+                        mode: mode === "give" ? "remove" : "add",
+                        reason: `${moderator.username} - ${reason}`,
+                        infractionId: infraction.id
+                    },
+                    guildId: guild.id,
+                    runsAt: duration.fromNow()
+                })
+                .schedule();
+        }
+
         const overviewEmbed = generateOverviewEmbed
-            ? this.createOverviewEmbed(infraction, member.user, moderator)
+            ? this.createOverviewEmbed(infraction, member.user, moderator, {
+                  duration
+              })
             : undefined;
 
         const summaryOfRoles =
@@ -1314,10 +1612,14 @@ class InfractionManager extends Service {
         ];
         const { includeNotificationStatusInEmbed = true } = options ?? {};
 
-        if (infraction.expiresAt) {
+        if (infraction.expiresAt || options?.duration) {
             fields.push({
                 name: "Duration",
-                value: formatDistanceToNowStrict(infraction.expiresAt)
+                value:
+                    options?.duration?.toString() ??
+                    formatDistanceToNowStrict(infraction.expiresAt!, {
+                        roundingMethod: "round"
+                    })
             });
         }
 
@@ -1362,6 +1664,7 @@ type InfractionConfig = NonNullable<GuildConfig["infractions"]>;
 
 type CreateOverviewOptions = {
     includeNotificationStatusInEmbed?: boolean;
+    duration?: Duration;
 };
 
 type CommonOptions<E extends boolean> = {
@@ -1387,7 +1690,7 @@ type CreateNotePayload<E extends boolean> = Omit<CommonOptions<E>, "notify"> & {
 
 type CreateUnmutePayload<E extends boolean> = CommonOptions<E> & {
     member: GuildMember;
-    mode?: "role" | "timeout" | "both";
+    mode?: "role" | "timeout" | "auto";
 };
 
 type CreateKickPayload<E extends boolean> = CommonOptions<E> & {
@@ -1460,5 +1763,11 @@ type InfractionCreateOptions<E extends boolean> = CommonOptions<E> & {
     sendLog?: boolean;
     processReason?: boolean;
 } & ({ user: User } | { member: GuildMember });
+
+type DurationUpdateResult = {
+    success?: boolean;
+    infraction?: Infraction;
+    error?: string;
+};
 
 export default InfractionManager;

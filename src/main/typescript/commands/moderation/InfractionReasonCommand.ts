@@ -61,8 +61,12 @@ class InfractionReasonCommand extends Command {
         });
 
         const { id, reason } = args;
-
-        const isSuccess = await this.infractionManager.updateReasonById(id, reason);
+        const isSuccess = await this.infractionManager.updateReasonById(
+            context.guildId!,
+            id,
+            reason,
+            !context.isChatInput() || context.options.getBoolean("notify") !== false
+        );
 
         if (!isSuccess) {
             await context.error("No infraction found with that ID.");

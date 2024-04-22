@@ -44,6 +44,7 @@ class InfractionListCommand extends Command {
         });
 
         const infractions: Infraction[] = await this.infractionManager.getUserInfractions(
+            context.guildId!,
             args.user.id
         );
 

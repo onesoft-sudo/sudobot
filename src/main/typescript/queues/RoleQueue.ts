@@ -8,6 +8,7 @@ type RoleQueuePayload = {
     roleIds: Snowflake[];
     reason?: string;
     mode: "add" | "remove";
+    infractionId: number;
 };
 
 class RoleQueue extends Queue<RoleQueuePayload> {

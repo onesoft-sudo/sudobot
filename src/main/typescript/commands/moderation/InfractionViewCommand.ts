@@ -129,7 +129,10 @@ class InfractionViewCommand extends Command {
             ephemeral: true
         });
 
-        const infraction: Infraction | null = await this.infractionManager.getById(args.id);
+        const infraction: Infraction | null = await this.infractionManager.getById(
+            context.guildId!,
+            args.id
+        );
 
         if (!infraction) {
             await context.error("No infraction found with that ID.");
