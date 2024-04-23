@@ -22,6 +22,7 @@ enum InfractionType {
     BEAN
     NOTE
     ROLE
+    MOD_MESSAGE
 }
 
 enum InfractionDeliveryStatus {

@@ -72,7 +72,8 @@ class InfractionManager extends Service {
         [InfractionType.NOTE]: "noted",
         [InfractionType.TIMEOUT]: "timed out",
         [InfractionType.TIMEOUT_REMOVE]: "removed timeout",
-        [InfractionType.ROLE]: "modified roles"
+        [InfractionType.ROLE]: "modified roles",
+        [InfractionType.MOD_MESSAGE]: "sent a moderator message"
     };
 
     @Inject()
@@ -338,14 +339,15 @@ class InfractionManager extends Service {
             payload,
             type,
             notify = true,
-            processReason = true
+            processReason = true,
+            failIfNotNotified = false
         } = options;
         const user =
             "member" in options && options.member
                 ? options.member.user
                 : (options as { user: User }).user;
-        const infraction = await this.application.prisma.$transaction(async prisma => {
-            let infraction = await prisma.infraction.create({
+        const infraction: Infraction = await this.application.prisma.$transaction(async prisma => {
+            let infraction: Infraction = await prisma.infraction.create({
                 data: {
                     userId: user.id,
                     guildId,
@@ -379,6 +381,10 @@ class InfractionManager extends Service {
             callback?.(infraction);
             return infraction;
         });
+
+        if (failIfNotNotified && infraction.deliveryStatus === InfractionDeliveryStatus.FAILED) {
+            throw new Error("Failed to notify user");
+        }
 
         this.application.getClient().emit("infractionCreate", infraction, user, moderator);
         return infraction;
@@ -709,6 +715,8 @@ class InfractionManager extends Service {
                 return "Timeout Remove";
             case InfractionType.ROLE:
                 return "Role Modification";
+            case InfractionType.MOD_MESSAGE:
+                return "Moderator Message";
             default:
                 return "Unknown";
         }
@@ -1547,6 +1555,57 @@ class InfractionManager extends Service {
         };
     }
 
+    public async createModeratorMessage<E extends boolean>(
+        payload: CreateModeratorMessage<E>
+    ): Promise<InfractionCreateResult<E>> {
+        const {
+            moderator,
+            member,
+            reason,
+            guildId,
+            generateOverviewEmbed,
+            transformNotificationEmbed,
+            notify = true
+        } = payload;
+
+        const guild = this.getGuild(payload.guildId);
+
+        if (!guild) {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null
+            };
+        }
+
+        try {
+            const infraction: Infraction = await this.createInfraction({
+                guildId,
+                moderator,
+                reason,
+                transformNotificationEmbed,
+                type: InfractionType.MOD_MESSAGE,
+                user: member.user,
+                notify,
+                failIfNotNotified: true
+            });
+
+            return {
+                status: "success",
+                infraction,
+                overviewEmbed: (generateOverviewEmbed
+                    ? this.createOverviewEmbed(infraction, member.user, moderator)
+                    : undefined) as E extends true ? APIEmbed : undefined
+            };
+        } catch (error) {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null
+            };
+        }
+    }
+
     public async createNote<E extends boolean>(
         payload: CreateNotePayload<E>
     ): Promise<InfractionCreateResult<E>> {
@@ -1701,6 +1760,10 @@ type CreateWarningPayload<E extends boolean> = CommonOptions<E> & {
     member: GuildMember;
 };
 
+type CreateModeratorMessage<E extends boolean> = CommonOptions<E> & {
+    member: GuildMember;
+};
+
 type CreateClearMessagesPayload<E extends boolean> = Omit<CommonOptions<E>, "notify"> & {
     user?: User;
     channel: TextChannel;
@@ -1762,6 +1825,7 @@ type InfractionCreateOptions<E extends boolean> = CommonOptions<E> & {
     notify?: boolean;
     sendLog?: boolean;
     processReason?: boolean;
+    failIfNotNotified?: boolean;
 } & ({ user: User } | { member: GuildMember });
 
 type DurationUpdateResult = {
