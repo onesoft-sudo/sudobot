@@ -24,6 +24,7 @@ import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { emoji } from "@framework/utils/emoji";
 import { fetchUser } from "@framework/utils/entities";
+import { also } from "@framework/utils/utils";
 import { Infraction, InfractionDeliveryStatus, InfractionType, PrismaClient } from "@prisma/client";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
@@ -1583,7 +1584,12 @@ class InfractionManager extends Service {
                 guildId,
                 moderator,
                 reason,
-                transformNotificationEmbed,
+                transformNotificationEmbed:
+                    transformNotificationEmbed ??
+                    (embed =>
+                        also(embed, embed => {
+                            embed.author!.name = `You have received a moderator message in ${guild.name}`;
+                        })),
                 type: InfractionType.MOD_MESSAGE,
                 user: member.user,
                 notify,
