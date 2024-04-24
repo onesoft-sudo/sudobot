@@ -19,7 +19,15 @@
 
 import { AfkEntry } from "@prisma/client";
 import { formatDistanceToNowStrict } from "date-fns";
-import { ChannelType, Collection, GuildMember, Message, Snowflake, escapeMarkdown, time } from "discord.js";
+import {
+    ChannelType,
+    Collection,
+    GuildMember,
+    Message,
+    Snowflake,
+    escapeMarkdown,
+    time
+} from "discord.js";
 import Service from "../core/Service";
 import { GatewayEventListener } from "../decorators/GatewayEventListener";
 import { HasEventListeners } from "../types/HasEventListeners";
@@ -80,12 +88,18 @@ export default class AFKService extends Service implements HasEventListeners {
         };
     }
 
-    async removeAFK(guildId: string, userId: string, shouldAwait: boolean = true, failIfGuildEntryNotFound = false) {
+    async removeAFK(
+        guildId: string,
+        userId: string,
+        shouldAwait: boolean = true,
+        failIfGuildEntryNotFound = false
+    ) {
         if (failIfGuildEntryNotFound && !this.entries.has(`${guildId}_${userId}`)) {
             return null;
         }
 
-        const entry = this.entries.get(`${guildId}_${userId}`) ?? this.entries.get(`global_${userId}`);
+        const entry =
+            this.entries.get(`${guildId}_${userId}`) ?? this.entries.get(`global_${userId}`);
 
         if (!entry) {
             return null;
@@ -117,7 +131,11 @@ export default class AFKService extends Service implements HasEventListeners {
         return entry;
     }
 
-    addMentions(guildId: string, userId: string, mentions: { userId: Snowflake; messageLink: string }[]) {
+    addMentions(
+        guildId: string,
+        userId: string,
+        mentions: { userId: Snowflake; messageLink: string }[]
+    ) {
         if (!this.isAFK(guildId, userId)) {
             return false;
         }
@@ -128,7 +146,9 @@ export default class AFKService extends Service implements HasEventListeners {
             return false;
         }
 
-        entry.mentions.push(...mentions.map(m => `${m.userId}__${m.messageLink}__${new Date().toISOString()}`));
+        entry.mentions.push(
+            ...mentions.map(m => `${m.userId}__${m.messageLink}__${new Date().toISOString()}`)
+        );
         this.modifiedIds.add(`${entry.global ? "global" : guildId}_${userId}`);
         this.queueSync();
 
@@ -199,7 +219,9 @@ export default class AFKService extends Service implements HasEventListeners {
         }
 
         if (users.size === 1) {
-            const entry = this.entries.get(`${message.guildId!}_${users.at(0)!.id}`);
+            const entry =
+                this.entries.get(`${message.guildId!}_${users.at(0)!.id}`) ??
+                this.entries.get(`global_${users.at(0)!.id}`);
             description = `<@${users.at(0)!.id}> is AFK right now${
                 entry?.reason ? `, for reason: **${escapeMarkdown(entry?.reason)}**` : ""
             }, for ${formatDistanceToNowStrict(entry?.createdAt ?? new Date())}`;
@@ -208,7 +230,9 @@ export default class AFKService extends Service implements HasEventListeners {
 
             for (const [id] of users) {
                 if (this.isAFK(message.guildId!, id)) {
-                    const entry = this.entries.get(`${message.guildId!}_${id}`);
+                    const entry =
+                        this.entries.get(`${message.guildId!}_${id}`) ??
+                        this.entries.get(`global_${id}`);
                     description += `* <@${id}>: ${entry?.reason ?? "*No reason provided*"} ${
                         entry?.createdAt ? `(${time(entry.createdAt)})` : ""
                     } - ${time(entry?.createdAt ?? new Date(), "R")}\n`;
@@ -254,9 +278,12 @@ export default class AFKService extends Service implements HasEventListeners {
                   entry.mentions
                       .map(data => {
                           const [userId, messageLink, dateISO] = data.split("__");
-                          return `From <@${userId}>, ${formatDistanceToNowStrict(new Date(dateISO), {
-                              addSuffix: true
-                          })} [Navigate](${messageLink})`;
+                          return `From <@${userId}>, ${formatDistanceToNowStrict(
+                              new Date(dateISO),
+                              {
+                                  addSuffix: true
+                              }
+                          )} [Navigate](${messageLink})`;
                       })
                       .join("\n")
                 : "")
