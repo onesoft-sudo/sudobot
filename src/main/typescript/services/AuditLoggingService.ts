@@ -1,90 +1,255 @@
+import { Inject } from "@framework/container/Inject";
+import { GatewayEventListener } from "@framework/events/GatewayEventListener";
+import { Name } from "@framework/services/Name";
+import { Service } from "@framework/services/Service";
+import { channelInfo, messageInfo, userInfo } from "@framework/utils/embeds";
+import { fetchChannel } from "@framework/utils/entities";
+import { isDiscordAPIError } from "@framework/utils/errors";
+import { Colors } from "@main/constants/Colors";
+import { RuleExecResult } from "@main/contracts/ModerationRuleHandlerContract";
+import ConfigurationManager from "@main/services/ConfigurationManager";
+import { GuildConfig } from "@main/types/GuildConfigSchema";
+import { MessageRuleType } from "@main/types/MessageRuleSchema";
+import { ModerationAction } from "@main/types/ModerationAction";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
-    APIEmbed,
-    EmbedBuilder,
-    Guild,
-    GuildMember,
+    ActionRowBuilder,
+    AttachmentBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    Collection,
     Message,
     MessageCreateOptions,
     MessagePayload,
     Snowflake,
+    TextChannel,
     User,
+    Webhook,
     bold,
     inlineCode,
     italic,
     roleMention
 } from "discord.js";
-import { Inject } from "@framework/container/Inject";
-import { Name } from "@framework/services/Name";
-import { Service } from "@framework/services/Service";
-import { Colors } from "../constants/Colors";
-import { RuleExecResult } from "../contracts/ModerationRuleHandlerContract";
-import { MessageRuleType } from "../types/MessageRuleSchema";
-import { ModerationAction } from "../types/ModerationAction";
-import { safeChannelFetch } from "../utils/fetch";
-import ConfigurationManager from "./ConfigurationManager";
+
+type WebhookInfo =
+    | {
+          status: "success";
+          webhook: Webhook;
+          useFailedAttempts?: number;
+      }
+    | {
+          status: "error";
+          attempts: number;
+      };
+
+export enum LogEventType {
+    MessageDelete = "message_delete",
+    SystemAutoModRuleModeration = "system_automod_rule_moderation"
+}
+
+type LogEventArgs = {
+    [LogEventType.MessageDelete]: [message: Message<true>, moderator?: User];
+    [LogEventType.SystemAutoModRuleModeration]: [
+        message: Message,
+        rule: MessageRuleType,
+        result: RuleExecResult
+    ];
+};
 
 @Name("auditLoggingService")
 class AuditLoggingService extends Service {
+    private readonly webhooks = new Collection<`${Snowflake}::${Snowflake}`, WebhookInfo>();
+    private readonly logHandlers: Record<
+        LogEventType,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (...args: any[]) => Promise<Message | undefined>
+    > = {
+        [LogEventType.MessageDelete]: this.logMessageDelete,
+        [LogEventType.SystemAutoModRuleModeration]: this.logMessageRuleModeration
+    };
+
     @Inject("configManager")
     private readonly configurationManager!: ConfigurationManager;
+
+    @GatewayEventListener("channelDelete")
+    public onChannelDelete(channel: TextChannel) {
+        if (this.webhooks.has(`${channel.guild.id}::${channel.id}`)) {
+            this.webhooks.delete(`${channel.guild.id}::${channel.id}`);
+        }
+    }
 
     private configFor(guildId: Snowflake) {
         return this.configurationManager.config[guildId!]?.logging;
     }
 
-    private shouldLog(guildId: Snowflake) {
-        return this.configFor(guildId)?.enabled;
-    }
+    private async send({
+        guildId,
+        messageCreateOptions,
+        channelType = "primary"
+    }: SendLogOptions): Promise<Message | undefined> {
+        const guild = this.client.guilds.cache.get(guildId);
 
-    public async sendLog({ embed, guild, user, messageOptions }: LogOptions) {
-        if (!this.shouldLog(guild.id)) {
+        if (!guild) {
             return;
         }
 
-        const channelId = this.configFor(guild.id)?.primary_channel;
+        const configManager = this.application.getServiceByName("configManager");
+        const config = configManager.config[guildId]?.logging;
+
+        if (!config?.enabled) {
+            return;
+        }
+
+        const channelId = config?.channels?.[channelType] ?? config?.channels?.primary;
 
         if (!channelId) {
+            this.application.logger.warn(
+                `No logging channel found for guild ${guild.name} (${guild.id})`
+            );
             return;
         }
 
-        const channel =
-            guild.channels.cache.get(channelId) ?? (await safeChannelFetch(guild, channelId));
+        let webhookClient = this.webhooks.get(`${guildId}::${channelId}`);
 
-        if (!channel?.isTextBased()) {
-            return;
-        }
+        if (!webhookClient || webhookClient.status === "error") {
+            this.application.logger.debug("LoggingService: Cache MISS");
 
-        const builder = new EmbedBuilder({
-            ...embed,
-            author: user
-                ? {
-                      name: user instanceof GuildMember ? user.user.username : user.username,
-                      icon_url:
-                          user instanceof GuildMember
-                              ? user.user.displayAvatarURL()
-                              : user.displayAvatarURL()
-                  }
-                : embed.author
-        });
+            if (!webhookClient) {
+                webhookClient = {
+                    status: "error",
+                    attempts: 0
+                };
 
-        if (!embed.timestamp) {
-            builder.setTimestamp();
-        }
-
-        if (!embed.color) {
-            builder.setColor(Colors.Primary);
-        }
-
-        return channel.send({
-            ...(messageOptions as MessageCreateOptions),
-            embeds: [builder],
-            allowedMentions: {
-                parse: [],
-                roles: [],
-                users: []
+                this.webhooks.set(`${guildId}::${channelId}`, webhookClient);
             }
-        });
+
+            if (webhookClient.attempts >= 3) {
+                this.application.logger.warn(
+                    `Failed to find log webhook for guild ${guild.name} (${guild.id})`
+                );
+                this.application.logger.warn("Cancelling webhook fetch task for this channel");
+                return;
+            }
+
+            webhookClient.attempts++;
+
+            const channel =
+                guild.channels.cache.get(channelId) ?? (await fetchChannel(guildId, channelId));
+
+            if (!channel) {
+                this.application.logger.warn(
+                    `Couldn't fetch logging channel for guild ${guild.name} (${guild.id})`
+                );
+                return;
+            }
+
+            if (!channel.isTextBased()) {
+                this.application.logger.warn(
+                    `Logging channel for guild ${guild.name} (${guild.id}) is not text based`
+                );
+                return;
+            }
+
+            if (channel instanceof TextChannel) {
+                const hooks = await channel.fetchWebhooks();
+
+                for (const hook of hooks.values()) {
+                    if (
+                        config?.hooks?.[channel.id] === hook.id &&
+                        hook.applicationId === this.client.application?.id
+                    ) {
+                        webhookClient = {
+                            status: "success",
+                            webhook: hook
+                        };
+
+                        this.webhooks.set(`${guildId}::${channelId}`, webhookClient);
+                        this.application.logger.debug(
+                            "LoggingService: Refreshed cache (hook found)"
+                        );
+                        break;
+                    }
+                }
+
+                if (webhookClient.status === "error") {
+                    this.application.logger.debug(
+                        `Couldn't find log webhook for guild ${guild.name} (${guild.id})`
+                    );
+                    this.application.logger.debug(
+                        `Creating log webhook for guild ${guild.name} (${guild.id})`
+                    );
+
+                    const webhook = await channel.createWebhook({
+                        name: "SudoBot Logging",
+                        avatar: this.client.user?.displayAvatarURL(),
+                        reason: "Automatically creating logging webhook for SudoBot"
+                    });
+
+                    webhookClient = {
+                        status: "success",
+                        webhook
+                    };
+
+                    this.webhooks.set(`${guildId}::${channelId}`, webhookClient);
+
+                    configManager.config[guildId]!.logging!.hooks ??= {};
+                    configManager.config[guildId]!.logging!.hooks![channel.id] = webhook.id;
+                    await configManager.write();
+                }
+            }
+        }
+
+        if (webhookClient.status === "error") {
+            return;
+        }
+
+        this.application.logger.debug("LoggingService: Cache HIT");
+
+        const { webhook } = webhookClient;
+
+        try {
+            const message = await webhook.send({
+                ...(messageCreateOptions as MessageCreateOptions),
+                allowedMentions: {
+                    parse: [],
+                    roles: [],
+                    users: []
+                }
+            });
+
+            webhookClient.useFailedAttempts = undefined;
+            return message;
+        } catch (error) {
+            this.application.logger.error("Failed to send log message", error);
+
+            if (isDiscordAPIError(error) && error.code === 10015) {
+                webhookClient.useFailedAttempts ??= 0;
+                webhookClient.useFailedAttempts++;
+
+                if (webhookClient.useFailedAttempts >= 3) {
+                    this.application.logger.warn(
+                        "Failed to send log message 3 times, removing webhook from cache"
+                    );
+
+                    this.webhooks.delete(`${guildId}::${channelId}`);
+                }
+            }
+        }
+    }
+
+    public async emitLogEvent<T extends LogEventType>(
+        guildId: Snowflake,
+        type: T,
+        ...args: LogEventArgs[T]
+    ) {
+        const configManager = this.application.getServiceByName("configManager");
+        const config = configManager.config[guildId]?.logging;
+
+        if (!config?.enabled || config.events?.[type] === false) {
+            return;
+        }
+
+        return this.logHandlers[type].call(this, ...args);
     }
 
     private commonSummary(action: ModerationAction, name: string) {
@@ -143,7 +308,7 @@ class AuditLoggingService extends Service {
         return summary === "" ? italic("No actions taken") : summary;
     }
 
-    public ruleAttributes(rule: MessageRuleType) {
+    private ruleAttributes(rule: MessageRuleType) {
         let attributes = "";
         const { bail, mode, exceptions, for: ruleFor } = rule;
 
@@ -166,54 +331,134 @@ class AuditLoggingService extends Service {
         return attributes === "" ? italic("No additional attributes") : attributes;
     }
 
-    public async logMessageRuleModeration(
+    private async logMessageRuleModeration(
         message: Message,
         rule: MessageRuleType,
         result: RuleExecResult
     ) {
-        return this.sendLog({
-            user: message.author,
-            guild: message.guild!,
-            embed: {
-                ...result.logEmbed,
-                color: Colors.Red,
-                fields: [
-                    ...(result.fields ?? []),
-                    ...(result.logEmbed?.fields ?? []),
+        return this.send({
+            guildId: message.guildId!,
+            messageCreateOptions: {
+                embeds: [
                     {
-                        name: "Rule Type",
-                        value: inlineCode(rule.type)
-                    },
+                        ...result.logEmbed,
+                        color: Colors.Red,
+                        fields: [
+                            ...(result.fields ?? []),
+                            ...(result.logEmbed?.fields ?? []),
+                            {
+                                name: "Rule Type",
+                                value: inlineCode(rule.type)
+                            },
+                            {
+                                name: "Action Taken By",
+                                value: "System"
+                            },
+                            {
+                                name: "Reason",
+                                value: result.reason ?? italic("No reason provided")
+                            },
+                            {
+                                name: "Actions Taken",
+                                value: this.summarizeActions(rule.actions),
+                                inline: true
+                            },
+                            {
+                                name: "Additional Attributes",
+                                value: this.ruleAttributes(rule),
+                                inline: true
+                            }
+                        ],
+                        title: "AutoMod Rule Action",
+                        author: {
+                            name: message.author.username,
+                            icon_url: message.author.displayAvatarURL() ?? undefined
+                        }
+                    }
+                ]
+            }
+        });
+    }
+
+    private async logMessageDelete(message: Message<true>, moderator?: User) {
+        const fields = [
+            {
+                name: "Channel",
+                value: channelInfo(message.channel),
+                inline: true
+            },
+            {
+                name: "Message",
+                value: messageInfo(message),
+                inline: true
+            },
+            {
+                name: "User",
+                value: userInfo(message.author)
+            },
+            {
+                name: "User ID",
+                value: message.author.id
+            }
+        ];
+
+        if (moderator) {
+            fields.push({
+                name: "Responsible Moderator",
+                value: userInfo(moderator)
+            });
+        }
+
+        if (message.embeds.length > 0) {
+            fields.push({
+                name: "Additional Information",
+                value: `+ ${bold(message.embeds.length.toString())} embed${message.embeds.length === 1 ? "" : "s"}`
+            });
+        }
+
+        return this.send({
+            guildId: message.guild.id,
+            messageCreateOptions: {
+                files: message.attachments.map(
+                    attachment =>
+                        ({
+                            attachment: attachment.proxyURL,
+                            name: attachment.name
+                        }) as AttachmentBuilder
+                ),
+                embeds: [
                     {
-                        name: "Action Taken By",
-                        value: "System"
-                    },
-                    {
-                        name: "Reason",
-                        value: result.reason ?? italic("No reason provided")
-                    },
-                    {
-                        name: "Actions Taken",
-                        value: this.summarizeActions(rule.actions),
-                        inline: true
-                    },
-                    {
-                        name: "Additional Attributes",
-                        value: this.ruleAttributes(rule),
-                        inline: true
+                        title: "Message Deleted",
+                        author: {
+                            name: message.author.username,
+                            icon_url: message.author.displayAvatarURL() ?? undefined
+                        },
+                        description: message.content,
+                        color: Colors.Red,
+                        timestamp: new Date().toISOString(),
+                        fields,
+                        footer: {
+                            text: "Deleted"
+                        }
                     }
                 ],
-                title: "AutoMod Rule Action"
+                components: [
+                    new ActionRowBuilder<ButtonBuilder>().addComponents(
+                        new ButtonBuilder()
+                            .setStyle(ButtonStyle.Link)
+                            .setURL(message.url)
+                            .setLabel("Jump to Context")
+                    )
+                ]
             }
         });
     }
 }
 
-type LogOptions = {
-    guild: Guild;
-    embed: APIEmbed;
-    user?: User | GuildMember;
-    messageOptions?: MessageCreateOptions | MessagePayload;
+type SendLogOptions = {
+    messageCreateOptions: MessageCreateOptions | MessagePayload;
+    guildId: Snowflake;
+    channelType?: keyof NonNullable<NonNullable<GuildConfig["logging"]>["channels"]>;
 };
 
 export default AuditLoggingService;

@@ -137,22 +137,25 @@ export const GuildConfigSchema = z.object({
         .object({
             enabled: z.boolean().default(false),
             bulk_delete_send_json: z.boolean().default(true),
-            primary_channel: zSnowflake.optional(),
-            message_logging_channel: zSnowflake.optional(),
-            infraction_logging_channel: zSnowflake.optional(),
-            join_leave_channel: zSnowflake.optional(),
-            saved_messages_channel: zSnowflake.optional(),
+            global_ignored_channels: z.array(zSnowflake).default([]),
+            channels: z
+                .object({
+                    primary: zSnowflake.optional(),
+                    message: zSnowflake.optional(),
+                    infraction: zSnowflake.optional(),
+                    join_leave: zSnowflake.optional(),
+                    saved_messages: zSnowflake.optional()
+                })
+                .optional(),
+            hooks: z.record(zSnowflake, zSnowflake).default({}),
             events: z
                 .object({
-                    system: z
-                        .object({
-                            automod: z
-                                .object({
-                                    moderation_rules: z.boolean().default(true)
-                                })
-                                .optional()
-                        })
-                        .optional()
+                    message_edit: z.boolean().default(true),
+                    message_delete: z.boolean().default(true),
+                    message_bulk_delete: z.boolean().default(true),
+                    member_join: z.boolean().default(true),
+                    member_leave: z.boolean().default(true),
+                    system_automod_rule_moderation: z.boolean().default(true)
                 })
                 .optional()
         })

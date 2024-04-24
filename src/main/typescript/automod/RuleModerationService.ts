@@ -7,6 +7,7 @@ import { MessageAutoModServiceContract } from "../contracts/MessageAutoModServic
 import ModerationRuleHandlerContract from "../contracts/ModerationRuleHandlerContract";
 import ModerationRuleHandler from "../security/ModerationRuleHandler";
 import type AuditLoggingService from "../services/AuditLoggingService";
+import { LogEventType } from "../services/AuditLoggingService";
 import type ConfigurationManager from "../services/ConfigurationManager";
 import type ModerationActionService from "../services/ModerationActionService";
 import type PermissionManagerService from "../services/PermissionManagerService";
@@ -182,7 +183,13 @@ class RuleModerationService
                     this.application.logger.warn(failedActions.join("\n"));
                 }
 
-                await this.auditLoggingService.logMessageRuleModeration(message, rule, result);
+                await this.auditLoggingService.emitLogEvent(
+                    message.guildId!,
+                    LogEventType.SystemAutoModRuleModeration,
+                    message,
+                    rule,
+                    result
+                );
 
                 if (rule.bail) {
                     break;

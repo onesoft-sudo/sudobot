@@ -53,7 +53,12 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
     }
 
     public override async execute(message: Message<boolean>) {
-        if (message.author.bot || !message.inGuild() || !this.types.includes(message.type)) {
+        if (
+            message.author.bot ||
+            message.webhookId ||
+            !message.inGuild() ||
+            !this.types.includes(message.type)
+        ) {
             return;
         }
 
