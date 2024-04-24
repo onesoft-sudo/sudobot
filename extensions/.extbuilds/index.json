@@ -17,17 +17,25 @@
         },
         "license": "AGPL-3.0-or-later",
         "licenseURL": "https://spdx.org/licenses/AGPL-3.0-or-later.html",
-        "lastUpdated": "2024-04-12T06:12:11.521Z",
+        "lastUpdated": "2024-04-24T21:13:46.078Z",
         "readmeFileName": "README.md",
         "readmeFileURL": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/antirickroll/README.md",
         "tarballs": [
+            {
+                "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/antirickroll/antirickroll-1.0.0-11.tar.gz",
+                "basename": "antirickroll-1.0.0-11.tar.gz",
+                "version": "1.0.0-11",
+                "checksum": "14cb3a11550771af8ef32cf878ad7c553d5721eb4ce6a241a618e1f5b7da22bf8968e366b1e19d0db6ce868a5edb12d57775ee510915462c21120f65098a3eeb",
+                "size": 4261,
+                "createdAt": "2024-04-24T21:13:42.611Z"
+            },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/antirickroll/antirickroll-1.0.0-10.tar.gz",
                 "basename": "antirickroll-1.0.0-10.tar.gz",
                 "version": "1.0.0-10",
                 "checksum": "49e0687cba4b1f0829fb5e5c661e2f9fc36414212a7899ef5891dd015653b6e0432eae640a25c5312ba8fbe7bb914a76a1f2ef194c522bd096354ed7d95a6d0a",
                 "size": 4260,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/antirickroll/antirickroll-1.0.0-9.tar.gz",
@@ -35,7 +43,7 @@
                 "version": "1.0.0-9",
                 "checksum": "5a8c95ab0c8da69f9cd2481281e9dca6b604b2590acbdfafa4afbe45fa2959b3c7d034094262ea07d2f1ac78d0a5494dcbdb6a4238aaa4c6f181b1ded60e9bb0",
                 "size": 4249,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/antirickroll/antirickroll-1.0.0-8.tar.gz",
@@ -43,7 +51,7 @@
                 "version": "1.0.0-8",
                 "checksum": "581b5832721475ffd5fc99c27dc33958bfff9cc3ba85f8c408e512f009ca5439d83d8b399c69d59fed24ee44d47e0bcdb466d105270d66129052bddd00014105",
                 "size": 4254,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/antirickroll/antirickroll-1.0.0-7.tar.gz",
@@ -51,7 +59,7 @@
                 "version": "1.0.0-7",
                 "checksum": "f3b1979866d35ff0f589b764f814031c29f3062a4173c08bc136c8899dd923c381ae5d62b7b03d4ec083721df89a2e1982bb5901fc68496f4c205b5dc0931929",
                 "size": 4245,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/antirickroll/antirickroll-1.0.0-6.tar.gz",
@@ -59,7 +67,7 @@
                 "version": "1.0.0-6",
                 "checksum": "96386312856658a016b9bfd8f78165c42b642cfe1ff736a3adb58f55cc01956d585e08e5c2e38b27414cffbd6c811b016b3d9dfe15d91c4e6d327b33b60a8b89",
                 "size": 4260,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/antirickroll/antirickroll-1.0.0-5.tar.gz",
@@ -67,7 +75,7 @@
                 "version": "1.0.0-5",
                 "checksum": "885b0942ca144866529cb364f6ac7823320756781e22d4f47980240589891369ecb3841de8c27fc7e2da33fad0743c52039ee103d2a22d27f2d8b474cd5ed328",
                 "size": 4271,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/antirickroll/antirickroll-1.0.0-4.tar.gz",
@@ -75,7 +83,7 @@
                 "version": "1.0.0-4",
                 "checksum": "7fae8410a3b60dd3f060bffb957f21a95914f888d468f62637ceb88d209fc877aa4d96e7666298d323323722c0e57463515b7bc31e4fed661a9ad9ef31e2b2ee",
                 "size": 4279,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/antirickroll/antirickroll-1.0.0-3.tar.gz",
@@ -83,7 +91,7 @@
                 "version": "1.0.0-3",
                 "checksum": "cd9470a17d2ca58c2474c2d1b70bf9d27c56a00e2b5c25df350558c292ba28fe816fd4d0e369d3a6a6b779e30d4b8810d99802d8c428c5e3647ee700632df17f",
                 "size": 4276,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/antirickroll/antirickroll-1.0.0-2.tar.gz",
@@ -91,7 +99,7 @@
                 "version": "1.0.0-2",
                 "checksum": "c1769e93a1b54c268d8aebf48f24af11fb47ef7576c274f1103c3c20e164c9938410983cb5e61bbf1ce7264cdca2ebf41d848c5b751503d4566bf039b407c84c",
                 "size": 4276,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/antirickroll/antirickroll-1.0.0-1.tar.gz",
@@ -99,7 +107,7 @@
                 "version": "1.0.0-1",
                 "checksum": "ae67b545ab8f01b84edae2e888b79f901c9003864993bcfc3474694c8717d58acd9ca0527c8096335df5fdbc20fe47cbfb32130a718b4ca4d3c849fcb2f10b69",
                 "size": 4265,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/antirickroll/antirickroll-1.0.0.tar.gz",
@@ -107,7 +115,7 @@
                 "version": "1.0.0",
                 "checksum": "a8e4a29198cd5b70f1a5c1eba2db3b259c139fa336eb51ea76ae9be4f2f314a10685d8d12c21579366ec4aff64fcd4f5889d1f8f8ecbb05056cf0523f09759b8",
                 "size": 4163,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             }
         ]
     },
@@ -122,23 +130,31 @@
         "language": "typescript",
         "services": 0,
         "main": "./build/index.js",
-        "iconURL": null,
+        "iconURL": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/neko/icon.png",
         "author": {
             "name": "Ryan Mello"
         },
         "license": "AGPL-3.0-or-later",
         "licenseURL": "https://spdx.org/licenses/AGPL-3.0-or-later.html",
-        "lastUpdated": "2024-04-12T06:12:11.524Z",
+        "lastUpdated": "2024-04-24T21:13:46.085Z",
         "readmeFileName": "README.md",
         "readmeFileURL": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/neko/README.md",
         "tarballs": [
+            {
+                "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-1.tar.gz",
+                "basename": "neko-1.0.0-1.tar.gz",
+                "version": "1.0.0-1",
+                "checksum": "eb8e2ec09ab2746bb4681cc2b421388e88365bdf53b349f768a68185eb52901b75b58c4e49ec75c4dcddf09490f05d26fc081bc26de98df6830dc483e3edba7c",
+                "size": 1405,
+                "createdAt": "2024-04-24T21:13:45.903Z"
+            },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0.tar.gz",
                 "basename": "neko-1.0.0.tar.gz",
                 "version": "1.0.0",
                 "checksum": "92b1ed74950a16d24d57b010c6b4574f4a742f501fed0b01393526a65b414840978045d6a3fdaee153c3b4759d173919640013e2205a2c2a40c61604b4cd70a3",
                 "size": 1406,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             }
         ]
     },
@@ -157,17 +173,25 @@
         "iconURL": null,
         "license": "AGPL-3.0-or-later",
         "licenseURL": "https://spdx.org/licenses/AGPL-3.0-or-later.html",
-        "lastUpdated": "2024-04-12T06:12:11.563Z",
+        "lastUpdated": "2024-04-24T21:13:46.123Z",
         "readmeFileName": "README.md",
         "readmeFileURL": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/urlfish/README.md",
         "tarballs": [
+            {
+                "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/urlfish/urlfish-1.0.0-13.tar.gz",
+                "basename": "urlfish-1.0.0-13.tar.gz",
+                "version": "1.0.0-13",
+                "checksum": "f1a61dce03e36e620e56c15295bbf203d32e9fe7979feb377b4b838987dd8b2902e9fe85ff1ccd66d7fe782732948393a631e8454e9f59bf13c1f6dfb8a04bdc",
+                "size": 15215,
+                "createdAt": "2024-04-24T21:13:39.367Z"
+            },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/urlfish/urlfish-1.0.0-12.tar.gz",
                 "basename": "urlfish-1.0.0-12.tar.gz",
                 "version": "1.0.0-12",
                 "checksum": "4c03700d5e23c1e6a9a78af5e61b5efdcb8adf28bd8d0858d94ebb8737e0def0a633146d97eb8be6cb3f3d0cbe9b5728adb0f31af4597fe6eb45b2f581ab0696",
                 "size": 15264,
-                "createdAt": "2024-04-12T06:12:05.329Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/urlfish/urlfish-1.0.0-11.tar.gz",
@@ -175,7 +199,7 @@
                 "version": "1.0.0-11",
                 "checksum": "da706a143b94a809f4a720facfe9b16b149cc6b500bc120c7ea679d557360e47d23cbe9b017b34189ac99d82ecb98c8f362efd1dcabfeb5b5f468fcbcfefa332",
                 "size": 15153,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/urlfish/urlfish-1.0.0-10.tar.gz",
@@ -183,7 +207,7 @@
                 "version": "1.0.0-10",
                 "checksum": "23ddd5bbda952f3b16c16ef6b90aab92efadb0e7d69c155e5651209e93c91b78e3204e0f385a2d38f19f95c95281599e1ac92f287e06a46eebc518d8dd214171",
                 "size": 15041,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/urlfish/urlfish-1.0.0-9.tar.gz",
@@ -191,7 +215,7 @@
                 "version": "1.0.0-9",
                 "checksum": "04ed1c5c99c7b57b8b9936f87163748521014ed3ea6d17e193bc4e1bcc8f6007ebd2c5569bbeda7939400f3b26e2ec0ae466dc17626e52b99e3f065b85a90389",
                 "size": 14932,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/urlfish/urlfish-1.0.0-8.tar.gz",
@@ -199,7 +223,7 @@
                 "version": "1.0.0-8",
                 "checksum": "587b55313ee07bc4c7673c169d9247226fed0e75f88af3610914391ddaee1cf0e3a9ee7b231a254524dddd74830e2aa7e3462035feef9bc088c86de6572c2a33",
                 "size": 15044,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/urlfish/urlfish-1.0.0-7.tar.gz",
@@ -207,7 +231,7 @@
                 "version": "1.0.0-7",
                 "checksum": "7730252281933e051344522dd8426b296d2ac4e3ed06c70b0e55b1aebaafe2c4c548d3efe52c3ad1bae0ce0cdcc21e026349032d94fc8a92ec5766be1b19f3d9",
                 "size": 15128,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/urlfish/urlfish-1.0.0-6.tar.gz",
@@ -215,7 +239,7 @@
                 "version": "1.0.0-6",
                 "checksum": "15492d36148cb0f2ded0da25181c148fa54f92f40aac690742ca63a3c5c5a7f27da872eafde7446f6a526f15cca6ec8ce0859aff2aff2c45ad30e22951ec55f6",
                 "size": 15146,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/urlfish/urlfish-1.0.0-5.tar.gz",
@@ -223,7 +247,7 @@
                 "version": "1.0.0-5",
                 "checksum": "5e58caa783f156f68bd8adb43573ddbb0bbc63a068fcceab37bd3c4ebb16688fb34434bc465b527548e33af67c368867e2c4d52ab0daad4dc1af0e519b44108f",
                 "size": 15238,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/urlfish/urlfish-1.0.0-4.tar.gz",
@@ -231,7 +255,7 @@
                 "version": "1.0.0-4",
                 "checksum": "dfb0d0af10ff17d95be3c65a1c80eb9ac600d2163517ff06b6d7ad2917569675074b8f19593d18aa2f763cc380341e784312ab113657b59fb574e96890735cb1",
                 "size": 3369,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/urlfish/urlfish-1.0.0-3.tar.gz",
@@ -239,7 +263,7 @@
                 "version": "1.0.0-3",
                 "checksum": "7413d1fcbde2d92165d4d887ba077d189124d075c6be7c838d1202f6bea07d6e745cfa40907a26939b887619c806b3cff9f558af98fd9906502dc40f09b0bf08",
                 "size": 1939,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/urlfish/urlfish-1.0.0-2.tar.gz",
@@ -247,7 +271,7 @@
                 "version": "1.0.0-2",
                 "checksum": "a3a070e43fbee6e3f9f79f3ab88de2d0a6a5b9bfa0b08e85520864bfc82ac5397aecce01cfc907eda6629f579bece8d8191e40a74a6426c82e9dda6bf21f75d3",
                 "size": 1874,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/urlfish/urlfish-1.0.0-1.tar.gz",
@@ -255,7 +279,7 @@
                 "version": "1.0.0-1",
                 "checksum": "e95412e3b13d751b271be4715101278101bc7fc314aab67d88cb922b1df4398a05727fcafb6ed90f541d8c2a2a0f0af75cbc72a1b956d843204dbadfa173725a",
                 "size": 1863,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/urlfish/urlfish-1.0.0.tar.gz",
@@ -263,7 +287,7 @@
                 "version": "1.0.0",
                 "checksum": "fcdeacc503ac9e2957897361f63b30437048f28d81d8799b6d8d9768427dc59e0b532039ab7373dd7b638599e18f40f9025de96ca23dfd212d5119d0b4388d52",
                 "size": 1806,
-                "createdAt": "2024-04-12T06:10:40.101Z"
+                "createdAt": "2024-04-24T21:12:03.591Z"
             }
         ]
     }
