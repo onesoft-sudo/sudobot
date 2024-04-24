@@ -1,3 +1,12 @@
+## [8.32.10](https://github.com/onesoft-sudo/sudobot/compare/v8.32.9...v8.32.10) (2024-04-24)
+
+
+### Bug Fixes
+
+* **services:afk:** createdAt date does not work with global mode ([ed9abfa](https://github.com/onesoft-sudo/sudobot/commit/ed9abfa9cc2024031e62a1f14abdcc8f595d7729))
+
+
+
 ## [8.32.9](https://github.com/onesoft-sudo/sudobot/compare/v8.32.8...v8.32.9) (2024-04-18)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * **commands:system:** initial ping shows `-1` ([dedface](https://github.com/onesoft-sudo/sudobot/commit/dedface694d1bc520461bdfe64458b70d1f965e5))
-
-
-
-## [8.32.5](https://github.com/onesoft-sudo/sudobot/compare/v8.32.4...v8.32.5) (2024-04-18)
-
-
-### Bug Fixes
-
-* infractions being logged in advance ([30ebea2](https://github.com/onesoft-sudo/sudobot/commit/30ebea25c49fd400ef9acdc235676858cc63662e))
 
 
 
