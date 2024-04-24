@@ -1,6 +1,7 @@
 {
     "name": "Neko Commands",
     "id": "me.ryanmello.nekocmds",
+    "icon": "./icon.png",
     "main": "./build/index.js",
     "commands": "./build/commands",
     "events": "./build/events",
