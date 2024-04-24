@@ -1,7 +1,8 @@
 import { Inject } from "@framework/container/Inject";
 import EventListener from "@framework/events/EventListener";
 import { fetchUser } from "@framework/utils/entities";
-import AuditLoggingService, { LogEventType } from "@main/services/AuditLoggingService";
+import AuditLoggingService from "@main/services/AuditLoggingService";
+import { LogEventType } from "@main/types/LoggingSchema";
 import { AuditLogEvent, Events, Message, Snowflake } from "discord.js";
 
 class MessageDeleteEventListener extends EventListener<Events.MessageDelete> {
@@ -48,14 +49,16 @@ class MessageDeleteEventListener extends EventListener<Events.MessageDelete> {
             return;
         }
 
-        const moderator = await this.findResponsibleModerator(message);
+        setTimeout(async () => {
+            const moderator = await this.findResponsibleModerator(message);
 
-        this.auditLoggingService.emitLogEvent(
-            message.guildId!,
-            LogEventType.MessageDelete,
-            message,
-            moderator
-        );
+            this.auditLoggingService.emitLogEvent(
+                message.guildId!,
+                LogEventType.MessageDelete,
+                message,
+                moderator
+            );
+        }, 1000);
     }
 }
 

@@ -8,21 +8,25 @@ import { isDiscordAPIError } from "@framework/utils/errors";
 import { Colors } from "@main/constants/Colors";
 import { RuleExecResult } from "@main/contracts/ModerationRuleHandlerContract";
 import ConfigurationManager from "@main/services/ConfigurationManager";
-import { GuildConfig } from "@main/types/GuildConfigSchema";
+import { LogEventArgs, LogEventType } from "@main/types/LoggingSchema";
 import { MessageRuleType } from "@main/types/MessageRuleSchema";
 import { ModerationAction } from "@main/types/ModerationAction";
 import { chunkedString } from "@main/utils/utils";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
     APIEmbed,
+    APIEmbedField,
     ActionRowBuilder,
     AttachmentBuilder,
+    Awaitable,
     ButtonBuilder,
     ButtonStyle,
     Collection,
+    GuildTextBasedChannel,
     Message,
     MessageCreateOptions,
     MessagePayload,
+    PartialMessage,
     Snowflake,
     TextChannel,
     User,
@@ -44,25 +48,10 @@ type WebhookInfo =
           attempts: number;
       };
 
-export enum LogEventType {
-    MessageDelete = "message_delete",
-    MessageUpdate = "message_update",
-    SystemAutoModRuleModeration = "system_automod_rule_moderation"
-}
-
-type LogEventArgs = {
-    [LogEventType.MessageDelete]: [message: Message<true>, moderator?: User];
-    [LogEventType.MessageUpdate]: [oldMessage: Message<true>, newMessage: Message<true>];
-    [LogEventType.SystemAutoModRuleModeration]: [
-        message: Message,
-        rule: MessageRuleType,
-        result: RuleExecResult
-    ];
-};
-
 @Name("auditLoggingService")
 class AuditLoggingService extends Service {
     private readonly webhooks = new Collection<`${Snowflake}::${Snowflake}`, WebhookInfo>();
+    private readonly channels = new Collection<`${Snowflake}::${string}`, Snowflake | null>();
     private readonly logHandlers: Record<
         LogEventType,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -70,6 +59,7 @@ class AuditLoggingService extends Service {
     > = {
         [LogEventType.MessageDelete]: this.logMessageDelete,
         [LogEventType.MessageUpdate]: this.logMessageUpdate,
+        [LogEventType.MessageDeleteBulk]: this.logMessageDeleteBulk,
         [LogEventType.SystemAutoModRuleModeration]: this.logMessageRuleModeration
     };
 
@@ -87,10 +77,52 @@ class AuditLoggingService extends Service {
         return this.configurationManager.config[guildId!]?.logging;
     }
 
+    public override boot(): Awaitable<void> {
+        this.reloadConfig();
+    }
+
+    public reloadConfig() {
+        this.channels.clear();
+
+        for (const guildId in this.configurationManager.config) {
+            const config = this.configurationManager.config[guildId]?.logging;
+
+            if (!config?.enabled) {
+                continue;
+            }
+
+            const loadedEvents = new Set<LogEventType>();
+            let index = 0;
+
+            for (const override of config.overrides) {
+                if (override.enabled) {
+                    for (const event of override.events) {
+                        if (loadedEvents.has(event)) {
+                            this.application.logger.warn(
+                                `Duplicate logging event ${event} found for guild ${guildId} in override #${index}. Ignoring.`
+                            );
+
+                            continue;
+                        }
+
+                        this.channels.set(`${guildId}::${event}`, override.channel);
+                        loadedEvents.add(event);
+                    }
+                } else {
+                    this.channels.set(`${guildId}::${LogEventType.MessageDelete}`, null);
+                }
+
+                index++;
+            }
+        }
+
+        this.application.logger.debug("AuditLoggingService: Configuration reloaded");
+    }
+
     private async send({
         guildId,
         messageCreateOptions,
-        channelType = "primary"
+        eventType
     }: SendLogOptions): Promise<Message | undefined> {
         const guild = this.client.guilds.cache.get(guildId);
 
@@ -105,12 +137,21 @@ class AuditLoggingService extends Service {
             return;
         }
 
-        const channelId = config?.channels?.[channelType] ?? config?.channels?.primary;
+        const overriddenChannel = this.channels.get(`${guildId}::${eventType}`);
+        const defaultEnabled = config.default_enabled;
+        const channelId =
+            (eventType && overriddenChannel !== null
+                ? overriddenChannel
+                : config.primary_channel) ?? config.primary_channel;
 
         if (!channelId) {
             this.application.logger.warn(
                 `No logging channel found for guild ${guild.name} (${guild.id})`
             );
+            return;
+        }
+
+        if (!overriddenChannel && !defaultEnabled) {
             return;
         }
 
@@ -138,6 +179,10 @@ class AuditLoggingService extends Service {
 
             webhookClient.attempts++;
 
+            /* 
+                FIXME: Instead of fetching the channel, we should store the webhook 
+                       ID and token in the configuration/db and fetch the webhook directly.
+            */
             const channel =
                 guild.channels.cache.get(channelId) ?? (await fetchChannel(guildId, channelId));
 
@@ -249,8 +294,15 @@ class AuditLoggingService extends Service {
     ) {
         const configManager = this.application.getServiceByName("configManager");
         const config = configManager.config[guildId]?.logging;
+        const defaultEnabled = config?.default_enabled ?? true;
 
-        if (!config?.enabled || config.events?.[type] === false) {
+        if (!config?.enabled) {
+            return;
+        }
+
+        const channel = this.channels.get(`${guildId}::${type}`);
+
+        if ((defaultEnabled && channel === null) || (!defaultEnabled && !channel)) {
             return;
         }
 
@@ -381,7 +433,8 @@ class AuditLoggingService extends Service {
                         }
                     }
                 ]
-            }
+            },
+            eventType: LogEventType.SystemAutoModRuleModeration
         });
     }
 
@@ -470,7 +523,8 @@ class AuditLoggingService extends Service {
                     }
                 ],
                 components
-            }
+            },
+            eventType: LogEventType.MessageDelete
         });
     }
 
@@ -565,7 +619,62 @@ class AuditLoggingService extends Service {
             messageCreateOptions: {
                 embeds,
                 components
+            },
+            eventType: LogEventType.MessageUpdate
+        });
+    }
+
+    public async logMessageDeleteBulk(
+        messages: Collection<string, Message<boolean> | PartialMessage>,
+        channel: GuildTextBasedChannel,
+        moderator?: User
+    ) {
+        const firstMessage = messages.first() as Message<true>;
+        const fields: APIEmbedField[] = [
+            {
+                name: "Channel",
+                value: channelInfo(channel),
+                inline: true
             }
+        ];
+
+        if (moderator) {
+            fields.push({
+                name: "Responsible Moderator",
+                value: userInfo(moderator)
+            });
+        }
+
+        return this.send({
+            guildId: firstMessage.guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        title: "Bulk Message Deletion",
+                        description: `Deleted **${messages.size}** messages in ${channel}.`,
+                        color: Colors.DarkRed,
+                        timestamp: new Date().toISOString(),
+                        fields,
+                        footer: {
+                            text: "Deleted"
+                        }
+                    }
+                ],
+                files: [
+                    {
+                        attachment: Buffer.from(
+                            JSON.stringify(
+                                messages.map(m => m.toJSON()),
+                                null,
+                                2
+                            ),
+                            "utf-8"
+                        ),
+                        name: "deleted_messages.json"
+                    }
+                ]
+            },
+            eventType: LogEventType.MessageDeleteBulk
         });
     }
 }
@@ -573,7 +682,7 @@ class AuditLoggingService extends Service {
 type SendLogOptions = {
     messageCreateOptions: MessageCreateOptions | MessagePayload;
     guildId: Snowflake;
-    channelType?: keyof NonNullable<NonNullable<GuildConfig["logging"]>["channels"]>;
+    eventType?: LogEventType;
 };
 
 export default AuditLoggingService;

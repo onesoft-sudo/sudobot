@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { LoggingSchema } from "@main/types/LoggingSchema";
 import { z } from "zod";
 import { MessageRuleSchema } from "./MessageRuleSchema";
 import { ModerationAction } from "./ModerationAction";
@@ -133,33 +134,7 @@ export const GuildConfigSchema = z.object({
             global_disabled_channels: z.array(zSnowflake).default([])
         })
         .optional(),
-    logging: z
-        .object({
-            enabled: z.boolean().default(false),
-            bulk_delete_send_json: z.boolean().default(true),
-            global_ignored_channels: z.array(zSnowflake).default([]),
-            channels: z
-                .object({
-                    primary: zSnowflake.optional(),
-                    message: zSnowflake.optional(),
-                    infraction: zSnowflake.optional(),
-                    join_leave: zSnowflake.optional(),
-                    saved_messages: zSnowflake.optional()
-                })
-                .optional(),
-            hooks: z.record(zSnowflake, zSnowflake).default({}),
-            events: z
-                .object({
-                    message_update: z.boolean().default(true),
-                    message_delete: z.boolean().default(true),
-                    message_bulk_delete: z.boolean().default(true),
-                    member_join: z.boolean().default(true),
-                    member_leave: z.boolean().default(true),
-                    system_automod_rule_moderation: z.boolean().default(true)
-                })
-                .optional()
-        })
-        .optional()
+    logging: LoggingSchema.optional()
     /*
     quickmute: z
         .object({
