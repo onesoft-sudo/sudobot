@@ -1,3 +1,12 @@
+## [8.32.11](https://github.com/onesoft-sudo/sudobot/compare/v8.32.10...v8.32.11) (2024-04-24)
+
+
+### Bug Fixes
+
+* **commands:temprole:** negative duration validation ([496c451](https://github.com/onesoft-sudo/sudobot/commit/496c4515aba1faf16096290eba90ecfd0dd3792f))
+
+
+
 ## [8.32.10](https://github.com/onesoft-sudo/sudobot/compare/v8.32.9...v8.32.10) (2024-04-24)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * axios brotli decompress not supported in Bun ([e4c144b](https://github.com/onesoft-sudo/sudobot/commit/e4c144b8106b7ab8462528b61730614c4250a9d3))
-
-
-
-## [8.32.6](https://github.com/onesoft-sudo/sudobot/compare/v8.32.5...v8.32.6) (2024-04-18)
-
-
-### Bug Fixes
-
-* **commands:system:** initial ping shows `-1` ([dedface](https://github.com/onesoft-sudo/sudobot/commit/dedface694d1bc520461bdfe64458b70d1f965e5))
 
 
 
