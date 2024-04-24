@@ -63,7 +63,7 @@ class InfractionListCommand extends Command {
                 for (const infraction of data) {
                     description += `### Infraction #${infraction.id}\n`;
                     description += `**Type:** ${this.infractionManager.prettifyInfractionType(infraction.type)}\n`;
-                    description += `**Moderator:** ${infraction.moderatorId ? `<@${infraction.moderatorId}> (${infraction.moderatorId})` : italic("Unknown")}\n`;
+                    description += `**Moderator:** ${infraction.moderatorId ? (infraction.moderatorId === "0" ? "[Unknown]" : `<@${infraction.moderatorId}> (${infraction.moderatorId})`) : italic("Unknown")}\n`;
                     description += `**Reason:**\n${infraction.reason ? infraction.reason.slice(0, 150) + (infraction.reason.length > 150 ? "\n..." : "") : italic("No reason provided")}\n`;
                     description += `**Created at:** ${time(infraction.createdAt)}\n\n`;
                 }

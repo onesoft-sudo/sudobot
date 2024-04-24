@@ -1,13 +1,23 @@
+import type Duration from "@framework/datetime/Duration";
 import type { RuleExecResult } from "@main/contracts/ModerationRuleHandlerContract";
 import type { MessageRuleType } from "@main/types/MessageRuleSchema";
 import { zSnowflake } from "@main/types/SnowflakeSchema";
-import type { Collection, GuildTextBasedChannel, Message, PartialMessage, User } from "discord.js";
+import type {
+    Collection,
+    Guild,
+    GuildTextBasedChannel,
+    Message,
+    PartialMessage,
+    User
+} from "discord.js";
 import { z } from "zod";
 
 export enum LogEventType {
     MessageDelete = "message_delete",
     MessageUpdate = "message_update",
     MessageDeleteBulk = "message_delete_bulk",
+    MemberBanAdd = "member_ban_add",
+    MemberBanRemove = "member_ban_remove",
     SystemAutoModRuleModeration = "system_automod_rule_moderation"
 }
 
@@ -30,6 +40,27 @@ export type LogEventArgs = {
         rule: MessageRuleType,
         result: RuleExecResult
     ];
+    [LogEventType.MemberBanAdd]: [payload: LogMemberBanAddPayload];
+    [LogEventType.MemberBanRemove]: [payload: LogMemberBanRemovePayload];
+};
+
+type LogModerationActionCommonPayload = {
+    guild: Guild;
+    moderator: User;
+    reason?: string;
+};
+
+export type LogMemberBanAddPayload = Omit<LogModerationActionCommonPayload, "moderator"> & {
+    moderator?: User;
+    user: User;
+    infractionId?: number;
+    duration?: Duration;
+};
+
+export type LogMemberBanRemovePayload = Omit<LogModerationActionCommonPayload, "moderator"> & {
+    moderator?: User;
+    user: User;
+    infractionId?: number;
 };
 
 const LogConfigOverride = z

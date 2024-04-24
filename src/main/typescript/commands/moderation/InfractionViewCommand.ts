@@ -62,7 +62,12 @@ class InfractionViewCommand extends Command {
             },
             {
                 name: "Moderator",
-                value: typeof moderator === "string" ? `ID: ${moderator}` : userInfo(moderator),
+                value:
+                    typeof moderator === "string"
+                        ? moderator === "0"
+                            ? "[Unknown]"
+                            : `ID: ${moderator}`
+                        : userInfo(moderator),
                 inline: true
             },
             {
@@ -140,7 +145,10 @@ class InfractionViewCommand extends Command {
         }
 
         const user = await fetchUser(this.application.client, infraction.userId);
-        const moderator = await fetchUser(this.application.client, infraction.moderatorId);
+        const moderator =
+            infraction.moderatorId === "0"
+                ? null
+                : await fetchUser(this.application.client, infraction.moderatorId);
 
         const embed = InfractionViewCommand.buildEmbed(
             infraction,

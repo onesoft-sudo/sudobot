@@ -1,6 +1,6 @@
 import { Inject } from "@framework/container/Inject";
 import EventListener from "@framework/events/EventListener";
-import AuditLoggingService from "@main/services/AuditLoggingService";
+import type AuditLoggingService from "@main/services/AuditLoggingService";
 import { LogEventType } from "@main/types/LoggingSchema";
 import { Events, Message } from "discord.js";
 

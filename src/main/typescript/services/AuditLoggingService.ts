@@ -8,7 +8,12 @@ import { isDiscordAPIError } from "@framework/utils/errors";
 import { Colors } from "@main/constants/Colors";
 import { RuleExecResult } from "@main/contracts/ModerationRuleHandlerContract";
 import ConfigurationManager from "@main/services/ConfigurationManager";
-import { LogEventArgs, LogEventType } from "@main/types/LoggingSchema";
+import {
+    LogEventArgs,
+    LogEventType,
+    LogMemberBanAddPayload,
+    LogMemberBanRemovePayload
+} from "@main/types/LoggingSchema";
 import { MessageRuleType } from "@main/types/MessageRuleSchema";
 import { ModerationAction } from "@main/types/ModerationAction";
 import { chunkedString } from "@main/utils/utils";
@@ -60,6 +65,8 @@ class AuditLoggingService extends Service {
         [LogEventType.MessageDelete]: this.logMessageDelete,
         [LogEventType.MessageUpdate]: this.logMessageUpdate,
         [LogEventType.MessageDeleteBulk]: this.logMessageDeleteBulk,
+        [LogEventType.MemberBanAdd]: this.logMemberBanAdd,
+        [LogEventType.MemberBanRemove]: this.logMemberBanRemove,
         [LogEventType.SystemAutoModRuleModeration]: this.logMessageRuleModeration
     };
 
@@ -624,7 +631,7 @@ class AuditLoggingService extends Service {
         });
     }
 
-    public async logMessageDeleteBulk(
+    private async logMessageDeleteBulk(
         messages: Collection<string, Message<boolean> | PartialMessage>,
         channel: GuildTextBasedChannel,
         moderator?: User
@@ -675,6 +682,128 @@ class AuditLoggingService extends Service {
                 ]
             },
             eventType: LogEventType.MessageDeleteBulk
+        });
+    }
+
+    private async logMemberBanAdd({
+        guild,
+        moderator,
+        user,
+        duration,
+        reason,
+        infractionId
+    }: LogMemberBanAddPayload) {
+        const fields = [
+            {
+                name: "User",
+                value: userInfo(user),
+                inline: true
+            },
+            {
+                name: "Responsible Moderator",
+                value: !moderator ? "[Unknown]" : userInfo(moderator),
+                inline: true
+            },
+            {
+                name: "User ID",
+                value: user.id
+            },
+            {
+                name: "Reason",
+                value: reason ?? italic("No reason provided")
+            },
+            {
+                name: "Duration",
+                value: duration?.toString() ?? italic("Permanent"),
+                inline: true
+            }
+        ];
+
+        if (typeof infractionId === "number") {
+            fields.push({
+                name: "Infraction ID",
+                value: infractionId.toString()
+            });
+        }
+
+        return this.send({
+            guildId: guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        author: {
+                            name: user.username,
+                            icon_url: user.displayAvatarURL() ?? undefined
+                        },
+                        title: "User Banned",
+                        color: Colors.Red,
+                        timestamp: new Date().toISOString(),
+                        fields,
+                        footer: {
+                            text: "Banned"
+                        }
+                    }
+                ]
+            },
+            eventType: LogEventType.MemberBanAdd
+        });
+    }
+
+    private async logMemberBanRemove({
+        guild,
+        moderator,
+        user,
+        reason,
+        infractionId
+    }: LogMemberBanRemovePayload) {
+        const fields = [
+            {
+                name: "User",
+                value: userInfo(user),
+                inline: true
+            },
+            {
+                name: "Responsible Moderator",
+                value: !moderator ? "[Unknown]" : userInfo(moderator),
+                inline: true
+            },
+            {
+                name: "User ID",
+                value: user.id
+            },
+            {
+                name: "Reason",
+                value: reason ?? italic("No reason provided")
+            }
+        ];
+
+        if (typeof infractionId === "number") {
+            fields.push({
+                name: "Infraction ID",
+                value: infractionId.toString()
+            });
+        }
+
+        return this.send({
+            guildId: guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        author: {
+                            name: user.username,
+                            icon_url: user.displayAvatarURL() ?? undefined
+                        },
+                        title: "User Unbanned",
+                        color: Colors.Green,
+                        timestamp: new Date().toISOString(),
+                        fields,
+                        footer: {
+                            text: "Unbanned"
+                        }
+                    }
+                ]
+            },
+            eventType: LogEventType.MemberBanRemove
         });
     }
 }
