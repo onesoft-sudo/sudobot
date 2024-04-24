@@ -11,8 +11,10 @@ import ConfigurationManager from "@main/services/ConfigurationManager";
 import { GuildConfig } from "@main/types/GuildConfigSchema";
 import { MessageRuleType } from "@main/types/MessageRuleSchema";
 import { ModerationAction } from "@main/types/ModerationAction";
+import { chunkedString } from "@main/utils/utils";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
+    APIEmbed,
     ActionRowBuilder,
     AttachmentBuilder,
     ButtonBuilder,
@@ -44,11 +46,13 @@ type WebhookInfo =
 
 export enum LogEventType {
     MessageDelete = "message_delete",
+    MessageUpdate = "message_update",
     SystemAutoModRuleModeration = "system_automod_rule_moderation"
 }
 
 type LogEventArgs = {
     [LogEventType.MessageDelete]: [message: Message<true>, moderator?: User];
+    [LogEventType.MessageUpdate]: [oldMessage: Message<true>, newMessage: Message<true>];
     [LogEventType.SystemAutoModRuleModeration]: [
         message: Message,
         rule: MessageRuleType,
@@ -65,6 +69,7 @@ class AuditLoggingService extends Service {
         (...args: any[]) => Promise<Message | undefined>
     > = {
         [LogEventType.MessageDelete]: this.logMessageDelete,
+        [LogEventType.MessageUpdate]: this.logMessageUpdate,
         [LogEventType.SystemAutoModRuleModeration]: this.logMessageRuleModeration
     };
 
@@ -416,6 +421,28 @@ class AuditLoggingService extends Service {
             });
         }
 
+        const components = [
+            new ActionRowBuilder<ButtonBuilder>().addComponents(
+                new ButtonBuilder()
+                    .setStyle(ButtonStyle.Link)
+                    .setURL(message.url)
+                    .setLabel("Context")
+            )
+        ];
+
+        if (message.reference) {
+            components.push(
+                new ActionRowBuilder<ButtonBuilder>().addComponents(
+                    new ButtonBuilder()
+                        .setStyle(ButtonStyle.Link)
+                        .setURL(
+                            `https://discord.com/channels/${message.guild.id}/${message.reference.channelId}/${message.reference.messageId}`
+                        )
+                        .setLabel("Referenced Message")
+                )
+            );
+        }
+
         return this.send({
             guildId: message.guild.id,
             messageCreateOptions: {
@@ -442,14 +469,102 @@ class AuditLoggingService extends Service {
                         }
                     }
                 ],
-                components: [
-                    new ActionRowBuilder<ButtonBuilder>().addComponents(
-                        new ButtonBuilder()
-                            .setStyle(ButtonStyle.Link)
-                            .setURL(message.url)
-                            .setLabel("Jump to Context")
-                    )
-                ]
+                components
+            }
+        });
+    }
+
+    private async logMessageUpdate(oldMessage: Message<true>, newMessage: Message<true>) {
+        const fields = [
+            {
+                name: "Channel",
+                value: channelInfo(oldMessage.channel!),
+                inline: true
+            },
+            {
+                name: "Message",
+                value: messageInfo(newMessage)
+            },
+            {
+                name: "User",
+                value: userInfo(oldMessage.author)
+            },
+            {
+                name: "User ID",
+                value: oldMessage.author.id
+            }
+        ];
+
+        const embeds: APIEmbed[] = [
+            {
+                title: "Message Updated",
+                author: {
+                    name: newMessage.author.username,
+                    icon_url: newMessage.author.displayAvatarURL() ?? undefined
+                },
+                color: Colors.Primary,
+                timestamp: new Date().toISOString(),
+                fields,
+                footer: {
+                    text: "Updated"
+                }
+            }
+        ];
+
+        if (oldMessage.content !== newMessage.content) {
+            const content = `### Before\n${oldMessage.content}\n### After\n${newMessage.content}`;
+            const tooLarge = content.length >= 2000;
+
+            if (tooLarge) {
+                const beforeChunks = chunkedString(`## Before\n${oldMessage.content}`, 2000);
+
+                for (const chunk of beforeChunks) {
+                    embeds.push({
+                        color: Colors.Primary,
+                        description: chunk
+                    });
+                }
+
+                const afterChunks = chunkedString(`## After\n${newMessage.content}`, 2000);
+
+                for (const chunk of afterChunks) {
+                    embeds.push({
+                        color: Colors.Primary,
+                        description: chunk
+                    });
+                }
+            } else {
+                embeds[0].description = content;
+            }
+        }
+
+        const components = [
+            new ActionRowBuilder<ButtonBuilder>().addComponents(
+                new ButtonBuilder()
+                    .setStyle(ButtonStyle.Link)
+                    .setURL(newMessage.url)
+                    .setLabel("Context")
+            )
+        ];
+
+        if (newMessage.reference) {
+            components.push(
+                new ActionRowBuilder<ButtonBuilder>().addComponents(
+                    new ButtonBuilder()
+                        .setStyle(ButtonStyle.Link)
+                        .setURL(
+                            `https://discord.com/channels/${newMessage.guild.id}/${newMessage.reference.channelId}/${newMessage.reference.messageId}`
+                        )
+                        .setLabel("Referenced Message")
+                )
+            );
+        }
+
+        return this.send({
+            guildId: newMessage.guild.id,
+            messageCreateOptions: {
+                embeds,
+                components
             }
         });
     }
