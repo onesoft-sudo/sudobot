@@ -42,7 +42,15 @@ git clone https://github.com/onesoft-sudo/sudobot
 
 After this command completes, go inside of the directory. (`sudobot/` if you cloned it using the above command)
 
-Then, install the dependencies using the following command:
+To make sure you recieve the latest updates as main isn't getting updated as often, run the following commands after you go inside of the sudobot directory.
+
+```bash
+git switch 8.x && git pull origin 8.x
+```
+
+That command will switch you to 8.x and pull the latest updates from there.
+
+Once that is done, install the dependencies using the following command:
 
 ```bash
 npm install -D
