@@ -14,9 +14,13 @@ import {
     LogMemberBanAddPayload,
     LogMemberBanRemovePayload,
     LogMemberKickPayload,
+    LogMemberModMessageAddPayload,
     LogMemberMuteAddPayload,
     LogMemberMuteRemovePayload,
-    LogMessageBulkDeletePayload
+    LogMemberRoleModificationPayload,
+    LogMemberWarningAddPayload,
+    LogMessageBulkDeletePayload,
+    LogUserNoteAddPayload
 } from "@main/types/LoggingSchema";
 import { MessageRuleType } from "@main/types/MessageRuleSchema";
 import { ModerationAction } from "@main/types/ModerationAction";
@@ -77,6 +81,10 @@ class AuditLoggingService extends Service {
         [LogEventType.GuildMemberKick]: this.logGuildMemberKick,
         [LogEventType.MemberMuteAdd]: this.logMemberMute,
         [LogEventType.MemberMuteRemove]: this.logMemberUnmute,
+        [LogEventType.MemberWarningAdd]: this.logMemberWarn,
+        [LogEventType.MemberModeratorMessageAdd]: this.logMemberModMessageAdd,
+        [LogEventType.UserNoteAdd]: this.logUserNoteAdd,
+        [LogEventType.MemberRoleModification]: this.logMemberRoleModification,
         [LogEventType.SystemAutoModRuleModeration]: this.logMessageRuleModeration
     };
 
@@ -1096,7 +1104,7 @@ class AuditLoggingService extends Service {
         member,
         moderator,
         infractionId,
-        reason,
+        reason
     }: LogMemberMuteRemovePayload) {
         const fields = [
             {
@@ -1147,6 +1155,265 @@ class AuditLoggingService extends Service {
                 ]
             },
             eventType: LogEventType.MemberMuteRemove
+        });
+    }
+
+    private async logMemberWarn({
+        infractionId,
+        member,
+        moderator,
+        reason
+    }: LogMemberWarningAddPayload) {
+        const fields = [
+            {
+                name: "User",
+                value: userInfo(member.user),
+                inline: true
+            },
+            {
+                name: "Responsible Moderator",
+                value: userInfo(moderator),
+                inline: true
+            },
+            {
+                name: "User ID",
+                value: member.id
+            },
+            {
+                name: "Reason",
+                value: reason ?? italic("No reason provided")
+            }
+        ];
+
+        if (typeof infractionId === "number") {
+            fields.push({
+                name: "Infraction ID",
+                value: infractionId.toString()
+            });
+        }
+
+        return this.send({
+            guildId: member.guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        author: {
+                            name: member.user.username,
+                            icon_url: member.user.displayAvatarURL() ?? undefined
+                        },
+                        title: "Member Warned",
+                        color: Colors.Gold,
+                        timestamp: new Date().toISOString(),
+                        fields,
+                        footer: {
+                            text: "Warned"
+                        }
+                    }
+                ]
+            },
+            eventType: LogEventType.MemberWarningAdd
+        });
+    }
+
+    private async logMemberModMessageAdd({
+        infractionId,
+        member,
+        moderator,
+        reason
+    }: LogMemberModMessageAddPayload) {
+        const fields = [
+            {
+                name: "User",
+                value: userInfo(member.user),
+                inline: true
+            },
+            {
+                name: "Responsible Moderator",
+                value: userInfo(moderator),
+                inline: true
+            },
+            {
+                name: "User ID",
+                value: member.id
+            },
+            {
+                name: "Reason",
+                value: reason ?? italic("No reason provided")
+            }
+        ];
+
+        if (typeof infractionId === "number") {
+            fields.push({
+                name: "Infraction ID",
+                value: infractionId.toString()
+            });
+        }
+
+        return this.send({
+            guildId: member.guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        author: {
+                            name: member.user.username,
+                            icon_url: member.user.displayAvatarURL() ?? undefined
+                        },
+                        title: "Moderator Message was sent to a member",
+                        color: Colors.Gold,
+                        timestamp: new Date().toISOString(),
+                        fields,
+                        footer: {
+                            text: "Sent"
+                        }
+                    }
+                ]
+            },
+            eventType: LogEventType.MemberModeratorMessageAdd
+        });
+    }
+
+    private async logUserNoteAdd({
+        infractionId,
+        user,
+        moderator,
+        reason,
+        guild
+    }: LogUserNoteAddPayload) {
+        const fields: APIEmbedField[] = [
+            {
+                name: "User",
+                value: userInfo(user),
+                inline: true
+            },
+            {
+                name: "Responsible Moderator",
+                value: userInfo(moderator),
+                inline: true
+            },
+            {
+                name: "User ID",
+                value: user.id
+            },
+            {
+                name: "Reason",
+                value: reason ?? italic("No reason provided")
+            }
+        ];
+
+        if (typeof infractionId === "number") {
+            fields.push({
+                name: "Infraction ID",
+                value: infractionId.toString()
+            });
+        }
+
+        return this.send({
+            guildId: guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        author: {
+                            name: user.username,
+                            icon_url: user.displayAvatarURL() ?? undefined
+                        },
+                        title: "Note added",
+                        color: Colors.Grey,
+                        timestamp: new Date().toISOString(),
+                        fields,
+                        footer: {
+                            text: "Added"
+                        }
+                    }
+                ]
+            },
+            eventType: LogEventType.UserNoteAdd
+        });
+    }
+
+    private async logMemberRoleModification({
+        added,
+        guild,
+        member,
+        removed,
+        infractionId,
+        moderator,
+        reason
+    }: LogMemberRoleModificationPayload) {
+        if (!added && !removed) {
+            this.application.logger.warn(
+                "AuditLoggingService: No roles were added or removed from the member. This should not happen!"
+            );
+            return;
+        }
+
+        const fields: APIEmbedField[] = [
+            {
+                name: "User",
+                value: userInfo(member.user),
+                inline: true
+            }
+        ];
+
+        if (moderator) {
+            fields.push({
+                name: "Responsible Moderator",
+                value: userInfo(moderator),
+                inline: true
+            });
+        }
+
+        fields.push(
+            {
+                name: "User ID",
+                value: member.id
+            },
+            {
+                name: "Reason",
+                value: reason ?? italic("No reason provided")
+            }
+        );
+
+        if (added) {
+            fields.push({
+                name: "Added",
+                value: added.map(r => roleMention(r)).join(", ")
+            });
+        }
+
+        if (removed) {
+            fields.push({
+                name: "Removed",
+                value: removed.map(r => roleMention(r)).join(", ")
+            });
+        }
+
+        if (typeof infractionId === "number") {
+            fields.push({
+                name: "Infraction ID",
+                value: infractionId.toString()
+            });
+        }
+
+        return this.send({
+            guildId: guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        author: {
+                            name: member.user.username,
+                            icon_url: member.user.displayAvatarURL() ?? undefined
+                        },
+                        title: "Role(s) modified for member",
+                        color: Colors.Primary,
+                        timestamp: new Date().toISOString(),
+                        fields,
+                        footer: {
+                            text: "Modified"
+                        }
+                    }
+                ]
+            },
+            eventType: LogEventType.MemberRoleModification
         });
     }
 }

@@ -44,6 +44,7 @@ import {
     PartialMessage,
     PermissionFlagsBits,
     PrivateThreadChannel,
+    Role,
     RoleResolvable,
     Snowflake,
     TextBasedChannel,
@@ -840,7 +841,7 @@ class InfractionManager extends Service {
             };
         }
 
-        await this.auditLoggingService
+        this.auditLoggingService
             .emitLogEvent(guildId, LogEventType.MemberBanAdd, {
                 guild,
                 user,
@@ -940,7 +941,7 @@ class InfractionManager extends Service {
             };
         }
 
-        await this.auditLoggingService
+        this.auditLoggingService
             .emitLogEvent(guildId, LogEventType.MemberBanRemove, {
                 guild,
                 user,
@@ -1006,7 +1007,7 @@ class InfractionManager extends Service {
             };
         }
 
-        await this.auditLoggingService
+        this.auditLoggingService
             .emitLogEvent(guildId, LogEventType.GuildMemberKick, {
                 member,
                 moderator,
@@ -1208,7 +1209,7 @@ class InfractionManager extends Service {
             }
         }
 
-        await this.auditLoggingService
+        this.auditLoggingService
             .emitLogEvent(guildId, LogEventType.MemberMuteAdd, {
                 guild,
                 member,
@@ -1348,7 +1349,7 @@ class InfractionManager extends Service {
             processReason: false
         });
 
-        await this.auditLoggingService
+        this.auditLoggingService
             .emitLogEvent(guildId, LogEventType.MemberMuteRemove, {
                 guild,
                 member,
@@ -1480,6 +1481,19 @@ class InfractionManager extends Service {
             value: summaryOfRoles
         });
 
+        this.auditLoggingService
+            .emitLogEvent(guildId, LogEventType.MemberRoleModification, {
+                member,
+                moderator,
+                reason,
+                infractionId: infraction?.id,
+                added: mode === "give" ? roles.map(r => (r instanceof Role ? r.id : r)) : undefined,
+                removed:
+                    mode === "take" ? roles.map(r => (r instanceof Role ? r.id : r)) : undefined,
+                guild
+            })
+            .catch(this.application.logger.error);
+
         return {
             status: "success",
             infraction,
@@ -1593,7 +1607,7 @@ class InfractionManager extends Service {
             }
         }
 
-        await this.auditLoggingService
+        this.auditLoggingService
             .emitLogEvent(guildId, LogEventType.MessageDeleteBulk, {
                 user,
                 moderator,
@@ -1642,6 +1656,15 @@ class InfractionManager extends Service {
             user: member.user,
             notify
         });
+
+        this.auditLoggingService
+            .emitLogEvent(guildId, LogEventType.MemberWarningAdd, {
+                member,
+                moderator,
+                reason,
+                infractionId: infraction.id
+            })
+            .catch(this.application.logger.error);
 
         return {
             status: "success",
@@ -1692,6 +1715,15 @@ class InfractionManager extends Service {
                 failIfNotNotified: true
             });
 
+            this.auditLoggingService
+                .emitLogEvent(guildId, LogEventType.MemberModeratorMessageAdd, {
+                    member,
+                    moderator,
+                    reason,
+                    infractionId: infraction.id
+                })
+                .catch(this.application.logger.error);
+
             return {
                 status: "success",
                 infraction,
@@ -1739,6 +1771,16 @@ class InfractionManager extends Service {
             user,
             notify: false
         });
+
+        this.auditLoggingService
+            .emitLogEvent(guildId, LogEventType.UserNoteAdd, {
+                guild,
+                user,
+                moderator,
+                reason,
+                infractionId: infraction.id
+            })
+            .catch(this.application.logger.error);
 
         return {
             status: "success",

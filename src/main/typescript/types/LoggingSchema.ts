@@ -9,6 +9,7 @@ import type {
     GuildTextBasedChannel,
     Message,
     PartialMessage,
+    Snowflake,
     User
 } from "discord.js";
 import { z } from "zod";
@@ -24,6 +25,10 @@ export enum LogEventType {
     GuildMemberKick = "guild_member_kick",
     MemberMuteAdd = "member_mute_add",
     MemberMuteRemove = "member_mute_remove",
+    MemberWarningAdd = "member_warning_add",
+    MemberModeratorMessageAdd = "member_mod_message_add",
+    UserNoteAdd = "user_note_add",
+    MemberRoleModification = "member_role_modification",
     SystemAutoModRuleModeration = "system_automod_rule_moderation"
 }
 
@@ -49,12 +54,27 @@ export type LogEventArgs = {
     [LogEventType.GuildMemberKick]: [payload: LogMemberKickPayload];
     [LogEventType.MemberMuteAdd]: [payload: LogMemberMuteAddPayload];
     [LogEventType.MemberMuteRemove]: [payload: LogMemberMuteRemovePayload];
+    [LogEventType.MemberWarningAdd]: [payload: LogMemberWarningAddPayload];
+    [LogEventType.MemberModeratorMessageAdd]: [payload: LogMemberModMessageAddPayload];
+    [LogEventType.UserNoteAdd]: [payload: LogUserNoteAddPayload];
+    [LogEventType.MemberRoleModification]: [payload: LogMemberRoleModificationPayload];
 };
 
 type LogModerationActionCommonPayload = {
     guild: Guild;
     moderator: User;
     reason?: string;
+};
+
+export type LogMemberRoleModificationPayload = Omit<
+    LogModerationActionCommonPayload,
+    "moderator"
+> & {
+    member: GuildMember;
+    infractionId?: number;
+    moderator?: User;
+    added?: Snowflake[];
+    removed?: Snowflake[];
 };
 
 export type LogMemberMuteRemovePayload = LogModerationActionCommonPayload & {
@@ -75,6 +95,17 @@ export type LogMessageBulkDeletePayload = Omit<
     moderator?: User;
     infractionId?: number;
     user?: User;
+};
+
+export type LogMemberWarningAddPayload = Omit<LogModerationActionCommonPayload, "guild"> & {
+    member: GuildMember;
+    infractionId: number;
+};
+
+export type LogMemberModMessageAddPayload = LogMemberWarningAddPayload;
+export type LogUserNoteAddPayload = LogModerationActionCommonPayload & {
+    user: User;
+    infractionId: number;
 };
 
 export type LogMemberKickPayload = Omit<LogModerationActionCommonPayload, "moderator" | "guild"> & {
