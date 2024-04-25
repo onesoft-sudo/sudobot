@@ -102,6 +102,11 @@ class UnbanCommand extends Command {
         const { overviewEmbed, status } = result;
 
         if (status === "failed") {
+            if (result.errorType === "unknown_ban") {
+                await context.error("That user is not banned!");
+                return;
+            }
+
             await context.error(
                 `Failed to unban the user. Maybe I don't have the permissions to do so. Error code: ${result.errorType ?? "unknown"}`
             );

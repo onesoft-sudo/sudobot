@@ -24,6 +24,7 @@ import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { emoji } from "@framework/utils/emoji";
 import { fetchUser } from "@framework/utils/entities";
+import { isDiscordAPIError } from "@framework/utils/errors";
 import { also } from "@framework/utils/utils";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
 import { LogEventType } from "@main/types/LoggingSchema";
@@ -891,6 +892,15 @@ class InfractionManager extends Service {
             );
         } catch (error) {
             this.application.logger.error(error);
+
+            if (isDiscordAPIError(error) && error.code === 10026) {
+                return {
+                    status: "failed",
+                    infraction: null,
+                    overviewEmbed: null,
+                    errorType: "unknown_ban"
+                };
+            }
 
             return {
                 status: "failed",
