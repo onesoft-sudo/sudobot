@@ -33,6 +33,7 @@ import {
     Message,
     MessageCreateOptions,
     MessagePayload,
+    PartialMessage,
     Snowflake,
     TextChannel,
     User,
@@ -697,7 +698,9 @@ class AuditLoggingService extends Service {
                     {
                         attachment: Buffer.from(
                             JSON.stringify(
-                                messages.map(m => m.toJSON()),
+                                messages
+                                    .filter((m): m is Message | PartialMessage => !!m)
+                                    .map(m => m.toJSON()),
                                 null,
                                 2
                             ),
