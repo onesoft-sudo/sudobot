@@ -25,6 +25,8 @@ import { Service } from "@framework/services/Service";
 import { emoji } from "@framework/utils/emoji";
 import { fetchUser } from "@framework/utils/entities";
 import { also } from "@framework/utils/utils";
+import type AuditLoggingService from "@main/services/AuditLoggingService";
+import { LogEventType } from "@main/types/LoggingSchema";
 import { Infraction, InfractionDeliveryStatus, InfractionType, PrismaClient } from "@prisma/client";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
@@ -32,11 +34,13 @@ import {
     Awaitable,
     CategoryChannel,
     ChannelType,
+    Collection,
     Colors,
     GuildMember,
     Message,
     MessageCreateOptions,
     MessagePayload,
+    PartialMessage,
     PermissionFlagsBits,
     PrivateThreadChannel,
     RoleResolvable,
@@ -82,6 +86,9 @@ class InfractionManager extends Service {
 
     @Inject()
     private readonly queueService!: QueueService;
+
+    @Inject("auditLoggingService")
+    private readonly auditLoggingService!: AuditLoggingService;
 
     public processReason(guildId: Snowflake, reason: string | undefined, abortOnNotFound = true) {
         if (!reason?.length) {
@@ -832,6 +839,17 @@ class InfractionManager extends Service {
             };
         }
 
+        await this.auditLoggingService
+            .emitLogEvent(guildId, LogEventType.MemberBanAdd, {
+                guild,
+                user,
+                moderator,
+                reason,
+                infractionId: infraction.id,
+                duration: payload.duration
+            })
+            .catch(this.application.logger.error);
+
         return {
             status: "success",
             infraction,
@@ -912,6 +930,16 @@ class InfractionManager extends Service {
             };
         }
 
+        await this.auditLoggingService
+            .emitLogEvent(guildId, LogEventType.MemberBanRemove, {
+                guild,
+                user,
+                moderator,
+                reason,
+                infractionId: infraction.id
+            })
+            .catch(this.application.logger.error);
+
         return {
             status: "success",
             infraction,
@@ -967,6 +995,15 @@ class InfractionManager extends Service {
                 overviewEmbed: null
             };
         }
+
+        await this.auditLoggingService
+            .emitLogEvent(guildId, LogEventType.GuildMemberKick, {
+                member,
+                moderator,
+                reason,
+                infractionId: infraction.id
+            })
+            .catch(this.application.logger.error);
 
         return {
             status: "success",
@@ -1441,8 +1478,10 @@ class InfractionManager extends Service {
             };
         }
 
+        let infraction: Infraction | undefined;
+
         if (user) {
-            await this.createInfraction({
+            infraction = await this.createInfraction({
                 guildId,
                 moderator,
                 reason,
@@ -1459,6 +1498,10 @@ class InfractionManager extends Service {
         if (user) {
             finalFilters.push((message: Message) => message.author.id === user.id);
         }
+
+        let deletedMessages:
+            | Collection<Snowflake, Message | PartialMessage | undefined>
+            | undefined;
 
         try {
             const messages = await channel.messages.fetch({ limit: count ?? 100 });
@@ -1479,7 +1522,8 @@ class InfractionManager extends Service {
             }
 
             if (messagesToDelete.length > 0) {
-                finalCount = (await channel.bulkDelete(messagesToDelete, true)).size;
+                deletedMessages = await channel.bulkDelete(messagesToDelete, true);
+                finalCount = deletedMessages.size;
             }
         } catch (error) {
             this.application.logger.error(error);
@@ -1507,6 +1551,17 @@ class InfractionManager extends Service {
                 }, 6000);
             }
         }
+
+        await this.auditLoggingService
+            .emitLogEvent(guildId, LogEventType.MessageDeleteBulk, {
+                user,
+                moderator,
+                reason,
+                infractionId: infraction?.id,
+                channel,
+                messages: deletedMessages ?? new Collection()
+            })
+            .catch(this.application.logger.error);
 
         return {
             status: "success",

@@ -7,10 +7,14 @@ import { AuditLogEvent, Events, Message, Snowflake } from "discord.js";
 
 class MessageDeleteEventListener extends EventListener<Events.MessageDelete> {
     public override readonly name = Events.MessageDelete;
-    private readonly deleteCountMap = new Map<Snowflake, number>();
+    private readonly deleteCountMap = new Map<`${Snowflake}_${Snowflake}`, number>();
 
     @Inject("auditLoggingService")
     protected readonly auditLoggingService!: AuditLoggingService;
+
+    public override onInitialize(): void {
+        setInterval(() => this.deleteCountMap.clear(), 1_000 * 60 * 6);
+    }
 
     private async findResponsibleModerator(message: Message) {
         const auditLogs = await message.guild!.fetchAuditLogs({
@@ -31,9 +35,10 @@ class MessageDeleteEventListener extends EventListener<Events.MessageDelete> {
                 return false;
             }
 
-            const prevCount = this.deleteCountMap.get(entry.executorId) ?? 0;
+            const prevCount =
+                this.deleteCountMap.get(`${message.guildId!}_${entry.executorId}`) ?? 0;
             const result = prevCount + 1 === entry.extra.count;
-            this.deleteCountMap.set(entry.executorId, entry.extra.count);
+            this.deleteCountMap.set(`${message.guildId!}_${entry.executorId}`, entry.extra.count);
             return result;
         });
 

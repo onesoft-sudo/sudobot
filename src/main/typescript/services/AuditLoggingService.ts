@@ -12,7 +12,9 @@ import {
     LogEventArgs,
     LogEventType,
     LogMemberBanAddPayload,
-    LogMemberBanRemovePayload
+    LogMemberBanRemovePayload,
+    LogMemberKickPayload,
+    LogMessageBulkDeletePayload
 } from "@main/types/LoggingSchema";
 import { MessageRuleType } from "@main/types/MessageRuleSchema";
 import { ModerationAction } from "@main/types/ModerationAction";
@@ -28,11 +30,9 @@ import {
     ButtonStyle,
     Collection,
     GuildMember,
-    GuildTextBasedChannel,
     Message,
     MessageCreateOptions,
     MessagePayload,
-    PartialMessage,
     Snowflake,
     TextChannel,
     User,
@@ -71,6 +71,7 @@ class AuditLoggingService extends Service {
         [LogEventType.MemberBanRemove]: this.logMemberBanRemove,
         [LogEventType.GuildMemberAdd]: this.logGuildMemberAdd,
         [LogEventType.GuildMemberRemove]: this.logGuildMemberRemove,
+        [LogEventType.GuildMemberKick]: this.logGuildMemberKick,
         [LogEventType.SystemAutoModRuleModeration]: this.logMessageRuleModeration
     };
 
@@ -635,17 +636,24 @@ class AuditLoggingService extends Service {
         });
     }
 
-    private async logMessageDeleteBulk(
-        messages: Collection<string, Message<boolean> | PartialMessage>,
-        channel: GuildTextBasedChannel,
-        moderator?: User
-    ) {
+    private async logMessageDeleteBulk({
+        channel,
+        messages,
+        moderator,
+        reason,
+        infractionId,
+        user
+    }: LogMessageBulkDeletePayload) {
         const firstMessage = messages.first() as Message<true>;
         const fields: APIEmbedField[] = [
             {
                 name: "Channel",
                 value: channelInfo(channel),
                 inline: true
+            },
+            {
+                name: "Reason",
+                value: reason ?? italic("No reason provided")
             }
         ];
 
@@ -653,6 +661,20 @@ class AuditLoggingService extends Service {
             fields.push({
                 name: "Responsible Moderator",
                 value: userInfo(moderator)
+            });
+        }
+
+        if (user) {
+            fields.push({
+                name: "User",
+                value: userInfo(user)
+            });
+        }
+
+        if (typeof infractionId === "number") {
+            fields.push({
+                name: "Infraction ID",
+                value: infractionId.toString()
             });
         }
 
@@ -933,6 +955,63 @@ class AuditLoggingService extends Service {
                     users: []
                 }
             }
+        });
+    }
+
+    private async logGuildMemberKick({
+        member,
+        infractionId,
+        moderator,
+        reason
+    }: LogMemberKickPayload) {
+        const fields = [
+            {
+                name: "User",
+                value: userInfo(member.user),
+                inline: true
+            },
+            {
+                name: "Responsible Moderator",
+                value: !moderator ? "[Unknown]" : userInfo(moderator),
+                inline: true
+            },
+            {
+                name: "User ID",
+                value: member.id
+            },
+            {
+                name: "Reason",
+                value: reason ?? italic("No reason provided")
+            }
+        ];
+
+        if (typeof infractionId === "number") {
+            fields.push({
+                name: "Infraction ID",
+                value: infractionId.toString()
+            });
+        }
+
+        return this.send({
+            guildId: member.guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        author: {
+                            name: member.user.username,
+                            icon_url: member.user.displayAvatarURL() ?? undefined
+                        },
+                        title: "Member Kicked",
+                        color: Colors.DarkGold,
+                        timestamp: new Date().toISOString(),
+                        fields,
+                        footer: {
+                            text: "Kicked"
+                        }
+                    }
+                ]
+            },
+            eventType: LogEventType.MemberBanAdd
         });
     }
 }

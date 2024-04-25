@@ -4,7 +4,7 @@ import { Events } from "@framework/types/ClientEvents";
 import { fetchUser } from "@framework/utils/entities";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
 import { LogEventType } from "@main/types/LoggingSchema";
-import { InfractionType } from "@prisma/client";
+import { InfractionDeliveryStatus, InfractionType } from "@prisma/client";
 import { AuditLogEvent, Guild, GuildAuditLogsEntry, GuildMember, User } from "discord.js";
 
 class GuildAuditLogEntryCreateEventListener extends EventListener<Events.GuildAuditLogEntryCreate> {
@@ -45,7 +45,8 @@ class GuildAuditLogEntryCreateEventListener extends EventListener<Events.GuildAu
                         auditLogEntry.action === AuditLogEvent.MemberBanAdd
                             ? InfractionType.BAN
                             : InfractionType.UNBAN,
-                    reason: auditLogEntry.reason ?? undefined
+                    reason: auditLogEntry.reason ?? undefined,
+                    deliveryStatus: InfractionDeliveryStatus.NOT_DELIVERED
                 }
             });
 

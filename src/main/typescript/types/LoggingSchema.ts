@@ -21,6 +21,7 @@ export enum LogEventType {
     MemberBanRemove = "member_ban_remove",
     GuildMemberAdd = "guild_member_add",
     GuildMemberRemove = "guild_member_remove",
+    GuildMemberKick = "guild_member_kick",
     SystemAutoModRuleModeration = "system_automod_rule_moderation"
 }
 
@@ -33,11 +34,7 @@ const LogEventSchema = z.enum(
 export type LogEventArgs = {
     [LogEventType.MessageDelete]: [message: Message<true>, moderator?: User];
     [LogEventType.MessageUpdate]: [oldMessage: Message<true>, newMessage: Message<true>];
-    [LogEventType.MessageDeleteBulk]: [
-        messages: Collection<string, Message<boolean> | PartialMessage>,
-        channel: GuildTextBasedChannel,
-        moderator?: User
-    ];
+    [LogEventType.MessageDeleteBulk]: [payload: LogMessageBulkDeletePayload];
     [LogEventType.SystemAutoModRuleModeration]: [
         message: Message,
         rule: MessageRuleType,
@@ -47,12 +44,30 @@ export type LogEventArgs = {
     [LogEventType.MemberBanRemove]: [payload: LogMemberBanRemovePayload];
     [LogEventType.GuildMemberAdd]: [member: GuildMember];
     [LogEventType.GuildMemberRemove]: [member: GuildMember];
+    [LogEventType.GuildMemberKick]: [payload: LogMemberKickPayload];
 };
 
 type LogModerationActionCommonPayload = {
     guild: Guild;
     moderator: User;
     reason?: string;
+};
+
+export type LogMessageBulkDeletePayload = Omit<
+    LogModerationActionCommonPayload,
+    "moderator" | "guild"
+> & {
+    messages: Collection<string, Message<boolean> | PartialMessage | undefined>;
+    channel: GuildTextBasedChannel;
+    moderator?: User;
+    infractionId?: number;
+    user?: User;
+};
+
+export type LogMemberKickPayload = Omit<LogModerationActionCommonPayload, "moderator" | "guild"> & {
+    moderator?: User;
+    member: GuildMember;
+    infractionId?: number;
 };
 
 export type LogMemberBanAddPayload = Omit<LogModerationActionCommonPayload, "moderator"> & {
