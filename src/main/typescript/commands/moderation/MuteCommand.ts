@@ -152,6 +152,11 @@ class MuteCommand extends Command {
                 return;
             }
 
+            if (result.errorType === "cannot_mute_a_bot") {
+                await context.error("Cannot mute a bot in timeout mode.");
+                return;
+            }
+
             await context.error(
                 "Failed to mute the user. Maybe I don't have the permissions to do so."
             );

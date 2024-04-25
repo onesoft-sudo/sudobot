@@ -14,6 +14,8 @@ import {
     LogMemberBanAddPayload,
     LogMemberBanRemovePayload,
     LogMemberKickPayload,
+    LogMemberMuteAddPayload,
+    LogMemberMuteRemovePayload,
     LogMessageBulkDeletePayload
 } from "@main/types/LoggingSchema";
 import { MessageRuleType } from "@main/types/MessageRuleSchema";
@@ -73,6 +75,8 @@ class AuditLoggingService extends Service {
         [LogEventType.GuildMemberAdd]: this.logGuildMemberAdd,
         [LogEventType.GuildMemberRemove]: this.logGuildMemberRemove,
         [LogEventType.GuildMemberKick]: this.logGuildMemberKick,
+        [LogEventType.MemberMuteAdd]: this.logMemberMute,
+        [LogEventType.MemberMuteRemove]: this.logMemberUnmute,
         [LogEventType.SystemAutoModRuleModeration]: this.logMessageRuleModeration
     };
 
@@ -898,7 +902,8 @@ class AuditLoggingService extends Service {
                         fields
                     }
                 ]
-            }
+            },
+            eventType: LogEventType.GuildMemberAdd
         });
     }
 
@@ -957,7 +962,8 @@ class AuditLoggingService extends Service {
                     roles: [],
                     users: []
                 }
-            }
+            },
+            eventType: LogEventType.GuildMemberRemove
         });
     }
 
@@ -1014,7 +1020,133 @@ class AuditLoggingService extends Service {
                     }
                 ]
             },
-            eventType: LogEventType.MemberBanAdd
+            eventType: LogEventType.GuildMemberKick
+        });
+    }
+
+    private async logMemberMute({
+        guild,
+        member,
+        moderator,
+        infractionId,
+        reason,
+        duration
+    }: LogMemberMuteAddPayload) {
+        const fields = [
+            {
+                name: "User",
+                value: userInfo(member.user),
+                inline: true
+            },
+            {
+                name: "Responsible Moderator",
+                value: userInfo(moderator),
+                inline: true
+            },
+            {
+                name: "User ID",
+                value: member.id
+            }
+        ];
+
+        if (duration) {
+            fields.push({
+                name: "Duration",
+                value: duration.toString()
+            });
+        }
+
+        if (typeof infractionId === "number") {
+            fields.push({
+                name: "Infraction ID",
+                value: infractionId.toString()
+            });
+        }
+
+        fields.push({
+            name: "Reason",
+            value: reason ?? italic("No reason provided")
+        });
+
+        return this.send({
+            guildId: guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        author: {
+                            name: member.user.username,
+                            icon_url: member.user.displayAvatarURL() ?? undefined
+                        },
+                        title: "Member Muted",
+                        color: Colors.Red,
+                        timestamp: new Date().toISOString(),
+                        fields,
+                        footer: {
+                            text: "Muted"
+                        }
+                    }
+                ]
+            },
+            eventType: LogEventType.MemberMuteAdd
+        });
+    }
+
+    private async logMemberUnmute({
+        guild,
+        member,
+        moderator,
+        infractionId,
+        reason,
+    }: LogMemberMuteRemovePayload) {
+        const fields = [
+            {
+                name: "User",
+                value: userInfo(member.user),
+                inline: true
+            },
+            {
+                name: "Responsible Moderator",
+                value: userInfo(moderator),
+                inline: true
+            },
+            {
+                name: "User ID",
+                value: member.id
+            }
+        ];
+
+        if (typeof infractionId === "number") {
+            fields.push({
+                name: "Infraction ID",
+                value: infractionId.toString()
+            });
+        }
+
+        fields.push({
+            name: "Reason",
+            value: reason ?? italic("No reason provided")
+        });
+
+        return this.send({
+            guildId: guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        author: {
+                            name: member.user.username,
+                            icon_url: member.user.displayAvatarURL() ?? undefined
+                        },
+                        title: "Member Unmuted",
+                        color: Colors.Green,
+                        timestamp: new Date().toISOString(),
+                        fields,
+                        footer: {
+                            text: "Unmuted"
+                        }
+                    }
+                ]
+            },
+            eventType: LogEventType.MemberMuteRemove
         });
     }
 }

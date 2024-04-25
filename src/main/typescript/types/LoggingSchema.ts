@@ -22,6 +22,8 @@ export enum LogEventType {
     GuildMemberAdd = "guild_member_add",
     GuildMemberRemove = "guild_member_remove",
     GuildMemberKick = "guild_member_kick",
+    MemberMuteAdd = "member_mute_add",
+    MemberMuteRemove = "member_mute_remove",
     SystemAutoModRuleModeration = "system_automod_rule_moderation"
 }
 
@@ -45,12 +47,23 @@ export type LogEventArgs = {
     [LogEventType.GuildMemberAdd]: [member: GuildMember];
     [LogEventType.GuildMemberRemove]: [member: GuildMember];
     [LogEventType.GuildMemberKick]: [payload: LogMemberKickPayload];
+    [LogEventType.MemberMuteAdd]: [payload: LogMemberMuteAddPayload];
+    [LogEventType.MemberMuteRemove]: [payload: LogMemberMuteRemovePayload];
 };
 
 type LogModerationActionCommonPayload = {
     guild: Guild;
     moderator: User;
     reason?: string;
+};
+
+export type LogMemberMuteRemovePayload = LogModerationActionCommonPayload & {
+    member: GuildMember;
+    infractionId?: number;
+};
+
+export type LogMemberMuteAddPayload = LogMemberMuteRemovePayload & {
+    duration?: Duration;
 };
 
 export type LogMessageBulkDeletePayload = Omit<

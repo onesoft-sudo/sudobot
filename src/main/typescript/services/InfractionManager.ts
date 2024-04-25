@@ -1059,6 +1059,16 @@ class InfractionManager extends Service {
 
         mode ??= role ? "role" : "timeout";
 
+        if (mode === "timeout" && member.user.bot) {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+                errorType: "cannot_mute_a_bot",
+                errorDescription: "Cannot mute a bot in timeout mode!"
+            };
+        }
+
         if (mode === "timeout" && !member.moderatable) {
             return {
                 status: "failed",
@@ -1188,6 +1198,17 @@ class InfractionManager extends Service {
             }
         }
 
+        await this.auditLoggingService
+            .emitLogEvent(guildId, LogEventType.MemberMuteAdd, {
+                guild,
+                member,
+                moderator,
+                reason,
+                infractionId: infraction.id,
+                duration
+            })
+            .catch(this.application.logger.error);
+
         return {
             status: "success",
             infraction,
@@ -1316,6 +1337,16 @@ class InfractionManager extends Service {
             },
             processReason: false
         });
+
+        await this.auditLoggingService
+            .emitLogEvent(guildId, LogEventType.MemberMuteRemove, {
+                guild,
+                member,
+                moderator,
+                reason,
+                infractionId: infraction.id
+            })
+            .catch(this.application.logger.error);
 
         return {
             status: "success",
