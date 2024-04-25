@@ -55,6 +55,12 @@ Once that is done, install the dependencies using the following command:
 npm install -D
 ```
 
+Or, if you prefer using bun over NPM, you run the following command to install the dependencies:
+
+```bash
+bun install -D
+```
+
 ## Building the bot
 
 Now we need to invoke the TypeScript compiler (`tsc`) to build the bot and generate compiled JavaScript files that the Node.js interpreter can run. To compile the bot, simply run:
@@ -62,6 +68,14 @@ Now we need to invoke the TypeScript compiler (`tsc`) to build the bot and gener
 ```bash
 npm run build
 ```
+
+Or if using bun, you can run the following command to build the bot:
+
+```bash
+bun run build
+```
+
+If that fails, don't worry. You can get a pre-built version or run the bot directly without building, you just might encounter some errors with a few commands. If this does happen, you can get help in the [Discord Server](https://discord.gg/892GWhTzgs).
 
 If it fails at building because you don't have enough resources to do so, or if it's for another reason, you can find pre-built versions [here](github.com/onesoft-sudo/sudobot/releases/latest) for linux and darwin.
 
@@ -72,6 +86,8 @@ Generate the JSON config schema files using the following command:
 ```bash
 npm run gen:schema
 ```
+
+Or if you are running bun, you can skip this step and move onto the enviroment variables.
 
 ## The environment variables
 
@@ -191,6 +207,24 @@ npm run start:prod
 Or if you want to see the process output in real time while in a production enviroment you can run the following:
 ```bash
 npm run start:prod -- --no-daemon
+```
+
+Or if you are using bun, you can start the bot up using the following command:
+
+```bash
+bun dev
+```
+
+Or if you need to run it in a production enviroment, run the following command:
+
+```bash
+bun dev:prod --no-daemon
+```
+
+If the bot starts up and comes online, and you don't want the real time logging, you can remove `--no-daemon` so your command looks like this:
+
+```bash
+bun dev:prod
 ```
 
 And if everything was configured correctly, the bot will log in successfully to Discord. Congratulations, you've set up your own instance of SudoBot!
