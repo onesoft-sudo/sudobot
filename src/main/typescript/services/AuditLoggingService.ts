@@ -27,6 +27,7 @@ import {
     ButtonBuilder,
     ButtonStyle,
     Collection,
+    GuildMember,
     GuildTextBasedChannel,
     Message,
     MessageCreateOptions,
@@ -39,7 +40,8 @@ import {
     bold,
     inlineCode,
     italic,
-    roleMention
+    roleMention,
+    time
 } from "discord.js";
 
 type WebhookInfo =
@@ -67,6 +69,8 @@ class AuditLoggingService extends Service {
         [LogEventType.MessageDeleteBulk]: this.logMessageDeleteBulk,
         [LogEventType.MemberBanAdd]: this.logMemberBanAdd,
         [LogEventType.MemberBanRemove]: this.logMemberBanRemove,
+        [LogEventType.GuildMemberAdd]: this.logGuildMemberAdd,
+        [LogEventType.GuildMemberRemove]: this.logGuildMemberRemove,
         [LogEventType.SystemAutoModRuleModeration]: this.logMessageRuleModeration
     };
 
@@ -804,6 +808,131 @@ class AuditLoggingService extends Service {
                 ]
             },
             eventType: LogEventType.MemberBanRemove
+        });
+    }
+
+    // TODO: Invite tracing
+    private async logGuildMemberAdd(member: GuildMember) {
+        const memberCount = Math.max(member.guild.members.cache.size, member.guild.memberCount);
+        const fields: APIEmbedField[] = [
+            {
+                name: "New Account?",
+                value: Date.now() - member.user.createdTimestamp > 604800000 ? "No" : "⚠️ Yes ⚠️", // 7 days
+                inline: true
+            },
+            {
+                name: "Bot?",
+                value: member.user.bot ? "Yes" : "No",
+                inline: true
+            },
+            {
+                name: "Account Created At",
+                value: `${time(member.user.createdAt, "f")} (${time(member.user.createdAt, "R")})`
+            },
+            {
+                name: "User Information",
+                value: userInfo(member.user),
+                inline: true
+            },
+            {
+                name: "Positions",
+                value:
+                    `Among all the members: ${memberCount}\n` +
+                    (member.user.bot
+                        ? `Among all the bot members: ${
+                              member.guild.members.cache.filter(m => m.user.bot).size
+                          }`
+                        : `Among all the human members: ${
+                              member.guild.members.cache.filter(m => !m.user.bot).size
+                          }`)
+            },
+            {
+                name: "User ID",
+                value: member.id
+            }
+        ];
+
+        return this.send({
+            guildId: member.guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        author: {
+                            name: member.user.username,
+                            icon_url: member.user.displayAvatarURL() ?? undefined
+                        },
+                        title: "New Member Joined",
+                        thumbnail: {
+                            url: member.user.displayAvatarURL() ?? undefined
+                        },
+                        color: Colors.Primary,
+                        timestamp: new Date().toISOString(),
+                        footer: {
+                            text: `Joined • ${member.guild.memberCount} members total`
+                        },
+                        fields
+                    }
+                ]
+            }
+        });
+    }
+
+    private async logGuildMemberRemove(member: GuildMember) {
+        const memberCount = Math.max(member.guild.members.cache.size, member.guild.memberCount);
+        const fields = [
+            {
+                name: "User Information",
+                value: userInfo(member.user),
+                inline: true
+            },
+            {
+                name: "Joined At",
+                value: member.joinedAt
+                    ? `${time(member.joinedAt, "f")} (${time(member.joinedAt, "R")})`
+                    : "[Unknown]"
+            },
+            {
+                name: "Roles",
+                value:
+                    member.roles.cache.size > 1
+                        ? member.roles.cache.map(r => roleMention(r.id)).join(", ")
+                        : italic("None")
+            },
+            {
+                name: "User ID",
+                value: member.id,
+                inline: true
+            },
+            {
+                name: "Bot?",
+                value: member.user.bot ? "Yes" : "No"
+            }
+        ];
+
+        return this.send({
+            guildId: member.guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        author: {
+                            name: member.user.username,
+                            icon_url: member.user.displayAvatarURL() ?? undefined
+                        },
+                        title: "Member Left",
+                        color: Colors.Red,
+                        timestamp: new Date().toISOString(),
+                        fields,
+                        footer: {
+                            text: `Left • ${memberCount} members total`
+                        }
+                    }
+                ],
+                allowedMentions: {
+                    parse: [],
+                    roles: [],
+                    users: []
+                }
+            }
         });
     }
 }

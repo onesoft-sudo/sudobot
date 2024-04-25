@@ -5,6 +5,7 @@ import { zSnowflake } from "@main/types/SnowflakeSchema";
 import type {
     Collection,
     Guild,
+    GuildMember,
     GuildTextBasedChannel,
     Message,
     PartialMessage,
@@ -18,6 +19,8 @@ export enum LogEventType {
     MessageDeleteBulk = "message_delete_bulk",
     MemberBanAdd = "member_ban_add",
     MemberBanRemove = "member_ban_remove",
+    GuildMemberAdd = "guild_member_add",
+    GuildMemberRemove = "guild_member_remove",
     SystemAutoModRuleModeration = "system_automod_rule_moderation"
 }
 
@@ -42,6 +45,8 @@ export type LogEventArgs = {
     ];
     [LogEventType.MemberBanAdd]: [payload: LogMemberBanAddPayload];
     [LogEventType.MemberBanRemove]: [payload: LogMemberBanRemovePayload];
+    [LogEventType.GuildMemberAdd]: [member: GuildMember];
+    [LogEventType.GuildMemberRemove]: [member: GuildMember];
 };
 
 type LogModerationActionCommonPayload = {
