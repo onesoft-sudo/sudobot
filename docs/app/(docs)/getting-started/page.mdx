@@ -69,15 +69,16 @@ Now we need to invoke the TypeScript compiler (`tsc`) to build the bot and gener
 npm run build
 ```
 
-Or if using bun, you can run the following command to build the bot:
+Or if you're using bun, you can run the following command to build the bot:
 
 ```bash
 bun run build
 ```
 
-If that fails, don't worry. You can get a pre-built version or run the bot directly without building, you just might encounter some errors with a few commands. If this does happen, you can get help in the [Discord Server](https://discord.gg/892GWhTzgs).
+If you don't have enough resources, this command will fail with heap allocation errors. If that happens, or if you don't want to build it yourself, don't worry. You can download prebuilt versions for every release. The builds are tested on Node.js **v21**, however they should also work with **v20**.
+You might see that only Linux and macOS (darwin) releases are available. This doesn't mean you cannot run the bot on Windows systems - only the native bindings are platform dependent. You don't need to worry about that in most cases and the bot will just work fine.
 
-If it fails at building because you don't have enough resources to do so, or if it's for another reason, you can find pre-built versions [here](github.com/onesoft-sudo/sudobot/releases/latest) for linux and darwin.
+As always if you ever encounter errors with commands or you see something is not working as you expect, you can join our [Discord Server](https://discord.gg/892GWhTzgs) and ask for help!
 
 ## JSON Configuration Schema
 
@@ -87,7 +88,7 @@ Generate the JSON config schema files using the following command:
 npm run gen:schema
 ```
 
-Or if you are running bun, you can skip this step and move onto the enviroment variables.
+Or if you're using bun, you can skip this step and move onto the enviroment variables.
 
 ## The environment variables
 
