@@ -93,7 +93,7 @@
         "tesseract.js": "^5.0.4",
         "tslib": "^2.6.2",
         "undici": "^5.23.0",
-        "utf-8-validate": "^5.0.10",
+        "utf-8-validate": "^6.0.3",
         "uuid": "^9.0.0",
         "zlib-sync": "^0.1.9",
         "zod": "^3.21.4"

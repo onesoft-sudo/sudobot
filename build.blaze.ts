@@ -34,10 +34,8 @@ dependencies(() => {
     requiredModule("@tensorflow/tfjs-node", "^4.17.0");
     requiredModule("archiver", "^7.0.1");
     requiredModule("ascii-table3", "^0.8.2");
-    requiredModule("async-mutex", "^0.4.0");
     requiredModule("axios", "^1.6.7");
     requiredModule("bcrypt", "^5.1.1");
-    requiredModule("bufferutil", "^4.0.8");
     requiredModule("canvas", "^2.11.2");
     requiredModule("chalk", "^4.1.2");
     requiredModule("cors", "^2.8.5");
@@ -64,10 +62,15 @@ dependencies(() => {
     requiredModule("tesseract.js", "^5.0.4");
     requiredModule("tslib", "^2.6.2");
     requiredModule("undici", "^5.23.0");
-    requiredModule("utf-8-validate", "^5.0.10");
     requiredModule("uuid", "^9.0.0");
-    requiredModule("zlib-sync", "^0.1.9");
     requiredModule("zod", "^3.21.4");
+
+    // Uncomment the following lines to install these optional dependencies,
+    //  which can improve performance.
+
+    // requiredModule("zlib-sync", "^0.1.9");
+    // requiredModule("bufferutil", "^4.0.8");
+    // requiredModule("utf-8-validate", "^6.0.3");
 
     devModule("@commitlint/cli", "^17.6.6");
     devModule("@commitlint/config-conventional", "^17.6.6");
