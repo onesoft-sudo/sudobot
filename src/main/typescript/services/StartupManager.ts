@@ -33,12 +33,14 @@ import {
     AttachmentBuilder,
     Colors,
     escapeCodeBlock,
+    Snowflake,
     WebhookClient
 } from "discord.js";
 import figlet from "figlet";
 import { rm } from "fs/promises";
 import path from "path";
 import semver from "semver";
+import { setTimeout } from "timers/promises";
 import { version } from "../../../../package.json";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { safeChannelFetch, safeMessageFetch } from "../utils/fetch";
@@ -100,11 +102,15 @@ class StartupManager extends Service implements HasEventListeners {
                     restartJsonFile,
                     { json: true }
                 )) as {
-                    guildId: string;
-                    messageId: string;
-                    channelId: string;
+                    guildId?: string;
+                    messageId?: string;
+                    channelId?: string;
                     time: number;
                 };
+
+                if (!guildId || !channelId || !messageId) {
+                    return;
+                }
 
                 const guild = this.application.getClient().guilds.cache.get(guildId);
 
@@ -157,6 +163,30 @@ class StartupManager extends Service implements HasEventListeners {
             ],
             status: presence?.status ?? "dnd"
         });
+    }
+
+    public async requestRestart({ channelId, guildId, message, messageId, time }: RestartOptions) {
+        setTimeout(time).then(async () => {
+            const restartJsonFile = path.join(systemPrefix("tmp", true), "restart.json");
+
+            await FileSystem.writeFileContents(
+                restartJsonFile,
+                JSON.stringify({
+                    guildId,
+                    channelId,
+                    messageId,
+                    message,
+                    time: Date.now()
+                })
+            );
+
+            this.application.logger.info("Restart requested. Shutting down...");
+            process.exit(
+                this.application.getServiceByName("configManager").systemConfig.restart_exit_code
+            );
+        });
+
+        return message;
     }
 
     private async sendErrorLog(content: string) {
@@ -351,5 +381,36 @@ class StartupManager extends Service implements HasEventListeners {
         }
     }
 }
+
+type RestartOptions = {
+    /**
+     * The message to broadcast to the instance before restarting.
+     *
+     * @default "System restart requested. Shutting down..."
+     */
+    message?: string;
+
+    /**
+     * The time to wait before restarting the system.
+     *
+     * @default 0
+     */
+    time?: number;
+
+    /**
+     * The channel ID to broadcast the message to.
+     */
+    channelId?: Snowflake;
+
+    /**
+     * The guild ID to broadcast the message to.
+     */
+    guildId?: Snowflake;
+
+    /**
+     * The message ID to edit.
+     */
+    messageId?: Snowflake;
+};
 
 export default StartupManager;

@@ -25,7 +25,6 @@ type ApplicationActivityType = keyof typeof ActivityType;
 
 export const SystemConfigSchema = z.object({
     $schema: z.string().optional(),
-    emojis: z.record(z.string()).optional().default({}),
     sync_emojis: z.boolean().default(false),
     system_admins: z.array(z.string()).default([]),
     snippets: z
@@ -33,7 +32,6 @@ export const SystemConfigSchema = z.object({
             save_attachments: z.boolean().default(false).optional()
         })
         .optional(),
-    disabled_commands: z.array(z.string()).default([]),
     restart_exit_code: z.number().int().default(1),
     trust_proxies: z.number().int().optional(),
     presence: z
@@ -57,7 +55,8 @@ export const SystemConfigSchema = z.object({
             groups: z.record(z.string(), z.array(z.string())).default({}),
             register_application_commands_on_boot: z
                 .enum(["always_global", "guild", "none", "auto_global"])
-                .default("auto_global")
+                .default("auto_global"),
+            global_disabled: z.array(z.string()).default([])
         })
         .default({}),
     enable_file_filter: z.boolean().default(false),

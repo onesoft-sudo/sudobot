@@ -14,3 +14,8 @@
 -   Log infraction ~~creation~~/edition/deletion when using `-infraction` commands
 -   `-modmsg` command
 -   Better cache management (especially for permission managers and command overwrites)
+
+## 9.x
+
+-   Mass(ban|kick) commands
+-   Finish logging

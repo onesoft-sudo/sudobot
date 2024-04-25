@@ -220,13 +220,20 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
 
         const context = new LegacyContext(commandName, content, message, args, argv);
 
+        if (this.configManager.systemConfig.commands.global_disabled.includes(commandName)) {
+            return;
+        }
+
         if (command.hasSubcommands) {
             const subcommandName = argv[1];
-            const subcommand = this.commands.get(
-                command.isolatedSubcommands
-                    ? `${this.getCanonicalName(commandName)}::${subcommandName}`
-                    : commandName
-            );
+            const key = command.isolatedSubcommands
+                ? `${this.getCanonicalName(commandName)}::${subcommandName}`
+                : commandName;
+            const subcommand = this.commands.get(key);
+
+            if (this.configManager.systemConfig.commands.global_disabled.includes(key)) {
+                return;
+            }
 
             if (!subcommand) {
                 const errorHandler = Reflect.getMetadata(
