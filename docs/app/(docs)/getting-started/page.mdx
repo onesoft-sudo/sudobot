@@ -77,6 +77,7 @@ bun run build
 
 If you don't have enough resources, this command will fail with heap allocation errors. If that happens, or if you don't want to build it yourself, don't worry. You can download prebuilt versions for every release. The builds are tested on Node.js **v21**, however they should also work with **v20**.
 You might see that only Linux and macOS (darwin) releases are available. This doesn't mean you cannot run the bot on Windows systems - only the native bindings are platform dependent. You don't need to worry about that in most cases and the bot will just work fine.
+You can download the prebuilt versions in the GitHub releases page: https://github.com/onesoft-sudo/sudobot/releases/latest
 
 As always if you ever encounter errors with commands or you see something is not working as you expect, you can join our [Discord Server](https://discord.gg/892GWhTzgs) and ask for help!
 
@@ -88,7 +89,7 @@ Generate the JSON config schema files using the following command:
 npm run gen:schema
 ```
 
-Or if you're using bun, you can skip this step and move onto the enviroment variables.
+You can skip this step and move onto the enviroment variables section if you don't mind not having autocompletion in your IDE/editor.
 
 ## The environment variables
 
@@ -199,18 +200,19 @@ Now it's time to start the bot. Run the following command to start the bot:
 npm start
 ```
 
-Or in a production enviroment, it's best to use the following command as it uses a process manager.
+Or in a production enviroment, it's best to use the following command as it uses the PM2 process manager.
 
 ```bash
 npm run start:prod
 ```
 
 Or if you want to see the process output in real time while in a production enviroment you can run the following:
+
 ```bash
 npm run start:prod -- --no-daemon
 ```
 
-Or if you are using bun, you can start the bot up using the following command:
+Or if you are using Bun, you can start the bot up without compilation. To start in dev mode, run the following command:
 
 ```bash
 bun dev
@@ -219,13 +221,13 @@ bun dev
 Or if you need to run it in a production enviroment, run the following command:
 
 ```bash
-bun dev:prod --no-daemon
+bun start:prod
 ```
 
-If the bot starts up and comes online, and you don't want the real time logging, you can remove `--no-daemon` so your command looks like this:
+Or if you want to see the process output in real time while in a production enviroment you can run the following:
 
 ```bash
-bun dev:prod
+bun start:prod --no-daemon
 ```
 
 And if everything was configured correctly, the bot will log in successfully to Discord. Congratulations, you've set up your own instance of SudoBot!
