@@ -26,6 +26,7 @@ import { emoji } from "@framework/utils/emoji";
 import { fetchUser } from "@framework/utils/entities";
 import { isDiscordAPIError } from "@framework/utils/errors";
 import { also } from "@framework/utils/utils";
+import MassUnbanQueue from "@main/queues/MassUnbanQueue";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
 import { LogEventType } from "@main/types/LoggingSchema";
 import { Infraction, InfractionDeliveryStatus, InfractionType, PrismaClient } from "@prisma/client";
@@ -848,7 +849,8 @@ class InfractionManager extends Service {
                 moderator,
                 reason,
                 infractionId: infraction.id,
-                duration: payload.duration
+                duration: payload.duration,
+                deletionTimeframe: payload.deletionTimeframe
             })
             .catch(this.application.logger.error);
 
@@ -1919,6 +1921,121 @@ class InfractionManager extends Service {
                     : Colors.Red
         } satisfies APIEmbed;
     }
+
+    public async createUserMassBan(payload: CreateUserMassBanPayload) {
+        const {
+            moderator,
+            users: userResolvables,
+            guildId,
+            deletionTimeframe,
+            duration,
+            onBanFail,
+            onBanSuccess,
+            onInvalidUser,
+            onMassBanComplete,
+            onMassBanStart,
+            onBanAttempt
+        } = payload;
+        let { reason } = payload;
+
+        reason = this.processReason(guildId, reason) ?? reason;
+
+        const guild = this.getGuild(payload.guildId);
+
+        if (!guild) {
+            return {
+                status: "failed"
+            };
+        }
+
+        await onMassBanStart?.();
+
+        const users: User[] = [];
+        const userIds: Snowflake[] = [];
+        const prismaInfractionCreatePayload: InfractionCreatePrismaPayload[] = [];
+
+        await Promise.all(
+            userResolvables.map(async resolvable => {
+                await onBanAttempt?.(typeof resolvable === "string" ? resolvable : resolvable.id);
+
+                const user =
+                    typeof resolvable === "string"
+                        ? await fetchUser(this.client, resolvable)
+                        : resolvable;
+
+                if (!user) {
+                    await onInvalidUser?.(
+                        typeof resolvable === "string" ? resolvable : resolvable.id
+                    );
+                    return;
+                }
+
+                users.push(user);
+                userIds.push(user.id);
+
+                try {
+                    await guild.bans.create(user, {
+                        reason: `${moderator.username} - ${reason ?? "No reason provided"}`,
+                        deleteMessageSeconds: deletionTimeframe?.toMilliseconds()
+                    });
+
+                    await onBanSuccess?.(user);
+
+                    prismaInfractionCreatePayload.push({
+                        guildId,
+                        moderatorId: moderator.id,
+                        type: InfractionType.MASSBAN,
+                        userId: user.id,
+                        reason,
+                        expiresAt: duration?.fromNow(),
+                        metadata: {
+                            deletionTimeframe: deletionTimeframe?.fromNowMilliseconds(),
+                            duration: duration?.fromNowMilliseconds()
+                        },
+                        deliveryStatus: InfractionDeliveryStatus.NOT_DELIVERED
+                    });
+                } catch (error) {
+                    this.application.logger.error(error);
+                    await onBanFail?.(user);
+                }
+            })
+        );
+
+        if (prismaInfractionCreatePayload.length > 0) {
+            this.application.prisma.infraction
+                .createMany({
+                    data: prismaInfractionCreatePayload
+                })
+                .then();
+        }
+
+        this.auditLoggingService
+            .emitLogEvent(guildId, LogEventType.MemberMassBan, {
+                guild,
+                moderator,
+                reason,
+                users,
+                deletionTimeframe,
+                duration
+            })
+            .catch(this.application.logger.error);
+
+        if (duration) {
+            this.queueService.create(MassUnbanQueue, {
+                data: {
+                    guildId,
+                    userIds
+                },
+                guildId,
+                runsAt: duration.fromNow()
+            });
+        }
+
+        await onMassBanComplete?.(users);
+        return {
+            status: "success"
+        };
+    }
 }
 
 type InfractionConfig = NonNullable<GuildConfig["infractions"]>;
@@ -1982,6 +2099,21 @@ type CreateMutePayload<E extends boolean> = CommonOptions<E> & {
     mode?: "role" | "timeout";
     clearMessagesCount?: number;
     channel?: TextChannel;
+};
+
+type CreateUserMassBanPayload = {
+    moderator: User;
+    reason?: string;
+    guildId: Snowflake;
+    users: Array<Snowflake | User>;
+    deletionTimeframe?: Duration;
+    duration?: Duration;
+    onBanAttempt?(userId: Snowflake): Awaitable<void>;
+    onBanSuccess?(user: User): Awaitable<void>;
+    onBanFail?(user: User): Awaitable<void>;
+    onInvalidUser?(userId: Snowflake): Awaitable<void>;
+    onMassBanComplete?(users: User[]): Awaitable<void>;
+    onMassBanStart?(): Awaitable<void>;
 };
 
 type CreateBanPayload<E extends boolean> = CommonOptions<E> & {

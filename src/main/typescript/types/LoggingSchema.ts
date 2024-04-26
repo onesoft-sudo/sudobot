@@ -19,6 +19,8 @@ export enum LogEventType {
     MessageUpdate = "message_update",
     MessageDeleteBulk = "message_delete_bulk",
     MemberBanAdd = "member_ban_add",
+    MemberMassBan = "member_mass_ban",
+    MemberMassUnban = "member_mass_unban",
     MemberBanRemove = "member_ban_remove",
     GuildMemberAdd = "guild_member_add",
     GuildMemberRemove = "guild_member_remove",
@@ -47,6 +49,8 @@ export type LogEventArgs = {
         rule: MessageRuleType,
         result: RuleExecResult
     ];
+    [LogEventType.MemberMassBan]: [payload: LogMemberMassBanPayload];
+    [LogEventType.MemberMassUnban]: [payload: LogMemberMassUnbanPayload];
     [LogEventType.MemberBanAdd]: [payload: LogMemberBanAddPayload];
     [LogEventType.MemberBanRemove]: [payload: LogMemberBanRemovePayload];
     [LogEventType.GuildMemberAdd]: [member: GuildMember];
@@ -65,6 +69,18 @@ type LogModerationActionCommonPayload = {
     moderator: User;
     reason?: string;
 };
+
+export type LogMemberMassBanPayload = LogModerationActionCommonPayload & {
+    users: Array<Snowflake | User>;
+    reason?: string;
+    duration?: Duration;
+    deletionTimeframe?: Duration;
+};
+
+export type LogMemberMassUnbanPayload = Omit<
+    LogMemberMassBanPayload,
+    "duration" | "deletionTimeframe"
+>;
 
 export type LogMemberRoleModificationPayload = Omit<
     LogModerationActionCommonPayload,
@@ -119,6 +135,7 @@ export type LogMemberBanAddPayload = Omit<LogModerationActionCommonPayload, "mod
     user: User;
     infractionId?: number;
     duration?: Duration;
+    deletionTimeframe?: Duration;
 };
 
 export type LogMemberBanRemovePayload = Omit<LogModerationActionCommonPayload, "moderator"> & {

@@ -14,6 +14,8 @@ import {
     LogMemberBanAddPayload,
     LogMemberBanRemovePayload,
     LogMemberKickPayload,
+    LogMemberMassBanPayload,
+    LogMemberMassUnbanPayload,
     LogMemberModMessageAddPayload,
     LogMemberMuteAddPayload,
     LogMemberMuteRemovePayload,
@@ -48,7 +50,8 @@ import {
     inlineCode,
     italic,
     roleMention,
-    time
+    time,
+    userMention
 } from "discord.js";
 
 type WebhookInfo =
@@ -75,6 +78,8 @@ class AuditLoggingService extends Service {
         [LogEventType.MessageUpdate]: this.logMessageUpdate,
         [LogEventType.MessageDeleteBulk]: this.logMessageDeleteBulk,
         [LogEventType.MemberBanAdd]: this.logMemberBanAdd,
+        [LogEventType.MemberMassBan]: this.logMemberMassBan,
+        [LogEventType.MemberMassUnban]: this.logMemberMassUnban,
         [LogEventType.MemberBanRemove]: this.logMemberBanRemove,
         [LogEventType.GuildMemberAdd]: this.logGuildMemberAdd,
         [LogEventType.GuildMemberRemove]: this.logGuildMemberRemove,
@@ -732,7 +737,8 @@ class AuditLoggingService extends Service {
         user,
         duration,
         reason,
-        infractionId
+        infractionId,
+        deletionTimeframe
     }: LogMemberBanAddPayload) {
         const fields = [
             {
@@ -756,6 +762,11 @@ class AuditLoggingService extends Service {
             {
                 name: "Duration",
                 value: duration?.toString() ?? italic("Permanent"),
+                inline: true
+            },
+            {
+                name: "Message Deletion Timeframe",
+                value: deletionTimeframe?.toString() ?? italic("None"),
                 inline: true
             }
         ];
@@ -845,6 +856,128 @@ class AuditLoggingService extends Service {
                 ]
             },
             eventType: LogEventType.MemberBanRemove
+        });
+    }
+
+    private async logMemberMassBan({
+        guild,
+        moderator,
+        users,
+        reason,
+        deletionTimeframe,
+        duration
+    }: LogMemberMassBanPayload) {
+        const fields = [
+            {
+                name: "Responsible Moderator",
+                value: !moderator ? "[Unknown]" : userInfo(moderator),
+                inline: true
+            },
+            {
+                name: "Reason",
+                value: reason ?? italic("No reason provided")
+            },
+            {
+                name: "Duration",
+                value: duration?.toString() ?? italic("Permanent"),
+                inline: true
+            },
+            {
+                name: "Message Deletion Timeframe",
+                value: deletionTimeframe?.toString() ?? italic("None"),
+                inline: true
+            }
+        ];
+
+        let description = "";
+        const i = 0;
+
+        for (const resolvable of users) {
+            const id = typeof resolvable === "string" ? resolvable : resolvable.id;
+            description += `${userMention(id)} (${id})\n`;
+        }
+
+        return this.send({
+            guildId: guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        title: `Mass Banned ${users.length} users`,
+                        color: Colors.Red,
+                        timestamp: new Date().toISOString(),
+                        description: description.length < 2000 ? description : undefined,
+                        fields,
+                        footer: {
+                            text: "Banned"
+                        }
+                    }
+                ],
+                files:
+                    description.length >= 2000
+                        ? [
+                              {
+                                  attachment: Buffer.from(description, "utf-8"),
+                                  name: "banned_user_list.txt"
+                              }
+                          ]
+                        : undefined
+            },
+            eventType: LogEventType.MemberMassBan
+        });
+    }
+
+    private async logMemberMassUnban({
+        guild,
+        moderator,
+        users,
+        reason
+    }: LogMemberMassUnbanPayload) {
+        const fields = [
+            {
+                name: "Responsible Moderator",
+                value: !moderator ? "[Unknown]" : userInfo(moderator),
+                inline: true
+            },
+            {
+                name: "Reason",
+                value: reason ?? italic("No reason provided")
+            }
+        ];
+
+        let description = "";
+        const i = 0;
+
+        for (const resolvable of users) {
+            const id = typeof resolvable === "string" ? resolvable : resolvable.id;
+            description += `${userMention(id)} (${id})\n`;
+        }
+
+        return this.send({
+            guildId: guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        title: `Mass Unbanned ${users.length} users`,
+                        color: Colors.Green,
+                        timestamp: new Date().toISOString(),
+                        description: description.length < 2000 ? description : undefined,
+                        fields,
+                        footer: {
+                            text: "Unbanned"
+                        }
+                    }
+                ],
+                files:
+                    description.length >= 2000
+                        ? [
+                              {
+                                  attachment: Buffer.from(description, "utf-8"),
+                                  name: "unbanned_user_list.txt"
+                              }
+                          ]
+                        : undefined
+            },
+            eventType: LogEventType.MemberMassUnban
         });
     }
 

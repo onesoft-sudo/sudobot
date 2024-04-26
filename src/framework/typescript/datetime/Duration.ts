@@ -158,6 +158,10 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<number> {
                 throw new DurationParseError(`Invalid number at position ${i} in expression`);
             }
 
+            if (value < 0) {
+                throw new DurationParseError("Negative numbers are not allowed in duration expressions");
+            }
+
             let unit = "";
 
             while (i < expression.length && expression[i] === " ") {
