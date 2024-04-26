@@ -120,6 +120,16 @@ model Queue {
     @@map("queues")
 }
 
+model MuteRecord {
+    id        Int      @id @default(autoincrement())
+    memberId  String
+    guildId   String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    @@map("mute_records")
+}
+
 // The following models were used in the previous version of the bot and are no longer used.
 // They are kept here for reference and will be removed in the future.
 

@@ -3,6 +3,7 @@ import EventListener from "@framework/events/EventListener";
 import { Events } from "@framework/types/ClientEvents";
 import { fetchUser } from "@framework/utils/entities";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
+import type InfractionManager from "@main/services/InfractionManager";
 import { LogEventType } from "@main/types/LoggingSchema";
 import { InfractionDeliveryStatus, InfractionType } from "@prisma/client";
 import { AuditLogEvent, type GuildMember } from "discord.js";
@@ -12,6 +13,9 @@ class GuildMemberRemoveEventListener extends EventListener<Events.GuildMemberRem
 
     @Inject("auditLoggingService")
     protected readonly auditLoggingService!: AuditLoggingService;
+
+    @Inject("infractionManager")
+    protected readonly infractionManager!: InfractionManager;
 
     public override execute(member: GuildMember): void {
         setTimeout(async () => {
@@ -62,6 +66,8 @@ class GuildMemberRemoveEventListener extends EventListener<Events.GuildMemberRem
                 member
             );
         }, 2500);
+
+        this.infractionManager.recordMuteIfNeeded(member);
     }
 }
 

@@ -1349,6 +1349,15 @@ class InfractionManager extends Service {
             processReason: false
         });
 
+        this.application.prisma.muteRecord
+            .deleteMany({
+                where: {
+                    memberId: member.id,
+                    guildId: guild.id
+                }
+            })
+            .then();
+
         this.auditLoggingService
             .emitLogEvent(guildId, LogEventType.MemberMuteRemove, {
                 guild,
@@ -1366,6 +1375,55 @@ class InfractionManager extends Service {
                 ? this.createOverviewEmbed(infraction, member.user, moderator)
                 : undefined) as E extends true ? APIEmbed : undefined
         };
+    }
+
+    public async recordMuteIfNeeded(member: GuildMember) {
+        const config = this.configManager.config[member.guild.id]?.muting;
+        const role = config?.role;
+
+        if (!role) {
+            return;
+        }
+
+        const existing = await this.application.prisma.muteRecord.findFirst({
+            where: {
+                memberId: member.id,
+                guildId: member.guild.id
+            }
+        });
+
+        if (existing) {
+            return;
+        }
+
+        await this.application.prisma.muteRecord.create({
+            data: {
+                memberId: member.id,
+                guildId: member.guild.id
+            }
+        });
+    }
+
+    public async reapplyMuteIfNeeded(member: GuildMember) {
+        const config = this.configManager.config[member.guild.id]?.muting;
+        const role = config?.role;
+
+        if (!role) {
+            return;
+        }
+
+        const existing = await this.application.prisma.muteRecord.findFirst({
+            where: {
+                memberId: member.id,
+                guildId: member.guild.id
+            }
+        });
+
+        if (!existing) {
+            return;
+        }
+
+        await member.roles.add(role, "Reapplying mute role");
     }
 
     public async createRoleModification<E extends boolean>(
