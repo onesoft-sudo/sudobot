@@ -1,8 +1,6 @@
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
-import Duration from "@framework/datetime/Duration";
-import DurationParseError from "@framework/datetime/DurationParseError";
 import { userInfo } from "@framework/utils/embeds";
 import { Colors } from "@main/constants/Colors";
 import { Limits } from "@main/constants/Limits";
@@ -18,19 +16,19 @@ import {
 } from "discord.js";
 import { setTimeout } from "timers/promises";
 
-class MassBanCommand extends Command {
-    public override readonly name = "massban";
-    public override readonly description: string = "Mass ban users.";
+class MassKickCommand extends Command {
+    public override readonly name = "masskick";
+    public override readonly description: string = "Mass kick members.";
     public override readonly detailedDescription: string =
-        "Mass bans multiple users from the server.";
+        "Mass kicks multiple members from the server.";
     public override readonly permissions = [PermissionFlagsBits.ManageGuild];
     public override readonly defer = true;
-    public override readonly usage = ["<...users: User[]> [-r|--reason=RestString]"];
+    public override readonly usage = ["<...members: GuildMember[]> [-r|--reason=RestString]"];
     public override readonly options = {
-        "-r, --reason": "The reason for the ban."
+        "-r, --reason": "The reason for the kick."
     };
-    public override readonly systemPermissions = [PermissionFlagsBits.BanMembers];
-    public override readonly aliases = ["mban"];
+    public override readonly systemPermissions = [PermissionFlagsBits.KickMembers];
+    public override readonly aliases = ["mkick"];
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;
@@ -40,29 +38,17 @@ class MassBanCommand extends Command {
             this.buildChatInput()
                 .addUserOption(option =>
                     option
-                        .setName("users")
+                        .setName("members")
                         .setDescription(
-                            "The users to ban. IDs and mentions can be separated by commas."
+                            "The members to ban. IDs and mentions can be separated by commas."
                         )
                         .setRequired(true)
                 )
                 .addStringOption(option =>
                     option
                         .setName("reason")
-                        .setDescription("The reason for the ban.")
+                        .setDescription("The reason for the kick.")
                         .setMaxLength(Limits.Reason)
-                )
-                .addStringOption(option =>
-                    option
-                        .setName("duration")
-                        .setDescription("The duration of the ban.")
-                        .setRequired(false)
-                )
-                .addStringOption(option =>
-                    option
-                        .setName("deletion_timeframe")
-                        .setDescription("The message deletion timeframe. Defaults to none.")
-                        .setRequired(false)
                 )
         ];
     }
@@ -74,14 +60,14 @@ class MassBanCommand extends Command {
             ? context.args.findIndex(arg => arg === "-r" || arg === "--reason")
             : undefined;
         const hasReasonOption = context.isLegacy() && reasonOptionPosition !== -1;
-        const rawUsers = context.isLegacy()
+        const rawMembers = context.isLegacy()
             ? context.args.slice(0, !hasReasonOption ? undefined : reasonOptionPosition)
             : context.isChatInput()
-              ? context.options.getString("users", true).split(/, */)
+              ? context.options.getString("members", true).split(/, */)
               : [];
 
-        if (!rawUsers?.length) {
-            await context.error("You must provide at least one user to ban.");
+        if (!rawMembers?.length) {
+            await context.error("You must provide at least one member to kick.");
             return;
         }
 
@@ -93,8 +79,8 @@ class MassBanCommand extends Command {
               : undefined;
 
         if (hasReasonOption && reason !== undefined && context.isLegacy()) {
-            for (const rawUser of rawUsers) {
-                reason = reason.slice(rawUser.length).trimStart();
+            for (const rawMember of rawMembers) {
+                reason = reason.slice(rawMember.length).trimStart();
             }
 
             let longOption;
@@ -126,67 +112,26 @@ class MassBanCommand extends Command {
             return;
         }
 
-        const deletionTimeframeString = context.isChatInput()
-            ? context.options.getString("deletion_timeframe")
-            : undefined;
-        let deletionTimeframe: Duration | undefined = undefined;
-        const durationString = context.isChatInput()
-            ? context.options.getString("duration")
-            : undefined;
-        let duration: Duration | undefined = undefined;
+        const memberIdSet = new Set<Snowflake>();
 
-        if (deletionTimeframeString) {
-            try {
-                deletionTimeframe = deletionTimeframeString
-                    ? Duration.fromDurationStringExpression(deletionTimeframeString)
-                    : undefined;
-            } catch (error) {
-                if (error instanceof DurationParseError) {
-                    await context.error(
-                        `Error parsing message deletion timeframe: ${error.message}`
-                    );
-                }
-
-                this.application.logger.debug(error);
-                return;
-            }
-        }
-
-        if (durationString) {
-            try {
-                duration = durationString
-                    ? Duration.fromDurationStringExpression(durationString)
-                    : undefined;
-            } catch (error) {
-                if (error instanceof DurationParseError) {
-                    await context.error(`Error parsing duration: ${error.message}`);
-                }
-
-                this.application.logger.debug(error);
-                return;
-            }
-        }
-
-        const userIdSet = new Set<Snowflake>();
-
-        for (const rawUser of rawUsers) {
+        for (const rawMember of rawMembers) {
             const id =
-                rawUser.startsWith("<@") && rawUser.endsWith(">")
-                    ? rawUser.slice(rawUser.startsWith("<@!") ? 3 : 2, -1)
-                    : rawUser;
+                rawMember.startsWith("<@") && rawMember.endsWith(">")
+                    ? rawMember.slice(rawMember.startsWith("<@!") ? 3 : 2, -1)
+                    : rawMember;
 
             if (!/^\d+$/.test(id)) {
-                errors.push(`__Invalid user ID/mention__: ${id}`);
+                errors.push(`__Invalid member ID/mention__: ${id}`);
                 continue;
             }
 
-            userIdSet.add(id);
+            memberIdSet.add(id);
         }
 
-        const userIds: Snowflake[] = Array.from(userIdSet);
+        const memberIds: Snowflake[] = Array.from(memberIdSet);
 
-        if (userIds.length > 200) {
-            await context.error("You cannot mass ban more than 200 users at once.");
+        if (memberIds.length > 200) {
+            await context.error("You cannot mass kick more than 200 users at once.");
             return;
         }
 
@@ -197,14 +142,11 @@ class MassBanCommand extends Command {
 
         let count = 0;
 
-        await this.infractionManager.createUserMassBan({
+        await this.infractionManager.createUserMassKick({
             guildId: context.guildId,
             moderator: context.user,
-            users: userIds,
-            reason,
-            deletionTimeframe,
-            duration,
-            onBanAttempt: async () => {
+            members: memberIds,
+            onKickAttempt: async () => {
                 if (count % 20 === 0) {
                     await setTimeout(3000);
                 }
@@ -218,46 +160,42 @@ class MassBanCommand extends Command {
                                 context,
                                 completed,
                                 failed,
-                                pending: userIds.filter(
+                                pending: memberIds.filter(
                                     id => !completed.includes(id) || failed.includes(id)
                                 ),
                                 reason,
-                                duration,
-                                deletionTimeframe,
-                                total: userIds.length,
+                                total: memberIds.length,
                                 errors
                             })
                         ]
                     });
                 }
             },
-            onBanSuccess(user) {
+            onKickSuccess(user) {
                 completed.push(user.id);
             },
-            onBanFail(user) {
+            onKickFail(user) {
                 failed.push(user.id);
             },
-            onInvalidUser(userId) {
-                errors.push(`__Invalid user ID__: ${userId}`);
+            onInvalidMember(userId) {
+                errors.push(`__Invalid member__: ${userId}`);
             },
-            onMassBanStart: async () => {
+            onMassKickStart: async () => {
                 message = await context.reply({
                     embeds: [
                         this.generateEmbed({
                             context,
                             completed: [],
                             failed: [],
-                            pending: userIds,
+                            pending: memberIds,
                             reason,
-                            duration,
-                            deletionTimeframe,
-                            total: userIds.length,
+                            total: memberIds.length,
                             errors
                         })
                     ]
                 });
             },
-            onMassBanComplete: async () => {
+            onMassKickComplete: async () => {
                 await message.edit({
                     embeds: [
                         this.generateEmbed({
@@ -266,9 +204,7 @@ class MassBanCommand extends Command {
                             failed,
                             pending: [],
                             reason,
-                            duration,
-                            deletionTimeframe,
-                            total: userIds.length,
+                            total: memberIds.length,
                             errors
                         })
                     ]
@@ -282,8 +218,6 @@ class MassBanCommand extends Command {
         context,
         failed,
         pending,
-        deletionTimeframe,
-        duration,
         reason,
         total,
         errors
@@ -316,19 +250,8 @@ class MassBanCommand extends Command {
             {
                 name: "Reason",
                 value: reason ?? "No reason provided"
-            },
-            {
-                name: "Duration",
-                value: duration?.toString() ?? "Permanent"
             }
         ];
-
-        if (deletionTimeframe) {
-            fields.push({
-                name: "Deletion Timeframe",
-                value: deletionTimeframe?.toString() ?? "None"
-            });
-        }
 
         if (errors?.length) {
             const value = errors.join("\n");
@@ -362,10 +285,8 @@ type GenerateEmbedOptions = {
     pending: Snowflake[];
     failed: Snowflake[];
     reason?: string;
-    duration?: Duration;
-    deletionTimeframe?: Duration;
     total: number;
     errors: string[];
 };
 
-export default MassBanCommand;
+export default MassKickCommand;

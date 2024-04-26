@@ -23,7 +23,7 @@ import Duration from "@framework/datetime/Duration";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { emoji } from "@framework/utils/emoji";
-import { fetchUser } from "@framework/utils/entities";
+import { fetchMember, fetchUser } from "@framework/utils/entities";
 import { isDiscordAPIError } from "@framework/utils/errors";
 import { also } from "@framework/utils/utils";
 import MassUnbanQueue from "@main/queues/MassUnbanQueue";
@@ -2036,6 +2036,102 @@ class InfractionManager extends Service {
             status: "success"
         };
     }
+
+    public async createUserMassKick(payload: CreateUserMassKickPayload) {
+        const {
+            moderator,
+            guildId,
+            members: memberResolvables,
+            onKickAttempt,
+            onInvalidMember,
+            onKickFail,
+            onKickSuccess,
+            onMassKickComplete,
+            onMassKickStart
+        } = payload;
+        let { reason } = payload;
+
+        reason = this.processReason(guildId, reason) ?? reason;
+
+        const guild = this.getGuild(payload.guildId);
+
+        if (!guild) {
+            return {
+                status: "failed"
+            };
+        }
+
+        await onMassKickStart?.();
+
+        const members: GuildMember[] = [];
+        const memberIds: Snowflake[] = [];
+        const prismaInfractionCreatePayload: InfractionCreatePrismaPayload[] = [];
+
+        await Promise.all(
+            memberResolvables.map(async resolvable => {
+                await onKickAttempt?.(typeof resolvable === "string" ? resolvable : resolvable.id);
+
+                const member =
+                    typeof resolvable === "string"
+                        ? await fetchMember(guild, resolvable)
+                        : resolvable;
+
+                if (!member) {
+                    await onInvalidMember?.(
+                        typeof resolvable === "string" ? resolvable : resolvable.id
+                    );
+                    return;
+                }
+
+                members.push(member);
+                memberIds.push(member.id);
+
+                try {
+                    if (!member.kickable) {
+                        throw new Error("Member is not kickable");
+                    }
+
+                    await member.kick(`${moderator.username} - ${reason ?? "No reason provided"}`);
+                    await onKickSuccess?.(member);
+
+                    prismaInfractionCreatePayload.push({
+                        guildId,
+                        moderatorId: moderator.id,
+                        type: InfractionType.MASSKICK,
+                        userId: member.id,
+                        reason,
+                        deliveryStatus: InfractionDeliveryStatus.NOT_DELIVERED
+                    });
+                } catch (error) {
+                    this.application.logger.error(error);
+                    await onKickFail?.(member);
+                }
+            })
+        );
+
+        if (prismaInfractionCreatePayload.length > 0) {
+            this.application.prisma.infraction
+                .createMany({
+                    data: prismaInfractionCreatePayload
+                })
+                .then();
+        }
+
+        this.auditLoggingService
+            .emitLogEvent(guildId, LogEventType.MemberMassKick, {
+                guild,
+                moderator,
+                reason,
+                members
+            })
+            .catch(this.application.logger.error);
+
+        await onMassKickComplete?.(members);
+
+        return {
+            status: "success"
+        };
+    }
 }
 
 type InfractionConfig = NonNullable<GuildConfig["infractions"]>;
@@ -2114,6 +2210,19 @@ type CreateUserMassBanPayload = {
     onInvalidUser?(userId: Snowflake): Awaitable<void>;
     onMassBanComplete?(users: User[]): Awaitable<void>;
     onMassBanStart?(): Awaitable<void>;
+};
+
+type CreateUserMassKickPayload = {
+    moderator: User;
+    reason?: string;
+    guildId: Snowflake;
+    members: Array<Snowflake | GuildMember>;
+    onKickAttempt?(memberId: Snowflake): Awaitable<void>;
+    onKickSuccess?(member: GuildMember): Awaitable<void>;
+    onKickFail?(member: GuildMember): Awaitable<void>;
+    onInvalidMember?(memberId: Snowflake): Awaitable<void>;
+    onMassKickComplete?(members: GuildMember[]): Awaitable<void>;
+    onMassKickStart?(): Awaitable<void>;
 };
 
 type CreateBanPayload<E extends boolean> = CommonOptions<E> & {

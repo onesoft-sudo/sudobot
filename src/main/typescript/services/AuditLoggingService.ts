@@ -15,6 +15,7 @@ import {
     LogMemberBanRemovePayload,
     LogMemberKickPayload,
     LogMemberMassBanPayload,
+    LogMemberMassKickPayload,
     LogMemberMassUnbanPayload,
     LogMemberModMessageAddPayload,
     LogMemberMuteAddPayload,
@@ -80,6 +81,7 @@ class AuditLoggingService extends Service {
         [LogEventType.MemberBanAdd]: this.logMemberBanAdd,
         [LogEventType.MemberMassBan]: this.logMemberMassBan,
         [LogEventType.MemberMassUnban]: this.logMemberMassUnban,
+        [LogEventType.MemberMassKick]: this.logMemberMassKick,
         [LogEventType.MemberBanRemove]: this.logMemberBanRemove,
         [LogEventType.GuildMemberAdd]: this.logGuildMemberAdd,
         [LogEventType.GuildMemberRemove]: this.logGuildMemberRemove,
@@ -890,7 +892,6 @@ class AuditLoggingService extends Service {
         ];
 
         let description = "";
-        const i = 0;
 
         for (const resolvable of users) {
             const id = typeof resolvable === "string" ? resolvable : resolvable.id;
@@ -926,6 +927,55 @@ class AuditLoggingService extends Service {
         });
     }
 
+    private async logMemberMassKick({ guild, moderator, members, reason }: LogMemberMassKickPayload) {
+        const fields = [
+            {
+                name: "Responsible Moderator",
+                value: !moderator ? "[Unknown]" : userInfo(moderator),
+                inline: true
+            },
+            {
+                name: "Reason",
+                value: reason ?? italic("No reason provided")
+            }
+        ];
+
+        let description = "";
+
+        for (const resolvable of members) {
+            const id = typeof resolvable === "string" ? resolvable : resolvable.id;
+            description += `${userMention(id)} (${id})\n`;
+        }
+
+        return this.send({
+            guildId: guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        title: `Mass Kicked ${members.length} users`,
+                        color: Colors.Red,
+                        timestamp: new Date().toISOString(),
+                        description: description.length < 2000 ? description : undefined,
+                        fields,
+                        footer: {
+                            text: "Kicked"
+                        }
+                    }
+                ],
+                files:
+                    description.length >= 2000
+                        ? [
+                              {
+                                  attachment: Buffer.from(description, "utf-8"),
+                                  name: "kicked_user_list.txt"
+                              }
+                          ]
+                        : undefined
+            },
+            eventType: LogEventType.MemberMassKick
+        });
+    }
+
     private async logMemberMassUnban({
         guild,
         moderator,
@@ -945,7 +995,6 @@ class AuditLoggingService extends Service {
         ];
 
         let description = "";
-        const i = 0;
 
         for (const resolvable of users) {
             const id = typeof resolvable === "string" ? resolvable : resolvable.id;

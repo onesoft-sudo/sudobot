@@ -21,6 +21,7 @@ export enum LogEventType {
     MemberBanAdd = "member_ban_add",
     MemberMassBan = "member_mass_ban",
     MemberMassUnban = "member_mass_unban",
+    MemberMassKick = "member_mass_kick",
     MemberBanRemove = "member_ban_remove",
     GuildMemberAdd = "guild_member_add",
     GuildMemberRemove = "guild_member_remove",
@@ -51,6 +52,7 @@ export type LogEventArgs = {
     ];
     [LogEventType.MemberMassBan]: [payload: LogMemberMassBanPayload];
     [LogEventType.MemberMassUnban]: [payload: LogMemberMassUnbanPayload];
+    [LogEventType.MemberMassKick]: [payload: LogMemberMassKickPayload];
     [LogEventType.MemberBanAdd]: [payload: LogMemberBanAddPayload];
     [LogEventType.MemberBanRemove]: [payload: LogMemberBanRemovePayload];
     [LogEventType.GuildMemberAdd]: [member: GuildMember];
@@ -81,6 +83,13 @@ export type LogMemberMassUnbanPayload = Omit<
     LogMemberMassBanPayload,
     "duration" | "deletionTimeframe"
 >;
+
+export type LogMemberMassKickPayload = Omit<
+    LogMemberMassBanPayload,
+    "duration" | "deletionTimeframe" | "users"
+> & {
+    members: Array<Snowflake | GuildMember>;
+};
 
 export type LogMemberRoleModificationPayload = Omit<
     LogModerationActionCommonPayload,
