@@ -17,13 +17,13 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { GuildMember, Role, Snowflake, TextChannel, User } from "discord.js";
+import type { GuildBasedChannel, GuildMember, Role, Snowflake, User } from "discord.js";
 import { isSnowflake } from "../utils/utils";
 import Argument from "./Argument";
 import { ErrorType } from "./InvalidArgumentError";
 
 abstract class EntityArgument<
-    E extends User | GuildMember | TextChannel | Role | null
+    E extends User | GuildMember | GuildBasedChannel | Role | null
 > extends Argument<E> {
     protected readonly mentionStart: string[] = [];
 

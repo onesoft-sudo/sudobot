@@ -2,8 +2,8 @@ import type BaseClient from "@framework/client/BaseClient";
 import type { Guild, Snowflake } from "discord.js";
 import { client } from "./helpers";
 
-export async function fetchChannel(guildId: Snowflake, channelId: Snowflake) {
-    const guild = client().guilds.cache.get(guildId);
+export async function fetchChannel(guildOrId: Guild | Snowflake, channelId: Snowflake) {
+    const guild = typeof guildOrId === "string" ? client().guilds.cache.get(guildOrId) : guildOrId;
 
     if (!guild) {
         return null;
