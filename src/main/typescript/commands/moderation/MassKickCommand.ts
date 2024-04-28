@@ -36,7 +36,7 @@ class MassKickCommand extends Command {
     public override build(): Buildable[] {
         return [
             this.buildChatInput()
-                .addUserOption(option =>
+                .addStringOption(option =>
                     option
                         .setName("members")
                         .setDescription(
@@ -63,7 +63,7 @@ class MassKickCommand extends Command {
         const rawMembers = context.isLegacy()
             ? context.args.slice(0, !hasReasonOption ? undefined : reasonOptionPosition)
             : context.isChatInput()
-              ? context.options.getString("members", true).split(/, */)
+              ? context.options.getString("members", true).split(/[\s,]+/)
               : [];
 
         if (!rawMembers?.length) {

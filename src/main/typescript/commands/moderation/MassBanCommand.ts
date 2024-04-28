@@ -38,7 +38,7 @@ class MassBanCommand extends Command {
     public override build(): Buildable[] {
         return [
             this.buildChatInput()
-                .addUserOption(option =>
+                .addStringOption(option =>
                     option
                         .setName("users")
                         .setDescription(
@@ -77,7 +77,7 @@ class MassBanCommand extends Command {
         const rawUsers = context.isLegacy()
             ? context.args.slice(0, !hasReasonOption ? undefined : reasonOptionPosition)
             : context.isChatInput()
-              ? context.options.getString("users", true).split(/, */)
+              ? context.options.getString("users", true).split(/[\s,]+/)
               : [];
 
         if (!rawUsers?.length) {
