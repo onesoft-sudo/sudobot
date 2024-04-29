@@ -129,6 +129,16 @@ export default class TempRoleCommand extends Command {
             offset = offset.result;
         }
 
+        if ((duration as number) < 0) {
+            await this.error(message, "Duration cannot be negative!");
+            return;
+        }
+
+        if ((offset as number) < 0) {
+            await this.error(message, "Offset cannot be negative!");
+            return;
+        }
+
         const totalDuration = (offset as number) + (duration as number);
 
         if (offset === 0) {

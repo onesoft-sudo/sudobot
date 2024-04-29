@@ -1,7 +1,7 @@
 {
   "name": "sudobot",
   "description": "A Discord bot for moderation purposes.",
-  "version": "8.32.9",
+  "version": "8.32.12",
   "main": "build/index.js",
   "license": "AGPL-3.0-or-later",
   "keywords": [
@@ -106,7 +106,7 @@
   "scripts": {
     "start": "node build/index.js",
     "start:bun": "bun build/bun.js",
-    "prepare": "has_bun=$(command -v bunx); cmd=bunx; if test -z \"$has_bun\"; then cmd=npx; fi; command $cmd husky",
+    "prepare": "husky || echo This is nothing to worry about.",
     "dev": "bun run src/bun.ts",
     "lint": "eslint src/ --ext .ts",
     "lint:fix": "eslint src/ --ext .ts --fix",
