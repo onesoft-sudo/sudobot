@@ -39,7 +39,7 @@ lib: prepare $(TARGETS)
 	$(CC) -shared $(LDFLAGS) $(ALL_OBJECTS_WITHOUT_MAIN) -o $(BUILD_DIR)/lib/$(LIB) $(LIB_LDLIBS)
 
 $(TARGETS):
-	dir="$(realpath .)"; \
+	dir="$(readlink -f .)"; \
 	which realpath > /dev/null; \
 	if test "$$?" = "0"; then \
 		dir="$(shell realpath . --relative-to "$@")"; \
@@ -49,7 +49,7 @@ $(TARGETS):
 
 clean:
 	for t in $(TARGETS); do \
-		dir="$(realpath .)"; \
+		dir="$(readlink -f .)"; \
 		which realpath > /dev/null; \
 		if test "$$?" = "0"; then \
 			dir="$(shell realpath . --relative-to "$@")"; \
