@@ -49,7 +49,7 @@ class DirectiveParser {
                 continue;
             }
 
-            await directive.apply(this, state, [arg]);
+            await directive.apply(this, state, arg);
         }
 
         return state;

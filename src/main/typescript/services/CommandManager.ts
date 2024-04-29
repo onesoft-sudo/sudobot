@@ -191,11 +191,16 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             return;
         }
 
-        const prefixes = [
-            config.prefix,
-            `<@${this.application.getClient().user!.id}>`,
-            `<@!${this.application.getClient().user!.id}>`
-        ];
+        const prefixes = [config.prefix];
+
+        if (
+            config.commands.mention_prefix ||
+            this.configManager.systemConfig.commands.mention_prefix
+        ) {
+            prefixes.push(`<@${this.application.getClient().user!.id}>`);
+            prefixes.push(`<@!${this.application.getClient().user!.id}>`);
+        }
+
         let foundPrefix;
 
         for (const prefix of prefixes) {
@@ -219,8 +224,11 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         }
 
         const context = new LegacyContext(commandName, content, message, args, argv);
+        const respondOnFail =
+            this.configManager.config[message.guildId!]?.commands.respond_on_precondition_fail;
 
-        if (this.configManager.systemConfig.commands.global_disabled.includes(commandName)) {
+        if (command.isDisabled(message.guildId!)) {
+            respondOnFail && (await context.error("This command is disabled."));
             return;
         }
 
@@ -231,7 +239,8 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
                 : commandName;
             const subcommand = this.commands.get(key);
 
-            if (this.configManager.systemConfig.commands.global_disabled.includes(key)) {
+            if (subcommand && subcommand.isDisabled(message.guildId!)) {
+                respondOnFail && (await context.error("This command is disabled."));
                 return;
             }
 
@@ -313,6 +322,12 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             commandName,
             interaction as ChatInputCommandInteraction | ContextMenuCommandInteraction
         );
+
+        if (command.isDisabled(interaction.guildId!)) {
+            this.configManager.config[interaction.guildId!]?.commands
+                .respond_on_precondition_fail && (await context.error("This command is disabled."));
+            return;
+        }
 
         try {
             await command.run(

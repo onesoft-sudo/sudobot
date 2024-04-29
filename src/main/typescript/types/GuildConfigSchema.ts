@@ -40,12 +40,16 @@ export const GuildConfigSchema = z.object({
     commands: z
         .object({
             mention_prefix: z.boolean().default(true),
-            bean_safe: z.array(zSnowflake).default([]),
-            shot_safe: z.array(zSnowflake).default([]),
-            fakeban_safe: z.array(zSnowflake).default([]),
-            echo_mentions: z.boolean().default(false),
             moderation_command_behaviour: z.enum(["delete", "default"]).default("default"),
             rerun_on_edit: z.boolean().default(false),
+            channels: z
+                .object({
+                    list: z.array(zSnowflake).default([]),
+                    mode: z.enum(["exclude", "include"]).default("exclude")
+                })
+                .default({}),
+            disabled_commands: z.array(z.string()).default([]),
+            respond_on_precondition_fail: z.boolean().default(true),
             ratelimiting: z
                 .object({
                     enabled: z.boolean().default(true),
@@ -83,6 +87,11 @@ export const GuildConfigSchema = z.object({
         })
         .optional()
         .default({}),
+    echoing: z
+        .object({
+            allow_mentions: z.boolean().default(true)
+        })
+        .optional(),
     infractions: z
         .object({
             send_ids_to_user: z.boolean().default(false),

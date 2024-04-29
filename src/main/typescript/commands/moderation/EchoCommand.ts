@@ -24,9 +24,10 @@ import RestStringArgument from "@framework/arguments/RestStringArgument";
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
-import { GuildBasedChannel, PermissionFlagsBits } from "discord.js";
-import InfractionManager from "../../services/InfractionManager";
-import PermissionManagerService from "../../services/PermissionManagerService";
+import DirectiveParseError from "@framework/directives/DirectiveParseError";
+import type ConfigurationManager from "@main/services/ConfigurationManager";
+import DirectiveParsingService from "@main/services/DirectiveParsingService";
+import { APIEmbed, GuildBasedChannel, PermissionFlagsBits } from "discord.js";
 
 type EchoCommandArgs = {
     content: string;
@@ -60,16 +61,17 @@ class EchoCommand extends Command {
         "Echoes a message to a channel. If no channel is specified, the message will be sent in the current channel.";
     public override readonly permissions = [PermissionFlagsBits.ManageMessages];
     public override readonly defer = true;
+    public override readonly ephemeral = true;
     public override readonly usage = [
         "[expression: RestString]",
         "<channel: TextBasedChannel> [expression: RestString]"
     ];
 
-    @Inject()
-    protected readonly infractionManager!: InfractionManager;
+    @Inject("configManager")
+    protected readonly configManager!: ConfigurationManager;
 
     @Inject()
-    protected readonly permissionManager!: PermissionManagerService;
+    protected readonly directiveParsingService!: DirectiveParsingService;
 
     public override build(): Buildable[] {
         return [
@@ -106,7 +108,32 @@ class EchoCommand extends Command {
         }
 
         const finalChannel = channel ?? context.channel;
-        await finalChannel.send(content);
+
+        try {
+            const { data, output } = await this.directiveParsingService.parse(content);
+
+            try {
+                await finalChannel.send({
+                    content: output.trim() === "" ? undefined : output,
+                    embeds: (data.embeds as APIEmbed[]) ?? [],
+                    allowedMentions:
+                        this.configManager.config[context.guildId]?.echoing?.allow_mentions !==
+                        false
+                            ? { parse: [], roles: [], users: [] }
+                            : undefined
+                });
+            } catch (error) {
+                return void context.error(
+                    "An error occurred while sending the message. Make sure I have the necessary permissions."
+                );
+            }
+        } catch (error) {
+            return void context.error(
+                error instanceof DirectiveParseError
+                    ? error.message.replace("Invalid argument: ", "")
+                    : "Error parsing the directives in the message content."
+            );
+        }
     }
 }
 

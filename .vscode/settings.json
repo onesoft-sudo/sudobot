@@ -26,6 +26,7 @@
         "botinfo",
         "Buildable",
         "commitlint",
+        "cooldown",
         "datetime",
         "deepmerge",
         "kickable",

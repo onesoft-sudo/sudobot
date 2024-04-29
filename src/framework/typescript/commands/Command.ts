@@ -24,6 +24,7 @@ import type {
     Message,
     PermissionResolvable,
     PermissionsString,
+    Snowflake,
     User
 } from "discord.js";
 import { ApplicationCommandType, ContextMenuCommandBuilder, SlashCommandBuilder } from "discord.js";
@@ -159,6 +160,11 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
     public readonly maxAttempts: number = 1;
 
     /**
+     * Whether the command is disabled.
+     */
+    public readonly disabled: boolean = false;
+
+    /**
      * The required permissions for the member running this command.
      * Can be modified or removed by the permission manager.
      */
@@ -276,6 +282,19 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
         ContextType.MessageContextMenu | ContextType.UserContextMenu | ContextType.ChatInput
     > {
         return this.supportsChatInput() || this.supportsContextMenu();
+    }
+
+    public isDisabled(guildId?: Snowflake): boolean {
+        const configManager = this.application.getServiceByName(
+            "configManager"
+        ) as ConfigurationManagerServiceInterface;
+        const name = this.name.replace("::", " ");
+
+        return (
+            this.disabled ||
+            configManager.systemConfig.commands.global_disabled.includes(name) ||
+            !!(guildId && configManager.config[guildId]?.commands.disabled_commands.includes(name))
+        );
     }
 
     /**
@@ -446,6 +465,20 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
         return this.subcommands.length > 0;
     }
 
+    private isInDisabledChannel(guildId: Snowflake, channelId: Snowflake) {
+        const configManager = this.application.getServiceByName(
+            "configManager"
+        ) satisfies ConfigurationManagerServiceInterface;
+
+        const channels = configManager.config[guildId]?.commands.channels;
+
+        return channels?.mode === "include"
+            ? !channels.list.includes(channelId)
+            : channels?.mode === "exclude"
+              ? channels.list.includes(channelId)
+              : false;
+    }
+
     /**
      * Checks the preconditions of the command.
      *
@@ -457,6 +490,16 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
         context: Context,
         state: CommandExecutionState<false>
     ): Promise<boolean> {
+        if (this.isDisabled(context.guildId)) {
+            await context.error("This command is disabled.");
+            return false;
+        }
+
+        if (this.isInDisabledChannel(context.guildId, context.channelId)) {
+            await context.error("This command is disabled in this channel.");
+            return false;
+        }
+
         if (!context.member) {
             return false;
         }
