@@ -41,6 +41,7 @@ import Command, {
 import { GatewayEventListener } from "../../decorators/GatewayEventListener";
 import { HasEventListeners } from "../../types/HasEventListeners";
 import { get, has, set, toDotted } from "../../utils/objects";
+import { isSystemAdmin } from "../../utils/utils";
 
 export default class ConfigCommand extends Command implements HasEventListeners {
     public readonly name = "config";
@@ -217,6 +218,12 @@ export default class ConfigCommand extends Command implements HasEventListeners 
         const configType = (interaction.options.getString("config_type") ?? "guild") as
             | "guild"
             | "system";
+
+        if (configType === "system" && !isSystemAdmin(this.client, interaction.user.id)) {
+            await interaction.respond([]);
+            return;
+        }
+
         const config =
             configType === "guild"
                 ? this.dottedConfig.guild[interaction.guildId!]
@@ -242,6 +249,20 @@ export default class ConfigCommand extends Command implements HasEventListeners 
         const subcommand = context.isLegacy
             ? context.parsedNamedArgs.subcommand
             : context.options.getSubcommand(true);
+
+        if (
+            !context.isLegacy &&
+            (subcommand === "get" || subcommand === "set") &&
+            context.options.getString("config_type") === "system" &&
+            !isSystemAdmin(this.client, message.member!.user!.id)
+        ) {
+            await this.error(
+                message,
+                "You do not have permission to view or change system configuration."
+            );
+            
+            return;
+        }
 
         switch (subcommand) {
             case "get":
