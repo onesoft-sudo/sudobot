@@ -104,9 +104,9 @@ class SendReplyCommand
                 embeds: (data.embeds as APIEmbed[]) ?? [],
                 allowedMentions:
                     this.configManager.config[interaction.guildId!]?.echoing?.allow_mentions !==
-                    false
-                        ? { parse: [], roles: [], users: [] }
-                        : undefined
+                        false || interaction.memberPermissions?.has("MentionEveryone", true)
+                        ? undefined
+                        : { parse: [], roles: [], users: [] }
             } satisfies MessageCreateOptions | MessagePayload;
 
             try {

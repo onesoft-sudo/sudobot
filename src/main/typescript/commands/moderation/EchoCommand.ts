@@ -136,12 +136,19 @@ class EchoCommand extends Command {
         try {
             const { data, output } = await this.directiveParsingService.parse(content);
             const options = {
+                files: context.isLegacy()
+                    ? context.commandMessage.attachments.map(a => ({
+                          attachment: a.proxyURL,
+                          name: a.name
+                      }))
+                    : [],
                 content: output.trim() === "" ? undefined : output,
                 embeds: (data.embeds as APIEmbed[]) ?? [],
                 allowedMentions:
-                    this.configManager.config[context.guildId]?.echoing?.allow_mentions !== false
-                        ? { parse: [], roles: [], users: [] }
-                        : undefined
+                    this.configManager.config[context.guildId]?.echoing?.allow_mentions !== false ||
+                    context.member?.permissions?.has("MentionEveryone", true)
+                        ? undefined
+                        : { parse: [], roles: [], users: [] }
             };
 
             try {

@@ -29,6 +29,7 @@
         "cooldown",
         "datetime",
         "deepmerge",
+        "editmsg",
         "kickable",
         "MASSBAN",
         "MASSKICK",
