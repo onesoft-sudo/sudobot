@@ -1,3 +1,14 @@
+## [8.32.13](https://github.com/onesoft-sudo/sudobot/compare/v8.32.12...v8.32.13) (2024-04-30)
+
+
+### Bug Fixes
+
+* config command system admin check ([915ba67](https://github.com/onesoft-sudo/sudobot/commit/915ba670e2bbfeea1732f3126066f5df0cb09897))
+* **native:build:** makefile errors ([0272fb0](https://github.com/onesoft-sudo/sudobot/commit/0272fb066fde2a0c3f69a1bf881e73c87d455b09))
+* **native:build:** update Makefile ([f7b74da](https://github.com/onesoft-sudo/sudobot/commit/f7b74da4815d32c994c262bbd419bcb42f4aa1e1))
+
+
+
 ## [8.32.12](https://github.com/onesoft-sudo/sudobot/compare/v8.32.11...v8.32.12) (2024-04-25)
 
 
@@ -31,16 +42,6 @@
 ### Bug Fixes
 
 * update command ([332a861](https://github.com/onesoft-sudo/sudobot/commit/332a861e011cd360138f8624b076c321a83d1c29))
-
-
-
-## [8.32.8](https://github.com/onesoft-sudo/sudobot/compare/v8.32.7...v8.32.8) (2024-04-18)
-
-
-### Bug Fixes
-
-* git update fails on bun ([02ff3f4](https://github.com/onesoft-sudo/sudobot/commit/02ff3f41f69d008393459c059636006b25cb6d69))
-* support bun to execute update command correctly ([1dcdea9](https://github.com/onesoft-sudo/sudobot/commit/1dcdea9e6cbbcc44900c6601ad48d552ac9931cf))
 
 
 
