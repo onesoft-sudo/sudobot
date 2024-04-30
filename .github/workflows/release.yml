@@ -76,7 +76,7 @@ jobs:
                   node-version: 21.x
 
             - name: "Install Programs, Libraies and Tools"
-              run: brew install curl
+              run: brew install curl pkg-config cairo pango libpng jpeg giflib librsvg
 
             - name: "Install Native Libraries"
               run: |
