@@ -176,7 +176,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         }
 
         if (loadMetadata) {
-            await this.application.classLoader.loadEventsFromMetadata(command);
+            this.application.classLoader.loadEventsFromMetadata(command);
         }
     }
 

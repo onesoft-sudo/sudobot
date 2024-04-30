@@ -334,8 +334,6 @@ class ClassLoader {
 
         const defaultGroup = basename(dirname(filepath));
         await commandManager.addCommand(command, loadMetadata, groups, defaultGroup);
-        this.loadEventsFromMetadata(command, true);
-
         this.application.logger.info("Loaded Command: ", command.name);
     }
 

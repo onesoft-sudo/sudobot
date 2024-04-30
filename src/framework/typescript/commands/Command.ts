@@ -310,6 +310,15 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
     }
 
     /**
+     * Builds the context menu command.
+     *
+     * @returns The context menu command builder.
+     */
+    protected buildContextMenu() {
+        return new ContextMenuCommandBuilder().setName(this.name).setDMPermission(false);
+    }
+
+    /**
      * Builds the command data.
      *
      * @returns An array of command builders.
