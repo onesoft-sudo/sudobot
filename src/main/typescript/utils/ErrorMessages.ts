@@ -18,10 +18,11 @@
  */
 
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
+import { Limits } from "@main/constants/Limits";
 
 export const ErrorMessages = {
-    reason: {
-        [ErrorType.InvalidRange]: "The reason must be between 1 and 4096 characters long.",
+    Reason: {
+        [ErrorType.InvalidRange]: `The reason must be between 1 and ${Limits.Reason} characters long.`,
         [ErrorType.InvalidType]: "The reason must be a valid string."
     }
 };

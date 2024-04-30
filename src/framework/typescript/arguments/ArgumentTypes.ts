@@ -50,7 +50,8 @@ export type ArgumentTypeOptions<T = unknown, N extends string[] = string[]> = {
     names: N;
     rules?: {
         [K in keyof ArgumentRules]?: ArgumentRules[K];
-    };
+    }[];
+    interactionRuleIndex?: number;
 };
 
 export type ArgumentOptionsFor<T> = {

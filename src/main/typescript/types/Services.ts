@@ -21,6 +21,7 @@ import type APIServer from "@framework/api/APIServer";
 import type { ServiceManager } from "@framework/services/ServiceManager";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
 import type DirectiveParsingService from "@main/services/DirectiveParsingService";
+import type SystemAuditLoggingService from "@main/services/SystemAuditLoggingService";
 import type CommandManager from "../services/CommandManager";
 import type ConfigurationManager from "../services/ConfigurationManager";
 import type ExtensionManager from "../services/ExtensionManager";
@@ -47,6 +48,7 @@ export interface ServiceRecord {
     imageRecognitionService: ImageRecognitionService;
     auditLoggingService: AuditLoggingService;
     directiveParsingService: DirectiveParsingService;
+    systemAuditLogging: SystemAuditLoggingService;
 }
 
 interface ServiceRecordLocal extends ServiceRecord {}

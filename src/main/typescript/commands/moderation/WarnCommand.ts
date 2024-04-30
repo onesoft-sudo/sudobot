@@ -19,11 +19,12 @@
 
 import { TakesArgument } from "@framework/arguments/ArgumentTypes";
 import GuildMemberArgument from "@framework/arguments/GuildMemberArgument";
-import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import { ArgumentDefaultRules } from "@main/utils/ArgumentDefaultRules";
+import { ErrorMessages } from "@main/utils/ErrorMessages";
 import { GuildMember, PermissionFlagsBits } from "discord.js";
 import { Limits } from "../../constants/Limits";
 import InfractionManager from "../../services/InfractionManager";
@@ -47,11 +48,9 @@ type WarnCommandArgs = {
     names: ["reason"],
     types: [RestStringArgument],
     optional: true,
-    errorMessages: [
-        {
-            [ErrorType.InvalidType]: "Invalid reason provided."
-        }
-    ],
+    errorMessages: [ErrorMessages.Reason],
+    rules: [ArgumentDefaultRules.Reason],
+    interactionRuleIndex: 0,
     interactionName: "reason",
     interactionType: RestStringArgument
 })

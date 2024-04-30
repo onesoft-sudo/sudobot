@@ -30,6 +30,8 @@ import Duration from "@framework/datetime/Duration";
 import DurationParseError from "@framework/datetime/DurationParseError";
 import { fetchMember } from "@framework/utils/entities";
 import { also } from "@framework/utils/utils";
+import { ArgumentDefaultRules } from "@main/utils/ArgumentDefaultRules";
+import { ErrorMessages } from "@main/utils/ErrorMessages";
 import { GuildMember, PermissionFlagsBits, User } from "discord.js";
 import { Limits } from "../../constants/Limits";
 import InfractionManager from "../../services/InfractionManager";
@@ -46,10 +48,12 @@ type BanCommandArgs = {
     names: ["member", "user"],
     types: [GuildMemberArgument<true>, UserArgument<true>],
     optional: false,
-    rules: {
-        "interaction:no_required_check": true
-    },
-    errorMessages: [UserArgument.defaultErrors],
+    rules: [
+        {
+            "interaction:no_required_check": true
+        }
+    ],
+    errorMessages: [GuildMemberArgument.defaultErrors, UserArgument.defaultErrors],
     interactionName: "user"
 })
 @TakesArgument<BanCommandArgs>({
@@ -59,20 +63,24 @@ type BanCommandArgs = {
     errorMessages: [
         {
             [ErrorType.InvalidType]: "Invalid reason or duration provided."
+        },
+        {
+            [ErrorType.InvalidRange]: `The reason must be between 1 and ${Limits.Reason} characters long.`,
+            [ErrorType.InvalidType]: "Invalid reason or duration provided."
         }
     ],
+    rules: [{}, ArgumentDefaultRules.Reason],
     interactionName: "duration",
-    interactionType: DurationArgument
+    interactionType: DurationArgument,
+    interactionRuleIndex: 0
 })
 @TakesArgument<BanCommandArgs>({
     names: ["reason"],
     types: [RestStringArgument],
     optional: true,
-    errorMessages: [
-        {
-            [ErrorType.InvalidType]: "Invalid reason provided."
-        }
-    ],
+    errorMessages: [ErrorMessages.Reason],
+    rules: [ArgumentDefaultRules.Reason],
+    interactionRuleIndex: 0,
     interactionName: "reason",
     interactionType: RestStringArgument
 })

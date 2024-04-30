@@ -53,12 +53,16 @@ type ClearCommandArgs = {
             [ErrorType.InvalidRange]: "Message count must be between 1 and 100."
         }
     ],
-    rules: {
-        "range:min": 1,
-        "range:max": 100
-    },
+    rules: [
+        {},
+        {
+            "range:min": 1,
+            "range:max": 100
+        }
+    ],
     interactionName: "user",
-    interactionType: UserArgument<true>
+    interactionType: UserArgument<true>,
+    interactionRuleIndex: 0
 })
 @TakesArgument<ClearCommandArgs>({
     names: ["count"],
@@ -70,12 +74,15 @@ type ClearCommandArgs = {
             [ErrorType.InvalidRange]: "Message count must be between 1 and 100."
         }
     ],
-    rules: {
-        "range:min": 1,
-        "range:max": 100
-    },
+    rules: [
+        {
+            "range:min": 1,
+            "range:max": 100
+        }
+    ],
     interactionName: "count",
-    interactionType: IntegerArgument
+    interactionType: IntegerArgument,
+    interactionRuleIndex: 0
 })
 class ClearCommand extends Command {
     public override readonly name = "clear";

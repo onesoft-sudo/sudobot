@@ -57,9 +57,12 @@ type RoleCommandArgs = {
         },
         RestRoleArgument.defaultErrors
     ],
-    rules: {
-        "role_rest:all_required": true
-    },
+    rules: [
+        {},
+        {
+            "role_rest:all_required": true
+        }
+    ],
     interactionName: "duration",
     interactionType: DurationArgument
 })
@@ -68,9 +71,11 @@ type RoleCommandArgs = {
     types: [RestRoleArgument<true>],
     optional: true,
     errorMessages: [RestRoleArgument.defaultErrors],
-    rules: {
-        "role_rest:all_required": true
-    },
+    rules: [
+        {
+            "role_rest:all_required": true
+        }
+    ],
     interactionName: "roles",
     interactionType: RestRoleArgument<true>
 })

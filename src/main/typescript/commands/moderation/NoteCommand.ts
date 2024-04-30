@@ -18,12 +18,13 @@
  */
 
 import { TakesArgument } from "@framework/arguments/ArgumentTypes";
-import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
 import UserArgument from "@framework/arguments/UserArgument";
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import { ArgumentDefaultRules } from "@main/utils/ArgumentDefaultRules";
+import { ErrorMessages } from "@main/utils/ErrorMessages";
 import { PermissionFlagsBits, User } from "discord.js";
 import { Limits } from "../../constants/Limits";
 import InfractionManager from "../../services/InfractionManager";
@@ -46,11 +47,9 @@ type NoteCommandArgs = {
     names: ["reason"],
     types: [RestStringArgument],
     optional: true,
-    errorMessages: [
-        {
-            [ErrorType.InvalidType]: "Invalid reason provided."
-        }
-    ],
+    errorMessages: [ErrorMessages.Reason],
+    rules: [ArgumentDefaultRules.Reason],
+    interactionRuleIndex: 0,
     interactionName: "reason",
     interactionType: RestStringArgument
 })

@@ -255,7 +255,7 @@ class ArgumentParser extends HasClient {
                     arg,
                     argIndex,
                     name,
-                    expectedArgInfo.rules,
+                    expectedArgInfo.rules?.[argTypeIndex],
                     !expectedArgInfo.optional
                 );
 
@@ -387,7 +387,9 @@ class ArgumentParser extends HasClient {
             const name = expectedArgInfo.interactionName ?? expectedArgInfo.names[0];
 
             if (
-                !expectedArgInfo.rules?.["interaction:no_required_check"] &&
+                !expectedArgInfo.rules?.[expectedArgInfo.interactionRuleIndex ?? 0]?.[
+                    "interaction:no_required_check"
+                ] &&
                 !interaction.options.get(name)
             ) {
                 if (expectedArgInfo.optional || expectedArgInfo.default !== undefined) {
@@ -406,7 +408,7 @@ class ArgumentParser extends HasClient {
                 context,
                 interaction,
                 name,
-                expectedArgInfo.rules,
+                expectedArgInfo.rules?.[expectedArgInfo.interactionRuleIndex ?? 0],
                 !expectedArgInfo.optional
             );
 

@@ -20,7 +20,6 @@
 import { fetchChannel } from "@framework/utils/entities";
 import { isSnowflake } from "@framework/utils/utils";
 import {
-    ChannelType,
     type Awaitable,
     type ChatInputCommandInteraction,
     type GuildBasedChannel
@@ -43,7 +42,9 @@ class ChannelArgument<E extends boolean = false> extends EntityArgument<
         return true;
     }
 
-    protected override transform(): Promise<If<E, GuildBasedChannel, GuildBasedChannel | null>> {
+    protected override async transform(): Promise<
+        If<E, GuildBasedChannel, GuildBasedChannel | null>
+    > {
         if (
             (this.stringValue.startsWith("<#") && this.stringValue.endsWith(">")) ||
             isSnowflake(this.stringValue)
@@ -53,12 +54,7 @@ class ChannelArgument<E extends boolean = false> extends EntityArgument<
             >;
         }
 
-        return Promise.resolve(
-            (this.context.guild.channels.cache.find(
-                channel =>
-                    channel.name === this.stringValue && channel.type !== ChannelType.GuildCategory
-            ) ?? null) as If<E, GuildBasedChannel, GuildBasedChannel | null>
-        );
+        return null as If<E, GuildBasedChannel, GuildBasedChannel | null>;
     }
 
     public override postTransformValidation() {

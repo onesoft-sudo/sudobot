@@ -26,6 +26,8 @@ import { Buildable, Command, CommandMessage } from "@framework/commands/Command"
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import Duration from "@framework/datetime/Duration";
+import { ArgumentDefaultRules } from "@main/utils/ArgumentDefaultRules";
+import { ErrorMessages } from "@main/utils/ErrorMessages";
 import { GuildMember, PermissionFlagsBits } from "discord.js";
 import { Limits } from "../../constants/Limits";
 import InfractionManager from "../../services/InfractionManager";
@@ -41,9 +43,11 @@ type MuteCommandArgs = {
     names: ["member"],
     types: [GuildMemberArgument<true>],
     optional: false,
-    rules: {
-        "interaction:no_required_check": true
-    },
+    rules: [
+        {
+            "interaction:no_required_check": true
+        }
+    ],
     errorMessages: [
         {
             [ErrorType.EntityNotFound]: "The user you provided was not found.",
@@ -60,8 +64,14 @@ type MuteCommandArgs = {
     errorMessages: [
         {
             [ErrorType.InvalidType]: "Invalid reason or duration provided."
+        },
+        {
+            [ErrorType.InvalidType]: "Invalid reason or duration provided.",
+            [ErrorType.InvalidRange]: `The reason must be between 1 and ${Limits.Reason} characters long.`
         }
     ],
+    rules: [{}, ArgumentDefaultRules.Reason],
+    interactionRuleIndex: 0,
     interactionName: "duration",
     interactionType: DurationArgument
 })
@@ -69,11 +79,9 @@ type MuteCommandArgs = {
     names: ["reason"],
     types: [RestStringArgument],
     optional: true,
-    errorMessages: [
-        {
-            [ErrorType.InvalidType]: "Invalid reason provided."
-        }
-    ],
+    errorMessages: [ErrorMessages.Reason],
+    rules: [ArgumentDefaultRules.Reason],
+    interactionRuleIndex: 0,
     interactionName: "reason",
     interactionType: RestStringArgument
 })

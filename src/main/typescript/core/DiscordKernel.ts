@@ -69,6 +69,7 @@ class DiscordKernel extends Kernel {
         "@services/PermissionManagerService",
         "@services/QueueService",
         "@services/AuditLoggingService",
+        "@services/SystemAuditLoggingService",
         "@services/InfractionManager",
         "@services/ModerationActionService",
         "@automod/SpamModerationService",

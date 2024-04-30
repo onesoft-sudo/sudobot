@@ -19,7 +19,6 @@
 
 import type { ActivityType } from "discord.js";
 import { z } from "zod";
-import { zSnowflake } from "./SnowflakeSchema";
 
 type ApplicationActivityType = keyof typeof ActivityType;
 
@@ -96,11 +95,7 @@ export const SystemConfigSchema = z.object({
     logging: z
         .object({
             enabled: z.boolean().default(false),
-            channels: z
-                .object({
-                    echo_send_logs: zSnowflake.optional()
-                })
-                .optional()
+            webhook_url: z.string().url()
         })
         .optional(),
     statistics: z

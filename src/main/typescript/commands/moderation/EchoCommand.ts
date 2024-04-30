@@ -27,6 +27,7 @@ import { Inject } from "@framework/container/Inject";
 import DirectiveParseError from "@framework/directives/DirectiveParseError";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import DirectiveParsingService from "@main/services/DirectiveParsingService";
+import type SystemAuditLoggingService from "@main/services/SystemAuditLoggingService";
 import { APIEmbed, GuildBasedChannel, PermissionFlagsBits } from "discord.js";
 
 type EchoCommandArgs = {
@@ -42,6 +43,17 @@ type EchoCommandArgs = {
         {
             ...ChannelArgument.defaultErrors,
             [ErrorType.Required]: "You must specify the content of the message to send!"
+        },
+        {
+            [ErrorType.InvalidRange]: "The message must be between 1 and 4096 characters long.",
+            [ErrorType.Required]: "You must specify the content of the message to send!"
+        }
+    ],
+    rules: [
+        {},
+        {
+            "range:max": 4096,
+            "range:min": 1
         }
     ],
     interactionName: "channel",
@@ -51,6 +63,17 @@ type EchoCommandArgs = {
     names: ["content"],
     types: [RestStringArgument],
     optional: true,
+    errorMessages: [
+        {
+            [ErrorType.InvalidRange]: "The message must be between 1 and 4096 characters long."
+        }
+    ],
+    rules: [
+        {
+            "range:max": 4096,
+            "range:min": 1
+        }
+    ],
     interactionName: "content",
     interactionType: RestStringArgument
 })
@@ -69,6 +92,9 @@ class EchoCommand extends Command {
 
     @Inject("configManager")
     protected readonly configManager!: ConfigurationManager;
+
+    @Inject("systemAuditLogging")
+    protected readonly systemAuditLogging!: SystemAuditLoggingService;
 
     @Inject()
     protected readonly directiveParsingService!: DirectiveParsingService;
@@ -97,8 +123,6 @@ class EchoCommand extends Command {
     ): Promise<void> {
         const { content, channel } = args;
 
-        console.log(channel?.id, content);
-
         if (channel && !channel.isTextBased()) {
             return void context.error("You can only send messages to text channels.");
         }
@@ -111,22 +135,34 @@ class EchoCommand extends Command {
 
         try {
             const { data, output } = await this.directiveParsingService.parse(content);
+            const options = {
+                content: output.trim() === "" ? undefined : output,
+                embeds: (data.embeds as APIEmbed[]) ?? [],
+                allowedMentions:
+                    this.configManager.config[context.guildId]?.echoing?.allow_mentions !== false
+                        ? { parse: [], roles: [], users: [] }
+                        : undefined
+            };
 
             try {
-                await finalChannel.send({
-                    content: output.trim() === "" ? undefined : output,
-                    embeds: (data.embeds as APIEmbed[]) ?? [],
-                    allowedMentions:
-                        this.configManager.config[context.guildId]?.echoing?.allow_mentions !==
-                        false
-                            ? { parse: [], roles: [], users: [] }
-                            : undefined
-                });
+                await finalChannel.send(options);
             } catch (error) {
                 return void context.error(
                     "An error occurred while sending the message. Make sure I have the necessary permissions."
                 );
             }
+
+            if (context.isChatInput()) {
+                await context.success("Message sent successfully.");
+            }
+
+            this.systemAuditLogging.logEchoCommandExecuted({
+                command: this.name,
+                guild: context.guild,
+                rawCommandContent: content,
+                user: context.user,
+                generatedMessageOptions: options
+            });
         } catch (error) {
             return void context.error(
                 error instanceof DirectiveParseError

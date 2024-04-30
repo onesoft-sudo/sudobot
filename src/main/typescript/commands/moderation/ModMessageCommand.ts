@@ -24,6 +24,7 @@ import RestStringArgument from "@framework/arguments/RestStringArgument";
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import { ArgumentDefaultRules } from "@main/utils/ArgumentDefaultRules";
 import { GuildMember, PermissionFlagsBits } from "discord.js";
 import { Limits } from "../../constants/Limits";
 import InfractionManager from "../../services/InfractionManager";
@@ -49,9 +50,12 @@ type ModMessageCommandArgs = {
     errorMessages: [
         {
             [ErrorType.InvalidType]: "Invalid message content provided.",
-            [ErrorType.Required]: "You must provide a message to send to the member."
+            [ErrorType.Required]: "You must provide a message to send to the member.",
+            [ErrorType.InvalidRange]: `The message must be between 1 and ${Limits.Reason} characters long.`
         }
     ],
+    rules: [ArgumentDefaultRules.Reason],
+    interactionRuleIndex: 0,
     interactionName: "message",
     interactionType: RestStringArgument
 })

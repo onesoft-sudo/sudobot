@@ -24,6 +24,7 @@ import { Buildable, Command, CommandMessage } from "@framework/commands/Command"
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import { also } from "@framework/utils/utils";
+import { ArgumentDefaultRules } from "@main/utils/ArgumentDefaultRules";
 import { GuildMember, PermissionFlagsBits } from "discord.js";
 import { Colors } from "../../constants/Colors";
 import { Limits } from "../../constants/Limits";
@@ -44,7 +45,16 @@ type BeanCommandArgs = {
     interactionName: "member",
     interactionType: GuildMemberArgument<true>
 })
-@TakesArgument<BeanCommandArgs>("reason", RestStringArgument, true, [ErrorMessages.reason])
+@TakesArgument<BeanCommandArgs>({
+    names: ["reason"],
+    types: [RestStringArgument],
+    optional: true,
+    errorMessages: [ErrorMessages.Reason],
+    rules: [ArgumentDefaultRules.Reason],
+    interactionRuleIndex: 0,
+    interactionName: "reason",
+    interactionType: RestStringArgument
+})
 class BeanCommand extends Command {
     public override readonly name = "bean";
     public override readonly description = "Beans a member.";
