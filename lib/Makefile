@@ -39,21 +39,13 @@ lib: prepare $(TARGETS)
 	$(CC) -shared $(LDFLAGS) $(ALL_OBJECTS_WITHOUT_MAIN) -o $(BUILD_DIR)/lib/$(LIB) $(LIB_LDLIBS)
 
 $(TARGETS):
-	dir="$(readlink -f .)"; \
-	which realpath > /dev/null; \
-	if test "$$?" = "0"; then \
-		dir="$(shell realpath . --relative-to "$@")"; \
-	fi; \
+	dir="$$(readlink -f .)"; \
 	echo $(MAKE) -C $@ "TOP_SRCDIR=\"$${dir}\""; \
 	$(MAKE) -C $@ "TOP_SRCDIR=$${dir}"
 
 clean:
 	for t in $(TARGETS); do \
-		dir="$(readlink -f .)"; \
-		which realpath > /dev/null; \
-		if test "$$?" = "0"; then \
-			dir="$(shell realpath . --relative-to "$@")"; \
-		fi; \
+		dir="$$(readlink -f .)"; \
 		$(MAKE) -C "$$t" clean "TOP_SRCDIR=$$dir"; \
 		if test "$$?" != "0"; then \
 			exit 1; \
