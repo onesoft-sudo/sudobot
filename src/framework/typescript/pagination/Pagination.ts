@@ -15,7 +15,11 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Events } from "discord.js
 type FetcherReturn<T> = {
     data: Iterable<T>;
 };
-type DataFetcher<T> = () => Promise<FetcherReturn<T>>;
+type DataFetcherOptions = {
+    page: number;
+    limit: number;
+};
+type DataFetcher<T> = (options: DataFetcherOptions) => Promise<FetcherReturn<T>>;
 type BuilderOptions<T> = {
     readonly data: Iterable<T>;
     readonly pagination: Pagination<T>;
@@ -31,6 +35,7 @@ type MessageOptions = MessagePayload | MessageCreateOptions | string;
 type State = {
     page: number;
 };
+type InteractionCreateListener = (interaction: Interaction) => Awaitable<void>;
 
 class Pagination<T> {
     private static readonly DEFAULT_STATE: State = { page: 1 };
@@ -39,7 +44,7 @@ class Pagination<T> {
     private readonly id = Date.now().toString();
     private _fetcher?: DataFetcher<T>;
     private _cachedData?: Array<T>;
-    private _getCount?: () => Promise<number>;
+    private _getCount?: () => Awaitable<number>;
     private _limit: number = 10;
     private _builder?: MessageOptionsBuilder<T>;
     private _state: State = { ...Pagination.DEFAULT_STATE };
@@ -47,14 +52,21 @@ class Pagination<T> {
     private _timeout?: ReturnType<typeof setTimeout>;
     private _initialMessage?: Message;
     private _destroyed = false;
+    private _interactionCreateCustomListener?: InteractionCreateListener;
 
     private _actionRowBuilder: ActionRowBuilderCallback = row => [row];
     private _onInteractionHandler = (async (interaction: Interaction) => {
-        if (!interaction.isButton() || !interaction.customId.startsWith(this.customId)) {
+        if (!("customId" in interaction) || !interaction.customId.startsWith(this.customId)) {
             return;
         }
 
-        await interaction.deferUpdate();
+        if (this._interactionCreateCustomListener) {
+            await this._interactionCreateCustomListener(interaction);
+        }
+
+        if (!interaction.isButton()) {
+            return;
+        }
 
         const action = interaction.customId.substring(4 + this.id.length);
 
@@ -70,22 +82,35 @@ class Pagination<T> {
             this._state.page = 1;
         } else if (action === "last") {
             this._state.page = await this.calculateMaxPages();
+        } else {
+            return;
         }
 
-        const messageOptions = await this.getMessageOptions();
-        await interaction.message.edit(messageOptions as MessagePayload);
+        await this.update(interaction);
     }).bind(this);
 
     public constructor(protected readonly client: BaseClient = Application.current().client) {
         this.setup();
     }
 
-    private get customId() {
+    public get customId() {
         return `pg_${this.id}`;
     }
 
+    public async update(interaction: Extract<Interaction, { message: Message }>) {
+        const messageOptions = await this.getMessageOptions();
+
+        if (interaction.deferred) {
+            await interaction.message.edit(messageOptions as MessagePayload);
+        } else {
+            await interaction.update(messageOptions as InteractionUpdateOptions);
+        }
+    }
+
     private async getCount() {
-        const count = this._cachedData?.length ?? this._count ?? (await this._getCount?.());
+        const count = this._getCount
+            ? await this._getCount?.()
+            : this._count ?? this._cachedData?.length;
 
         if (count === undefined) {
             throw new Error("No count provided");
@@ -115,12 +140,17 @@ class Pagination<T> {
         return this;
     }
 
+    public setInteractionCreateListener(listener: InteractionCreateListener) {
+        this._interactionCreateCustomListener = listener;
+        return this;
+    }
+
     public setFetcher(fetcher: DataFetcher<T>): Pagination<T> {
         this._fetcher = fetcher;
         return this;
     }
 
-    public setCountGetter(getCount: () => Promise<number>): Pagination<T> {
+    public setCountGetter(getCount: () => Awaitable<number>): Pagination<T> {
         this._getCount = getCount;
         return this;
     }
@@ -155,7 +185,11 @@ class Pagination<T> {
             throw new Error("No fetcher provided");
         }
 
-        const { data } = await this._fetcher.call(undefined);
+        const { data } = await this._fetcher.call(undefined, {
+            limit: this._limit,
+            page: this._state.page
+        });
+
         this.setData(data);
 
         if (this._count === undefined) {
@@ -170,12 +204,16 @@ class Pagination<T> {
     }
 
     private async getSlice(page: number): Promise<Array<T>> {
-        if (!this._cachedData) {
-            throw new Error("No data provided");
+        const offset = this.calculateOffset(page);
+        const results = this._fetcher
+            ? await this.fetch()
+            : this._cachedData?.slice(offset, this._limit + offset);
+
+        if (!results) {
+            throw new Error("No data available");
         }
 
-        const offset = this.calculateOffset(page);
-        return (this._cachedData ?? (await this.fetch())).slice(offset, this._limit + offset);
+        return results;
     }
 
     public async getMessageOptions(): Promise<MessageOptions> {
@@ -194,9 +232,11 @@ class Pagination<T> {
         });
 
         if (typeof options === "object") {
-            (options as InteractionUpdateOptions).components = <
-                InteractionUpdateOptions["components"]
-            >await this._actionRowBuilder(await this.getActionRow());
+            const rows = await this._actionRowBuilder(await this.getActionRow());
+            (options as InteractionUpdateOptions).components ??= [];
+            (options as InteractionUpdateOptions).components?.push(
+                ...(rows as unknown as NonNullable<InteractionUpdateOptions["components"]>)
+            );
         }
 
         return options;
