@@ -31,6 +31,9 @@ class SendReplyCommand
     public override readonly detailedDescription: string =
         "Send a reply to the selected message, using an interactive modal.";
     public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly supportedContexts: ContextType.MessageContextMenu[] = [
+        ContextType.MessageContextMenu
+    ];
 
     @Inject("configManager")
     protected readonly configManager!: ConfigurationManager;

@@ -32,7 +32,8 @@ export enum LogEventType {
     MemberModeratorMessageAdd = "member_mod_message_add",
     UserNoteAdd = "user_note_add",
     MemberRoleModification = "member_role_modification",
-    SystemAutoModRuleModeration = "system_automod_rule_moderation"
+    SystemAutoModRuleModeration = "system_automod_rule_moderation",
+    SystemUserMessageSave = "system_user_message_save"
 }
 
 const LogEventSchema = z.enum(
@@ -64,6 +65,7 @@ export type LogEventArgs = {
     [LogEventType.MemberModeratorMessageAdd]: [payload: LogMemberModMessageAddPayload];
     [LogEventType.UserNoteAdd]: [payload: LogUserNoteAddPayload];
     [LogEventType.MemberRoleModification]: [payload: LogMemberRoleModificationPayload];
+    [LogEventType.SystemUserMessageSave]: [message: Message, moderator: User];
 };
 
 type LogModerationActionCommonPayload = {

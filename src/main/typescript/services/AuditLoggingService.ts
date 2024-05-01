@@ -92,7 +92,8 @@ class AuditLoggingService extends Service {
         [LogEventType.MemberModeratorMessageAdd]: this.logMemberModMessageAdd,
         [LogEventType.UserNoteAdd]: this.logUserNoteAdd,
         [LogEventType.MemberRoleModification]: this.logMemberRoleModification,
-        [LogEventType.SystemAutoModRuleModeration]: this.logMessageRuleModeration
+        [LogEventType.SystemAutoModRuleModeration]: this.logMessageRuleModeration,
+        [LogEventType.SystemUserMessageSave]: this.logSystemUserMessageSave
     };
 
     @Inject("configManager")
@@ -329,13 +330,13 @@ class AuditLoggingService extends Service {
         const defaultEnabled = config?.default_enabled ?? true;
 
         if (!config?.enabled) {
-            return;
+            return null;
         }
 
         const channel = this.channels.get(`${guildId}::${type}`);
 
         if ((defaultEnabled && channel === null) || (!defaultEnabled && !channel)) {
-            return;
+            return null;
         }
 
         return this.logHandlers[type].call(this, ...args);
@@ -927,7 +928,12 @@ class AuditLoggingService extends Service {
         });
     }
 
-    private async logMemberMassKick({ guild, moderator, members, reason }: LogMemberMassKickPayload) {
+    private async logMemberMassKick({
+        guild,
+        moderator,
+        members,
+        reason
+    }: LogMemberMassKickPayload) {
         const fields = [
             {
                 name: "Responsible Moderator",
@@ -1596,6 +1602,40 @@ class AuditLoggingService extends Service {
                 ]
             },
             eventType: LogEventType.MemberRoleModification
+        });
+    }
+
+    private async logSystemUserMessageSave(message: Message, moderator: User) {
+        return this.send({
+            guildId: message.guild!.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        title: "Message Saved",
+                        author: {
+                            name: message.author.username,
+                            icon_url: message.author.displayAvatarURL() ?? undefined
+                        },
+                        description: message.content,
+                        color: Colors.Green,
+                        timestamp: new Date().toISOString(),
+                        fields: [
+                            {
+                                name: "Saved By",
+                                value: userInfo(moderator)
+                            }
+                        ]
+                    }
+                ],
+                files: message.attachments.map(
+                    attachment =>
+                        ({
+                            attachment: attachment.proxyURL,
+                            name: attachment.name
+                        }) as AttachmentBuilder
+                )
+            },
+            eventType: LogEventType.SystemUserMessageSave
         });
     }
 }
