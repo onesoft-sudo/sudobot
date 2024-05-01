@@ -1,7 +1,15 @@
-import type { Stats} from "fs";
-import { close, closeSync, constants, existsSync, lstatSync, realpathSync } from "fs";
-import type { FileHandle} from "fs/promises";
-import { lstat, open, realpath } from "fs/promises";
+import type { Stats } from "fs";
+import {
+    close,
+    closeSync,
+    constants,
+    createReadStream,
+    existsSync,
+    lstatSync,
+    realpathSync
+} from "fs";
+import type { CreateReadStreamOptions, FileHandle } from "fs/promises";
+import { lstat, open, realpath, rm } from "fs/promises";
 import { basename, resolve } from "path";
 import FileSystem from "../polyfills/FileSystem";
 
@@ -102,6 +110,33 @@ export class File implements Disposable, AsyncDisposable {
         }
 
         return FileSystem.writeFileContents(this.path, contents, true);
+    }
+
+    public async delete() {
+        if (this.cache.handle) {
+            await this.cache.handle.close();
+        }
+
+        return rm(this.path);
+    }
+
+    public async deleteRecursive() {
+        if (this.cache.handle) {
+            await this.cache.handle.close();
+        }
+
+        return rm(this.path, { recursive: true });
+    }
+
+    public createReadStream(options?: CreateReadStreamOptions) {
+        if (this.cache.handle) {
+            return this.cache.handle.createReadStream(options);
+        }
+
+        return createReadStream(this.path, {
+            ...options,
+            encoding: options?.encoding ?? undefined
+        });
     }
 
     private attribute<K extends keyof Cache>(

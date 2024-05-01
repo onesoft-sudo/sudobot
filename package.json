@@ -50,9 +50,10 @@
         "test": "vitest"
     },
     "_moduleAliases": {
-        "@sudobot": "build",
-        "@framework": "build/framework/typescript",
-        "@main": "build/main/typescript"
+        "@sudobot": "build/out",
+        "@framework": "build/out/framework/typescript",
+        "@main": "build/out/main/typescript",
+        "@root": "."
     },
     "trustedDependencies": [
         "core-js"

@@ -20,7 +20,7 @@ class RunTask extends AbstractTask {
             if (process.argv.includes("--node")) {
                 await tasks.execute("build");
                 code =
-                    spawnSync("node", [`${project.buildDir}/main/typescript/index.js`], {
+                    spawnSync("node", [`${project.buildDir}/out/main/typescript/index.js`], {
                         stdio: "inherit"
                     }).status ?? -1;
             } else {

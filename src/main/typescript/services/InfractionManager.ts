@@ -30,7 +30,8 @@ import MassUnbanQueue from "@main/queues/MassUnbanQueue";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
 import { LogEventType } from "@main/types/LoggingSchema";
 import { Infraction, InfractionDeliveryStatus, InfractionType, PrismaClient } from "@prisma/client";
-import { formatDistanceToNowStrict } from "date-fns";
+import { AsciiTable3 } from "ascii-table3";
+import { formatDistanceStrict, formatDistanceToNowStrict } from "date-fns";
 import {
     APIEmbed,
     Awaitable,
@@ -38,6 +39,7 @@ import {
     ChannelType,
     Collection,
     Colors,
+    Guild,
     GuildMember,
     Message,
     MessageCreateOptions,
@@ -2132,7 +2134,109 @@ class InfractionManager extends Service {
             status: "success"
         };
     }
+
+    public async generatePlainTextExport({
+        columnsToInclude,
+        guild,
+        user,
+        onlyNotified = false
+    }: GeneratePlainTextExportOptions) {
+        const infractions = await this.application.prisma.infraction.findMany({
+            where: {
+                guildId: guild.id,
+                userId: user.id,
+                deliveryStatus: onlyNotified
+                    ? {
+                          not: InfractionDeliveryStatus.NOT_DELIVERED
+                      }
+                    : undefined
+            }
+        });
+
+        const table = new AsciiTable3("Infractions");
+
+        table.setHeading(
+            ...columnsToInclude.map(column => {
+                switch (column) {
+                    case "id":
+                        return "ID";
+                    case "type":
+                        return "Type";
+                    case "userId":
+                        return "User ID";
+                    case "reason":
+                        return "Reason";
+                    case "createdAt":
+                        return "Created At";
+                    case "expiresAt":
+                        return "Expires At";
+                    case "metadata":
+                        return "Metadata";
+                    case "deliveryStatus":
+                        return "Delivery Status";
+                    case "duration":
+                        return "Duration";
+                    default:
+                        throw new Error("Invalid column");
+                }
+            })
+        );
+
+        for (const infraction of infractions) {
+            const row: (string | Date | number | null)[] = columnsToInclude.map(column => {
+                switch (column) {
+                    case "id":
+                        return infraction.id;
+                    case "type":
+                        return this.prettifyInfractionType(infraction.type);
+                    case "userId":
+                        return infraction.userId;
+                    case "moderatorId":
+                        return infraction.moderatorId;
+                    case "reason":
+                        return infraction.reason ?? "None";
+                    case "createdAt":
+                        return infraction.createdAt;
+                    case "expiresAt":
+                        return infraction.expiresAt ?? "Never";
+                    case "metadata":
+                        return JSON.stringify(infraction.metadata);
+                    case "duration":
+                        return infraction.expiresAt
+                            ? formatDistanceStrict(infraction.expiresAt, infraction.createdAt)
+                            : "None";
+                    case "deliveryStatus":
+                        return infraction.deliveryStatus;
+                    default:
+                        throw new Error("Invalid column");
+                }
+            });
+
+            table.addRow(...row);
+        }
+
+        return { output: table.toString(), count: infractions.length };
+    }
 }
+
+export type GeneratePlainTextExportColumn =
+    | "id"
+    | "type"
+    | "duration"
+    | "userId"
+    | "moderatorId"
+    | "reason"
+    | "createdAt"
+    | "expiresAt"
+    | "metadata"
+    | "deliveryStatus";
+
+type GeneratePlainTextExportOptions = {
+    guild: Guild;
+    user: User;
+    columnsToInclude: GeneratePlainTextExportColumn[];
+    onlyNotified?: boolean;
+};
 
 type InfractionConfig = NonNullable<GuildConfig["infractions"]>;
 

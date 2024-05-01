@@ -54,7 +54,7 @@ class BuildTask extends AbstractTask {
             const tmpBuildDir = path.resolve(
                 `${this.blaze.projectManager.metadata.buildDir}/../_build.tmp`
             );
-            const targetDir = `${this.blaze.projectManager.metadata.buildDir}/src`;
+            const targetDir = `${this.blaze.projectManager.metadata.buildDir}/out/src`;
             const tscOutput = `${this.blaze.projectManager.metadata.buildDir}/out`;
 
             if (existsSync(tmpBuildDir)) {
