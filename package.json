@@ -42,7 +42,7 @@
         "start:blazew": "node build/out/main/typescript/bun.ts",
         "lint": "eslint src",
         "lint:fix": "eslint src --fix",
-        "build": "tsc && mv build/src _build && rm -fr build && mv _build build",
+        "build": "tsc && mv build/out/src _build && rm -fr build/out && mv _build build/out",
         "start:prod": "pm2 start ./ecosystem.config.js",
         "deploy": "node scripts/deploy-commands.js",
         "gen:schema": "node scripts/generate-config-schema.js",
