@@ -13,7 +13,7 @@ class DMHistoryCommand extends Command {
     public override readonly detailedDescription =
         "Sends you a full list of your infractions in this server. This includes all warnings, mutes, bans, and other types of infractions.";
     public override readonly defer = true;
-    public override readonly aliases = ["dmh", "sendhistory", "dminfs"];
+    public override readonly aliases = ["dmh", "dminfs"];
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;

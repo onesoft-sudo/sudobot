@@ -2176,6 +2176,10 @@ class InfractionManager extends Service {
                         return "Delivery Status";
                     case "duration":
                         return "Duration";
+                    case "updatedAt":
+                        return "Updated At";
+                    case "moderatorId":
+                        return "Moderator ID";
                     default:
                         throw new Error("Invalid column");
                 }
@@ -2197,6 +2201,8 @@ class InfractionManager extends Service {
                         return infraction.reason ?? "None";
                     case "createdAt":
                         return infraction.createdAt;
+                    case "updatedAt":
+                        return infraction.updatedAt;
                     case "expiresAt":
                         return infraction.expiresAt ?? "Never";
                     case "metadata":
@@ -2229,6 +2235,7 @@ export type GeneratePlainTextExportColumn =
     | "createdAt"
     | "expiresAt"
     | "metadata"
+    | "updatedAt"
     | "deliveryStatus";
 
 type GeneratePlainTextExportOptions = {
