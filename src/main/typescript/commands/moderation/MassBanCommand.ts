@@ -16,7 +16,6 @@ import {
     Snowflake,
     heading
 } from "discord.js";
-import { setTimeout } from "timers/promises";
 
 class MassBanCommand extends Command {
     public override readonly name = "massban";
@@ -29,7 +28,10 @@ class MassBanCommand extends Command {
     public override readonly options = {
         "-r, --reason": "The reason for the ban."
     };
-    public override readonly systemPermissions = [PermissionFlagsBits.BanMembers];
+    public override readonly systemPermissions = [
+        PermissionFlagsBits.BanMembers,
+        PermissionFlagsBits.ManageGuild
+    ];
     public override readonly aliases = ["mban"];
 
     @Inject()
@@ -192,11 +194,6 @@ class MassBanCommand extends Command {
 
         let message: Message;
 
-        const completed: Snowflake[] = [];
-        const failed: Snowflake[] = [];
-
-        let count = 0;
-
         await this.infractionManager.createUserMassBan({
             guildId: context.guildId,
             moderator: context.user,
@@ -204,42 +201,6 @@ class MassBanCommand extends Command {
             reason,
             deletionTimeframe,
             duration,
-            onBanAttempt: async () => {
-                if (count % 20 === 0) {
-                    await setTimeout(3000);
-                }
-
-                count++;
-
-                if (count % 10 === 0) {
-                    await message.edit({
-                        embeds: [
-                            this.generateEmbed({
-                                context,
-                                completed,
-                                failed,
-                                pending: userIds.filter(
-                                    id => !completed.includes(id) || failed.includes(id)
-                                ),
-                                reason,
-                                duration,
-                                deletionTimeframe,
-                                total: userIds.length,
-                                errors
-                            })
-                        ]
-                    });
-                }
-            },
-            onBanSuccess(user) {
-                completed.push(user.id);
-            },
-            onBanFail(user) {
-                failed.push(user.id);
-            },
-            onInvalidUser(userId) {
-                errors.push(`__Invalid user ID__: ${userId}`);
-            },
             onMassBanStart: async () => {
                 message = await context.reply({
                     embeds: [
@@ -257,19 +218,20 @@ class MassBanCommand extends Command {
                     ]
                 });
             },
-            onMassBanComplete: async () => {
+            onMassBanComplete: async (bannedUsers, failedUsers, _, errorType) => {
                 await message.edit({
                     embeds: [
                         this.generateEmbed({
                             context,
-                            completed,
-                            failed,
+                            completed: bannedUsers,
+                            failed: failedUsers,
                             pending: [],
                             reason,
                             duration,
                             deletionTimeframe,
                             total: userIds.length,
-                            errors
+                            errors,
+                            errorType
                         })
                     ]
                 });
@@ -286,30 +248,46 @@ class MassBanCommand extends Command {
         duration,
         reason,
         total,
-        errors
+        errors,
+        errorType
     }: GenerateEmbedOptions) {
         let description =
             heading(
-                pending.length === 0
-                    ? `${context.emoji("check")} Mass banned ${completed.length}/${total} users`
-                    : `${context.emoji("loading")} Mass Banning ${total} users`,
+                errorType
+                    ? `${context.emoji("error")} Error banning the users`
+                    : pending.length === 0
+                      ? `${context.emoji("check")} Mass banned ${completed.length}/${total} users`
+                      : `${context.emoji("loading")} Mass Banning ${total} users`,
                 HeadingLevel.Two
             ) + "\n";
 
-        if (pending.length) {
-            description += `Banning **${completed.length}/${total}** users...\n\n`;
-        }
+        if (errorType) {
+            if (errorType === "failed_to_ban") {
+                description +=
+                    "Couldn't ban any of the given users. Maybe they're already banned.\n";
+            } else {
+                description += "Couldn't ban any of the given users: Discord returned an error.\n";
+            }
+        } else {
+            if (pending.length) {
+                description += `Banning **${completed.length}/${total}** users...\n\n`;
+            }
 
-        for (const id of failed) {
-            description += `${context.emoji("error")} <@${id}> - **Failed**\n`;
-        }
+            for (const id of failed) {
+                description += `${context.emoji("error")} <@${id}> - **Failed**\n`;
+            }
 
-        for (const id of completed) {
-            description += `${context.emoji("check")} <@${id}> - **Banned**\n`;
-        }
+            for (const id of completed) {
+                description += `${context.emoji("check")} <@${id}> - **Banned**\n`;
+            }
 
-        for (const id of pending) {
-            description += `${context.emoji("loading")} <@${id}> - Pending\n`;
+            for (const id of pending) {
+                description += `${context.emoji("loading")} <@${id}> - Pending\n`;
+            }
+
+            if (failed.length) {
+                description += "\n\n__Bans may fail if the users are already banned.__\n";
+            }
         }
 
         const fields = [
@@ -350,8 +328,8 @@ class MassBanCommand extends Command {
             description:
                 description.slice(0, 4000) +
                 (description.length > 4000 ? "\n(... more results were omitted)" : ""),
-            fields,
-            color: pending.length === 0 ? Colors.Green : Colors.Primary
+            fields: errorType ? undefined : fields,
+            color: errorType ? Colors.Red : pending.length === 0 ? Colors.Green : Colors.Primary
         } as APIEmbed;
     }
 }
@@ -366,6 +344,7 @@ type GenerateEmbedOptions = {
     deletionTimeframe?: Duration;
     total: number;
     errors: string[];
+    errorType?: string;
 };
 
 export default MassBanCommand;

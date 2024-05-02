@@ -39,6 +39,7 @@ import {
     ChannelType,
     Collection,
     Colors,
+    DiscordAPIError,
     Guild,
     GuildMember,
     Message,
@@ -1931,12 +1932,9 @@ class InfractionManager extends Service {
             guildId,
             deletionTimeframe,
             duration,
-            onBanFail,
-            onBanSuccess,
-            onInvalidUser,
             onMassBanComplete,
             onMassBanStart,
-            onBanAttempt
+            onError
         } = payload;
         let { reason } = payload;
 
@@ -1950,58 +1948,79 @@ class InfractionManager extends Service {
             };
         }
 
+        if (userResolvables.length > 200) {
+            return {
+                status: "failed",
+                errorType: "too_many_users"
+            };
+        }
+
         await onMassBanStart?.();
 
-        const users: User[] = [];
-        const userIds: Snowflake[] = [];
+        const bannedUsers: Snowflake[] = [];
+        const failedUsers: Snowflake[] = [];
+        const allUsers = userResolvables.map(resolvable =>
+            typeof resolvable === "string" ? resolvable : resolvable.id
+        );
         const prismaInfractionCreatePayload: InfractionCreatePrismaPayload[] = [];
 
-        await Promise.all(
-            userResolvables.map(async resolvable => {
-                await onBanAttempt?.(typeof resolvable === "string" ? resolvable : resolvable.id);
-
-                const user =
-                    typeof resolvable === "string"
-                        ? await fetchUser(this.client, resolvable)
-                        : resolvable;
-
-                if (!user) {
-                    await onInvalidUser?.(
-                        typeof resolvable === "string" ? resolvable : resolvable.id
-                    );
-                    return;
+        try {
+            const response = (await this.client.rest.post(
+                `/guilds/${encodeURIComponent(guild.id)}/bulk-ban`,
+                {
+                    reason: `${moderator.username} - ${reason ?? "No reason provided"}`,
+                    body: {
+                        user_ids: allUsers,
+                        delete_message_seconds: deletionTimeframe?.toSeconds("floor")
+                    }
                 }
+            )) as {
+                banned_users: Snowflake[];
+                failed_users: Snowflake[];
+            };
 
-                users.push(user);
-                userIds.push(user.id);
+            console.log(response);
 
-                try {
-                    await guild.bans.create(user, {
-                        reason: `${moderator.username} - ${reason ?? "No reason provided"}`,
-                        deleteMessageSeconds: deletionTimeframe?.toMilliseconds()
-                    });
+            bannedUsers.push(...response.banned_users);
+            failedUsers.push(...response.failed_users);
+        } catch (error) {
+            this.application.logger.error("Bulk ban error", error);
 
-                    await onBanSuccess?.(user);
-
-                    prismaInfractionCreatePayload.push({
-                        guildId,
-                        moderatorId: moderator.id,
-                        type: InfractionType.MASSBAN,
-                        userId: user.id,
-                        reason,
-                        expiresAt: duration?.fromNow(),
-                        metadata: {
-                            deletionTimeframe: deletionTimeframe?.fromNowMilliseconds(),
-                            duration: duration?.fromNowMilliseconds()
-                        },
-                        deliveryStatus: InfractionDeliveryStatus.NOT_DELIVERED
-                    });
-                } catch (error) {
-                    this.application.logger.error(error);
-                    await onBanFail?.(user);
+            if (error instanceof DiscordAPIError) {
+                if (error.code === 500000) {
+                    onError?.("failed_to_ban");
+                    onMassBanComplete?.([], allUsers, allUsers, "failed_to_ban");
+                    return {
+                        status: "failed",
+                        errorType: "failed_to_ban"
+                    };
                 }
-            })
-        );
+            }
+
+            onError?.("bulk_ban_failed");
+            onMassBanComplete?.([], allUsers, allUsers, "bulk_ban_failed");
+            
+            return {
+                status: "failed",
+                errorType: "bulk_ban_failed"
+            };
+        }
+
+        for (const userId of bannedUsers) {
+            prismaInfractionCreatePayload.push({
+                guildId,
+                moderatorId: moderator.id,
+                type: InfractionType.MASSBAN,
+                userId,
+                reason,
+                expiresAt: duration?.fromNow(),
+                metadata: {
+                    deletionTimeframe: deletionTimeframe?.fromNowMilliseconds(),
+                    duration: duration?.fromNowMilliseconds()
+                },
+                deliveryStatus: InfractionDeliveryStatus.NOT_DELIVERED
+            });
+        }
 
         if (prismaInfractionCreatePayload.length > 0) {
             this.application.prisma.infraction
@@ -2016,7 +2035,7 @@ class InfractionManager extends Service {
                 guild,
                 moderator,
                 reason,
-                users,
+                users: bannedUsers,
                 deletionTimeframe,
                 duration
             })
@@ -2026,14 +2045,14 @@ class InfractionManager extends Service {
             this.queueService.create(MassUnbanQueue, {
                 data: {
                     guildId,
-                    userIds
+                    userIds: bannedUsers
                 },
                 guildId,
                 runsAt: duration.fromNow()
             });
         }
 
-        await onMassBanComplete?.(users);
+        await onMassBanComplete?.(bannedUsers, failedUsers, allUsers);
         return {
             status: "success"
         };
@@ -2315,12 +2334,14 @@ type CreateUserMassBanPayload = {
     users: Array<Snowflake | User>;
     deletionTimeframe?: Duration;
     duration?: Duration;
-    onBanAttempt?(userId: Snowflake): Awaitable<void>;
-    onBanSuccess?(user: User): Awaitable<void>;
-    onBanFail?(user: User): Awaitable<void>;
-    onInvalidUser?(userId: Snowflake): Awaitable<void>;
-    onMassBanComplete?(users: User[]): Awaitable<void>;
+    onMassBanComplete?(
+        bannedUsers: Snowflake[],
+        failedUsers: Snowflake[],
+        allUsers: Snowflake[],
+        errorType?: string
+    ): Awaitable<void>;
     onMassBanStart?(): Awaitable<void>;
+    onError?(type: string): Awaitable<void>;
 };
 
 type CreateUserMassKickPayload = {
