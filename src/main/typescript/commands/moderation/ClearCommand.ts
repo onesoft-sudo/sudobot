@@ -199,7 +199,7 @@ class ClearCommand extends Command {
             }
         }
 
-        await this.infractionManager.createClearMessages({
+        const result = await this.infractionManager.createClearMessages({
             guildId: context.guildId,
             moderator: context.user,
             user,
@@ -213,6 +213,11 @@ class ClearCommand extends Command {
             respond: true,
             filters
         });
+
+        if (result.status === "failed") {
+            await context.error(result.errorDescription ?? "Failed to perform this action.");
+            return;
+        }
 
         if (context.isChatInput()) {
             await context.success("Operation completed.");

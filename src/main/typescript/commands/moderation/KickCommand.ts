@@ -104,7 +104,7 @@ class KickCommand extends Command {
             return;
         }
 
-        const { overviewEmbed, status } = await this.infractionManager.createKick({
+        const result = await this.infractionManager.createKick({
             guildId: context.guildId,
             moderator: context.user,
             reason,
@@ -113,12 +113,12 @@ class KickCommand extends Command {
             notify: !context.isChatInput() || context.options.getBoolean("notify") !== false
         });
 
-        if (status === "failed") {
-            await context.error("Failed to kick member.");
+        if (result.status === "failed") {
+            await context.error(result.errorDescription ?? "Failed to kick member.");
             return;
         }
 
-        await context.reply({ embeds: [overviewEmbed] });
+        await context.reply({ embeds: [result.overviewEmbed] });
     }
 }
 

@@ -109,7 +109,8 @@ class UnbanCommand extends Command {
             }
 
             await context.error(
-                `Failed to unban the user. Maybe I don't have the permissions to do so. Error code: ${result.errorType ?? "unknown"}`
+                result.errorDescription ??
+                    `Failed to unban the user. Maybe I don't have the permissions to do so. Error code: ${result.errorType ?? "unknown"}`
             );
 
             return;

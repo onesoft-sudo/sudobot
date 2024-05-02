@@ -167,7 +167,7 @@ class RoleCommand extends Command {
             return;
         }
 
-        const { overviewEmbed, status } = await this.infractionManager.createRoleModification({
+        const result = await this.infractionManager.createRoleModification({
             guildId: context.guildId,
             moderator: context.user,
             reason: context.isChatInput()
@@ -185,12 +185,12 @@ class RoleCommand extends Command {
             duration
         });
 
-        if (status === "failed") {
-            await context.error("Failed to complete the operation.");
+        if (result.status === "failed") {
+            await context.error(result.errorDescription ?? "Failed to complete the operation.");
             return;
         }
 
-        await context.reply({ embeds: [overviewEmbed] });
+        await context.reply({ embeds: [result.overviewEmbed] });
     }
 }
 

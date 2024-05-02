@@ -201,7 +201,7 @@ class BanCommand extends Command {
             return;
         }
 
-        const { overviewEmbed, status } = await this.infractionManager.createBan({
+        const result = await this.infractionManager.createBan({
             guildId: context.guildId,
             moderator: context.user,
             reason,
@@ -212,15 +212,18 @@ class BanCommand extends Command {
             notify: !context.isChatInput() || context.options.getBoolean("notify") !== false
         });
 
-        if (status === "failed") {
-            await context.error("Failed to ban user. Maybe I don't have the permissions to do so.");
+        if (result.status === "failed") {
+            await context.error(
+                result.errorDescription ??
+                    "Failed to ban user. Maybe I don't have the permissions to do so."
+            );
             return;
         }
 
         await context.reply({
             embeds: [
                 also(
-                    overviewEmbed,
+                    result.overviewEmbed,
                     embed =>
                         void embed.fields?.push({
                             name: "Message Deletion Timeframe",

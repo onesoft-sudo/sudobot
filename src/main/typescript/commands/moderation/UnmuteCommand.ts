@@ -136,7 +136,8 @@ class UnmuteCommand extends Command {
             }
 
             await context.error(
-                `Failed to mute the user. Maybe I don't have the permissions to do so. Error code: ${result.errorType}`
+                result.errorDescription ??
+                    `Failed to mute the user. Maybe I don't have the permissions to do so. Error code: ${result.errorType}`
             );
 
             return;

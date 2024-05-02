@@ -20,6 +20,7 @@
 import CommandAbortedError from "@framework/commands/CommandAbortedError";
 import { Inject } from "@framework/container/Inject";
 import Duration from "@framework/datetime/Duration";
+import APIErrors from "@framework/errors/APIErrors";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { emoji } from "@framework/utils/emoji";
@@ -95,6 +96,20 @@ class InfractionManager extends Service {
 
     @Inject("auditLoggingService")
     private readonly auditLoggingService!: AuditLoggingService;
+
+    private createError<E extends boolean>(result: InfractionCreateResult<E>) {
+        const clone = { ...result };
+
+        if (clone.status === "failed" && clone.errorType === "api_error") {
+            clone.errorDescription ??= APIErrors.translateToMessage(clone.code);
+
+            if (clone.errorDescription !== "An unknown error has occurred") {
+                clone.errorDescription = `Error: ${clone.errorDescription}`;
+            }
+        }
+
+        return clone;
+    }
 
     public processReason(guildId: Snowflake, reason: string | undefined, abortOnNotFound = true) {
         if (!reason?.length) {
@@ -780,7 +795,8 @@ class InfractionManager extends Service {
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null
+                overviewEmbed: null,
+                code: 0
             };
         }
 
@@ -811,12 +827,26 @@ class InfractionManager extends Service {
         });
 
         try {
-            await guild.bans.create(user, {
-                reason: `${moderator.username} - ${infraction.reason ?? "No reason provided"}`,
-                deleteMessageSeconds: payload.deletionTimeframe
-                    ? payload.deletionTimeframe.toSeconds("floor")
-                    : undefined
-            });
+            try {
+                await guild.bans.create(user, {
+                    reason: `${moderator.username} - ${infraction.reason ?? "No reason provided"}`,
+                    deleteMessageSeconds: payload.deletionTimeframe
+                        ? payload.deletionTimeframe.toSeconds("floor")
+                        : undefined
+                });
+            } catch (error) {
+                if (isDiscordAPIError(error)) {
+                    return this.createError({
+                        status: "failed",
+                        infraction: null,
+                        overviewEmbed: null,
+                        errorType: "api_error",
+                        code: +error.code
+                    });
+                }
+
+                throw error;
+            }
 
             await this.queueService.bulkCancel(UnbanQueue, queue => {
                 return queue.data.userId === user.id && queue.data.guildId === guild.id;
@@ -841,7 +871,8 @@ class InfractionManager extends Service {
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null
+                overviewEmbed: null,
+                code: 0
             };
         }
 
@@ -877,7 +908,8 @@ class InfractionManager extends Service {
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null
+                overviewEmbed: null,
+                code: 0
             };
         }
 
@@ -899,20 +931,22 @@ class InfractionManager extends Service {
         } catch (error) {
             this.application.logger.error(error);
 
-            if (isDiscordAPIError(error) && error.code === 10026) {
-                return {
+            if (isDiscordAPIError(error)) {
+                return this.createError({
                     status: "failed",
                     infraction: null,
                     overviewEmbed: null,
-                    errorType: "unknown_ban"
-                };
+                    errorType: error.code === 10026 ? "unknown_ban" : "api_Error",
+                    code: +error.code
+                });
             }
 
             return {
                 status: "failed",
                 infraction: null,
                 overviewEmbed: null,
-                errorType: "unban_failed"
+                errorType: "unban_failed",
+                code: 0
             };
         }
 
@@ -942,7 +976,8 @@ class InfractionManager extends Service {
                 status: "failed",
                 infraction: null,
                 overviewEmbed: null,
-                errorType: "queue_cancel_failed"
+                errorType: "queue_cancel_failed",
+                code: 0
             };
         }
 
@@ -984,7 +1019,8 @@ class InfractionManager extends Service {
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null
+                overviewEmbed: null,
+                code: 0
             };
         }
 
@@ -1005,10 +1041,21 @@ class InfractionManager extends Service {
         } catch (error) {
             this.application.logger.error(error);
 
+            if (isDiscordAPIError(error)) {
+                return this.createError({
+                    status: "failed",
+                    infraction: null,
+                    overviewEmbed: null,
+                    errorType: "api_error",
+                    code: +error.code
+                });
+            }
+
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null
+                overviewEmbed: null,
+                code: 0
             };
         }
 
@@ -1056,7 +1103,8 @@ class InfractionManager extends Service {
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null
+                overviewEmbed: null,
+                code: 0
             };
         }
 
@@ -1069,7 +1117,8 @@ class InfractionManager extends Service {
                 infraction: null,
                 overviewEmbed: null,
                 errorType: "role_not_found",
-                errorDescription: "Muted role not found"
+                errorDescription: "Muted role not found!",
+                code: 0
             };
         }
 
@@ -1081,7 +1130,8 @@ class InfractionManager extends Service {
                 infraction: null,
                 overviewEmbed: null,
                 errorType: "cannot_mute_a_bot",
-                errorDescription: "Cannot mute a bot in timeout mode!"
+                errorDescription: "Cannot mute a bot in timeout mode!",
+                code: 0
             };
         }
 
@@ -1091,7 +1141,8 @@ class InfractionManager extends Service {
                 infraction: null,
                 overviewEmbed: null,
                 errorType: "cannot_moderate",
-                errorDescription: "This member cannot be moderated by me"
+                errorDescription: "This member cannot be moderated by me!",
+                code: 0
             };
         }
 
@@ -1101,7 +1152,8 @@ class InfractionManager extends Service {
                 infraction: null,
                 overviewEmbed: null,
                 errorType: "invalid_duration",
-                errorDescription: "Must provide duration when timing out"
+                errorDescription: "Must provide duration when timing out!",
+                code: 0
             };
         }
 
@@ -1111,7 +1163,8 @@ class InfractionManager extends Service {
                 infraction: null,
                 overviewEmbed: null,
                 errorType: "invalid_duration",
-                errorDescription: "Duration must be less than 28 days when timing out"
+                errorDescription: "Duration must be less than 28 days when timing out!",
+                code: 0
             };
         }
 
@@ -1121,7 +1174,8 @@ class InfractionManager extends Service {
                 infraction: null,
                 overviewEmbed: null,
                 errorType: "cannot_manage",
-                errorDescription: "This member cannot be managed by me"
+                errorDescription: "This member cannot be managed by me!",
+                code: 0
             };
         }
 
@@ -1134,7 +1188,8 @@ class InfractionManager extends Service {
                 infraction: null,
                 overviewEmbed: null,
                 errorType: "already_muted",
-                errorDescription: "This member is already muted."
+                errorDescription: "This member is already muted.",
+                code: 0
             };
         }
 
@@ -1154,10 +1209,21 @@ class InfractionManager extends Service {
         } catch (error) {
             this.application.logger.error(error);
 
+            if (isDiscordAPIError(error)) {
+                return this.createError({
+                    status: "failed",
+                    infraction: null,
+                    overviewEmbed: null,
+                    errorType: "api_error",
+                    code: +error.code
+                });
+            }
+
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null
+                overviewEmbed: null,
+                code: 0
             };
         }
 
@@ -1245,7 +1311,8 @@ class InfractionManager extends Service {
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null
+                overviewEmbed: null,
+                code: 0
             };
         }
 
@@ -1269,7 +1336,8 @@ class InfractionManager extends Service {
                 infraction: null,
                 overviewEmbed: null,
                 errorType: "permission",
-                errorDescription: "Member is not manageable"
+                errorDescription: "Member is not manageable by me!",
+                code: 0
             };
         }
 
@@ -1279,7 +1347,8 @@ class InfractionManager extends Service {
                 infraction: null,
                 overviewEmbed: null,
                 errorType: "permission",
-                errorDescription: "Member is not moderatable"
+                errorDescription: "Member is not moderatable by me!",
+                code: 0
             };
         }
 
@@ -1289,7 +1358,8 @@ class InfractionManager extends Service {
                 infraction: null,
                 overviewEmbed: null,
                 errorType: "role_not_found",
-                errorDescription: "Muted role not found"
+                errorDescription: "Muted role not found!",
+                code: 0
             };
         }
 
@@ -1302,7 +1372,8 @@ class InfractionManager extends Service {
                 infraction: null,
                 overviewEmbed: null,
                 errorType: "not_muted",
-                errorDescription: "This member is not muted"
+                errorDescription: "This member is not muted!",
+                code: 0
             };
         }
 
@@ -1331,10 +1402,21 @@ class InfractionManager extends Service {
         } catch (error) {
             this.application.logger.error(error);
 
+            if (isDiscordAPIError(error)) {
+                return this.createError({
+                    status: "failed",
+                    infraction: null,
+                    overviewEmbed: null,
+                    errorType: "api_error",
+                    code: +error.code
+                });
+            }
+
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null
+                overviewEmbed: null,
+                code: 0
             };
         }
 
@@ -1440,7 +1522,8 @@ class InfractionManager extends Service {
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null
+                overviewEmbed: null,
+                code: 0
             };
         }
 
@@ -1463,7 +1546,8 @@ class InfractionManager extends Service {
                 infraction: null,
                 overviewEmbed: null,
                 errorType: "permission",
-                errorDescription: "Member is not manageable"
+                errorDescription: "Member is not manageable by me!",
+                code: 0
             };
         }
 
@@ -1478,10 +1562,21 @@ class InfractionManager extends Service {
         } catch (error) {
             this.application.logger.error(error);
 
+            if (isDiscordAPIError(error)) {
+                return this.createError({
+                    status: "failed",
+                    infraction: null,
+                    overviewEmbed: null,
+                    errorType: "api_error",
+                    code: +error.code
+                });
+            }
+
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null
+                overviewEmbed: null,
+                code: 0
             };
         }
 
@@ -1592,7 +1687,8 @@ class InfractionManager extends Service {
         if (!guild) {
             return {
                 status: "failed",
-                overviewEmbed: null
+                overviewEmbed: null,
+                code: 0
             };
         }
 
@@ -1646,9 +1742,22 @@ class InfractionManager extends Service {
         } catch (error) {
             this.application.logger.error(error);
 
+            if (isDiscordAPIError(error)) {
+                const code = +error.code;
+
+                return {
+                    status: "failed",
+                    overviewEmbed: null,
+                    errorType: "api_error",
+                    code,
+                    errorDescription: APIErrors.translateToMessage(code)
+                };
+            }
+
             return {
                 status: "failed",
-                overviewEmbed: null
+                overviewEmbed: null,
+                code: 0
             };
         }
 
@@ -1683,7 +1792,8 @@ class InfractionManager extends Service {
 
         return {
             status: "success",
-            count: finalCount
+            count: finalCount,
+            infraction
         };
     }
 
@@ -1706,7 +1816,8 @@ class InfractionManager extends Service {
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null
+                overviewEmbed: null,
+                code: 0
             };
         }
 
@@ -1757,7 +1868,8 @@ class InfractionManager extends Service {
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null
+                overviewEmbed: null,
+                code: 0
             };
         }
 
@@ -1798,7 +1910,8 @@ class InfractionManager extends Service {
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null
+                overviewEmbed: null,
+                code: 0
             };
         }
     }
@@ -1821,7 +1934,8 @@ class InfractionManager extends Service {
             return {
                 status: "failed",
                 infraction: null,
-                overviewEmbed: null
+                overviewEmbed: null,
+                code: 0
             };
         }
 
@@ -1986,20 +2100,19 @@ class InfractionManager extends Service {
         } catch (error) {
             this.application.logger.error("Bulk ban error", error);
 
-            if (error instanceof DiscordAPIError) {
-                if (error.code === 500000) {
-                    onError?.("failed_to_ban");
-                    onMassBanComplete?.([], allUsers, allUsers, "failed_to_ban");
-                    return {
-                        status: "failed",
-                        errorType: "failed_to_ban"
-                    };
-                }
+            if (error instanceof DiscordAPIError && error.code === 500000) {
+                onError?.("failed_to_ban");
+                onMassBanComplete?.([], allUsers, allUsers, "failed_to_ban");
+
+                return {
+                    status: "failed",
+                    errorType: "failed_to_ban"
+                };
             }
 
             onError?.("bulk_ban_failed");
             onMassBanComplete?.([], allUsers, allUsers, "bulk_ban_failed");
-            
+
             return {
                 status: "failed",
                 errorType: "bulk_ban_failed"
@@ -2382,12 +2495,14 @@ type InfractionCreateResult<E extends boolean = false> =
           overviewEmbed: null;
           errorType?: string;
           errorDescription?: string;
+          code: number;
       };
 
 type MessageBulkDeleteResult =
     | {
           status: "success";
           count: number;
+          infraction?: Infraction;
       }
     | Omit<Extract<InfractionCreateResult<false>, { status: "failed" }>, "infraction">;
 
