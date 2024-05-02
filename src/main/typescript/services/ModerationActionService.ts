@@ -55,7 +55,7 @@ class ModerationActionService extends Service {
 
             if (result?.status !== "success") {
                 failedActions.push(action.type);
-            } else if (result && "infraction" in result) {
+            } else if (result && "infraction" in result && result.infraction) {
                 infractions.push(result.infraction);
             }
         }
