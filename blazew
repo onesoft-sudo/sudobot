@@ -205,7 +205,7 @@ setup_bun() {
         args=()
 
         if [ "$bun_version" != "latest" ]; then
-            args=(-s "bun-v$bun_version")
+            args=("-s" "bun-v$bun_version")
         fi
 
         mkdir -p "$bun_dir"
