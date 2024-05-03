@@ -23,6 +23,7 @@ enum InfractionType {
     NOTE
     ROLE
     MOD_MESSAGE
+    SHOT
 }
 
 enum InfractionDeliveryStatus {

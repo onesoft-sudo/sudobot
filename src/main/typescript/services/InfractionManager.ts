@@ -85,7 +85,8 @@ class InfractionManager extends Service {
         [InfractionType.TIMEOUT]: "timed out",
         [InfractionType.TIMEOUT_REMOVE]: "removed timeout",
         [InfractionType.ROLE]: "modified roles",
-        [InfractionType.MOD_MESSAGE]: "sent a moderator message"
+        [InfractionType.MOD_MESSAGE]: "sent a moderator message",
+        [InfractionType.SHOT]: "given a shot"
     };
 
     @Inject()
@@ -776,6 +777,53 @@ class InfractionManager extends Service {
             user,
             notify
         });
+
+        return {
+            status: "success",
+            infraction,
+            overviewEmbed: (generateOverviewEmbed
+                ? this.createOverviewEmbed(infraction, user, moderator)
+                : undefined) as E extends true ? APIEmbed : undefined
+        };
+    }
+
+    public async createShot<E extends boolean>(
+        payload: CreateShotPayload<E>
+    ): Promise<InfractionCreateResult<E>> {
+        const {
+            moderator,
+            user,
+            reason,
+            guildId,
+            generateOverviewEmbed,
+            transformNotificationEmbed,
+            notify = true
+        } = payload;
+
+        const infraction: Infraction = {
+            id: Math.round(Math.random() * 5000),
+            guildId,
+            moderatorId: moderator.id,
+            userId: user.id,
+            reason: this.processReason(guildId, reason),
+            type: InfractionType.SHOT,
+            deliveryStatus: InfractionDeliveryStatus.NOT_DELIVERED,
+            createdAt: new Date(),
+            queueId: null,
+            updatedAt: new Date(),
+            expiresAt: null,
+            metadata: null
+        };
+
+        if (notify) {
+            const status = await this.notify(user, infraction, transformNotificationEmbed);
+            infraction.deliveryStatus =
+                status === "notified"
+                    ? InfractionDeliveryStatus.SUCCESS
+                    : status === "fallback"
+                      ? InfractionDeliveryStatus.FALLBACK
+                      : InfractionDeliveryStatus.FAILED;
+        }
 
         return {
             status: "success",
@@ -2047,11 +2095,11 @@ class InfractionManager extends Service {
                 value: infraction.reason ?? italic("No reason provided")
             },
             {
-                name: "User",
+                name: infraction.type === InfractionType.SHOT ? "Patient" : "User",
                 value: userInfo(user)
             },
             {
-                name: "Moderator",
+                name: infraction.type === InfractionType.SHOT ? "💉 Doctor" : "Moderator",
                 value: userInfo(moderator)
             }
         ];
@@ -2098,7 +2146,9 @@ class InfractionManager extends Service {
             fields,
             timestamp: new Date().toISOString(),
             color:
-                actionDoneName.startsWith("un") || actionDoneName === "bean"
+                actionDoneName.startsWith("un") ||
+                infraction.type === InfractionType.BEAN ||
+                infraction.type === InfractionType.SHOT
                     ? Colors.Green
                     : Colors.Red
         } satisfies APIEmbed;
@@ -2459,6 +2509,10 @@ type CommonOptions<E extends boolean> = {
 };
 
 type CreateBeanPayload<E extends boolean> = CommonOptions<E> & {
+    user: User;
+};
+
+type CreateShotPayload<E extends boolean> = CommonOptions<E> & {
     user: User;
 };
 
