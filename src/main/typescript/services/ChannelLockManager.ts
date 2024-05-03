@@ -2,7 +2,7 @@ import APIErrors from "@framework/errors/APIErrors";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { isDiscordAPIError } from "@framework/utils/errors";
-import { GuildBasedChannel, PermissionsString, ThreadChannel } from "discord.js";
+import { Guild, GuildBasedChannel, PermissionsString, Snowflake, ThreadChannel } from "discord.js";
 
 @Name("channelLockManager")
 class ChannelLockManager extends Service {
@@ -183,6 +183,193 @@ class ChannelLockManager extends Service {
         }
 
         return { status: "success" as const };
+    }
+
+    public async lockAll(guild: Guild) {
+        const lockRecords = [] as Array<{
+            guildId: Snowflake;
+            channelId: Snowflake;
+            permissions: {
+                allow: Array<PermissionsString>;
+                deny: Array<PermissionsString>;
+            };
+        }>;
+        let permissionErrors = 0,
+            alreadyLocked = 0,
+            success = 0,
+            skipped = 0;
+        const errors: string[] = [];
+
+        const channelLocks = await this.application.prisma.channelLock.findMany({
+            where: { guildId: guild.id }
+        });
+
+        for (const channel of guild.channels.cache.values()) {
+            if (channel.isThread()) {
+                continue;
+            }
+
+            if (channelLocks.find(lock => lock.channelId === channel.id)) {
+                alreadyLocked++;
+                continue;
+            }
+
+            if (!channel.manageable) {
+                permissionErrors++;
+                continue;
+            }
+
+            const overwrite = channel.permissionOverwrites.cache.get(guild.roles.everyone.id);
+
+            if (overwrite?.deny.has("ViewChannel")) {
+                skipped++;
+                continue;
+            }
+
+            try {
+                await channel.permissionOverwrites.edit(channel.guild.roles.everyone, {
+                    SendMessages: false,
+                    SendTTSMessages: false,
+                    SendVoiceMessages: false,
+                    SendMessagesInThreads: false,
+                    AddReactions: false,
+                    Speak: false,
+                    Connect: false,
+                    UseApplicationCommands: false
+                });
+            } catch (error) {
+                this.application.logger.error(error);
+
+                if (isDiscordAPIError(error)) {
+                    errors.push(`<@${channel.id}>: ${APIErrors.translateToMessage(+error.code)}`);
+                    permissionErrors++;
+                    continue;
+                }
+
+                errors.push(`<@${channel.id}>: An unknown error has occurred`);
+                continue;
+            }
+
+            lockRecords.push({
+                permissions: {
+                    allow: overwrite?.allow.toArray().filter(this.filter) ?? [],
+                    deny: overwrite?.deny.toArray().filter(this.filter) ?? []
+                },
+                channelId: channel.id,
+                guildId: channel.guild.id
+            });
+
+            success++;
+        }
+
+        await this.application.prisma.channelLock.createMany({ data: lockRecords });
+
+        return {
+            permissionErrors,
+            alreadyLocked,
+            success,
+            errors,
+            skipped,
+            total: guild.channels.cache.filter(channel => !channel.isThread()).size
+        };
+    }
+
+    public async unlockAll(guild: Guild) {
+        const lockRecords = [] as Array<number>;
+        let permissionErrors = 0,
+            notLocked = 0,
+            success = 0,
+            skipped = 0;
+        const errors: string[] = [];
+
+        const channelLocks = await this.application.prisma.channelLock.findMany({
+            where: { guildId: guild.id }
+        });
+
+        for (const channel of guild.channels.cache.values()) {
+            if (channel.isThread()) {
+                continue;
+            }
+
+            const channelLock = channelLocks.find(lock => lock.channelId === channel.id);
+
+            if (!channelLock) {
+                notLocked++;
+                continue;
+            }
+
+            if (!channel.manageable) {
+                permissionErrors++;
+                continue;
+            }
+
+            if (
+                channel.permissionOverwrites.cache
+                    .get(channel.guild.roles.everyone.id)
+                    ?.deny.has("ViewChannel")
+            ) {
+                skipped++;
+                continue;
+            }
+
+            try {
+                await channel.permissionOverwrites.edit(channel.guild.roles.everyone, {
+                    SendMessages: this.overwritePermissions(
+                        channelLock.permissions,
+                        "SendMessages"
+                    ),
+                    SendTTSMessages: this.overwritePermissions(
+                        channelLock.permissions,
+                        "SendTTSMessages"
+                    ),
+                    SendVoiceMessages: this.overwritePermissions(
+                        channelLock.permissions,
+                        "SendVoiceMessages"
+                    ),
+                    SendMessagesInThreads: this.overwritePermissions(
+                        channelLock.permissions,
+                        "SendMessagesInThreads"
+                    ),
+                    AddReactions: this.overwritePermissions(
+                        channelLock.permissions,
+                        "AddReactions"
+                    ),
+                    Speak: this.overwritePermissions(channelLock.permissions, "Speak"),
+                    Connect: this.overwritePermissions(channelLock.permissions, "Connect"),
+                    UseApplicationCommands: this.overwritePermissions(
+                        channelLock.permissions,
+                        "UseApplicationCommands"
+                    )
+                });
+            } catch (error) {
+                this.application.logger.error(error);
+
+                if (isDiscordAPIError(error)) {
+                    errors.push(`<@${channel.id}>: ${APIErrors.translateToMessage(+error.code)}`);
+                    permissionErrors++;
+                    continue;
+                }
+
+                errors.push(`<@${channel.id}>: An unknown error has occurred`);
+                continue;
+            }
+
+            lockRecords.push(channelLock.id);
+            success++;
+        }
+
+        await this.application.prisma.channelLock.deleteMany({
+            where: { id: { in: lockRecords } }
+        });
+
+        return {
+            permissionErrors,
+            notLocked,
+            success,
+            errors,
+            skipped,
+            total: guild.channels.cache.filter(channel => !channel.isThread()).size
+        };
     }
 }
 
