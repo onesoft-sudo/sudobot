@@ -104,8 +104,6 @@ export default class QueueEntry {
     }
 
     clearTimeout(deleteRecord: boolean = false) {
-        log(this.timeout);
-
         if (this.timeout === undefined) return;
 
         log("Queue timeout cleared: ", path.basename(this.options.filePath));

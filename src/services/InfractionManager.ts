@@ -496,7 +496,6 @@ export default class InfractionManager extends Service {
         });
 
         if (autoRemoveQueue) {
-            log("Auto remove", this.client.queueManager.queues);
             await this.autoRemoveUnbanQueue(guild, user).catch(logError);
         }
 
@@ -634,8 +633,6 @@ export default class InfractionManager extends Service {
     }
 
     private async autoRemoveUnbanQueue(guild: Guild, user: User) {
-        log("Auto remove", this.client.queueManager.queues);
-
         for (const queue of this.client.queueManager.queues.values()) {
             if (
                 queue.options.name === "UnbanQueue" &&
@@ -950,8 +947,6 @@ export default class InfractionManager extends Service {
         }
 
         if (autoRemoveQueue) {
-            log("Auto remove", this.client.queueManager.queues);
-
             for (const queue of this.client.queueManager.queues.values()) {
                 if (
                     queue.options.name === "UnmuteQueue" &&
@@ -964,9 +959,12 @@ export default class InfractionManager extends Service {
             }
         }
 
+        log("Removal succeeded");
+
         let queueId: number | undefined;
 
         if (duration) {
+            log("Adding queue");
             queueId = await this.client.queueManager.add(
                 new QueueEntry({
                     args: [member.user.id],
@@ -979,6 +977,7 @@ export default class InfractionManager extends Service {
                     willRunAt: new Date(Date.now() + duration)
                 })
             );
+            log("Succeeded");
         }
 
         const infraction = await this.client.prisma.infraction.create({
@@ -1127,8 +1126,6 @@ export default class InfractionManager extends Service {
         }
 
         if (autoRemoveQueue) {
-            log("Auto remove", this.client.queueManager.queues);
-
             for (const queue of this.client.queueManager.queues.values()) {
                 if (
                     queue.options.name === "UnmuteQueue" &&
