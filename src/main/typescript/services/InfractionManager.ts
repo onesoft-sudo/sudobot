@@ -786,6 +786,71 @@ class InfractionManager extends Service {
         };
     }
 
+    public async createFakeBan<E extends boolean>(
+        payload: CreateBanPayload<E>
+    ): Promise<InfractionCreateResult<E>> {
+        const guild = this.getGuild(payload.guildId);
+
+        if (!guild) {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+                code: 0
+            };
+        }
+
+        const {
+            moderator,
+            user,
+            reason,
+            guildId,
+            generateOverviewEmbed,
+            transformNotificationEmbed,
+            notify = true,
+            duration,
+            deletionTimeframe
+        } = payload;
+
+        const infraction: Infraction = {
+            id: Math.round(Math.random() * 5000),
+            guildId,
+            moderatorId: moderator.id,
+            userId: user.id,
+            reason: this.processReason(guildId, reason),
+            type: InfractionType.BAN,
+            deliveryStatus: InfractionDeliveryStatus.NOT_DELIVERED,
+            createdAt: new Date(),
+            expiresAt: duration?.fromNow() ?? null,
+            metadata: {
+                deletionTimeframe: deletionTimeframe?.fromNowMilliseconds(),
+                duration: duration?.fromNowMilliseconds()
+            },
+            queueId: 0,
+            updatedAt: new Date()
+        };
+
+        if (notify) {
+            const status = await this.notify(user, infraction, transformNotificationEmbed);
+            infraction.deliveryStatus =
+                status === "notified"
+                    ? InfractionDeliveryStatus.SUCCESS
+                    : status === "fallback"
+                      ? InfractionDeliveryStatus.FALLBACK
+                      : InfractionDeliveryStatus.FAILED;
+        }
+
+        return {
+            status: "success",
+            infraction,
+            overviewEmbed: (generateOverviewEmbed
+                ? this.createOverviewEmbed(infraction, user, moderator, {
+                      duration: payload.duration
+                  })
+                : undefined) as E extends true ? APIEmbed : undefined
+        };
+    }
+
     public async createBan<E extends boolean>(
         payload: CreateBanPayload<E>
     ): Promise<InfractionCreateResult<E>> {
