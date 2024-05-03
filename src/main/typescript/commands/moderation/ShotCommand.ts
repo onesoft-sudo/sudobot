@@ -104,7 +104,7 @@ class ShotCommand extends Command {
             return;
         }
 
-        const { overviewEmbed, status } = await this.infractionManager.createBean({
+        const { overviewEmbed, status } = await this.infractionManager.createShot({
             guildId: context.guildId,
             moderator: context.user,
             reason,

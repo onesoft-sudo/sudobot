@@ -63,6 +63,7 @@ class FakeBanCommand extends Command {
     public override readonly permissions = [PermissionFlagsBits.ManageMessages];
     public override readonly defer = true;
     public override readonly usage = ["<member: GuildMember> [reason: RestString]"];
+    public override readonly aliases = ["fban"];
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;
