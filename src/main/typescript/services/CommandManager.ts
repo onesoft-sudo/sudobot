@@ -140,7 +140,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
     }
 
     public getCommand(name: string): Command | null {
-        return this.commands.get(name) ?? null;
+        return this.commands.get(name.toLowerCase()) ?? null;
     }
 
     public getRateLimiter() {
@@ -216,7 +216,8 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
 
         const content = message.content.slice(foundPrefix.length).trim();
         const argv = content.split(/ +/);
-        const [commandName, ...args] = argv;
+        const [rawCommandName, ...args] = argv;
+        const commandName = rawCommandName.toLowerCase();
         const command = this.commands.get(commandName);
 
         if (!command || !command.supportsLegacy()) {
