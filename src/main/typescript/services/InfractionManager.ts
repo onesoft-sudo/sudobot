@@ -1582,8 +1582,6 @@ class InfractionManager extends Service {
             }
         });
 
-        console.log(records);
-
         let roleRestoreSuccess = true;
 
         if (records?.length) {
