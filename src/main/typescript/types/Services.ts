@@ -22,6 +22,7 @@ import type { ServiceManager } from "@framework/services/ServiceManager";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
 import type DirectiveParsingService from "@main/services/DirectiveParsingService";
 import type SystemAuditLoggingService from "@main/services/SystemAuditLoggingService";
+import type ChannelLockManager from "../services/ChannelLockManager";
 import type CommandManager from "../services/CommandManager";
 import type ConfigurationManager from "../services/ConfigurationManager";
 import type ExtensionManager from "../services/ExtensionManager";
@@ -49,6 +50,7 @@ export interface ServiceRecord {
     auditLoggingService: AuditLoggingService;
     directiveParsingService: DirectiveParsingService;
     systemAuditLogging: SystemAuditLoggingService;
+    channelLockManager: ChannelLockManager;
 }
 
 interface ServiceRecordLocal extends ServiceRecord {}
