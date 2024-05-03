@@ -86,22 +86,26 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             return;
         }
 
-        const commands = this.commands
-            .filter(
-                (command, key) =>
-                    !command.name.includes("::") &&
-                    command.name === key &&
-                    command.supportsInteraction()
-            )
-            .map(command => command.build().map(builder => builder.toJSON()))
-            .flat();
+        const clear = process.argv.includes("--clear-commands") || process.argv.includes("-c");
+        const global = process.argv.includes("--global-commands") || process.argv.includes("-g");
+        const commands = clear
+            ? []
+            : this.commands
+                  .filter(
+                      (command, key) =>
+                          !command.name.includes("::") &&
+                          command.name === key &&
+                          command.supportsInteraction()
+                  )
+                  .map(command => command.build().map(builder => builder.toJSON()))
+                  .flat();
 
-        if (!commands.length) {
+        if (!clear && !commands.length) {
             this.application.logger.debug("No commands to register");
             return;
         }
 
-        let guildId = mode === "guild" ? process.env.HOME_GUILD_ID : undefined;
+        let guildId = mode === "guild" && !global ? process.env.HOME_GUILD_ID : undefined;
         let registered = false;
 
         if (guildId) {
@@ -117,10 +121,10 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             );
             registered = true;
         } else if (
-            mode === "auto_global" &&
+            (mode === "auto_global" || global) &&
             (process.argv.includes("--update-commands") || process.argv.includes("-u"))
         ) {
-            if (isDevelopmentMode()) {
+            if (isDevelopmentMode() && !global) {
                 this.client.guilds.cache
                     .find(g => g.id === process.env.HOME_GUILD_ID!)
                     ?.commands.set(commands);

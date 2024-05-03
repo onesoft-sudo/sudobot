@@ -124,6 +124,14 @@ class MuteCommand extends Command {
                         .setDescription("Whether to notify the user. Defaults to true.")
                         .setRequired(false)
                 )
+                .addBooleanOption(option =>
+                    option
+                        .setName("role_takeout")
+                        .setDescription(
+                            "Whether to take away all roles from the user. Defaults to false."
+                        )
+                        .setRequired(false)
+                )
         ];
     }
 
@@ -148,7 +156,9 @@ class MuteCommand extends Command {
             member,
             generateOverviewEmbed: true,
             duration,
-            notify: !context.isChatInput() || context.options.getBoolean("notify") !== false
+            notify: !context.isChatInput() || context.options.getBoolean("notify") !== false,
+            roleTakeout:
+                context.isChatInput() && context.options.getBoolean("role_takeout") === true
         });
         const { overviewEmbed, status } = result;
 

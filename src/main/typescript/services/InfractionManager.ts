@@ -1203,7 +1203,8 @@ class InfractionManager extends Service {
             channel,
             generateOverviewEmbed,
             transformNotificationEmbed,
-            notify = true
+            notify = true,
+            roleTakeout = false
         } = payload;
         let { mode } = payload;
         const guild = this.getGuild(payload.guildId);
@@ -1307,6 +1308,19 @@ class InfractionManager extends Service {
         }
 
         const reason = this.processReason(guildId, rawReason) ?? rawReason;
+        let rolesTaken = roleTakeout ? member.roles.cache.map(r => r.id) : undefined;
+
+        if (rolesTaken && !member.manageable) {
+            return {
+                status: "failed",
+                infraction: null,
+                overviewEmbed: null,
+                errorType: "cannot_manage",
+                errorDescription:
+                    "This member cannot be managed by me, so I cannot take their roles!",
+                code: 0
+            };
+        }
 
         try {
             if (mode === "timeout" && duration) {
@@ -1318,6 +1332,15 @@ class InfractionManager extends Service {
                 await member.roles.add(role, `${moderator.username} - ${reason}`);
             } else {
                 throw new Error("Unreachable");
+            }
+
+            if (rolesTaken) {
+                try {
+                    await member.roles.set([], `${moderator.username} - ${reason}`);
+                } catch (error) {
+                    this.application.logger.error(error);
+                    rolesTaken = [];
+                }
             }
         } catch (error) {
             this.application.logger.error(error);
@@ -1351,12 +1374,15 @@ class InfractionManager extends Service {
             payload: {
                 metadata: {
                     type: role ? "role" : "timeout",
-                    duration: duration?.fromNowMilliseconds()
+                    duration: duration?.fromNowMilliseconds(),
+                    roles_taken: rolesTaken
                 },
                 expiresAt: duration ? duration.fromNow() : undefined
             },
             processReason: false
         });
+
+        await this.recordMute(member, rolesTaken ?? []);
 
         if (clearMessagesCount && channel) {
             await this.createClearMessages({
@@ -1549,14 +1575,35 @@ class InfractionManager extends Service {
             processReason: false
         });
 
-        this.application.prisma.muteRecord
-            .deleteMany({
-                where: {
-                    memberId: member.id,
-                    guildId: guild.id
-                }
-            })
-            .then();
+        const records = await this.application.prisma.muteRecord.findMany({
+            where: {
+                memberId: member.id,
+                guildId: guild.id
+            }
+        });
+
+        console.log(records);
+
+        let roleRestoreSuccess = true;
+
+        if (records?.length) {
+            try {
+                await member.roles.add(records[0].roles, `${moderator.username} - ${reason}`);
+            } catch (error) {
+                this.application.logger.error(error);
+                roleRestoreSuccess = false;
+            }
+
+            this.application.prisma.muteRecord
+                .deleteMany({
+                    where: {
+                        id: {
+                            in: records.map(r => r.id)
+                        }
+                    }
+                })
+                .then();
+        }
 
         this.auditLoggingService
             .emitLogEvent(guildId, LogEventType.MemberMuteRemove, {
@@ -1572,34 +1619,31 @@ class InfractionManager extends Service {
             status: "success",
             infraction,
             overviewEmbed: (generateOverviewEmbed
-                ? this.createOverviewEmbed(infraction, member.user, moderator)
+                ? also(this.createOverviewEmbed(infraction, member.user, moderator), embed => {
+                      if (!roleRestoreSuccess) {
+                          embed.fields.push({
+                              name: "Role Restoration",
+                              value: "Failed to restore roles"
+                          });
+                      }
+                  })
                 : undefined) as E extends true ? APIEmbed : undefined
         };
     }
 
-    public async recordMuteIfNeeded(member: GuildMember) {
-        const config = this.configManager.config[member.guild.id]?.muting;
-        const role = config?.role;
-
-        if (!role) {
-            return;
-        }
-
-        const existing = await this.application.prisma.muteRecord.findFirst({
+    public async recordMute(member: GuildMember, roles: Snowflake[]) {
+        await this.application.prisma.muteRecord.deleteMany({
             where: {
                 memberId: member.id,
                 guildId: member.guild.id
             }
         });
 
-        if (existing) {
-            return;
-        }
-
         await this.application.prisma.muteRecord.create({
             data: {
                 memberId: member.id,
-                guildId: member.guild.id
+                guildId: member.guild.id,
+                roles
             }
         });
     }
@@ -2557,6 +2601,7 @@ type CreateMutePayload<E extends boolean> = CommonOptions<E> & {
     mode?: "role" | "timeout";
     clearMessagesCount?: number;
     channel?: TextChannel;
+    roleTakeout?: boolean;
 };
 
 type CreateUserMassBanPayload = {

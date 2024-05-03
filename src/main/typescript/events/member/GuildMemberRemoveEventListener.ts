@@ -66,8 +66,6 @@ class GuildMemberRemoveEventListener extends EventListener<Events.GuildMemberRem
                 member
             );
         }, 2500);
-
-        this.infractionManager.recordMuteIfNeeded(member);
     }
 }
 
