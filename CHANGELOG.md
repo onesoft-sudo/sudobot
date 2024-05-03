@@ -1,3 +1,12 @@
+## [8.32.14](https://github.com/onesoft-sudo/sudobot/compare/v8.32.13...v8.32.14) (2024-05-03)
+
+
+### Bug Fixes
+
+* circular dependency issue and RangeError while prining PrismaPromise ([d47cb6a](https://github.com/onesoft-sudo/sudobot/commit/d47cb6aa821e5580fa64cd9840337f31c0991f5b))
+
+
+
 ## [8.32.13](https://github.com/onesoft-sudo/sudobot/compare/v8.32.12...v8.32.13) (2024-04-30)
 
 
@@ -33,15 +42,6 @@
 ### Bug Fixes
 
 * **services:afk:** createdAt date does not work with global mode ([ed9abfa](https://github.com/onesoft-sudo/sudobot/commit/ed9abfa9cc2024031e62a1f14abdcc8f595d7729))
-
-
-
-## [8.32.9](https://github.com/onesoft-sudo/sudobot/compare/v8.32.8...v8.32.9) (2024-04-18)
-
-
-### Bug Fixes
-
-* update command ([332a861](https://github.com/onesoft-sudo/sudobot/commit/332a861e011cd360138f8624b076c321a83d1c29))
 
 
 
