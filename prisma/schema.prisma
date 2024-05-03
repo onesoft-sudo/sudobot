@@ -143,6 +143,20 @@ model ChannelLock {
     @@map("channel_locks")
 }
 
+model AfkEntry {
+    id           Int      @id @default(autoincrement())
+    reason       String?
+    userId       String
+    guildId      String
+    mentions     String[] @default([])
+    mentionCount Int      @default(0)
+    global       Boolean  @default(false)
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @default(now()) @updatedAt
+
+    @@map("afk_entries")
+}
+
 // The following models were used in the previous version of the bot and are no longer used.
 // They are kept here for reference and will be removed in the future.
 
@@ -223,19 +237,6 @@ model BoostRoleEntries {
     createdAt DateTime @default(now())
 
     @@map("boost_role_entries")
-}
-
-model AfkEntry {
-    id        Int      @id @default(autoincrement())
-    reason    String?
-    userId    String
-    guildId   String
-    mentions  String[] @default([])
-    global    Boolean  @default(false)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
-
-    @@map("afk_entries")
 }
 
 enum PermissionLogicMode {

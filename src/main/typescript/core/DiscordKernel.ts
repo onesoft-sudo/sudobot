@@ -75,6 +75,7 @@ class DiscordKernel extends Kernel {
         "@automod/SpamModerationService",
         "@automod/RuleModerationService",
         "@services/ChannelLockManager",
+        "@services/AFKService",
         "@services/ImageRecognitionService",
         "@services/DirectiveParsingService",
         "@root/framework/typescript/api/APIServer"

@@ -17,5 +17,4 @@
 
 ## 9.x
 
--   Mass(ban|kick) commands
--   Finish logging
+-   Make a semaphore that blocks when a specific condition is met
