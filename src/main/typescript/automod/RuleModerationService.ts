@@ -5,7 +5,10 @@ import { HasEventListeners } from "@framework/types/HasEventListeners";
 import { LogEventType } from "@main/types/LoggingSchema";
 import { GuildMember, Message, Snowflake, TextChannel } from "discord.js";
 import { MessageAutoModServiceContract } from "../contracts/MessageAutoModServiceContract";
-import ModerationRuleHandlerContract from "../contracts/ModerationRuleHandlerContract";
+import {
+    MessageRuleScope,
+    type default as ModerationRuleHandlerContract
+} from "../contracts/ModerationRuleHandlerContract";
 import ModerationRuleHandler from "../security/ModerationRuleHandler";
 import type AuditLoggingService from "../services/AuditLoggingService";
 import type ConfigurationManager from "../services/ConfigurationManager";
@@ -69,38 +72,32 @@ class RuleModerationService
         return instance;
     }
 
-    public onMessageCreate(message: Message<boolean>) {
+    public async onMessageCreate(message: Message<boolean>) {
         if (message.author.bot) {
             return;
         }
 
+        await this.moderate(message);
+    }
+
+    public async moderate(message: Message, options?: ModerateOptions): Promise<boolean> {
         const config = this.configFor(message.guildId!);
 
         if (!config?.enabled) {
-            return;
+            return false;
         }
 
         if (config.global_disabled_channels.includes(message.channelId)) {
-            return;
+            return false;
         }
 
-        return this.moderate(message);
-    }
-
-    public async moderate(message: Message): Promise<void> {
         if (!(await this.shouldModerate(message))) {
             this.application.logger.debug(
                 "Rule moderation is disabled for this user",
                 message.author.id
             );
 
-            return;
-        }
-
-        const config = this.configFor(message.guildId!);
-
-        if (!config?.enabled) {
-            return;
+            return false;
         }
 
         let { member } = message;
@@ -117,12 +114,25 @@ class RuleModerationService
         let count = 0;
         let moderated = false;
 
-        const metadata = Reflect.getMetadata(
+        const contextTypes = Reflect.getMetadata(
             "rule:context:types",
+            this.ruleHandler.constructor.prototype
+        );
+        const scopes = Reflect.getMetadata(
+            "rule:context:scopes",
             this.ruleHandler.constructor.prototype
         );
 
         for (const rule of rules) {
+            if (
+                options?.scopes !== undefined &&
+                scopes?.[rule.type].find((scope: MessageRuleScope) =>
+                    options?.scopes?.includes(scope)
+                ) === undefined
+            ) {
+                continue;
+            }
+
             if (!rule.enabled || !(await this.checkPreconditions(member, rule, message))) {
                 continue;
             }
@@ -142,9 +152,9 @@ class RuleModerationService
                 continue;
             }
 
-            const expectsContext = metadata?.[rule.type]?.includes("message");
+            const expectsContext = contextTypes?.[rule.type]?.includes("message");
 
-            if (!expectsContext && metadata?.[rule.type]) {
+            if (!expectsContext && contextTypes?.[rule.type]) {
                 this.application.logger.debug(
                     `Rule type ${rule.type} does not expect a message context`
                 );
@@ -162,34 +172,37 @@ class RuleModerationService
 
             if (result.matched) {
                 moderated = true;
+
                 this.application.logger.debug(
                     `Rule ${count} matched for message ${message.id} in guild ${message.guildId}`
                 );
 
-                const { failedActions } = await this.moderationActionService.takeActions(
-                    message.guild!,
-                    member,
-                    rule.actions,
-                    {
-                        message,
-                        channel: message.channel! as TextChannel
-                    }
-                );
-
-                if (failedActions.length > 0) {
-                    this.application.logger.warn(
-                        `Failed to execute actions for rule ${rule.type} in guild ${message.guildId}`
+                if (!options?.skipActions) {
+                    const { failedActions } = await this.moderationActionService.takeActions(
+                        message.guild!,
+                        member,
+                        rule.actions,
+                        {
+                            message,
+                            channel: message.channel! as TextChannel
+                        }
                     );
-                    this.application.logger.warn(failedActions.join("\n"));
-                }
 
-                await this.auditLoggingService.emitLogEvent(
-                    message.guildId!,
-                    LogEventType.SystemAutoModRuleModeration,
-                    message,
-                    rule,
-                    result
-                );
+                    if (failedActions.length > 0) {
+                        this.application.logger.warn(
+                            `Failed to execute actions for rule ${rule.type} in guild ${message.guildId}`
+                        );
+                        this.application.logger.warn(failedActions.join("\n"));
+                    }
+
+                    await this.auditLoggingService.emitLogEvent(
+                        message.guildId!,
+                        LogEventType.SystemAutoModRuleModeration,
+                        message,
+                        rule,
+                        result
+                    );
+                }
 
                 if (rule.bail) {
                     break;
@@ -203,6 +216,8 @@ class RuleModerationService
             );
             this.application.logger.debug(`Executed ${count} rules`);
         }
+
+        return moderated;
     }
 
     private async checkPreconditions(member: GuildMember, rule: MessageRuleType, message: Message) {
@@ -253,5 +268,10 @@ class RuleModerationService
         return true;
     }
 }
+
+type ModerateOptions = {
+    skipActions?: boolean;
+    scopes?: MessageRuleScope[];
+};
 
 export default RuleModerationService;

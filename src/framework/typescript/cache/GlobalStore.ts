@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { Awaitable} from "discord.js";
+import type { Awaitable } from "discord.js";
 import { Collection } from "discord.js";
 import { isDeepStrictEqual } from "util";
 import Application from "../app/Application";
@@ -104,7 +104,12 @@ export const set = async <K extends CacheKey>(
             value: typeof value === "function" ? await value() : value,
             maxHits: options?.maxHits,
             ttl: options?.ttl,
-            timeout: options?.ttl ? setTimeout(() => store.delete(key), options.ttl) : undefined,
+            timeout: options?.ttl
+                ? setTimeout(() => {
+                      Application.current().logger.debug(`Cache: EXPIRED ${key}`);
+                      store.delete(key);
+                  }, options.ttl)
+                : undefined,
             dependencies: options?.dependencies,
             hits: options?.maxHits ? 0 : undefined
         });

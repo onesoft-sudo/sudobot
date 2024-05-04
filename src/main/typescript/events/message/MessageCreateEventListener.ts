@@ -76,11 +76,14 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
             }
         }
 
-        this.afkService.onMessageCreate(message);
         const value = await this.commandManager.runCommandFromMessage(message);
 
         if (value === false) {
             this.logger.debug("Command or snippet not found: all strategies failed");
+        }
+
+        if (value !== true) {
+            this.afkService.onMessageCreate(message);
         }
     }
 }

@@ -40,7 +40,7 @@ export const GuildConfigSchema = z.object({
     commands: z
         .object({
             mention_prefix: z.boolean().default(true),
-            moderation_command_behaviour: z.enum(["delete", "default"]).default("default"),
+            moderation_command_behavior: z.enum(["delete", "default"]).default("default"),
             rerun_on_edit: z.boolean().default(false),
             channels: z
                 .object({

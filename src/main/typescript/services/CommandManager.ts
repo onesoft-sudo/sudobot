@@ -241,7 +241,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             const subcommandName = argv[1];
             const key = command.isolatedSubcommands
                 ? `${this.getCanonicalName(commandName)}::${subcommandName}`
-                : commandName;
+                : this.getCanonicalName(commandName);
             const subcommand = this.commands.get(key);
 
             if (subcommand && subcommand.isDisabled(message.guildId!)) {
@@ -267,7 +267,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
                 } else {
                     await context.error(
                         subcommandName
-                            ? "Invalid subcommand provided"
+                            ? "Invalid subcommand provided."
                             : "Please provide a subcommand!"
                     );
                     return;

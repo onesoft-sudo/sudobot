@@ -5,7 +5,13 @@ type HandlerRecord = {
     [K in MessageRuleType["type"]]: Handler;
 };
 
-export type MessageRuleContextSpecific = {
+export enum MessageRuleScope {
+    Content,
+    Embed,
+    Attachments
+}
+
+export type ModerationRuleContextSpecific = {
     message: {
         message: Message;
     };
@@ -13,17 +19,17 @@ export type MessageRuleContextSpecific = {
         member: GuildMember;
     };
 };
-export type MessageRuleContextType = "message" | "profile";
-export type MessageRuleContext<
-    T extends MessageRuleContextType = MessageRuleContextType,
+export type ModerationRuleContextType = "message" | "profile";
+export type ModerationRuleContext<
+    T extends ModerationRuleContextType = ModerationRuleContextType,
     U = MessageRuleType
 > = {
     rule: Extract<MessageRuleType, U>;
     type: T;
-} & MessageRuleContextSpecific[T];
+} & ModerationRuleContextSpecific[T];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Handler = (context: MessageRuleContext<any, any>) => Awaitable<RuleExecResult>;
+export type Handler = (context: ModerationRuleContext<any, any>) => Awaitable<RuleExecResult>;
 export type RuleExecResult = {
     matched: boolean;
     reason?: string;

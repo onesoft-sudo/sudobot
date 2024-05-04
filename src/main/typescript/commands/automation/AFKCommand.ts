@@ -5,9 +5,11 @@ import type { Buildable } from "@framework/commands/Command";
 import { Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import RuleModerationService from "@main/automod/RuleModerationService";
 import { Colors } from "@main/constants/Colors";
+import { MessageRuleScope } from "@main/contracts/ModerationRuleHandlerContract";
 import AFKService from "@main/services/AFKService";
-import { ChatInputCommandInteraction, Message } from "discord.js";
+import { ChatInputCommandInteraction, Collection, Message } from "discord.js";
 
 type AFKCommandArgs = {
     reason?: string;
@@ -43,6 +45,9 @@ class AFKCommand extends Command {
     @Inject()
     private readonly afkService!: AFKService;
 
+    @Inject()
+    private readonly ruleModerationService!: RuleModerationService;
+
     public override build(): Buildable[] {
         return [
             this.buildChatInput()
@@ -59,6 +64,42 @@ class AFKCommand extends Command {
                         .setRequired(false)
                 )
         ];
+    }
+
+    private async verifyReason(
+        context: Context<Message<true> | ChatInputCommandInteraction>,
+        reason?: string
+    ): Promise<boolean> {
+        return !(await this.ruleModerationService.moderate(
+            {
+                components: [],
+                author: context.user,
+                attachments: new Collection(),
+                applicationId: null,
+                _cacheType: true,
+                bulkDeletable: false,
+                channel: context.channel,
+                channelId: context.channel.id,
+                client: this.application.client,
+                content: reason ?? "",
+                embeds: [],
+                guild: context.guild,
+                guildId: context.guild?.id,
+                id: "",
+                member: context.member,
+                mentions: {
+                    channels: new Collection(),
+                    everyone: false,
+                    members: new Collection(),
+                    roles: new Collection(),
+                    users: new Collection()
+                }
+            } as unknown as Message,
+            {
+                scopes: [MessageRuleScope.Content],
+                skipActions: true
+            }
+        ));
     }
 
     public override async execute(
@@ -108,6 +149,10 @@ class AFKCommand extends Command {
             );
 
             return;
+        }
+
+        if (!(await this.verifyReason(context, args.reason))) {
+            return void context.error("Your AFK reason violates this server's rules.");
         }
 
         await this.afkService.setAFK({

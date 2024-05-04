@@ -16,6 +16,7 @@
         "node_modules/**": true
     },
     "cSpell.words": [
+        "afks",
         "antispam",
         "automod",
         "automoderation",
@@ -34,6 +35,7 @@
         "dminfs",
         "editmsg",
         "kickable",
+        "manageafks",
         "MASSBAN",
         "MASSKICK",
         "Memoizable",

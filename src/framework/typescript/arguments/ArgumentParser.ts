@@ -180,7 +180,12 @@ class ArgumentParser extends HasClient {
         if (subcommand) {
             const commandManager = Application.current().getServiceByName("commandManager");
             const canonicalName = commandManager.getCommand(argv[0])?.name ?? argv[0];
-            const command = commandManager.commands.get(`${canonicalName}::${args[0]}`);
+            const baseCommand = commandManager.commands.get(canonicalName);
+
+            const command =
+                baseCommand && baseCommand.isolatedSubcommands === false
+                    ? baseCommand
+                    : commandManager.commands.get(`${canonicalName}::${args[0]}`);
 
             if (!command) {
                 if (typeof onSubcommandNotFound === "function" && context) {

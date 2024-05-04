@@ -8,7 +8,7 @@ import { Collection, escapeMarkdown, Message, messageLink, Snowflake, time } fro
 
 @Name("afkService")
 class AFKService extends Service implements HasEventListeners {
-    protected readonly cache = new Collection<`${Snowflake | "global"}::${Snowflake}`, AfkEntry>();
+    public readonly cache = new Collection<`${Snowflake | "global"}::${Snowflake}`, AfkEntry>();
     protected readonly modified = new Set<`${Snowflake | "global"}::${Snowflake}`>();
     protected timeout?: ReturnType<typeof setTimeout>;
 
@@ -116,7 +116,7 @@ class AFKService extends Service implements HasEventListeners {
             }
 
             this.modified.clear();
-        }, 15_000);
+        }, 7_000);
     }
 
     public async addMention({
@@ -124,7 +124,8 @@ class AFKService extends Service implements HasEventListeners {
         mentionId,
         userId,
         channelId,
-        messageId
+        messageId,
+        global
     }: AddMentionOptions) {
         const key = `${global ? "global" : guildId}::${userId}` as const;
         const entry = this.cache.get(key);
@@ -186,22 +187,30 @@ class AFKService extends Service implements HasEventListeners {
     public generateAFKSummary(global?: AfkEntry, guild?: AfkEntry) {
         let description = `You're no longer AFK. You've had **${(global?.mentionCount ?? 0) + (guild?.mentionCount ?? 0)}** mentions total.\n`;
         let mentions = "";
+        let count = 0;
 
         if (global) {
             for (const mentionString of global.mentions) {
                 mentions += this.formatMentionString(mentionString);
+
+                if (++count >= 25) {
+                    break;
+                }
             }
         }
 
         if (guild) {
             for (const mentionString of guild.mentions) {
                 mentions += this.formatMentionString(mentionString);
+
+                if (++count >= 25) {
+                    break;
+                }
             }
         }
 
         if (mentions !== "") {
-            description +=
-                "Your last 25-25 mentions in both global and guild-local records are:\n\n";
+            description += "Your last 25 mentions in both global and guild-local records are:\n\n";
             description += mentions + "\n";
         }
 
@@ -254,9 +263,9 @@ class AFKService extends Service implements HasEventListeners {
                 });
 
                 afkUsers.push({
-                    reason: globalAFK?.reason ?? guildAFK!.reason,
+                    reason: globalAFK ? globalAFK.reason : guildAFK!.reason,
                     id: mentionedUser.id,
-                    createdAt: globalAFK?.createdAt ?? guildAFK!.createdAt
+                    createdAt: globalAFK ? globalAFK.createdAt : guildAFK!.createdAt
                 });
             }
         }
@@ -269,16 +278,16 @@ class AFKService extends Service implements HasEventListeners {
             await message.reply({
                 embeds: [
                     {
-                        description: `<@${afkUsers[0].id}> is AFK for ${time(afkUsers[0].createdAt, "R")}${afkUsers[0].reason ? `, with reason: **${escapeMarkdown(afkUsers[0].reason)}**.` : "."}`,
+                        description: `<@${afkUsers[0].id}> is AFK${afkUsers[0].reason ? `, for reason: **${escapeMarkdown(afkUsers[0].reason)}**` : ""} - ${time(afkUsers[0].createdAt, "R")}.`,
                         color: Colors.Primary
                     }
                 ]
             });
         } else {
-            let description = "The following users are AFK right now:\n";
+            let description = "The following users are AFK right now:\n\n";
 
             for (const user of afkUsers) {
-                description += `\n- <@${user.id}> - ${time(user.createdAt, "R")}${user.reason ? `, with reason: **${escapeMarkdown(user.reason)}**.` : "."}`;
+                description += `- <@${user.id}> - ${time(user.createdAt, "R")}${user.reason ? `, with reason: **${escapeMarkdown(user.reason)}**.` : "."}\n`;
             }
 
             await message.reply({
@@ -301,7 +310,7 @@ class AFKService extends Service implements HasEventListeners {
             string
         ];
 
-        return `\n- By <@${mentionId}> - ${time(new Date(timestamp), "R")} - [Navigate](${messageLink(channelId, messageId, guildId)})\n`;
+        return `- By <@${mentionId}> - ${time(new Date(timestamp), "R")} - [Navigate](${messageLink(channelId, messageId, guildId)})\n`;
     }
 }
 
