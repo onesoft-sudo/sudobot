@@ -41,7 +41,7 @@ dependencies(() => {
     requiredModule("cors", "^2.8.5");
     requiredModule("date-fns", "^2.30.0");
     requiredModule("deepmerge", "^4.3.1");
-    requiredModule("discord.js", "^14.14.1");
+    requiredModule("discord.js", "^14.15.0");
     requiredModule("dot-object", "^2.1.4");
     requiredModule("dotenv", "^16.3.1");
     requiredModule("express", "^4.18.2");

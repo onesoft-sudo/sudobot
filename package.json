@@ -79,7 +79,7 @@
     "date-fns": "^2.30.0",
     "deepmerge": "^4.3.1",
     "discord-api-types": "^0.37.83",
-    "discord.js": "^14.14.1",
+    "discord.js": "^14.15.0",
     "dot-object": "^2.1.4",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
