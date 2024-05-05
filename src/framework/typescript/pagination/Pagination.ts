@@ -234,9 +234,11 @@ class Pagination<T> {
         if (typeof options === "object") {
             const rows = await this._actionRowBuilder(await this.getActionRow());
             (options as InteractionUpdateOptions).components ??= [];
-            (options as InteractionUpdateOptions).components?.push(
-                ...(rows as unknown as NonNullable<InteractionUpdateOptions["components"]>)
-            );
+            (
+                (options as InteractionUpdateOptions).components as NonNullable<
+                    InteractionUpdateOptions["components"]
+                >[number][]
+            )?.push(...(rows as unknown as NonNullable<InteractionUpdateOptions["components"]>));
         }
 
         return options;

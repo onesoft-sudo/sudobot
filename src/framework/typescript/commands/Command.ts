@@ -24,6 +24,7 @@ import type {
     Message,
     PermissionResolvable,
     PermissionsString,
+    SlashCommandOptionsOnlyBuilder,
     Snowflake,
     User
 } from "discord.js";
@@ -728,7 +729,10 @@ export type CommandExecutionState<L extends boolean = false> = {
     memberPermissions: MemberPermissionData | (L extends false ? undefined : never);
     isSystemAdmin: boolean | (L extends false ? undefined : never);
 };
-export type Buildable = Pick<SlashCommandBuilder | ContextMenuCommandBuilder, "name" | "toJSON">;
+export type Buildable = Pick<
+    SlashCommandBuilder | ContextMenuCommandBuilder | SlashCommandOptionsOnlyBuilder,
+    "name" | "toJSON"
+>;
 export type PreconditionExecutionResult = {
     passed: boolean;
     state: CommandExecutionState<boolean>;
