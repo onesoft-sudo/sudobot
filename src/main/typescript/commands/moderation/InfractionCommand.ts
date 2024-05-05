@@ -8,7 +8,11 @@ class InfractionCommand extends Command {
     public override readonly description: string = "Manage infractions.";
     public override readonly detailedDescription: string =
         "Manage infractions for users. This command allows you to view, create, and delete infractions.";
-    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly permissions = [
+        PermissionFlagsBits.ManageMessages,
+        PermissionFlagsBits.ViewAuditLog
+    ];
+    public override readonly permissionCheckingMode = "or";
     public override readonly usage = ["<subcommand: String> [...args: Any[]]"];
     public override readonly aliases = ["inf", "infs", "infractions"];
     public override readonly subcommands = [

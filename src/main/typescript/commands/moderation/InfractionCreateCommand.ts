@@ -55,7 +55,11 @@ type InfractionCreateCommandArgs = {
 class InfractionCreateCommand extends Command {
     public override readonly name = "infraction::create";
     public override readonly description: string = "Create a new infraction.";
-    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly permissions = [
+        PermissionFlagsBits.ManageMessages,
+        PermissionFlagsBits.ViewAuditLog
+    ];
+    public override readonly permissionCheckingMode = "or";
     public override readonly usage = ["<user: User> <type: InfractionType> [reason: string]"];
 
     @Inject()

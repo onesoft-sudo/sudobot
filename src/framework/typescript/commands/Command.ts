@@ -39,7 +39,8 @@ import type { PermissionManagerServiceInterface } from "../contracts/PermissionM
 import type { Guard } from "../guards/Guard";
 import type { GuardLike } from "../guards/GuardLike";
 import type { SystemOnlyPermissionResolvable } from "../permissions/AbstractPermissionManagerService";
-import type { Permission, PermissionLike } from "../permissions/Permission";
+import type { PermissionLike } from "../permissions/Permission";
+import { Permission } from "../permissions/Permission";
 import { PermissionDeniedError } from "../permissions/PermissionDeniedError";
 import type { Policy } from "../policies/Policy";
 import type Builder from "../types/Builder";
@@ -170,6 +171,11 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      * Can be modified or removed by the permission manager.
      */
     public readonly permissions?: CommandPermissionLike[];
+
+    /**
+     * The mode for checking permissions.
+     */
+    public readonly permissionCheckingMode: "or" | "and" = "and";
 
     /**
      * The persistent discord permissions for the member running this command.
@@ -614,7 +620,17 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
         }
 
         if (this.persistentDiscordPermissions) {
-            if (!context.member.permissions.has(this.persistentDiscordPermissions, true)) {
+            if (
+                this.permissionCheckingMode === "and" &&
+                !context.member.permissions.has(this.persistentDiscordPermissions, true)
+            ) {
+                return false;
+            }
+
+            if (
+                this.permissionCheckingMode === "or" &&
+                !context.member.permissions.any(this.persistentDiscordPermissions, true)
+            ) {
                 return false;
             }
         }
@@ -653,11 +669,37 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
         const { overwrite } = result;
 
         if (((!overwrite && mode === "overwrite") || mode === "check") && this.permissions) {
-            return await permissionManager.hasPermissions(
-                context.member,
-                this.permissions,
-                state.memberPermissions
-            );
+            if (this.permissionCheckingMode === "and") {
+                return await permissionManager.hasPermissions(
+                    context.member,
+                    this.permissions,
+                    state.memberPermissions
+                );
+            } else
+                block: {
+                    for (const permission of this.permissions) {
+                        if (
+                            Permission.isDiscordPermission(permission) &&
+                            !context.member.permissions.has(permission, true)
+                        ) {
+                            continue;
+                        }
+
+                        if (
+                            !(await permissionManager.hasPermissions(
+                                context.member,
+                                [permission],
+                                state.memberPermissions
+                            ))
+                        ) {
+                            continue;
+                        }
+
+                        break block;
+                    }
+
+                    return false;
+                }
         }
 
         return true;

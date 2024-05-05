@@ -42,7 +42,11 @@ type InfractionReasonCommandArgs = {
 class InfractionReasonCommand extends Command {
     public override readonly name = "infraction::reason";
     public override readonly description: string = "Update the reason of an infraction.";
-    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly permissions = [
+        PermissionFlagsBits.ManageMessages,
+        PermissionFlagsBits.ViewAuditLog
+    ];
+    public override readonly permissionCheckingMode = "or";
     public override readonly usage = ["<id: number> <reason: string>"];
 
     @Inject()

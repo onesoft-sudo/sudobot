@@ -29,7 +29,11 @@ type InfractionDeleteCommandArgs = {
 class InfractionDeleteCommand extends Command {
     public override readonly name = "infraction::delete";
     public override readonly description: string = "Delete an infraction.";
-    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly permissions = [
+        PermissionFlagsBits.ManageMessages,
+        PermissionFlagsBits.ViewAuditLog
+    ];
+    public override readonly permissionCheckingMode = "or";
     public override readonly usage = ["<id: number>"];
 
     @Inject()

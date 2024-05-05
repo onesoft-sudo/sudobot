@@ -46,7 +46,11 @@ class InfractionDurationCommand extends Command {
     public override readonly name = "infraction::duration";
     public override readonly description: string =
         "Update the duration of a mute/ban/role infraction.";
-    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly permissions = [
+        PermissionFlagsBits.ManageMessages,
+        PermissionFlagsBits.ViewAuditLog
+    ];
+    public override readonly permissionCheckingMode = "or";
     public override readonly usage = ['<id: number> <duration: Duration | "none">'];
     public override readonly aliases: string[] = ["infraction::d"];
 
