@@ -152,6 +152,20 @@ export const GuildConfigSchema = z.object({
             ban_duration: z.number().int().optional(),
             ignore_bots: z.boolean().optional().default(false)
         })
+        .optional(),
+    reaction_roles: z
+        .object({
+            enabled: z.boolean().optional().default(false),
+            ignore_bots: z.boolean().optional().default(true),
+            ratelimiting: z
+                .object({
+                    enabled: z.boolean().optional().default(true),
+                    timeframe: z.number().int().min(0).default(7000),
+                    max_attempts: z.number().int().min(0).default(5),
+                    block_duration: z.number().int().min(0).default(10_000)
+                })
+                .optional()
+        })
         .optional()
     /*
     quickmute: z
@@ -382,20 +396,7 @@ export const GuildConfigSchema = z.object({
             ignore_bots: z.boolean().optional().default(true)
         })
         .optional(),
-    reaction_roles: z
-        .object({
-            enabled: z.boolean().optional().default(false),
-            ignore_bots: z.boolean().optional().default(true),
-            ratelimiting: z
-                .object({
-                    enabled: z.boolean().optional().default(true),
-                    timeframe: z.number().int().min(0).default(7000),
-                    max_attempts: z.number().int().min(0).default(5),
-                    block_duration: z.number().int().min(0).default(10_000)
-                })
-                .optional()
-        })
-        .optional(),
+    
     create_boost_role: z
         .object({
             create_roles_after: zSnowflake.optional()

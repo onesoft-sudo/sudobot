@@ -33,6 +33,7 @@ import { isDevelopmentMode } from "@framework/utils/utils";
 import CommandRateLimiter from "@main/security/CommandRateLimiter";
 import { CommandPermissionOverwriteAction } from "@prisma/client";
 import {
+    ApplicationCommandDataResolvable,
     ApplicationCommandOptionType,
     ChatInputCommandInteraction,
     Collection,
@@ -97,7 +98,11 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
                           command.name === key &&
                           command.supportsInteraction()
                   )
-                  .map(command => command.build().map(builder => builder.toJSON()))
+                  .map(command =>
+                      command
+                          .build()
+                          .map(builder => builder.toJSON() as ApplicationCommandDataResolvable)
+                  )
                   .flat();
 
         if (!clear && !commands.length) {

@@ -18,3 +18,4 @@
 ## 9.x
 
 -   Make a semaphore that blocks when a specific condition is met
+-   Listen to raw message delete event and raw message edit event for logging

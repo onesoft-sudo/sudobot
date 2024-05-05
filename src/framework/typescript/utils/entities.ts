@@ -1,5 +1,5 @@
 import type BaseClient from "@framework/client/BaseClient";
-import type { Guild, Snowflake } from "discord.js";
+import type { Guild, Snowflake, TextBasedChannel } from "discord.js";
 import { client } from "./helpers";
 
 export async function fetchChannel(guildOrId: Guild | Snowflake, channelId: Snowflake) {
@@ -35,6 +35,14 @@ export async function fetchMember(guild: Guild, memberId: Snowflake) {
 export async function fetchUser(client: BaseClient, userId: Snowflake) {
     try {
         return client.users.cache.get(userId) ?? (await client.users.fetch(userId));
+    } catch {
+        return null;
+    }
+}
+
+export async function fetchMessage(channel: TextBasedChannel, messageId: Snowflake) {
+    try {
+        return channel.messages.cache.get(messageId) ?? (await channel.messages.fetch(messageId));
     } catch {
         return null;
     }

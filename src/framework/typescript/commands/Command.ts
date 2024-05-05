@@ -18,7 +18,6 @@
  */
 
 import type {
-    ApplicationCommandDataResolvable,
     Awaitable,
     ChatInputCommandInteraction,
     ContextMenuCommandInteraction,
@@ -732,10 +731,8 @@ export type CommandExecutionState<L extends boolean = false> = {
 };
 export type Buildable = Pick<
     SlashCommandBuilder | ContextMenuCommandBuilder | SlashCommandOptionsOnlyBuilder,
-    "name"
-> & {
-    toJSON: () => ApplicationCommandDataResolvable;
-};
+    "name" | "toJSON"
+>;
 export type PreconditionExecutionResult = {
     passed: boolean;
     state: CommandExecutionState<boolean>;

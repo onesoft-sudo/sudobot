@@ -28,7 +28,7 @@ import {
 } from "@framework/permissions/AbstractPermissionManagerService";
 import { Name } from "@framework/services/Name";
 import { OptionalRecord } from "@framework/types/OptionalRecord";
-import { GuildMember } from "discord.js";
+import { Guild, GuildMember, Snowflake } from "discord.js";
 import DiscordPermissionManager from "../security/DiscordPermissionManager";
 import LayeredPermissionManager from "../security/LayeredPermissionManager";
 import LevelBasedPermissionManager from "../security/LevelBasedPermissionManager";
@@ -80,6 +80,12 @@ class PermissionManagerService extends AbstractPermissionManagerService {
             default:
                 throw new Error(`Unknown permission mode: ${mode}`);
         }
+    }
+
+    public getManagerForGuild(guildResolvable: Guild | Snowflake) {
+        return this.getManager(
+            typeof guildResolvable === "string" ? guildResolvable : guildResolvable.id
+        );
     }
 
     public override async hasPermissions(

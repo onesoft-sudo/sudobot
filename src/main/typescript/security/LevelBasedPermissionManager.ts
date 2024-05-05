@@ -158,8 +158,9 @@ class LevelBasedPermissionManager extends AbstractPermissionManager {
         };
     }
 
-    public getMemberLevel(member: GuildMember): Promise<number> {
-        return this.getMemberPermissions(member).then(permissions => permissions.level);
+    public async getMemberLevel(member: GuildMember): Promise<number> {
+        const permissions = await this.getMemberPermissions(member);
+        return permissions.level;
     }
 }
 
