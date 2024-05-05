@@ -41,7 +41,7 @@ dependencies(() => {
     requiredModule("cors", "^2.8.5");
     requiredModule("date-fns", "^2.30.0");
     requiredModule("deepmerge", "^4.3.1");
-    requiredModule("discord.js", "^14.15.0");
+    requiredModule("discord.js", "^14.15.1");
     requiredModule("dot-object", "^2.1.4");
     requiredModule("dotenv", "^16.3.1");
     requiredModule("express", "^4.18.2");
@@ -66,7 +66,7 @@ dependencies(() => {
     requiredModule("zod", "^3.21.4");
 
     // Uncomment the following lines to install these optional dependencies,
-    //  which can improve performance.
+    // which can improve performance.
 
     // requiredModule("zlib-sync", "^0.1.9");
     // requiredModule("bufferutil", "^4.0.8");
