@@ -52,6 +52,34 @@ class AFKService extends Service implements HasEventListeners {
         return this.cache.get(key);
     }
 
+    public async removeGuildAFKs(guildId: Snowflake) {
+        const ids = [];
+
+        for (const entry of this.cache.values()) {
+            if (entry.global || entry.guildId !== guildId) {
+                continue;
+            }
+
+            ids.push(entry.id);
+            this.cache.delete(`${guildId}::${entry.userId}`);
+        }
+
+        if (ids.length === 0) {
+            return 0;
+        }
+
+        await this.application.prisma.afkEntry.deleteMany({
+            where: {
+                id: {
+                    in: ids
+                }
+            }
+        });
+
+        this.application.logger.debug(`Removed ${ids.length} AFK entries for guild ${guildId}.`);
+        return ids.length;
+    }
+
     public async removeAFK(userId: Snowflake, guildId: Snowflake) {
         const globalEntry = this.cache.get(`global::${userId}`);
         const guildEntry = this.cache.get(`${guildId}::${userId}`);
