@@ -143,7 +143,16 @@ export const GuildConfigSchema = z.object({
             global_disabled_channels: z.array(zSnowflake).default([])
         })
         .optional(),
-    logging: LoggingSchema.optional()
+    logging: LoggingSchema.optional(),
+    anti_member_join: z
+        .object({
+            enabled: z.boolean().optional().default(false),
+            behavior: z.enum(["kick", "ban"]).default("kick"),
+            custom_reason: z.string().optional(),
+            ban_duration: z.number().int().optional(),
+            ignore_bots: z.boolean().optional().default(false)
+        })
+        .optional()
     /*
     quickmute: z
         .object({
