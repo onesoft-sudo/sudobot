@@ -61,6 +61,7 @@ class CreateReactionRoleCommand extends Command {
     public override readonly defer = true;
     public override readonly aliases = ["crr", "rr"];
     public override readonly usage = ["<link: URL> <emoji: string> <...roles: Role[]>"];
+    public override readonly permissions = [PermissionFlagsBits.ManageRoles];
     public override readonly systemPermissions = [PermissionFlagsBits.ManageRoles];
 
     @Inject()
