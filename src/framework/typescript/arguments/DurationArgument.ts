@@ -24,6 +24,12 @@ import Argument from "./Argument";
 import { ErrorType } from "./InvalidArgumentError";
 
 class DurationArgument extends Argument<Duration> {
+    public static readonly defaultErrors = {
+        [ErrorType.Required]: "You must specify a duration/time to perform this action!",
+        [ErrorType.InvalidType]: "You must specify a valid duration/time to perform this action.",
+        [ErrorType.InvalidRange]: "The given duration/time is out of range."
+    };
+
     public override toString(): string {
         return this.stringValue!.toString();
     }

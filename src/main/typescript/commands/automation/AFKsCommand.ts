@@ -12,19 +12,31 @@ import {
     ChatInputCommandInteraction,
     Colors,
     ComponentType,
+    PermissionFlagsBits,
     escapeMarkdown,
-    italic,
-    PermissionFlagsBits
+    italic
 } from "discord.js";
 
 // TODO: Pagination
 class AFKsCommand extends Command {
     public override readonly name = "afks";
     public override readonly description: string = "Manage others' AFK statuses.";
-    public override readonly usage = ["[...reason: RestString]"];
+    public override readonly usage = ["<subcommand: String> [...args: Any[]]"];
     public override readonly aliases = ["manageafks"];
     public override readonly subcommands = ["list", "remove", "clear"];
     public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly subcommandMeta = {
+        list: {
+            description: "List all users with AFK statuses."
+        },
+        remove: {
+            description: "Remove a user's AFK status.",
+            usage: ["<user: User>", "[...reason: RestString]"]
+        },
+        clear: {
+            description: "Clear all AFK statuses in this server."
+        }
+    };
 
     @Inject()
     private readonly afkService!: AFKService;

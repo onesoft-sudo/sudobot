@@ -30,6 +30,7 @@
         "Buildable",
         "commitlint",
         "cooldown",
+        "crosspostable",
         "datetime",
         "deepmerge",
         "dmhistory",
