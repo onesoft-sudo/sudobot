@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { APIErrorCode } from "@main/types/APIErrorCode";
 import type { NextFunction, Response } from "express";
 import type Request from "../http/Request";
 
@@ -27,7 +28,8 @@ export default async function GuildAccessControl(
 ) {
     if (!request.params.guild) {
         response.status(401).send({
-            error: "Cannot authorize access without a Guild ID."
+            error: "Cannot authorize access without a Guild ID.",
+            code: APIErrorCode.RestrictedGuildAccess
         });
 
         return;
@@ -35,7 +37,8 @@ export default async function GuildAccessControl(
 
     if (!request.user?.guilds.includes(request.params.guild)) {
         response.status(403).send({
-            error: "Access denied."
+            error: "Access denied.",
+            code: APIErrorCode.RestrictedGuildAccess
         });
 
         return;

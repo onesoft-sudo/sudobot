@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { APIErrorCode } from "@main/types/APIErrorCode";
 import type { NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
 import type Application from "../../app/Application";
@@ -31,7 +32,8 @@ export default async function RequireAuthMiddleware(
 ) {
     if (!request.headers.authorization) {
         response.status(401).json({
-            error: "No authorization header found in the request"
+            error: "No authorization header found in the request",
+            code: APIErrorCode.Unauthorized
         });
 
         return;
@@ -41,7 +43,8 @@ export default async function RequireAuthMiddleware(
 
     if (type.toLowerCase() !== "bearer") {
         response.status(401).json({
-            error: "Only bearer tokens are supported"
+            error: "Only bearer tokens are supported",
+            code: APIErrorCode.Unauthorized
         });
 
         return;
@@ -88,7 +91,8 @@ export default async function RequireAuthMiddleware(
         application.logger.debug(e);
 
         response.status(401).json({
-            error: "Invalid API token"
+            error: "Invalid API token",
+            code: APIErrorCode.Unauthorized
         });
 
         return;

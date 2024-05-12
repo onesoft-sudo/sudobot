@@ -17,10 +17,19 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import Response from "@framework/api/http/Response";
 import Application from "../../app/Application";
-import CanBind from "../../container/CanBind";
 
-@CanBind
 export default abstract class Controller {
-    public constructor(protected readonly application: Application) {}
+    public constructor(
+        @((..._: unknown[]) => undefined) protected readonly application: Application
+    ) {}
+
+    protected error(status: number, body?: unknown, headers?: Record<string, string>) {
+        return new Response({
+            status,
+            body,
+            headers
+        });
+    }
 }

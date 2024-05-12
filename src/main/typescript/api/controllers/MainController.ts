@@ -19,12 +19,10 @@
 
 import { Action } from "@framework/api/decorators/Action";
 import Controller from "@framework/api/http/Controller";
-import CanBind from "@framework/container/CanBind";
 import { Inject } from "@framework/container/Inject";
 import ConfigurationManager from "../../services/ConfigurationManager";
 
-@CanBind
-export default class MainController extends Controller {
+class MainController extends Controller {
     @Inject()
     protected readonly configManager!: ConfigurationManager;
 
@@ -47,3 +45,5 @@ export default class MainController extends Controller {
         };
     }
 }
+
+export default MainController;
