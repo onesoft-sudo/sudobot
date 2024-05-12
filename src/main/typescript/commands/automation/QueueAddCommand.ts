@@ -50,7 +50,13 @@ class QueueAddCommand extends Command {
 
     public override async execute(context: Context, args: QueueAddCommandArgs): Promise<void> {
         const { command, runAfter } = args;
-        const commandName = command.slice(0, Math.max(command.indexOf(" "), command.indexOf("\n")));
+        const spaceIndex = command.indexOf(" ");
+        const newLineIndex = command.indexOf("\n");
+        const index =
+            spaceIndex === -1 || newLineIndex === -1
+                ? Math.max(spaceIndex, newLineIndex)
+                : Math.min(spaceIndex, newLineIndex);
+        const commandName = command.slice(0, index === -1 ? command.length : index);
 
         if (!this.commandManager.commands.has(commandName)) {
             return void context.error(
@@ -79,6 +85,7 @@ class QueueAddCommand extends Command {
                     fromInteraction: context.isChatInput()
                 },
                 guildId: context.guildId,
+                userId: context.userId,
                 runsAt: new Date(Date.now() + runAfter.toMilliseconds())
             })
             .schedule();

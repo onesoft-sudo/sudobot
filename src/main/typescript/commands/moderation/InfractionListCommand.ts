@@ -58,8 +58,7 @@ class InfractionListCommand extends Command {
         }
 
         const pagination: Pagination<Infraction> = Pagination.withData(infractions)
-            .setData(infractions)
-            .setLimit(3)
+            .setLimit(5)
             .setMaxTimeout(Pagination.DEFAULT_TIMEOUT)
             .setMessageOptionsBuilder(({ data, maxPages, page }) => {
                 let description = "";

@@ -22,15 +22,15 @@ export type QueueOptions<T extends StorableData> = {
 abstract class Queue<T extends StorableData = StorableData> extends HasApplication {
     public static readonly uniqueName: string = "";
     public readonly data: T;
-    protected readonly guildId: Snowflake;
-    protected readonly userId: Snowflake;
-    protected readonly channelId?: Snowflake;
-    protected readonly messageId?: Snowflake;
+    public readonly guildId: Snowflake;
+    public readonly userId: Snowflake;
+    public readonly channelId?: Snowflake;
+    public readonly messageId?: Snowflake;
+    public readonly runsAt: Date;
+    public readonly repeat?: boolean;
     protected readonly manager: QueueManager;
-    protected readonly runsAt: Date;
-    protected readonly repeat?: boolean;
-    private _isExecuting: boolean = false;
 
+    private _isExecuting: boolean = false;
     private _createdAt?: Date;
     private _updatedAt?: Date;
     private _id?: number;
@@ -114,6 +114,14 @@ abstract class Queue<T extends StorableData = StorableData> extends HasApplicati
         this.manager.add(this);
 
         return id;
+    }
+
+    public get createdAt() {
+        return this._createdAt;
+    }
+
+    public get updatedAt() {
+        return this._updatedAt;
     }
 
     public async delete() {

@@ -1,6 +1,6 @@
 import { HasApplication } from "../types/HasApplication";
-import type { QueueOptions, StorableData } from "./Queue";
 import type Queue from "./Queue";
+import type { QueueOptions, StorableData } from "./Queue";
 
 export type QueueClass<T extends StorableData = StorableData> = typeof Queue<T>;
 export type QueueConstructor<T extends StorableData = StorableData> = new (
@@ -28,6 +28,10 @@ class QueueManager extends HasApplication {
         return this.queueClasses.get(name) as QueueConstructor<StorableData> | undefined;
     }
 
+    public getJobs(): ReadonlyMap<number, Queue> {
+        return this.scheduledQueues;
+    }
+
     public create<T extends StorableData>(
         queue: string | QueueClass,
         options: QueueOptions<T>
@@ -44,7 +48,10 @@ class QueueManager extends HasApplication {
         return new QueueClass(this.application, this, options);
     }
 
-    public async bulkCancel<T extends StorableData>(type: QueueClass<T>, filter: (queue: Queue<NoInfer<T>>) => boolean) {
+    public async bulkCancel<T extends StorableData>(
+        type: QueueClass<T>,
+        filter: (queue: Queue<NoInfer<T>>) => boolean
+    ) {
         for (const queue of this.scheduledQueues.values()) {
             // noinspection SuspiciousTypeOfGuard
             if (queue instanceof type && filter(queue as Queue<NoInfer<T>>)) {

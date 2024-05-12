@@ -1,3 +1,4 @@
+import type { Client, Snowflake } from "discord.js";
 import { MessageType, type GuildBasedChannel, type Message, type User } from "discord.js";
 
 export function userInfo(user: User) {
@@ -10,4 +11,12 @@ export function channelInfo(channel: GuildBasedChannel) {
 
 export function messageInfo(message: Message) {
     return `ID: ${message.id}\nType: ${MessageType[message.type]}\nURL: ${message.url}`;
+}
+
+export function shortUserInfo(client: Client, userId: Snowflake) {
+    if (userId === client.user!.id) {
+        return "System";
+    }
+
+    return `<@${userId}> [\`${userId}\`]`;
 }
