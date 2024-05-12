@@ -32,6 +32,10 @@ class QueueManager extends HasApplication {
         return this.scheduledQueues;
     }
 
+    public getJob(id: number) {
+        return this.scheduledQueues.get(id);
+    }
+
     public create<T extends StorableData>(
         queue: string | QueueClass,
         options: QueueOptions<T>

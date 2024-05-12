@@ -9,7 +9,15 @@ class QueueCommand extends Command {
     public override readonly defer = true;
     public override readonly usage = ["<subcommand: String> [...args: Any[]]"];
     public override readonly systemPermissions = [];
-    public override readonly subcommands = ["list", "cancel", "show", "add"];
+    public override readonly subcommands = [
+        "list",
+        "cancel",
+        "show",
+        "view",
+        "add",
+        "remove",
+        "delete"
+    ];
     public override readonly isolatedSubcommands = true;
     public override readonly aliases = ["queues", "q"];
     public override readonly permissions = [PermissionFlagsBits.ManageGuild];
