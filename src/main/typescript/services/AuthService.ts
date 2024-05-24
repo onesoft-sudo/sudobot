@@ -43,7 +43,7 @@ class AuthService extends Service {
             };
         }
 
-        if (!user.token) {
+        if (!user.token || !user.tokenExpiresAt || user.tokenExpiresAt.getTime() <= Date.now()) {
             const token = await this.generateToken(user);
             const tokenExpiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000);
 
