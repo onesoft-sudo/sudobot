@@ -25,7 +25,7 @@ import {
     LogUserNoteAddPayload
 } from "@main/schemas/LoggingSchema";
 import { MessageRuleType } from "@main/schemas/MessageRuleSchema";
-import { ModerationAction } from "@main/schemas/ModerationAction";
+import { ModerationActionType } from "@main/schemas/ModerationActionSchema";
 import ConfigurationManager from "@main/services/ConfigurationManager";
 import { chunkedString } from "@main/utils/utils";
 import { formatDistanceToNowStrict } from "date-fns";
@@ -342,7 +342,7 @@ class AuditLoggingService extends Service {
         return this.logHandlers[type].call(this, ...args);
     }
 
-    private commonSummary(action: ModerationAction, name: string) {
+    private commonSummary(action: ModerationActionType, name: string) {
         let summary = bold(name) + "\n";
 
         if ("duration" in action && action.duration) {
@@ -356,7 +356,7 @@ class AuditLoggingService extends Service {
         return summary;
     }
 
-    private summarizeActions(actions: ModerationAction[]) {
+    private summarizeActions(actions: ModerationActionType[]) {
         let summary = "";
 
         for (const action of actions) {
