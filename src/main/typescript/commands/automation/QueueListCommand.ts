@@ -8,18 +8,6 @@ import { Colors } from "@main/constants/Colors";
 import QueueService from "@main/services/QueueService";
 import { PermissionFlagsBits, inlineCode, italic, time } from "discord.js";
 
-// type QueueListCommandArgs = {
-//     id: number
-// };
-
-// @TakesArgument<QueueListCommandArgs>({
-//     names: ["id"],
-//     types: [IntegerArgument],
-//     optional: false,
-//     errorMessages: [{
-//         [ErrorType.Required]: "You must provide a Queued Job ID!",
-//     }],
-// })
 class QueueListCommand extends Command {
     public override readonly name = "queue::list";
     public override readonly description: string = "List all queued jobs in this server.";
