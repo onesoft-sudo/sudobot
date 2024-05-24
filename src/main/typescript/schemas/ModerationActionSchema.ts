@@ -6,7 +6,7 @@ const CommonOptions = {
     notify: z.boolean().optional()
 };
 
-export const ModerationAction = z.union([
+export const ModerationActionSchema = z.union([
     z.object({
         ...CommonOptions,
         type: z.literal("ban"),
@@ -56,4 +56,4 @@ export const ModerationAction = z.union([
     })
 ]);
 
-export type ModerationAction = z.infer<typeof ModerationAction>;
+export type ModerationActionType = z.infer<typeof ModerationActionSchema>;

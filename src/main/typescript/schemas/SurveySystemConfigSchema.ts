@@ -11,7 +11,7 @@ const SurveyQuestion = z.object({
     default_value: z.string().optional()
 });
 
-export const SurveySystemConfig = z.object({
+export const SurveySystemConfigSchema = z.object({
     enabled: z.boolean().default(false),
     default_log_channel: zSnowflake.optional(),
     surveys: z

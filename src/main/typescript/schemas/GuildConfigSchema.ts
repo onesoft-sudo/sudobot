@@ -18,10 +18,10 @@
  */
 
 import { LoggingSchema } from "@main/schemas/LoggingSchema";
-import { SurveySystemConfig } from "@main/schemas/SurveySystemConfig";
+import { SurveySystemConfigSchema } from "@main/schemas/SurveySystemConfigSchema";
 import { z } from "zod";
 import { MessageRuleSchema } from "./MessageRuleSchema";
-import { ModerationAction } from "./ModerationAction";
+import { ModerationActionSchema } from "./ModerationActionSchema";
 import { zSnowflake } from "./SnowflakeSchema";
 
 export const PermissionModeSchema = z.union([
@@ -122,7 +122,7 @@ export const GuildConfigSchema = z.object({
                     mode: z.enum(["exclude", "include"]).default("exclude")
                 })
                 .default({}),
-            actions: z.array(ModerationAction)
+            actions: z.array(ModerationActionSchema)
         })
         .optional(),
     extensions: z
@@ -168,7 +168,7 @@ export const GuildConfigSchema = z.object({
                 .optional()
         })
         .optional(),
-    survey_system: SurveySystemConfig.optional()
+    survey_system: SurveySystemConfigSchema.optional()
     /*
     quickmute: z
         .object({

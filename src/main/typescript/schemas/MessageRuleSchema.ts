@@ -18,7 +18,7 @@
  */
 
 import { z } from "zod";
-import { ModerationAction } from "./ModerationAction";
+import { ModerationActionSchema } from "./ModerationActionSchema";
 import { zSnowflake } from "./SnowflakeSchema";
 
 const hasStringArrayData = {
@@ -26,7 +26,7 @@ const hasStringArrayData = {
 };
 
 const Common = {
-    actions: z.array(ModerationAction).default([]),
+    actions: z.array(ModerationActionSchema).default([]),
     mode: z.enum(["normal", "invert"]).default("normal"),
     enabled: z.boolean().default(true),
     bail: z.boolean().default(true),
