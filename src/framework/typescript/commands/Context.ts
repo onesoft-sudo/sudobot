@@ -18,6 +18,7 @@
  */
 
 import type { GuildConfig } from "@main/schemas/GuildConfigSchema";
+import type { SystemConfig } from "@main/schemas/SystemConfigSchema";
 import type {
     ChatInputCommandInteraction,
     ContextMenuCommandInteraction,
@@ -107,6 +108,10 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
 
     public get config(): GuildConfig | undefined {
         return Application.current().service("configManager").config[this.guildId];
+    }
+
+    public get systemConfig(): SystemConfig {
+        return Application.current().service("configManager").systemConfig;
     }
 
     public abstract get userId(): Snowflake;

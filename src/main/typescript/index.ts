@@ -21,12 +21,21 @@ import "module-alias/register";
 import "reflect-metadata";
 
 import Application from "@framework/app/Application";
+import { version } from "@root/package.json";
 import path from "path";
 import DiscordKernel from "./core/DiscordKernel";
 
 async function main() {
     Application.setupGlobals();
-    const application = new Application(path.resolve(__dirname), path.resolve(__dirname, "../../.."));
+
+    const rootDirectoryPath = path.resolve(__dirname);
+    const projectRootDirectoryPath = path.resolve(__dirname, "../../..");
+    const application = new Application(
+        rootDirectoryPath,
+        projectRootDirectoryPath,
+        process.env.SUDOBOT_VERSION ?? version
+    );
+
     await application.run(new DiscordKernel());
 }
 

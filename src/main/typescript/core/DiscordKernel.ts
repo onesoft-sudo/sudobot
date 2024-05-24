@@ -21,6 +21,7 @@ import type { AnyConstructor } from "@framework/container/Container";
 import Container from "@framework/container/Container";
 import Kernel from "@framework/core/Kernel";
 import { Logger } from "@framework/log/Logger";
+import { createAxiosClient } from "@main/utils/axios";
 import metadata from "@root/package.json";
 import axios from "axios";
 import { spawn } from "child_process";
@@ -159,6 +160,8 @@ class DiscordKernel extends Kernel {
                 key: binding.key
             });
         }
+
+        createAxiosClient(application);
     }
 
     public getClient() {

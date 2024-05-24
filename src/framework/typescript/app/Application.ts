@@ -51,7 +51,8 @@ class Application {
 
     public constructor(
         public readonly rootPath: string,
-        public readonly projectRootPath: string
+        public readonly projectRootPath: string,
+        public readonly version: string
     ) {
         this.container = Container.getInstance();
     }
