@@ -18,6 +18,7 @@
  */
 
 import { LoggingSchema } from "@main/types/LoggingSchema";
+import { SurveySystemConfig } from "@main/types/SurveySystemConfig";
 import { z } from "zod";
 import { MessageRuleSchema } from "./MessageRuleSchema";
 import { ModerationAction } from "./ModerationAction";
@@ -166,7 +167,8 @@ export const GuildConfigSchema = z.object({
                 })
                 .optional()
         })
-        .optional()
+        .optional(),
+    survey_system: SurveySystemConfig.optional()
     /*
     quickmute: z
         .object({
