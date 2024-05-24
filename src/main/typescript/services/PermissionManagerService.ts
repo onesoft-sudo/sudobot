@@ -29,10 +29,10 @@ import {
 import { Name } from "@framework/services/Name";
 import { OptionalRecord } from "@framework/types/OptionalRecord";
 import { Guild, GuildMember, Snowflake } from "discord.js";
+import { PermissionMode } from "../schemas/GuildConfigSchema";
 import DiscordPermissionManager from "../security/DiscordPermissionManager";
 import LayeredPermissionManager from "../security/LayeredPermissionManager";
 import LevelBasedPermissionManager from "../security/LevelBasedPermissionManager";
-import { PermissionMode } from "../types/GuildConfigSchema";
 import ConfigurationManager from "./ConfigurationManager";
 
 @Name("permissionManager")

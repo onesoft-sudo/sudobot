@@ -1,4 +1,4 @@
-import { zSnowflake } from "@main/types/SnowflakeSchema";
+import { zSnowflake } from "@main/schemas/SnowflakeSchema";
 import { z } from "zod";
 
 const SurveyQuestion = z.object({

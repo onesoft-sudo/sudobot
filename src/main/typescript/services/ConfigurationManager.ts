@@ -26,8 +26,8 @@ import fs, { writeFile } from "fs/promises";
 import path from "path";
 import { AnyZodObject, z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import { GuildConfig, GuildConfigSchema } from "../types/GuildConfigSchema";
-import { SystemConfig, SystemConfigSchema } from "../types/SystemConfigSchema";
+import { GuildConfig, GuildConfigSchema } from "../schemas/GuildConfigSchema";
+import { SystemConfig, SystemConfigSchema } from "../schemas/SystemConfigSchema";
 import { systemPrefix } from "../utils/utils";
 
 export const name = "configManager";

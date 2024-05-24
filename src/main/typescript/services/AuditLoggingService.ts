@@ -7,7 +7,6 @@ import { fetchChannel } from "@framework/utils/entities";
 import { isDiscordAPIError } from "@framework/utils/errors";
 import { Colors } from "@main/constants/Colors";
 import { RuleExecResult } from "@main/contracts/ModerationRuleHandlerContract";
-import ConfigurationManager from "@main/services/ConfigurationManager";
 import {
     LogEventArgs,
     LogEventType,
@@ -24,9 +23,10 @@ import {
     LogMemberWarningAddPayload,
     LogMessageBulkDeletePayload,
     LogUserNoteAddPayload
-} from "@main/types/LoggingSchema";
-import { MessageRuleType } from "@main/types/MessageRuleSchema";
-import { ModerationAction } from "@main/types/ModerationAction";
+} from "@main/schemas/LoggingSchema";
+import { MessageRuleType } from "@main/schemas/MessageRuleSchema";
+import { ModerationAction } from "@main/schemas/ModerationAction";
+import ConfigurationManager from "@main/services/ConfigurationManager";
 import { chunkedString } from "@main/utils/utils";
 import { formatDistanceToNowStrict } from "date-fns";
 import {

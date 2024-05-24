@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { GuildConfig } from "@main/types/GuildConfigSchema";
+import type { GuildConfig } from "@main/schemas/GuildConfigSchema";
 import type {
     ChatInputCommandInteraction,
     ContextMenuCommandInteraction,

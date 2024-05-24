@@ -28,8 +28,8 @@ import { fetchMember, fetchUser } from "@framework/utils/entities";
 import { isDiscordAPIError } from "@framework/utils/errors";
 import { also } from "@framework/utils/utils";
 import MassUnbanQueue from "@main/queues/MassUnbanQueue";
+import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
-import { LogEventType } from "@main/types/LoggingSchema";
 import { Infraction, InfractionDeliveryStatus, InfractionType, PrismaClient } from "@prisma/client";
 import { AsciiTable3 } from "ascii-table3";
 import { formatDistanceStrict, formatDistanceToNowStrict } from "date-fns";
@@ -63,7 +63,7 @@ import InfractionChannelDeleteQueue from "../queues/InfractionChannelDeleteQueue
 import RoleQueue from "../queues/RoleQueue";
 import UnbanQueue from "../queues/UnbanQueue";
 import UnmuteQueue from "../queues/UnmuteQueue";
-import { GuildConfig } from "../types/GuildConfigSchema";
+import { GuildConfig } from "../schemas/GuildConfigSchema";
 import { userInfo } from "../utils/embed";
 import ConfigurationManager from "./ConfigurationManager";
 import QueueService from "./QueueService";

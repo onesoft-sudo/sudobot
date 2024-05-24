@@ -1,5 +1,5 @@
 import type { APIEmbed, Awaitable, GuildMember, Message } from "discord.js";
-import type { MessageRuleType } from "../types/MessageRuleSchema";
+import type { MessageRuleType } from "../schemas/MessageRuleSchema";
 
 type HandlerRecord = {
     [K in MessageRuleType["type"]]: Handler;

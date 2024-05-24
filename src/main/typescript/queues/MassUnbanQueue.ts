@@ -1,5 +1,5 @@
 import Queue from "@framework/queues/Queue";
-import { LogEventType } from "@main/types/LoggingSchema";
+import { LogEventType } from "@main/schemas/LoggingSchema";
 import { InfractionType, type PrismaClient } from "@prisma/client";
 import type { Snowflake } from "discord.js";
 

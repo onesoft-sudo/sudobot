@@ -2,8 +2,8 @@ import { Buildable, Command } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { ContextType } from "@framework/commands/ContextType";
 import { Inject } from "@framework/container/Inject";
+import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
-import { LogEventType } from "@main/types/LoggingSchema";
 import {
     ApplicationCommandType,
     PermissionFlagsBits,

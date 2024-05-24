@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { LoggingSchema } from "@main/types/LoggingSchema";
-import { SurveySystemConfig } from "@main/types/SurveySystemConfig";
+import { LoggingSchema } from "@main/schemas/LoggingSchema";
+import { SurveySystemConfig } from "@main/schemas/SurveySystemConfig";
 import { z } from "zod";
 import { MessageRuleSchema } from "./MessageRuleSchema";
 import { ModerationAction } from "./ModerationAction";

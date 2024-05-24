@@ -4,7 +4,7 @@ import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { Infraction } from "@prisma/client";
 import { Guild, GuildMember, Message, TextChannel, User } from "discord.js";
-import { ModerationAction } from "../types/ModerationAction";
+import { ModerationAction } from "../schemas/ModerationAction";
 import type InfractionManager from "./InfractionManager";
 
 type MemberOnlyAction = Extract<ModerationAction, { type: "kick" | "mute" | "role" | "warn" }>;

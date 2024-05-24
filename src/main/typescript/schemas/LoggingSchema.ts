@@ -1,7 +1,7 @@
 import type Duration from "@framework/datetime/Duration";
 import type { RuleExecResult } from "@main/contracts/ModerationRuleHandlerContract";
-import type { MessageRuleType } from "@main/types/MessageRuleSchema";
-import { zSnowflake } from "@main/types/SnowflakeSchema";
+import type { MessageRuleType } from "@main/schemas/MessageRuleSchema";
+import { zSnowflake } from "@main/schemas/SnowflakeSchema";
 import type {
     Collection,
     Guild,

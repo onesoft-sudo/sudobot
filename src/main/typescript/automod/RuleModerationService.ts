@@ -2,19 +2,19 @@ import { Inject } from "@framework/container/Inject";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
-import { LogEventType } from "@main/types/LoggingSchema";
+import { LogEventType } from "@main/schemas/LoggingSchema";
 import { GuildMember, Message, Snowflake, TextChannel } from "discord.js";
 import { MessageAutoModServiceContract } from "../contracts/MessageAutoModServiceContract";
 import {
     MessageRuleScope,
     type default as ModerationRuleHandlerContract
 } from "../contracts/ModerationRuleHandlerContract";
+import { MessageRuleType } from "../schemas/MessageRuleSchema";
 import ModerationRuleHandler from "../security/ModerationRuleHandler";
 import type AuditLoggingService from "../services/AuditLoggingService";
 import type ConfigurationManager from "../services/ConfigurationManager";
 import type ModerationActionService from "../services/ModerationActionService";
 import type PermissionManagerService from "../services/PermissionManagerService";
-import { MessageRuleType } from "../types/MessageRuleSchema";
 import { safeMemberFetch } from "../utils/fetch";
 
 @Name("ruleModerationService")

@@ -32,7 +32,7 @@
             "@root/*": ["./*"],
         }
     },
-    "include": ["src/main/typescript/types/globals.d.ts", "src/**/*.ts", "build.blaze.ts"],
+    "include": ["src/main/typescript/types/global/globals.d.ts", "src/**/*.ts", "build.blaze.ts"],
     "exclude": [
         "./backup",
         "./tmp",
