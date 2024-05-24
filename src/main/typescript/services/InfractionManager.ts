@@ -281,7 +281,7 @@ class InfractionManager extends Service {
             }
 
             await this.application
-                .getServiceByName("queueService")
+                .service("queueService")
                 .create(InfractionChannelDeleteQueue, {
                     data: {
                         channelId: channel.id,

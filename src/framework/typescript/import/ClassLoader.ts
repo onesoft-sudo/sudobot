@@ -263,15 +263,11 @@ class ClassLoader {
     }
 
     private get configManager() {
-        return this.application.getServiceByName(
-            "configManager"
-        ) as ConfigurationManagerServiceInterface;
+        return this.application.service("configManager") as ConfigurationManagerServiceInterface;
     }
 
     private get commandManager() {
-        return this.application.getServiceByName(
-            "commandManager"
-        ) as CommandManagerServiceInterface;
+        return this.application.service("commandManager") as CommandManagerServiceInterface;
     }
 
     public flattenCommandGroups() {
@@ -338,7 +334,7 @@ class ClassLoader {
     }
 
     public async loadQueueClasses(directory = path.resolve(__dirname, "../../queues")) {
-        this.application.getServiceByName("queueService").onBeforeQueueRegister();
+        this.application.service("queueService").onBeforeQueueRegister();
         const queueFiles = await this.iterateDirectoryRecursively(directory);
 
         for (const file of queueFiles) {
@@ -352,7 +348,7 @@ class ClassLoader {
 
     public async loadQueueClass(filepath: string) {
         const { default: QueueClass }: DefaultExport<typeof Queue> = await import(filepath);
-        this.application.getServiceByName("queueService").register(QueueClass);
+        this.application.service("queueService").register(QueueClass);
         this.application.logger.info("Loaded Queue: ", QueueClass.uniqueName);
     }
 

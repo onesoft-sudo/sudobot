@@ -66,11 +66,8 @@ export default class APIServer extends Service {
 
     public async onReady() {
         if (
-            (
-                this.application.getServiceByName(
-                    "configManager"
-                ) as ConfigurationManagerServiceInterface
-            ).systemConfig.api.enabled
+            (this.application.service("configManager") as ConfigurationManagerServiceInterface)
+                .systemConfig.api.enabled
         ) {
             await this.boot();
             await this.start();
@@ -81,7 +78,7 @@ export default class APIServer extends Service {
         this.expressApp.use(this.onError);
         this.expressApp.use(cors());
 
-        const configManager = this.application.getServiceByName(
+        const configManager = this.application.service(
             "configManager"
         ) as ConfigurationManagerServiceInterface;
 

@@ -4,6 +4,7 @@ import DurationParseError from "@framework/datetime/DurationParseError";
 import { Override } from "@framework/decorators/Override";
 import { isAlpha, isDigit } from "@framework/utils/string";
 import { formatDuration } from "date-fns";
+import { TimestampStylesString, time } from "discord.js";
 
 type DurationOptions = {
     years?: number;
@@ -159,7 +160,9 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<number> {
             }
 
             if (value < 0) {
-                throw new DurationParseError("Negative numbers are not allowed in duration expressions");
+                throw new DurationParseError(
+                    "Negative numbers are not allowed in duration expressions"
+                );
             }
 
             let unit = "";
@@ -275,12 +278,11 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<number> {
     }
 
     /**
-     * Returns a string representation of the duration.
+     * Formats the duration into a human-readable string.
      *
      * @returns The formatted duration.
      */
-    @Override
-    public toString() {
+    public format(): string {
         let formatted = formatDuration(this);
 
         if (this.milliseconds) {
@@ -288,6 +290,39 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<number> {
         }
 
         return formatted;
+    }
+
+    /**
+     * Formats the duration for Discord.
+     *
+     * @returns The formatted duration.
+     */
+    public formatForDiscord(): `<t:${bigint}>`;
+
+    /**
+     * Formats the duration for Discord with a style.
+     *
+     * @param style The style to format the duration with.
+     * @returns The formatted duration.
+     */
+    public formatForDiscord<S extends TimestampStylesString>(style: S): `<t:${bigint}:${S}>`;
+
+    public formatForDiscord<S extends TimestampStylesString>(style?: S) {
+        if (!style) {
+            return time(this.fromNow());
+        }
+
+        return time(this.fromNow(), style);
+    }
+
+    /**
+     * Returns a string representation of the duration.
+     *
+     * @returns The formatted duration.
+     */
+    @Override
+    public toString() {
+        return this.format();
     }
 
     /**

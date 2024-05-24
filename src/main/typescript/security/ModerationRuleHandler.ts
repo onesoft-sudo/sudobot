@@ -7,8 +7,8 @@ import { AcceptsMessageRuleScopes } from "@main/decorators/AcceptsMessageRuleSco
 import { Invite, Snowflake, spoiler } from "discord.js";
 import ModerationRuleHandlerContract, {
     MessageRuleScope,
-    type ModerationRuleContext,
-    RuleExecResult
+    RuleExecResult,
+    type ModerationRuleContext
 } from "../contracts/ModerationRuleHandlerContract";
 
 // FIXME: This class is not complete and is only a placeholder for the actual implementation.
@@ -26,8 +26,7 @@ class ModerationRuleHandler
     >();
 
     private preconditionForInviteCaches(guild: Snowflake) {
-        const config =
-            this.application.getServiceByName("configManager").config[guild]?.rule_moderation;
+        const config = this.application.service("configManager").config[guild]?.rule_moderation;
 
         return config?.enabled && config.rules.some(r => r.type === "anti_invite");
     }
@@ -630,7 +629,7 @@ class ModerationRuleHandler
         for (const url of urls) {
             const {
                 data: { text: actualText, words: textWords }
-            } = await this.application.getServiceByName("imageRecognitionService").recognize(url);
+            } = await this.application.service("imageRecognitionService").recognize(url);
             const text = actualText.toLowerCase();
             const result = await this.checkImageFilter(
                 [text],

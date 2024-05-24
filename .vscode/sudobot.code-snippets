@@ -1,0 +1,77 @@
+{
+    "SudoBot Command Class": {
+        "scope": "typescript",
+        "prefix": "command",
+        "body": [
+            "import { TakesArgument } from \"@framework/arguments/ArgumentTypes\";",
+            "import type { Buildable } from \"@framework/commands/Command\";",
+            "import { Command } from \"@framework/commands/Command\";",
+            "import type Context from \"@framework/commands/Context\";",
+            "",
+            "type ${1:${TM_FILENAME_BASE/(.*?)\\..*/$1/}}Args = {",
+            "\targ: string;",
+            "};",
+            "",
+            "@TakesArgument<${1:${TM_FILENAME_BASE/(.*?)\\..*/$1/}}Args>({",
+            "\tnames: [],",
+            "\ttypes: [],",
+            "\toptional: false,",
+            "\terrorMessages: [],",
+            "})",
+            "class ${1:${TM_FILENAME_BASE/(.*?)\\..*/$1/}} extends Command {",
+            "\tpublic override readonly name = \"custom\";",
+            "\tpublic override readonly description: string = \"Custom command.\";",
+            "\tpublic override readonly detailedDescription: string = \"Custom command.\";",
+            "\tpublic override readonly defer = true;",
+            "\tpublic override readonly usage = [\"\"];",
+            "\tpublic override readonly systemPermissions = [];",
+            "",
+            "\tpublic override build(): Buildable[] {",
+            "\t\treturn [this.buildChatInput()];",
+            "\t}",
+            "",
+            "\tpublic override async execute(context: Context, args: ${1:${TM_FILENAME_BASE/(.*?)\\..*/$1/}}Args): Promise<void> {",
+            "\t\t// Add your custom command logic here",
+            "\t}",
+            "}",
+            "",
+            "export default ${1:${TM_FILENAME_BASE/(.*?)\\..*/$1/}};"
+        ]
+    },
+    "SudoBot Service Class": {
+        "scope": "typescript",
+        "prefix": "service",
+        "body": [
+            "import { Name } from \"@framework/services/Name\";",
+            "import { Service } from \"@framework/services/Service\";",
+            "",
+            "@Name(\"${1:${TM_FILENAME_BASE/(.*?)\\..*/$1/}}\")",
+            "class ${1:${TM_FILENAME_BASE/(.*?)\\..*/$1/}} extends Service {",
+            "\t// TODO: Implement service",
+            "}",
+            "",
+            "export default ${1:${TM_FILENAME_BASE/(.*?)\\..*/$1/}};"
+        ]
+    },
+    "SudoBot Queue Class": {
+        "scope": "typescript",
+        "prefix": "queue",
+        "body": [
+            "import Queue from \"@framework/queues/Queue\";",
+            "",
+            "type ${1:${TM_FILENAME_BASE/(.*?)\\..*/$1/}}Payload = {",
+            "\t// TODO: Add payload properties",
+            "};",
+            "",
+            "class ${1:${TM_FILENAME_BASE/(.*?)\\..*/$1/}} extends Queue<${1:${TM_FILENAME_BASE/(.*?)\\..*/$1/}}Payload> {",
+            "\tpublic static override readonly uniqueName = \"${1:${TM_FILENAME_BASE/(.*?)\\..*/$1/}}\";",
+            "",
+            "\tpublic async execute(payload: ${1:${TM_FILENAME_BASE/(.*?)\\..*/$1/}}Payload) {",
+            "\t\t// TODO: Implement queue logic",
+            "\t}",
+            "}",
+            "",
+            "export default ${1:${TM_FILENAME_BASE/(.*?)\\..*/$1/}};"
+        ]
+    }
+}

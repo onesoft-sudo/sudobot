@@ -89,6 +89,10 @@ abstract class Queue<T extends StorableData = StorableData> extends HasApplicati
         );
     }
 
+    public get uniqueName() {
+        return (this.constructor as typeof Queue).uniqueName;
+    }
+
     public async save() {
         if (this._id !== undefined) {
             throw new Error("This queue has already been saved");

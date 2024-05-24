@@ -121,7 +121,7 @@ class LevelBasedPermissionManager extends AbstractPermissionManager {
             level: number;
         }
     > {
-        const permissionManager = this.application.getServiceByName("permissionManager");
+        const permissionManager = this.application.service("permissionManager");
         const globalUserLevel = this.levels.get(`0:${member.user.id}`);
         const globalEveryoneLevel = this.levels.get("0:0");
         const memberLevel = this.levels.get(`${member.guild.id}:${member.user.id}`);

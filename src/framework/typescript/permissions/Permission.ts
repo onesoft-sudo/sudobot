@@ -56,7 +56,7 @@ abstract class Permission extends Singleton {
     }
 
     public static fromString(permission: string): Permission | undefined {
-        const permissionManager = Application.current().getServiceByName(
+        const permissionManager = Application.current().service(
             "permissionManager"
         ) satisfies PermissionManagerServiceInterface;
         return permissionManager.getPermissionByName(permission);
@@ -90,7 +90,7 @@ abstract class Permission extends Singleton {
 
     public static async of(member: GuildMember, exclude?: Permission[]) {
         const permissions = new FluentSet<Permission>();
-        const permissionManager = Application.current().getServiceByName(
+        const permissionManager = Application.current().service(
             "permissionManager"
         ) satisfies PermissionManagerServiceInterface;
         const allPermissions = permissionManager.getAllPermissions().values();

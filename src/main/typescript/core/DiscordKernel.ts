@@ -186,8 +186,8 @@ class DiscordKernel extends Kernel {
         await application.boot();
 
         if (process.env.SERVER_ONLY_MODE) {
-            await application.getServiceByName("apiServer").boot();
-            await application.getServiceByName("apiServer").start();
+            await application.service("apiServer").boot();
+            await application.service("apiServer").start();
         } else {
             this.logger.debug("Attempting to log into Discord...");
             await application.getClient().login(process.env.TOKEN);

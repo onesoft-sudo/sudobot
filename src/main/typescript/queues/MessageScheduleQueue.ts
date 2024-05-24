@@ -35,7 +35,7 @@ class MessageScheduleQueue extends Queue<MessageScheduleQueuePayload> {
 
         try {
             const { data, output } = await this.application
-                .getServiceByName("directiveParsingService")
+                .service("directiveParsingService")
                 .parse(content);
             const options = {
                 content: output.trim() === "" ? undefined : output,
@@ -48,7 +48,7 @@ class MessageScheduleQueue extends Queue<MessageScheduleQueuePayload> {
 
                 if (deleteAfter) {
                     this.application
-                        .getServiceByName("queueService")
+                        .service("queueService")
                         .create(MessageDeleteQueue, {
                             data: {
                                 guildId,
@@ -68,7 +68,7 @@ class MessageScheduleQueue extends Queue<MessageScheduleQueuePayload> {
             const user = await fetchUser(this.application.client, this.userId);
 
             if (user) {
-                this.application.getServiceByName("systemAuditLogging").logEchoCommandExecuted({
+                this.application.service("systemAuditLogging").logEchoCommandExecuted({
                     command: "schedule",
                     guild,
                     rawCommandContent: content,

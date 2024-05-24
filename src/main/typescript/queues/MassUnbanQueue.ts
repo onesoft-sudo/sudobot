@@ -50,7 +50,7 @@ class MassUnbanQueue extends Queue<MassUnbanQueuePayload> {
         }
 
         this.application
-            .getServiceByName("auditLoggingService")
+            .service("auditLoggingService")
             .emitLogEvent(guildId, LogEventType.MemberMassUnban, {
                 guild,
                 moderator: this.application.client.user!,

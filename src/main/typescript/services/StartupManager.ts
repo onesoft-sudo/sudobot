@@ -181,9 +181,7 @@ class StartupManager extends Service implements HasEventListeners {
             );
 
             this.application.logger.info("Restart requested. Shutting down...");
-            process.exit(
-                this.application.getServiceByName("configManager").systemConfig.restart_exit_code
-            );
+            process.exit(this.application.service("configManager").systemConfig.restart_exit_code);
         });
 
         return message;

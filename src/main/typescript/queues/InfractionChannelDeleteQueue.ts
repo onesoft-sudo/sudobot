@@ -17,8 +17,7 @@ class InfractionChannelDeleteQueue extends Queue<InfractionChannelDeleteQueuePay
             return;
         }
 
-        const config =
-            this.application.getServiceByName("configManager").config[this.guildId]?.infractions;
+        const config = this.application.service("configManager").config[this.guildId]?.infractions;
 
         if (!config || config.dm_fallback === "none") {
             return;

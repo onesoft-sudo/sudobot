@@ -426,7 +426,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             return true;
         }
 
-        const manager = this.application.getServiceByName("permissionManager").managers.levels;
+        const manager = this.application.service("permissionManager").managers.levels;
 
         if (manager && manager instanceof LevelBasedPermissionManager) {
             const memberLevel = await manager.getMemberLevel(context.member);
@@ -632,7 +632,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         const memberPermissions =
             alreadyComputedPermissions ??
             (await this.application
-                .getServiceByName("permissionManager")
+                .service("permissionManager")
                 .getMemberPermissions(context.member));
 
         if (allow) {

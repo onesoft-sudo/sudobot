@@ -58,7 +58,7 @@ class ArgumentParser extends HasClient {
             [];
         let payload: ArgumentPayload;
         const { args, argv } = context;
-        const commandManager = Application.current().getServiceByName("commandManager");
+        const commandManager = Application.current().service("commandManager");
 
         if (isDynamic && !subcommand) {
             const paramTypes = Reflect.getMetadata(
@@ -178,7 +178,7 @@ class ArgumentParser extends HasClient {
         }
 
         if (subcommand) {
-            const commandManager = Application.current().getServiceByName("commandManager");
+            const commandManager = Application.current().service("commandManager");
             const canonicalName = commandManager.getCommand(argv[0])?.name ?? argv[0];
             const baseCommand = commandManager.commands.get(canonicalName);
 

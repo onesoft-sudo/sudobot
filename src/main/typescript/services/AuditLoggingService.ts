@@ -163,7 +163,7 @@ class AuditLoggingService extends Service {
             return;
         }
 
-        const configManager = this.application.getServiceByName("configManager");
+        const configManager = this.application.service("configManager");
         const config = configManager.config[guildId]?.logging;
 
         if (!config?.enabled) {
@@ -325,7 +325,7 @@ class AuditLoggingService extends Service {
         type: T,
         ...args: LogEventArgs[T]
     ) {
-        const configManager = this.application.getServiceByName("configManager");
+        const configManager = this.application.service("configManager");
         const config = configManager.config[guildId]?.logging;
         const defaultEnabled = config?.default_enabled ?? true;
 

@@ -39,14 +39,13 @@ class CommandRateLimiter extends HasApplication implements CommandRateLimiterCon
         userId: Snowflake
     ): Promise<boolean> {
         const config =
-            this.application.getServiceByName("configManager").config[guildId]?.commands
-                ?.ratelimiting;
+            this.application.service("configManager").config[guildId]?.commands?.ratelimiting;
         const globalKey = `${userId}_${commandName}` as const;
         const guildKey = `${guildId}_${userId}_${commandName}` as const;
         const globalCache = this.cache.get(globalKey);
         const guildCache = this.cache.get(guildKey);
         const command = (
-            this.application.getServiceByName("commandManager") as CommandManagerServiceInterface
+            this.application.service("commandManager") as CommandManagerServiceInterface
         ).getCommand(commandName);
 
         if (!command) {

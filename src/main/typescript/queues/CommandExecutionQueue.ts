@@ -41,7 +41,7 @@ class CommandExecutionQueue extends Queue<CommandExecutionQueuePayload> {
         messageId,
         fromInteraction
     }: CommandExecutionQueuePayload) {
-        const prefix = this.application.getServiceByName("configManager").config[guildId]?.prefix;
+        const prefix = this.application.service("configManager").config[guildId]?.prefix;
 
         if (!prefix) {
             this.application.logger.error(`No prefix found for guild ${guildId}`);
@@ -123,9 +123,7 @@ class CommandExecutionQueue extends Queue<CommandExecutionQueuePayload> {
         });
 
         if (
-            (await this.application
-                .getServiceByName("commandManager")
-                .runCommandFromMessage(copy)) === false
+            (await this.application.service("commandManager").runCommandFromMessage(copy)) === false
         ) {
             this.application.logger.error(
                 `Failed to run command from message ${message.id} in guild ${guild.id}`

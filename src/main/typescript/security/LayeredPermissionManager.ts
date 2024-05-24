@@ -188,7 +188,7 @@ class LayeredPermissionManager extends AbstractPermissionManager {
         finalDiscordPermissions.add(...member.permissions.toArray());
 
         const allPermissions = this.application
-            .getServiceByName("permissionManager")
+            .service("permissionManager")
             .getAllPermissions()
             .values();
 

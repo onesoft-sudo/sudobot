@@ -25,7 +25,7 @@ class UnbanQueue extends Queue<UnbanQueuePayload> {
         }
 
         await this.application
-            .getServiceByName("infractionManager")
+            .service("infractionManager")
             .createUnban({
                 guildId: guild.id,
                 moderator: this.application.client.user!,

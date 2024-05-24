@@ -28,7 +28,7 @@ class UnmuteQueue extends Queue<UnmuteQueuePayload> {
         }
 
         const result = await this.application
-            .getServiceByName("infractionManager")
+            .service("infractionManager")
             .createUnmute({
                 guildId: guild.id,
                 moderator: this.application.client.user!,

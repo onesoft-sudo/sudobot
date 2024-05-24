@@ -106,7 +106,7 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
     }
 
     public get config(): GuildConfig | undefined {
-        return Application.current().getServiceByName("configManager").config[this.guildId];
+        return Application.current().service("configManager").config[this.guildId];
     }
 
     public abstract get userId(): Snowflake;

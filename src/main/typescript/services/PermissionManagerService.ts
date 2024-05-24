@@ -48,7 +48,7 @@ class PermissionManagerService extends AbstractPermissionManagerService {
     }
 
     private createManagers() {
-        const config = this.application.getServiceByName("configManager").config;
+        const config = this.application.service("configManager").config;
         const modes = new FluentSet<PermissionMode>();
 
         for (const guildId in config) {
@@ -110,7 +110,7 @@ class PermissionManagerService extends AbstractPermissionManagerService {
 
     protected async getManager(guildId: string) {
         const mode =
-            this.application.getServiceByName("configManager").config[guildId]?.permissions.mode ??
+            this.application.service("configManager").config[guildId]?.permissions.mode ??
             "discord";
 
         if (!this.managers[mode]) {

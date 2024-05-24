@@ -233,7 +233,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      */
     public constructor(protected readonly application: Application) {
         this.argumentParser = new ArgumentParser(application.getClient());
-        this.internalPermissionManager = application.getServiceByName(
+        this.internalPermissionManager = application.service(
             "permissionManager"
         ) satisfies PermissionManagerServiceInterface;
     }
@@ -292,7 +292,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
     }
 
     public isDisabled(guildId?: Snowflake): boolean {
-        const configManager = this.application.getServiceByName(
+        const configManager = this.application.service(
             "configManager"
         ) as ConfigurationManagerServiceInterface;
         const name = this.name.replace("::", " ");
@@ -422,9 +422,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
 
         if (!state.isSystemAdmin) {
             const ratelimiter = (
-                this.application.getServiceByName(
-                    "commandManager"
-                ) as CommandManagerServiceInterface
+                this.application.service("commandManager") as CommandManagerServiceInterface
             ).getRateLimiter();
 
             if (
@@ -482,7 +480,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
     }
 
     private isInDisabledChannel(guildId: Snowflake, channelId: Snowflake) {
-        const configManager = this.application.getServiceByName(
+        const configManager = this.application.service(
             "configManager"
         ) satisfies ConfigurationManagerServiceInterface;
 
@@ -643,14 +641,14 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
             }
         }
 
-        const configManager = this.application.getServiceByName(
+        const configManager = this.application.service(
             "configManager"
         ) satisfies ConfigurationManagerServiceInterface;
         const mode =
             configManager.config[context.guildId]?.permissions.command_permission_mode ??
             configManager.systemConfig.command_permission_mode;
 
-        const commandManager = this.application.getServiceByName(
+        const commandManager = this.application.service(
             "commandManager"
         ) satisfies CommandManagerServiceInterface;
 
