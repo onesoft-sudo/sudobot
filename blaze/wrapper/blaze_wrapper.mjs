@@ -79,8 +79,9 @@ function getProperty(name, def) {
 
 function determineIndexFile() {
     const blazeSrcPath = getProperty("blaze.srcpath", "build_src");
-    return path.resolve(PROJECT_DIR, blazeSrcPath, "src/index.ts");
+    return path.resolve(PROJECT_DIR, blazeSrcPath, "src/main/typescript/index.ts");
 }
+
 
 function getBunPath() {
     if (process.isBun) {

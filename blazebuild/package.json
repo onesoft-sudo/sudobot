@@ -1,21 +1,12 @@
 {
   "name": "blazebuild",
   "module": "src/index.ts",
+  "type": "module",
   "devDependencies": {
     "@types/bun": "latest",
-    "@types/glob": "^8.1.0",
-    "@types/node": "^20.12.2"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.4.5"
   },
   "dependencies": {
-    "chalk": "4",
-    "deepmerge": "^4.3.1",
-    "glob": "^10.3.12",
-    "reflect-metadata": "^0.2.2"
-  },
-  "scripts": {
-    "dev": "bun run src/index.ts"
+    "chalk": "4"
   }
 }

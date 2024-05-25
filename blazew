@@ -252,11 +252,11 @@ if [ "$node" == "node" ]; then
     cmd="npm"
 fi
 
-file="$blaze_srcpath/build/index.js"
+file="$blaze_srcpath/build/out/main/typescript/index.js"
 if [ ! -z "$has_bun" ] || [ $setup_done -eq 1 ] || [ -x "$bun" ]; then
     cmd=$bun
     has_bun=1
-    file="$blaze_srcpath/src/index.ts"
+    file="$blaze_srcpath/src/main/typescript/index.ts"
 fi
 
 blaze_cmd() {
