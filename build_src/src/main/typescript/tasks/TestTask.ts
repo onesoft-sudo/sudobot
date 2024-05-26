@@ -1,9 +1,11 @@
 import AbstractTask from "blazebuild/tasks/AbstractTask";
 import { TaskAction } from "blazebuild/tasks/TaskAction";
+import { TaskDependencyGenerator } from "blazebuild/tasks/TaskDependencyGenerator";
 import { TaskInputGenerator } from "blazebuild/tasks/TaskInputGenerator";
-import { Awaitable } from "blazebuild/types/utils";
+import type { Awaitable } from "blazebuild/types/utils";
 import { $ } from "bun";
 import { glob } from "glob";
+import DependenciesTask from "./DependenciesTask";
 
 class TestTask extends AbstractTask {
     @TaskInputGenerator
@@ -18,6 +20,11 @@ class TestTask extends AbstractTask {
         // }
 
         await $`vitest --run`;
+    }
+
+    @TaskDependencyGenerator
+    protected override dependencies() {
+        return [DependenciesTask];
     }
 }
 

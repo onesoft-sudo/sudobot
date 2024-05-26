@@ -99,7 +99,11 @@ function getBunPath() {
  */
 function execute(file, ...args) {
     const { status } = spawnSync(getBunPath(), [file, ...args], {
-        stdio: process.env.BLAZE_QUIET === "1" ? "ignore" : "inherit"
+        stdio: process.env.BLAZE_QUIET === "1" ? "ignore" : "inherit",
+        env: {
+            ...process.env,
+            PATH: `${process.env.PATH}:${path.resolve(process.cwd(), "node_modules/.bin")}`
+        }
     });
 
     if (status !== 0) {

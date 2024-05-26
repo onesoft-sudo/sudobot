@@ -193,7 +193,7 @@ abstract class AbstractTask<R = void> {
                 taskObject = this.blaze.taskManager.resolveTask(dependency);
             }
 
-            taskObject.getDependencies(set);
+            await taskObject.getDependencies(set);
             set.add(taskObject);
         }
 
@@ -202,13 +202,25 @@ abstract class AbstractTask<R = void> {
 
     public async execute(execDeps = true) {
         const name = this.determineName();
+
+        if (this.blaze.taskManager.executedTasks.has(name)) {
+            return;
+        }
+
         const { call: callExecute } = this.findAction();
         const { call: callGenerateInput } = this.findInputGenerator();
         this._input = callGenerateInput ? new Set(await callGenerateInput()) : this._input;
 
         if (await this.isUpToDate()) {
             IO.println(`> ${chalk.white.dim(`:${name}`)} ${chalk.green(`UP-TO-DATE`)}`);
+            this.blaze.taskManager.upToDateTasks.add(name);
             return;
+        } else {
+            if (process.env.BLAZE_DEBUG === "1") {
+                IO.println(`> ${chalk.white.dim(`:${name}`)} ${chalk.red(`OUT-OF-DATE`)}`);
+            }
+
+            this.blaze.taskManager.upToDateTasks.delete(name);
         }
 
         if (execDeps) {
@@ -223,6 +235,8 @@ abstract class AbstractTask<R = void> {
 
         IO.println(`> ${chalk.white.dim(`:${name}`)}`);
         const result = await callExecute();
+
+        this.blaze.taskManager.executedTasks.add(name);
         const { call: callGenerateOutput } = this.findOutputGenerator();
 
         this._output = callGenerateOutput

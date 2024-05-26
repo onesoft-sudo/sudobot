@@ -33,6 +33,16 @@ class Blaze {
     }
 
     public async boot() {
+        process.on("uncaughtException", error => {
+            IO.error(error);
+            IO.exit(1);
+        });
+
+        process.on("unhandledRejection", error => {
+            IO.error(error);
+            IO.exit(1);
+        });
+
         for (const manager of this.managers) {
             if (manager.boot) {
                 await manager.boot();
@@ -46,7 +56,7 @@ class Blaze {
             await this.buildScriptManager.loadBuildScript();
         } catch (error) {
             if (error instanceof MissingBuildScriptError) {
-                IO.println(error.message);
+                IO.error(error.message);
                 IO.buildFailed();
                 IO.exit(1);
             }
@@ -63,7 +73,7 @@ class Blaze {
             }
         } catch (error) {
             if (error instanceof TaskNotFoundError) {
-                IO.println(`Task '${error.getTaskName()}' could not be found!`);
+                IO.error(error.message);
                 IO.buildFailed();
                 IO.exit(1);
             }

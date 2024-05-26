@@ -1,7 +1,7 @@
 import AbstractTask from "blazebuild/tasks/AbstractTask";
 import { TaskAction } from "blazebuild/tasks/TaskAction";
 import { TaskInputGenerator } from "blazebuild/tasks/TaskInputGenerator";
-import { Awaitable } from "blazebuild/types/utils";
+import type { Awaitable } from "blazebuild/types/utils";
 import { existsSync } from "fs";
 import { rename, rm } from "fs/promises";
 

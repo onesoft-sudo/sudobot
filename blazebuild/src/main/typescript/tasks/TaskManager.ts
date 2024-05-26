@@ -7,7 +7,8 @@ class TaskManager extends Manager {
     private static readonly builtInTasks: Array<new (blaze: Blaze) => AbstractTask<any>> = [];
     private readonly tasks = new Map<string, AbstractTask<any>>();
     private readonly classToTaskMap = new Map<typeof AbstractTask<any>, AbstractTask<any>>();
-    private readonly executedTasks = new Set<string>();
+    public readonly executedTasks = new Set<string>();
+    public readonly upToDateTasks = new Set<string>();
 
     public override async boot() {
         for (const TaskClass of TaskManager.builtInTasks) {
@@ -28,7 +29,7 @@ class TaskManager extends Manager {
                 : this.classToTaskMap.get(taskName);
 
         if (!task) {
-            throw new TaskNotFoundError(`Task ${taskName} not found!`).setTaskName(
+            throw new TaskNotFoundError(`Task '${taskName}' could not be found!`).setTaskName(
                 typeof taskName === "string" ? taskName : taskName.name
             );
         }
@@ -39,11 +40,18 @@ class TaskManager extends Manager {
     public async executeTask(taskName: string) {
         const task = this.resolveTask(taskName);
         await task.execute();
-        this.executedTasks.add(taskName);
     }
 
     public getExecutedTaskCount() {
         return this.executedTasks.size;
+    }
+
+    public getUpToDateTasks() {
+        return this.upToDateTasks.size;
+    }
+
+    public getActionableTaskCount() {
+        return this.upToDateTasks.size + this.executedTasks.size;
     }
 }
 

@@ -59,9 +59,11 @@ class IO {
 
     public static buildSuccessful(): void {
         console.log(`\n${chalk.green.bold("BUILD SUCCESSFUL")} in ${this.timeDiffFromStartup()}`);
-        console.log(
-            `${Blaze.getInstance().taskManager.getExecutedTaskCount()} actionable tasks: ${Blaze.getInstance().taskManager.getExecutedTaskCount()} executed`
-        );
+        const actionableTasks = Blaze.getInstance().taskManager.getActionableTaskCount();
+        const executedTasks = Blaze.getInstance().taskManager.getExecutedTaskCount();
+        const upToDateTasks = Blaze.getInstance().taskManager.getUpToDateTasks();
+
+        console.log(`${actionableTasks} actionable tasks: ${executedTasks} executed`);
     }
 
     public static buildFailed(): void {

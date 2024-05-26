@@ -276,7 +276,7 @@ blaze_cmd() {
 if [ ! -e "$projectdir/.blaze/build.d.ts" ]; then
     print 34 "info   " "Creating $projectdir/.blaze/build.d.ts..."
     mkdir -p "$projectdir/.blaze"
-    cp "$blaze_srcpath/templates/build.d.ts" "$projectdir/.blaze/build.d.ts"
+    cp "$blaze_srcpath/src/main/typescript/types/build.d.ts" "$projectdir/.blaze/build.d.ts"
 
     if [ $? -ne 0 ]; then
         print "1;31" "error  " "Failed to create build.d.ts."
@@ -303,7 +303,7 @@ if [ $setup -eq 1 ]; then
         rm -rf "$projectdir/node_modules/blazebuild" || exit 1
     fi
 
-    ln -s "$(readlink -f "$blaze_srcpath")" "$projectdir/node_modules/blazebuild" || exit 1
+    ln -s "$(readlink -f "$blaze_srcpath/src/main/typescript")" "$projectdir/node_modules/blazebuild" || exit 1
 
     if [ -z "$has_bun" ]; then
         print 34 "info   " "Building BlazeBuild (for node)..."
