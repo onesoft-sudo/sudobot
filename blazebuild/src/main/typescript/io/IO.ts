@@ -1,7 +1,8 @@
 import chalk from "chalk";
+import { performance } from "perf_hooks";
 import Blaze from "../core/Blaze";
 
-const now = process.hrtime.bigint();
+const now = performance.now();
 
 class IO {
     public static println(message: string): void {
@@ -16,7 +17,7 @@ class IO {
         console.debug(chalk.white.dim(message));
     }
 
-    public static error(error: Error | string): void {
+    public static error(error: unknown): void {
         if (error instanceof Error) {
             console.error(error.message);
             console.error(error.stack);
@@ -26,9 +27,7 @@ class IO {
     }
 
     private static timeDiffFromStartup(): string {
-        const diff = process.hrtime.bigint() - now;
-        const ns = diff % 1000n;
-        let time = Math.floor(Number(diff - ns) / 1000);
+        let time = performance.now() - now;
         let str = "";
 
         if (time > 86400000) {
@@ -47,7 +46,7 @@ class IO {
         }
 
         if (time > 1000) {
-            str += `${Math.floor(time / 1000)}s `;
+            str += `${(time / 1000).toFixed(2).replace(/\.00$/, "")}s `;
             time %= 1000;
         }
 
@@ -59,14 +58,18 @@ class IO {
     }
 
     public static buildSuccessful(): void {
-        console.log(`${chalk.green.bold("BUILD SUCCESSFUL")} in ${this.timeDiffFromStartup()}`);
+        console.log(`\n${chalk.green.bold("BUILD SUCCESSFUL")} in ${this.timeDiffFromStartup()}`);
         console.log(
             `${Blaze.getInstance().taskManager.getExecutedTaskCount()} actionable tasks: ${Blaze.getInstance().taskManager.getExecutedTaskCount()} executed`
         );
     }
 
     public static buildFailed(): void {
-        console.log(`${chalk.red.bold("BUILD FAILED")} in ${this.timeDiffFromStartup()}`);
+        console.log(`\n${chalk.red.bold("BUILD FAILED")} in ${this.timeDiffFromStartup()}`);
+    }
+
+    public static exit(code: number = 0): void {
+        process.exit(code);
     }
 }
 

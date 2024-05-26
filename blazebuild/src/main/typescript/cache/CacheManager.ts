@@ -11,7 +11,10 @@ type CacheJson = {
               buildFileModTime: number;
               tasks: {
                   [task: string]: {
-                      files: {
+                      input: {
+                          [path: string]: number | null | undefined;
+                      };
+                      output: {
                           [path: string]: number | null | undefined;
                       };
                   };
@@ -76,24 +79,26 @@ class CacheManager extends Manager {
     public getCachedLastModTime(
         module: string,
         task: string,
+        type: "input" | "output",
         path: string
     ): number | null | undefined {
         if (!this._cache) {
             throw new Error("Cache not loaded!");
         }
 
-        return this._cache[module]?.tasks[task]?.files[path];
+        return this._cache[module]?.tasks[task]?.[type][path];
     }
 
     public getCachedFiles(
         module: string,
-        task: string
+        task: string,
+        type: "input" | "output"
     ): Record<string, number | null | undefined> | null {
         if (!this._cache) {
             throw new Error("Cache not loaded!");
         }
 
-        const caches = this._cache[module]?.tasks[task]?.files;
+        const caches = this._cache[module]?.tasks[task]?.[type];
 
         if (caches === null || caches === undefined) {
             return null;
@@ -105,6 +110,7 @@ class CacheManager extends Manager {
     public setCachedLastModTime(
         module: string,
         task: string,
+        type: "input" | "output",
         path: string,
         lastModTime: number | null | undefined
     ) {
@@ -121,11 +127,12 @@ class CacheManager extends Manager {
 
         if (!this._cache[module]?.tasks[task]) {
             this._cache[module]!.tasks[task] = {
-                files: {}
+                input: {},
+                output: {}
             };
         }
 
-        this._cache[module]!.tasks[task]!.files[path] = lastModTime;
+        this._cache[module]!.tasks[task]![type][path] = lastModTime;
     }
 }
 

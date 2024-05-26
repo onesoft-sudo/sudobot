@@ -1,7 +1,9 @@
 import { lstat } from "fs/promises";
+import path from "path";
 import Manager from "../core/Manager";
+import MissingBuildScriptError from "../errors/MissingBuildScriptError";
 
-export const BUILD_SCRIPT_PATH = "blazebuild/src/main/typescript/index.ts";
+export const BUILD_SCRIPT_PATH = "build.blaze.ts";
 
 class BuildScriptManager extends Manager {
     private _buildScriptLastModTime?: number;
@@ -16,6 +18,24 @@ class BuildScriptManager extends Manager {
         }
 
         return this._buildScriptLastModTime;
+    }
+
+    public async loadBuildScript() {
+        const buildScriptPath = path.resolve(process.cwd(), BUILD_SCRIPT_PATH);
+
+        if (!(await Bun.file(buildScriptPath).exists())) {
+            throw new MissingBuildScriptError(
+                `Missing build script! Expected at: ${buildScriptPath}`
+            );
+        }
+
+        await this.setupEnvironment(global as Record<string, unknown>);
+        await import(buildScriptPath);
+    }
+
+    private async setupEnvironment(global: Record<string, unknown>) {
+        global.tasks = this.blaze.taskManager;
+        global.blaze = this.blaze;
     }
 }
 
