@@ -37,7 +37,7 @@
     "scripts": {
         "start": "node build/out/main/typescript/index.js",
         "start:bun": "bun --tsconfig-override=tsconfig.bun.json src/bun.ts",
-        "prepare": "husky",
+        "prepare": "husky && rm -f node_modules/blazebuild && ln -s $(pwd)/blazebuild/src/main/typescript $(pwd)/node_modules/blazebuild",
         "dev": "bun run src/main/typescript/bun.ts",
         "start:blazew": "node build/out/main/typescript/index.js",
         "lint": "eslint src",
