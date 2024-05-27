@@ -1,11 +1,7 @@
-import chalk from "chalk";
-import { lstat } from "fs/promises";
-import { DEFAULT_MODULE } from "../cache/CacheManager";
 import type Blaze from "../core/Blaze";
-import IO from "../io/IO";
 import type { Awaitable } from "../types/utils";
+import { ACTIONLESS_TASK_METADATA_KEY } from "./ActionlessTask";
 import { TASK_ACTION_METADATA_KEY } from "./TaskAction";
-import { TASK_DEPENDENCY_GENERATOR_METADATA_KEY } from "./TaskDependencyGenerator";
 import { TASK_INPUT_GENERATOR_METADATA_KEY } from "./TaskInputGenerator";
 import { TASK_OUTPUT_GENERATOR_METADATA_KEY } from "./TaskOutputGenerator";
 
@@ -13,6 +9,8 @@ abstract class AbstractTask<R = void> {
     protected readonly name?: string;
     private _input = new Set<string>();
     private _output = new Set<string>();
+    private _hasComputedInput = false;
+    private _hasComputedOutput = false;
 
     public constructor(protected readonly blaze: Blaze) {}
 
@@ -21,7 +19,7 @@ abstract class AbstractTask<R = void> {
     protected generateOutput?(result: R): Awaitable<Iterable<string>>;
     protected dependencies?(): Awaitable<Iterable<TaskResolvable<any>>>;
 
-    public async getIO() {
+    public get io() {
         return {
             input: this._input as ReadonlySet<string>,
             output: this._output as ReadonlySet<string>
@@ -40,14 +38,19 @@ abstract class AbstractTask<R = void> {
 
     private findAction() {
         const methodName = Reflect.getMetadata(TASK_ACTION_METADATA_KEY, this);
+        const isActionLess = Reflect.getMetadata(ACTIONLESS_TASK_METADATA_KEY, this.constructor);
 
-        if (!methodName) {
+        if (!methodName && !isActionLess) {
             throw new Error("No action defined in task!");
+        } else if (methodName && isActionLess) {
+            throw new Error("Cannot define both action and actionless task in the same class!");
         }
 
         return {
             methodName,
-            call: (this[methodName as keyof this] as () => Awaitable<R>).bind(this)
+            call: isActionLess
+                ? ((() => void 0) as () => Awaitable<R>)
+                : (this[methodName as keyof this] as () => Awaitable<R>).bind(this)
         };
     }
 
@@ -85,199 +88,32 @@ abstract class AbstractTask<R = void> {
         };
     }
 
-    public async isUpToDate() {
-        if (
-            this.blaze.cacheManager.cache[DEFAULT_MODULE]?.buildFileModTime !==
-            this.blaze.buildScriptManager.buildScriptLastModTime
-        ) {
-            IO.debug("Rerun due to build file modification time mismatch!");
-            return false;
-        }
-
-        const previousInput = this.blaze.cacheManager.getCachedFiles(
-            DEFAULT_MODULE,
-            this.determineName(),
-            "input"
-        );
-
-        const previousInputKeyCount = previousInput ? Object.keys(previousInput).length : 0;
-
-        if (
-            (previousInputKeyCount === 0 && this._input.size > 0) ||
-            (previousInputKeyCount > 0 && this._input.size === 0)
-        ) {
-            IO.debug("Rerun due to input file count mismatch!");
-            return false;
-        }
-
-        for (const file in previousInput) {
-            const previousMtimeMs = previousInput[file];
-
-            if (previousMtimeMs === undefined) {
-                IO.debug("Rerun due to missing input file in previous cache!");
-                return false;
-            }
-
-            let mtimeMs = null;
-
-            try {
-                mtimeMs = (await lstat(file)).mtimeMs;
-            } catch (error) {
-                IO.debug(
-                    "Failed to stat input file during update check: " + (error as Error).message
-                );
-            }
-
-            if (mtimeMs !== previousMtimeMs) {
-                IO.debug("Rerun due to input file modification time mismatch!");
-                return false;
-            }
-        }
-
-        const previousOutput = this.blaze.cacheManager.getCachedFiles(
-            DEFAULT_MODULE,
-            this.determineName(),
-            "output"
-        );
-
-        if (!previousOutput) {
-            IO.debug("Rerun due to missing output cache!");
-            return false;
-        }
-
-        for (const file in previousOutput) {
-            const previousMtimeMs = previousOutput[file];
-
-            if (previousMtimeMs === undefined) {
-                IO.debug("Rerun due to missing output file in previous cache!");
-                return false;
-            }
-
-            let mtimeMs = null;
-
-            try {
-                mtimeMs = (await lstat(file)).mtimeMs;
-            } catch (error) {
-                IO.debug(
-                    "Failed to stat output file during update check: " + (error as Error).message
-                );
-            }
-
-            if (mtimeMs !== previousMtimeMs) {
-                IO.debug("Rerun due to output file modification time mismatch!");
-                return false;
-            }
-        }
-
-        return true;
+    public get hasComputedInput() {
+        return this._hasComputedInput;
     }
 
-    private async getDependencies(set = new Set<AbstractTask<any>>()) {
-        const methodName = Reflect.getMetadata(TASK_DEPENDENCY_GENERATOR_METADATA_KEY, this);
-
-        if (!methodName) {
-            return null;
-        }
-
-        const dependencies = await (
-            this[methodName as keyof this] as () => Awaitable<Iterable<TaskResolvable<any>>>
-        ).call(this);
-
-        for (const dependency of dependencies) {
-            let taskObject: AbstractTask<unknown>;
-
-            if (typeof dependency === "string") {
-                const task = this.blaze.taskManager.resolveTask(dependency);
-                taskObject = task;
-            } else {
-                taskObject = this.blaze.taskManager.resolveTask(dependency);
-            }
-
-            await taskObject.getDependencies(set);
-            set.add(taskObject);
-        }
-
-        return set;
+    public get hasComputedOutput() {
+        return this._hasComputedOutput;
     }
 
-    public async execute(execDeps = true) {
-        const name = this.determineName();
-
-        if (this.blaze.taskManager.executedTasks.has(name)) {
-            return;
-        }
-
-        const { call: callExecute } = this.findAction();
+    public async computeInput() {
         const { call: callGenerateInput } = this.findInputGenerator();
         this._input = callGenerateInput ? new Set(await callGenerateInput()) : this._input;
+        this._hasComputedInput = true;
+    }
 
-        if (await this.isUpToDate()) {
-            IO.println(`> ${chalk.white.dim(`:${name}`)} ${chalk.green(`UP-TO-DATE`)}`);
-            this.blaze.taskManager.upToDateTasks.add(name);
-            return;
-        } else {
-            if (process.env.BLAZE_DEBUG === "1") {
-                IO.println(`> ${chalk.white.dim(`:${name}`)} ${chalk.red(`OUT-OF-DATE`)}`);
-            }
-
-            this.blaze.taskManager.upToDateTasks.delete(name);
-        }
-
-        if (execDeps) {
-            const dependencies = await this.getDependencies();
-
-            if (dependencies) {
-                for (const dependency of dependencies) {
-                    await dependency.execute(false);
-                }
-            }
-        }
-
-        IO.println(`> ${chalk.white.dim(`:${name}`)}`);
-        const result = await callExecute();
-
-        this.blaze.taskManager.executedTasks.add(name);
+    public async computeOutput(result: R) {
         const { call: callGenerateOutput } = this.findOutputGenerator();
-
         this._output = callGenerateOutput
             ? new Set(await callGenerateOutput(result))
             : this._output;
+        this._hasComputedOutput = true;
+    }
 
-        for (const file of this._output) {
-            let mtimeMs = null;
-
-            try {
-                mtimeMs = (await lstat(file)).mtimeMs;
-            } catch (error) {
-                IO.debug("Failed to stat output file: " + (error as Error).message);
-            }
-
-            this.blaze.cacheManager.setCachedLastModTime(
-                DEFAULT_MODULE,
-                name,
-                "output",
-                file,
-                mtimeMs
-            );
-        }
-
-        for (const file of this._input) {
-            let mtimeMs = null;
-
-            try {
-                mtimeMs = (await lstat(file)).mtimeMs;
-            } catch (error) {
-                IO.debug("Failed to stat input file: " + (error as Error).message);
-            }
-
-            this.blaze.cacheManager.setCachedLastModTime(
-                DEFAULT_MODULE,
-                name,
-                "input",
-                file,
-                mtimeMs
-            );
-        }
+    public async execute() {
+        const { call: callExecute } = this.findAction();
+        const result = await callExecute();
+        await this.computeOutput(result);
     }
 
     public determineName() {

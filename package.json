@@ -67,14 +67,12 @@
         "tesseract.js"
     ],
     "dependencies": {
-        "@google/generative-ai": "^0.3.0",
         "@prisma/client": "^5.11.0",
         "@tensorflow/tfjs-node": "^4.17.0",
         "archiver": "^7.0.1",
         "ascii-table3": "^0.8.2",
         "axios": "^1.6.7",
         "bcrypt": "^5.1.1",
-        "canvas": "^2.11.2",
         "chalk": "^4.1.2",
         "cors": "^2.8.5",
         "date-fns": "^2.30.0",

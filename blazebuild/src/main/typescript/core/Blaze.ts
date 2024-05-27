@@ -34,13 +34,11 @@ class Blaze {
 
     public async boot() {
         process.on("uncaughtException", error => {
-            IO.error(error);
-            IO.exit(1);
+            IO.fatal(error);
         });
 
         process.on("unhandledRejection", error => {
-            IO.error(error);
-            IO.exit(1);
+            IO.fatal(error);
         });
 
         for (const manager of this.managers) {
@@ -61,7 +59,7 @@ class Blaze {
                 IO.exit(1);
             }
 
-            IO.error(error);
+            IO.fatal(error);
         }
 
         const taskNames =
@@ -74,11 +72,12 @@ class Blaze {
         } catch (error) {
             if (error instanceof TaskNotFoundError) {
                 IO.error(error.message);
+                IO.debug(error.stack ?? "[No stack]");
                 IO.buildFailed();
                 IO.exit(1);
             }
 
-            IO.error(error);
+            IO.fatal(error);
         }
 
         IO.buildSuccessful();

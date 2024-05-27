@@ -8,7 +8,6 @@ import type { Awaitable } from "blazebuild/types/utils";
 import { $ } from "bun";
 import { glob } from "glob";
 import path from "path";
-import DependenciesTask from "./DependenciesTask";
 
 class LintTask extends AbstractTask {
     @TaskAction
@@ -23,7 +22,7 @@ class LintTask extends AbstractTask {
 
     @TaskDependencyGenerator
     protected override dependencies() {
-        return [DependenciesTask];
+        return ["dependencies"];
     }
 }
 

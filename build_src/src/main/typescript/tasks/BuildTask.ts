@@ -1,9 +1,7 @@
 import AbstractTask from "blazebuild/tasks/AbstractTask";
 import { TaskAction } from "blazebuild/tasks/TaskAction";
 import { TaskDependencyGenerator } from "blazebuild/tasks/TaskDependencyGenerator";
-import CompileTask from "./CompileTask";
-import LintTask from "./LintTask";
-import TestTask from "./TestTask";
+import { TaskOutputGenerator } from "blazebuild/tasks/TaskOutputGenerator";
 
 class BuildTask extends AbstractTask {
     @TaskAction
@@ -11,7 +9,12 @@ class BuildTask extends AbstractTask {
 
     @TaskDependencyGenerator
     protected override async dependencies() {
-        return [CompileTask, LintTask, TestTask];
+        return ["compile", "lint", "test"];
+    }
+
+    @TaskOutputGenerator
+    protected override async generateOutput() {
+        return ["build"];
     }
 }
 

@@ -2,6 +2,7 @@ import { lstat } from "fs/promises";
 import path from "path";
 import Manager from "../core/Manager";
 import MissingBuildScriptError from "../errors/MissingBuildScriptError";
+import { println } from "../io/IO";
 
 export const BUILD_SCRIPT_PATH = "build.blaze.ts";
 
@@ -36,6 +37,7 @@ class BuildScriptManager extends Manager {
     private async setupEnvironment(global: Record<string, unknown>) {
         global.tasks = this.blaze.taskManager;
         global.blaze = this.blaze;
+        global.println = println;
     }
 }
 

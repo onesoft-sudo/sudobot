@@ -7,7 +7,6 @@ import type { Awaitable } from "blazebuild/types/utils";
 import { $ } from "bun";
 import { glob } from "glob";
 import path from "path";
-import DependenciesTask from "./DependenciesTask";
 
 class CompileTypeScriptTask extends AbstractTask {
     @TaskAction
@@ -27,7 +26,7 @@ class CompileTypeScriptTask extends AbstractTask {
 
     @TaskDependencyGenerator
     protected override dependencies(): Awaitable<Iterable<TaskResolvable<any>>> {
-        return [DependenciesTask];
+        return ["dependencies"];
     }
 }
 

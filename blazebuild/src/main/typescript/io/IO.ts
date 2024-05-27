@@ -19,11 +19,18 @@ class IO {
 
     public static error(error: unknown): void {
         if (error instanceof Error) {
-            console.error(error.message);
+            console.error(chalk.red.bold("error: ") + error.message);
+            console.error(error.stack);
             console.error(error.stack);
         } else {
-            console.error(error);
+            console.error(chalk.red.bold("error: ") + error);
         }
+    }
+
+    public static fatal(error: unknown): never {
+        IO.error(error);
+        IO.buildFailed();
+        IO.exit(1);
     }
 
     private static timeDiffFromStartup(): string {
@@ -63,16 +70,20 @@ class IO {
         const executedTasks = Blaze.getInstance().taskManager.getExecutedTaskCount();
         const upToDateTasks = Blaze.getInstance().taskManager.getUpToDateTasks();
 
-        console.log(`${actionableTasks} actionable tasks: ${executedTasks} executed`);
+        console.log(
+            `${actionableTasks} actionable task${actionableTasks === 1 ? "" : "s"}: ${executedTasks === 0 ? "" : `${executedTasks} executed`}${upToDateTasks === 0 ? "" : `${upToDateTasks !== 0 && executedTasks !== 0 ? ", " : ""}${upToDateTasks} up-to-date`}`
+        );
     }
 
     public static buildFailed(): void {
         console.log(`\n${chalk.red.bold("BUILD FAILED")} in ${this.timeDiffFromStartup()}`);
     }
 
-    public static exit(code: number = 0): void {
+    public static exit(code: number = 0): never {
         process.exit(code);
     }
 }
+
+export const println = IO.println.bind(IO);
 
 export default IO;

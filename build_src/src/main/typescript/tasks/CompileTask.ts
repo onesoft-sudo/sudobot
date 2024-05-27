@@ -6,7 +6,6 @@ import { TaskOutputGenerator } from "blazebuild/tasks/TaskOutputGenerator";
 import type { Awaitable } from "blazebuild/types/utils";
 import { glob } from "glob";
 import path from "path";
-import CompileTypeScriptTask from "./CompileTypeScriptTask";
 
 class CompileTask extends AbstractTask {
     @TaskAction
@@ -14,7 +13,7 @@ class CompileTask extends AbstractTask {
 
     @TaskDependencyGenerator
     protected override async dependencies() {
-        return [CompileTypeScriptTask];
+        return ["compileTypeScript"];
     }
 
     @TaskInputGenerator

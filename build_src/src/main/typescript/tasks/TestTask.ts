@@ -5,7 +5,6 @@ import { TaskInputGenerator } from "blazebuild/tasks/TaskInputGenerator";
 import type { Awaitable } from "blazebuild/types/utils";
 import { $ } from "bun";
 import { glob } from "glob";
-import DependenciesTask from "./DependenciesTask";
 
 class TestTask extends AbstractTask {
     @TaskInputGenerator
@@ -24,7 +23,7 @@ class TestTask extends AbstractTask {
 
     @TaskDependencyGenerator
     protected override dependencies() {
-        return [DependenciesTask];
+        return ["dependencies"];
     }
 }
 
