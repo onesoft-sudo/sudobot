@@ -1,3 +1,12 @@
+## [8.32.15](https://github.com/onesoft-sudo/sudobot/compare/v8.32.14...v8.32.15) (2024-05-28)
+
+
+### Bug Fixes
+
+* type errors ([1df8285](https://github.com/onesoft-sudo/sudobot/commit/1df82853431a4cd676a5b7f2ed2a1b548922a375))
+
+
+
 ## [8.32.14](https://github.com/onesoft-sudo/sudobot/compare/v8.32.13...v8.32.14) (2024-05-03)
 
 
@@ -33,15 +42,6 @@
 ### Bug Fixes
 
 * **commands:temprole:** negative duration validation ([496c451](https://github.com/onesoft-sudo/sudobot/commit/496c4515aba1faf16096290eba90ecfd0dd3792f))
-
-
-
-## [8.32.10](https://github.com/onesoft-sudo/sudobot/compare/v8.32.9...v8.32.10) (2024-04-24)
-
-
-### Bug Fixes
-
-* **services:afk:** createdAt date does not work with global mode ([ed9abfa](https://github.com/onesoft-sudo/sudobot/commit/ed9abfa9cc2024031e62a1f14abdcc8f595d7729))
 
 
 
