@@ -40,7 +40,9 @@ import {
     PermissionResolvable,
     SlashCommandBuilder,
     TextBasedChannel,
-    User
+    User,
+    SlashCommandOptionsOnlyBuilder,
+    SlashCommandSubcommandsOnlyBuilder
 } from "discord.js";
 import {
     ChatInputCommandContext,
@@ -72,7 +74,10 @@ export type CommandReturn =
 
 type CommandSlashCommandBuilder =
     | Partial<Pick<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">>
-    | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
+    | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">
+    | SlashCommandBuilder
+    | SlashCommandOptionsOnlyBuilder
+    | SlashCommandSubcommandsOnlyBuilder;
 
 type DeferReplyMode = "delete" | "channel" | "default" | "auto";
 type DeferReplyOptions =

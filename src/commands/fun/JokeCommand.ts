@@ -61,7 +61,7 @@ export default class JokeCommand extends Command {
         option
             .setName("type")
             .setDescription("The type of the joke")
-            .setChoices<Array<{ name: string; value: JokeType }>>(
+            .setChoices(
                 {
                     name: "Random (Default)",
                     value: "random"
