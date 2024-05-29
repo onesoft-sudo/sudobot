@@ -22,6 +22,7 @@ import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import DirectiveParseError from "@framework/directives/DirectiveParseError";
 import { GatewayEventListener } from "@framework/events/GatewayEventListener";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import DirectiveParsingService from "@main/services/DirectiveParsingService";
@@ -42,7 +43,7 @@ import {
 export default class EditMessageCommand extends Command implements HasEventListeners {
     public override readonly name = "Edit Message";
     public override readonly description: string = "Edits messages sent by the bot.";
-    public override readonly permissions = [PermissionsBitField.Flags.ManageMessages];
+    public override readonly permissions = [PermissionFlags.ManageMessages];
     public override readonly systemAdminOnly = true;
 
     @Inject("configManager")

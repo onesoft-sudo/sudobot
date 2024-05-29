@@ -4,6 +4,7 @@ import { ContextType } from "@framework/commands/ContextType";
 import { Inject } from "@framework/container/Inject";
 import DirectiveParseError from "@framework/directives/DirectiveParseError";
 import { GatewayEventListener } from "@framework/events/GatewayEventListener";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import DirectiveParsingService from "@main/services/DirectiveParsingService";
@@ -30,7 +31,7 @@ class SendReplyCommand
     public override readonly description: string = "Send a reply to the selected message";
     public override readonly detailedDescription: string =
         "Send a reply to the selected message, using an interactive modal.";
-    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly permissions = [PermissionFlags.ManageMessages];
     public override readonly supportedContexts: ContextType.MessageContextMenu[] = [
         ContextType.MessageContextMenu
     ];

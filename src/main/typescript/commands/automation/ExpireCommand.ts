@@ -9,13 +9,14 @@ import { Inject } from "@framework/container/Inject";
 import Duration from "@framework/datetime/Duration";
 import DirectiveParseError from "@framework/directives/DirectiveParseError";
 import APIErrors from "@framework/errors/APIErrors";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { isDiscordAPIError } from "@framework/utils/errors";
 import MessageDeleteQueue from "@main/queues/MessageDeleteQueue";
 import ConfigurationManager from "@main/services/ConfigurationManager";
 import DirectiveParsingService from "@main/services/DirectiveParsingService";
 import QueueService from "@main/services/QueueService";
 import SystemAuditLoggingService from "@main/services/SystemAuditLoggingService";
-import { APIEmbed, PermissionFlagsBits, TextChannel } from "discord.js";
+import { APIEmbed, TextChannel } from "discord.js";
 
 type ExpireCommandArgs = {
     content: string;
@@ -60,7 +61,7 @@ class ExpireCommand extends Command {
     public override readonly defer = true;
     public override readonly usage = ["<time_interval: Duration> <...content: RestString>"];
     public override readonly systemPermissions = [];
-    public override permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly permissions = [PermissionFlags.ManageMessages];
 
     @Inject()
     protected readonly directiveParsingService!: DirectiveParsingService;

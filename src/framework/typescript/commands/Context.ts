@@ -20,8 +20,10 @@
 import type { GuildConfig } from "@main/schemas/GuildConfigSchema";
 import type { SystemConfig } from "@main/schemas/SystemConfigSchema";
 import type {
+    APIEmbed,
     ChatInputCommandInteraction,
     ContextMenuCommandInteraction,
+    EmbedBuilder,
     Guild,
     GuildMember,
     GuildTextBasedChannel,
@@ -137,6 +139,10 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
             ...optionsToPass,
             fetchReply: true
         });
+    }
+
+    public replyEmbed(...embeds: Array<APIEmbed | EmbedBuilder>) {
+        return this.reply({ embeds });
     }
 
     public async defer(options?: InteractionDeferReplyOptions) {

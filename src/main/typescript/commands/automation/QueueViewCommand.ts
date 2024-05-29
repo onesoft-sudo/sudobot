@@ -4,11 +4,12 @@ import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import { Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { shortUserInfo } from "@framework/utils/embeds";
 import { Colors } from "@main/constants/Colors";
 import CommandExecutionQueue from "@main/queues/CommandExecutionQueue";
 import QueueService from "@main/services/QueueService";
-import { PermissionFlagsBits, inlineCode, italic, time } from "discord.js";
+import { inlineCode, italic, time } from "discord.js";
 
 type QueueViewCommandArgs = {
     id: number;
@@ -30,7 +31,7 @@ class QueueViewCommand extends Command {
     public override readonly name = "queue::view";
     public override readonly description: string = "Shows information about a queued job.";
     public override readonly defer = true;
-    public override readonly permissions = [PermissionFlagsBits.ManageGuild];
+    public override readonly permissions = [PermissionFlags.ManageGuild];
     public override readonly usage = ["<id: Int>"];
     public override readonly aliases = ["queue::show"];
 

@@ -7,13 +7,14 @@ import { Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import Duration from "@framework/datetime/Duration";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import InfractionViewCommand from "@main/commands/moderation/InfractionViewCommand";
 import InfractionManager from "@main/services/InfractionManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
 import { ArgumentDefaultRules } from "@main/utils/ArgumentDefaultRules";
 import { ErrorMessages } from "@main/utils/ErrorMessages";
 import { Infraction, InfractionType } from "@prisma/client";
-import { PermissionFlagsBits, User } from "discord.js";
+import { User } from "discord.js";
 
 type InfractionCreateCommandArgs = {
     user: User;
@@ -56,8 +57,8 @@ class InfractionCreateCommand extends Command {
     public override readonly name = "infraction::create";
     public override readonly description: string = "Create a new infraction.";
     public override readonly permissions = [
-        PermissionFlagsBits.ManageMessages,
-        PermissionFlagsBits.ViewAuditLog
+        PermissionFlags.ManageMessages,
+        PermissionFlags.ViewAuditLog
     ];
     public override readonly permissionCheckingMode = "or";
     public override readonly usage = ["<user: User> <type: InfractionType> [reason: string]"];

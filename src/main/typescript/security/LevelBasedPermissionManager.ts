@@ -23,12 +23,12 @@ import AbstractPermissionManager from "@framework/permissions/AbstractPermission
 import type { SystemPermissionLikeString } from "@framework/permissions/AbstractPermissionManagerService";
 import { Permission } from "@framework/permissions/Permission";
 import type { PermissionLevel } from "@prisma/client";
-import type { GuildMember, PermissionResolvable, Snowflake } from "discord.js";
+import type { GuildMember, PermissionsString, Snowflake } from "discord.js";
 import { Collection } from "discord.js";
 
 type MinimalPermissionLevelInfo = {
     level: number;
-    grantedDiscordPermissions: FluentSet<PermissionResolvable>;
+    grantedDiscordPermissions: FluentSet<PermissionsString>;
     grantedSystemPermissions: FluentSet<SystemPermissionLikeString>;
 };
 
@@ -69,7 +69,7 @@ class LevelBasedPermissionManager extends AbstractPermissionManager {
     private mergeLevels(
         ...levels: Array<MinimalPermissionLevelInfo | undefined | null>
     ): MinimalPermissionLevelInfo {
-        const grantedDiscordPermissions = new FluentSet<PermissionResolvable>();
+        const grantedDiscordPermissions = new FluentSet<PermissionsString>();
         const grantedSystemPermissions = new FluentSet<SystemPermissionLikeString>();
         let level = 0;
 
@@ -92,8 +92,8 @@ class LevelBasedPermissionManager extends AbstractPermissionManager {
 
     private makeCache(level: PermissionLevel) {
         const grantedSystemPermissions = new FluentSet<SystemPermissionLikeString>();
-        const grantedDiscordPermissions = new FluentSet<PermissionResolvable>(
-            level.grantedDiscordPermissions as PermissionResolvable[]
+        const grantedDiscordPermissions = new FluentSet<PermissionsString>(
+            level.grantedDiscordPermissions as PermissionsString[]
         );
 
         for (const permission of level.grantedSystemPermissions) {

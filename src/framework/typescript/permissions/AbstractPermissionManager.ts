@@ -18,7 +18,6 @@
  */
 
 import type { Awaitable, GuildMember, PermissionResolvable } from "discord.js";
-import { PermissionFlagsBits } from "discord.js";
 import type Application from "../app/Application";
 import type {
     MemberPermissionData,
@@ -73,8 +72,8 @@ abstract class AbstractPermissionManager implements PermissionManagerInterface {
                 typeof permission === "function"
                     ? await permission.getInstance<Permission>()
                     : typeof permission === "string"
-                    ? Permission.fromString(permission)
-                    : permission;
+                      ? Permission.fromString(permission)
+                      : permission;
 
             if (!instance) {
                 this.application.logger.debug(`Permission ${permission} does not exist`);
@@ -104,7 +103,7 @@ abstract class AbstractPermissionManager implements PermissionManagerInterface {
     }
 
     public canBypassAutoModeration(member: GuildMember): Awaitable<boolean> {
-        return this.hasPermissions(member, [PermissionFlagsBits.ManageGuild]);
+        return this.hasPermissions(member, ["ManageGuild"]);
     }
 
     public boot?(): Awaitable<void>;

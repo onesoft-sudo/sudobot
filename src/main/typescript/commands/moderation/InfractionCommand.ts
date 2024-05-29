@@ -1,7 +1,7 @@
 import type { Buildable } from "@framework/commands/Command";
 import { Command, type SubcommandMeta } from "@framework/commands/Command";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { InfractionType } from "@prisma/client";
-import { PermissionFlagsBits } from "discord.js";
 
 class InfractionCommand extends Command {
     public override readonly name = "infraction";
@@ -9,8 +9,8 @@ class InfractionCommand extends Command {
     public override readonly detailedDescription: string =
         "Manage infractions for users. This command allows you to view, create, and delete infractions.";
     public override readonly permissions = [
-        PermissionFlagsBits.ManageMessages,
-        PermissionFlagsBits.ViewAuditLog
+        PermissionFlags.ManageMessages,
+        PermissionFlags.ViewAuditLog
     ];
     public override readonly permissionCheckingMode = "or";
     public override readonly usage = ["<subcommand: String> [...args: Any[]]"];

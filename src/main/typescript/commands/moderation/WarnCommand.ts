@@ -23,9 +23,10 @@ import RestStringArgument from "@framework/arguments/RestStringArgument";
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { ArgumentDefaultRules } from "@main/utils/ArgumentDefaultRules";
 import { ErrorMessages } from "@main/utils/ErrorMessages";
-import { GuildMember, PermissionFlagsBits } from "discord.js";
+import { GuildMember } from "discord.js";
 import { Limits } from "../../constants/Limits";
 import InfractionManager from "../../services/InfractionManager";
 import PermissionManagerService from "../../services/PermissionManagerService";
@@ -59,7 +60,7 @@ class WarnCommand extends Command {
     public override readonly description = "Warns a member.";
     public override readonly detailedDescription =
         "Warns a member, by sending them a direct message. This is a formal warning and will be recorded.";
-    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly permissions = [PermissionFlags.ManageMessages];
     public override readonly defer = true;
     public override readonly usage = ["<member: GuildMember> [reason: RestString]"];
 

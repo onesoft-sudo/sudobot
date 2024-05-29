@@ -3,6 +3,7 @@ import UserArgument from "@framework/arguments/UserArgument";
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import ConfigurationManager from "@main/services/ConfigurationManager";
 import InfractionManager from "@main/services/InfractionManager";
 import { AttachmentBuilder, User } from "discord.js";
@@ -31,6 +32,7 @@ class SendHistoryCommand extends Command {
         "Sends a full list of infractions of a member. This includes all warnings, mutes, bans, and other types of infracti";
     public override readonly defer = true;
     public override readonly aliases = ["smh", "sendinfs"];
+    public override readonly permissions = [PermissionFlags.ManageMessages];
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;

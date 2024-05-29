@@ -23,17 +23,11 @@ import { Command } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import Pagination from "@framework/pagination/Pagination";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { Colors } from "@main/constants/Colors";
 import InfractionManager from "@main/services/InfractionManager";
 import { Infraction } from "@prisma/client";
-import {
-    ActionRowBuilder,
-    PermissionFlagsBits,
-    StringSelectMenuBuilder,
-    User,
-    italic,
-    time
-} from "discord.js";
+import { ActionRowBuilder, StringSelectMenuBuilder, User, italic, time } from "discord.js";
 
 type ModStatsCommandArgs = {
     user?: User;
@@ -51,7 +45,7 @@ export default class ModStatsCommand extends Command {
     public override readonly name = "modstats";
     public override readonly description = "View the statistics of a moderator.";
     public override readonly aliases = ["modstat", "moderatorstats", "moderatorstat"];
-    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly permissions = [PermissionFlags.ManageMessages];
     public override readonly defer = true;
 
     @Inject()

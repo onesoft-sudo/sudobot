@@ -1,4 +1,4 @@
-import type { Awaitable, GuildMember, PermissionResolvable } from "discord.js";
+import type { Awaitable, GuildMember, PermissionsString } from "discord.js";
 import type FluentSet from "../collections/FluentSet";
 import type {
     SystemPermissionLikeString,
@@ -6,7 +6,7 @@ import type {
 } from "../permissions/AbstractPermissionManagerService";
 
 export type MemberPermissionData = {
-    grantedDiscordPermissions: FluentSet<PermissionResolvable>;
+    grantedDiscordPermissions: FluentSet<PermissionsString>;
     grantedSystemPermissions: FluentSet<SystemPermissionLikeString>;
 };
 

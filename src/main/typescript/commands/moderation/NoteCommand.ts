@@ -23,9 +23,10 @@ import UserArgument from "@framework/arguments/UserArgument";
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { ArgumentDefaultRules } from "@main/utils/ArgumentDefaultRules";
 import { ErrorMessages } from "@main/utils/ErrorMessages";
-import { PermissionFlagsBits, User } from "discord.js";
+import { User } from "discord.js";
 import { Limits } from "../../constants/Limits";
 import InfractionManager from "../../services/InfractionManager";
 import PermissionManagerService from "../../services/PermissionManagerService";
@@ -58,7 +59,7 @@ class NoteCommand extends Command {
     public override readonly description: string = "Takes a note on a user.";
     public override readonly detailedDescription: string =
         "Takes a note on a user. Notes are saved as infractions, but are not considered like warnings or mutes. They are simply for record-keeping purposes.";
-    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly permissions = [PermissionFlags.ManageMessages];
     public override readonly defer = true;
     public override readonly usage = ["<user: User> [reason: RestString]"];
 

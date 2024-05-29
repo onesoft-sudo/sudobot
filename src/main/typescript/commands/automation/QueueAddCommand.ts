@@ -6,10 +6,11 @@ import { Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import Duration from "@framework/datetime/Duration";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import CommandExecutionQueue from "@main/queues/CommandExecutionQueue";
 import CommandManager from "@main/services/CommandManager";
 import QueueService from "@main/services/QueueService";
-import { Message, PermissionFlagsBits, inlineCode } from "discord.js";
+import { Message, inlineCode } from "discord.js";
 
 type QueueAddCommandArgs = {
     runAfter: Duration;
@@ -40,7 +41,7 @@ class QueueAddCommand extends Command {
     public override readonly detailedDescription: string =
         "Queues the given command to be run at a later time.";
     public override readonly defer = true;
-    public override readonly permissions = [PermissionFlagsBits.ManageGuild];
+    public override readonly permissions = [PermissionFlags.ManageGuild];
 
     @Inject()
     private readonly commandManager!: CommandManager;

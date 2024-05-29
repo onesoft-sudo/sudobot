@@ -47,9 +47,9 @@ class SystemAdminPermission extends Permission {
         const has = this.configManager.systemConfig.system_admins.includes(member.id);
 
         if (has) {
-            this.logger.debug(`User ${member.user.tag} has system.admin permission`);
+            this.logger.debug(`User @${member.user.username} has system.admin permission`);
         } else {
-            this.logger.debug(`User ${member.user.tag} does not have system.admin permission`);
+            this.logger.debug(`User @${member.user.username} does not have system.admin permission`);
         }
 
         return has;

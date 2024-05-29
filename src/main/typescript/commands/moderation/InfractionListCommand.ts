@@ -4,11 +4,12 @@ import { Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import Pagination from "@framework/pagination/Pagination";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { Colors } from "@main/constants/Colors";
 import InfractionManager from "@main/services/InfractionManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
 import { Infraction } from "@prisma/client";
-import { PermissionFlagsBits, User, italic, time } from "discord.js";
+import { User, italic, time } from "discord.js";
 
 type InfractionListCommandArgs = {
     user: User;
@@ -27,8 +28,8 @@ class InfractionListCommand extends Command {
     public override readonly description: string = "List infractions for a user.";
     public override readonly aliases = ["infraction::ls", "infraction::s"];
     public override readonly permissions = [
-        PermissionFlagsBits.ManageMessages,
-        PermissionFlagsBits.ViewAuditLog
+        PermissionFlags.ManageMessages,
+        PermissionFlags.ViewAuditLog
     ];
     public override readonly permissionCheckingMode = "or";
     public override readonly usage = ["<user: User>"];

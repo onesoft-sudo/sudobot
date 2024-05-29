@@ -7,9 +7,10 @@ import { Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import Duration from "@framework/datetime/Duration";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import InfractionManager from "@main/services/InfractionManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
-import { PermissionFlagsBits, bold } from "discord.js";
+import { bold } from "discord.js";
 
 type InfractionDurationCommandArgs = {
     id: number;
@@ -47,8 +48,8 @@ class InfractionDurationCommand extends Command {
     public override readonly description: string =
         "Update the duration of a mute/ban/role infraction.";
     public override readonly permissions = [
-        PermissionFlagsBits.ManageMessages,
-        PermissionFlagsBits.ViewAuditLog
+        PermissionFlags.ManageMessages,
+        PermissionFlags.ViewAuditLog
     ];
     public override readonly permissionCheckingMode = "or";
     public override readonly usage = ['<id: number> <duration: Duration | "none">'];

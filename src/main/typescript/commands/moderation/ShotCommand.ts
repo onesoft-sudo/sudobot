@@ -23,9 +23,10 @@ import RestStringArgument from "@framework/arguments/RestStringArgument";
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { also } from "@framework/utils/utils";
 import { ArgumentDefaultRules } from "@main/utils/ArgumentDefaultRules";
-import { GuildMember, PermissionFlagsBits } from "discord.js";
+import { GuildMember } from "discord.js";
 import { Colors } from "../../constants/Colors";
 import { Limits } from "../../constants/Limits";
 import InfractionManager from "../../services/InfractionManager";
@@ -59,7 +60,7 @@ class ShotCommand extends Command {
     public override readonly name = "shot";
     public override readonly description = "Gives shot to a member.";
     public override readonly detailedDescription = "Just a joke command. Gives shot to a member.";
-    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly permissions = [PermissionFlags.ManageMessages];
     public override readonly defer = true;
     public override readonly usage = ["<member: GuildMember> [reason: RestString]"];
 

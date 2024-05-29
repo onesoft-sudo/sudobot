@@ -71,7 +71,7 @@ export type SubcommandMeta = {
 };
 
 export type CommandGuardLike = GuardLike | typeof Guard;
-export type CommandPermissionLike = PermissionLike | typeof Permission;
+export type CommandPermissionLike = PermissionLike | PermissionsString | typeof Permission;
 
 /**
  * Represents an abstract command.

@@ -1,6 +1,7 @@
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { userInfo } from "@framework/utils/embeds";
 import { Colors } from "@main/constants/Colors";
 import { Limits } from "@main/constants/Limits";
@@ -21,7 +22,7 @@ class MassKickCommand extends Command {
     public override readonly description: string = "Mass kick members.";
     public override readonly detailedDescription: string =
         "Mass kicks multiple members from the server.";
-    public override readonly permissions = [PermissionFlagsBits.ManageGuild];
+    public override readonly permissions = [PermissionFlags.ManageGuild];
     public override readonly defer = true;
     public override readonly usage = ["<...members: GuildMember[]> [-r|--reason=RestString]"];
     public override readonly options = {

@@ -3,6 +3,7 @@ import Context from "@framework/commands/Context";
 import InteractionContext from "@framework/commands/InteractionContext";
 import LegacyContext from "@framework/commands/LegacyContext";
 import { Inject } from "@framework/container/Inject";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import AFKService from "@main/services/AFKService";
 import PermissionManagerService from "@main/services/PermissionManagerService";
 import {
@@ -12,7 +13,6 @@ import {
     ChatInputCommandInteraction,
     Colors,
     ComponentType,
-    PermissionFlagsBits,
     escapeMarkdown,
     italic
 } from "discord.js";
@@ -24,7 +24,7 @@ class AFKsCommand extends Command {
     public override readonly usage = ["<subcommand: String> [...args: Any[]]"];
     public override readonly aliases = ["manageafks"];
     public override readonly subcommands = ["list", "remove", "clear"];
-    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly permissions = [PermissionFlags.ManageMessages];
     public override readonly subcommandMeta = {
         list: {
             description: "List all users with AFK statuses."

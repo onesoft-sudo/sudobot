@@ -4,10 +4,10 @@ import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import { Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import InfractionManager from "@main/services/InfractionManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
 import { Infraction } from "@prisma/client";
-import { PermissionFlagsBits } from "discord.js";
 
 type InfractionDeleteCommandArgs = {
     id: number;
@@ -30,8 +30,8 @@ class InfractionDeleteCommand extends Command {
     public override readonly name = "infraction::delete";
     public override readonly description: string = "Delete an infraction.";
     public override readonly permissions = [
-        PermissionFlagsBits.ManageMessages,
-        PermissionFlagsBits.ViewAuditLog
+        PermissionFlags.ManageMessages,
+        PermissionFlags.ViewAuditLog
     ];
     public override readonly permissionCheckingMode = "or";
     public override readonly usage = ["<id: number>"];

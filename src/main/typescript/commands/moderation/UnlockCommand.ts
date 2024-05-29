@@ -4,6 +4,7 @@ import type { Buildable } from "@framework/commands/Command";
 import { Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import ChannelLockManager from "@main/services/ChannelLockManager";
 import { ChannelType, GuildBasedChannel, PermissionFlagsBits } from "discord.js";
 
@@ -26,7 +27,7 @@ class UnlockCommand extends Command {
         "Unlocks a channel, by restoring @everyone permission for Send Messages.";
     public override readonly defer = true;
     public override readonly usage = ["[channel]"];
-    public override readonly permissions = [PermissionFlagsBits.ManageChannels];
+    public override readonly permissions = [PermissionFlags.ManageChannels];
     public override readonly systemPermissions = [PermissionFlagsBits.ManageChannels];
 
     @Inject()

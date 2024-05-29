@@ -25,14 +25,8 @@ import { Buildable, Command, CommandMessage } from "@framework/commands/Command"
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import { GatewayEventListener } from "@framework/events/GatewayEventListener";
-import {
-    Awaitable,
-    Message,
-    PermissionFlagsBits,
-    TextChannel,
-    User,
-    type Interaction
-} from "discord.js";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
+import { Awaitable, Message, TextChannel, User, type Interaction } from "discord.js";
 import { Limits } from "../../constants/Limits";
 import InfractionManager from "../../services/InfractionManager";
 import PermissionManagerService from "../../services/PermissionManagerService";
@@ -89,7 +83,7 @@ class ClearCommand extends Command {
     public override readonly description = "Clears messages from a channel.";
     public override readonly detailedDescription =
         "Clear messages from a channel. You can specify a user to clear messages from, or a message count.";
-    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly permissions = [PermissionFlags.ManageMessages];
     public override readonly defer = true;
     public override readonly usage = ["<count: Integer>", "<user: User> [count: Integer]"];
 

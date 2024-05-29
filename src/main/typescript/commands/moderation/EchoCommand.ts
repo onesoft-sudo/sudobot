@@ -25,10 +25,11 @@ import { Buildable, Command, CommandMessage } from "@framework/commands/Command"
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import DirectiveParseError from "@framework/directives/DirectiveParseError";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import DirectiveParsingService from "@main/services/DirectiveParsingService";
 import type SystemAuditLoggingService from "@main/services/SystemAuditLoggingService";
-import { APIEmbed, GuildBasedChannel, PermissionFlagsBits } from "discord.js";
+import { APIEmbed, GuildBasedChannel } from "discord.js";
 
 type EchoCommandArgs = {
     content: string;
@@ -82,7 +83,7 @@ class EchoCommand extends Command {
     public override readonly description = "Echoes a message to a channel.";
     public override readonly detailedDescription =
         "Echoes a message to a channel. If no channel is specified, the message will be sent in the current channel.";
-    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly permissions = [PermissionFlags.ManageMessages];
     public override readonly defer = true;
     public override readonly ephemeral = true;
     public override readonly usage = [

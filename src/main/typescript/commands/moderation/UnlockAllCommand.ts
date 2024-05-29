@@ -1,6 +1,7 @@
 import { Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import ChannelLockManager from "@main/services/ChannelLockManager";
 import { PermissionFlagsBits } from "discord.js";
 
@@ -9,7 +10,7 @@ class UnlockAllCommand extends Command {
     public override readonly description: string = "Unlocks all channels.";
     public override readonly detailedDescription: string =
         "Unlocks all the channels in this server.";
-    public override readonly permissions = [PermissionFlagsBits.ManageChannels];
+    public override readonly permissions = [PermissionFlags.ManageChannels];
     public override readonly systemPermissions = [PermissionFlagsBits.ManageChannels];
 
     @Inject()

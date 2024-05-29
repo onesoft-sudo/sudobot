@@ -1,14 +1,14 @@
 import { Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import ConfigurationManager from "@main/services/ConfigurationManager";
-import { PermissionFlagsBits } from "discord.js";
 
 class AntiMemberJoinCommand extends Command {
     public override readonly name = "antijoin";
     public override readonly description: string = "Enable or disable the anti-join system.";
     public override readonly defer = true;
-    public override permissions = [PermissionFlagsBits.ManageGuild];
+    public override permissions = [PermissionFlags.ManageGuild];
 
     @Inject()
     private readonly configManager!: ConfigurationManager;

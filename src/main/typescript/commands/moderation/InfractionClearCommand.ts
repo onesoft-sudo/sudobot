@@ -5,10 +5,11 @@ import UserArgument from "@framework/arguments/UserArgument";
 import { Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import InfractionManager from "@main/services/InfractionManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
 import { InfractionType } from "@prisma/client";
-import { PermissionFlagsBits, User, bold } from "discord.js";
+import { User, bold } from "discord.js";
 
 type InfractionClearCommandArgs = {
     user: User;
@@ -40,7 +41,7 @@ class InfractionClearCommand extends Command {
     public override readonly name = "infraction::clear";
     public override readonly description: string = "Clear all infractions of a user";
     public override readonly aliases = ["infraction::clear", "infraction::rmrf"];
-    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly permissions = [PermissionFlags.ManageMessages];
     public override readonly usage = ["<user: User> [type: InfractionType]"];
 
     @Inject()

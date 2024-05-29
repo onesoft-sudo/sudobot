@@ -28,6 +28,7 @@ import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import Duration from "@framework/datetime/Duration";
 import DurationParseError from "@framework/datetime/DurationParseError";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { fetchMember } from "@framework/utils/entities";
 import { also } from "@framework/utils/utils";
 import { ArgumentDefaultRules } from "@main/utils/ArgumentDefaultRules";
@@ -88,7 +89,7 @@ class BanCommand extends Command {
     public override readonly name = "ban";
     public override readonly description = "Bans a user.";
     public override readonly detailedDescription = "Bans a user from the server.";
-    public override readonly permissions = [PermissionFlagsBits.BanMembers];
+    public override readonly permissions = [PermissionFlags.BanMembers];
     public override readonly defer = true;
     public override readonly usage = [
         "<user: User> [reason: RestString]",

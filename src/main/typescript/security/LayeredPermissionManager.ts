@@ -23,7 +23,7 @@ import AbstractPermissionManager from "@framework/permissions/AbstractPermission
 import type { SystemPermissionLikeString } from "@framework/permissions/AbstractPermissionManagerService";
 import { Permission } from "@framework/permissions/Permission";
 import type { PermissionOverwrite } from "@prisma/client";
-import type { GuildMember, PermissionResolvable, Snowflake } from "discord.js";
+import type { GuildMember, PermissionsString, Snowflake } from "discord.js";
 import { Collection } from "discord.js";
 
 type CachedPermissionOverwrite = Omit<PermissionOverwrite, "grantedSystemPermissions"> & {
@@ -134,7 +134,7 @@ class LayeredPermissionManager extends AbstractPermissionManager {
     }
 
     private combinePermissions(...overwrites: Array<CachedPermissionOverwrite | undefined | null>) {
-        const discordPermissions = new FluentSet<PermissionResolvable>();
+        const discordPermissions = new FluentSet<PermissionsString>();
         const system = new FluentSet<SystemPermissionLikeString>();
 
         for (const overwrite of overwrites) {
@@ -142,9 +142,7 @@ class LayeredPermissionManager extends AbstractPermissionManager {
                 continue;
             }
 
-            discordPermissions.add(
-                ...(overwrite.grantedDiscordPermissions as PermissionResolvable[])
-            );
+            discordPermissions.add(...(overwrite.grantedDiscordPermissions as PermissionsString[]));
 
             if (overwrite.grantedSystemPermissions?.size) {
                 system.combine(overwrite.grantedSystemPermissions);
@@ -176,7 +174,7 @@ class LayeredPermissionManager extends AbstractPermissionManager {
                 this.application.logger.debug(`Role ${role.name} has overwrites`);
 
                 finalDiscordPermissions.add(
-                    ...(roleOverwrites.grantedDiscordPermissions as PermissionResolvable[])
+                    ...(roleOverwrites.grantedDiscordPermissions as PermissionsString[])
                 );
 
                 if (roleOverwrites.grantedSystemPermissions?.size) {

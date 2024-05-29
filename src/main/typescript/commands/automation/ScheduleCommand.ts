@@ -7,12 +7,13 @@ import { Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import Duration from "@framework/datetime/Duration";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import MessageScheduleQueue from "@main/queues/MessageScheduleQueue";
 import ConfigurationManager from "@main/services/ConfigurationManager";
 import DirectiveParsingService from "@main/services/DirectiveParsingService";
 import QueueService from "@main/services/QueueService";
 import SystemAuditLoggingService from "@main/services/SystemAuditLoggingService";
-import { PermissionFlagsBits, TextChannel } from "discord.js";
+import { TextChannel } from "discord.js";
 
 type ScheduleCommandArgs = {
     content: string;
@@ -56,7 +57,7 @@ class ScheduleCommand extends Command {
     public override readonly defer = true;
     public override readonly usage = ["<delay: Duration> <...content: RestString>"];
     public override readonly systemPermissions = [];
-    public override permissions = [PermissionFlagsBits.ManageMessages];
+    public override permissions = [PermissionFlags.ManageMessages];
 
     @Inject()
     protected readonly directiveParsingService!: DirectiveParsingService;

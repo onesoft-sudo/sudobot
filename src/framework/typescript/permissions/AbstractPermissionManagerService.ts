@@ -17,16 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type {
-    Awaitable,
-    GuildMember,
-    PermissionResolvable,
-    PermissionsString
-} from "discord.js";
-import {
-    Collection,
-    PermissionFlagsBits
-} from "discord.js";
+import type { Awaitable, GuildMember, PermissionsString } from "discord.js";
+import { Collection, PermissionFlagsBits } from "discord.js";
 import type { MemberPermissionData } from "../contracts/PermissionManagerInterface";
 import type { PermissionManagerServiceInterface } from "../contracts/PermissionManagerServiceInterface";
 import { Service } from "../services/Service";
@@ -40,7 +32,7 @@ export type SystemPermissionLikeString = Exclude<keyof SystemPermissionStrings, 
 
 export type PermissionLikeString = SystemPermissionLikeString | PermissionsString;
 
-export type SystemPermissionResolvable = PermissionResolvable | SystemOnlyPermissionResolvable;
+export type SystemPermissionResolvable = PermissionsString | SystemOnlyPermissionResolvable;
 
 export type SystemOnlyPermissionResolvable =
     | SystemPermissionLikeString
@@ -51,6 +43,20 @@ abstract class AbstractPermissionManagerService
     extends Service
     implements PermissionManagerServiceInterface
 {
+    private static readonly MODERATION_PERMISSIONS: PermissionsString[] = [
+        "Administrator",
+        "BanMembers",
+        "KickMembers",
+        "ManageGuild",
+        "ChangeNickname",
+        "ModerateMembers",
+        "ManageMessages",
+        "ManageNicknames",
+        "MuteMembers",
+        "MoveMembers",
+        "DeafenMembers"
+    ];
+
     protected readonly permissionInstances = new Collection<
         SystemPermissionLikeString,
         Permission
@@ -101,6 +107,13 @@ abstract class AbstractPermissionManagerService
         return (
             member.guild.ownerId === member.id ||
             member.permissions.has(PermissionFlagsBits.Administrator, true)
+        );
+    }
+
+    public async isModerator(member: GuildMember) {
+        const { grantedDiscordPermissions } = await this.getMemberPermissions(member);
+        return grantedDiscordPermissions.hasAny(
+            ...AbstractPermissionManagerService.MODERATION_PERMISSIONS
         );
     }
 }

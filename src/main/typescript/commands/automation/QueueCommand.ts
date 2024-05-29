@@ -1,6 +1,6 @@
 import type { Buildable } from "@framework/commands/Command";
 import { Command } from "@framework/commands/Command";
-import { PermissionFlagsBits } from "discord.js";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 
 class QueueCommand extends Command {
     public override readonly name = "queue";
@@ -20,7 +20,7 @@ class QueueCommand extends Command {
     ];
     public override readonly isolatedSubcommands = true;
     public override readonly aliases = ["queues", "q"];
-    public override readonly permissions = [PermissionFlagsBits.ManageGuild];
+    public override readonly permissions = [PermissionFlags.ManageGuild];
     public override readonly subcommandMeta = {
         list: {
             description: "List all queued jobs."

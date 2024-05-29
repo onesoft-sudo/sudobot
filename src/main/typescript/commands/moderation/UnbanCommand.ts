@@ -23,6 +23,7 @@ import UserArgument from "@framework/arguments/UserArgument";
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { ArgumentDefaultRules } from "@main/utils/ArgumentDefaultRules";
 import { ErrorMessages } from "@main/utils/ErrorMessages";
 import { PermissionFlagsBits, User } from "discord.js";
@@ -61,7 +62,7 @@ class UnbanCommand extends Command {
     public override readonly name = "unban";
     public override readonly description = "Unbans a user.";
     public override readonly detailedDescription = "Removes the ban for the given user, if any.";
-    public override readonly permissions = [PermissionFlagsBits.BanMembers];
+    public override readonly permissions = [PermissionFlags.BanMembers];
     public override readonly defer = true;
     public override readonly usage = ["<user: User> [reason: RestString]"];
     public override readonly systemPermissions = [PermissionFlagsBits.BanMembers];

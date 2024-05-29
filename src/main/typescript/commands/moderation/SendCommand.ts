@@ -25,10 +25,11 @@ import { Buildable, Command, CommandMessage } from "@framework/commands/Command"
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import DirectiveParseError from "@framework/directives/DirectiveParseError";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import DirectiveParsingService from "@main/services/DirectiveParsingService";
 import type SystemAuditLoggingService from "@main/services/SystemAuditLoggingService";
-import { APIEmbed, PermissionFlagsBits, User } from "discord.js";
+import { APIEmbed, User } from "discord.js";
 
 type SendCommandArgs = {
     content: string;
@@ -72,7 +73,7 @@ class SendCommand extends Command {
     public override readonly description = "Sends a message to a user.";
     public override readonly detailedDescription =
         "Sends a message to a user. This command is used to send a message to a user directly.";
-    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly permissions = [PermissionFlags.ManageMessages];
     public override readonly defer = true;
     public override readonly ephemeral = true;
     public override readonly usage = ["<user: User> <expression: RestString>"];

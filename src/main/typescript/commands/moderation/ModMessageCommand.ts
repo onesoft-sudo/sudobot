@@ -24,8 +24,9 @@ import RestStringArgument from "@framework/arguments/RestStringArgument";
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { ArgumentDefaultRules } from "@main/utils/ArgumentDefaultRules";
-import { GuildMember, PermissionFlagsBits } from "discord.js";
+import { GuildMember } from "discord.js";
 import { Limits } from "../../constants/Limits";
 import InfractionManager from "../../services/InfractionManager";
 import PermissionManagerService from "../../services/PermissionManagerService";
@@ -64,7 +65,7 @@ class ModMessageCommand extends Command {
     public override readonly description: string = "Sends a moderator message to a member.";
     public override readonly detailedDescription =
         "Sends a moderator message to a member. This command is used to send a message to a member that is not a warning directly.";
-    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly permissions = [PermissionFlags.ManageMessages];
     public override readonly defer = true;
     public override readonly usage = ["<member: GuildMember> [message: RestString]"];
     public override readonly aliases = ["moderatormessage"];

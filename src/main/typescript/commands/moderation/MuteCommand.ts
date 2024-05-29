@@ -26,9 +26,10 @@ import { Buildable, Command, CommandMessage } from "@framework/commands/Command"
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import Duration from "@framework/datetime/Duration";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { ArgumentDefaultRules } from "@main/utils/ArgumentDefaultRules";
 import { ErrorMessages } from "@main/utils/ErrorMessages";
-import { GuildMember, PermissionFlagsBits } from "discord.js";
+import { GuildMember } from "discord.js";
 import { Limits } from "../../constants/Limits";
 import InfractionManager from "../../services/InfractionManager";
 import PermissionManagerService from "../../services/PermissionManagerService";
@@ -90,7 +91,7 @@ class MuteCommand extends Command {
     public override readonly description = "Mutes a user.";
     public override readonly detailedDescription =
         "Mutes a user and prevents them from talking, while still allowing them in the server.";
-    public override readonly permissions = [PermissionFlagsBits.ModerateMembers];
+    public override readonly permissions = [PermissionFlags.ModerateMembers];
     public override readonly defer = true;
     public override readonly usage = [
         "<member: GuildMember> [reason: RestString]",

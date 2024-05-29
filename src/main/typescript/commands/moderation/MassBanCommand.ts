@@ -3,6 +3,7 @@ import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import Duration from "@framework/datetime/Duration";
 import DurationParseError from "@framework/datetime/DurationParseError";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { userInfo } from "@framework/utils/embeds";
 import { Colors } from "@main/constants/Colors";
 import { Limits } from "@main/constants/Limits";
@@ -22,7 +23,7 @@ class MassBanCommand extends Command {
     public override readonly description: string = "Mass ban users.";
     public override readonly detailedDescription: string =
         "Mass bans multiple users from the server.";
-    public override readonly permissions = [PermissionFlagsBits.ManageGuild];
+    public override readonly permissions = [PermissionFlags.ManageGuild];
     public override readonly defer = true;
     public override readonly usage = ["<...users: User[]> [-r|--reason=RestString]"];
     public override readonly options = {

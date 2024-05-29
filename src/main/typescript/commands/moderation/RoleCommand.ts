@@ -25,8 +25,9 @@ import { Buildable, Command, CommandMessage } from "@framework/commands/Command"
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import Duration from "@framework/datetime/Duration";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import RestRoleArgument from "@main/arguments/RestRoleArgument";
-import { GuildMember, PermissionFlagsBits, Role } from "discord.js";
+import { GuildMember, Role } from "discord.js";
 import { Limits } from "../../constants/Limits";
 import InfractionManager from "../../services/InfractionManager";
 import PermissionManagerService from "../../services/PermissionManagerService";
@@ -84,7 +85,7 @@ class RoleCommand extends Command {
     public override readonly description = "Assigns roles to a member.";
     public override readonly detailedDescription =
         "Assigns roles to a member. This command can be used to add/remove roles for indefinite or temporary periods of time.";
-    public override readonly permissions = [PermissionFlagsBits.ManageRoles];
+    public override readonly permissions = [PermissionFlags.ManageRoles];
     public override readonly defer = true;
     public override readonly usage = ["<member: GuildMember> <...Roles: Role[]>"];
     public override readonly aliases = ["giverole", "takerole", "temprole"];

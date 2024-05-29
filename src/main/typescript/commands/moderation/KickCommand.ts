@@ -23,6 +23,7 @@ import RestStringArgument from "@framework/arguments/RestStringArgument";
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { ArgumentDefaultRules } from "@main/utils/ArgumentDefaultRules";
 import { GuildMember, PermissionFlagsBits } from "discord.js";
 import { Limits } from "../../constants/Limits";
@@ -58,7 +59,7 @@ class KickCommand extends Command {
     public override readonly description: string = "Kicks a member from the server.";
     public override readonly detailedDescription: string =
         "Kicks a member from the server. They can rejoin if they want to.";
-    public override readonly permissions = [PermissionFlagsBits.KickMembers];
+    public override readonly permissions = [PermissionFlags.KickMembers];
     public override readonly defer = true;
     public override readonly usage = ["<member: GuildMember> [reason: RestString]"];
     public override readonly systemPermissions = [PermissionFlagsBits.KickMembers];

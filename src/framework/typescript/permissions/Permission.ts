@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { Awaitable, GuildMember, PermissionResolvable } from "discord.js";
+import type { Awaitable, GuildMember, PermissionsString } from "discord.js";
 import { PermissionFlagsBits } from "discord.js";
 import Application from "../app/Application";
 import FluentSet from "../collections/FluentSet";
@@ -80,12 +80,8 @@ abstract class Permission extends Singleton {
         return undefined;
     }
 
-    public static isDiscordPermission(permission: unknown): permission is PermissionResolvable {
-        return (
-            (typeof permission === "string" && permission in PermissionFlagsBits) ||
-            typeof permission === "bigint" ||
-            typeof permission === "number"
-        );
+    public static isDiscordPermission(permission: unknown): permission is PermissionsString {
+        return typeof permission === "string" && permission in PermissionFlagsBits;
     }
 
     public static async of(member: GuildMember, exclude?: Permission[]) {
@@ -113,5 +109,5 @@ abstract class Permission extends Singleton {
     }
 }
 
-export type PermissionLike = Permission | PermissionResolvable;
+export type PermissionLike = Permission | PermissionsString;
 export { Permission };

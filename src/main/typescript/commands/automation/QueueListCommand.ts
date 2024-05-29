@@ -2,17 +2,18 @@ import { Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import Pagination from "@framework/pagination/Pagination";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import Queue from "@framework/queues/Queue";
 import { shortUserInfo } from "@framework/utils/embeds";
 import { Colors } from "@main/constants/Colors";
 import QueueService from "@main/services/QueueService";
-import { PermissionFlagsBits, inlineCode, italic, time } from "discord.js";
+import { inlineCode, italic, time } from "discord.js";
 
 class QueueListCommand extends Command {
     public override readonly name = "queue::list";
     public override readonly description: string = "List all queued jobs in this server.";
     public override readonly defer = true;
-    public override readonly permissions = [PermissionFlagsBits.ManageGuild];
+    public override readonly permissions = [PermissionFlags.ManageGuild];
 
     @Inject()
     private readonly queueService!: QueueService;

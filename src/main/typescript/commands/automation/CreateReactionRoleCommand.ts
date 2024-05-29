@@ -7,14 +7,15 @@ import { Command } from "@framework/commands/Command";
 import InteractionContext from "@framework/commands/InteractionContext";
 import LegacyContext from "@framework/commands/LegacyContext";
 import { Inject } from "@framework/container/Inject";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { fetchChannel, fetchMessage, fetchRole } from "@framework/utils/entities";
 import { isSnowflake } from "@framework/utils/utils";
 import ReactionRoleService from "@main/services/ReactionRoleService";
 import {
     ChatInputCommandInteraction,
-    parseEmoji,
     PermissionFlagsBits,
-    Snowflake
+    Snowflake,
+    parseEmoji
 } from "discord.js";
 
 type CreateReactionRoleCommandArgs = {
@@ -61,7 +62,7 @@ class CreateReactionRoleCommand extends Command {
     public override readonly defer = true;
     public override readonly aliases = ["crr", "rr"];
     public override readonly usage = ["<link: URL> <emoji: string> <...roles: Role[]>"];
-    public override readonly permissions = [PermissionFlagsBits.ManageRoles];
+    public override readonly permissions = [PermissionFlags.ManageRoles];
     public override readonly systemPermissions = [PermissionFlagsBits.ManageRoles];
 
     @Inject()

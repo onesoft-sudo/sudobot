@@ -4,13 +4,14 @@ import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import { Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { userInfo } from "@framework/utils/embeds";
 import { fetchUser } from "@framework/utils/entities";
 import { Colors } from "@main/constants/Colors";
 import InfractionManager from "@main/services/InfractionManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
 import { Infraction } from "@prisma/client";
-import { APIEmbed, PermissionFlagsBits, User, italic, time } from "discord.js";
+import { APIEmbed, User, italic, time } from "discord.js";
 
 type InfractionViewCommandArgs = {
     id: number;
@@ -33,8 +34,8 @@ class InfractionViewCommand extends Command {
     public override readonly name = "infraction::view";
     public override readonly description: string = "View an infraction.";
     public override readonly permissions = [
-        PermissionFlagsBits.ManageMessages,
-        PermissionFlagsBits.ViewAuditLog
+        PermissionFlags.ManageMessages,
+        PermissionFlags.ViewAuditLog
     ];
     public override readonly permissionCheckingMode = "or";
     public override readonly usage = ["<id: number>"];

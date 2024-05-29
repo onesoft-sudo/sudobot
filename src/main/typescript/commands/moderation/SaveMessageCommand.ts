@@ -2,20 +2,17 @@ import { Buildable, Command } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { ContextType } from "@framework/commands/ContextType";
 import { Inject } from "@framework/container/Inject";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
-import {
-    ApplicationCommandType,
-    PermissionFlagsBits,
-    type MessageContextMenuCommandInteraction
-} from "discord.js";
+import { ApplicationCommandType, type MessageContextMenuCommandInteraction } from "discord.js";
 
 class SaveMessageCommand extends Command<ContextType.MessageContextMenu> {
     public override readonly name: string = "Save Message";
     public override readonly description: string = "Saves a message for later review.";
     public override readonly detailedDescription: string =
         "Saves a message for later review, in the log channel.";
-    public override readonly permissions = [PermissionFlagsBits.ManageMessages];
+    public override readonly permissions = [PermissionFlags.ManageMessages];
     public override readonly supportedContexts: ContextType.MessageContextMenu[] = [
         ContextType.MessageContextMenu
     ];
