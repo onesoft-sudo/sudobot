@@ -89,6 +89,23 @@ class InfractionManager extends Service {
         [InfractionType.SHOT]: "given a shot"
     };
 
+    private readonly typeToPointKeyMap = {
+        [InfractionType.MASSBAN]: "massban",
+        [InfractionType.MASSKICK]: "masskick",
+        [InfractionType.MUTE]: "mute",
+        [InfractionType.BAN]: "ban",
+        [InfractionType.BULK_DELETE_MESSAGE]: "clear",
+        [InfractionType.ROLE]: "role",
+        [InfractionType.TIMEOUT]: "timeout",
+        [InfractionType.WARNING]: "warning",
+        [InfractionType.KICK]: "kick",
+        [InfractionType.MOD_MESSAGE]: "mod_message",
+        [InfractionType.NOTE]: "note",
+        [InfractionType.UNBAN]: "unban"
+    } satisfies {
+        [K in InfractionType]?: keyof NonNullable<GuildConfig["infractions"]>["points"];
+    };
+
     @Inject()
     private readonly configManager!: ConfigurationManager;
 
@@ -2512,6 +2529,142 @@ class InfractionManager extends Service {
 
         return { output: table.toString(), count: infractions.length };
     }
+
+    public async getUserValidInfractions(guildId: Snowflake, userId: Snowflake) {
+        return await this.application.prisma.infraction.findMany({
+            where: {
+                guildId,
+                userId,
+                type: {
+                    in: Object.keys(this.typeToPointKeyMap) as InfractionType[]
+                }
+            }
+        });
+    }
+
+    public async getInfractionStatistics(
+        guildId: Snowflake,
+        userId: Snowflake
+    ): Promise<InfractionStatistics | null> {
+        type Key = keyof NonNullable<GuildConfig["infractions"]>["points"];
+        const infractions = await this.getUserInfractions(guildId, userId);
+        const config = this.configManager.config[guildId]?.infractions;
+
+        if (!config) {
+            return null;
+        }
+
+        let points = 0;
+        const pointRecord: Record<Key, number> = {
+            ban: 0,
+            mute: 0,
+            clear: 0,
+            kick: 0,
+            massban: 0,
+            masskick: 0,
+            note: 0,
+            role: 0,
+            tempban: 0,
+            mod_message: 0,
+            softban: 0,
+            timeout: 0,
+            unban: 0,
+            warning: 0
+        };
+        const groupedInfractions = {} as Record<Key, Infraction[] | undefined>;
+
+        for (const infraction of infractions) {
+            const type = infraction.type;
+
+            if (!(type in this.typeToPointKeyMap)) {
+                continue;
+            }
+
+            let key: Key = this.typeToPointKeyMap[type as keyof typeof this.typeToPointKeyMap];
+
+            if (type === InfractionType.BAN) {
+                if (infraction.expiresAt) {
+                    key = "tempban";
+                } else if (
+                    typeof infraction.metadata === "object" &&
+                    infraction.metadata &&
+                    "softban" in infraction.metadata &&
+                    infraction.metadata.softban
+                ) {
+                    key = "softban";
+                }
+            }
+
+            points += config.points[key];
+            pointRecord[key] += config.points[key];
+            groupedInfractions[key] ??= [];
+            groupedInfractions[key]?.push(infraction);
+        }
+
+        return {
+            total: points,
+            points: pointRecord,
+            infractions: groupedInfractions,
+            summarize: () => {
+                let summary = "";
+                let index = 0;
+                let total = 0;
+                const keys = Object.keys(groupedInfractions);
+
+                for (const type of keys) {
+                    const infractions = groupedInfractions[type as keyof typeof groupedInfractions];
+
+                    if (!infractions) {
+                        continue;
+                    }
+
+                    summary += `**${infractions.length}** ${type === "mod_message" ? "moderator message" : type}${index === keys.length - 1 ? "" : ", "}`;
+                    index++;
+                    total += infractions.length;
+                }
+
+                if (summary === "") {
+                    return "**0** infractions total";
+                }
+
+                summary += ` infraction(s), **${total}** total`;
+                return summary;
+            },
+            recommendAction: (): string => {
+                if (
+                    (groupedInfractions.tempban?.length ?? 0) > 1 ||
+                    (groupedInfractions.softban?.length ?? 0) > 1
+                ) {
+                    return "Consider banning this user permanently.";
+                }
+
+                if ((groupedInfractions.kick?.length ?? 0) > 1) {
+                    return (
+                        "Consider temporarily banning this user, for " +
+                        (groupedInfractions.kick?.length ?? 1) * 2 +
+                        " day(s)."
+                    );
+                }
+
+                if (
+                    (groupedInfractions.mute?.length ?? 0) > 1 ||
+                    (groupedInfractions.timeout?.length ?? 0) > 1
+                ) {
+                    return "Consider kicking or temporarily banning this user.";
+                }
+
+                if ((groupedInfractions.warning?.length ?? 0) > 1) {
+                    return (
+                        "Consider muting this user for " +
+                        (groupedInfractions.warning?.length ?? 1) * 2 +
+                        " hours(s)."
+                    );
+                }
+
+                return "No action recommended";
+            }
+        };
+    }
 }
 
 export type GeneratePlainTextExportColumn =
@@ -2526,6 +2679,17 @@ export type GeneratePlainTextExportColumn =
     | "metadata"
     | "updatedAt"
     | "deliveryStatus";
+
+export type InfractionStatistics = {
+    total: number;
+    points: Record<keyof NonNullable<GuildConfig["infractions"]>["points"], number>;
+    infractions: Record<
+        keyof NonNullable<GuildConfig["infractions"]>["points"],
+        Infraction[] | undefined
+    >;
+    recommendAction(): string;
+    summarize(): string;
+};
 
 type GeneratePlainTextExportOptions = {
     guild: Guild;

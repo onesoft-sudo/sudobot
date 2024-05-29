@@ -108,9 +108,27 @@ export const GuildConfigSchema = z.object({
                     "A record of reason templates. The key is the name of the template, and the value is the template itself."
                 )
                 .default({}),
-            reason_template_placeholder_wrapper: z.string().default("{{%name%}}")
+            reason_template_placeholder_wrapper: z.string().default("{{%name%}}"),
+            points: z
+                .object({
+                    warning: z.number().int().default(1),
+                    mute: z.number().int().default(3),
+                    timeout: z.number().int().default(3),
+                    kick: z.number().int().default(5),
+                    ban: z.number().int().default(10),
+                    tempban: z.number().int().default(8),
+                    softban: z.number().int().default(7),
+                    unban: z.number().int().default(0),
+                    note: z.number().int().default(0),
+                    clear: z.number().int().default(0),
+                    role: z.number().int().default(0),
+                    mod_message: z.number().int().default(2),
+                    massban: z.number().int().default(10),
+                    masskick: z.number().int().default(5)
+                })
+                .default({})
         })
-        .optional(),
+        .default({}),
     antispam: z
         .object({
             enabled: z.boolean().optional().default(false),
