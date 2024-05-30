@@ -134,8 +134,7 @@ class StartupManager extends Service implements HasEventListeners {
                     embeds: [
                         {
                             color: Colors.Green,
-                            title: "System Restart",
-                            description: `${emoji(
+                            description: `### ${emoji(this.application.client, "restart")} System Restart\n${emoji(
                                 this.application.getClient(),
                                 "check"
                             )} Operation completed. (took ${((Date.now() - time) / 1000).toFixed(
@@ -165,8 +164,15 @@ class StartupManager extends Service implements HasEventListeners {
         });
     }
 
-    public async requestRestart({ channelId, guildId, message, messageId, time }: RestartOptions) {
-        setTimeout(time).then(async () => {
+    public async requestRestart({
+        channelId,
+        guildId,
+        message,
+        messageId,
+        waitFor,
+        key
+    }: RestartOptions) {
+        setTimeout(waitFor).then(async () => {
             const restartJsonFile = path.join(systemPrefix("tmp", true), "restart.json");
 
             await FileSystem.writeFileContents(
@@ -176,11 +182,17 @@ class StartupManager extends Service implements HasEventListeners {
                     channelId,
                     messageId,
                     message,
-                    time: Date.now()
+                    time: Date.now(),
+                    key
                 })
             );
 
             this.application.logger.info("Restart requested. Shutting down...");
+
+            if (message) {
+                this.application.logger.info(`Broadcasted Message: ${message}`);
+            }
+
             process.exit(this.application.service("configManager").systemConfig.restart_exit_code);
         });
 
@@ -393,7 +405,7 @@ type RestartOptions = {
      *
      * @default 0
      */
-    time?: number;
+    waitFor?: number;
 
     /**
      * The channel ID to broadcast the message to.
@@ -409,6 +421,11 @@ type RestartOptions = {
      * The message ID to edit.
      */
     messageId?: Snowflake;
+
+    /**
+     * The key to use for the restart. This is a 2FA code.
+     */
+    key?: string | null;
 };
 
 export default StartupManager;
