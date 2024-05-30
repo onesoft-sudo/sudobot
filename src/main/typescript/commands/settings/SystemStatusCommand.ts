@@ -30,7 +30,12 @@ class SystemStatusCommand extends Command {
 
         if (context.isLegacy()) {
             message = await context.reply({
-                content: `${context.emoji("loading")} Checking system status...`
+                embeds: [
+                    {
+                        description: `${context.emoji("loading")} Checking system status...`,
+                        color: Colors.Primary
+                    }
+                ]
             });
         } else {
             await context.defer();
