@@ -231,6 +231,10 @@ class EvalCommand extends Command {
         process.on("unhandledRejection", rejectionHandler);
 
         try {
+            const { application } = this;
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { client } = application;
+
             const result = eval(code);
             const string = `${
                 typeof result === "string" || typeof result?.toString === "function"
