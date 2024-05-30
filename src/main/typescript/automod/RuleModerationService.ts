@@ -66,6 +66,40 @@ class RuleModerationService
         return this.permissionManagerService.canAutoModerate(member);
     }
 
+    public getFirstWordFilterRuleOrCreate(guildId: Snowflake) {
+        if (!this.configurationManager.config[guildId]?.rule_moderation?.enabled) {
+            return null;
+        }
+
+        let index = this.configurationManager.config[guildId]?.rule_moderation?.rules.findIndex(
+            rule => rule.type === "word_filter"
+        );
+
+        if (index === -1) {
+            this.configurationManager.config[guildId]?.rule_moderation?.rules.push({
+                type: "word_filter",
+                tokens: [],
+                words: [],
+                enabled: true,
+                mode: "invert",
+                normalize: true,
+                actions: [
+                    {
+                        type: "delete_message"
+                    }
+                ],
+                bail: false
+            });
+
+            index =
+                (this.configurationManager.config[guildId]?.rule_moderation?.rules.length ?? 1) - 1;
+        }
+
+        return this.configurationManager.config[guildId]?.rule_moderation?.rules[
+            index ?? 0
+        ] as Extract<MessageRuleType, { type: "word_filter" }>;
+    }
+
     private async createRuleHandler(): Promise<ModerationRuleHandlerContract> {
         const instance = new ModerationRuleHandler(this.application);
         await instance.boot?.();

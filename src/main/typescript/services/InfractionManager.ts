@@ -937,7 +937,8 @@ class InfractionManager extends Service {
             guildId,
             generateOverviewEmbed,
             transformNotificationEmbed,
-            notify = true
+            notify = true,
+            immediateUnban = false
         } = payload;
         const infraction: Infraction = await this.createInfraction({
             guildId,
@@ -951,7 +952,8 @@ class InfractionManager extends Service {
                 expiresAt: payload.duration?.fromNow(),
                 metadata: {
                     deletionTimeframe: payload.deletionTimeframe?.fromNowMilliseconds(),
-                    duration: payload.duration?.fromNowMilliseconds()
+                    duration: payload.duration?.fromNowMilliseconds(),
+                    softban: immediateUnban
                 }
             }
         });
@@ -976,6 +978,27 @@ class InfractionManager extends Service {
                 }
 
                 throw error;
+            }
+
+            if (immediateUnban) {
+                try {
+                    await guild.bans.remove(
+                        user,
+                        `${moderator.username} - ${infraction.reason ?? "No reason provided"}`
+                    );
+                } catch (error) {
+                    if (isDiscordAPIError(error)) {
+                        return this.createError({
+                            status: "failed",
+                            infraction: null,
+                            overviewEmbed: null,
+                            errorType: "api_error_unban",
+                            code: +error.code
+                        });
+                    }
+
+                    throw error;
+                }
             }
 
             await this.queueService.bulkCancel(UnbanQueue, queue => {
@@ -1018,14 +1041,24 @@ class InfractionManager extends Service {
             })
             .catch(this.application.logger.error);
 
+        const overviewEmbed = generateOverviewEmbed
+            ? this.createOverviewEmbed(infraction, user, moderator, {
+                  duration: payload.duration
+              })
+            : undefined;
+
+        if (overviewEmbed && immediateUnban) {
+            overviewEmbed.fields ??= [];
+            overviewEmbed.fields.push({
+                name: "Ban Type",
+                value: "Soft-ban"
+            });
+        }
+
         return {
             status: "success",
             infraction,
-            overviewEmbed: (generateOverviewEmbed
-                ? this.createOverviewEmbed(infraction, user, moderator, {
-                      duration: payload.duration
-                  })
-                : undefined) as E extends true ? APIEmbed : undefined
+            overviewEmbed: overviewEmbed as E extends true ? APIEmbed : undefined
         };
     }
 
@@ -2800,6 +2833,7 @@ type CreateBanPayload<E extends boolean> = CommonOptions<E> & {
     user: User;
     deletionTimeframe?: Duration;
     duration?: Duration;
+    immediateUnban?: boolean;
 };
 
 type CreateRoleModificationPayload<E extends boolean> = CommonOptions<E> & {
