@@ -96,7 +96,7 @@ class BanCommand extends Command {
         "<user: User> <duration: Duration> [reason: RestString]"
     ];
     public override readonly systemPermissions = [PermissionFlagsBits.BanMembers];
-    public override readonly aliases = ["cleanban", "tempban"];
+    public override readonly aliases = ["cleanban", "tempban", "softban"];
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;
@@ -170,6 +170,11 @@ class BanCommand extends Command {
             return;
         }
 
+        if (context.commandName === "softban" && args.duration) {
+            await context.error("You cannot provide a duration for a softban.");
+            return;
+        }
+
         const deletionTimeframeString = context.isChatInput()
             ? context.options.getString("deletion_timeframe") ?? undefined
             : undefined;
@@ -210,14 +215,18 @@ class BanCommand extends Command {
             generateOverviewEmbed: true,
             duration: args.duration,
             deletionTimeframe,
-            notify: !context.isChatInput() || context.options.getBoolean("notify") !== false
+            notify: !context.isChatInput() || context.options.getBoolean("notify") !== false,
+            immediateUnban: context.commandName === "softban"
         });
 
         if (result.status === "failed") {
             await context.error(
-                result.errorDescription ??
-                    "Failed to ban user. Maybe I don't have the permissions to do so."
+                result.errorType === "api_error_unban" && result.errorDescription
+                    ? `Error while removing the created ban: ${result.errorDescription}`
+                    : result.errorDescription ??
+                          "Failed to ban user. Maybe I don't have the permissions to do so."
             );
+            
             return;
         }
 
