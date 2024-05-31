@@ -22,7 +22,7 @@
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "noImplicitOverride": true,
-        "importsNotUsedAsValues": "remove",
+        "importsNotUsedAsValues": "error",
         /* These paths are only used in Blaze build scripts, when ran with bun. */
         "paths": {
             "@buildSrc/*": ["./build_src/src/main/typescript/*"],
