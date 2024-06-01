@@ -4,31 +4,33 @@ import { ACTIONLESS_TASK_METADATA_KEY } from "./ActionlessTask";
 import { TASK_ACTION_METADATA_KEY } from "./TaskAction";
 import { TASK_INPUT_GENERATOR_METADATA_KEY } from "./TaskInputGenerator";
 import { TASK_OUTPUT_GENERATOR_METADATA_KEY } from "./TaskOutputGenerator";
+import type { FileResolvable } from "../types/file";
+import File from "../io/File";
 
 abstract class AbstractTask<R = void> {
     protected readonly name?: string;
-    private _input = new Set<string>();
-    private _output = new Set<string>();
+    private _input = new Set<File>();
+    private _output = new Set<File>();
     private _hasComputedInput = false;
     private _hasComputedOutput = false;
 
     public constructor(protected readonly blaze: Blaze) {}
 
-    protected generateInput?(): Awaitable<Iterable<string>>;
+    protected generateInput?(): Awaitable<Iterable<FileResolvable>>;
     protected run?(): Awaitable<R>;
-    protected generateOutput?(result: R): Awaitable<Iterable<string>>;
+    protected generateOutput?(result: R): Awaitable<Iterable<FileResolvable>>;
     protected dependencies?(): Awaitable<Iterable<TaskResolvable<any>>>;
 
     public get io() {
         return {
-            input: this._input as ReadonlySet<string>,
-            output: this._output as ReadonlySet<string>
+            input: this._input as ReadonlySet<File>,
+            output: this._output as ReadonlySet<File>
         };
     }
 
-    protected addOutput(...files: string[]) {
+    protected addOutput(...files: FileResolvable[]) {
         for (const file of files) {
-            this._output.add(file);
+            this._output.add(File.resolve(file));
         }
     }
 
@@ -66,7 +68,7 @@ abstract class AbstractTask<R = void> {
 
         return {
             methodName,
-            call: (this[methodName as keyof this] as () => Awaitable<Iterable<string>>).bind(this)
+            call: (this[methodName as keyof this] as () => Awaitable<Iterable<FileResolvable>>).bind(this)
         };
     }
 
@@ -83,7 +85,7 @@ abstract class AbstractTask<R = void> {
         return {
             methodName,
             call: (
-                this[methodName as keyof this] as (result: R) => Awaitable<Iterable<string>>
+                this[methodName as keyof this] as (result: R) => Awaitable<Iterable<FileResolvable>>
             ).bind(this)
         };
     }
@@ -98,14 +100,14 @@ abstract class AbstractTask<R = void> {
 
     public async computeInput() {
         const { call: callGenerateInput } = this.findInputGenerator();
-        this._input = callGenerateInput ? new Set(await callGenerateInput()) : this._input;
+        this._input = callGenerateInput ? new Set(Array.from(await callGenerateInput(), File.resolve)) : this._input;
         this._hasComputedInput = true;
     }
 
     public async computeOutput(result: R) {
         const { call: callGenerateOutput } = this.findOutputGenerator();
         this._output = callGenerateOutput
-            ? new Set(await callGenerateOutput(result))
+            ? new Set(Array.from(await callGenerateOutput(result), File.resolve))
             : this._output;
         this._hasComputedOutput = true;
     }

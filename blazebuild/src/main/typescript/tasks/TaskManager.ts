@@ -334,7 +334,8 @@ class TaskManager extends Manager {
             let mtimeMs = null;
 
             try {
-                mtimeMs = (await lstat(file)).mtimeMs;
+                await file.waitUntilUsable();
+                mtimeMs = file.modifiedTimestamp;
             } catch (error) {
                 IO.debug("Failed to stat output file: " + (error as Error).message);
             }
@@ -343,7 +344,7 @@ class TaskManager extends Manager {
                 DEFAULT_MODULE,
                 name,
                 "output",
-                file,
+                file.path,
                 mtimeMs
             );
         }
@@ -352,7 +353,8 @@ class TaskManager extends Manager {
             let mtimeMs = null;
 
             try {
-                mtimeMs = (await lstat(file)).mtimeMs;
+                await file.waitUntilUsable();
+                mtimeMs = file.modifiedTimestamp;
             } catch (error) {
                 IO.debug("Failed to stat input file: " + (error as Error).message);
             }
@@ -361,7 +363,7 @@ class TaskManager extends Manager {
                 DEFAULT_MODULE,
                 name,
                 "input",
-                file,
+                file.path,
                 mtimeMs
             );
         }
