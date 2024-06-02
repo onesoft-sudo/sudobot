@@ -55,7 +55,8 @@ export const SystemConfigSchema = z.object({
             register_application_commands_on_boot: z
                 .enum(["always_global", "guild", "none", "auto_global"])
                 .default("auto_global"),
-            global_disabled: z.array(z.string()).default([])
+            global_disabled: z.array(z.string()).default([]),
+            system_banned_users: z.array(z.string()).default([]),
         })
         .default({}),
     enable_file_filter: z.boolean().default(false),

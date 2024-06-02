@@ -194,6 +194,10 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
     }
 
     public async runCommandFromMessage(message: Message<true>) {
+        if (this.configManager.systemConfig.commands.system_banned_users.includes(message.author.id)) {
+            return;
+        }
+
         const config = this.configManager.config[message.guildId!];
 
         if (!config) {
@@ -301,6 +305,15 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
     }
 
     public async runCommandFromInteraction(interaction: CommandInteraction) {
+        if (this.configManager.systemConfig.commands.system_banned_users.includes(interaction.user.id)) {
+            await interaction.reply({
+                content: "You are unable to use commands.",
+                ephemeral: true
+            });
+            
+            return;
+        }
+
         const { commandName } = interaction;
         const baseCommand = this.commands.get(commandName);
 
