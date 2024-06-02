@@ -22,7 +22,6 @@ import type {
     ChatInputCommandInteraction,
     ContextMenuCommandInteraction,
     Message,
-    PermissionResolvable,
     PermissionsString,
     SlashCommandOptionsOnlyBuilder,
     Snowflake,
@@ -62,16 +61,24 @@ export type AnyCommand = Command<ContextType>;
 export type SubcommandMeta = {
     description: string;
     detailedDescription?: string;
+    aliases?: string[];
+    supportedContexts?: ContextType[];
     usage?: string[];
+    deprecated?: boolean;
     options?: Record<string, string>;
     beta?: boolean;
+    systemAdminOnly?: boolean;
     since?: string;
-    permissions?: PermissionResolvable[];
-    systemPermissions?: PermissionResolvable[];
+    permissionCheckingMode?: "or" | "and";
+    permissions?: PermissionsString[];
+    systemPermissions?: PermissionsString[];
+    persistentDiscordPermissions?: PermissionsString[];
+    persistentCustomPermissions?: SystemOnlyPermissionResolvable[];
 };
 
 export type CommandGuardLike = GuardLike | typeof Guard;
 export type CommandPermissionLike = PermissionLike | PermissionsString | typeof Permission;
+export type PlainPermissionResolvable = PermissionsString | bigint;
 
 /**
  * Represents an abstract command.
@@ -152,6 +159,11 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
     public readonly beta: boolean = false;
 
     /**
+     * Whether the command is deprecated.
+     */
+    public readonly deprecated: boolean = false;
+
+    /**
      * The cooldown of the command in milliseconds.
      */
     public readonly cooldown?: number;
@@ -199,7 +211,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
     /**
      * The required permissions for the bot system to run this command.
      */
-    public readonly systemPermissions?: PermissionResolvable[];
+    public readonly systemPermissions?: PlainPermissionResolvable[];
 
     /**
      * Whether the command can only be run by system admins.

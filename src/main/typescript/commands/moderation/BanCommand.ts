@@ -88,7 +88,8 @@ type BanCommandArgs = {
 class BanCommand extends Command {
     public override readonly name = "ban";
     public override readonly description = "Bans a user.";
-    public override readonly detailedDescription = "Bans a user from the server.";
+    public override readonly detailedDescription =
+        "Bans a user from the server.\n:warning: The aliases of this command behave differently.\n\n* `ban` - Bans a user normally.\n* `cleanban` - Bans a user and deletes their messages from the past 7 days.\n* `tempban` - Temporarily bans a user.\n* `softban` - Bans and immediately unbans a user, deleting their messages.";
     public override readonly permissions = [PermissionFlags.BanMembers];
     public override readonly defer = true;
     public override readonly usage = [
@@ -226,7 +227,7 @@ class BanCommand extends Command {
                     : result.errorDescription ??
                           "Failed to ban user. Maybe I don't have the permissions to do so."
             );
-            
+
             return;
         }
 
