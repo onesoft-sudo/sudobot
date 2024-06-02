@@ -4,16 +4,20 @@ import { DEFAULT_MODULE } from "../cache/CacheManager";
 import type Blaze from "../core/Blaze";
 import Manager from "../core/Manager";
 import TaskNotFoundError from "../errors/TaskNotFoundError";
+import BuildTask from "../framework/tasks/BuildTask";
 import TasksTask from "../framework/tasks/TasksTask";
 import IO from "../io/IO";
+import type { FileResolvable } from "../types/file";
 import type { Awaitable } from "../types/utils";
 import AbstractTask, { type TaskResolvable } from "./AbstractTask";
 import { ActionlessTask } from "./ActionlessTask";
 import { TASK_DEPENDENCY_GENERATOR_METADATA_KEY } from "./TaskDependencyGenerator";
+import { TaskOutputGenerator } from "./TaskOutputGenerator";
 
 class TaskManager extends Manager {
     private static readonly builtInTasks: Array<new (blaze: Blaze) => AbstractTask<any>> = [
-        TasksTask
+        TasksTask,
+        BuildTask
     ];
     private readonly tasks = new Map<string, TaskDetails<any>>();
     private readonly classToTaskMap = new Map<typeof AbstractTask<any>, TaskDetails<any>>();
@@ -72,9 +76,50 @@ class TaskManager extends Manager {
         throw new Error("Invalid arguments passed to register method");
     }
 
+    public named<R>(name: string, options: TaskRegisterOptions<R>) {
+        const task = this.resolveTask(name);
+
+        task.options = {
+            ...task.options,
+            ...options
+        };
+
+        if (options.inputs !== undefined) {
+            Reflect.defineProperty(task.task, "generateInput", {
+                value: async () => {
+                    return options.inputs ?? [];
+                },
+                configurable: true
+            });
+
+            TaskOutputGenerator(task.task, "generateInput");
+        }
+
+        if (options.outputs !== undefined) {
+            Reflect.defineProperty(task.task, "generateOutput", {
+                value: async () => {
+                    return options.outputs ?? [];
+                },
+                configurable: true
+            });
+
+            TaskOutputGenerator(task.task, "generateOutput");
+        }
+
+        this.tasks.set(name, task);
+    }
+
     private registerWithOptionsOnly<R>(options: TaskRegisterOptions<R> & { name: string }) {
-        const DynamicClass = class extends AbstractTask<R> {};
+        const DynamicClass = class extends AbstractTask<R> {
+            public override generateInput =
+                options.inputs !== undefined ? async () => options.inputs ?? [] : undefined;
+
+            public override generateOutput =
+                options.outputs !== undefined ? async () => options.outputs ?? [] : undefined;
+        };
+
         ActionlessTask(DynamicClass);
+
         Object.defineProperty(DynamicClass, "name", { value: `Dynamic_${options.name}_Task` });
         this.registerWithNameAndClass(options.name, DynamicClass, options);
     }
@@ -396,6 +441,8 @@ export type TaskRegisterOptions<R> = {
     description?: string;
     hidden?: boolean;
     group?: string;
+    outputs?: Iterable<FileResolvable>;
+    inputs?: Iterable<FileResolvable>;
 };
 
 type TaskRegisterOptionsWithoutName<R> = Omit<TaskRegisterOptions<R>, "name">;

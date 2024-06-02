@@ -1,6 +1,5 @@
 import "blazebuild/types/build.d";
 
-import BuildTask from "@buildSrc/tasks/BuildTask";
 import CleanTask from "@buildSrc/tasks/CleanTask";
 import CompileTask from "@buildSrc/tasks/CompileTask";
 import CompileTypeScriptTask from "@buildSrc/tasks/CompileTypeScriptTask";
@@ -15,7 +14,11 @@ tasks.register(CleanTask);
 tasks.register(CompileTypeScriptTask);
 tasks.register(CompileTask);
 tasks.register(TestTask);
-tasks.register(BuildTask);
 tasks.register(LintTask);
 tasks.register(ProcessCoverageReportsTask);
 tasks.register(RunTask);
+
+tasks.named("build", {
+    dependsOn: ["compile", "lint", "test"],
+    outputs: ["build"]
+});
