@@ -4,6 +4,7 @@ import { DEFAULT_MODULE } from "../cache/CacheManager";
 import type Blaze from "../core/Blaze";
 import Manager from "../core/Manager";
 import TaskNotFoundError from "../errors/TaskNotFoundError";
+import TasksTask from "../framework/tasks/TasksTask";
 import IO from "../io/IO";
 import type { Awaitable } from "../types/utils";
 import AbstractTask, { type TaskResolvable } from "./AbstractTask";
@@ -11,7 +12,9 @@ import { ActionlessTask } from "./ActionlessTask";
 import { TASK_DEPENDENCY_GENERATOR_METADATA_KEY } from "./TaskDependencyGenerator";
 
 class TaskManager extends Manager {
-    private static readonly builtInTasks: Array<new (blaze: Blaze) => AbstractTask<any>> = [];
+    private static readonly builtInTasks: Array<new (blaze: Blaze) => AbstractTask<any>> = [
+        TasksTask
+    ];
     private readonly tasks = new Map<string, TaskDetails<any>>();
     private readonly classToTaskMap = new Map<typeof AbstractTask<any>, TaskDetails<any>>();
     public readonly executedTasks = new Set<string>();
@@ -21,6 +24,9 @@ class TaskManager extends Manager {
         for (const TaskClass of TaskManager.builtInTasks) {
             this.register(TaskClass);
         }
+    }
+    public getAvailableTasks(): ReadonlyMap<string, TaskDetails<any>> {
+        return this.tasks;
     }
 
     public register<R>(
@@ -268,7 +274,7 @@ class TaskManager extends Manager {
               ).call(task)
             : [];
 
-        for (const dependency of [...dependencies, ...(options?.dependencies ?? [])]) {
+        for (const dependency of [...dependencies, ...(options?.dependsOn ?? [])]) {
             const details: TaskDetails<unknown> = this.blaze.taskManager.resolveTask(dependency);
             await this.getTaskDependencies(details.task, set);
             set.add(details);
@@ -382,11 +388,14 @@ class TaskManager extends Manager {
     }
 }
 
-type TaskRegisterOptions<R> = {
+export type TaskRegisterOptions<R> = {
     doFirst?(this: AbstractTask<R>): Awaitable<void>;
     doLast?(this: AbstractTask<R>): Awaitable<void>;
     name?: string;
-    dependencies?: Iterable<string | typeof AbstractTask<any>>;
+    dependsOn?: Iterable<string | typeof AbstractTask<any>>;
+    description?: string;
+    hidden?: boolean;
+    group?: string;
 };
 
 type TaskRegisterOptionsWithoutName<R> = Omit<TaskRegisterOptions<R>, "name">;

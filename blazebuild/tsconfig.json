@@ -25,7 +25,6 @@
     "noImplicitThis": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "importsNotUsedAsValues": "error"
+    "emitDecoratorMetadata": true
   }
 }

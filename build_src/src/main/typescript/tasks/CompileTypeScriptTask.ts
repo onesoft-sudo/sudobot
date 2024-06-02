@@ -1,4 +1,5 @@
 import AbstractTask, { TaskResolvable } from "blazebuild/tasks/AbstractTask";
+import { Task } from "blazebuild/tasks/Task";
 import { TaskAction } from "blazebuild/tasks/TaskAction";
 import { TaskDependencyGenerator } from "blazebuild/tasks/TaskDependencyGenerator";
 import { TaskInputGenerator } from "blazebuild/tasks/TaskInputGenerator";
@@ -8,6 +9,10 @@ import { files } from "blazebuild/utils/glob";
 import { $ } from "bun";
 import path from "path";
 
+@Task({
+    description: "Compiles the TypeScript source files",
+    group: "Build"
+})
 class CompileTypeScriptTask extends AbstractTask {
     @TaskAction
     protected override async run(): Promise<void> {

@@ -1,14 +1,14 @@
 import type Blaze from "../core/Blaze";
+import File from "../io/File";
+import type { FileResolvable } from "../types/file";
 import type { Awaitable } from "../types/utils";
 import { ACTIONLESS_TASK_METADATA_KEY } from "./ActionlessTask";
+import type { TaskBaseDetails } from "./Task";
 import { TASK_ACTION_METADATA_KEY } from "./TaskAction";
 import { TASK_INPUT_GENERATOR_METADATA_KEY } from "./TaskInputGenerator";
 import { TASK_OUTPUT_GENERATOR_METADATA_KEY } from "./TaskOutputGenerator";
-import type { FileResolvable } from "../types/file";
-import File from "../io/File";
 
 abstract class AbstractTask<R = void> {
-    protected readonly name?: string;
     private _input = new Set<File>();
     private _output = new Set<File>();
     private _hasComputedInput = false;
@@ -68,7 +68,9 @@ abstract class AbstractTask<R = void> {
 
         return {
             methodName,
-            call: (this[methodName as keyof this] as () => Awaitable<Iterable<FileResolvable>>).bind(this)
+            call: (
+                this[methodName as keyof this] as () => Awaitable<Iterable<FileResolvable>>
+            ).bind(this)
         };
     }
 
@@ -100,7 +102,9 @@ abstract class AbstractTask<R = void> {
 
     public async computeInput() {
         const { call: callGenerateInput } = this.findInputGenerator();
-        this._input = callGenerateInput ? new Set(Array.from(await callGenerateInput(), File.resolve)) : this._input;
+        this._input = callGenerateInput
+            ? new Set(Array.from(await callGenerateInput(), File.resolve))
+            : this._input;
         this._hasComputedInput = true;
     }
 
@@ -118,9 +122,17 @@ abstract class AbstractTask<R = void> {
         await this.computeOutput(result);
     }
 
+    public get details() {
+        return Reflect.getMetadata("task:details", this.constructor) as
+            | TaskBaseDetails<R>
+            | undefined;
+    }
+
     public determineName() {
-        if (this.name) {
-            return this.name;
+        const metadata = this.details;
+
+        if (metadata?.name) {
+            return metadata.name;
         }
 
         const className = this.constructor.name;

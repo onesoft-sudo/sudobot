@@ -1,4 +1,5 @@
 import AbstractTask from "blazebuild/tasks/AbstractTask";
+import { Task } from "blazebuild/tasks/Task";
 import { TaskAction } from "blazebuild/tasks/TaskAction";
 import { TaskDependencyGenerator } from "blazebuild/tasks/TaskDependencyGenerator";
 import { TaskInputGenerator } from "blazebuild/tasks/TaskInputGenerator";
@@ -7,6 +8,10 @@ import type { Awaitable } from "blazebuild/types/utils";
 import { files } from "blazebuild/utils/glob";
 import path from "path";
 
+@Task({
+    description: "Compiles the source files",
+    group: "Build"
+})
 class CompileTask extends AbstractTask {
     @TaskAction
     protected override async run(): Promise<void> {}

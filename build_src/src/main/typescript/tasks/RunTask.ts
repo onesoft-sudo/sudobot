@@ -1,8 +1,13 @@
 import IO from "blazebuild/io/IO";
 import AbstractTask from "blazebuild/tasks/AbstractTask";
+import { Task } from "blazebuild/tasks/Task";
 import { TaskAction } from "blazebuild/tasks/TaskAction";
 import { spawnSync } from "child_process";
 
+@Task({
+    description: "Runs the project",
+    group: "Execution"
+})
 class RunTask extends AbstractTask {
     @TaskAction
     protected override run() {
