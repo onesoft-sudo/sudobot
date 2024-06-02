@@ -37,6 +37,11 @@ class SystemBanCommand extends Command {
     }
 
     public override async execute(context: Context, { user }: SystemBanCommandArgs): Promise<void> {
+        if (user.id === context.userId) {
+            await context.error("You cannot ban yourself from the system.");
+            return;
+        }
+
         if (this.configManager.systemConfig.commands.system_banned_users.includes(user.id)) {
             await context.error(`User **${user.username}** is already banned from the system.`);
             return;
