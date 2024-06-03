@@ -1,5 +1,5 @@
 import Manager from "../core/Manager";
-import type { ProjectProperties } from "../exports";
+import type { ProjectProperties } from "../types/project";
 
 class ProjectManager extends Manager {
     private _properties: Partial<ProjectProperties> = {

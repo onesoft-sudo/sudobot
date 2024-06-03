@@ -252,22 +252,21 @@ if [ "$node" == "node" ]; then
     cmd="npm"
 fi
 
-file="$blaze_srcpath/build/out/main/typescript/index.js"
+file="$blaze_srcpath/build/out/main/typescript/cli.js"
 if [ ! -z "$has_bun" ] || [ $setup_done -eq 1 ] || [ -x "$bun" ]; then
     cmd=$bun
     has_bun=1
-    file="$blaze_srcpath/src/main/typescript/index.ts"
+    file="$blaze_srcpath/src/main/typescript/cli.ts"
 fi
 
 blaze_cmd() {
     node_path=$(dirname "$node")
-    final_path=$(readlink -f $node_path)
+    final_path=$(readlink -f "$node_path")
     wrapper=$(readlink -f "$projectdir/blaze/wrapper/blaze_wrapper.mjs")
 
     if [ -z "$has_bun" ]; then
         print "1;31" "error  " "Bun not found. Please install Bun to use BlazeBuild."
         exit 1
-        export PATH="$final_path":$PATH:"$final_path" && bash -c "exec -a \"$argv_0\" $node $wrapper $file --- $*"
     else
         export PATH="$final_path":$PATH:"$final_path" && bash -c "exec -a \"$argv_0\" $cmd $wrapper $file --- $*"
     fi
@@ -318,4 +317,5 @@ if [ $argsetup -eq 1 ]; then
     exit 0
 fi
 
+# shellcheck disable=SC2068
 blaze_cmd $@

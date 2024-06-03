@@ -1,12 +1,28 @@
+import "./types/build";
 import "reflect-metadata";
 
-import Blaze from "./core/Blaze";
+import AbstractTask from "./tasks/AbstractTask";
+import { Task } from "./tasks/Task";
+import { TaskAction } from "./tasks/TaskAction";
+import { TaskDependencyGenerator } from "./tasks/TaskDependencyGenerator";
+import { TaskInputGenerator } from "./tasks/TaskInputGenerator";
+import { TaskOutputGenerator } from "./tasks/TaskOutputGenerator";
+import IO from "./io/IO";
+import { files, glob } from "./utils/glob";
 
-async function main() {
-    const blaze = Blaze.getInstance();
-    await blaze.boot();
-    await blaze.run();
-    await blaze.cacheManager.saveCache();
-}
+export {
+    AbstractTask,
+    Task,
+    TaskAction,
+    TaskDependencyGenerator,
+    TaskInputGenerator,
+    TaskOutputGenerator,
+    files,
+    glob,
+    IO
+};
 
-await main();
+export * from "./types/file";
+export * from "./types/project";
+export * from "./types/task";
+export * from "./types/utils";

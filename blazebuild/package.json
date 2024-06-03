@@ -1,7 +1,7 @@
 {
   "name": "blazebuild",
-  "main": "src/main/typescript/exports.ts",
-  "module": "src/main/typescript/exports.ts",
+  "main": "src/main/typescript/index.ts",
+  "module": "src/main/typescript/index.ts",
   "type": "module",
   "devDependencies": {
     "@types/bun": "latest",
