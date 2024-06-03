@@ -273,13 +273,12 @@ blaze_cmd() {
     fi
 }
 
-if [ ! -e "$projectdir/.blaze/build.d.ts" ]; then
-    print 34 "info   " "Creating $projectdir/.blaze/build.d.ts..."
+if [ ! -e "$projectdir/.blaze" ]; then
+    print 34 "info   " "Creating $projectdir/.blaze directory..."
     mkdir -p "$projectdir/.blaze"
-    cp "$blaze_srcpath/src/main/typescript/types/build.d.ts" "$projectdir/.blaze/build.d.ts"
 
     if [ $? -ne 0 ]; then
-        print "1;31" "error  " "Failed to create build.d.ts."
+        print "1;31" "error  " "Failed to create .blaze/ directory!"
         exit 1
     fi
 fi
