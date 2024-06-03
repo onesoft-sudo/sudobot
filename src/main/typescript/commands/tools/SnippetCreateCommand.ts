@@ -67,6 +67,11 @@ class SnippetCreateCommand extends Command {
     private readonly directiveParsingService!: DirectiveParsingService;
 
     public override async execute(context: Context, args: SnippetCreateCommandArgs): Promise<void> {
+        if (this.snippetManagerService.hasSnippet(args.name, context.guildId)) {
+            await context.error(`Snippet \`${args.name}\` already exists.`);
+            return;
+        }
+
         try {
             await this.directiveParsingService.parse(args.content);
         } catch (error) {

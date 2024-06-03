@@ -7,9 +7,16 @@ import PermissionManagerService from "@main/services/PermissionManagerService";
 import { downloadFile } from "@main/utils/download";
 import { systemPrefix } from "@main/utils/utils";
 import { PermissionLogicMode, Snippet } from "@prisma/client";
-import { APIEmbed, Collection, Message, PermissionFlagsBits, PermissionsString } from "discord.js";
+import {
+    APIEmbed,
+    Collection,
+    Message,
+    PermissionFlagsBits,
+    PermissionsString,
+    Snowflake
+} from "discord.js";
 import { existsSync } from "fs";
-import { mkdir } from "fs/promises";
+import { mkdir, rm } from "fs/promises";
 import { join } from "path";
 
 @Name("snippetManagerService")
@@ -39,6 +46,10 @@ class SnippetManagerService extends Service {
         }
 
         this.application.logger.info(`Discovered ${snippets.length} snippets.`);
+    }
+
+    public hasSnippet(name: string, guildId: string): boolean {
+        return this.cache.has(`${guildId}_${name}`);
     }
 
     private async checkRequirements(message: Message<true>, snippet: Snippet): Promise<boolean> {
@@ -217,6 +228,57 @@ class SnippetManagerService extends Service {
             this.cache.set(`${options.guildId}_${alias}`, snippet);
         }
 
+        return snippet;
+    }
+
+    public async deleteSnippet(name: string, guildId: string): Promise<Snippet | null> {
+        const snippet = this.cache.get(`${guildId}_${name}`);
+
+        if (snippet) {
+            await this.application.prisma.snippet.delete({
+                where: {
+                    id: snippet.id
+                }
+            });
+
+            this.cache.delete(`${guildId}_${name}`);
+
+            for (const alias of snippet.aliases) {
+                this.cache.delete(`${guildId}_${alias}`);
+            }
+
+            for (const file of snippet.attachments) {
+                const path = systemPrefix(join("storage/snippets", guildId, file));
+
+                if (existsSync(path)) {
+                    await rm(path);
+                }
+            }
+
+            return snippet;
+        }
+
+        return null;
+    }
+
+    public async renameSnippet(name: string, newName: string, guildId: Snowflake) {
+        const snippet = this.cache.get(`${guildId}_${name}`);
+
+        if (!snippet || this.cache.has(`${guildId}_${newName}`)) {
+            return null;
+        }
+
+        await this.application.prisma.snippet.update({
+            where: {
+                id: snippet.id
+            },
+            data: {
+                name: newName
+            }
+        });
+
+        this.cache.delete(`${guildId}_${name}`);
+        this.cache.set(`${guildId}_${newName}`, snippet);
         return snippet;
     }
 }
