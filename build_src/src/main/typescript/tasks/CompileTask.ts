@@ -1,11 +1,13 @@
-import AbstractTask from "blazebuild/tasks/AbstractTask";
-import { Task } from "blazebuild/tasks/Task";
-import { TaskAction } from "blazebuild/tasks/TaskAction";
-import { TaskDependencyGenerator } from "blazebuild/tasks/TaskDependencyGenerator";
-import { TaskInputGenerator } from "blazebuild/tasks/TaskInputGenerator";
-import { TaskOutputGenerator } from "blazebuild/tasks/TaskOutputGenerator";
-import type { Awaitable } from "blazebuild/types/utils";
-import { files } from "blazebuild/utils/glob";
+import {
+    AbstractTask,
+    Task,
+    TaskAction,
+    TaskDependencyGenerator,
+    TaskInputGenerator,
+    TaskOutputGenerator,
+    files,
+    type Awaitable
+} from "blazebuild";
 import path from "path";
 
 @Task({

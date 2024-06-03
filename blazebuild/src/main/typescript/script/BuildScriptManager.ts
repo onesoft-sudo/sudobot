@@ -36,6 +36,7 @@ class BuildScriptManager extends Manager {
 
     private async setupEnvironment(global: Record<string, unknown>) {
         global.tasks = this.blaze.taskManager;
+        global.project = this.blaze.projectManager.getProxy();
         global.blaze = this.blaze;
         global.println = println;
     }

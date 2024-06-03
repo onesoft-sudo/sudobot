@@ -2,6 +2,7 @@ import CacheManager from "../cache/CacheManager";
 import MissingBuildScriptError from "../errors/MissingBuildScriptError";
 import TaskNotFoundError from "../errors/TaskNotFoundError";
 import IO from "../io/IO";
+import ProjectManager from "../project/ProjectManager";
 import BuildScriptManager from "../script/BuildScriptManager";
 import TaskManager from "../tasks/TaskManager";
 import type Manager from "./Manager";
@@ -11,10 +12,12 @@ class Blaze {
     public readonly cacheManager = new CacheManager(this);
     public readonly buildScriptManager = new BuildScriptManager(this);
     public readonly taskManager = new TaskManager(this);
+    public readonly projectManager = new ProjectManager(this);
     private readonly managers: Manager[] = [
         this.buildScriptManager,
         this.cacheManager,
-        this.taskManager
+        this.taskManager,
+        this.projectManager
     ];
 
     private static _instance: Blaze;

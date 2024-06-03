@@ -1,7 +1,5 @@
-import IO from "blazebuild/io/IO";
-import AbstractTask from "blazebuild/tasks/AbstractTask";
-import { Task } from "blazebuild/tasks/Task";
-import { TaskAction } from "blazebuild/tasks/TaskAction";
+import { AbstractTask, Task, TaskAction } from "blazebuild";
+import IO from "blazebuild/src/main/typescript/io/IO";
 import { spawnSync } from "child_process";
 
 @Task({

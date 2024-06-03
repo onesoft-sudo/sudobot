@@ -1,7 +1,4 @@
-import AbstractTask from "blazebuild/tasks/AbstractTask";
-import { Task } from "blazebuild/tasks/Task";
-import { TaskAction } from "blazebuild/tasks/TaskAction";
-import { TaskOutputGenerator } from "blazebuild/tasks/TaskOutputGenerator";
+import { AbstractTask, Task, TaskAction, TaskOutputGenerator } from "blazebuild";
 import { rm } from "fs/promises";
 
 @Task({

@@ -1,5 +1,3 @@
-import "blazebuild/types/build.d";
-
 import CleanTask from "@buildSrc/tasks/CleanTask";
 import CompileTask from "@buildSrc/tasks/CompileTask";
 import CompileTypeScriptTask from "@buildSrc/tasks/CompileTypeScriptTask";
@@ -8,6 +6,13 @@ import LintTask from "@buildSrc/tasks/LintTask";
 import ProcessCoverageReportsTask from "@buildSrc/tasks/ProcessCoverageReportsTask";
 import RunTask from "@buildSrc/tasks/RunTask";
 import TestTask from "@buildSrc/tasks/TestTask";
+
+project.name = "sudobot";
+project.version = "1.0.0";
+project.description = "Sudobot. A Discord moderation bot.";
+project.structure.sourcesRootDirectory = "src";
+project.structure.sourceModules = ["main", "framework"];
+project.structure.testsDirectory = "test";
 
 tasks.register(DependenciesTask);
 tasks.register(CleanTask);
@@ -20,5 +25,5 @@ tasks.register(RunTask);
 
 tasks.named("build", {
     dependsOn: ["compile", "lint", "test"],
-    outputs: ["build"]
+    outputs: [project.structure.buildOutputDirectory]
 });
