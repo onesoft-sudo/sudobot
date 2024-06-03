@@ -82,6 +82,7 @@ class DiscordKernel extends Kernel {
         "@services/AuthService",
         "@services/ImageRecognitionService",
         "@services/DirectiveParsingService",
+        "@services/SnippetManagerService",
         "@root/framework/typescript/api/APIServer"
     ];
 

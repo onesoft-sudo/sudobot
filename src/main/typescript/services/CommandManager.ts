@@ -194,7 +194,9 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
     }
 
     public async runCommandFromMessage(message: Message<true>) {
-        if (this.configManager.systemConfig.commands.system_banned_users.includes(message.author.id)) {
+        if (
+            this.configManager.systemConfig.commands.system_banned_users.includes(message.author.id)
+        ) {
             return;
         }
 
@@ -233,7 +235,28 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         const commandName = rawCommandName.toLowerCase();
         const command = this.commands.get(commandName);
 
-        if (!command || !command.supportsLegacy()) {
+        if (!command) {
+            this.application.logger.debug(
+                `Command not found: ${commandName}: trying to resolve a snippet`
+            );
+
+            const result = await this.application
+                .service("snippetManagerService")
+                .resolveMessageOptions(message, commandName);
+
+            if (!result) {
+                this.application.logger.debug(
+                    `Snippet not found: ${commandName}: all strategies to resolve the command failed`
+                );
+                return false;
+            }
+
+            const { options } = result;
+            await message.reply(options).catch(this.application.logger.error);
+            return true;
+        }
+
+        if (!command.supportsLegacy()) {
             return false;
         }
 
@@ -286,7 +309,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             return this.runSubcommand(command, subcommand, context);
         }
 
-        return this.execCommand(command, context);
+        return void (await this.execCommand(command, context));
     }
 
     private async execCommand(command: Command, context: Context, subcommand = false) {
@@ -305,12 +328,16 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
     }
 
     public async runCommandFromInteraction(interaction: CommandInteraction) {
-        if (this.configManager.systemConfig.commands.system_banned_users.includes(interaction.user.id)) {
+        if (
+            this.configManager.systemConfig.commands.system_banned_users.includes(
+                interaction.user.id
+            )
+        ) {
             await interaction.reply({
                 content: "You are unable to use commands.",
                 ephemeral: true
             });
-            
+
             return;
         }
 

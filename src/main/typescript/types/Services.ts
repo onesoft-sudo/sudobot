@@ -32,6 +32,7 @@ import type LogStreamingService from "../services/LogStreamingService";
 import type ModerationActionService from "../services/ModerationActionService";
 import type PermissionManagerService from "../services/PermissionManagerService";
 import type QueueService from "../services/QueueService";
+import type SnippetManagerService from "../services/SnippetManagerService";
 import type StartupManager from "../services/StartupManager";
 
 export interface ServiceRecord {
@@ -51,6 +52,7 @@ export interface ServiceRecord {
     directiveParsingService: DirectiveParsingService;
     systemAuditLogging: SystemAuditLoggingService;
     channelLockManager: ChannelLockManager;
+    snippetManagerService: SnippetManagerService;
 }
 
 interface ServiceRecordLocal extends ServiceRecord {}

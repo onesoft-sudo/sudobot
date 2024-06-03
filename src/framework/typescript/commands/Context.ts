@@ -21,6 +21,7 @@ import type { GuildConfig } from "@main/schemas/GuildConfigSchema";
 import type { SystemConfig } from "@main/schemas/SystemConfigSchema";
 import type {
     APIEmbed,
+    Attachment,
     ChatInputCommandInteraction,
     ContextMenuCommandInteraction,
     EmbedBuilder,
@@ -35,7 +36,7 @@ import type {
     User,
     UserContextMenuCommandInteraction
 } from "discord.js";
-import { Message } from "discord.js";
+import { Collection, Message } from "discord.js";
 import Application from "../app/Application";
 import { emoji } from "../utils/emoji";
 import type { AnyCommand, Command, CommandMessage } from "./Command";
@@ -143,6 +144,12 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
 
     public replyEmbed(...embeds: Array<APIEmbed | EmbedBuilder>) {
         return this.reply({ embeds });
+    }
+
+    public get attachments(): Collection<Snowflake, Attachment> {
+        return this.commandMessage instanceof Message
+            ? this.commandMessage.attachments
+            : new Collection();
     }
 
     public async defer(options?: InteractionDeferReplyOptions) {

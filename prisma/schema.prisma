@@ -176,25 +176,12 @@ model User {
     @@map("users")
 }
 
-// The following models were used in the previous version of the bot and are no longer used.
-// They are kept here for reference and will be removed in the future.
-
-model SpamRecord {
-    id        Int      @id @default(autoincrement())
-    user_id   String
-    guild_id  String
-    level     Int      @default(1)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
-
-    @@map("spam_records")
-}
-
 model Snippet {
     id             Int                 @id @default(autoincrement())
     name           String
-    user_id        String
-    guild_id       String
+    userId         String
+    guildId        String
+    aliases        String[]            @default([])
     roles          String[]            @default([])
     channels       String[]            @default([])
     users          String[]            @default([])
@@ -229,88 +216,7 @@ model ReactionRole {
     @@map("reaction_roles")
 }
 
-model BoostRoleEntries {
-    id        Int      @id @default(autoincrement())
-    role_id   String
-    user_id   String
-    guild_id  String
-    createdAt DateTime @default(now())
-
-    @@map("boost_role_entries")
-}
-
 enum PermissionLogicMode {
     OR
     AND
-}
-
-model Ballot {
-    id        Int      @id @default(autoincrement())
-    guildId   String
-    channelId String
-    messageId String
-    userId    String
-    content   String
-    anonymous Boolean  @default(false)
-    files     String[] @default([])
-    upvotes   String[] @default([])
-    downvotes String[] @default([])
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
-
-    @@map("ballots")
-}
-
-model Review {
-    id            Int      @id @default(autoincrement())
-    reviewer      String?
-    content       String
-    rating        Int
-    discordId     String?
-    email         String?
-    aboutReviewer String?
-    approved      Boolean  @default(false)
-    ip            String?
-    createdAt     DateTime @default(now())
-    updatedAt     DateTime @default(now()) @updatedAt
-
-    @@map("reviews")
-}
-
-model VerificationEntry {
-    id        Int      @id @default(autoincrement())
-    userId    String
-    token     String   @unique
-    guildId   String
-    attempts  Int      @default(0)
-    meta      Json?
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
-
-    @@map("verification_entries")
-}
-
-model GlobalUserBan {
-    id         Int      @id @default(autoincrement())
-    userId     String   @unique
-    reason     String?
-    executorId String
-    notified   Boolean  @default(false)
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @default(now()) @updatedAt
-
-    @@map("global_user_bans")
-}
-
-model UserStatistics {
-    id              Int      @id @default(autoincrement())
-    userId          String
-    guildId         String
-    messagesSent    Int      @default(0)
-    messagesEdited  Int      @default(0)
-    messagesDeleted Int      @default(0)
-    createdAt       DateTime @default(now())
-    updatedAt       DateTime @default(now()) @updatedAt
-
-    @@map("user_statistics")
 }

@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { env } from "@main/env/env";
 import type { AxiosRequestConfig } from "axios";
 import axios from "axios";
 import type {
@@ -29,10 +30,7 @@ import type {
     TextChannel,
     ThreadChannel
 } from "discord.js";
-import {
-    ChannelType,
-    PermissionsBitField
-} from "discord.js";
+import { ChannelType, PermissionsBitField } from "discord.js";
 import { mkdirSync } from "fs";
 import path from "path";
 
@@ -84,8 +82,8 @@ export function wait(time: number) {
 
 export function systemPrefix(pathLike: string, createDirIfNotExists = false) {
     const directoryOrFile = path.resolve(
-        process.env.SUDO_PREFIX ?? __dirname,
-        process.env.SUDO_PREFIX ? "" : "../..",
+        env.SUDO_PREFIX ?? __dirname,
+        env.SUDO_PREFIX ? "" : "../..",
         pathLike
     );
 
@@ -130,8 +128,8 @@ export function getChannelPermissionOverride(
     return permissionOverwrites.allow.has(permission, true)
         ? true
         : permissionOverwrites.deny.has(permission, true)
-        ? true
-        : null;
+          ? true
+          : null;
 }
 
 export function chunkedString(str: string, chunkSize = 4000) {
