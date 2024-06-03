@@ -81,7 +81,8 @@ class SnippetEditCommand extends Command {
         "pmode",
         "level",
         "permission",
-        "content"
+        "content",
+        "randomize"
     ];
 
     @Inject()

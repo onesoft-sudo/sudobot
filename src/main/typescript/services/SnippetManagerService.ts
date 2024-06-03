@@ -305,21 +305,51 @@ class SnippetManagerService extends Service {
         }
 
         switch (attribute) {
-            case "level":
-                if (this.configurationManager.config[guildId]?.permissions.mode !== "levels") {
-                    return {
-                        error: "Permission levels are not enabled in this server."
-                    };
+            case "randomize":
+                {
+                    const randomize = value === "true" || value === "1" || value === "enabled";
+
+                    await this.application.prisma.snippet.update({
+                        where: {
+                            id: snippet.id
+                        },
+                        data: {
+                            randomize
+                        }
+                    });
+
+                    snippet.randomize = randomize;
                 }
 
-                await this.application.prisma.snippet.update({
-                    where: {
-                        id: snippet.id
-                    },
-                    data: {
-                        level: parseInt(value)
+                break;
+
+            case "level":
+                {
+                    if (this.configurationManager.config[guildId]?.permissions.mode !== "levels") {
+                        return {
+                            error: "Permission levels are not enabled in this server."
+                        };
                     }
-                });
+
+                    const level = parseInt(value);
+
+                    if (isNaN(level)) {
+                        return {
+                            error: "Level must be a number."
+                        };
+                    }
+
+                    await this.application.prisma.snippet.update({
+                        where: {
+                            id: snippet.id
+                        },
+                        data: {
+                            level
+                        }
+                    });
+
+                    snippet.level = level;
+                }
 
                 break;
 
@@ -347,21 +377,25 @@ class SnippetManagerService extends Service {
                             permissions
                         }
                     });
+
+                    snippet.permissions = permissions;
                 }
 
                 break;
 
             case "pmode":
             case "permission_mode":
-                if (value === "AND" || value === "OR") {
+                if (value.toUpperCase() === "AND" || value.toUpperCase() === "OR") {
                     await this.application.prisma.snippet.update({
                         where: {
                             id: snippet.id
                         },
                         data: {
-                            permissionMode: value
+                            permissionMode: value as PermissionLogicMode
                         }
                     });
+
+                    snippet.permissionMode = value.toUpperCase() as PermissionLogicMode;
                 } else {
                     return {
                         error: "Permission mode must be either `AND` or `OR`."
@@ -380,6 +414,7 @@ class SnippetManagerService extends Service {
                     }
                 });
 
+                snippet.content = [value];
                 break;
 
             default:
