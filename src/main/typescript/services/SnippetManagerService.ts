@@ -425,6 +425,40 @@ class SnippetManagerService extends Service {
 
         return { snippet };
     }
+
+    public async pushAttachment(name: string, urls: string[], guildId: Snowflake) {
+        const snippet = this.cache.get(`${guildId}_${name}`);
+
+        if (!snippet) {
+            return null;
+        }
+
+        const fileNames = [];
+
+        for (const url of urls) {
+            const fileName = `${Date.now()}-${Math.random() * 10_000_000}.${new URL(url).pathname.split(".").pop()}`;
+
+            await downloadFile({
+                url,
+                path: systemPrefix(join("storage/snippets", guildId)),
+                name: fileName
+            });
+
+            fileNames.push(fileName);
+        }
+
+        await this.application.prisma.snippet.update({
+            where: {
+                id: snippet.id
+            },
+            data: {
+                attachments: [...snippet.attachments, ...fileNames]
+            }
+        });
+
+        snippet.attachments.push(...fileNames);
+        return snippet;
+    }
 }
 
 export type CreateSnippetOptions = {
