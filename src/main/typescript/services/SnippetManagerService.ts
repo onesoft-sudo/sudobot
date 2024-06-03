@@ -1,4 +1,5 @@
 import { Inject } from "@framework/container/Inject";
+import { Permission } from "@framework/permissions/Permission";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
@@ -292,6 +293,102 @@ class SnippetManagerService extends Service {
         }
 
         return snippets;
+    }
+
+    public async updateSnippet(name: string, attribute: string, value: string, guildId: Snowflake) {
+        const snippet = this.cache.get(`${guildId}_${name}`);
+
+        if (!snippet) {
+            return {
+                error: "Snippet does not exist."
+            };
+        }
+
+        switch (attribute) {
+            case "level":
+                if (this.configurationManager.config[guildId]?.permissions.mode !== "levels") {
+                    return {
+                        error: "Permission levels are not enabled in this server."
+                    };
+                }
+
+                await this.application.prisma.snippet.update({
+                    where: {
+                        id: snippet.id
+                    },
+                    data: {
+                        level: parseInt(value)
+                    }
+                });
+
+                break;
+
+            case "perm":
+            case "permission":
+                {
+                    const permissions = value.split(" ");
+
+                    for (const permission of permissions) {
+                        if (
+                            !(permission in PermissionFlagsBits) &&
+                            !Permission.fromString(permission)
+                        ) {
+                            return {
+                                error: "Invalid permission: " + permission
+                            };
+                        }
+                    }
+
+                    await this.application.prisma.snippet.update({
+                        where: {
+                            id: snippet.id
+                        },
+                        data: {
+                            permissions
+                        }
+                    });
+                }
+
+                break;
+
+            case "pmode":
+            case "permission_mode":
+                if (value === "AND" || value === "OR") {
+                    await this.application.prisma.snippet.update({
+                        where: {
+                            id: snippet.id
+                        },
+                        data: {
+                            permissionMode: value
+                        }
+                    });
+                } else {
+                    return {
+                        error: "Permission mode must be either `AND` or `OR`."
+                    };
+                }
+
+                break;
+
+            case "content":
+                await this.application.prisma.snippet.update({
+                    where: {
+                        id: snippet.id
+                    },
+                    data: {
+                        content: [value]
+                    }
+                });
+
+                break;
+
+            default:
+                return {
+                    error: "Invalid attribute: " + attribute
+                };
+        }
+
+        return { snippet };
     }
 }
 
