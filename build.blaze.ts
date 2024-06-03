@@ -25,5 +25,5 @@ tasks.register(RunTask);
 
 tasks.named("build", {
     dependsOn: ["compile", "lint", "test"],
-    outputs: [project.structure.buildOutputDirectory]
+    outputs: [project.structure.buildOutputDirectory],
 });

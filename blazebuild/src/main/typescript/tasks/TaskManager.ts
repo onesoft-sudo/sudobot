@@ -76,7 +76,7 @@ class TaskManager extends Manager {
         throw new Error("Invalid arguments passed to register method");
     }
 
-    public named<R>(name: string, options: TaskRegisterOptions<R>) {
+    public named<T extends AbstractTask<any>>(name: string, options: TaskRegisterOptions<unknown, T>) {
         const task = this.resolveTask(name);
 
         task.options = {
@@ -433,9 +433,9 @@ class TaskManager extends Manager {
     }
 }
 
-export type TaskRegisterOptions<R> = {
-    doFirst?(this: AbstractTask<R>): Awaitable<void>;
-    doLast?(this: AbstractTask<R>): Awaitable<void>;
+export type TaskRegisterOptions<R, T extends AbstractTask<R> = AbstractTask<R>> = {
+    doFirst?(this: T): Awaitable<void>;
+    doLast?(this: T): Awaitable<void>;
     name?: string;
     dependsOn?: Iterable<string | typeof AbstractTask<any>>;
     description?: string;

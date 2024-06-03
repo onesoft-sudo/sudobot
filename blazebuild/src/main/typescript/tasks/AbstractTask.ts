@@ -138,6 +138,10 @@ abstract class AbstractTask<R = void> {
         const className = this.constructor.name;
         return className[0].toLowerCase() + className.slice(1).replace(/Task$/, "");
     }
+
+    public get name() {
+        return this.determineName();
+    }
 }
 
 export type TaskResolvable<T> = string | typeof AbstractTask<T>;

@@ -9,6 +9,11 @@ import { TaskInputGenerator } from "./tasks/TaskInputGenerator";
 import { TaskOutputGenerator } from "./tasks/TaskOutputGenerator";
 import IO from "./io/IO";
 import { files, glob } from "./utils/glob";
+import File from './io/File';
+import FileAlreadyExistsError from './io/FileAlreadyExistsError';
+import FileIOError from './io/FileIOError';
+import FileNotFoundError from './io/FileNotFoundError';
+import FileWriter from './io/FileWriter';
 
 export {
     AbstractTask,
@@ -19,7 +24,12 @@ export {
     TaskOutputGenerator,
     files,
     glob,
-    IO
+    IO,
+    File,
+    FileIOError,
+    FileAlreadyExistsError,
+    FileNotFoundError,
+    FileWriter
 };
 
 export * from "./types/file";
