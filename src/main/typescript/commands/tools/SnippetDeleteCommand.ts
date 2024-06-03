@@ -32,6 +32,7 @@ class SnippetDeleteCommand extends Command {
     public override readonly name = "snippet::delete";
     public override readonly description: string = "Deletes a snippet.";
     public override readonly defer = true;
+    public override readonly aliases = ["remove"];
     public override readonly usage = ["<name: String>"];
     public override readonly permissions = [
         PermissionFlags.ManageGuild,

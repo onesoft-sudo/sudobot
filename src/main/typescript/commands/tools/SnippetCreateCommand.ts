@@ -54,6 +54,7 @@ class SnippetCreateCommand extends Command {
     public override readonly description: string = "Creates a new snippet.";
     public override readonly defer = true;
     public override readonly usage = ["<name: String> <...content: RestString>"];
+    public override readonly aliases = ["snippet::add"];
     public override readonly permissions = [
         PermissionFlags.ManageGuild,
         PermissionFlags.BanMembers
