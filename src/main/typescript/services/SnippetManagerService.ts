@@ -281,6 +281,18 @@ class SnippetManagerService extends Service {
         this.cache.set(`${guildId}_${newName}`, snippet);
         return snippet;
     }
+
+    public async getSnippets(guildId: Snowflake): Promise<Snippet[]> {
+        const snippets: Snippet[] = [];
+
+        for (const snippet of this.cache.values()) {
+            if (snippet.guildId === guildId) {
+                snippets.push(snippet);
+            }
+        }
+
+        return snippets;
+    }
 }
 
 export type CreateSnippetOptions = {
