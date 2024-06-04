@@ -17,6 +17,10 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+export function escapeRegex(string: string) {
+    return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
+}
+
 export function requireNonNull<T>(value: T | null | undefined, message?: string): T {
     if (value === null || value === undefined) {
         throw new Error(message ?? "Value cannot be null or undefined");

@@ -3,10 +3,10 @@ import Directive from "@framework/directives/Directive";
 import DirectiveParseError from "@framework/directives/DirectiveParseError";
 import type DirectiveParser from "@framework/directives/DirectiveParser";
 import type { APIEmbed } from "discord.js";
-import JSON5 from "json5";
 import { z } from "zod";
+import { escapeRegex } from "@framework/utils/utils";
 
-class EmbedDirective extends Directive {
+class EmbedDirective extends Directive<APIEmbed> {
     public override readonly name = "embed";
     public static readonly discordApiEmbedSchema = z.object({
         title: z.string().optional(),
@@ -56,18 +56,8 @@ class EmbedDirective extends Directive {
             .optional()
     });
 
-    public override async apply(parser: DirectiveParser, state: ParserState, arg: string) {
-        let parsed;
-
-        try {
-            parsed = JSON5.parse(arg);
-        } catch (error) {
-            throw new DirectiveParseError("Invalid argument: must be valid JSON5", {
-                cause: error
-            });
-        }
-
-        const embed = EmbedDirective.discordApiEmbedSchema.safeParse(parsed);
+    public override async apply(parser: DirectiveParser, state: ParserState, arg: APIEmbed) {
+        const embed = EmbedDirective.discordApiEmbedSchema.safeParse(arg);
 
         if (!embed.success) {
             throw new DirectiveParseError(
@@ -82,7 +72,10 @@ class EmbedDirective extends Directive {
             state.output += "\n";
         }
 
-        state.output = state.output.replace(/@embed\s*\([^\n]+\)\n/gi, "");
+        if (state.currentArgument) {
+            state.output = state.output.replace(new RegExp(`@embed(\\s*)\\((\\s*)${escapeRegex(state.currentArgument)}(\\s*)\\)`), "");
+        }
+
         state.data.embeds ??= [];
         (state.data.embeds as Array<APIEmbed>)!.push(embed.data);
     }
