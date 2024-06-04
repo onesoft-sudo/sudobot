@@ -35,11 +35,11 @@ describe("generateEmbed", () => {
                 switch (field) {
                     case "author_name":
                         return "author";
-                    case "author_iconurl":
+                    case "author_icon_url":
                         return authorIconURL;
                     case "footer_text":
                         return "footer";
-                    case "footer_iconurl":
+                    case "footer_icon_url":
                         return footerIconURL;
                     case "color":
                         return Colors.Red satisfies ColorResolvable;
