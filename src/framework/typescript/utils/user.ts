@@ -20,7 +20,7 @@
 import { emoji } from "@framework/utils/emoji";
 import { client } from "@framework/utils/helpers";
 import type { GuildMember, User } from "discord.js";
-import { TimestampStyles, UserFlags, time } from "discord.js";
+import { time, TimestampStyles, UserFlags } from "discord.js";
 
 const map: Record<string, [string, string]> = {
     BugHunterLevel1: ["bughunter", "Bughunter Level 1"],

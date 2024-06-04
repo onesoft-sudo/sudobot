@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { ChatContext} from "@framework/commands/Command";
+import type { ChatContext } from "@framework/commands/Command";
 import { Command } from "@framework/commands/Command";
 import type { MetadataType } from "../../core/DiscordKernel";
 

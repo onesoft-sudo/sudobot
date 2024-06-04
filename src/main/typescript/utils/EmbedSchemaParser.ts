@@ -30,9 +30,7 @@ import type {
     TextBasedChannel,
     User
 } from "discord.js";
-import {
-    EmbedBuilder
-} from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import JSON5 from "json5";
 import { z } from "zod";
 

@@ -9,9 +9,9 @@ import RuleModerationService from "@main/automod/RuleModerationService";
 import { Colors } from "@main/constants/Colors";
 import ConfigurationManager from "@main/services/ConfigurationManager";
 import {
-    escapeMarkdown,
     type APIEmbed,
     type ChatInputCommandInteraction,
+    escapeMarkdown,
     type MessagePayload
 } from "discord.js";
 

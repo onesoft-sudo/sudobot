@@ -1,7 +1,8 @@
 import AbstractRootCommand from "@framework/commands/AbstractRootCommand";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import type { Buildable } from "@framework/commands/Command";
-import { ChannelType, type SlashCommandSubcommandBuilder } from "discord.js";
+import type { ChannelType } from "discord.js";
+import { type SlashCommandSubcommandBuilder } from "discord.js";
 import { TextableChannelTypes } from "@framework/utils/channel";
 
 class EmbedCommand extends AbstractRootCommand {

@@ -1,6 +1,5 @@
 import { type Buildable, Command } from "@framework/commands/Command";
 import { TakesArgument } from "@framework/arguments/ArgumentTypes";
-import StringArgument from "@framework/arguments/StringArgument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import type Context from "@framework/commands/Context";
 import { ContextType } from "@framework/commands/ContextType";

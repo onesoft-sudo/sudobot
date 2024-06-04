@@ -21,9 +21,9 @@ import { ConfigurationManagerServiceInterface } from "@framework/contracts/Confi
 import cors from "cors";
 import express, {
     Application,
+    NextFunction,
     Request as ExpressRequest,
-    Response as ExpressResponse,
-    NextFunction
+    Response as ExpressResponse
 } from "express";
 import ratelimiter from "express-rate-limit";
 import { Router } from "express-serve-static-core";

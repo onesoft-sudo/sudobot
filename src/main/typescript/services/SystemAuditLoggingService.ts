@@ -3,14 +3,14 @@ import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import {
+    cleanCodeBlockContent,
+    codeBlock,
     Collection,
     Guild,
     MessageCreateOptions,
     MessagePayload,
     User,
-    WebhookClient,
-    cleanCodeBlockContent,
-    codeBlock
+    WebhookClient
 } from "discord.js";
 
 @Name("systemAuditLogging")

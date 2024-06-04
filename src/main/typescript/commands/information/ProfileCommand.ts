@@ -9,18 +9,18 @@ import { emoji } from "@framework/utils/emoji";
 import { getUserBadges } from "@framework/utils/user";
 import PermissionManagerService from "@main/services/PermissionManagerService";
 import {
-    APIEmbedField,
     ActivityType,
+    APIEmbedField,
+    bold,
     EmbedBuilder,
     Emoji,
     GuildMember,
     PermissionFlagsBits,
     PermissionsBitField,
     Role,
-    User,
-    bold,
     roleMention,
-    time
+    time,
+    User
 } from "discord.js";
 
 type ProfileCommandArgs = {

@@ -18,7 +18,7 @@
  */
 
 export function escapeRegex(string: string) {
-    return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
+    return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
 }
 
 export function requireNonNull<T>(value: T | null | undefined, message?: string): T {

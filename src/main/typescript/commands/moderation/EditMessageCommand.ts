@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Command, type Buildable } from "@framework/commands/Command";
+import { type Buildable, Command } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import DirectiveParseError from "@framework/directives/DirectiveParseError";
@@ -29,15 +29,15 @@ import DirectiveParsingService from "@main/services/DirectiveParsingService";
 import type SystemAuditLoggingService from "@main/services/SystemAuditLoggingService";
 import {
     ActionRowBuilder,
+    type APIEmbed,
     ApplicationCommandType,
+    type CacheType,
+    type Interaction,
     MessageContextMenuCommandInteraction,
     ModalBuilder,
     PermissionsBitField,
     TextInputBuilder,
-    TextInputStyle,
-    type APIEmbed,
-    type CacheType,
-    type Interaction
+    TextInputStyle
 } from "discord.js";
 
 export default class EditMessageCommand extends Command implements HasEventListeners {

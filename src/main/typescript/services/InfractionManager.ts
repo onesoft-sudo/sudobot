@@ -36,6 +36,7 @@ import { formatDistanceStrict, formatDistanceToNowStrict } from "date-fns";
 import {
     APIEmbed,
     Awaitable,
+    bold,
     CategoryChannel,
     ChannelType,
     Collection,
@@ -43,6 +44,7 @@ import {
     DiscordAPIError,
     Guild,
     GuildMember,
+    italic,
     Message,
     MessageCreateOptions,
     MessagePayload,
@@ -55,8 +57,6 @@ import {
     TextBasedChannel,
     TextChannel,
     User,
-    bold,
-    italic,
     userMention
 } from "discord.js";
 import InfractionChannelDeleteQueue from "../queues/InfractionChannelDeleteQueue";

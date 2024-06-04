@@ -7,7 +7,7 @@ import type Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import { userFlagsToString } from "@framework/utils/user";
 import InfractionManager from "@main/services/InfractionManager";
-import { EmbedBuilder, GuildMember, User, time, userMention } from "discord.js";
+import { EmbedBuilder, GuildMember, time, User, userMention } from "discord.js";
 
 type UserLookupCommandArgs = {
     user: User | GuildMember;

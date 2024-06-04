@@ -73,7 +73,10 @@ class EmbedDirective extends Directive<APIEmbed> {
         }
 
         if (state.currentArgument) {
-            state.output = state.output.replace(new RegExp(`@embed(\\s*)\\((\\s*)${escapeRegex(state.currentArgument)}(\\s*)\\)`), "");
+            state.output = state.output.replace(
+                new RegExp(`@embed(\\s*)\\((\\s*)${escapeRegex(state.currentArgument)}(\\s*)\\)`),
+                ""
+            );
         }
 
         state.data.embeds ??= [];

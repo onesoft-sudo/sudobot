@@ -9,11 +9,11 @@ import InfractionManager from "@main/services/InfractionManager";
 import {
     APIEmbed,
     ChatInputCommandInteraction,
+    heading,
     HeadingLevel,
     Message,
     PermissionFlagsBits,
-    Snowflake,
-    heading
+    Snowflake
 } from "discord.js";
 import { setTimeout } from "timers/promises";
 

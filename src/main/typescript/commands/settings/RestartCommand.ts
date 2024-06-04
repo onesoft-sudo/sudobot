@@ -9,8 +9,8 @@ import {
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
-    Snowflake,
-    type Interaction
+    type Interaction,
+    Snowflake
 } from "discord.js";
 
 class RestartCommand extends Command {

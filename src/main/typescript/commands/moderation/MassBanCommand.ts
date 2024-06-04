@@ -11,11 +11,11 @@ import InfractionManager from "@main/services/InfractionManager";
 import {
     APIEmbed,
     ChatInputCommandInteraction,
+    heading,
     HeadingLevel,
     Message,
     PermissionFlagsBits,
-    Snowflake,
-    heading
+    Snowflake
 } from "discord.js";
 
 class MassBanCommand extends Command {

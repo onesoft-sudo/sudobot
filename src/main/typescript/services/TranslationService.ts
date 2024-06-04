@@ -4,7 +4,8 @@ import { getAxiosClient } from "@main/utils/axios";
 
 @Name("translationService")
 class TranslationService extends Service {
-    protected readonly requestURL = "https://translate.google.com/translate_a/single?client=at&dt=t&dt=rm&dj=1";
+    protected readonly requestURL =
+        "https://translate.google.com/translate_a/single?client=at&dt=t&dt=rm&dj=1";
 
     public async translate(text: string, from: string = "auto", to: string = "en") {
         try {

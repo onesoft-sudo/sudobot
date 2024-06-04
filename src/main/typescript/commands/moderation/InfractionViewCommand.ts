@@ -11,7 +11,7 @@ import { Colors } from "@main/constants/Colors";
 import InfractionManager from "@main/services/InfractionManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
 import { Infraction } from "@prisma/client";
-import { APIEmbed, User, italic, time } from "discord.js";
+import { APIEmbed, italic, time, User } from "discord.js";
 
 type InfractionViewCommandArgs = {
     id: number;

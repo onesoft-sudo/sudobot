@@ -34,7 +34,6 @@ import ConfigurationManager from "../services/ConfigurationManager";
 import LogStreamingService from "../services/LogStreamingService";
 import { systemPrefix } from "../utils/utils";
 import Client from "./Client";
-import TranslationService from "@main/services/TranslationService";
 
 type Binding = {
     key: string;

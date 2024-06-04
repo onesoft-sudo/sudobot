@@ -10,7 +10,7 @@ import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import CommandExecutionQueue from "@main/queues/CommandExecutionQueue";
 import CommandManager from "@main/services/CommandManager";
 import QueueService from "@main/services/QueueService";
-import { Message, inlineCode } from "discord.js";
+import { inlineCode, Message } from "discord.js";
 
 type QueueAddCommandArgs = {
     runAfter: Duration;

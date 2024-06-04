@@ -27,7 +27,7 @@ import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { Colors } from "@main/constants/Colors";
 import InfractionManager from "@main/services/InfractionManager";
 import { Infraction } from "@prisma/client";
-import { ActionRowBuilder, StringSelectMenuBuilder, User, italic, time } from "discord.js";
+import { ActionRowBuilder, italic, StringSelectMenuBuilder, time, User } from "discord.js";
 
 type ModStatsCommandArgs = {
     user?: User;

@@ -34,7 +34,8 @@ class EmbedSendCommand extends Command {
             return;
         }
 
-        const channel = context.options.getChannel("channel") as GuildBasedChannel ?? context.channel;
+        const channel =
+            (context.options.getChannel("channel") as GuildBasedChannel) ?? context.channel;
 
         if (!channel?.isTextBased()) {
             await context.error("Invalid channel given.");

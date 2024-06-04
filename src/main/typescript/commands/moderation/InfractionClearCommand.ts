@@ -9,7 +9,7 @@ import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import InfractionManager from "@main/services/InfractionManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
 import { InfractionType } from "@prisma/client";
-import { User, bold } from "discord.js";
+import { bold, User } from "discord.js";
 
 type InfractionClearCommandArgs = {
     user: User;

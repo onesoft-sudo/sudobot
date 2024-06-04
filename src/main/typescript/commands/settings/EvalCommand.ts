@@ -12,11 +12,11 @@ import {
     ButtonBuilder,
     ButtonStyle,
     ComponentType,
+    escapeCodeBlock,
+    escapeMarkdown,
     GuildMember,
     InteractionCollector,
-    InteractionType,
-    escapeCodeBlock,
-    escapeMarkdown
+    InteractionType
 } from "discord.js";
 import * as uuid from "uuid";
 

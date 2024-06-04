@@ -30,29 +30,29 @@ import ConfigurationManager from "@main/services/ConfigurationManager";
 import { chunkedString } from "@main/utils/utils";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
+    ActionRowBuilder,
     APIEmbed,
     APIEmbedField,
-    ActionRowBuilder,
     AttachmentBuilder,
     Awaitable,
+    bold,
     ButtonBuilder,
     ButtonStyle,
     Collection,
     GuildMember,
+    inlineCode,
+    italic,
     Message,
     MessageCreateOptions,
     MessagePayload,
     PartialMessage,
+    roleMention,
     Snowflake,
     TextChannel,
-    User,
-    Webhook,
-    bold,
-    inlineCode,
-    italic,
-    roleMention,
     time,
-    userMention
+    User,
+    userMention,
+    Webhook
 } from "discord.js";
 
 type WebhookInfo =

@@ -13,9 +13,9 @@ import { isSnowflake } from "@framework/utils/utils";
 import ReactionRoleService from "@main/services/ReactionRoleService";
 import {
     ChatInputCommandInteraction,
+    parseEmoji,
     PermissionFlagsBits,
-    Snowflake,
-    parseEmoji
+    Snowflake
 } from "discord.js";
 
 type CreateReactionRoleCommandArgs = {

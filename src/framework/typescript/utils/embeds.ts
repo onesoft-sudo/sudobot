@@ -1,5 +1,5 @@
 import type { Client, Snowflake } from "discord.js";
-import { MessageType, type GuildBasedChannel, type Message, type User } from "discord.js";
+import { type GuildBasedChannel, type Message, MessageType, type User } from "discord.js";
 
 export function userInfo(user: User) {
     return `ID: ${user.id}\nUsername: ${user.username}\nMention: <@${user.id}>`;

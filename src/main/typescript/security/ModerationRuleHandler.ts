@@ -7,8 +7,8 @@ import { AcceptsMessageRuleScopes } from "@main/decorators/AcceptsMessageRuleSco
 import { Invite, Snowflake, spoiler } from "discord.js";
 import ModerationRuleHandlerContract, {
     MessageRuleScope,
-    RuleExecResult,
-    type ModerationRuleContext
+    type ModerationRuleContext,
+    RuleExecResult
 } from "../contracts/ModerationRuleHandlerContract";
 
 // FIXME: This class is not complete and is only a placeholder for the actual implementation.

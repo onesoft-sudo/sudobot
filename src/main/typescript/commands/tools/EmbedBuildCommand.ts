@@ -2,11 +2,7 @@ import { Command } from "@framework/commands/Command";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import type LegacyContext from "@framework/commands/LegacyContext";
 import type InteractionContext from "@framework/commands/InteractionContext";
-import {
-    type ChatInputCommandInteraction,
-    EmbedBuilder,
-    type GuildBasedChannel
-} from "discord.js";
+import { type ChatInputCommandInteraction, EmbedBuilder, type GuildBasedChannel } from "discord.js";
 import JSON5 from "json5";
 import { TakesArgument } from "@framework/arguments/ArgumentTypes";
 import RestStringArgument from "@framework/arguments/RestStringArgument";

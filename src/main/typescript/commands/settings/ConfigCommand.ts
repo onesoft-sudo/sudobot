@@ -10,10 +10,10 @@ import ConfigurationManager from "@main/services/ConfigurationManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
 import {
     ChatInputCommandInteraction,
-    EmbedBuilder,
-    GuildMember,
     codeBlock,
+    EmbedBuilder,
     escapeInlineCode,
+    GuildMember,
     inlineCode,
     type Interaction
 } from "discord.js";

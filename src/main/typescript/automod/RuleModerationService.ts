@@ -6,8 +6,8 @@ import { LogEventType } from "@main/schemas/LoggingSchema";
 import { GuildMember, Message, Snowflake, TextChannel } from "discord.js";
 import { MessageAutoModServiceContract } from "../contracts/MessageAutoModServiceContract";
 import {
-    MessageRuleScope,
-    type default as ModerationRuleHandlerContract
+    type default as ModerationRuleHandlerContract,
+    MessageRuleScope
 } from "../contracts/ModerationRuleHandlerContract";
 import { MessageRuleType } from "../schemas/MessageRuleSchema";
 import ModerationRuleHandler from "../security/ModerationRuleHandler";
