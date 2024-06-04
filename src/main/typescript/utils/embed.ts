@@ -38,12 +38,12 @@ export function generateEmbed(options: ChatInputCommandInteraction["options"]) {
 
     const author = {
         name: getString("author_name")!,
-        iconURL: getString("author_iconurl")
+        iconURL: getString("author_icon_url")
     };
 
     const footer = {
         text: getString("footer_text")!,
-        iconURL: getString("footer_iconurl")
+        iconURL: getString("footer_icon_url")
     };
 
     try {

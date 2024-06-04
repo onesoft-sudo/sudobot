@@ -9,17 +9,18 @@ class RunTask extends AbstractTask {
     @TaskAction
     protected override run() {
         setTimeout(async () => {
-            let code = -1;
+            let code: number;
+            const argv = process.argv.slice(process.argv.indexOf('--') + 1);
 
             if (process.argv.includes("--node")) {
                 await this.blaze.taskManager.executeTask("build");
                 code =
-                    spawnSync("node", [`${process.cwd()}/build/out/main/typescript/index.js`], {
+                    spawnSync("node", [`${process.cwd()}/build/out/main/typescript/index.js`, ...argv], {
                         stdio: "inherit"
                     }).status ?? -1;
             } else {
                 code =
-                    spawnSync("bun", [`${process.cwd()}/src/main/typescript/bun.ts`], {
+                    spawnSync("bun", [`${process.cwd()}/src/main/typescript/bun.ts`, ...argv], {
                         stdio: "inherit"
                     }).status ?? -1;
             }

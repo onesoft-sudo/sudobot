@@ -62,27 +62,9 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
     public readonly commandMessage: T;
     public abstract readonly type: ContextType;
 
-    public isLegacy(): this is LegacyContext {
-        return this.type === ContextType.Legacy;
-    }
-
-    public isChatInput(): this is InteractionContext<ChatInputCommandInteraction> {
-        return this.type === ContextType.ChatInput;
-    }
-
-    public isContextMenu(): this is InteractionContext<ContextMenuCommandInteraction> {
-        return (
-            this.type === ContextType.MessageContextMenu ||
-            this.type === ContextType.UserContextMenu
-        );
-    }
-
-    public isMessageContextMenu(): this is InteractionContext<MessageContextMenuCommandInteraction> {
-        return this.type === ContextType.MessageContextMenu;
-    }
-
-    public isUserContextMenu(): this is InteractionContext<UserContextMenuCommandInteraction> {
-        return this.type === ContextType.UserContextMenu;
+    public constructor(commandName: string, commandMessage: T) {
+        this.commandName = commandName;
+        this.commandMessage = commandMessage;
     }
 
     public get guildId(): Snowflake {
@@ -118,11 +100,36 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
     }
 
     public abstract get userId(): Snowflake;
+
     public abstract get user(): User;
 
-    public constructor(commandName: string, commandMessage: T) {
-        this.commandName = commandName;
-        this.commandMessage = commandMessage;
+    public get attachments(): Collection<Snowflake, Attachment> {
+        return this.commandMessage instanceof Message
+            ? this.commandMessage.attachments
+            : new Collection();
+    }
+
+    public isLegacy(): this is LegacyContext {
+        return this.type === ContextType.Legacy;
+    }
+
+    public isChatInput(): this is InteractionContext<ChatInputCommandInteraction> {
+        return this.type === ContextType.ChatInput;
+    }
+
+    public isContextMenu(): this is InteractionContext<ContextMenuCommandInteraction> {
+        return (
+            this.type === ContextType.MessageContextMenu ||
+            this.type === ContextType.UserContextMenu
+        );
+    }
+
+    public isMessageContextMenu(): this is InteractionContext<MessageContextMenuCommandInteraction> {
+        return this.type === ContextType.MessageContextMenu;
+    }
+
+    public isUserContextMenu(): this is InteractionContext<UserContextMenuCommandInteraction> {
+        return this.type === ContextType.UserContextMenu;
     }
 
     public reply(options: Parameters<this["commandMessage"]["reply"]>[0]): Promise<Message> {
@@ -146,12 +153,6 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
         return this.reply({ embeds });
     }
 
-    public get attachments(): Collection<Snowflake, Attachment> {
-        return this.commandMessage instanceof Message
-            ? this.commandMessage.attachments
-            : new Collection();
-    }
-
     public async defer(options?: InteractionDeferReplyOptions) {
         if (this.commandMessage instanceof Message) {
             return;
@@ -167,7 +168,7 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
     public async error(options: Parameters<this["commandMessage"]["reply"]>[0]) {
         return this.reply(
             typeof options === "string"
-                ? `${this.emoji("error")} ${options}`
+                ? `${this.emoji("error") ?? ""} ${options}`
                 : {
                       ...(options as unknown as MessageCreateOptions & InteractionReplyOptions),
                       ephemeral: true,
@@ -181,7 +182,7 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
     public async success(options: Parameters<this["commandMessage"]["reply"]>[0]) {
         return this.reply(
             typeof options === "string"
-                ? `${this.emoji("check")} ${options}`
+                ? `${this.emoji("check") ?? ""} ${options}`
                 : {
                       ...(options as unknown as MessageCreateOptions & InteractionReplyOptions),
                       ephemeral: true,

@@ -27,7 +27,6 @@ class SnippetCommand extends AbstractRootCommand {
     public override build(): Buildable[] {
         return [
             this.buildChatInput()
-
                 .addSubcommand(subcommand =>
                     subcommand
                         .setName("create")
