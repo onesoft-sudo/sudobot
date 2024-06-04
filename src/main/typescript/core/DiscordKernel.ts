@@ -34,6 +34,7 @@ import ConfigurationManager from "../services/ConfigurationManager";
 import LogStreamingService from "../services/LogStreamingService";
 import { systemPrefix } from "../utils/utils";
 import Client from "./Client";
+import TranslationService from "@main/services/TranslationService";
 
 type Binding = {
     key: string;
@@ -83,6 +84,7 @@ class DiscordKernel extends Kernel {
         "@services/ImageRecognitionService",
         "@services/DirectiveParsingService",
         "@services/SnippetManagerService",
+        "@services/TranslationService",
         "@root/framework/typescript/api/APIServer"
     ];
 

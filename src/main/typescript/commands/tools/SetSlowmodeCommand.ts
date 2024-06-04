@@ -6,6 +6,7 @@ import ChannelArgument from "@framework/arguments/ChannelArgument";
 import Duration from "@framework/datetime/Duration";
 import DurationArgument from "@framework/arguments/DurationArgument";
 import { isDiscordAPIError } from "@framework/utils/errors";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 
 type SetSlowmodeCommandArgs = {
     duration: Duration;
@@ -30,6 +31,7 @@ class SetSlowmodeCommand extends Command {
     public override readonly defer = true;
     public override readonly aliases = ["slowmode", "ratelimit"];
     public override readonly usage = ["<duration: Duration> [channel: Channel]"];
+    public override readonly permissions = [PermissionFlags.ManageChannels];
 
     public override build(): Buildable[] {
         return [

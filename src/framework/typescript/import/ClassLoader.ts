@@ -106,7 +106,7 @@ class ClassLoader {
                 continue;
             }
 
-            this.modules.push(module);
+            this.modules.push(basename(module));
         }
 
         return modules;
@@ -116,7 +116,7 @@ class ClassLoader {
         const modules = module ? [module] : await this.loadModules();
 
         for (const moduleName of modules) {
-            const filePath = path.resolve(moduleName, "/resources/", name);
+            const filePath = path.join(this.application.projectRootPath, "src", moduleName, "resources/", name);
             const file = File.of(filePath);
 
             if (!file.exists) {
@@ -326,6 +326,10 @@ class ClassLoader {
 
         if (!canBind) {
             this.getContainer().resolveProperties(CommandClass, command);
+        }
+
+        if (!command.initialized) {
+            await command.initialize?.();
         }
 
         const defaultGroup = basename(dirname(filepath));

@@ -84,7 +84,7 @@ export type PlainPermissionResolvable = PermissionsString | bigint;
  * Represents an abstract command.
  * @template T - The type of context the command supports.
  */
-abstract class Command<T extends ContextType = ContextType.ChatInput | ContextType.Legacy>
+abstract class Command<T extends ContextType = ContextType.ChatInput | ContextType.Legacy, N extends boolean = false>
     implements Builder<CommandBuilders>
 {
     /**
@@ -239,6 +239,11 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
     private readonly internalPermissionManager: PermissionManagerServiceInterface;
 
     /**
+     * Whether this command has been initialized.
+     */
+    private _initialized = false;
+
+    /**
      * Creates a new instance of the Command class.
      *
      * @param application - The client instance.
@@ -249,6 +254,21 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
             "permissionManager"
         ) satisfies PermissionManagerServiceInterface;
     }
+
+    /**
+     * A wrapper for the _initialized private property.
+     */
+    public get initialized() {
+        return this._initialized;
+    }
+
+    /**
+     * Initializes the command.
+     * This method gets called when the command is loaded.
+     *
+     * @returns - Nothing, or a promise that resolves when the command is initialized.
+     */
+    public initialize?(): Awaitable<void>;
 
     /**
      * Checks if the command supports legacy context.
@@ -376,7 +396,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      * @param context - The command context.
      * @param args - The command arguments.
      */
-    public abstract execute(context: Context, ...args: ArgumentPayload): Promise<void>;
+    public abstract execute(context: Context, ...args: ArgumentPayload<N>): Promise<void>;
 
     /**
      * Handles the case when a subcommand is not found.
@@ -776,7 +796,7 @@ export type AuthorizeOptions<K extends Exclude<keyof PolicyActions, number>> = {
 };
 
 export type Arguments = Record<string | number, unknown>;
-export type ArgumentPayload = Array<Argument<unknown> | null> | [Arguments];
+export type ArgumentPayload<N extends boolean = false> = Array<Argument<unknown> | null | (N extends true ? undefined : never)> | [Arguments | (N extends true ? undefined : never)];
 export type CommandExecutionState<L extends boolean = false> = {
     memberPermissions: MemberPermissionData | (L extends false ? undefined : never);
     isSystemAdmin: boolean | (L extends false ? undefined : never);
