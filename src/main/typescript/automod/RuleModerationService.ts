@@ -102,6 +102,7 @@ class RuleModerationService
 
     private async createRuleHandler(): Promise<ModerationRuleHandlerContract> {
         const instance = new ModerationRuleHandler(this.application);
+        this.application.container.resolveProperties(ModerationRuleHandler, instance);
         await instance.boot?.();
         return instance;
     }

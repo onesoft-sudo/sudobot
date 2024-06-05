@@ -1,15 +1,18 @@
 import * as cache from "@framework/cache/GlobalStore";
-import { GatewayEventListener } from "@framework/events/GatewayEventListener";
 import { HasApplication } from "@framework/types/HasApplication";
-import { HasEventListeners } from "@framework/types/HasEventListeners";
 import { normalize } from "@framework/utils/string";
 import { AcceptsMessageRuleScopes } from "@main/decorators/AcceptsMessageRuleScopes";
-import { Invite, Snowflake, spoiler } from "discord.js";
+import { Attachment, spoiler } from "discord.js";
 import ModerationRuleHandlerContract, {
     MessageRuleScope,
     type ModerationRuleContext,
     RuleExecResult
 } from "../contracts/ModerationRuleHandlerContract";
+import type InviteTrackingService from "@main/services/InviteTrackingService";
+import { Inject } from "@framework/container/Inject";
+import { request } from "@main/utils/utils";
+import sharp from "sharp";
+import type ImageRecognitionService from "@main/services/ImageRecognitionService";
 
 // FIXME: This class is not complete and is only a placeholder for the actual implementation.
 
@@ -17,60 +20,20 @@ type MessageContext<T> = ModerationRuleContext<"message", { type: T }>;
 
 class ModerationRuleHandler
     extends HasApplication
-    implements ModerationRuleHandlerContract, HasEventListeners
+    implements ModerationRuleHandlerContract
 {
-    protected readonly inviteCache = new Map<`${Snowflake}_${string}`, Invite>();
     protected readonly computedRegexCache = new WeakMap<
         Array<string | [string, string]>,
         RegExp[]
     >();
 
-    private preconditionForInviteCaches(guild: Snowflake) {
-        const config = this.application.service("configManager").config[guild]?.rule_moderation;
+    @Inject("inviteTrackingService")
+    private readonly inviteTrackingService!: InviteTrackingService;
 
-        return config?.enabled && config.rules.some(r => r.type === "anti_invite");
-    }
+    @Inject("imageRecognitionService")
+    private readonly imageRecognitionService!: ImageRecognitionService;
 
-    // FIXME: Use a service for invite tracking.
-    @GatewayEventListener("inviteCreate")
-    public async onInviteCreate(invite: Invite) {
-        if (!invite.guild || !this.preconditionForInviteCaches(invite.guild.id)) {
-            return;
-        }
-
-        this.inviteCache.set(`${invite.guild?.id}_${invite.code}`, invite);
-    }
-
-    @GatewayEventListener("inviteDelete")
-    public async onInviteDelete(invite: Invite) {
-        if (!invite.guild || !this.preconditionForInviteCaches(invite.guild.id)) {
-            return;
-        }
-
-        this.inviteCache.delete(`${invite.guild?.id}_${invite.code}`);
-    }
-
-    public async boot() {
-        const handler = () => {
-            this.inviteCache.clear();
-            this.application.client.guilds.cache.forEach(async guild => {
-                if (!this.preconditionForInviteCaches(guild.id)) {
-                    return;
-                }
-
-                const invites = await guild.invites.fetch();
-
-                invites.forEach(invite => {
-                    this.inviteCache.set(`${guild.id}_${invite.code}`, invite);
-                });
-            });
-
-            this.application.logger.info("Invite cache has been refreshed.");
-        };
-
-        setInterval(handler, 30 * 60 * 1_000);
-        handler();
-    }
+    public boot() {}
 
     @AcceptsMessageRuleScopes(MessageRuleScope.Content)
     public domain_filter(context: ModerationRuleContext<"message", { type: "domain_filter" }>) {
@@ -80,7 +43,7 @@ class ModerationRuleHandler
         const scanLinksOnly = rule.scan_links_only;
 
         if (scanLinksOnly) {
-            const links = message.content.match(/https?:\/\/[^\s]+/g);
+            const links = message.content.match(/https?:\/\/\S+/g);
 
             if (links) {
                 const domain = links
@@ -250,10 +213,10 @@ class ModerationRuleHandler
                     continue;
                 }
 
-                const cachedInvite = this.inviteCache.get(`${message.guildId}_${code}`);
+                const cachedInvite = this.inviteTrackingService.invites.get(`${message.guildId!}::${code}`);
 
                 if (cachedInvite) {
-                    if (cachedInvite.guild?.id === message.guildId && allow_internal_invites) {
+                    if (cachedInvite.guildId === message.guildId && allow_internal_invites) {
                         continue;
                     }
                 }
@@ -712,15 +675,180 @@ class ModerationRuleHandler
         };
     }
 
-    // TODO
-    public EXPERIMENTAL_url_crawl(_context: ModerationRuleContext) {
+    @AcceptsMessageRuleScopes(MessageRuleScope.Content)
+    public async EXPERIMENTAL_url_crawl(context: MessageContext<"EXPERIMENTAL_url_crawl">) {
+        if (context.message.content.trim() === "") {
+            return {
+                matched: false
+            };
+        }
+
+        const { excluded_domains_regex, excluded_link_regex, excluded_links, words, tokens } = context.rule;
+        const matches = context.message.content.matchAll(/https?:\/\/([A-Za-z0-9-.]*[A-Za-z0-9-])\S*/gim);
+
+        for (const match of matches) {
+            const url = match[0].toLowerCase();
+            const domain = match[1].toLowerCase();
+
+            if (excluded_links.includes(url)) {
+                return {
+                    matched: false
+                };
+            }
+
+            for (const regex of excluded_domains_regex) {
+                if (new RegExp(regex, "gim").test(domain)) {
+                    return {
+                        matched: false
+                    };
+                }
+            }
+
+            for (const regex of excluded_link_regex) {
+                if (new RegExp(regex, "gim").test(url)) {
+                    return {
+                        matched: false
+                    };
+                }
+            }
+        }
+
+        for (const match of matches) {
+            const url = match[0].toLowerCase();
+
+            const [response, error] = await request({
+                url,
+                method: "GET",
+                transformResponse: r => r
+            });
+
+            if (error) {
+                this.application.logger.error(error);
+                continue;
+            }
+
+            if (typeof response?.data !== "string") {
+                this.application.logger.warn("The response returned by the server during URL crawl is invalid");
+                continue;
+            }
+
+            const lowerCasedData = response.data.toLowerCase();
+
+            for (const token of tokens) {
+                if (lowerCasedData.includes(token)) {
+                    return {
+                        matched: true,
+                        reason: "Website contains blocked token(s)",
+                        fields: [
+                            {
+                                name: "Token",
+                                value: `||${token}||`
+                            },
+                            {
+                                name: "Method",
+                                value: "URL Crawling"
+                            }
+                        ],
+                    };
+                }
+            }
+
+            const textWords = lowerCasedData.split(/\s+/);
+
+            for (const word of words) {
+                if (textWords.includes(word)) {
+                    return {
+                        matched: true,
+                        reason: "Website contains blocked word(s)",
+                        fields: [
+                            {
+                                name: "Word",
+                                value: `||${word}||`
+                            },
+                            {
+                                name: "Method",
+                                value: "URL Crawling"
+                            }
+                        ]
+                    };
+                }
+            }
+        }
+
         return {
             matched: false
         };
     }
 
-    // TODO
-    public EXPERIMENTAL_nsfw_filter(_context: ModerationRuleContext) {
+    @AcceptsMessageRuleScopes(MessageRuleScope.Attachments)
+    public async EXPERIMENTAL_nsfw_filter(context: MessageContext<"EXPERIMENTAL_nsfw_filter">) {
+        if (context.message.attachments.size === 0) {
+            return {
+                matched: false
+            };
+        }
+
+        const { score_thresholds } = context.rule;
+
+        for (const attachment of context.message.attachments.values()) {
+            this.application.logger.debug("Scanning attachment", attachment.id);
+
+            if (attachment instanceof Attachment && attachment.contentType?.startsWith("image/")) {
+                this.application.logger.debug("Scanning image attachment", attachment.id);
+
+                const [response, error] = await request({
+                    url: attachment.proxyURL,
+                    method: "GET",
+                    responseType: "arraybuffer"
+                });
+
+                if (error || !response) {
+                    this.application.logger.error(error);
+                    continue;
+                }
+
+                const imageData = Buffer.from(response.data, "binary");
+                const sharpMethodName = attachment.contentType.startsWith("image/gif")
+                    ? "gif"
+                    : attachment.contentType.startsWith("image/png")
+                        ? "png"
+                        : attachment.contentType.startsWith("image/jpeg")
+                            ? "jpeg"
+                            : "unknown";
+
+                if (sharpMethodName === "unknown") {
+                    this.application.logger.warn("Unknown image type");
+                    continue;
+                }
+
+                const sharpInfo = sharp(imageData);
+                const sharpMethod = sharpInfo[sharpMethodName].bind(sharpInfo);
+                const convertedImageBuffer = await sharpMethod().toBuffer();
+                const result = await this.imageRecognitionService.detectNSFW(convertedImageBuffer);
+                const isNSFW =
+                    result.hentai >= score_thresholds.hentai ||
+                    result.porn >= score_thresholds.porn ||
+                    result.sexy >= score_thresholds.sexy;
+
+                this.application.logger.debug("NSFW result", result);
+
+                if (isNSFW) {
+                    return {
+                        matched: true,
+                        reason: "NSFW content detected in image",
+                        fields: [
+                            {
+                                name: "Scores",
+                                value: `Hentai: ${Math.round(result.hentai * 100)}%\nPorn: ${Math.round(
+                                    result.porn * 100
+                                )}%\nSexy: ${Math.round(result.sexy * 100)}%\nNeutral: ${Math.round(result.neutral * 100)}%`
+                            }
+                        ],
+                    };
+                }
+            }
+        }
+
         return {
             matched: false
         };

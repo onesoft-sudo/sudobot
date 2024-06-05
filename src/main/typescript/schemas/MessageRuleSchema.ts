@@ -132,7 +132,6 @@ export const URLCrawlRule = z
         excluded_link_regex: z.array(z.string()).default([]),
         tokens: z.array(z.string()).default([]),
         words: z.array(z.string()).default([]),
-        inherit_from_word_filter: z.boolean().default(false)
     })
     .describe("Experimental. Use at your own risk.");
 
