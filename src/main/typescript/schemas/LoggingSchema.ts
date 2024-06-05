@@ -1,6 +1,7 @@
 import type Duration from "@framework/datetime/Duration";
 import type { RuleExecResult } from "@main/contracts/ModerationRuleHandlerContract";
 import type { MessageRuleType } from "@main/schemas/MessageRuleSchema";
+import type { ModerationActionType } from "@main/schemas/ModerationActionSchema";
 import { zSnowflake } from "@main/schemas/SnowflakeSchema";
 import type {
     Collection,
@@ -33,7 +34,8 @@ export enum LogEventType {
     UserNoteAdd = "user_note_add",
     MemberRoleModification = "member_role_modification",
     SystemAutoModRuleModeration = "system_automod_rule_moderation",
-    SystemUserMessageSave = "system_user_message_save"
+    SystemUserMessageSave = "system_user_message_save",
+    RaidAlert = "raid_alert"
 }
 
 const LogEventSchema = z.enum(
@@ -67,6 +69,15 @@ export type LogEventArgs = {
     [LogEventType.UserNoteAdd]: [payload: LogUserNoteAddPayload];
     [LogEventType.MemberRoleModification]: [payload: LogMemberRoleModificationPayload];
     [LogEventType.SystemUserMessageSave]: [message: Message, moderator: User];
+    [LogEventType.RaidAlert]: [payload: LogRaidAlertPayload];
+};
+
+export type LogRaidAlertPayload = {
+    guild: Guild;
+    membersJoined: number;
+    duration: number;
+    actions: ModerationActionType[];
+    serverAction: "none" | "lock" | "lock_and_antijoin" | "antijoin";
 };
 
 type LogModerationActionCommonPayload = {

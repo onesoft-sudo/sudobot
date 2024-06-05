@@ -186,7 +186,21 @@ export const GuildConfigSchema = z.object({
                 .optional()
         })
         .optional(),
-    survey_system: SurveySystemConfigSchema.optional()
+    survey_system: SurveySystemConfigSchema.optional(),
+    raid_protection: z
+        .object({
+            enabled: z.boolean().optional().default(false),
+            threshold: z.number().int().default(10),
+            timeframe: z.number().int().default(60_000),
+            action: z
+                .enum(["auto", "lock", "antijoin", "lock_and_antijoin", "none"])
+                .default("auto"),
+            member_actions: z.array(ModerationActionSchema).default([]),
+            send_log: z.boolean().optional().default(true),
+            channels: z.array(zSnowflake).default([]),
+            channel_mode: z.enum(["exclude", "include"]).default("exclude")
+        })
+        .optional()
     /*
     quickmute: z
         .object({

@@ -4,7 +4,17 @@ import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { ModerationActionType } from "@main/schemas/ModerationActionSchema";
 import { Infraction } from "@prisma/client";
-import { Guild, GuildMember, Message, TextChannel, User } from "discord.js";
+import { formatDistanceToNowStrict } from "date-fns";
+import {
+    Guild,
+    GuildMember,
+    Message,
+    TextChannel,
+    User,
+    bold,
+    italic,
+    roleMention
+} from "discord.js";
 import type InfractionManager from "./InfractionManager";
 
 type MemberOnlyAction = Extract<ModerationActionType, { type: "kick" | "mute" | "role" | "warn" }>;
@@ -177,6 +187,62 @@ class ModerationActionService extends Service {
             default:
                 throw new Error(`Invalid action type: ${action.type}`);
         }
+    }
+
+    private commonSummary(action: ModerationActionType, name: string) {
+        let summary = bold(name) + "\n";
+
+        if ("duration" in action && action.duration) {
+            summary += `Duration: ${formatDistanceToNowStrict(Date.now() - action.duration)}\n`;
+        }
+
+        if ("notify" in action) {
+            summary += `Notification: ${action.notify ? "Delivered" : "Not delivered"}\n`;
+        }
+
+        return summary;
+    }
+
+    public summarizeActions(actions: ModerationActionType[]) {
+        let summary = "";
+
+        for (const action of actions) {
+            switch (action.type) {
+                case "ban":
+                    summary += this.commonSummary(action, "Banned");
+                    break;
+                case "mute":
+                    summary += this.commonSummary(action, "Muted");
+                    break;
+                case "kick":
+                    summary += this.commonSummary(action, "Kicked");
+                    break;
+                case "warn":
+                    summary += this.commonSummary(action, "Warned");
+                    break;
+                case "clear":
+                    summary += this.commonSummary(action, "Cleared recent messages");
+                    summary += `Count: ${action.count ?? italic("None")}\n`;
+                    break;
+                case "role":
+                    summary += this.commonSummary(
+                        action,
+                        `Roles ${action.mode === "give" ? "Added" : "Removed"}`
+                    );
+                    summary += `Roles: ${action.roles.map(r => roleMention(r)).join(", ")}\n`;
+                    break;
+                case "verbal_warn":
+                    summary += this.commonSummary(action, "Verbally Warned");
+                    break;
+                case "delete_message":
+                    summary += bold("Deleted Message") + "\n";
+                    break;
+                default:
+                    throw new Error(`Unknown action type: ${action.type}`);
+            }
+        }
+
+        return summary === "" ? italic("No actions taken") : summary;
     }
 }
 

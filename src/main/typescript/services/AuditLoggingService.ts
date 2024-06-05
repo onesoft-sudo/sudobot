@@ -22,37 +22,37 @@ import {
     LogMemberRoleModificationPayload,
     LogMemberWarningAddPayload,
     LogMessageBulkDeletePayload,
+    LogRaidAlertPayload,
     LogUserNoteAddPayload
 } from "@main/schemas/LoggingSchema";
 import { MessageRuleType } from "@main/schemas/MessageRuleSchema";
-import { ModerationActionType } from "@main/schemas/ModerationActionSchema";
 import ConfigurationManager from "@main/services/ConfigurationManager";
 import { chunkedString } from "@main/utils/utils";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
-    ActionRowBuilder,
     APIEmbed,
     APIEmbedField,
+    ActionRowBuilder,
     AttachmentBuilder,
     Awaitable,
-    bold,
     ButtonBuilder,
     ButtonStyle,
     Collection,
     GuildMember,
-    inlineCode,
-    italic,
     Message,
     MessageCreateOptions,
     MessagePayload,
     PartialMessage,
-    roleMention,
     Snowflake,
     TextChannel,
-    time,
     User,
-    userMention,
-    Webhook
+    Webhook,
+    bold,
+    inlineCode,
+    italic,
+    roleMention,
+    time,
+    userMention
 } from "discord.js";
 
 type WebhookInfo =
@@ -93,7 +93,8 @@ class AuditLoggingService extends Service {
         [LogEventType.UserNoteAdd]: this.logUserNoteAdd,
         [LogEventType.MemberRoleModification]: this.logMemberRoleModification,
         [LogEventType.SystemAutoModRuleModeration]: this.logMessageRuleModeration,
-        [LogEventType.SystemUserMessageSave]: this.logSystemUserMessageSave
+        [LogEventType.SystemUserMessageSave]: this.logSystemUserMessageSave,
+        [LogEventType.RaidAlert]: this.logRaidAlert
     };
 
     @Inject("configManager")
@@ -342,62 +343,6 @@ class AuditLoggingService extends Service {
         }
     }
 
-    private commonSummary(action: ModerationActionType, name: string) {
-        let summary = bold(name) + "\n";
-
-        if ("duration" in action && action.duration) {
-            summary += `Duration: ${formatDistanceToNowStrict(Date.now() - action.duration)}\n`;
-        }
-
-        if ("notify" in action) {
-            summary += `Notification: ${action.notify ? "Delivered" : "Not delivered"}\n`;
-        }
-
-        return summary;
-    }
-
-    private summarizeActions(actions: ModerationActionType[]) {
-        let summary = "";
-
-        for (const action of actions) {
-            switch (action.type) {
-                case "ban":
-                    summary += this.commonSummary(action, "Banned");
-                    break;
-                case "mute":
-                    summary += this.commonSummary(action, "Muted");
-                    break;
-                case "kick":
-                    summary += this.commonSummary(action, "Kicked");
-                    break;
-                case "warn":
-                    summary += this.commonSummary(action, "Warned");
-                    break;
-                case "clear":
-                    summary += this.commonSummary(action, "Cleared recent messages");
-                    summary += `Count: ${action.count ?? italic("None")}\n`;
-                    break;
-                case "role":
-                    summary += this.commonSummary(
-                        action,
-                        `Roles ${action.mode === "give" ? "Added" : "Removed"}`
-                    );
-                    summary += `Roles: ${action.roles.map(r => roleMention(r)).join(", ")}\n`;
-                    break;
-                case "verbal_warn":
-                    summary += this.commonSummary(action, "Verbally Warned");
-                    break;
-                case "delete_message":
-                    summary += bold("Deleted Message") + "\n";
-                    break;
-                default:
-                    throw new Error(`Unknown action type: ${action.type}`);
-            }
-        }
-
-        return summary === "" ? italic("No actions taken") : summary;
-    }
-
     private ruleAttributes(rule: MessageRuleType) {
         let attributes = "";
         const { bail, mode, exceptions, for: ruleFor } = rule;
@@ -459,7 +404,9 @@ class AuditLoggingService extends Service {
                             },
                             {
                                 name: "Actions Taken",
-                                value: this.summarizeActions(rule.actions),
+                                value: this.application
+                                    .service("moderationActionService")
+                                    .summarizeActions(rule.actions),
                                 inline: true
                             },
                             {
@@ -1646,6 +1593,54 @@ class AuditLoggingService extends Service {
                 )
             },
             eventType: LogEventType.SystemUserMessageSave
+        });
+    }
+
+    public async logRaidAlert({
+        actions,
+        serverAction,
+        guild,
+        membersJoined,
+        duration
+    }: LogRaidAlertPayload) {
+        return this.send({
+            guildId: guild.id,
+            eventType: LogEventType.RaidAlert,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        title: "Raid Alert",
+                        description: `Detected a potential raid. **${membersJoined}** members joined in the last **${formatDistanceToNowStrict(Date.now() - duration)}**.`,
+                        color: Colors.Red,
+                        fields: [
+                            {
+                                name: "Action for Server",
+                                value:
+                                    serverAction === "antijoin"
+                                        ? "Anti-Join Mode"
+                                        : serverAction === "lock"
+                                          ? "Lockdown Mode"
+                                          : serverAction === "lock_and_antijoin"
+                                            ? "Lockdown and Anti-Join Mode"
+                                            : "None",
+                                inline: true
+                            },
+                            {
+                                name: "Actions for Members",
+                                value:
+                                    actions.length === 0
+                                        ? "None"
+                                        : this.application
+                                              .service("moderationActionService")
+                                              .summarizeActions(actions),
+
+                                inline: true
+                            }
+                        ],
+                        timestamp: new Date().toISOString()
+                    }
+                ]
+            }
         });
     }
 }

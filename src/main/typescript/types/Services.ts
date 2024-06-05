@@ -19,6 +19,7 @@
 
 import type APIServer from "@framework/api/APIServer";
 import type { ServiceManager } from "@framework/services/ServiceManager";
+import type AntiMemberJoinService from "@main/automod/AntiMemberJoinService";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
 import type DirectiveParsingService from "@main/services/DirectiveParsingService";
 import type SystemAuditLoggingService from "@main/services/SystemAuditLoggingService";
@@ -53,6 +54,7 @@ export interface ServiceRecord {
     systemAuditLogging: SystemAuditLoggingService;
     channelLockManager: ChannelLockManager;
     snippetManagerService: SnippetManagerService;
+    antiMemberJoinService: AntiMemberJoinService;
 }
 
 interface ServiceRecordLocal extends ServiceRecord {}

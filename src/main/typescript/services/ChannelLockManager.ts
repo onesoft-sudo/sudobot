@@ -185,7 +185,7 @@ class ChannelLockManager extends Service {
         return { status: "success" as const };
     }
 
-    public async lockAll(guild: Guild) {
+    public async lockAll(guild: Guild, channels?: Iterable<GuildBasedChannel>) {
         const lockRecords = [] as Array<{
             guildId: Snowflake;
             channelId: Snowflake;
@@ -204,7 +204,7 @@ class ChannelLockManager extends Service {
             where: { guildId: guild.id }
         });
 
-        for (const channel of guild.channels.cache.values()) {
+        for (const channel of channels ?? guild.channels.cache.values()) {
             if (channel.isThread()) {
                 continue;
             }
@@ -274,7 +274,7 @@ class ChannelLockManager extends Service {
         };
     }
 
-    public async unlockAll(guild: Guild) {
+    public async unlockAll(guild: Guild, channels?: Iterable<GuildBasedChannel>) {
         const lockRecords = [] as Array<number>;
         let permissionErrors = 0,
             notLocked = 0,
@@ -286,7 +286,7 @@ class ChannelLockManager extends Service {
             where: { guildId: guild.id }
         });
 
-        for (const channel of guild.channels.cache.values()) {
+        for (const channel of channels ?? guild.channels.cache.values()) {
             if (channel.isThread()) {
                 continue;
             }
