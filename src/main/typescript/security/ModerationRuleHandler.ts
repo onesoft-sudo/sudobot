@@ -971,7 +971,7 @@ class ModerationRuleHandler extends HasApplication implements ModerationRuleHand
             }
         }
 
-        const {tokens,words,normalize,} = context.rule;
+        const { tokens, words, normalize, regex_patterns } = context.rule;
 
         for (let string of stringsToCheck) {
             if (!string) {
@@ -984,7 +984,7 @@ class ModerationRuleHandler extends HasApplication implements ModerationRuleHand
 
             string = string.toLowerCase();
 
-            if (tokens) {
+            if (tokens?.length) {
                 const token = tokens.find(t => string.includes(t));
 
                 if (token) {
@@ -1001,7 +1001,7 @@ class ModerationRuleHandler extends HasApplication implements ModerationRuleHand
                 }
             }
 
-            if (words) {
+            if (words?.length) {
                 const contentSplitted = string.split(/\s+/);
                 const word = words.find(w => contentSplitted.includes(w));
 
@@ -1016,6 +1016,23 @@ class ModerationRuleHandler extends HasApplication implements ModerationRuleHand
                             }
                         ]
                     };
+                }
+            }
+
+            if (regex_patterns?.length) {
+                for (const pattern of regex_patterns) {
+                    if (new RegExp(pattern, "gim").test(string)) {
+                        return {
+                            matched: true,
+                            reason: "Profile contains a blocked regex pattern.",
+                            fields: [
+                                {
+                                    name: "Pattern",
+                                    value: `${spoiler(pattern)}`
+                                }
+                            ]
+                        };
+                    }
                 }
             }
         }

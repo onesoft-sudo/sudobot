@@ -131,7 +131,7 @@ export const URLCrawlRule = z
         excluded_links: z.array(z.string().url()).default([]),
         excluded_link_regex: z.array(z.string()).default([]),
         tokens: z.array(z.string()).default([]),
-        words: z.array(z.string()).default([]),
+        words: z.array(z.string()).default([])
     })
     .describe("Experimental. Use at your own risk.");
 
@@ -162,6 +162,7 @@ export const ProfileFilter = z.object({
     type: z.literal("profile_filter"),
     tokens: z.array(z.string()).default([]),
     words: z.array(z.string()).default([]),
+    regex_patterns: z.array(z.string()).default([]),
     normalize: z.boolean().default(true)
 });
 
