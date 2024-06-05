@@ -121,11 +121,12 @@ class RuleModerationService
         });
     }
 
-    public moderate(message: Message): Promise<boolean> {
+    public moderate(message: Message, options?: Partial<ModerateOptions>): Promise<boolean> {
         return this.moderateMemberOrMessage({
             message,
             member: message.member!,
-            guildId: message.guildId!
+            guildId: message.guildId!,
+            ...options
         });
     }
 
