@@ -106,10 +106,6 @@ class AuditLoggingService extends Service {
         }
     }
 
-    private configFor(guildId: Snowflake) {
-        return this.configurationManager.config[guildId!]?.logging;
-    }
-
     public override boot(): Awaitable<void> {
         this.reloadConfig();
     }
@@ -150,6 +146,32 @@ class AuditLoggingService extends Service {
         }
 
         this.application.logger.debug("AuditLoggingService: Configuration reloaded");
+    }
+
+    public async emitLogEvent<T extends LogEventType>(
+        guildId: Snowflake,
+        type: T,
+        ...args: LogEventArgs[T]
+    ) {
+        const configManager = this.application.service("configManager");
+        const config = configManager.config[guildId]?.logging;
+        const defaultEnabled = config?.default_enabled ?? true;
+
+        if (!config?.enabled) {
+            return null;
+        }
+
+        const channel = this.channels.get(`${guildId}::${type}`);
+
+        if ((defaultEnabled && channel === null) || (!defaultEnabled && !channel)) {
+            return null;
+        }
+
+        return this.logHandlers[type].call(this, ...args);
+    }
+
+    private configFor(guildId: Snowflake) {
+        return this.configurationManager.config[guildId!]?.logging;
     }
 
     private async send({
@@ -212,8 +234,8 @@ class AuditLoggingService extends Service {
 
             webhookClient.attempts++;
 
-            /* 
-                FIXME: Instead of fetching the channel, we should store the webhook 
+            /*
+                FIXME: Instead of fetching the channel, we should store the webhook
                        ID and token in the configuration/db and fetch the webhook directly.
             */
             const channel =
@@ -320,28 +342,6 @@ class AuditLoggingService extends Service {
         }
     }
 
-    public async emitLogEvent<T extends LogEventType>(
-        guildId: Snowflake,
-        type: T,
-        ...args: LogEventArgs[T]
-    ) {
-        const configManager = this.application.service("configManager");
-        const config = configManager.config[guildId]?.logging;
-        const defaultEnabled = config?.default_enabled ?? true;
-
-        if (!config?.enabled) {
-            return null;
-        }
-
-        const channel = this.channels.get(`${guildId}::${type}`);
-
-        if ((defaultEnabled && channel === null) || (!defaultEnabled && !channel)) {
-            return null;
-        }
-
-        return this.logHandlers[type].call(this, ...args);
-    }
-
     private commonSummary(action: ModerationActionType, name: string) {
         let summary = bold(name) + "\n";
 
@@ -422,12 +422,17 @@ class AuditLoggingService extends Service {
     }
 
     private async logMessageRuleModeration(
-        message: Message,
+        type: "profile" | "message",
+        messageOrMember: Message | GuildMember,
         rule: MessageRuleType,
         result: RuleExecResult
     ) {
+        const member =
+            messageOrMember instanceof GuildMember ? messageOrMember : messageOrMember.member!;
+        const message = messageOrMember instanceof Message ? messageOrMember : undefined;
+
         return this.send({
-            guildId: message.guildId!,
+            guildId: message?.guildId ?? member.guild.id,
             messageCreateOptions: {
                 embeds: [
                     {
@@ -443,6 +448,10 @@ class AuditLoggingService extends Service {
                             {
                                 name: "Action Taken By",
                                 value: "System"
+                            },
+                            {
+                                name: "User",
+                                value: userInfo(message?.author ?? member.user)
                             },
                             {
                                 name: "Reason",
@@ -461,8 +470,9 @@ class AuditLoggingService extends Service {
                         ],
                         title: "AutoMod Rule Action",
                         author: {
-                            name: message.author.username,
-                            icon_url: message.author.displayAvatarURL() ?? undefined
+                            name: (message?.author ?? member.user).username,
+                            icon_url:
+                                (message?.author ?? member.user).displayAvatarURL() ?? undefined
                         }
                     }
                 ]

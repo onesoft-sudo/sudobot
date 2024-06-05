@@ -47,7 +47,8 @@ export type LogEventArgs = {
     [LogEventType.MessageUpdate]: [oldMessage: Message<true>, newMessage: Message<true>];
     [LogEventType.MessageDeleteBulk]: [payload: LogMessageBulkDeletePayload];
     [LogEventType.SystemAutoModRuleModeration]: [
-        message: Message,
+        type: "profile" | "message",
+        messageOrMember: Message | GuildMember,
         rule: MessageRuleType,
         result: RuleExecResult
     ];

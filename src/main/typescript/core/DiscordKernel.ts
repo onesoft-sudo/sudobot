@@ -72,6 +72,8 @@ class DiscordKernel extends Kernel {
         "@services/AuditLoggingService",
         "@services/SystemAuditLoggingService",
         "@services/InfractionManager",
+        "@services/ImageRecognitionService",
+        "@services/InviteTrackingService",
         "@automod/AntiMemberJoinService",
         "@services/ModerationActionService",
         "@automod/SpamModerationService",
@@ -80,10 +82,8 @@ class DiscordKernel extends Kernel {
         "@services/ReactionRoleService",
         "@services/AFKService",
         "@services/AuthService",
-        "@services/ImageRecognitionService",
         "@services/DirectiveParsingService",
         "@services/SnippetManagerService",
-        "@services/InviteTrackingService",
         "@services/TranslationService",
         "@root/framework/typescript/api/APIServer"
     ];

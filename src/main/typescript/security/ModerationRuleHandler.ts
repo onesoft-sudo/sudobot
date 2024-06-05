@@ -1,27 +1,26 @@
 import * as cache from "@framework/cache/GlobalStore";
+import { Inject } from "@framework/container/Inject";
 import { HasApplication } from "@framework/types/HasApplication";
 import { normalize } from "@framework/utils/string";
 import { AcceptsMessageRuleScopes } from "@main/decorators/AcceptsMessageRuleScopes";
+import { AcceptsModerationRuleContextType } from "@main/decorators/AcceptsModerationRuleContextType";
+import type ImageRecognitionService from "@main/services/ImageRecognitionService";
+import type InviteTrackingService from "@main/services/InviteTrackingService";
+import { request } from "@main/utils/utils";
 import { Attachment, spoiler } from "discord.js";
+import sharp from "sharp";
 import ModerationRuleHandlerContract, {
     MessageRuleScope,
-    type ModerationRuleContext,
-    RuleExecResult
+    RuleExecResult,
+    type ModerationRuleContext
 } from "../contracts/ModerationRuleHandlerContract";
-import type InviteTrackingService from "@main/services/InviteTrackingService";
-import { Inject } from "@framework/container/Inject";
-import { request } from "@main/utils/utils";
-import sharp from "sharp";
-import type ImageRecognitionService from "@main/services/ImageRecognitionService";
 
 // FIXME: This class is not complete and is only a placeholder for the actual implementation.
 
 type MessageContext<T> = ModerationRuleContext<"message", { type: T }>;
+type ProfileContext<T> = ModerationRuleContext<"profile", { type: T }>;
 
-class ModerationRuleHandler
-    extends HasApplication
-    implements ModerationRuleHandlerContract
-{
+class ModerationRuleHandler extends HasApplication implements ModerationRuleHandlerContract {
     protected readonly computedRegexCache = new WeakMap<
         Array<string | [string, string]>,
         RegExp[]
@@ -213,7 +212,9 @@ class ModerationRuleHandler
                     continue;
                 }
 
-                const cachedInvite = this.inviteTrackingService.invites.get(`${message.guildId!}::${code}`);
+                const cachedInvite = this.inviteTrackingService.invites.get(
+                    `${message.guildId!}::${code}`
+                );
 
                 if (cachedInvite) {
                     if (cachedInvite.guildId === message.guildId && allow_internal_invites) {
@@ -683,8 +684,11 @@ class ModerationRuleHandler
             };
         }
 
-        const { excluded_domains_regex, excluded_link_regex, excluded_links, words, tokens } = context.rule;
-        const matches = context.message.content.matchAll(/https?:\/\/([A-Za-z0-9-.]*[A-Za-z0-9-])\S*/gim);
+        const { excluded_domains_regex, excluded_link_regex, excluded_links, words, tokens } =
+            context.rule;
+        const matches = context.message.content.matchAll(
+            /https?:\/\/([A-Za-z0-9-.]*[A-Za-z0-9-])\S*/gim
+        );
 
         for (const match of matches) {
             const url = match[0].toLowerCase();
@@ -728,7 +732,9 @@ class ModerationRuleHandler
             }
 
             if (typeof response?.data !== "string") {
-                this.application.logger.warn("The response returned by the server during URL crawl is invalid");
+                this.application.logger.warn(
+                    "The response returned by the server during URL crawl is invalid"
+                );
                 continue;
             }
 
@@ -748,7 +754,7 @@ class ModerationRuleHandler
                                 name: "Method",
                                 value: "URL Crawling"
                             }
-                        ],
+                        ]
                     };
                 }
             }
@@ -811,10 +817,10 @@ class ModerationRuleHandler
                 const sharpMethodName = attachment.contentType.startsWith("image/gif")
                     ? "gif"
                     : attachment.contentType.startsWith("image/png")
-                        ? "png"
-                        : attachment.contentType.startsWith("image/jpeg")
-                            ? "jpeg"
-                            : "unknown";
+                      ? "png"
+                      : attachment.contentType.startsWith("image/jpeg")
+                        ? "jpeg"
+                        : "unknown";
 
                 if (sharpMethodName === "unknown") {
                     this.application.logger.warn("Unknown image type");
@@ -843,7 +849,7 @@ class ModerationRuleHandler
                                     result.porn * 100
                                 )}%\nSexy: ${Math.round(result.sexy * 100)}%\nNeutral: ${Math.round(result.neutral * 100)}%`
                             }
-                        ],
+                        ]
                     };
                 }
             }
@@ -936,6 +942,81 @@ class ModerationRuleHandler
                         }
                     ]
                 };
+            }
+        }
+
+        return {
+            matched: false
+        };
+    }
+
+    @AcceptsModerationRuleContextType("profile")
+    public async profile_filter(context: ProfileContext<"profile_filter">) {
+        const { member } = context;
+        const stringsToCheck = [member.user.displayName, member.nickname, member.user.username];
+
+        if (member.presence) {
+            for (const activity of member.presence.activities.values()) {
+                if (activity.state) {
+                    stringsToCheck.push(activity.state);
+                }
+
+                if (activity.details) {
+                    stringsToCheck.push(activity.details);
+                }
+
+                if (activity.name) {
+                    stringsToCheck.push(activity.name);
+                }
+            }
+        }
+
+        const {tokens,words,normalize,} = context.rule;
+
+        for (let string of stringsToCheck) {
+            if (!string) {
+                continue;
+            }
+
+            if (normalize) {
+                string = string.normalize();
+            }
+
+            string = string.toLowerCase();
+
+            if (tokens) {
+                const token = tokens.find(t => string.includes(t));
+
+                if (token) {
+                    return {
+                        matched: true,
+                        reason: "Profile contains a blocked token.",
+                        fields: [
+                            {
+                                name: "Token",
+                                value: `${spoiler(token)}`
+                            }
+                        ]
+                    };
+                }
+            }
+
+            if (words) {
+                const contentSplitted = string.split(/\s+/);
+                const word = words.find(w => contentSplitted.includes(w));
+
+                if (word) {
+                    return {
+                        matched: true,
+                        reason: "Profile contains a blocked word.",
+                        fields: [
+                            {
+                                name: "Word",
+                                value: `${spoiler(word)}`
+                            }
+                        ]
+                    };
+                }
             }
         }
 

@@ -1,6 +1,6 @@
 import type { ModerationRuleContextType } from "../contracts/ModerationRuleHandlerContract";
 
-export function AcceptsMessageRuleContextType(type: ModerationRuleContextType) {
+export function AcceptsModerationRuleContextType(type: ModerationRuleContextType) {
     return (target: object, key: string) => {
         const existing = Reflect.getMetadata("rule:context:types", target) || {};
         existing[key] ??= [];

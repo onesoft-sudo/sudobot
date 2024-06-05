@@ -157,6 +157,14 @@ export const WordFilter = z.object({
     normalize: z.boolean().default(true)
 });
 
+export const ProfileFilter = z.object({
+    ...Common,
+    type: z.literal("profile_filter"),
+    tokens: z.array(z.string()).default([]),
+    words: z.array(z.string()).default([]),
+    normalize: z.boolean().default(true)
+});
+
 export const MessageRuleSchema = z.union([
     DomainFilterRule,
     MimeTypeFilterRule,
@@ -169,7 +177,8 @@ export const MessageRuleSchema = z.union([
     EmbedFilterRule,
     URLCrawlRule,
     NSFWFilter,
-    WordFilter
+    WordFilter,
+    ProfileFilter
 ]);
 
 export type MessageRuleType = z.infer<typeof MessageRuleSchema>;
