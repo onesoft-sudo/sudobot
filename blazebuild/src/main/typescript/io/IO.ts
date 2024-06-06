@@ -5,7 +5,7 @@ import Blaze from "../core/Blaze";
 const now = performance.now();
 
 class IO {
-    public static println(message: string): void {
+    public static println(message: unknown): void {
         console.log(message);
     }
 

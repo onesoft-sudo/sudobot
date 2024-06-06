@@ -9,5 +9,5 @@ declare global {
         setProperties(properties: Partial<ProjectProperties>): void;
     };
 
-    function println(message: string): void;
+    function println(message: unknown): void;
 }
