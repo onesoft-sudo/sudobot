@@ -19,7 +19,7 @@ class Blaze {
         this.taskManager,
         this.projectManager
     ];
-
+    private _taskNames: string[] = [];
     private static _instance: Blaze;
 
     private constructor() {
@@ -33,6 +33,10 @@ class Blaze {
 
         this._instance = new Blaze();
         return this._instance;
+    }
+
+    public get taskNames() {
+        return this._taskNames;
     }
 
     public async boot() {
@@ -65,11 +69,11 @@ class Blaze {
             IO.fatal(error);
         }
 
-        const taskNames =
+        this._taskNames =
             process.argv.length >= 3 ? process.argv.slice(2) : [Blaze.defaultTaskName];
 
         try {
-            for (const taskName of taskNames) {
+            for (const taskName of this._taskNames) {
                 await this.taskManager.executeTask(taskName);
             }
         } catch (error) {

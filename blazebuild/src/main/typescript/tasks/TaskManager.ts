@@ -5,6 +5,7 @@ import type Blaze from "../core/Blaze";
 import Manager from "../core/Manager";
 import TaskNotFoundError from "../errors/TaskNotFoundError";
 import BuildTask from "../framework/tasks/BuildTask";
+import GraphTask from "../framework/tasks/GraphTask";
 import TasksTask from "../framework/tasks/TasksTask";
 import IO from "../io/IO";
 import type { FileResolvable } from "../types/file";
@@ -12,12 +13,14 @@ import type { Awaitable } from "../types/utils";
 import AbstractTask, { type TaskResolvable } from "./AbstractTask";
 import { ActionlessTask } from "./ActionlessTask";
 import { TASK_DEPENDENCY_GENERATOR_METADATA_KEY } from "./TaskDependencyGenerator";
+import TaskGraph from "./TaskGraph";
 import { TaskOutputGenerator } from "./TaskOutputGenerator";
 
 class TaskManager extends Manager {
     private static readonly builtInTasks: Array<new (blaze: Blaze) => AbstractTask<any>> = [
         TasksTask,
-        BuildTask
+        BuildTask,
+        GraphTask
     ];
     private readonly tasks = new Map<string, TaskDetails<any>>();
     private readonly classToTaskMap = new Map<typeof AbstractTask<any>, TaskDetails<any>>();
@@ -76,7 +79,10 @@ class TaskManager extends Manager {
         throw new Error("Invalid arguments passed to register method");
     }
 
-    public named<T extends AbstractTask<any>>(name: string, options: TaskRegisterOptions<unknown, T>) {
+    public named<T extends AbstractTask<any>>(
+        name: string,
+        options: TaskRegisterOptions<unknown, T>
+    ) {
         const task = this.resolveTask(name);
 
         task.options = {
@@ -302,7 +308,8 @@ class TaskManager extends Manager {
 
     public async getTaskDependencies(
         taskResolvable: string | AbstractTask<any>,
-        set = new Set<TaskDetails<unknown>>()
+        set = new Set<TaskDetails<unknown>>(),
+        deep = true
     ) {
         const { task, options } = this.resolveTask(
             typeof taskResolvable === "string"
@@ -321,7 +328,11 @@ class TaskManager extends Manager {
 
         for (const dependency of [...dependencies, ...(options?.dependsOn ?? [])]) {
             const details: TaskDetails<unknown> = this.blaze.taskManager.resolveTask(dependency);
-            await this.getTaskDependencies(details.task, set);
+
+            if (deep) {
+                await this.getTaskDependencies(details.task, set);
+            }
+
             set.add(details);
         }
 
@@ -430,6 +441,11 @@ class TaskManager extends Manager {
 
     public getActionableTaskCount() {
         return this.upToDateTasks.size + this.executedTasks.size;
+    }
+
+    public async getTaskGraph<T>(resolvable: TaskResolvable<T>) {
+        const taskDetails = this.resolveTask(resolvable);
+        return new TaskGraph(taskDetails);
     }
 }
 
