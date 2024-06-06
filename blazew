@@ -301,7 +301,7 @@ if [ $setup -eq 1 ]; then
         rm -rf "$projectdir/node_modules/blazebuild" || exit 1
     fi
 
-    ln -s "$(readlink -f "$blaze_srcpath/src/main/typescript")" "$projectdir/node_modules/blazebuild" || exit 1
+    ln -s "$(readlink -f "$blaze_srcpath")" "$projectdir/node_modules/blazebuild" || exit 1
 
     if [ -z "$has_bun" ]; then
         print 34 "info   " "Building BlazeBuild (for node)..."
