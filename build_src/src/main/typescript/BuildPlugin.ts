@@ -1,5 +1,4 @@
-import { Awaitable } from "blazebuild";
-import BlazePlugin from "blazebuild/src/main/typescript/plugins/BlazePlugin";
+import { Awaitable, BlazePlugin } from "blazebuild";
 import CleanTask from "./tasks/CleanTask";
 import CompileTask from "./tasks/CompileTask";
 import CompileTypeScriptTask from "./tasks/CompileTypeScriptTask";
