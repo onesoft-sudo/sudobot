@@ -9,6 +9,10 @@ class IO {
     private static _progress?: Progress;
 
     public static createProgress(total: number): void {
+        if (!process.stdout.isTTY) {
+            return;
+        }
+
         this._progress = new Progress(total);
         this._progress.render();
     }
