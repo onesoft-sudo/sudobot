@@ -2,6 +2,7 @@ import "./types/build";
 import "reflect-metadata";
 
 import AbstractTask from "./tasks/AbstractTask";
+import BlazePlugin from './plugins/BlazePlugin';
 import { Task } from "./tasks/Task";
 import { TaskAction } from "./tasks/TaskAction";
 import { TaskDependencyGenerator } from "./tasks/TaskDependencyGenerator";
@@ -17,6 +18,7 @@ import FileWriter from './io/FileWriter';
 
 export {
     AbstractTask,
+    BlazePlugin,
     Task,
     TaskAction,
     TaskDependencyGenerator,
