@@ -200,6 +200,27 @@ export const GuildConfigSchema = z.object({
             channels: z.array(zSnowflake).default([]),
             channel_mode: z.enum(["exclude", "include"]).default("exclude")
         })
+        .optional(),
+    member_verification: z
+        .object({
+            enabled: z.boolean().optional().default(false),
+            conditions: z.object({
+                age_less_than: z.number().int().optional(),
+                no_avatar: z.boolean().optional(),
+                always: z.boolean().default(false)
+            }),
+            unverified_roles: z.array(zSnowflake).default([]),
+            verified_roles: z.array(zSnowflake).default([]),
+            failed_actions: z.array(ModerationActionSchema).default([]),
+            verification_message: z.string().optional(),
+            success_message: z.string().optional(),
+            max_duration: z
+                .number()
+                .describe("Max verification duration (in seconds)")
+                .int()
+                .optional(),
+            max_attempts: z.number().int().optional()
+        })
         .optional()
     /*
     quickmute: z

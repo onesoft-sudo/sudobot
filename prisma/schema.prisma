@@ -220,3 +220,17 @@ enum PermissionLogicMode {
     OR
     AND
 }
+
+model VerificationEntry {
+    id        Int      @id @default(autoincrement())
+    userId    String
+    guildId   String
+    code      String   @unique
+    attempts  Int      @default(0)
+    expiresAt DateTime
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    @@unique([userId, guildId])
+    @@map("verification_entries")
+}

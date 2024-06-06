@@ -29,6 +29,7 @@ export const EnvironmentVariableSchema = z.object({
     SUPPRESS_LOGS: z.string().optional(),
     CAT_API_TOKEN: z.string().optional(),
     DOG_API_TOKEN: z.string().optional(),
+    SYSTEM_API_URL: z.string().optional(),
     HTTP_USER_AGENT: z
         .string()
         .optional()
