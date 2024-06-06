@@ -61,6 +61,10 @@ function readProperties() {
     });
 
     properties = contents.split("\n").reduce((acc, line) => {
+        if (!line?.trim() || line.startsWith("#")) {
+            return acc;
+        }
+        
         const [key, value] = line.split("=");
         acc[key.trim()] = value.trim();
         return acc;
