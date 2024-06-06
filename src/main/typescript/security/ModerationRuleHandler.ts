@@ -1041,6 +1041,9 @@ class ModerationRuleHandler extends HasApplication implements ModerationRuleHand
             matched: false
         };
     }
+
+    // TODO: Implement file filter
+    // TODO: Implement AI auto moderation
 }
 
 export default ModerationRuleHandler;
