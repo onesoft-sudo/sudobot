@@ -1,4 +1,4 @@
-import { AbstractTask, Task, TaskAction, IO } from "blazebuild";
+import { AbstractTask, IO, Task, TaskAction } from "blazebuild";
 import { spawnSync } from "child_process";
 
 @Task({
@@ -8,16 +8,22 @@ import { spawnSync } from "child_process";
 class RunTask extends AbstractTask {
     @TaskAction
     protected override run() {
+        IO.newline();
+
         setTimeout(async () => {
             let code: number;
-            const argv = process.argv.slice(process.argv.indexOf('--') + 1);
+            const argv = process.argv.slice(process.argv.indexOf("--") + 1);
 
             if (process.argv.includes("--node")) {
                 await this.blaze.taskManager.executeTask("build");
                 code =
-                    spawnSync("node", [`${process.cwd()}/build/out/main/typescript/index.js`, ...argv], {
-                        stdio: "inherit"
-                    }).status ?? -1;
+                    spawnSync(
+                        "node",
+                        [`${process.cwd()}/build/out/main/typescript/index.js`, ...argv],
+                        {
+                            stdio: "inherit"
+                        }
+                    ).status ?? -1;
             } else {
                 code =
                     spawnSync("bun", [`${process.cwd()}/src/main/typescript/bun.ts`, ...argv], {

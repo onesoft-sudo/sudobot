@@ -1,5 +1,6 @@
 import {
     AbstractTask,
+    IO,
     Task,
     TaskAction,
     TaskDependencyGenerator,
@@ -21,10 +22,7 @@ class TestTask extends AbstractTask {
 
     @TaskAction
     protected override async run(): Promise<void> {
-        // if (!project.testsDir) {
-        //     throw new Error("No tests directory specified.");
-        // }
-
+        IO.newline();
         await $`vitest --run`;
     }
 

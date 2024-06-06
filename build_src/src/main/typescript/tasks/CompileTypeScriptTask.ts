@@ -1,5 +1,6 @@
 import {
     AbstractTask,
+    IO,
     Task,
     TaskAction,
     TaskDependencyGenerator,
@@ -8,7 +9,6 @@ import {
     files,
     type Awaitable
 } from "blazebuild";
-import { TaskResolvable } from "blazebuild/src/main/typescript/tasks/AbstractTask";
 import { $ } from "bun";
 import path from "path";
 
@@ -19,6 +19,7 @@ import path from "path";
 class CompileTypeScriptTask extends AbstractTask {
     @TaskAction
     protected override async run(): Promise<void> {
+        IO.newline();
         await $`tsc`;
     }
 
@@ -33,7 +34,7 @@ class CompileTypeScriptTask extends AbstractTask {
     }
 
     @TaskDependencyGenerator
-    protected override dependencies(): Awaitable<Iterable<TaskResolvable<any>>> {
+    protected override dependencies() {
         return ["dependencies"];
     }
 }

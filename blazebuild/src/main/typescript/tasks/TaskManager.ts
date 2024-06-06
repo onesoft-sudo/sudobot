@@ -32,6 +32,7 @@ class TaskManager extends Manager {
             this.register(TaskClass);
         }
     }
+
     public getAvailableTasks(): ReadonlyMap<string, TaskDetails<any>> {
         return this.tasks;
     }
@@ -339,7 +340,11 @@ class TaskManager extends Manager {
         return set;
     }
 
-    public async executeTask(taskName: string | AbstractTask<any>, customName?: string) {
+    public async executeTask(
+        taskName: string | AbstractTask<any>,
+        customName?: string,
+        ownsProgress = true
+    ) {
         const { task, options } = this.resolveTask(
             typeof taskName === "string"
                 ? taskName
@@ -348,14 +353,18 @@ class TaskManager extends Manager {
         const name = customName ?? options?.name ?? task.determineName();
 
         if (this.executedTasks.has(name)) {
+            IO.progress?.increment();
             return;
         }
+
+        IO.progress?.setStatus("<computing>");
 
         await task.computeInput();
         const dependencies = await this.getTaskDependencies(task);
 
         if (await this.isUpToDate(task, dependencies, customName)) {
             if (!this.upToDateTasks.has(name)) {
+                IO.progress?.increment();
                 IO.println(`> Task ${chalk.white.dim(`:${name}`)} ${chalk.green(`UP-TO-DATE`)}`);
             }
 
@@ -369,18 +378,31 @@ class TaskManager extends Manager {
             this.upToDateTasks.delete(name);
         }
 
+        if (ownsProgress) {
+            if (!IO.progress) {
+                IO.createProgress(dependencies.size + 1);
+            } else {
+                IO.progress.addToTotal(dependencies.size + 1);
+            }
+        } else if (IO.progress) {
+            IO.progress.addToTotal(dependencies.size);
+        }
+
         if (dependencies) {
             for (const dependency of dependencies) {
-                await this.executeTask(dependency.task, dependency.options?.name);
+                await this.executeTask(dependency.task, dependency.options?.name, false);
             }
         }
 
+        IO.progress?.setStatus(`Task :${name}`);
         await options?.doFirst?.call(task);
         IO.println(`> Task ${chalk.white.dim(`:${name}`)}`);
         await task.execute();
         await options?.doLast?.call(task);
         this.executedTasks.add(name);
+        IO.progress?.increment();
         await this.updateTaskIO(task, customName);
+        IO.progress?.setStatus("<idle>");
     }
 
     private async updateTaskIO(taskResolvable: string | AbstractTask<any>, customName?: string) {

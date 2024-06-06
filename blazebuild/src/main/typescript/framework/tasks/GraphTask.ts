@@ -18,7 +18,8 @@ class GraphTask extends AbstractTask {
         }
 
         const graph = await this.blaze.taskManager.getTaskGraph(taskName);
-        console.log("\n" + (await graph.toString()));
+        IO.newline();
+        IO.println(await graph.toString());
     }
 }
 

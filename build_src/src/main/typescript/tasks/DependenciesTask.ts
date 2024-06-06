@@ -1,4 +1,4 @@
-import { AbstractTask, Task, TaskAction, TaskOutputGenerator } from "blazebuild";
+import { AbstractTask, IO, Task, TaskAction, TaskOutputGenerator } from "blazebuild";
 import { $ } from "bun";
 
 @Task({
@@ -8,6 +8,7 @@ import { $ } from "bun";
 class DependenciesTask extends AbstractTask {
     @TaskAction
     protected override async run(): Promise<void> {
+        IO.newline();
         await $`bun install`;
     }
 

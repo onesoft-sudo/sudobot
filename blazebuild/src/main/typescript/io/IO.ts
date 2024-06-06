@@ -1,11 +1,52 @@
 import chalk from "chalk";
 import { performance } from "perf_hooks";
 import Blaze from "../core/Blaze";
+import Progress from "./Progress";
 
 const now = performance.now();
 
 class IO {
+    private static _progress?: Progress;
+
+    public static createProgress(total: number): void {
+        this._progress = new Progress(total);
+        this._progress.render();
+    }
+
+    public static get progress(): Progress | undefined {
+        return this._progress;
+    }
+
+    public static print(
+        message: unknown,
+        consoleMethod: "log" | "error" | "warn" | "info" | "debug" = "log"
+    ): void {
+        if (this._progress) {
+            this._progress.print(message, consoleMethod);
+            return;
+        }
+
+        console[consoleMethod].call(
+            console,
+            typeof message === "string" ? message.padEnd(process.stdout.columns, " ") : message
+        );
+    }
+
+    public static newline() {
+        if (this._progress) {
+            console.log(`\r${" ".repeat(process.stdout.columns - 1)}`);
+            return;
+        }
+
+        console.log("");
+    }
+
     public static println(message: unknown): void {
+        if (this._progress) {
+            this._progress.print(message);
+            return;
+        }
+
         console.log(message);
     }
 
@@ -14,16 +55,28 @@ class IO {
             return;
         }
 
+        if (this._progress) {
+            this._progress.print(chalk.white.dim(message), "debug");
+            return;
+        }
+
         console.debug(chalk.white.dim(message));
     }
 
+    public static destroyProgress(): void {
+        this._progress?.destroy();
+        this._progress = undefined;
+    }
+
     public static error(error: unknown): void {
+        this.destroyProgress();
+
         if (error instanceof Error) {
-            console.error(chalk.red.bold("error: ") + error.message);
-            console.error(error.stack);
-            console.error(error.stack);
+            this.print(chalk.red.bold("error: ") + error.message, "error");
+            this.print(error.stack, "error");
+            this.print(error.stack, "error");
         } else {
-            console.error(chalk.red.bold("error: ") + error);
+            this.print(chalk.red.bold("error: ") + error, "error");
         }
     }
 
@@ -65,7 +118,15 @@ class IO {
     }
 
     public static buildSuccessful(): void {
-        console.log(`\n${chalk.green.bold("BUILD SUCCESSFUL")} in ${this.timeDiffFromStartup()}`);
+        this.destroyProgress();
+
+        console.log("\r" + " ".repeat(process.stdout.columns - 1));
+        console.log(
+            `${chalk.green.bold("BUILD SUCCESSFUL")} in ${this.timeDiffFromStartup()}`.padEnd(
+                process.stdout.columns,
+                " "
+            )
+        );
         const actionableTasks = Blaze.getInstance().taskManager.getActionableTaskCount();
         const executedTasks = Blaze.getInstance().taskManager.getExecutedTaskCount();
         const upToDateTasks = Blaze.getInstance().taskManager.getUpToDateTasks();
@@ -76,7 +137,9 @@ class IO {
     }
 
     public static buildFailed(): void {
-        console.log(`\n${chalk.red.bold("BUILD FAILED")} in ${this.timeDiffFromStartup()}`);
+        this.destroyProgress();
+        console.log("\r" + " ".repeat(process.stdout.columns - 1));
+        console.log(`${chalk.red.bold("BUILD FAILED")} in ${this.timeDiffFromStartup()}`);
     }
 
     public static exit(code: number = 0): never {

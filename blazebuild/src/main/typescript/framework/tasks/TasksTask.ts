@@ -1,4 +1,5 @@
 import chalk from "chalk";
+import IO from "../../io/IO";
 import AbstractTask from "../../tasks/AbstractTask";
 import { Task } from "../../tasks/Task";
 import { TaskAction } from "../../tasks/TaskAction";
@@ -12,7 +13,8 @@ class TasksTask extends AbstractTask {
     public override async run() {
         const tasks = this.blaze.taskManager.getAvailableTasks();
 
-        console.log(chalk.white.bold("\nAvailable tasks:"));
+        IO.newline();
+        IO.println(chalk.white.bold("Available tasks:"));
 
         const groupedTasks = Object.groupBy(
             tasks,
@@ -20,7 +22,7 @@ class TasksTask extends AbstractTask {
         );
 
         for (const group in groupedTasks) {
-            console.log();
+            IO.newline();
 
             const tasks = groupedTasks[group];
 
@@ -28,15 +30,15 @@ class TasksTask extends AbstractTask {
                 continue;
             }
 
-            console.log(chalk.whiteBright(group));
-            console.log("-".repeat(group.length + 1));
+            IO.println(chalk.whiteBright(group));
+            IO.println("-".repeat(group.length + 1));
 
             for (const [name, details] of tasks) {
                 if (details.options?.hidden || details.task.details?.hidden) {
                     continue;
                 }
 
-                console.log(
+                IO.println(
                     chalk`{cyan ${name}} - {dim ${details.options?.description ?? details.task.details?.description ?? "No description"}}`
                 );
             }
