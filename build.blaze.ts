@@ -1,4 +1,4 @@
-import "blazebuild";
+import "blazebuild/types";
 
 project.name = "sudobot";
 project.version = "1.0.0";

@@ -12,5 +12,17 @@
     "chalk": "4",
     "glob": "^10.4.1",
     "reflect-metadata": "^0.2.2"
+  },
+  "exports": {
+    ".": "./src/main/typescript/index.ts",
+    "./types": "./src/main/typescript/types/build.ts"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./src/main/typescript/index.ts"],
+      "types": [
+        "./src/main/typescript/types/build.ts"]
+    }
   }
 }
