@@ -109,11 +109,7 @@ class VerificationController extends Controller {
                 throw new Error("Invalid token response");
             }
 
-            // FIXME: Remove this
-            console.log(oauthData);
-
             const { access_token, token_type } = oauthData as Record<string, string>;
-
             const userResponse = await undici.request("https://discord.com/api/users/@me", {
                 method: "GET",
                 headers: {

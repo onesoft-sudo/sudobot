@@ -53,29 +53,28 @@ export default async function RequireAuthMiddleware(
     try {
         const info = jwt.verify(token, process.env.JWT_SECRET!, {
             issuer: process.env.JWT_ISSUER ?? "SudoBot",
-            subject: "Temporary API token for authenticated user",
             complete: true
         });
 
         const payload = info.payload as {
-            userId: number;
+            id: number;
         };
 
         application.logger.debug(info, payload);
 
-        if (!payload?.userId) {
+        if (!payload?.id) {
             throw new Error("ID not found");
         }
 
         if (!fetchUser) {
-            request.userId = payload.userId;
+            request.userId = payload.id;
             next();
             return;
         }
 
         const user = await application.prisma.user.findFirst({
             where: {
-                id: payload.userId,
+                id: payload.id,
                 token
             }
         });

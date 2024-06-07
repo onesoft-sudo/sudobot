@@ -190,6 +190,10 @@ export default class ConfigurationManager
         return this.config[guildId] as T | undefined;
     }
 
+    public getOrDefault<T extends GuildConfig = GuildConfig>(guildId: Snowflake): T {
+        return this.config[guildId] as T ?? this.guildConfigSchema.parse({});
+    }
+
     public set(guildId: Snowflake, value: GuildConfig) {
         this.config[guildId] = value;
     }
