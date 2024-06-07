@@ -7,6 +7,7 @@ import { fetchMember } from "@framework/utils/entities";
 import { Colors } from "@main/constants/Colors";
 import { env } from "@main/env/env";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
+import { VerificationEntry } from "@prisma/client";
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -126,13 +127,15 @@ class VerificationService extends Service {
                     new ButtonBuilder()
                         .setLabel("Verify")
                         .setStyle(ButtonStyle.Link)
-                        .setURL(`${env.SYSTEM_API_URL}/verify?code=${encodeURIComponent(code)}`)
+                        .setURL(
+                            `${env.FRONTEND_URL}/guilds/${encodeURIComponent(member.guild.id)}/verify?token=${encodeURIComponent(code)}`
+                        )
                 )
             ]
         });
     }
 
-    public async verifyByCode(code: string) {
+    public async getVerificationEntry(code: string) {
         const entry = await this.application.prisma.verificationEntry.findUnique({
             where: {
                 code
@@ -153,6 +156,20 @@ class VerificationService extends Service {
             return null;
         }
 
+        return entry;
+    }
+
+    public async verifyByCode(code: string) {
+        const entry = await this.getVerificationEntry(code);
+
+        if (!entry) {
+            return null;
+        }
+
+        return this.verifyWithEntry(entry);
+    }
+
+    public async verifyWithEntry(entry: VerificationEntry) {
         const config = this.configFor(entry.guildId);
 
         if (!config?.enabled) {
