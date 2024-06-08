@@ -4,6 +4,7 @@ import Controller from "@framework/api/http/Controller";
 import type Request from "@framework/api/http/Request";
 import Response from "@framework/api/http/Response";
 import { Inject } from "@framework/container/Inject";
+import { auth, oauth2 } from "@googleapis/oauth2";
 import type VerificationService from "@main/automod/VerificationService";
 import { env } from "@main/env/env";
 import { VerificationMethod } from "@prisma/client";
@@ -13,6 +14,15 @@ import { z } from "zod";
 class VerificationController extends Controller {
     @Inject("verificationService")
     private readonly verificationService!: VerificationService;
+
+    private readonly googleOauth2Client =
+        env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET
+            ? new auth.OAuth2({
+                  clientId: env.GOOGLE_CLIENT_ID,
+                  clientSecret: env.GOOGLE_CLIENT_SECRET,
+                  redirectUri: `${env.FRONTEND_URL}/challenge/google`
+              })
+            : null;
 
     @Action("POST", "/verification/guild")
     @Validate(
@@ -200,8 +210,6 @@ class VerificationController extends Controller {
 
             const { access_token, token_type, scope } = oauthData as Record<string, string>;
 
-            console.log(oauthData);
-
             if (!scope.includes("read:user")) {
                 return new Response({
                     status: 403,
@@ -269,6 +277,84 @@ class VerificationController extends Controller {
         return new Response({
             status: 403,
             body: { error: "We're unable to verify your GitHub Account." }
+        });
+    }
+
+    @Action("POST", "/challenge/google")
+    @Validate(
+        z.object({
+            code: z.string(),
+            token: z.string()
+        })
+    )
+    public async verifyByGoogle(request: Request) {
+        const { code, token } = request.parsedBody ?? {};
+
+        if (!this.googleOauth2Client) {
+            return new Response({
+                status: 403,
+                body: { error: "Google OAuth is not supported." }
+            });
+        }
+
+        try {
+            const { tokens } = await this.googleOauth2Client.getToken(code);
+            this.googleOauth2Client.setCredentials(tokens);
+
+            const userInfo = await oauth2("v2").userinfo.get({ auth: this.googleOauth2Client });
+
+            const { name, id } = userInfo.data;
+
+            if (!id || !name) {
+                return new Response({
+                    status: 403,
+                    body: { error: "We're unable to verify you, please try again." }
+                });
+            }
+
+            const entry = await this.verificationService.getVerificationEntry(token);
+
+            if (!entry || entry.code !== token) {
+                return new Response({
+                    status: 403,
+                    body: { error: "We're unable to verify you, please try again." }
+                });
+            }
+
+            const result = await this.application
+                .service("verificationService")
+                .verifyWithEntry(entry, {
+                    googleId: id,
+                    method: VerificationMethod.GOOGLE
+                });
+
+            if (!result) {
+                return new Response({
+                    status: 403,
+                    body: { error: "We're unable to verify you, please try again." }
+                });
+            }
+
+            if (result.error === "record_exists") {
+                return new Response({
+                    status: 403,
+                    body: { error: "You cannot use this account to verify." }
+                });
+            }
+
+            return new Response({
+                status: 200,
+                body: {
+                    message: "You have been verified successfully."
+                }
+            });
+        } catch (error) {
+            this.application.logger.error(error);
+        }
+
+        return new Response({
+            status: 403,
+            body: { error: "We're unable to verify your Google Account." }
         });
     }
 }
