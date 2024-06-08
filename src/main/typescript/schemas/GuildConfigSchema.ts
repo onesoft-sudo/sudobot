@@ -211,7 +211,7 @@ export const GuildConfigSchema = z.object({
             }),
             unverified_roles: z.array(zSnowflake).default([]),
             verified_roles: z.array(zSnowflake).default([]),
-            failed_actions: z.array(ModerationActionSchema).default([]),
+            expired_actions: z.array(ModerationActionSchema).default([]),
             verification_message: z.string().optional(),
             success_message: z.string().optional(),
             max_duration: z

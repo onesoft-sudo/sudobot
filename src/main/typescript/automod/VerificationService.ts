@@ -3,11 +3,12 @@ import { GatewayEventListener } from "@framework/events/GatewayEventListener";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { Events } from "@framework/types/ClientEvents";
-import { fetchMember } from "@framework/utils/entities";
+import { fetchMember, fetchUser } from "@framework/utils/entities";
 import { Colors } from "@main/constants/Colors";
 import { env } from "@main/env/env";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
-import { VerificationEntry } from "@prisma/client";
+import type ModerationActionService from "@main/services/ModerationActionService";
+import { VerificationEntry, VerificationMethod } from "@prisma/client";
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -24,6 +25,9 @@ import jwt from "jsonwebtoken";
 class VerificationService extends Service {
     @Inject("configManager")
     private readonly configManager!: ConfigurationManager;
+
+    @Inject("moderationActionService")
+    private readonly moderationActionService!: ModerationActionService;
 
     private configFor(guildId: Snowflake) {
         return this.configManager.config[guildId]?.member_verification;
@@ -153,23 +157,36 @@ class VerificationService extends Service {
                 }
             });
 
+            const actions = this.configFor(entry.guildId)?.expired_actions;
+            const guild = this.application.client.guilds.cache.get(entry.guildId);
+
+            if (actions?.length && guild) {
+                const memberOrUser =
+                    (await fetchMember(guild, entry.userId)) ??
+                    (await fetchUser(this.application.client, entry.userId));
+
+                if (memberOrUser) {
+                    await this.moderationActionService.takeActions(guild, memberOrUser, actions);
+                }
+            }
+
             return null;
         }
 
         return entry;
     }
 
-    public async verifyByCode(code: string) {
+    public async verifyByCode(code: string, payload: VerificationPayload) {
         const entry = await this.getVerificationEntry(code);
 
         if (!entry) {
             return null;
         }
 
-        return this.verifyWithEntry(entry);
+        return this.verifyWithEntry(entry, payload);
     }
 
-    public async verifyWithEntry(entry: VerificationEntry) {
+    public async verifyWithEntry(entry: VerificationEntry, payload: VerificationPayload) {
         const config = this.configFor(entry.guildId);
 
         if (!config?.enabled) {
@@ -180,6 +197,20 @@ class VerificationService extends Service {
 
         if (!guild) {
             return null;
+        }
+
+        const existingRecord = await this.application.prisma.verificationRecord.findFirst({
+            where: {
+                guildId: guild.id,
+                userId: entry.userId,
+                ...payload
+            }
+        });
+
+        if (existingRecord) {
+            return {
+                error: "record_exists"
+            };
         }
 
         const member = await fetchMember(guild, entry.userId);
@@ -199,6 +230,14 @@ class VerificationService extends Service {
         await this.application.prisma.verificationEntry.delete({
             where: {
                 id: entry.id
+            }
+        });
+
+        await this.application.prisma.verificationRecord.create({
+            data: {
+                guildId: guild.id,
+                userId: member.id,
+                ...payload
             }
         });
 
@@ -229,5 +268,13 @@ class VerificationService extends Service {
         };
     }
 }
+
+export type VerificationPayload = {
+    githubId?: string;
+    googleId?: string;
+    discordId?: string;
+    email?: string;
+    method: VerificationMethod;
+};
 
 export default VerificationService;

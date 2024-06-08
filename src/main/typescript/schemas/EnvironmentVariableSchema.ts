@@ -36,7 +36,9 @@ export const EnvironmentVariableSchema = z.object({
         .nullable()
         .transform(value => (value === "null" ? null : value)),
     API_NINJAS_JOKE_API_KEY: z.string().optional(),
-    PIXABAY_TOKEN: z.string().optional()
+    PIXABAY_TOKEN: z.string().optional(),
+    GITHUB_CLIENT_ID: z.string().optional(),
+    GITHUB_CLIENT_SECRET: z.string().optional()
 });
 
 export type EnvironmentVariableRecord = z.infer<typeof EnvironmentVariableSchema>;

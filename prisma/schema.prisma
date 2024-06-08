@@ -162,6 +162,7 @@ model User {
     name                   String?
     username               String
     discordId              String
+    githubId               String?
     guilds                 String[]  @default([])
     password               String
     token                  String?
@@ -233,4 +234,26 @@ model VerificationEntry {
 
     @@unique([userId, guildId])
     @@map("verification_entries")
+}
+
+model VerificationRecord {
+    id        Int                @id @default(autoincrement())
+    guildId   String
+    userId    String
+    discordId String?
+    githubId  String?
+    googleId  String?
+    email     String?
+    method    VerificationMethod
+    createdAt DateTime           @default(now())
+    updatedAt DateTime           @default(now()) @updatedAt
+
+    @@map("verification_records")
+}
+
+enum VerificationMethod {
+    DISCORD
+    GITHUB
+    GOOGLE
+    EMAIL
 }
