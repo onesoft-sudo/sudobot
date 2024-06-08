@@ -228,6 +228,7 @@ model VerificationEntry {
     guildId   String
     code      String   @unique
     attempts  Int      @default(0)
+    metadata  Json?
     expiresAt DateTime
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt

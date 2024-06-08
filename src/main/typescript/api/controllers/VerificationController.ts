@@ -357,6 +357,121 @@ class VerificationController extends Controller {
             body: { error: "We're unable to verify your Google Account." }
         });
     }
+
+    @Action("POST", "/start-challenge/email")
+    @Validate(
+        z.object({
+            email: z.string().email(),
+            token: z.string()
+        })
+    )
+    public async initiateEmailVerification(request: Request) {
+        if (!env.FRONTEND_KEY) {
+            return new Response({
+                status: 403,
+                body: { error: "Google OAuth is not supported." }
+            });
+        }
+
+        if (request.headers["x-frontend-key"] !== env.FRONTEND_KEY) {
+            return new Response({
+                status: 403,
+                body: { error: "Forbidden request." }
+            });
+        }
+
+        const { email, token } = request.parsedBody ?? {};
+        const entry = await this.verificationService.getVerificationEntry(token);
+
+        if (!entry || entry.code !== token) {
+            return new Response({
+                status: 400,
+                body: { error: "Invalid token." }
+            });
+        }
+
+        const guild = this.application.client.guilds.cache.get(entry.guildId);
+
+        if (!guild) {
+            return new Response({
+                status: 400,
+                body: { error: "Guild not found." }
+            });
+        }
+
+        const emailToken = await this.verificationService.generateEmailToken(entry, email);
+
+        if (!emailToken) {
+            return new Response({
+                status: 403,
+                body: { error: "Cannot initiate verification." }
+            });
+        }
+
+        return new Response({
+            status: 200,
+            body: {
+                emailToken,
+                email,
+                guild
+            }
+        });
+    }
+
+    @Action("POST", "/challenge/email")
+    @Validate(
+        z.object({
+            email: z.string().email(),
+            token: z.string(),
+            emailToken: z.string()
+        })
+    )
+    public async verifyByEmail(request: Request) {
+        const { email, token, emailToken } = request.parsedBody ?? {};
+        const entry = await this.verificationService.getVerificationEntry(token);
+
+        if (
+            !entry ||
+            entry.code !== token ||
+            !entry.metadata ||
+            typeof entry.metadata !== "object" ||
+            !("emailToken" in entry.metadata) ||
+            entry.metadata.emailToken !== emailToken
+        ) {
+            return new Response({
+                status: 403,
+                body: { error: "We're unable to verify you, please try again." }
+            });
+        }
+
+        const result = await this.application
+            .service("verificationService")
+            .verifyWithEntry(entry, {
+                email,
+                method: VerificationMethod.EMAIL
+            });
+
+        if (!result) {
+            return new Response({
+                status: 403,
+                body: { error: "We're unable to verify you, please try again." }
+            });
+        }
+
+        if (result.error === "record_exists") {
+            return new Response({
+                status: 403,
+                body: { error: "You cannot use this account to verify." }
+            });
+        }
+
+        return new Response({
+            status: 200,
+            body: {
+                message: "You have been verified successfully."
+            }
+        });
+    }
 }
 
 export default VerificationController;

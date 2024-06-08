@@ -267,6 +267,41 @@ class VerificationService extends Service {
             userId: member.id
         };
     }
+
+    public async generateEmailToken(entry: VerificationEntry, email: string) {
+        const config = this.configFor(entry.guildId);
+
+        if (!config?.enabled) {
+            return null;
+        }
+
+        const token = jwt.sign(
+            {
+                guildId: entry.guildId,
+                userId: entry.userId,
+                email
+            },
+            env.JWT_SECRET,
+            {
+                expiresIn: "6h",
+                issuer: env.JWT_ISSUER
+            }
+        );
+
+        await this.application.prisma.verificationEntry.update({
+            where: {
+                id: entry.id
+            },
+            data: {
+                metadata: {
+                    emailToken: token,
+                    email
+                }
+            }
+        });
+
+        return token;
+    }
 }
 
 export type VerificationPayload = {
