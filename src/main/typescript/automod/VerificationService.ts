@@ -199,11 +199,32 @@ class VerificationService extends Service {
             return null;
         }
 
+        if (payload.method === VerificationMethod.EMAIL) {
+            if (
+                typeof entry.metadata !== "object" ||
+                !entry.metadata ||
+                !("email" in entry.metadata) ||
+                !("emailToken" in entry.metadata) ||
+                entry.metadata.email !== payload.email ||
+                entry.metadata.emailToken !== payload.emailToken
+            ) {
+                return {
+                    error: "invalid_email"
+                };
+            }
+
+            if (payload.emailToken) {
+                delete payload.emailToken;
+            }
+        }
+
         const existingRecord = await this.application.prisma.verificationRecord.findFirst({
             where: {
                 guildId: guild.id,
                 userId: entry.userId,
-                ...payload
+                ...(payload as {
+                    email?: string;
+                })
             }
         });
 
@@ -309,6 +330,7 @@ export type VerificationPayload = {
     googleId?: string;
     discordId?: string;
     email?: string;
+    emailToken?: string;
     method: VerificationMethod;
 };
 

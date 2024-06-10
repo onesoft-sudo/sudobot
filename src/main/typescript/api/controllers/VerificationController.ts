@@ -436,7 +436,9 @@ class VerificationController extends Controller {
             !entry.metadata ||
             typeof entry.metadata !== "object" ||
             !("emailToken" in entry.metadata) ||
-            entry.metadata.emailToken !== emailToken
+            entry.metadata.emailToken !== emailToken ||
+            !("email" in entry.metadata) ||
+            entry.metadata.email !== email
         ) {
             return new Response({
                 status: 403,
@@ -448,10 +450,11 @@ class VerificationController extends Controller {
             .service("verificationService")
             .verifyWithEntry(entry, {
                 email,
+                emailToken,
                 method: VerificationMethod.EMAIL
             });
 
-        if (!result) {
+        if (!result || result.error === "invalid_email") {
             return new Response({
                 status: 403,
                 body: { error: "We're unable to verify you, please try again." }
