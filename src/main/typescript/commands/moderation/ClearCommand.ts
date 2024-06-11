@@ -26,7 +26,13 @@ import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import { GatewayEventListener } from "@framework/events/GatewayEventListener";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
-import { Awaitable, type Interaction, Message, TextChannel, User } from "discord.js";
+import {
+    Message,
+    User,
+    type Awaitable,
+    type GuildTextBasedChannel,
+    type Interaction
+} from "discord.js";
 import { Limits } from "../../constants/Limits";
 import InfractionManager from "../../services/InfractionManager";
 import PermissionManagerService from "../../services/PermissionManagerService";
@@ -198,9 +204,8 @@ class ClearCommand extends Command {
             moderator: context.user,
             user,
             count,
-            channel:
-                (context.isChatInput() ? context.options.getChannel("channel") : undefined) ??
-                (context.channel as TextChannel),
+            channel: ((context.isChatInput() ? context.options.getChannel("channel") : undefined) ??
+                context.channel) as GuildTextBasedChannel,
             reason: context.isChatInput()
                 ? context.options.getString("reason") ?? undefined
                 : undefined,

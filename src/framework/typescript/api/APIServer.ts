@@ -21,9 +21,9 @@ import { ConfigurationManagerServiceInterface } from "@framework/contracts/Confi
 import cors from "cors";
 import express, {
     Application,
-    NextFunction,
     Request as ExpressRequest,
-    Response as ExpressResponse
+    Response as ExpressResponse,
+    NextFunction
 } from "express";
 import ratelimiter from "express-rate-limit";
 import { Router } from "express-serve-static-core";
@@ -53,7 +53,7 @@ export default class APIServer extends Service {
     });
     public readonly port = process.env.PORT ?? 4000;
     public expressServer?: HttpServer;
-    private readonly logger = new Logger("server", true);
+    protected override readonly logger = new Logger("server", true);
 
     private _controllerDirectory = path.resolve(
         __dirname,
