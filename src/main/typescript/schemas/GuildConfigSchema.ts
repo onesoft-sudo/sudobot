@@ -218,8 +218,7 @@ export const GuildConfigSchema = z.object({
                 .number()
                 .describe("Max verification duration (in seconds)")
                 .int()
-                .optional(),
-            max_attempts: z.number().int().optional()
+                .optional()
         })
         .optional()
     /*

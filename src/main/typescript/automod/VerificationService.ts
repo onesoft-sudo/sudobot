@@ -6,6 +6,7 @@ import { Events } from "@framework/types/ClientEvents";
 import { fetchMember, fetchUser } from "@framework/utils/entities";
 import { Colors } from "@main/constants/Colors";
 import { env } from "@main/env/env";
+import VerificationExpiredQueue from "@main/queues/VerificationExpiredQueue";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import type ModerationActionService from "@main/services/ModerationActionService";
 import { VerificationEntry, VerificationMethod } from "@prisma/client";
@@ -64,6 +65,8 @@ class VerificationService extends Service {
                 guildId: member.guild.id
             }
         });
+
+        await this.clearVerificationQueues(member.guild.id, member.id);
     }
 
     public async startVerification(member: GuildMember, reason?: string) {
@@ -99,7 +102,27 @@ class VerificationService extends Service {
             }
         });
 
+        await this.application
+            .service("queueService")
+            .create(VerificationExpiredQueue, {
+                data: {
+                    guildId: member.guild.id,
+                    memberId: member.id
+                },
+                guildId: member.guild.id,
+                runsAt: entry.expiresAt
+            })
+            .schedule();
+
         await this.sendVerificationMessage(member, entry.code).catch(this.application.logger.error);
+    }
+
+    private async clearVerificationQueues(guildId: Snowflake, userId: Snowflake) {
+        await this.application
+            .service("queueService")
+            .bulkCancel(VerificationExpiredQueue, queue => {
+                return queue.data.guildId === guildId && queue.data.memberId === userId;
+            });
     }
 
     private async sendVerificationMessage(member: GuildMember, code: string) {
@@ -139,6 +162,32 @@ class VerificationService extends Service {
         });
     }
 
+    public async onVerificationExpire(guildId: Snowflake, userId: Snowflake) {
+        const { count } = await this.application.prisma.verificationEntry.deleteMany({
+            where: {
+                userId,
+                guildId
+            }
+        });
+
+        if (count === 0) {
+            return;
+        }
+
+        const actions = this.configFor(guildId)?.expired_actions;
+        const guild = this.application.client.guilds.cache.get(guildId);
+
+        if (actions?.length && guild) {
+            const memberOrUser =
+                (await fetchMember(guild, userId)) ??
+                (await fetchUser(this.application.client, userId));
+
+            if (memberOrUser) {
+                await this.moderationActionService.takeActions(guild, memberOrUser, actions);
+            }
+        }
+    }
+
     public async getVerificationEntry(code: string) {
         const entry = await this.application.prisma.verificationEntry.findUnique({
             where: {
@@ -151,25 +200,8 @@ class VerificationService extends Service {
         }
 
         if (entry.expiresAt.getTime() < Date.now()) {
-            await this.application.prisma.verificationEntry.delete({
-                where: {
-                    id: entry.id
-                }
-            });
-
-            const actions = this.configFor(entry.guildId)?.expired_actions;
-            const guild = this.application.client.guilds.cache.get(entry.guildId);
-
-            if (actions?.length && guild) {
-                const memberOrUser =
-                    (await fetchMember(guild, entry.userId)) ??
-                    (await fetchUser(this.application.client, entry.userId));
-
-                if (memberOrUser) {
-                    await this.moderationActionService.takeActions(guild, memberOrUser, actions);
-                }
-            }
-
+            await this.onVerificationExpire(entry.guildId, entry.userId);
+            await this.clearVerificationQueues(entry.guildId, entry.userId);
             return null;
         }
 
@@ -262,6 +294,7 @@ class VerificationService extends Service {
             }
         });
 
+        await this.clearVerificationQueues(entry.guildId, entry.userId);
         await member
             .send({
                 embeds: [
