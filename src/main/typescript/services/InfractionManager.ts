@@ -36,7 +36,6 @@ import { formatDistanceStrict, formatDistanceToNowStrict } from "date-fns";
 import {
     APIEmbed,
     Awaitable,
-    bold,
     CategoryChannel,
     ChannelType,
     Collection,
@@ -44,7 +43,7 @@ import {
     DiscordAPIError,
     Guild,
     GuildMember,
-    italic,
+    GuildTextBasedChannel,
     Message,
     MessageCreateOptions,
     MessagePayload,
@@ -55,8 +54,9 @@ import {
     RoleResolvable,
     Snowflake,
     TextBasedChannel,
-    TextChannel,
     User,
+    bold,
+    italic,
     userMention
 } from "discord.js";
 import InfractionChannelDeleteQueue from "../queues/InfractionChannelDeleteQueue";
@@ -2782,7 +2782,7 @@ type CreateModeratorMessage<E extends boolean> = CommonOptions<E> & {
 
 type CreateClearMessagesPayload<E extends boolean> = Omit<CommonOptions<E>, "notify"> & {
     user?: User;
-    channel: TextChannel;
+    channel: GuildTextBasedChannel;
     count?: number;
     filters?: Array<MessageFilter>;
     respond?: boolean;
@@ -2795,7 +2795,7 @@ type CreateMutePayload<E extends boolean> = CommonOptions<E> & {
     duration?: Duration;
     mode?: "role" | "timeout";
     clearMessagesCount?: number;
-    channel?: TextChannel;
+    channel?: GuildTextBasedChannel;
     roleTakeout?: boolean;
 };
 

@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type { Logger } from "@framework/log/Logger";
 import type { Awaitable } from "discord.js";
 import type Application from "../app/Application";
 import type BaseClient from "../client/BaseClient";
@@ -25,11 +26,13 @@ import { HasApplication } from "../types/HasApplication";
 abstract class Service extends HasApplication {
     protected static override name: string;
     protected readonly client: BaseClient;
+    protected readonly logger: Logger;
     public boot(): Awaitable<void> {}
 
     public constructor(application: Application) {
         super(application);
         this.client = application.getClient();
+        this.logger = this.application.logger;
     }
 
     public static getName() {

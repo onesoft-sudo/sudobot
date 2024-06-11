@@ -44,7 +44,6 @@ class ReactionRoleService extends Service implements HasEventListeners {
         this.application.logger.info("Successfully synced reaction roles");
     }
 
-    @GatewayEventListener("raw")
     public async onRaw(data: RawMessageReactionData) {
         if (data.t !== "MESSAGE_REACTION_ADD" && data.t !== "MESSAGE_REACTION_REMOVE") {
             return;
@@ -334,7 +333,7 @@ interface UserRequestInfo {
     timeout?: Timer;
 }
 
-type RawMessageReactionData = {
+export type RawMessageReactionData = {
     t: "MESSAGE_REACTION_ADD" | "MESSAGE_REACTION_REMOVE";
     d: {
         user_id: string;

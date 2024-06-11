@@ -220,14 +220,13 @@ export const GuildConfigSchema = z.object({
                 .int()
                 .optional()
         })
-        .optional()
-    /*
-    quickmute: z
+        .optional(),
+    quick_mute: z
         .object({
             enabled: z.boolean().optional().default(false),
-            clear_emoji: z.string().optional(),
-            noclear_emoji: z.string().optional(),
-            duration: z
+            mute_clear_emoji: z.string().optional(),
+            mute_emoji: z.string().optional(),
+            default_duration: z
                 .number()
                 .int()
                 .min(0)
@@ -235,7 +234,9 @@ export const GuildConfigSchema = z.object({
                 .optional(),
             reason: z.string().optional()
         })
-        .optional(),
+        .optional()
+    /*
+    
     logging: z
         .object({
             enabled: z.boolean().default(false),

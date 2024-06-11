@@ -103,6 +103,7 @@ enum Events {
     Warn = "warn",
     WebhooksUpdate = "webhooksUpdate",
     WebhookUpdate = "webhookUpdate",
+    Raw = "raw",
 
     NormalMessageCreate = "normalMessageCreate",
     NormalMessageUpdate = "normalMessageUpdate",
