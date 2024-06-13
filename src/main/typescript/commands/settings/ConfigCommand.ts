@@ -10,10 +10,10 @@ import ConfigurationManager from "@main/services/ConfigurationManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
 import {
     ChatInputCommandInteraction,
-    codeBlock,
     EmbedBuilder,
-    escapeInlineCode,
     GuildMember,
+    codeBlock,
+    escapeInlineCode,
     inlineCode,
     type Interaction
 } from "discord.js";
@@ -405,7 +405,7 @@ class ConfigCommand extends Command {
                             {
                                 description: `### ${context.emoji(
                                     "error"
-                                )} Failed to parse the value as JSON\n\n${error.slice(0, 1800)}${
+                                )} Failed to parse the value as JSON\n\n${codeBlock(error.slice(0, 1800))}${
                                     error.length > 1800
                                         ? "\n... The error message is loo long."
                                         : ""
@@ -444,7 +444,7 @@ class ConfigCommand extends Command {
                 .setDescription(
                     `### ${context.emoji("error")} The configuration is invalid (${inlineCode(
                         error.type
-                    )})\n\nThe changes were not saved.\n\n${errorString.slice(0, 1800)}${
+                    )})\n\nThe changes were not saved.\n\n${codeBlock(errorString.slice(0, 1800))}${
                         errorString.length > 1800 ? "\n... The error description is loo long." : ""
                     }`
                 )

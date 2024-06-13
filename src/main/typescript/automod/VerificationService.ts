@@ -98,7 +98,10 @@ class VerificationService extends Service {
                 guildId: member.guild.id,
                 userId: member.id,
                 code,
-                expiresAt: new Date(Date.now() + (config.max_duration ?? 24 * 60 * 60) * 1000)
+                expiresAt: new Date(Date.now() + (config.max_duration ?? 24 * 60 * 60) * 1000),
+                metadata: {
+                    captcha_completed: false
+                }
             }
         });
 
@@ -231,6 +234,22 @@ class VerificationService extends Service {
             return null;
         }
 
+        if (
+            !!config?.require_captcha &&
+            !(entry.metadata as Record<string, boolean> | null)?.captcha_completed
+        ) {
+            return null;
+        }
+
+        if (
+            !config ||
+            !config.allowed_methods.includes(
+                payload.method.toLowerCase() as Lowercase<VerificationMethod>
+            )
+        ) {
+            return null;
+        }
+
         if (payload.method === VerificationMethod.EMAIL) {
             if (
                 typeof entry.metadata !== "object" ||
@@ -348,6 +367,7 @@ class VerificationService extends Service {
             },
             data: {
                 metadata: {
+                    ...(entry.metadata as Record<string, string>),
                     emailToken: token,
                     email
                 }

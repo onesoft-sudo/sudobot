@@ -7,6 +7,7 @@ import { Inject } from "@framework/container/Inject";
 import { auth, oauth2 } from "@googleapis/oauth2";
 import type VerificationService from "@main/automod/VerificationService";
 import { env } from "@main/env/env";
+import type ConfigurationManager from "@main/services/ConfigurationManager";
 import { VerificationMethod } from "@prisma/client";
 import undici from "undici";
 import { z } from "zod";
@@ -14,6 +15,9 @@ import { z } from "zod";
 class VerificationController extends Controller {
     @Inject("verificationService")
     private readonly verificationService!: VerificationService;
+
+    @Inject("configManager")
+    private readonly configManager!: ConfigurationManager;
 
     private readonly googleOauth2Client =
         env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET
@@ -44,6 +48,8 @@ class VerificationController extends Controller {
             return new Response({ status: 403, body: { error: "Guild not found." } });
         }
 
+        const config = this.configManager.get(guild.id)?.member_verification;
+
         return new Response({
             status: 200,
             body: {
@@ -51,9 +57,96 @@ class VerificationController extends Controller {
                     id: guild.id,
                     name: guild.name,
                     icon: guild.iconURL({ forceStatic: false }) ?? null
+                },
+                needs_captcha:
+                    !!config?.require_captcha &&
+                    !(entry.metadata as Record<string, boolean> | null)?.captcha_completed,
+                supported_methods: config?.allowed_methods ?? [
+                    "discord",
+                    "google",
+                    "github",
+                    "email"
+                ]
+            }
+        });
+    }
+
+    @Action("PUT", "/challenge/captcha")
+    @Validate(
+        z.object({
+            recaptchaResponse: z.string(),
+            token: z.string()
+        })
+    )
+    public async completeCaptcha(request: Request) {
+        if (!env.RECAPTCHA_SECRET_KEY) {
+            return new Response({ status: 403, body: { error: "Recaptcha is not supported." } });
+        }
+
+        const { recaptchaResponse, token } = request.parsedBody ?? {};
+        const entry = await this.verificationService.getVerificationEntry(token);
+
+        if (!entry) {
+            return new Response({ status: 403, body: { error: "Invalid token." } });
+        }
+
+        const guild = this.application.client.guilds.cache.get(entry.guildId);
+
+        if (!guild) {
+            return new Response({ status: 403, body: { error: "Guild not found." } });
+        }
+
+        const config = this.configManager.get(guild.id);
+
+        if (!config?.member_verification?.require_captcha) {
+            return new Response({ status: 403, body: { error: "Captcha is not required." } });
+        }
+
+        if ((entry.metadata as Record<string, boolean> | null)?.captcha_completed) {
+            return new Response({
+                status: 403,
+                body: { error: "Captcha has already been completed." }
+            });
+        }
+
+        const response = await undici.request("https://www.google.com/recaptcha/api/siteverify", {
+            method: "POST",
+            body: new URLSearchParams({
+                secret: env.RECAPTCHA_SECRET_KEY,
+                response: recaptchaResponse
+            }).toString(),
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        });
+
+        if (response.statusCode > 299 || response.statusCode < 200) {
+            return new Response({ status: 403, body: { error: "Failed to verify captcha." } });
+        }
+
+        const captchaData = (await response.body.json()) as {
+            success: boolean;
+            challenge_ts: number;
+            "error-codes"?: Array<unknown>;
+        };
+
+        if (!captchaData.success) {
+            return new Response({ status: 403, body: { error: "Failed to verify captcha." } });
+        }
+
+        await this.application.prisma.verificationEntry.update({
+            where: {
+                id: entry.id
+            },
+            data: {
+                metadata: {
+                    ...(entry.metadata as Record<string, string>),
+                    captcha_completed: true
                 }
             }
         });
+
+        return new Response({ status: 200, body: { message: "Captcha has been completed." } });
     }
 
     @Action("POST", "/challenge/discord")
