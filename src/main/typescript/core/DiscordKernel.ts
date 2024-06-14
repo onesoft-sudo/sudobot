@@ -84,8 +84,10 @@ class DiscordKernel extends Kernel {
         "@services/ChannelLockManager",
         "@services/ReactionRoleService",
         "@services/AFKService",
-        "@services/AuthService",
+        "@services/AutoRoleService",
         "@services/DirectiveParsingService",
+        "@services/WelcomerService",
+        "@services/AuthService",
         "@services/SnippetManagerService",
         "@services/TranslationService",
         "@root/framework/typescript/api/APIServer"

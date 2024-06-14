@@ -238,6 +238,40 @@ export const GuildConfigSchema = z.object({
                 .optional(),
             reason: z.string().optional()
         })
+        .optional(),
+    auto_role: z
+        .object({
+            enabled: z.boolean().optional().default(false),
+            roles: z.array(zSnowflake).default([]),
+            ignore_bots: z.boolean().optional().default(true)
+        })
+        .optional(),
+    welcomer: z
+        .object({
+            enabled: z.boolean().default(false),
+            custom_message: z.string().optional(),
+            randomize: z.boolean().optional().default(false),
+            mention: z.boolean().optional().default(false),
+            say_hi_button: z
+                .object({
+                    enabled: z.boolean().optional().default(false),
+                    label: z.string().optional().default("Say Hi"),
+                    emoji: z.string().optional().default("👋"),
+                    reply: z.string().optional().default(":acc: said hi to you!"),
+                    expire_after: z
+                        .number()
+                        .int()
+                        .min(5_000)
+                        .max(10 * 60_000)
+                        .default(5 * 60_000)
+                        .nullable()
+                })
+                .optional(),
+            delete_after: z.number().int().optional(),
+            channel: zSnowflake,
+            force_embeds: z.boolean().default(true),
+            forced_embed_color: z.number().int().optional()
+        })
         .optional()
     /*
     message_reporting: z
@@ -265,84 +299,6 @@ export const GuildConfigSchema = z.object({
                         ])
                 })
                 .default({})
-        })
-        .optional(),
-    message_filter: z
-        .object({
-            enabled: z.boolean().default(false),
-            send_logs: z
-                .boolean()
-                .or(
-                    z.object({
-                        blocked_words: z.boolean().default(false),
-                        blocked_tokens: z.boolean().default(false),
-                        blocked_messages: z.boolean().default(false)
-                    })
-                )
-                .default(false),
-            delete_message: z
-                .boolean()
-                .or(
-                    z.object({
-                        blocked_words: z.boolean().default(false),
-                        blocked_tokens: z.boolean().default(false),
-                        blocked_messages: z.boolean().default(false)
-                    })
-                )
-                .default(false),
-            data: z
-                .object({
-                    blocked_words: z.array(z.string()).optional().default([]),
-                    blocked_tokens: z.array(z.string()).optional().default([]),
-                    blocked_messages: z.array(z.string()).optional().default([])
-                })
-                .default({})
-        })
-        .optional(),
-    antispam: z
-        .object({
-            enabled: z.boolean().optional().default(false),
-            limit: z.number().int().default(-1).optional(),
-            timeframe: z.number().int().default(-1).optional(),
-            mute_duration: z.number().int().default(-1).optional(),
-            similar_messages: z
-                .object({
-                    max: z.number().int().default(-1).optional(),
-                    channels: z.array(zSnowflake).or(z.boolean()).default(false).optional(),
-                    timeframe: z.number().int().min(0).optional()
-                })
-                .optional(),
-            action: z
-                .union([
-                    z.literal("verbal_warn"),
-                    z.literal("warn"),
-                    z.literal("warn"),
-                    z.literal("mute"),
-                    z.literal("mute_clear"),
-                    z.literal("auto")
-                ])
-                .optional(),
-            disabled_channels: z.array(zSnowflake).default([])
-        })
-        .optional(),
-    antiraid: z
-        .object({
-            enabled: z.boolean().optional().default(false),
-            max_joins: z.number().int().default(-1).optional(),
-            timeframe: z.number().int().default(-1).optional(),
-            action: z
-                .union([
-                    z.literal("auto"),
-                    z.literal("lock"),
-                    z.literal("antijoin"),
-                    z.literal("lock_and_antijoin"),
-                    z.literal("none")
-                ])
-                .optional(),
-            send_log: z.boolean().optional().default(true),
-            channels: z.array(zSnowflake).default([]),
-            channel_mode: z.literal("exclude").or(z.literal("include")).default("exclude"),
-            ignore_private_channels: z.boolean().optional().default(true)
         })
         .optional(),
     welcomer: z
@@ -380,74 +336,11 @@ export const GuildConfigSchema = z.object({
                 .or(z.string().startsWith("#"))
         })
         .optional(),
-    profile_filter: z
-        .object({
-            enabled: z.boolean().optional().default(false),
-            scan: z
-                .array(z.literal("status").or(z.literal("nickname")).or(z.literal("username")))
-                .default([]),
-            actions: z
-                .object({
-                    status: z
-                        .literal("mute")
-                        .or(z.literal("warn"))
-                        .or(z.literal("none"))
-                        .default("none"),
-                    nickname: z
-                        .literal("mute")
-                        .or(z.literal("warn"))
-                        .or(z.literal("none"))
-                        .default("none"),
-                    username: z
-                        .literal("mute")
-                        .or(z.literal("warn"))
-                        .or(z.literal("none"))
-                        .default("none")
-                })
-                .default({})
-                .optional(),
-            inherit_from_message_filter: z
-                .object({
-                    tokens: z.boolean().optional().default(false),
-                    words: z.boolean().optional().default(false)
-                })
-                .default({})
-                .optional(),
-            tokens: z.array(z.string()).default([]).optional(),
-            words: z.array(z.string()).default([]).optional()
-        })
-        .optional(),
-    autorole: z
-        .object({
-            enabled: z.boolean().optional().default(false),
-            roles: z.array(zSnowflake).default([]),
-            ignore_bots: z.boolean().optional().default(true)
-        })
-        .optional(),
-    
-    create_boost_role: z
-        .object({
-            create_roles_after: zSnowflake.optional()
-        })
-        .optional(),
-    disabled_commands: z
-        .object({
-            guild: z.array(z.string()).default([]),
-            channels: z.record(zSnowflake, z.array(z.string()).default([])).default({})
-        })
-        .optional(),
     file_filter: z
         .object({
             enabled: z.boolean().optional().default(false),
             disabled_channels: z.array(zSnowflake).default([]),
             blocked_hashes: z.record(z.string(), z.string().nullable()).default({})
-        })
-        .optional(),
-    message_rules: z
-        .object({
-            enabled: z.boolean().default(false),
-            rules: z.array(MessageRuleSchema).default([]),
-            global_disabled_channels: z.array(zSnowflake).default([])
         })
         .optional(),
     auto_triggers: z
@@ -486,64 +379,7 @@ export const GuildConfigSchema = z.object({
             reminder_content: z.string().min(1).optional(),
             on_bump_content: z.string().min(1).optional()
         })
-        .optional(),
-    verification: z
-        .object({
-            enabled: z.boolean().default(false).optional(),
-            parameters: z.object({
-                age_less_than: z
-                    .number()
-                    .int()
-                    .default(1000 * 60 * 60 * 24 * 3)
-                    .optional(), // 3 days
-                no_avatar: z.boolean().optional(),
-                always: z.boolean().optional()
-            }),
-            unverified_roles: z.array(zSnowflake).default([]),
-            verified_roles: z.array(zSnowflake).default([]),
-            action_on_fail: z
-                .union([
-                    z.object({
-                        type: z.literal("ban")
-                    }),
-                    z.object({
-                        type: z.literal("kick")
-                    }),
-                    z.object({
-                        type: z.literal("mute")
-                    }),
-                    z.object({
-                        type: z.literal("role"),
-                        mode: z.enum(["give", "take"]),
-                        roles: z.array(zSnowflake)
-                    })
-                ])
-                .optional(),
-            max_attempts: z
-                .number()
-                .int()
-                .default(0)
-                .describe("Set this to 0 to allow every attempt"),
-            max_time: z
-                .number()
-                .int()
-                .default(1000 * 60 * 60 * 2)
-                .describe("Set this to 0 to disable time checks"),
-            logging: z
-                .object({
-                    enabled: z.boolean(),
-                    channel: zSnowflake.optional()
-                })
-                .default({
-                    enabled: true
-                })
-        })
-        .optional(),
-    statistics: z
-        .object({
-            enabled: z.boolean().default(false)
-        })
-        .optional() */
+        .optional(), */
 });
 
 export type GuildConfig = z.infer<typeof GuildConfigSchema>;
