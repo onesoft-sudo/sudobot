@@ -1,4 +1,5 @@
 import { Inject } from "@framework/container/Inject";
+import { GatewayEventListener } from "@framework/events/GatewayEventListener";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
@@ -6,8 +7,8 @@ import { LogEventType } from "@main/schemas/LoggingSchema";
 import { GuildMember, Message, Snowflake, TextChannel } from "discord.js";
 import { MessageAutoModServiceContract } from "../contracts/MessageAutoModServiceContract";
 import {
-    type default as ModerationRuleHandlerContract,
-    MessageRuleScope
+    MessageRuleScope,
+    type default as ModerationRuleHandlerContract
 } from "../contracts/ModerationRuleHandlerContract";
 import { MessageRuleType } from "../schemas/MessageRuleSchema";
 import ModerationRuleHandler from "../security/ModerationRuleHandler";
@@ -16,7 +17,6 @@ import type ConfigurationManager from "../services/ConfigurationManager";
 import type ModerationActionService from "../services/ModerationActionService";
 import type PermissionManagerService from "../services/PermissionManagerService";
 import { safeMemberFetch } from "../utils/fetch";
-import { GatewayEventListener } from "@framework/events/GatewayEventListener";
 
 @Name("ruleModerationService")
 class RuleModerationService
@@ -93,7 +93,8 @@ class RuleModerationService
 
     @GatewayEventListener("guildMemberUpdate")
     public async onGuildMemberUpdate(oldMember: GuildMember, newMember: GuildMember) {
-        if (oldMember.nickname === newMember.nickname &&
+        if (
+            oldMember.nickname === newMember.nickname &&
             oldMember.user.displayName === newMember.user.displayName &&
             oldMember.user.username === newMember.user.username &&
             oldMember.presence === newMember.presence
@@ -101,19 +102,24 @@ class RuleModerationService
             return;
         }
 
-        presence:
-        if (oldMember.presence && newMember.presence) {
+        presence: if (oldMember.presence && newMember.presence) {
             for (let index = 0; index < oldMember.presence.activities.length; index++) {
                 const oldActivity = oldMember.presence.activities[index];
                 const newActivity = newMember.presence.activities[index];
 
-                if (oldActivity?.name !== newActivity?.name || oldActivity?.state !== newActivity?.state || oldActivity?.details !== newActivity?.details) {
+                if (
+                    oldActivity?.name !== newActivity?.name ||
+                    oldActivity?.state !== newActivity?.state ||
+                    oldActivity?.details !== newActivity?.details
+                ) {
                     break presence;
                 }
             }
         }
 
-        this.application.logger.debug(`Checking member profile ${newMember.user.id} in guild ${newMember.guild.id}`);
+        this.application.logger.debug(
+            `Checking member profile ${newMember.user.id} in guild ${newMember.guild.id}`
+        );
         await this.moderateMemberOrMessage({
             member: newMember,
             guildId: newMember.guild.id,
@@ -153,7 +159,7 @@ class RuleModerationService
         }
 
         if (message) {
-            let fetchedMember;
+            let fetchedMember: GuildMember | null = member;
 
             if (!member) {
                 fetchedMember = await safeMemberFetch(message.guild!, message.author.id);
@@ -183,8 +189,9 @@ class RuleModerationService
             if (
                 scopes !== undefined &&
                 options.scopes !== undefined &&
-                scopes?.[rule.type]?.find((scope: MessageRuleScope) => options.scopes?.includes(scope)) ===
-                    undefined
+                scopes?.[rule.type]?.find((scope: MessageRuleScope) =>
+                    options.scopes?.includes(scope)
+                ) === undefined
             ) {
                 continue;
             }

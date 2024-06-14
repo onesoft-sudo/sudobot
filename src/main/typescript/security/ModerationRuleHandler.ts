@@ -6,8 +6,11 @@ import { AcceptsMessageRuleScopes } from "@main/decorators/AcceptsMessageRuleSco
 import { AcceptsModerationRuleContextType } from "@main/decorators/AcceptsModerationRuleContextType";
 import type ImageRecognitionService from "@main/services/ImageRecognitionService";
 import type InviteTrackingService from "@main/services/InviteTrackingService";
-import { request } from "@main/utils/utils";
-import { Attachment, spoiler } from "discord.js";
+import { downloadFile } from "@main/utils/download";
+import { request, systemPrefix } from "@main/utils/utils";
+import crypto from "crypto";
+import { Attachment, hyperlink, inlineCode, spoiler } from "discord.js";
+import { readFile, rm } from "fs/promises";
 import sharp from "sharp";
 import ModerationRuleHandlerContract, {
     MessageRuleScope,
@@ -857,6 +860,73 @@ class ModerationRuleHandler extends HasApplication implements ModerationRuleHand
 
         return {
             matched: false
+        };
+    }
+
+    private async getFileHashFromURL(url: string) {
+        const name = `file_filter_${Math.round(Math.random()) * 100000}_${Date.now()}`;
+        const directory = systemPrefix("tmp");
+
+        try {
+            const { filePath } = await downloadFile({
+                url,
+                name,
+                path: directory
+            });
+
+            const recomputedHash = crypto.createHash("sha512");
+            recomputedHash.update(await readFile(filePath));
+            const hex = recomputedHash.digest("hex");
+            this.application.logger.debug("File hash", hex);
+            await rm(filePath);
+            return hex;
+        } catch (error) {
+            this.application.logger.error(error);
+            return null;
+        }
+    }
+
+    @AcceptsMessageRuleScopes(MessageRuleScope.Attachments)
+    public async file_filter(
+        context: ModerationRuleContext<"message", { type: "file_filter" }>
+    ): Promise<RuleExecResult> {
+        const { message, rule } = context;
+        const invert = rule.mode === "invert";
+
+        for (const attachment of message.attachments.values()) {
+            const hash = await this.getFileHashFromURL(attachment.url);
+
+            if (!hash) {
+                continue;
+            }
+
+            if (
+                (invert &&
+                    (!(hash in rule.hashes) ||
+                        (rule.check_mime_types && rule.hashes[hash] !== attachment.contentType))) ||
+                (!invert &&
+                    hash in rule.hashes &&
+                    (!rule.check_mime_types || rule.hashes[hash] === attachment.contentType))
+            ) {
+                return {
+                    matched: true,
+                    reason: "This attachment is not allowed.",
+                    fields: [
+                        {
+                            name: "Attachment",
+                            value: `${hyperlink(attachment.name, attachment.proxyURL)}`
+                        },
+                        {
+                            name: "Hash",
+                            value: `${inlineCode(hash)}`
+                        }
+                    ]
+                };
+            }
+        }
+
+        return {
+            matched: invert
         };
     }
 

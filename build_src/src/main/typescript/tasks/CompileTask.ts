@@ -8,6 +8,7 @@ import {
     files,
     type Awaitable
 } from "blazebuild";
+import { $ } from "bun";
 import path from "path";
 
 @Task({
@@ -16,7 +17,18 @@ import path from "path";
 })
 class CompileTask extends AbstractTask {
     @TaskAction
-    protected override async run(): Promise<void> {}
+    protected override async run(): Promise<void> {
+        const buildOutputDirectory =
+            this.blaze.projectManager.properties.structure?.buildOutputDirectory;
+
+        if (!buildOutputDirectory) {
+            throw new Error("buildOutputDirectory is not defined in project properties");
+        }
+
+        await $`mv ${buildOutputDirectory}/out/src ${buildOutputDirectory}/out.tmp`;
+        await $`rm -rf ${buildOutputDirectory}/out`;
+        await $`mv ${buildOutputDirectory}/out.tmp ${buildOutputDirectory}/out`;
+    }
 
     @TaskDependencyGenerator
     protected override async dependencies() {

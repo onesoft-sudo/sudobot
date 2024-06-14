@@ -157,6 +157,13 @@ export const WordFilter = z.object({
     normalize: z.boolean().default(true)
 });
 
+export const FileFilter = z.object({
+    ...Common,
+    type: z.literal("file_filter"),
+    hashes: z.record(z.string(), z.string().nullable()).default({}),
+    check_mime_types: z.boolean().default(false)
+});
+
 export const ProfileFilter = z.object({
     ...Common,
     type: z.literal("profile_filter"),
@@ -179,7 +186,8 @@ export const MessageRuleSchema = z.union([
     URLCrawlRule,
     NSFWFilter,
     WordFilter,
-    ProfileFilter
+    ProfileFilter,
+    FileFilter
 ]);
 
 export type MessageRuleType = z.infer<typeof MessageRuleSchema>;

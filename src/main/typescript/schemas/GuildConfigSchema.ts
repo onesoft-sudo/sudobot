@@ -301,48 +301,6 @@ export const GuildConfigSchema = z.object({
                 .default({})
         })
         .optional(),
-    welcomer: z
-        .object({
-            enabled: z.boolean().optional().default(false),
-            custom_message: z.string().optional(),
-            randomize: z.boolean().optional().default(false),
-            mention: z.boolean().optional().default(false),
-            say_hi_button: z.boolean().optional().default(false),
-            say_hi_label: z.string().min(1).optional(),
-            say_hi_emoji: z.string().optional().default("default"),
-            say_hi_reply: z.string().optional(),
-            say_hi_expire_after: z
-                .number()
-                .int()
-                .min(5_000)
-                .max(10 * 60_000)
-                .default(5 * 60_000)
-                .nullable(),
-            delete_messages: z
-                .number()
-                .int()
-                .min(5_000)
-                .max(10 * 60_000)
-                .nullable()
-                .default(null),
-            channel: zSnowflake,
-            embed: z.boolean().optional().default(true),
-            color: z
-                .number()
-                .int()
-                .min(0x000000)
-                .max(0xffffff)
-                .default(0x007bff)
-                .or(z.string().startsWith("#"))
-        })
-        .optional(),
-    file_filter: z
-        .object({
-            enabled: z.boolean().optional().default(false),
-            disabled_channels: z.array(zSnowflake).default([]),
-            blocked_hashes: z.record(z.string(), z.string().nullable()).default({})
-        })
-        .optional(),
     auto_triggers: z
         .object({
             enabled: z.boolean().default(false),

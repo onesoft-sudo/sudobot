@@ -92,7 +92,10 @@ class ClassLoader {
             return this.modules;
         }
 
-        const srcDir = path.resolve(this.application.projectRootPath, "src");
+        const srcDir = path.resolve(
+            this.application.projectRootPath,
+            process.isBun ? "src" : "out"
+        );
         const modules = await readdir(srcDir);
 
         for (const module of modules) {
@@ -116,7 +119,13 @@ class ClassLoader {
         const modules = module ? [module] : await this.loadModules();
 
         for (const moduleName of modules) {
-            const filePath = path.join(this.application.projectRootPath, "src", moduleName, "resources/", name);
+            const filePath = path.join(
+                this.application.projectRootPath,
+                process.isBun ? "src" : "out",
+                moduleName,
+                "resources/",
+                name
+            );
             const file = File.of(filePath);
 
             if (!file.exists) {

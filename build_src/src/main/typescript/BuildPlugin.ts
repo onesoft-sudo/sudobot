@@ -2,6 +2,7 @@ import { Awaitable, BlazePlugin } from "blazebuild";
 import CleanTask from "./tasks/CleanTask";
 import CompileTask from "./tasks/CompileTask";
 import CompileTypeScriptTask from "./tasks/CompileTypeScriptTask";
+import CopyResourcesTask from "./tasks/CopyResourcesTask";
 import DependenciesTask from "./tasks/DependenciesTask";
 import LintTask from "./tasks/LintTask";
 import ProcessCoverageReportsTask from "./tasks/ProcessCoverageReportsTask";
@@ -11,7 +12,7 @@ import TestTask from "./tasks/TestTask";
 class BuildPlugin extends BlazePlugin {
     public override boot(): Awaitable<void> {
         this.blaze.taskManager.named("build", {
-            dependsOn: ["compile", "lint", "test"],
+            dependsOn: ["compile", "copyResources", "lint", "test"],
             outputs: [this.blaze.projectManager.properties.structure?.buildOutputDirectory ?? ""]
         });
     }
@@ -25,7 +26,8 @@ class BuildPlugin extends BlazePlugin {
             LintTask,
             ProcessCoverageReportsTask,
             RunTask,
-            TestTask
+            TestTask,
+            CopyResourcesTask
         ];
     }
 }
