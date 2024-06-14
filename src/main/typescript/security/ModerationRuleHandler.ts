@@ -11,7 +11,9 @@ import { request, systemPrefix } from "@main/utils/utils";
 import crypto from "crypto";
 import { Attachment, hyperlink, inlineCode, spoiler } from "discord.js";
 import { readFile, rm } from "fs/promises";
+import { env } from "process";
 import sharp from "sharp";
+import undici from "undici";
 import ModerationRuleHandlerContract, {
     MessageRuleScope,
     RuleExecResult,
@@ -22,6 +24,60 @@ import ModerationRuleHandlerContract, {
 
 type MessageContext<T> = ModerationRuleContext<"message", { type: T }>;
 type ProfileContext<T> = ModerationRuleContext<"profile", { type: T }>;
+
+type GoogleClient = {
+    comments: {
+        analyze: (
+            params: unknown,
+            callback: (error: Error | null, response: unknown) => void
+        ) => void;
+    };
+};
+
+type GoogleResponse = {
+    attributeScores: {
+        TOXICITY: {
+            summaryScore: {
+                value: number;
+            };
+        };
+        THREAT: {
+            summaryScore: {
+                value: number;
+            };
+        };
+        SEVERE_TOXICITY: {
+            summaryScore: {
+                value: number;
+            };
+        };
+        IDENTITY_ATTACK: {
+            summaryScore: {
+                value: number;
+            };
+        };
+        INSULT: {
+            summaryScore: {
+                value: number;
+            };
+        };
+        PROFANITY: {
+            summaryScore: {
+                value: number;
+            };
+        };
+        SEXUALLY_EXPLICIT: {
+            summaryScore: {
+                value: number;
+            };
+        };
+        FLIRTATION: {
+            summaryScore: {
+                value: number;
+            };
+        };
+    };
+};
 
 class ModerationRuleHandler extends HasApplication implements ModerationRuleHandlerContract {
     protected readonly computedRegexCache = new WeakMap<
@@ -34,8 +90,6 @@ class ModerationRuleHandler extends HasApplication implements ModerationRuleHand
 
     @Inject("imageRecognitionService")
     private readonly imageRecognitionService!: ImageRecognitionService;
-
-    public boot() {}
 
     @AcceptsMessageRuleScopes(MessageRuleScope.Content)
     public domain_filter(context: ModerationRuleContext<"message", { type: "domain_filter" }>) {
@@ -928,6 +982,124 @@ class ModerationRuleHandler extends HasApplication implements ModerationRuleHand
         return {
             matched: invert
         };
+    }
+
+    @AcceptsMessageRuleScopes(MessageRuleScope.Content)
+    public async ai_scan(
+        context: ModerationRuleContext<"message", { type: "ai_scan" }>
+    ): Promise<RuleExecResult> {
+        const { message, rule } = context;
+        const invert = rule.mode === "invert";
+
+        if (message.content && env.PERSPECTIVE_API_TOKEN) {
+            const payload = {
+                comment: {
+                    text: message.content
+                },
+                requestedAttributes: {
+                    TOXICITY: {},
+                    THREAT: {},
+                    SEVERE_TOXICITY: {},
+                    IDENTITY_ATTACK: {},
+                    INSULT: {},
+                    PROFANITY: {},
+                    SEXUALLY_EXPLICIT: {},
+                    FLIRTATION: {}
+                },
+                languages: ["en"]
+            };
+
+            const result = await this.analyzeComment(payload);
+
+            if (!result) {
+                return {
+                    matched: false
+                };
+            }
+
+            const {
+                TOXICITY: { summaryScore: toxicity },
+                THREAT: { summaryScore: threat },
+                SEVERE_TOXICITY: { summaryScore: severeToxicity },
+                IDENTITY_ATTACK: { summaryScore: identityAttack },
+                INSULT: { summaryScore: insult },
+                PROFANITY: { summaryScore: profanity },
+                SEXUALLY_EXPLICIT: { summaryScore: sexualExplicit },
+                FLIRTATION: { summaryScore: flirtation }
+            } = result.attributeScores;
+
+            const {
+                toxicity_threshold,
+                threat_threshold,
+                severe_toxicity_threshold,
+                identity_attack_threshold,
+                insult_threshold,
+                profanity_threshold,
+                sexual_explicit_threshold,
+                flirtation_threshold
+            } = rule;
+
+            if (
+                (toxicity.value >= toxicity_threshold ||
+                    threat.value >= threat_threshold ||
+                    severeToxicity.value >= severe_toxicity_threshold ||
+                    identityAttack.value >= identity_attack_threshold ||
+                    insult.value >= insult_threshold ||
+                    profanity.value >= profanity_threshold ||
+                    sexualExplicit.value >= sexual_explicit_threshold ||
+                    flirtation.value >= flirtation_threshold) === !invert
+            ) {
+                let results = "";
+
+                results += `Toxicity: ${Math.round(toxicity.value * 100)}%\n`;
+                results += `Threat: ${Math.round(threat.value * 100)}%\n`;
+                results += `Severe Toxicity: ${Math.round(severeToxicity.value * 100)}%\n`;
+                results += `Identity Attack: ${Math.round(identityAttack.value * 100)}%\n`;
+                results += `Insult: ${Math.round(insult.value * 100)}%\n`;
+                results += `Profanity: ${Math.round(profanity.value * 100)}%\n`;
+                results += `Sexually Explicit: ${Math.round(sexualExplicit.value * 100)}%\n`;
+                results += `Flirtation: ${Math.round(flirtation.value * 100)}%\n`;
+
+                return {
+                    matched: true,
+                    reason: "Message possibly contains inappropriate content.",
+                    fields: [
+                        {
+                            name: "Scan Results",
+                            value: results
+                        }
+                    ]
+                };
+            }
+        }
+
+        return {
+            matched: invert
+        };
+    }
+
+    private async analyzeComment(payload: unknown) {
+        if (!env.PERSPECTIVE_API_TOKEN) {
+            return null;
+        }
+
+        try {
+            const url =
+                "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=" +
+                encodeURIComponent(env.PERSPECTIVE_API_TOKEN);
+            const response = await undici.request(url, {
+                method: "POST",
+                body: JSON.stringify(payload),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            return response.body.json() as Promise<GoogleResponse>;
+        } catch (error) {
+            this.application.logger.error(error);
+            return null;
+        }
     }
 
     @AcceptsMessageRuleScopes(MessageRuleScope.Content)

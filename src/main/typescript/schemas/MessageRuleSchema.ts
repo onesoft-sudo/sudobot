@@ -164,6 +164,19 @@ export const FileFilter = z.object({
     check_mime_types: z.boolean().default(false)
 });
 
+export const AIScanFilter = z.object({
+    ...Common,
+    type: z.literal("ai_scan"),
+    toxicity_threshold: z.number().min(0).max(1).default(0.5),
+    identity_attack_threshold: z.number().min(0).max(1).default(0.5),
+    insult_threshold: z.number().min(0).max(1).default(0.5),
+    profanity_threshold: z.number().min(0).max(1).default(0.5),
+    sexual_explicit_threshold: z.number().min(0).max(1).default(0.5),
+    threat_threshold: z.number().min(0).max(1).default(0.5),
+    severe_toxicity_threshold: z.number().min(0).max(1).default(0.5),
+    flirtation_threshold: z.number().min(0).max(1).default(0.5)
+});
+
 export const ProfileFilter = z.object({
     ...Common,
     type: z.literal("profile_filter"),
@@ -187,7 +200,8 @@ export const MessageRuleSchema = z.union([
     NSFWFilter,
     WordFilter,
     ProfileFilter,
-    FileFilter
+    FileFilter,
+    AIScanFilter
 ]);
 
 export type MessageRuleType = z.infer<typeof MessageRuleSchema>;

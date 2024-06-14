@@ -42,7 +42,8 @@ export const EnvironmentVariableSchema = z.object({
     GOOGLE_CLIENT_ID: z.string().optional(),
     GOOGLE_CLIENT_SECRET: z.string().optional(),
     FRONTEND_KEY: z.string().optional(),
-    RECAPTCHA_SECRET_KEY: z.string().optional()
+    RECAPTCHA_SECRET_KEY: z.string().optional(),
+    PERSPECTIVE_API_TOKEN: z.string().optional()
 });
 
 export type EnvironmentVariableRecord = z.infer<typeof EnvironmentVariableSchema>;
