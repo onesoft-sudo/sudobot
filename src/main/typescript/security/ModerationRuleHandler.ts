@@ -25,15 +25,6 @@ import ModerationRuleHandlerContract, {
 type MessageContext<T> = ModerationRuleContext<"message", { type: T }>;
 type ProfileContext<T> = ModerationRuleContext<"profile", { type: T }>;
 
-type GoogleClient = {
-    comments: {
-        analyze: (
-            params: unknown,
-            callback: (error: Error | null, response: unknown) => void
-        ) => void;
-    };
-};
-
 type GoogleResponse = {
     attributeScores: {
         TOXICITY: {
