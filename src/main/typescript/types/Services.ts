@@ -23,6 +23,7 @@ import type AntiMemberJoinService from "@main/automod/AntiMemberJoinService";
 import type VerificationService from "@main/automod/VerificationService";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
 import type DirectiveParsingService from "@main/services/DirectiveParsingService";
+import type InviteTrackingService from "@main/services/InviteTrackingService";
 import type SystemAuditLoggingService from "@main/services/SystemAuditLoggingService";
 import type ChannelLockManager from "../services/ChannelLockManager";
 import type CommandManager from "../services/CommandManager";
@@ -57,6 +58,7 @@ export interface ServiceRecord {
     snippetManagerService: SnippetManagerService;
     antiMemberJoinService: AntiMemberJoinService;
     verificationService: VerificationService;
+    inviteTrackingService: InviteTrackingService;
 }
 
 interface ServiceRecordLocal extends ServiceRecord {}

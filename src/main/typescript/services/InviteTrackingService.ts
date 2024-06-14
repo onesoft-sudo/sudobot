@@ -1,12 +1,20 @@
-import { Service } from "@framework/services/Service";
-import { Name } from "@framework/services/Name";
-import { Collection, type Guild, type Invite, type ReadonlyCollection, Snowflake } from "discord.js";
-import type { HasEventListeners } from "@framework/types/HasEventListeners";
 import { GatewayEventListener } from "@framework/events/GatewayEventListener";
+import { Name } from "@framework/services/Name";
+import { Service } from "@framework/services/Service";
+import type { HasEventListeners } from "@framework/types/HasEventListeners";
+import {
+    Collection,
+    GuildMember,
+    Snowflake,
+    type Guild,
+    type Invite,
+    type ReadonlyCollection
+} from "discord.js";
 
 @Name("inviteTrackingService")
 class InviteTrackingService extends Service implements HasEventListeners {
     private readonly _invites = new Collection<`${Snowflake}::${string}`, InviteInfo>();
+    private readonly _uses = new Collection<`${Snowflake}::${string}`, number>();
 
     public get invites(): ReadonlyCollection<`${Snowflake}::${string}`, InviteInfo> {
         return this._invites;
@@ -20,7 +28,8 @@ class InviteTrackingService extends Service implements HasEventListeners {
                 this._invites.set(`${guild.id}::${invite.code}`, {
                     type: "general",
                     invite,
-                    guildId: guild.id
+                    guildId: guild.id,
+                    uses: invite.uses ?? 0
                 });
             }
 
@@ -43,10 +52,15 @@ class InviteTrackingService extends Service implements HasEventListeners {
             return;
         }
 
+        if (invite.inviterId) {
+            this._uses.set(`${invite.guild.id}::${invite.code}`, 0);
+        }
+
         this._invites.set(`${invite.guild.id}::${invite.code}`, {
             type: "general",
             invite,
-            guildId: invite.guild.id
+            guildId: invite.guild.id,
+            uses: invite.uses ?? 0
         });
     }
 
@@ -57,6 +71,7 @@ class InviteTrackingService extends Service implements HasEventListeners {
         }
 
         this._invites.delete(`${invite.guild.id}::${invite.code}`);
+        this._uses.delete(`${invite.guild.id}::${invite.code}`);
     }
 
     @GatewayEventListener("guildUpdate")
@@ -76,18 +91,39 @@ class InviteTrackingService extends Service implements HasEventListeners {
             }
         }
     }
+
+    public async findInviteForMember(member: GuildMember) {
+        const invites = await member.guild.invites.fetch();
+
+        for (const invite of invites.values()) {
+            const existingUses = this._uses.get(`${member.guild.id}::${invite.code}`);
+
+            if (existingUses === undefined || invite.uses === null) {
+                continue;
+            }
+
+            if (invite.uses > existingUses) {
+                this._uses.set(`${member.guild.id}::${invite.code}`, invite.uses);
+                return invite;
+            }
+        }
+
+        return null;
+    }
 }
 
-export type InviteInfo = {
-    type: "general";
-    invite: Invite;
-    guildId: string;
-} | {
-    type: "vanity";
-    code: string;
-    uses: number;
-    guildId: string;
-};
-
+export type InviteInfo =
+    | {
+          type: "general";
+          invite: Invite;
+          guildId: string;
+          uses: number;
+      }
+    | {
+          type: "vanity";
+          code: string;
+          uses: number;
+          guildId: string;
+      };
 
 export default InviteTrackingService;

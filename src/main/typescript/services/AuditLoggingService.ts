@@ -1034,6 +1034,23 @@ class AuditLoggingService extends Service {
             }
         ];
 
+        const invite = await this.application
+            .service("inviteTrackingService")
+            .findInviteForMember(member);
+
+        if (invite) {
+            let value = `**Link:** ${invite.url}\n`;
+
+            value += `Inviter: ${invite.inviterId ? `<@${invite.inviterId}> (${invite.inviterId})` : "*Unavailable*"}\n`;
+            value += `Uses: ${invite.uses} / ${invite.maxUses ?? "∞"}\n`;
+            value += `Expires: ${invite.expiresAt ? time(invite.expiresAt, "R") : "*Unavailable*"}`;
+
+            fields.push({
+                name: "Invite Information",
+                value
+            });
+        }
+
         return this.send({
             guildId: member.guild.id,
             messageCreateOptions: {

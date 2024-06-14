@@ -240,32 +240,6 @@ export const GuildConfigSchema = z.object({
         })
         .optional()
     /*
-    
-    logging: z
-        .object({
-            enabled: z.boolean().default(false),
-            bulk_delete_send_json: z.boolean().default(true),
-            primary_channel: zSnowflake.optional(),
-            message_logging_channel: zSnowflake.optional(),
-            infraction_logging_channel: zSnowflake.optional(),
-            join_leave_channel: zSnowflake.optional(),
-            saved_messages_channel: zSnowflake.optional(),
-            events: z
-                .object({
-                    message_edit: z.boolean().default(true),
-                    message_delete: z.boolean().default(true),
-                    member_join: z.boolean().default(true),
-                    member_leave: z.boolean().default(true),
-                    message_bulk_delete: z.boolean().default(true)
-                })
-                .default({
-                    message_edit: true,
-                    member_leave: true,
-                    member_join: true,
-                    message_delete: true
-                })
-        })
-        .optional(),
     message_reporting: z
         .object({
             enabled: z.boolean().default(false),
@@ -291,11 +265,6 @@ export const GuildConfigSchema = z.object({
                         ])
                 })
                 .default({})
-        })
-        .optional(),
-    invite_tracking: z
-        .object({
-            enabled: z.boolean().default(false)
         })
         .optional(),
     message_filter: z
