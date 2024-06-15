@@ -85,6 +85,7 @@ class DiscordKernel extends Kernel {
         "@services/ReactionRoleService",
         "@services/AFKService",
         "@services/AutoRoleService",
+        "@automod/TriggerService",
         "@services/DirectiveParsingService",
         "@services/WelcomerService",
         "@services/AuthService",

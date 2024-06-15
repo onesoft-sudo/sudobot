@@ -21,6 +21,7 @@ import { Inject } from "@framework/container/Inject";
 import EventListener from "@framework/events/EventListener";
 import type { Logger } from "@framework/log/Logger";
 import { Events } from "@framework/types/ClientEvents";
+import type TriggerService from "@main/automod/TriggerService";
 import type AFKService from "@main/services/AFKService";
 import { Message, MessageType } from "discord.js";
 import type RuleModerationService from "../../automod/RuleModerationService";
@@ -44,6 +45,9 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
     @Inject("spamModerationService")
     private readonly spamModerationService!: SpamModerationService;
 
+    @Inject("triggerService")
+    private readonly triggerService!: TriggerService;
+
     @Inject("afkService")
     private readonly afkService!: AFKService;
 
@@ -52,7 +56,8 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
     public override async onInitialize() {
         this.listeners.push(
             this.ruleModerationService.onMessageCreate.bind(this.ruleModerationService),
-            this.spamModerationService.onMessageCreate.bind(this.spamModerationService)
+            this.spamModerationService.onMessageCreate.bind(this.spamModerationService),
+            this.triggerService.onMessageCreate.bind(this.triggerService)
         );
     }
 

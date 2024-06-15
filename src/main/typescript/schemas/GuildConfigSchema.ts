@@ -19,6 +19,7 @@
 
 import { LoggingSchema } from "@main/schemas/LoggingSchema";
 import { SurveySystemConfigSchema } from "@main/schemas/SurveySystemConfigSchema";
+import { TriggerSchema } from "@main/schemas/TriggerSchema";
 import { z } from "zod";
 import { MessageRuleSchema } from "./MessageRuleSchema";
 import { ModerationActionSchema } from "./ModerationActionSchema";
@@ -272,7 +273,14 @@ export const GuildConfigSchema = z.object({
             force_embeds: z.boolean().default(true),
             forced_embed_color: z.number().int().optional()
         })
-        .optional()
+        .optional(),
+        auto_triggers: z
+            .object({
+                enabled: z.boolean().default(false),
+                triggers: z.array(TriggerSchema).default([]),
+                global_disabled_channels: z.array(zSnowflake).default([])
+            })
+            .optional(),
     /*
     message_reporting: z
         .object({
@@ -299,13 +307,6 @@ export const GuildConfigSchema = z.object({
                         ])
                 })
                 .default({})
-        })
-        .optional(),
-    auto_triggers: z
-        .object({
-            enabled: z.boolean().default(false),
-            triggers: z.array(TriggerSchema).default([]),
-            global_disabled_channels: z.array(zSnowflake).default([])
         })
         .optional(),
     bump_reminder: z
