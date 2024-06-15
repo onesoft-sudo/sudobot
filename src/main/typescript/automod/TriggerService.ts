@@ -75,13 +75,13 @@ class TriggerService extends Service implements HasEventListeners {
 
     public onMessageCreate(message: Message<boolean>) {
         if (message.author.bot) {
-            return false;
+            return true;
         }
 
         const config = this.config(message.guildId!);
 
         if (!config?.enabled || config?.global_disabled_channels?.includes(message.channelId!)) {
-            return false;
+            return true;
         }
 
         this.processMessageTriggers(message, config.triggers);

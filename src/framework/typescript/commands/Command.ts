@@ -115,7 +115,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
     /**
      * The supported contexts of the command.
      */
-    public readonly supportedContexts: T[] = [ContextType.Legacy, ContextType.ChatInput] as T[];
+    public readonly supportedContexts: readonly T[] = [ContextType.Legacy, ContextType.ChatInput] as T[];
 
     /**
      * Whether the command should be deferred.

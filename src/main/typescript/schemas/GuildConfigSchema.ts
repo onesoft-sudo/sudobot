@@ -274,14 +274,13 @@ export const GuildConfigSchema = z.object({
             forced_embed_color: z.number().int().optional()
         })
         .optional(),
-        auto_triggers: z
-            .object({
-                enabled: z.boolean().default(false),
-                triggers: z.array(TriggerSchema).default([]),
-                global_disabled_channels: z.array(zSnowflake).default([])
-            })
-            .optional(),
-    /*
+    auto_triggers: z
+        .object({
+            enabled: z.boolean().default(false),
+            triggers: z.array(TriggerSchema).default([]),
+            global_disabled_channels: z.array(zSnowflake).default([])
+        })
+        .optional(),
     message_reporting: z
         .object({
             enabled: z.boolean().default(false),
@@ -308,7 +307,9 @@ export const GuildConfigSchema = z.object({
                 })
                 .default({})
         })
-        .optional(),
+        .optional()
+    /*
+   
     bump_reminder: z
         .object({
             enabled: z.boolean().optional(),

@@ -162,26 +162,28 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         groups: Record<string, string> | null = null,
         defaultGroup = "default"
     ) {
-        const previousCommand = this.commands.get(command.name);
+        const previousCommand = this.getCommand(command.name);
         let aliasGroupSet = false;
 
         if (loadMetadata && previousCommand) {
             await this.application.classLoader.unloadEventsFromMetadata(previousCommand);
         }
 
-        this.commands.set(command.name, command);
+        const loweredName = command.name.toLowerCase();
+        this.commands.set(loweredName, command);
 
         for (const alias of command.aliases) {
-            this.commands.set(alias, command);
+            const loweredAlias = alias.toLowerCase();
+            this.commands.set(loweredAlias, command);
 
-            if (groups?.[alias] && !aliasGroupSet) {
-                command.group = groups?.[alias];
+            if (groups?.[loweredAlias] && !aliasGroupSet) {
+                command.group = groups?.[loweredAlias];
                 aliasGroupSet = true;
             }
         }
 
-        if (!aliasGroupSet || groups?.[command.name]) {
-            command.group = groups?.[command.name] ?? defaultGroup;
+        if (!aliasGroupSet || groups?.[loweredName]) {
+            command.group = groups?.[loweredName] ?? defaultGroup;
         }
 
         if (loadMetadata) {
@@ -233,7 +235,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         const argv = content.split(/ +/);
         const [rawCommandName, ...args] = argv;
         const commandName = rawCommandName.toLowerCase();
-        const command = this.commands.get(commandName);
+        const command = this.getCommand(commandName);
 
         if (!command) {
             this.application.logger.debug(
@@ -274,7 +276,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             const key = command.isolatedSubcommands
                 ? `${this.getCanonicalName(commandName)}::${subcommandName}`
                 : this.getCanonicalName(commandName);
-            const subcommand = this.commands.get(key);
+            const subcommand = this.getCommand(key);
 
             if (subcommand && subcommand.isDisabled(message.guildId!)) {
                 respondOnFail && (await context.error("This command is disabled."));
@@ -342,7 +344,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         }
 
         const { commandName } = interaction;
-        const baseCommand = this.commands.get(commandName);
+        const baseCommand = this.getCommand(commandName);
 
         if (!baseCommand || !baseCommand.supportsInteraction()) {
             return false;
@@ -352,7 +354,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             e => e.type === ApplicationCommandOptionType.Subcommand
         )?.name;
 
-        const command = this.commands.get(
+        const command = this.getCommand(
             subcommand && baseCommand.isolatedSubcommands && baseCommand.hasSubcommands
                 ? `${commandName}::${subcommand}`
                 : commandName

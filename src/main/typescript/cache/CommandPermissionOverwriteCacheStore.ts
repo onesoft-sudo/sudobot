@@ -73,7 +73,7 @@ class CommandPermissionOverwriteCacheStore extends GuildStore<
             const cached = this.makeCache(overwrite);
 
             for (const command of overwrite.commands) {
-                const actualName = this.commandManager.commands.get(command)?.name;
+                const actualName = this.commandManager.getCommand(command)?.name;
 
                 if (!actualName) {
                     continue;

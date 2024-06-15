@@ -100,7 +100,7 @@ class ArgumentParser extends HasClient {
                 argv,
                 argTypes,
                 subcommand,
-                commandManager.commands.get(argv[0])?.subcommands ?? [],
+                commandManager.getCommand(argv[0])?.subcommands ?? [],
                 command.onSubcommandNotFound?.bind(command) ??
                     Reflect.getMetadata("command:subcommand_not_found_error", command.constructor),
                 context
@@ -180,12 +180,12 @@ class ArgumentParser extends HasClient {
         if (subcommand) {
             const commandManager = Application.current().service("commandManager");
             const canonicalName = commandManager.getCommand(argv[0])?.name ?? argv[0];
-            const baseCommand = commandManager.commands.get(canonicalName);
+            const baseCommand = commandManager.getCommand(canonicalName);
 
             const command =
                 baseCommand && baseCommand.isolatedSubcommands === false
                     ? baseCommand
-                    : commandManager.commands.get(`${canonicalName}::${args[0]}`);
+                    : commandManager.getCommand(`${canonicalName}::${args[0]}`);
 
             if (!command) {
                 if (typeof onSubcommandNotFound === "function" && context) {
