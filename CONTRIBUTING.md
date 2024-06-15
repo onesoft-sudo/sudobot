@@ -53,7 +53,7 @@ This would mean this commit is not complete, and two more commits will be pushed
 
 We require contributors to [Sign-off Commits](https://git-scm.com/docs/git-commit#Documentation/git-commit.txt---signoff) before they are merged/pushed into the remote branches. This is done to make sure the contributors acknowledge that the code they're submitting is theirs and they have the appropriate rights to do so. By signing-off a commit, a you explicitly agrees that:
 
-* The code they submit is yours;
+* The code you submit is yours;
 * You have the appropriate legal rights to submit the code;
 * You agree to the terms and conditions of the [GNU Affero General Public License](https://gnu.org/licenses/agpl-3.0.html), and acknowledge that your code is now a part of a free software which can be seen, studied or modified by anyone over the world;
 
