@@ -3,7 +3,6 @@ on:
     push:
         branches:
             - main
-            - 8.x
 
 jobs:
     build_linux:
