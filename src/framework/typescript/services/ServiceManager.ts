@@ -77,13 +77,14 @@ class ServiceManager {
         }
     }
 
-    public async loadService(servicePath: string, name?: string) {
-        const { default: ServiceClass }: { default: ServiceConstructor } = await import(
-            servicePath
-        );
-
+    public async loadServiceClass(
+        ServiceClass: ServiceConstructor,
+        name?: string,
+        servicePath?: string
+    ) {
         this.application.logger.debug(
-            `Loading service: ${name ?? ServiceClass.name} (${servicePath})`
+            `Loading service: ${name ?? ServiceClass.name}` +
+                (servicePath ? ` (${servicePath})` : "")
         );
 
         const instance = new ServiceClass(this.application);
@@ -107,6 +108,14 @@ class ServiceManager {
         this.application.logger.info(
             `Loaded service: ${name ?? ServiceClass.name} (bound as ${key})`
         );
+    }
+
+    public async loadService(servicePath: string, name?: string) {
+        const { default: ServiceClass }: { default: ServiceConstructor } = await import(
+            servicePath
+        );
+
+        await this.loadServiceClass(ServiceClass, name, servicePath);
     }
 
     public loadServicesFromDirectory(servicesDirectory: string) {

@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import promise from "./index";
+import promise from "./main";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore

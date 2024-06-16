@@ -18,9 +18,9 @@
  */
 
 import { ConfigurationManagerServiceInterface } from "@framework/contracts/ConfigurationManagerServiceInterface";
-import type { Extension } from "@framework/extensions/Extension";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
+import { ExtensionMetadataSchema, type Extension } from "@main/extensions/Extension";
 import { Snowflake } from "discord.js";
 import fs, { writeFile } from "fs/promises";
 import path from "path";
@@ -46,6 +46,7 @@ export default class ConfigurationManager
     public readonly schemaDirectory = systemPrefix("config/schema", true);
     public readonly configSchemaPath = path.join(this.schemaDirectory, "config.json");
     public readonly systemConfigSchemaPath = path.join(this.schemaDirectory, "system.json");
+    public readonly extensionMetaSchemaPath = path.join(this.schemaDirectory, "extension.json");
 
     protected configSchemaInfo =
         "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/config/schema/config.json";
@@ -191,7 +192,7 @@ export default class ConfigurationManager
     }
 
     public getOrDefault<T extends GuildConfig = GuildConfig>(guildId: Snowflake): T {
-        return this.config[guildId] as T ?? this.guildConfigSchema.parse({});
+        return (this.config[guildId] as T) ?? this.guildConfigSchema.parse({});
     }
 
     public set(guildId: Snowflake, value: GuildConfig) {
@@ -242,5 +243,13 @@ export default class ConfigurationManager
         );
         await writeFile(this.systemConfigSchemaPath, systemConfigSchema, { encoding: "utf-8" });
         this.application.logger.info("Successfully generated the system configuration schema file");
+
+        const extensionMetaSchema = JSON.stringify(
+            zodToJsonSchema(ExtensionMetadataSchema),
+            null,
+            4
+        );
+        await writeFile(this.extensionMetaSchemaPath, extensionMetaSchema, { encoding: "utf-8" });
+        this.application.logger.info("Successfully generated the extension metadata schema file");
     }
 }

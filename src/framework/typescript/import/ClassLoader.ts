@@ -328,6 +328,16 @@ class ClassLoader {
     ) {
         const { default: CommandClass }: DefaultExport<Class<Command, [Application]>> =
             await import(filepath);
+        await this.loadCommandClass(CommandClass, filepath, loadMetadata, groups, commandManager);
+    }
+
+    public async loadCommandClass(
+        CommandClass: Class<Command, [Application]>,
+        filepath?: string,
+        loadMetadata = true,
+        groups: Record<string, string> | null = null,
+        commandManager: CommandManagerServiceInterface = this.commandManager
+    ) {
         const canBind = Reflect.hasMetadata("di:can-bind", CommandClass.prototype);
         const command = canBind
             ? this.getContainer().resolveByClass(CommandClass)
@@ -341,7 +351,7 @@ class ClassLoader {
             await command.initialize?.();
         }
 
-        const defaultGroup = basename(dirname(filepath));
+        const defaultGroup = filepath ? basename(dirname(filepath)) : undefined;
         await commandManager.addCommand(command, loadMetadata, groups, defaultGroup);
         this.application.logger.info("Loaded Command: ", command.name);
     }

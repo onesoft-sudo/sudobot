@@ -19,18 +19,22 @@
 
 import Application from "@framework/app/Application";
 import EventListener from "@framework/events/EventListener";
-import { Extension } from "@framework/extensions/Extension";
-import { ExtensionInfo } from "@framework/extensions/ExtensionInfo";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import type { ClientEvents } from "@framework/types/ClientEvents";
+import { env } from "@main/env/env";
+import {
+    Extension,
+    ExtensionMetadataSchema,
+    type ExtensionMetadataType
+} from "@main/extensions/Extension";
+import { ExtensionInfo } from "@main/extensions/ExtensionInfo";
 import { Snowflake } from "discord.js";
 import { Response } from "express";
 import { existsSync } from "fs";
 import fs, { rm } from "fs/promises";
 import path from "path";
 import tar from "tar";
-import { z } from "zod";
 import { cache } from "../utils/cache";
 import { downloadFile } from "../utils/download";
 import { request, systemPrefix, wait } from "../utils/utils";
@@ -261,30 +265,15 @@ function getGuildIdResolversMap() {
     return map;
 }
 
-const extensionMetadataSchema = z.object({
-    main: z.string().optional(),
-    commands: z.string().optional(),
-    services: z.string().optional(),
-    events: z.string().optional(),
-    language: z.enum(["typescript", "javascript"]).optional(),
-    main_directory: z.string().optional(),
-    build_command: z.string().optional(),
-    resources: z.string().optional(),
-    name: z.string().optional(),
-    description: z.string().optional(),
-    id: z.string({ required_error: "Extension ID is required" }),
-    icon: z.string().optional(),
-    readmeFileName: z.string().default("README.md")
-});
-
-@Name("extensionService")
-export default class ExtensionService extends Service {
+@Name("extensionManager")
+export default class ExtensionManager extends Service {
     private readonly extensionIndexURL =
         "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/index.json";
-    protected readonly extensionsPath = process.env.EXTENSIONS_DIRECTORY;
+    protected readonly extensionsPath = env.EXTENSIONS_DIRECTORY;
     protected readonly guildIdResolvers = getGuildIdResolversMap();
 
     private readonly downloadProgressStreamEOF = "%";
+    private readonly extensions: Extension[] = [];
 
     public override async boot() {
         if (!this.extensionsPath || !existsSync(this.extensionsPath)) {
@@ -293,52 +282,18 @@ export default class ExtensionService extends Service {
             return;
         }
 
-        const extensionsIndex = path.join(this.extensionsPath, "index.json");
-
-        if (existsSync(extensionsIndex)) {
-            await this.loadExtensionsFromIndex(extensionsIndex);
-            return;
-        }
-
         await this.loadExtensions();
     }
 
-    public async onInitializationComplete(extensions: Extension[]) {
-        await this.application.getService(ConfigurationManager).registerExtensionConfig(extensions);
+    public async onInitializationComplete() {
+        await this.application
+            .getService(ConfigurationManager)
+            .registerExtensionConfig(this.extensions);
         return this.initializeConfigService();
     }
 
     public initializeConfigService() {
         return this.application.getService(ConfigurationManager).manualBoot();
-    }
-
-    public async loadExtensionsFromIndex(extensionsIndex: string) {
-        const { extensions } = JSON.parse(await fs.readFile(extensionsIndex, "utf-8"));
-        const loadInfoList = [];
-        const extensionInitializers = [];
-
-        for (const { entry, commands, events, name, services, id } of extensions) {
-            this.application.logger.info("Loading extension initializer (cached): ", name);
-            const loadInfo = {
-                extensionPath: entry,
-                commands,
-                events,
-                extensionName: name,
-                services,
-                extensionId: id,
-                extension: null as unknown as Extension
-            };
-
-            loadInfoList.push(loadInfo);
-            loadInfo.extension = await this.loadExtensionInitializer(loadInfo);
-            extensionInitializers.push(loadInfo.extension);
-        }
-
-        await this.onInitializationComplete(extensionInitializers);
-
-        for (const loadInfo of loadInfoList) {
-            await this.loadExtension(loadInfo);
-        }
     }
 
     public async loadExtensions() {
@@ -347,8 +302,6 @@ export default class ExtensionService extends Service {
         }
 
         const extensions = await fs.readdir(this.extensionsPath);
-        const loadInfoList = [];
-        const extensionInitializers = [];
 
         for (const extensionName of extensions) {
             const extensionDirectory = path.resolve(this.extensionsPath, extensionName);
@@ -358,7 +311,7 @@ export default class ExtensionService extends Service {
                 continue;
             }
 
-            this.application.logger.info("Loading extension: ", extensionName);
+            this.application.logger.debug("Loading extension from directory: ", extensionDirectory);
             const metadataFile = path.join(extensionDirectory, "extension.json");
 
             if (!existsSync(metadataFile)) {
@@ -368,7 +321,7 @@ export default class ExtensionService extends Service {
                 process.exit(-1);
             }
 
-            const parseResult = extensionMetadataSchema.safeParse(
+            const parseResult = ExtensionMetadataSchema.safeParse(
                 JSON.parse(await fs.readFile(metadataFile, { encoding: "utf-8" }))
             );
 
@@ -380,45 +333,32 @@ export default class ExtensionService extends Service {
                 continue;
             }
 
-            const {
-                main_directory = "./build",
-                commands = `./${main_directory}/commands`,
-                events = `./${main_directory}/events`,
-                services = `./${main_directory}/services`,
-                main = `./${main_directory}/index.js`,
-                id
-            } = parseResult.data;
+            const { main = "./src/index.js", id } = parseResult.data;
 
-            const loadInfo = {
+            const initializer = await this.loadExtensionInitializer({
+                extensionPath: path.resolve(extensionDirectory, main),
                 extensionName,
                 extensionId: id,
-                extensionPath: path.join(extensionDirectory, main),
-                commandsDirectory: path.join(extensionDirectory, commands),
-                eventsDirectory: path.join(extensionDirectory, events),
-                servicesDirectory: path.join(extensionDirectory, services),
-                extension: null as unknown as Extension
-            };
+                meta: parseResult.data
+            });
 
-            loadInfo.extension = await this.loadExtensionInitializer(loadInfo);
-            loadInfoList.push(loadInfo);
-            extensionInitializers.push(loadInfo.extension);
+            this.extensions.push(initializer);
+            this.logger.info(`Loaded extension: ${id} (${extensionName})`);
         }
 
-        await this.onInitializationComplete(extensionInitializers);
-
-        for (const loadInfo of loadInfoList) {
-            await this.loadExtension(loadInfo);
-        }
+        await this.onInitializationComplete();
     }
 
     public async loadExtensionInitializer({
         extensionName,
         extensionId,
-        extensionPath
+        extensionPath,
+        meta
     }: {
         extensionPath: string;
         extensionName: string;
         extensionId: string;
+        meta: ExtensionMetadataType;
     }) {
         this.application.logger.debug(
             "Attempting to load extension initializer: ",
@@ -427,75 +367,32 @@ export default class ExtensionService extends Service {
         );
         const {
             default: ExtensionClass
-        }: { default: new (application: Application) => Extension } = await import(extensionPath);
-        return new ExtensionClass(this.application);
+        }: {
+            default: new (
+                manager: ExtensionManager,
+                id: string,
+                name: string,
+                path: string,
+                meta: ExtensionMetadataType,
+                application: Application
+            ) => Extension;
+        } = await import(extensionPath);
+
+        return new ExtensionClass(
+            this,
+            extensionId,
+            extensionName,
+            extensionPath,
+            meta,
+            this.application
+        );
     }
 
-    public async loadExtension({
-        commandsDirectory,
-        eventsDirectory,
-        commands,
-        events,
-        extensionName,
-        services,
-        servicesDirectory,
-        extensionId,
-        extension
-    }: LoadInfo) {
-        this.application.logger.debug("Attempting to load extension: ", extensionName, extensionId);
-
-        const commandPaths = await extension.commands();
-        const eventPaths = await extension.events();
-        const servicePaths = await extension.services();
-
-        if (servicePaths === null) {
-            if (servicesDirectory) {
-                if (existsSync(servicesDirectory)) {
-                    await this.application.serviceManager.loadServicesFromDirectory(
-                        servicesDirectory
-                    );
-                }
-            } else if (services) {
-                for (const servicePath of services) {
-                    await this.application.serviceManager.loadService(servicePath);
-                }
-            }
-        } else {
-            for (const servicePath of servicePaths) {
-                await this.application.serviceManager.loadService(servicePath);
-            }
-        }
-
-        if (commandPaths === null) {
-            if (commandsDirectory) {
-                if (existsSync(commandsDirectory)) {
-                    await this.application.classLoader.loadCommands(commandsDirectory);
-                }
-            } else if (commands) {
-                for (const commandPath of commands) {
-                    await this.application.classLoader.loadCommand(commandPath);
-                }
-            }
-        } else {
-            for (const commandPath of commandPaths) {
-                await this.application.classLoader.loadCommand(commandPath);
-            }
-        }
-
-        if (eventPaths === null) {
-            if (eventsDirectory) {
-                if (existsSync(eventsDirectory)) {
-                    await this.loadEvents(extensionName, eventsDirectory);
-                }
-            } else if (events) {
-                for (const eventPath of events) {
-                    await this.loadEvent(extensionName, eventPath);
-                }
-            }
-        } else {
-            for (const eventPath of eventPaths) {
-                await this.loadEvent(extensionName, eventPath);
-            }
+    public async postConstruct() {
+        for (const extension of this.extensions) {
+            this.logger.debug(`Setting up extension: ${extension.id} (${extension.name})`);
+            extension.postConstruct();
+            await extension.register();
         }
     }
 
@@ -524,6 +421,13 @@ export default class ExtensionService extends Service {
             default: Event
         }: { default: new (application: Application) => EventListener<keyof ClientEvents> } =
             await import(filePath);
+        await this.loadEventClass(extensionName, Event);
+    }
+
+    public async loadEventClass(
+        extensionName: string,
+        Event: new (application: Application) => EventListener<keyof ClientEvents>
+    ) {
         const event = new Event(this.application);
         this.application
             .getClient()
@@ -750,30 +654,3 @@ export default class ExtensionService extends Service {
         // TODO: Load extension automatically
     }
 }
-
-type LoadInfo = (
-    | {
-          extensionPath: string;
-          commandsDirectory: string;
-          eventsDirectory: string;
-          servicesDirectory: string;
-          extensionName: string;
-          extensionId: string;
-          commands?: never;
-          events?: never;
-          services?: never;
-      }
-    | {
-          extensionPath: string;
-          commandsDirectory?: never;
-          eventsDirectory?: never;
-          servicesDirectory?: never;
-          commands: string[];
-          events: string[];
-          services: string[];
-          extensionName: string;
-          extensionId: string;
-      }
-) & {
-    extension: Extension;
-};
