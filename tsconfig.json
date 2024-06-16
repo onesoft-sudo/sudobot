@@ -29,7 +29,7 @@
             "@blazebuild/*": ["./blazebuild/src/main/typescript/*"],
             "@main/*": ["./src/main/typescript/*"],
             "@framework/*": ["./src/framework/typescript/*"],
-            "@root/*": ["./*"],
+            "@root/*": ["./*"]
         }
     },
     "include": ["src/main/typescript/types/global/globals.d.ts", "src/**/*.ts", "build.blaze.ts"],
@@ -50,6 +50,7 @@
         "./blazebuild/**",
         "./build_src",
         "./build_src/**",
-        "./node_modules"
+        "./node_modules",
+        "./storage"
     ]
 }
