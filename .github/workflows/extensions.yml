@@ -3,8 +3,8 @@ name: Build Extensions
 on: 
     push: 
         branches: [main]
-#    schedule:
-#        - cron: '*/20 * * * *'
+    schedule:
+        - cron: '*/20 * * * *'
 
 jobs:
     build:
