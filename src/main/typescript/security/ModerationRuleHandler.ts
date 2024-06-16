@@ -82,6 +82,8 @@ class ModerationRuleHandler extends HasApplication implements ModerationRuleHand
     @Inject("imageRecognitionService")
     private readonly imageRecognitionService!: ImageRecognitionService;
 
+    public async boot() {}
+
     @AcceptsMessageRuleScopes(MessageRuleScope.Content)
     public domain_filter(context: ModerationRuleContext<"message", { type: "domain_filter" }>) {
         const { message, rule } = context;
