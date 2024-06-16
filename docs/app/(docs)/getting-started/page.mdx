@@ -12,8 +12,7 @@ Thanks for choosing SudoBot! In this article you'll learn how to set up a custom
 <Callout type="info">
     If you don't want to set the bot up yourself and want a pre-hosted solution
     for free, you can contact
-    [@rakinar2](https://discord.com/users/774553653394538506) at Discord. Your
-    Discord server should have at least 50 members to be eligible.
+    [@rakinar2](https://discord.com/users/774553653394538506) at Discord.
 </Callout>
 
 ## Requirements
@@ -42,10 +41,24 @@ git clone https://github.com/onesoft-sudo/sudobot
 
 After this command completes, go inside of the directory. (`sudobot/` if you cloned it using the above command)
 
-Then, install the dependencies using the following command:
+To make sure you recieve the latest updates as main isn't getting updated as often, run the following commands after you go inside of the sudobot directory.
+
+```bash
+git switch 8.x && git pull origin 8.x
+```
+
+That command will switch you to 8.x and pull the latest updates from there.
+
+Once that is done, install the dependencies using the following command:
 
 ```bash
 npm install -D
+```
+
+Or, if you prefer using bun over NPM, you run the following command to install the dependencies:
+
+```bash
+bun install -D
 ```
 
 ## Building the bot
@@ -56,7 +69,17 @@ Now we need to invoke the TypeScript compiler (`tsc`) to build the bot and gener
 npm run build
 ```
 
-If it fails at building because you don't have enough resources to do so, or if it's for another reason, you can find pre-built versions [here](github.com/onesoft-sudo/sudobot/releases/latest) for linux and darwin.
+Or if you're using bun, you can run the following command to build the bot:
+
+```bash
+bun run build
+```
+
+If you don't have enough resources, this command will fail with heap allocation errors. If that happens, or if you don't want to build it yourself, don't worry. You can download prebuilt versions for every release. The builds are tested on Node.js **v21**, however they should also work with **v20**.
+You might see that only Linux and macOS (darwin) releases are available. This doesn't mean you cannot run the bot on Windows systems - only the native bindings are platform dependent. You don't need to worry about that in most cases and the bot will just work fine.
+You can download the prebuilt versions in the GitHub releases page: https://github.com/onesoft-sudo/sudobot/releases/latest
+
+As always if you ever encounter errors with commands or you see something is not working as you expect, you can join our [Discord Server](https://discord.gg/892GWhTzgs) and ask for help!
 
 ## JSON Configuration Schema
 
@@ -65,6 +88,8 @@ Generate the JSON config schema files using the following command:
 ```bash
 npm run gen:schema
 ```
+
+You can skip this step and move onto the enviroment variables section if you don't mind not having autocompletion in your IDE/editor.
 
 ## The environment variables
 
@@ -175,15 +200,34 @@ Now it's time to start the bot. Run the following command to start the bot:
 npm start
 ```
 
-Or in a production enviroment, it's best to use the following command as it uses a process manager.
+Or in a production enviroment, it's best to use the following command as it uses the PM2 process manager.
 
 ```bash
 npm run start:prod
 ```
 
 Or if you want to see the process output in real time while in a production enviroment you can run the following:
+
 ```bash
 npm run start:prod -- --no-daemon
+```
+
+Or if you are using Bun, you can start the bot up without compilation. To start in dev mode, run the following command:
+
+```bash
+bun dev
+```
+
+Or if you need to run it in a production enviroment, run the following command:
+
+```bash
+bun start:prod
+```
+
+Or if you want to see the process output in real time while in a production enviroment you can run the following:
+
+```bash
+bun start:prod --no-daemon
 ```
 
 And if everything was configured correctly, the bot will log in successfully to Discord. Congratulations, you've set up your own instance of SudoBot!

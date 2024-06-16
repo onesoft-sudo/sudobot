@@ -13,6 +13,9 @@ export default class URLFishService extends Service {
     private readonly domainListURL =
         "https://raw.githubusercontent.com/mitchellkrogza/Phishing.Database/master/phishing-domains-ACTIVE.txt";
     private _list: string[] = [];
+    private readonly patterns = [
+        /\[steamcommunity\.com\/gift\/([^\/]+)\]\(.+?\)/gim
+    ];
 
     async boot() {
         const urlfishDir = sudoPrefix("tmp/urlfish", true);
@@ -66,6 +69,14 @@ export default class URLFishService extends Service {
             (await this.client.permissionManager.isImmuneToAutoMod(message.member!))
         ) {
             return;
+        }
+
+        for (const pattern of this.patterns) {
+            if (pattern.test(message.content)) {
+                await this.takeAction(message, config);
+                await this.logMessage(message, config, [pattern.toString()], config.action);
+                return;
+            }
         }
 
         const links = this.scanMessage(message);

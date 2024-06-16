@@ -1,3 +1,12 @@
+# [8.30.0](https://github.com/onesoft-sudo/sudobot/compare/v8.29.3...v8.30.0) (2024-03-13)
+
+
+### Features
+
+* **commands:ai:** support custom model names ([68d2b42](https://github.com/onesoft-sudo/sudobot/commit/68d2b4248a053e47d4cdf3e1dc50cf05bb0ff0e4))
+
+
+
 ## [8.29.3](https://github.com/onesoft-sudo/sudobot/compare/v8.29.2...v8.29.3) (2024-03-13)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * nested pages/routes ([ae60584](https://github.com/onesoft-sudo/sudobot/commit/ae60584a758b09744709cffc24d9168e00ba1bc9))
-
-
-
-## [8.28.2](https://github.com/onesoft-sudo/sudobot/compare/v8.28.1...v8.28.2) (2024-03-11)
-
-
-### Bug Fixes
-
-* **utils:datetime:** issue with parsing intervals ([2be2f9e](https://github.com/onesoft-sudo/sudobot/commit/2be2f9e54b39d650bc230fad3d2eb01b9439568c))
 
 
 
