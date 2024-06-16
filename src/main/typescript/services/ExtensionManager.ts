@@ -396,7 +396,7 @@ export default class ExtensionManager extends Service {
         }
     }
 
-    public async loadEvents(extensionName: string, directory: string) {
+    public async loadEvents(extensionId: string, directory: string) {
         const files = await fs.readdir(directory);
 
         for (const file of files) {
@@ -404,7 +404,7 @@ export default class ExtensionManager extends Service {
             const isDirectory = (await fs.lstat(filePath)).isDirectory();
 
             if (isDirectory) {
-                await this.loadEvents(extensionName, filePath);
+                await this.loadEvents(extensionId, filePath);
                 continue;
             }
 
@@ -412,20 +412,20 @@ export default class ExtensionManager extends Service {
                 continue;
             }
 
-            await this.loadEvent(extensionName, filePath);
+            await this.loadEvent(extensionId, filePath);
         }
     }
 
-    public async loadEvent(extensionName: string, filePath: string) {
+    public async loadEvent(extensionId: string, filePath: string) {
         const {
             default: Event
         }: { default: new (application: Application) => EventListener<keyof ClientEvents> } =
             await import(filePath);
-        await this.loadEventClass(extensionName, Event);
+        await this.loadEventClass(extensionId, Event);
     }
 
     public async loadEventClass(
-        extensionName: string,
+        extensionId: string,
         Event: new (application: Application) => EventListener<keyof ClientEvents>
     ) {
         const event = new Event(this.application);
@@ -433,12 +433,12 @@ export default class ExtensionManager extends Service {
             .getClient()
             .addEventListener(
                 event.name,
-                this.wrapHandler(extensionName, event.name, event.execute.bind(event))
+                this.wrapHandler(extensionId, event.name, event.execute.bind(event))
             );
     }
 
     public wrapHandler<K extends keyof ClientEvents>(
-        extensionName: string,
+        extensionId: string,
         eventName: K,
         handler: (...args: ClientEvents[K]) => unknown,
         bail?: boolean
@@ -455,18 +455,18 @@ export default class ExtensionManager extends Service {
                 return;
             }
 
-            if (guildId !== null && !this.isEnabled(extensionName, guildId)) {
+            if (guildId !== null && !this.isEnabled(extensionId, guildId)) {
                 this.application.logger.debug("Extension isn't enabled in this guild: ", guildId);
                 return;
             }
 
-            this.application.logger.info("Running: " + eventName + " [" + extensionName + "]");
+            this.application.logger.info("Running: " + eventName + " [" + extensionId + "]");
 
             try {
                 return await handler(...args);
             } catch (e) {
                 this.application.logger.error(
-                    `Extension error: the extension '${extensionName}' seems to cause this exception`
+                    `Extension error: the extension '${extensionId}' seems to cause this exception`
                 );
                 this.application.logger.error(e);
 
@@ -477,7 +477,7 @@ export default class ExtensionManager extends Service {
         };
     }
 
-    public isEnabled(extensionName: string, guildId: Snowflake) {
+    public isEnabled(extensionId: string, guildId: Snowflake) {
         const { disabled_extensions, enabled } =
             this.application.getService(ConfigurationManager).config[guildId]?.extensions ?? {};
         const { default_mode } =
@@ -485,7 +485,7 @@ export default class ExtensionManager extends Service {
         this.application.logger.debug(default_mode, enabled);
         return (
             (enabled === undefined ? default_mode === "enable_all" : enabled) &&
-            !disabled_extensions?.includes(extensionName)
+            !disabled_extensions?.includes(extensionId)
         );
     }
 
