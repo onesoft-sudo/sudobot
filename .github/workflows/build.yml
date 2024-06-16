@@ -3,15 +3,15 @@
 
 name: Build
 
-on: [ push, pull_request ]
+on: [push, pull_request]
 
 jobs:
     build:
         strategy:
             matrix:
-                node-version: [20.x, 21.x]
+                node-version: [20.x, 21.x, 22.x]
                 os: [ubuntu-latest, macos-latest]
-       
+
         runs-on: ${{ matrix.os }}
 
         steps:
@@ -23,11 +23,11 @@ jobs:
                   node-version: ${{ matrix.node-version }}
 
             - name: Install Libraries (Linux)
-              run: sudo apt update && sudo apt install build-essential libcurl4 libcurl4-gnutls-dev -y
+              run: sudo apt update && sudo apt install build-essential librsvg2-dev libgif-dev giflib-tools libcurl4 libcurl4-gnutls-dev libgtk-3-dev libpango1.0-dev libpng-dev libpng++-dev libpng-tools libjpeg-tools libjpeg-progs libjpeg-dev -y
               if: matrix.os == 'ubuntu-latest'
 
             - name: Install Libraries and Tools (macOS)
-              run: brew install curl
+              run: brew install curl pkg-config cairo pango libpng jpeg giflib librsvg
               if: matrix.os == 'macos-latest'
 
             - name: "Install Native Libraries"
@@ -48,7 +48,7 @@ jobs:
               run: npx prisma generate
 
             - name: "ESLint"
-              run: npm run lint -- --max-warnings=0 
+              run: npm run lint -- --max-warnings=0
 
             - name: "Build (TypeScript)"
               run: npm run build --if-present
@@ -57,4 +57,27 @@ jobs:
               run: make
 
             - name: "Test"
-              run: npm test
+              run: npx vitest run --coverage
+
+            - name: Upload coverage reports to Codecov
+              uses: codecov/codecov-action@v4.0.1
+              with:
+                  token: ${{ secrets.CODECOV_TOKEN }}
+                  slug: onesoft-sudo/sudobot
+
+    blazebuild:
+        strategy:
+            matrix:
+                os: [ubuntu-latest, macos-latest]
+
+        runs-on: ${{ matrix.os }}
+
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Install tools on macOS
+              run: brew install curl pkg-config cairo pango libpng jpeg giflib librsvg
+              if: matrix.os == 'macos-latest'
+
+            - name: Build with BlazeBuild
+              run: ./blazew build

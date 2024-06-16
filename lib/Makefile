@@ -40,20 +40,12 @@ lib: prepare $(TARGETS)
 
 $(TARGETS):
 	dir="$(realpath .)"; \
-	which realpath > /dev/null; \
-	if test "$$?" = "0"; then \
-		dir="$(shell realpath . --relative-to "$@")"; \
-	fi; \
 	echo $(MAKE) -C $@ "TOP_SRCDIR=\"$${dir}\""; \
 	$(MAKE) -C $@ "TOP_SRCDIR=$${dir}"
 
 clean:
 	for t in $(TARGETS); do \
 		dir="$(realpath .)"; \
-		which realpath > /dev/null; \
-		if test "$$?" = "0"; then \
-			dir="$(shell realpath . --relative-to "$@")"; \
-		fi; \
 		$(MAKE) -C "$$t" clean "TOP_SRCDIR=$$dir"; \
 		if test "$$?" != "0"; then \
 			exit 1; \

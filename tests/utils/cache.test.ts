@@ -1,5 +1,5 @@
+import { cache, resetCache } from "@/utils/cache";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { cache, resetCache } from "../../src/utils/cache";
 
 describe("caching utilities", () => {
     beforeEach(() => {

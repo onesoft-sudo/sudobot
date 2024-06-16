@@ -1,0 +1,28 @@
+{
+  "name": "blazebuild",
+  "main": "src/main/typescript/index.ts",
+  "module": "src/main/typescript/index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/glob": "^8.1.0",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "chalk": "4",
+    "glob": "^10.4.1",
+    "reflect-metadata": "^0.2.2"
+  },
+  "exports": {
+    ".": "./src/main/typescript/index.ts",
+    "./types": "./src/main/typescript/types/build.ts"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./src/main/typescript/index.ts"],
+      "types": [
+        "./src/main/typescript/types/build.ts"]
+    }
+  }
+}

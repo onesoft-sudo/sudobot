@@ -1,6 +1,8 @@
+import "reflect-metadata";
+
+import Client from "@/core/Client";
 import { ClientUser } from "discord.js";
 import { vi } from "vitest";
-import Client from "../../src/core/Client";
 import { randomSnowflake } from "./snowflakes";
 
 vi.mock("@prisma/client", () => {
@@ -9,13 +11,6 @@ vi.mock("@prisma/client", () => {
         PrismaClient: vi.fn().mockImplementation(() => {
             return {
                 user: {
-                    findUnique: vi.fn(),
-                    create: vi.fn(),
-                    findMany: vi.fn(),
-                    update: vi.fn(),
-                    delete: vi.fn()
-                },
-                troll: {
                     findUnique: vi.fn(),
                     create: vi.fn(),
                     findMany: vi.fn(),
@@ -32,8 +27,10 @@ export function createClient() {
         intents: []
     });
 
+    const id = randomSnowflake();
+
     client.user = {
-        id: randomSnowflake(),
+        id,
         username: "SudoBot",
         discriminator: "0000",
         tag: "SudoBot#0000",
@@ -42,7 +39,7 @@ export function createClient() {
         system: false,
         client,
         toString() {
-            return `<@${this.id}>`;
+            return `<@${id}>`;
         }
     } as unknown as ClientUser;
 

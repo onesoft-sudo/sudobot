@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "incremental": true,
+        "target": "ES2022",
+        "module": "CommonJS",
+        "rootDir": "src",
+        "types": ["node", "bun"],
+        "lib": ["ES2022", "DOM"],
+        "resolveJsonModule": true,
+        "declaration": true,
+        "noEmit": true,
+        "newLine": "lf",
+        "noEmitOnError": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "noImplicitOverride": true,
+        "importsNotUsedAsValues": "remove"
+    }
+}

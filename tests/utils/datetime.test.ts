@@ -1,5 +1,5 @@
+import { displayDate, displayTimeSeconds, stringToTimeInterval } from "@/utils/datetime";
 import { describe, expect, it } from "vitest";
-import { displayDate, displayTimeSeconds, stringToTimeInterval } from "../../src/utils/datetime";
 
 describe("datetime utilities", () => {
     it("should display a date", () => {

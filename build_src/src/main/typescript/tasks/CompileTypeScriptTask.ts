@@ -1,0 +1,42 @@
+import {
+    AbstractTask,
+    IO,
+    Task,
+    TaskAction,
+    TaskDependencyGenerator,
+    TaskInputGenerator,
+    TaskOutputGenerator,
+    files,
+    type Awaitable
+} from "blazebuild";
+import { $ } from "bun";
+import path from "path";
+
+@Task({
+    description: "Compiles the TypeScript source files",
+    group: "Build"
+})
+class CompileTypeScriptTask extends AbstractTask {
+    @TaskAction
+    protected override async run(): Promise<void> {
+        IO.newline();
+        await $`tsc`;
+    }
+
+    @TaskInputGenerator
+    protected override generateInput(): Awaitable<string[]> {
+        return files(path.resolve(process.cwd(), "src/**/*.ts"));
+    }
+
+    @TaskOutputGenerator
+    protected override generateOutput(): Awaitable<string[]> {
+        return files(path.resolve(process.cwd(), "build/out/**/*.js"));
+    }
+
+    @TaskDependencyGenerator
+    protected override dependencies() {
+        return ["dependencies"];
+    }
+}
+
+export default CompileTypeScriptTask;

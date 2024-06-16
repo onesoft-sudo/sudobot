@@ -3,12 +3,12 @@
         "incremental": true,
         "target": "ES2022",
         "module": "CommonJS",
-        "rootDir": "./src",
+        "baseUrl": ".",
         "types": ["node", "bun"],
         "lib": ["ES2022", "DOM"],
         "resolveJsonModule": true,
         "declaration": true,
-        "outDir": "./build",
+        "outDir": "./build/out",
         "importHelpers": true,
         "newLine": "lf",
         "noEmitHelpers": true,
@@ -17,8 +17,40 @@
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "strict": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "noImplicitOverride": true,
+        "importsNotUsedAsValues": "remove",
+        /* These paths are only used in Blaze build scripts, when ran with bun. */
+        "paths": {
+            "@buildSrc/*": ["./build_src/src/main/typescript/*"],
+            "@blazebuild/*": ["./blazebuild/src/main/typescript/*"],
+            "@main/*": ["./src/main/typescript/*"],
+            "@framework/*": ["./src/framework/typescript/*"],
+            "@root/*": ["./*"]
+        }
     },
-    "include": ["./src/types/globals.d.ts", "src/**/*.ts"],
-    "exclude": ["./backup", "./tmp", "./tmp/**", "./scripts", "./tests", "./build", "./extensions", "./docs", "./docs/**"]
+    "include": ["src/main/typescript/types/global/globals.d.ts", "src/**/*.ts", "build.blaze.ts"],
+    "exclude": [
+        "./backup",
+        "./tmp",
+        "./scripts",
+        "./tests",
+        "./build",
+        "./extensions",
+        "./docs",
+        "./docs/**",
+        "./src.bak/**",
+        "./src.bak",
+        "./.blaze",
+        "./blaze",
+        "./blazebuild",
+        "./blazebuild/**",
+        "./build_src",
+        "./build_src/**",
+        "./node_modules",
+        "./storage"
+    ]
 }
