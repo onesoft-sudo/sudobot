@@ -307,9 +307,7 @@ export const GuildConfigSchema = z.object({
                 })
                 .default({})
         })
-        .optional()
-    /*
-   
+        .optional(),
     bump_reminder: z
         .object({
             enabled: z.boolean().optional(),
@@ -321,7 +319,7 @@ export const GuildConfigSchema = z.object({
             reminder_content: z.string().min(1).optional(),
             on_bump_content: z.string().min(1).optional()
         })
-        .optional(), */
+        .optional()
 });
 
 export type GuildConfig = z.infer<typeof GuildConfigSchema>;
