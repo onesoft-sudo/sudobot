@@ -150,7 +150,7 @@ class PermissionManagerService extends AbstractPermissionManagerService {
         moderator: GuildMember,
         forceNoSameMemberCheck?: boolean
     ) {
-        const moderatorIsSystemAdmin = await this.isSystemAdmin(member);
+        const moderatorIsSystemAdmin = await this.isSystemAdmin(moderator);
 
         if (member.id === moderator.id && !moderatorIsSystemAdmin && !forceNoSameMemberCheck) {
             return false;

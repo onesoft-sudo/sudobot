@@ -1,22 +1,29 @@
 import { Inject } from "@framework/container/Inject";
 import { MemberPermissionData } from "@framework/contracts/PermissionManagerInterface";
+import Duration from "@framework/datetime/Duration";
 import { GatewayEventListener } from "@framework/events/GatewayEventListener";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
-import { TODO } from "@framework/utils/devflow";
 import { userInfo } from "@framework/utils/embeds";
-import { fetchChannel, fetchMember } from "@framework/utils/entities";
+import { fetchChannel, fetchMember, fetchUser } from "@framework/utils/entities";
 import { Colors } from "@main/constants/Colors";
-import { ModerationActionType } from "@main/schemas/ModerationActionSchema";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
+import type InfractionManager from "@main/services/InfractionManager";
 import type PermissionManagerService from "@main/services/PermissionManagerService";
 import {
+    APIEmbed,
     ActionRowBuilder,
+    EmbedBuilder,
     GuildMember,
     Message,
+    ModalBuilder,
+    ModalSubmitInteraction,
     PermissionsString,
+    Snowflake,
     StringSelectMenuBuilder,
     StringSelectMenuInteraction,
+    TextInputBuilder,
+    TextInputStyle,
     User,
     italic,
     type Interaction
@@ -25,10 +32,14 @@ import {
 enum ReportStatus {
     Pending = "Pending",
     Resolved = "Resolved",
-    Ignored = "Ignored"
+    Ignored = "Ignored",
+    Warned = "Warned",
+    Muted = "Muted",
+    Kicked = "Kicked",
+    Banned = "Banned"
 }
 
-type ModerationAction = ModerationActionType["type"];
+type ModerationAction = "ban" | "warn" | "kick" | "mute";
 
 @Name("messageReportingService")
 class MessageReportingService extends Service {
@@ -37,6 +48,54 @@ class MessageReportingService extends Service {
 
     @Inject("permissionManager")
     private readonly permissionManager!: PermissionManagerService;
+
+    @Inject("infractionManager")
+    private readonly infractionManager!: InfractionManager;
+
+    private static readonly ACTION_OPTIONS = [
+        {
+            label: "Ignore",
+            value: "ignore",
+            description: "Ignore the report",
+            emoji: "✅",
+            default: false
+        },
+        {
+            label: "Warn",
+            value: "warn" satisfies ModerationAction,
+            description: "Warn the user",
+            emoji: "⚠️",
+            default: false
+        },
+        {
+            label: "Mute",
+            value: "mute" satisfies ModerationAction,
+            description: "Mute the user",
+            emoji: "🔇",
+            default: false
+        },
+        {
+            label: "Kick",
+            value: "kick" satisfies ModerationAction,
+            description: "Kick the user",
+            emoji: "👢",
+            default: false
+        },
+        {
+            label: "Ban",
+            value: "ban" satisfies ModerationAction,
+            description: "Ban the user",
+            emoji: "🔨",
+            default: false
+        },
+        {
+            label: "Other",
+            value: "other",
+            description: "Other action that was taken out of the scope of the system",
+            emoji: "✅",
+            default: false
+        }
+    ];
 
     private config(guildId: string) {
         return this.configManager.config[guildId]?.message_reporting;
@@ -164,44 +223,7 @@ class MessageReportingService extends Service {
                     `report_action_${message.author.id}_${message.channelId}_${message.id}`
                 )
                 .setPlaceholder("Select an action to take")
-                .addOptions([
-                    {
-                        label: "Ignore",
-                        value: "ignore",
-                        description: "Ignore the report",
-                        emoji: "✅"
-                    },
-                    {
-                        label: "Warn",
-                        value: "warn" satisfies ModerationAction,
-                        description: "Warn the user",
-                        emoji: "⚠️"
-                    },
-                    {
-                        label: "Mute",
-                        value: "mute" satisfies ModerationAction,
-                        description: "Mute the user",
-                        emoji: "🔇"
-                    },
-                    {
-                        label: "Kick",
-                        value: "kick" satisfies ModerationAction,
-                        description: "Kick the user",
-                        emoji: "👢"
-                    },
-                    {
-                        label: "Ban",
-                        value: "ban" satisfies ModerationAction,
-                        description: "Ban the user",
-                        emoji: "🔨"
-                    },
-                    {
-                        label: "Other",
-                        value: "other",
-                        description: "Other action that was taken out of the scope of the system",
-                        emoji: "✅"
-                    }
-                ])
+                .addOptions(MessageReportingService.ACTION_OPTIONS)
         );
 
         await channel.send({
@@ -212,58 +234,213 @@ class MessageReportingService extends Service {
 
     @GatewayEventListener("interactionCreate")
     public async onInteractionCreate(interaction: Interaction) {
-        if (!interaction.isStringSelectMenu() || !interaction.inGuild()) {
+        if (!interaction.inGuild()) {
             return;
         }
 
-        await interaction.deferReply({
-            ephemeral: true
-        });
+        if (interaction.isStringSelectMenu()) {
+            const [type, action, userId, channelId, messageId] = interaction.customId.split("_");
 
-        const [type, action, userId, channelId, messageId] = interaction.customId.split("_");
+            if (action !== "action" || type !== "report" || !userId || !channelId || !messageId) {
+                await interaction.reply({
+                    content: "Malformed interaction payload.",
+                    ephemeral: true
+                });
+                return;
+            }
 
-        if (action !== "action" || type !== "report" || !userId || !channelId || !messageId) {
-            await interaction.editReply({ content: "Malformed interaction payload." });
-            return;
-        }
+            if (!interaction.member) {
+                return;
+            }
 
-        if (!interaction.member) {
-            return;
-        }
+            const member = await fetchMember(interaction.guild!, userId);
 
-        const member = await fetchMember(interaction.guild!, userId);
+            if (
+                member &&
+                !(await this.application
+                    .service("permissionManager")
+                    .canModerate(member, interaction.member as GuildMember))
+            ) {
+                await interaction.reply({
+                    content: "You do not have permission to take action on this report.",
+                    ephemeral: true
+                });
 
-        if (
-            member &&
-            !(await this.application
-                .service("permissionManager")
-                .canModerate(member, interaction.member as GuildMember))
-        ) {
-            await interaction.editReply({
-                content: "You do not have permission to take action on this report."
+                return;
+            }
+
+            const config = this.config(interaction.guildId);
+
+            if (!config?.enabled) {
+                await interaction.reply({
+                    content: "Message reporting is not enabled in this server.",
+                    ephemeral: true
+                });
+                return;
+            }
+
+            await this.takeBasicAction(interaction, interaction.values[0], userId);
+        } else if (interaction.isModalSubmit() && interaction.customId.startsWith("rpl_")) {
+            const [type, action, userId] = interaction.customId.split("_") as [
+                string,
+                ModerationAction,
+                string
+            ];
+
+            if (type !== "rpl" || !action || !userId) {
+                return;
+            }
+
+            await interaction.deferReply({
+                ephemeral: true
             });
 
-            return;
+            const member = await fetchMember(interaction.guild!, userId);
+
+            if (!member && action !== "ban") {
+                await interaction.editReply({ content: "Invalid user received." });
+                return;
+            }
+
+            const user = member?.user ?? (await fetchUser(this.application.client, userId));
+
+            if (!user) {
+                await interaction.editReply({ content: "Invalid user received." });
+                return;
+            }
+
+            const duration = interaction.fields.fields.some(field => field.customId === "duration")
+                ? interaction.fields.getTextInputValue("duration")
+                : undefined;
+            const reason = interaction.fields.fields.some(field => field.customId === "reason")
+                ? interaction.fields.getTextInputValue("reason")
+                : undefined;
+            let parsedDuration: Duration | undefined = undefined;
+
+            try {
+                parsedDuration = duration
+                    ? Duration.fromDurationStringExpression(duration)
+                    : undefined;
+            } catch (error) {
+                await interaction.editReply({ content: "Invalid duration provided." });
+                return;
+            }
+
+            let overviewEmbed: EmbedBuilder | APIEmbed | null = null;
+
+            switch (action) {
+                case "warn":
+                    overviewEmbed = (
+                        await this.infractionManager.createWarning({
+                            member: member!,
+                            guildId: interaction.guildId,
+                            reason,
+                            moderator: interaction.user,
+                            notify: true,
+                            generateOverviewEmbed: true
+                        })
+                    ).overviewEmbed;
+
+                    if (overviewEmbed) {
+                        await this.updateReportStatus(
+                            interaction,
+                            ReportStatus.Warned,
+                            action,
+                            interaction.user
+                        );
+                    }
+
+                    break;
+                case "ban":
+                    overviewEmbed = (
+                        await this.infractionManager.createBan({
+                            user,
+                            guildId: interaction.guildId,
+                            reason,
+                            moderator: interaction.user,
+                            notify: true,
+                            generateOverviewEmbed: true,
+                            duration: parsedDuration
+                        })
+                    ).overviewEmbed;
+
+                    if (overviewEmbed) {
+                        await this.updateReportStatus(
+                            interaction,
+                            ReportStatus.Banned,
+                            action,
+                            interaction.user
+                        );
+                    }
+
+                    break;
+                case "mute":
+                    overviewEmbed = (
+                        await this.infractionManager.createMute({
+                            member: member!,
+                            guildId: interaction.guildId,
+                            reason,
+                            moderator: interaction.user,
+                            notify: true,
+                            generateOverviewEmbed: true,
+                            duration: parsedDuration
+                        })
+                    ).overviewEmbed;
+
+                    if (overviewEmbed) {
+                        await this.updateReportStatus(
+                            interaction,
+                            ReportStatus.Muted,
+                            action,
+                            interaction.user
+                        );
+                    }
+
+                    break;
+                case "kick":
+                    overviewEmbed = (
+                        await this.infractionManager.createKick({
+                            member: member!,
+                            guildId: interaction.guildId,
+                            reason,
+                            moderator: interaction.user,
+                            notify: true,
+                            generateOverviewEmbed: true
+                        })
+                    ).overviewEmbed;
+
+                    if (overviewEmbed) {
+                        await this.updateReportStatus(
+                            interaction,
+                            ReportStatus.Kicked,
+                            action,
+                            interaction.user
+                        );
+                    }
+
+                    break;
+            }
+
+            if (overviewEmbed) {
+                await interaction.editReply({
+                    embeds: [overviewEmbed]
+                });
+            } else {
+                await interaction.editReply({ content: "Failed to take action." });
+            }
         }
-
-        const config = this.config(interaction.guildId);
-
-        if (!config?.enabled) {
-            await interaction.editReply({
-                content: "Message reporting is not enabled in this server."
-            });
-            return;
-        }
-
-        await this.takeAction(interaction, interaction.values[0]);
-        await interaction.editReply({ content: "Successfully took action." });
     }
 
     private async updateReportStatus(
-        interaction: StringSelectMenuInteraction,
+        interaction: StringSelectMenuInteraction | ModalSubmitInteraction,
         status: ReportStatus,
+        action: string,
         resolvedBy: GuildMember | User
     ) {
+        if (!interaction.message) {
+            throw new Error("Interaction message is not available.");
+        }
+
         const embed = interaction.message.embeds[0];
 
         if (!embed) {
@@ -283,22 +460,102 @@ class MessageReportingService extends Service {
                             return field;
                         })
                     }
+                ],
+                components: [
+                    new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+                        new StringSelectMenuBuilder()
+                            .setCustomId("report_action")
+                            .setMaxValues(1)
+                            .setMinValues(1)
+                            .setOptions(
+                                MessageReportingService.ACTION_OPTIONS.filter(option => {
+                                    if (option.value === action) {
+                                        option.default = true;
+                                        return true;
+                                    }
+
+                                    return false;
+                                })
+                            )
+                    )
                 ]
             })
             .catch(this.logger.error);
     }
 
-    private async takeAction(
+    private createTakeActionModal(userId: Snowflake, action: string) {
+        const rows = [] as ActionRowBuilder<TextInputBuilder>[];
+
+        if (action === "mute" || action === "ban") {
+            rows.push(
+                new ActionRowBuilder<TextInputBuilder>().addComponents(
+                    new TextInputBuilder()
+                        .setCustomId("duration")
+                        .setLabel("Duration")
+                        .setRequired(false)
+                        .setStyle(TextInputStyle.Short)
+                )
+            );
+        }
+
+        rows.push(
+            new ActionRowBuilder<TextInputBuilder>().addComponents(
+                new TextInputBuilder()
+                    .setCustomId("reason")
+                    .setLabel("Reason")
+                    .setRequired(false)
+                    .setStyle(TextInputStyle.Paragraph)
+            )
+        );
+
+        const modal = new ModalBuilder()
+            .setCustomId(`rpl_${action}_${userId}`)
+            .setTitle("Take Action")
+            .addComponents(...rows);
+
+        return modal;
+    }
+
+    private async takeBasicAction(
         interaction: StringSelectMenuInteraction,
-        action: string
+        action: string,
+        targetId: Snowflake
     ): Promise<void> {
-        switch (action) {
+        switch (action as ModerationAction | "ignore" | "other") {
             case "ignore":
-                await this.updateReportStatus(interaction, ReportStatus.Ignored, interaction.user);
+                await this.updateReportStatus(
+                    interaction,
+                    ReportStatus.Ignored,
+                    action,
+                    interaction.user
+                );
+
+                await interaction.reply({
+                    content: "Successfully ignored the report.",
+                    ephemeral: true
+                });
+
                 break;
 
-            default:
-                TODO("Implement moderation actions");
+            case "other":
+                await this.updateReportStatus(
+                    interaction,
+                    ReportStatus.Resolved,
+                    action,
+                    interaction.user
+                );
+
+                await interaction.reply({
+                    content: "Successfully resolved the report.",
+                    ephemeral: true
+                });
+
+                break;
+
+            default: {
+                const modal = this.createTakeActionModal(targetId, action);
+                await interaction.showModal(modal);
+            }
         }
     }
 }
