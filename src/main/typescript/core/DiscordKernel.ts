@@ -91,6 +91,7 @@ class DiscordKernel extends Kernel {
         "@services/MessageReportingService",
         "@services/WelcomerService",
         "@services/BumpReminderService",
+        "@services/SurveyService",
         "@services/AuthService",
         "@services/SnippetManagerService",
         "@services/TranslationService",
