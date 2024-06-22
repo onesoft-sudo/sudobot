@@ -26,6 +26,7 @@ const hasStringArrayData = {
 };
 
 const Common = {
+    name: z.string().nullable().default(null),
     actions: z.array(ModerationActionSchema).default([]),
     mode: z.enum(["normal", "invert"]).default("normal"),
     enabled: z.boolean().default(true),
@@ -43,7 +44,9 @@ const Common = {
             users: z.array(zSnowflake).optional(),
             channels: z.array(zSnowflake).optional()
         })
-        .optional()
+        .optional(),
+    is_bypasser: z.boolean().default(false),
+    bypasses: z.array(z.string()).nullable().default(null)
 };
 
 export const DomainFilterRule = z

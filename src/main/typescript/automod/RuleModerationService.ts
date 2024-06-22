@@ -1,3 +1,4 @@
+import FluentSet from "@framework/collections/FluentSet";
 import { Inject } from "@framework/container/Inject";
 import { GatewayEventListener } from "@framework/events/GatewayEventListener";
 import { Name } from "@framework/services/Name";
@@ -67,7 +68,10 @@ class RuleModerationService
                         type: "delete_message"
                     }
                 ],
-                bail: false
+                bail: false,
+                is_bypasser: false,
+                bypasses: null,
+                name: "Managed Word Filter Rule"
             });
 
             index =
@@ -184,8 +188,14 @@ class RuleModerationService
             "rule:context:scopes",
             this.ruleHandler.constructor.prototype
         );
+        const bypassedRules = new FluentSet<string>();
 
         for (const rule of rules) {
+            if (rule.name && bypassedRules.has(rule.name)) {
+                this.logger.debug(`Rule ${rule.name} (${rule.type}) has been bypassed`);
+                continue;
+            }
+
             if (
                 scopes !== undefined &&
                 options.scopes !== undefined &&
@@ -231,6 +241,14 @@ class RuleModerationService
             });
 
             count++;
+
+            if (rule.is_bypasser && rule.bypasses?.length && result.matched) {
+                bypassedRules.add(...rule.bypasses);
+                this.application.logger.debug(
+                    `Rule ${rule.name} (${rule.type}) has been queued to be bypassed`
+                );
+                continue;
+            }
 
             if (result.matched) {
                 moderated = true;
@@ -394,6 +412,8 @@ class RuleModerationService
 
         return true;
     }
+
+    private async handleBypasser() {}
 }
 
 type ModerateOptions = {
