@@ -1,3 +1,12 @@
+## [9.2.1](https://github.com/onesoft-sudo/sudobot/compare/v9.2.0...v9.2.1) (2024-06-22)
+
+
+### Bug Fixes
+
+* **logging:** message deletion log delay ([770ebf1](https://github.com/onesoft-sudo/sudobot/commit/770ebf18c02ebc044a9f88f815a63d12ace29da6))
+
+
+
 # [9.2.0](https://github.com/onesoft-sudo/sudobot/compare/v9.1.0...v9.2.0) (2024-06-22)
 
 
@@ -338,15 +347,6 @@
 ### Features
 
 * **commands:ai:** support custom model names ([68d2b42](https://github.com/onesoft-sudo/sudobot/commit/68d2b4248a053e47d4cdf3e1dc50cf05bb0ff0e4))
-
-
-
-## [8.29.3](https://github.com/onesoft-sudo/sudobot/compare/v8.29.2...v8.29.3) (2024-03-13)
-
-
-### Bug Fixes
-
-* ai command ([025f94a](https://github.com/onesoft-sudo/sudobot/commit/025f94a1474add7884ed2e7f5ff9089e0f6f41ed))
 
 
 
