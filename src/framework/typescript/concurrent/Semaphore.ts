@@ -1,8 +1,10 @@
+import type Condition from "@framework/concurrent/Condition";
 import { promiseWithResolvers } from "../polyfills/Promise";
 
 type SemaphoreOptions = {
     ignoreExtraneousReleases?: boolean;
     maxPermits?: number;
+    condition?: Condition;
 };
 
 class Semaphore {
@@ -12,6 +14,7 @@ class Semaphore {
     private count = 0;
     private readonly resolvers: Array<() => void> = [];
     private readonly ignoreExtraneousReleases: boolean;
+    private readonly condition?: Condition;
 
     public constructor(options?: SemaphoreOptions);
     public constructor(maxPermits?: number);
@@ -25,6 +28,8 @@ class Semaphore {
             typeof optionsOrPermits === "number"
                 ? false
                 : optionsOrPermits.ignoreExtraneousReleases ?? false;
+        this.condition =
+            typeof optionsOrPermits === "number" ? undefined : optionsOrPermits.condition;
     }
 
     public get availablePermits() {
@@ -32,6 +37,10 @@ class Semaphore {
     }
 
     public async acquire() {
+        if (this.condition) {
+            await this.condition.wait();
+        }
+
         if (this.count >= this.maxPermits) {
             const { promise, resolve } = promiseWithResolvers<void>();
             this.resolvers.push(resolve);

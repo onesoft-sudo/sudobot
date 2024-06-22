@@ -1,6 +1,7 @@
+import Condition from "@framework/concurrent/Condition";
 import Semaphore from "@framework/concurrent/Semaphore";
 import { setTimeout } from "timers/promises";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 describe("Semaphore", () => {
     describe("basic usage", () => {
@@ -103,5 +104,25 @@ describe("Semaphore", () => {
                 expect(output).toStrictEqual([1, 2, 2, 1, 1]);
             }
         );
+    });
+
+    it("works with a condition", async () => {
+        const condition = new Condition();
+
+        condition.wait = vi.fn();
+        condition.signal = vi.fn();
+
+        // Arrange
+        const semaphore = new Semaphore({
+            maxPermits: 1,
+            condition
+        });
+
+        // Act
+        await semaphore.acquire();
+
+        // Assert
+        expect(semaphore.availablePermits).toBe(0);
+        expect(condition?.wait).toHaveBeenCalled();
     });
 });
