@@ -129,7 +129,7 @@ class Application {
         }
 
         if (events) {
-            this.getClient().setMaxListeners(50);
+            this.getClient().setMaxListenerCount(50);
             await this.classLoader.loadEvents(path.resolve(this.rootPath, "events"));
         }
 

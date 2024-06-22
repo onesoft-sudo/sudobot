@@ -49,7 +49,7 @@ export async function downloadFile({ url, path, name, axiosOptions }: DownloadFi
 
     response.data.pipe(writer);
 
-    await finished(writer);
+    await finished(writer as unknown as NodeJS.WritableStream);
 
     if (!writer.closed) await promisify(writer.close.bind(writer))();
 

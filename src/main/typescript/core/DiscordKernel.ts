@@ -247,7 +247,10 @@ class DiscordKernel extends Kernel {
         let key = restartKey ?? (index !== -1 ? process.argv[index + 1] : null);
 
         if (!key) {
-            const readline = createInterface(process.stdin, process.stdout);
+            const readline = createInterface(
+                process.stdin as unknown as NodeJS.ReadableStream,
+                process.stdout as unknown as NodeJS.WritableStream
+            );
             key = await readline.question("Enter the one-time 2FA code: ");
             readline.close();
         } else if (restartKey) {

@@ -24,3 +24,15 @@ declare global {
     var bootDate: number;
     var kernel: Kernel;
 }
+
+declare module "node:events" {
+    interface EventEmitter {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        once(event: string, listener: (...args: any[]) => any): this;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        on(event: string, listener: (...args: any[]) => any): this;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        off(event: string, listener: (...args: any[]) => any): this;
+        emit(event: string, ...args: unknown[]);
+    }
+}

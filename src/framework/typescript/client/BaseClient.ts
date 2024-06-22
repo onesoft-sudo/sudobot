@@ -19,10 +19,15 @@
 
 import type { Awaitable, ClientEvents as DiscordClientEvents } from "discord.js";
 import { Client as DiscordJSClient } from "discord.js";
+import type EventEmitter from "events";
 import type { ClientEvents } from "../types/ClientEvents";
 
 abstract class BaseClient<R extends boolean = boolean> extends DiscordJSClient<R> {
     public static instance: BaseClient;
+
+    public setMaxListenerCount(n: number) {
+        return (this as unknown as EventEmitter).setMaxListeners(n);
+    }
 
     public addEventListener<K extends keyof ClientEvents>(
         event: K,
