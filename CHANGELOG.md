@@ -1,3 +1,13 @@
+# [9.3.0](https://github.com/onesoft-sudo/sudobot/compare/v9.2.1...v9.3.0) (2024-06-23)
+
+
+### Features
+
+* introduce drizzle ([67fa240](https://github.com/onesoft-sudo/sudobot/commit/67fa240bd6bfaa437c06c75a1719f824546579b3))
+* move to drizzle from prisma ([7e2bfd5](https://github.com/onesoft-sudo/sudobot/commit/7e2bfd5fe3776ad04bccfb7e7871c85e75ede2e1))
+
+
+
 ## [9.2.1](https://github.com/onesoft-sudo/sudobot/compare/v9.2.0...v9.2.1) (2024-06-22)
 
 
@@ -338,15 +348,6 @@
 ### Performance Improvements
 
 * better caching and ttl checking ([adad2ff](https://github.com/onesoft-sudo/sudobot/commit/adad2fface16e207657630bcd7b78af949f3c109))
-
-
-
-# [8.30.0](https://github.com/onesoft-sudo/sudobot/compare/v8.29.3...v8.30.0) (2024-03-13)
-
-
-### Features
-
-* **commands:ai:** support custom model names ([68d2b42](https://github.com/onesoft-sudo/sudobot/commit/68d2b4248a053e47d4cdf3e1dc50cf05bb0ff0e4))
 
 
 
