@@ -1,9 +1,14 @@
 import GuildStore from "@framework/cache/GuildStore";
 import type { SystemPermissionLikeString } from "@framework/permissions/AbstractPermissionManagerService";
-import { prisma } from "@framework/utils/helpers";
+import { drizzle } from "@framework/utils/helpers";
 import { pick } from "@framework/utils/objects";
-import type { CommandPermissionOverwrite, CommandPermissionOverwriteAction } from "@prisma/client";
+import type { CommandPermissionOverwrite } from "@main/models/CommandPermissionOverwrite";
+import {
+    CommandPermissionOverwriteAction,
+    commandPermissionOverwrites
+} from "@main/models/CommandPermissionOverwrite";
 import type { PermissionsString, Snowflake } from "discord.js";
+import { and, arrayContains, eq } from "drizzle-orm";
 import type CommandManager from "../services/CommandManager";
 
 export type MinimalCommandPermissionOverwrite = Pick<
@@ -54,22 +59,21 @@ class CommandPermissionOverwriteCacheStore extends GuildStore<
             return cached;
         }
 
-        const commandPermissionOverwrites = await prisma().commandPermissionOverwrite.findMany({
-            where: {
-                guildId,
-                commands: {
-                    has: name
-                },
-                disabled: false
-            }
-        });
+        const commandPermissionOverwriteList =
+            await drizzle().query.commandPermissionOverwrites.findMany({
+                where: and(
+                    eq(commandPermissionOverwrites.guildId, guildId),
+                    arrayContains(commandPermissionOverwrites.commands, [name]),
+                    eq(commandPermissionOverwrites.disabled, false)
+                )
+            });
 
-        if (commandPermissionOverwrites.length === 0) {
+        if (commandPermissionOverwriteList.length === 0) {
             this.set(guildId, name, null);
             return null;
         }
 
-        for (const overwrite of commandPermissionOverwrites) {
+        for (const overwrite of commandPermissionOverwriteList) {
             const cached = this.makeCache(overwrite);
 
             for (const command of overwrite.commands) {
@@ -226,8 +230,8 @@ class CommandPermissionOverwriteCacheStore extends GuildStore<
     ) {
         if (!base) {
             return {
-                allow: onMatch === "ALLOW" && other ? other : null,
-                deny: onMatch === "DENY" && other ? other : null
+                allow: onMatch === CommandPermissionOverwriteAction.Allow && other ? other : null,
+                deny: onMatch === CommandPermissionOverwriteAction.Deny && other ? other : null
             } satisfies CachedCommandPermissionOverwrites;
         }
 
@@ -235,7 +239,7 @@ class CommandPermissionOverwriteCacheStore extends GuildStore<
             return base;
         }
 
-        const target = onMatch === "ALLOW" ? "allow" : "deny";
+        const target = onMatch === CommandPermissionOverwriteAction.Allow ? "allow" : "deny";
         const existing = base[target];
 
         if (!existing) {

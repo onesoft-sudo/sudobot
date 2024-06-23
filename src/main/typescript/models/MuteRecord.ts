@@ -5,7 +5,11 @@ export const muteRecords = pgTable("mute_records", {
     id: serial("id").primaryKey(),
     memberId: varchar("member_id").notNull(),
     guildId: varchar("guild_id").notNull(),
-    roles: varchar("roles").notNull().array().default([]),
+    roles: varchar("roles")
+        .notNull()
+        .array()
+        .notNull()
+        .default(sql`'{}'`),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at")
         .defaultNow()

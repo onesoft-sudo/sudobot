@@ -2,7 +2,9 @@ import APIErrors from "@framework/errors/APIErrors";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { isDiscordAPIError } from "@framework/utils/errors";
+import { channelLocks } from "@main/models/ChannelLock";
 import { Guild, GuildBasedChannel, PermissionsString, Snowflake, ThreadChannel } from "discord.js";
+import { and, eq, inArray } from "drizzle-orm";
 
 @Name("channelLockManager")
 class ChannelLockManager extends Service {
@@ -28,11 +30,11 @@ class ChannelLockManager extends Service {
             };
         }
 
-        const channelLock = await this.application.prisma.channelLock.findFirst({
-            where: {
-                channelId: channel.id,
-                guildId: channel.guild.id
-            }
+        const channelLock = await this.application.database.query.channelLocks.findFirst({
+            where: and(
+                eq(channelLocks.channelId, channel.id),
+                eq(channelLocks.guildId, channel.guild.id)
+            )
         });
 
         if (channelLock) {
@@ -45,15 +47,13 @@ class ChannelLockManager extends Service {
 
         const overwrite = channel.permissionOverwrites.cache.get(channel.guild.roles.everyone.id);
 
-        await this.application.prisma.channelLock.create({
-            data: {
-                permissions: {
-                    allow: overwrite?.allow.toArray().filter(this.filter) ?? [],
-                    deny: overwrite?.deny.toArray().filter(this.filter) ?? []
-                },
-                channelId: channel.id,
-                guildId: channel.guild.id
-            }
+        await this.application.database.drizzle.insert(channelLocks).values({
+            permissions: {
+                allow: overwrite?.allow.toArray().filter(this.filter) ?? [],
+                deny: overwrite?.deny.toArray().filter(this.filter) ?? []
+            },
+            channelId: channel.id,
+            guildId: channel.guild.id
         });
 
         try {
@@ -119,11 +119,11 @@ class ChannelLockManager extends Service {
             };
         }
 
-        const channelLock = await this.application.prisma.channelLock.findFirst({
-            where: {
-                channelId: channel.id,
-                guildId: channel.guild.id
-            }
+        const channelLock = await this.application.database.drizzle.query.channelLocks.findFirst({
+            where: and(
+                eq(channelLocks.channelId, channel.id),
+                eq(channelLocks.guildId, channel.guild.id)
+            )
         });
 
         if (!channelLock) {
@@ -134,11 +134,9 @@ class ChannelLockManager extends Service {
             };
         }
 
-        await this.application.prisma.channelLock.delete({
-            where: {
-                id: channelLock.id
-            }
-        });
+        await this.application.database.drizzle
+            .delete(channelLocks)
+            .where(eq(channelLocks.id, channelLock.id));
 
         try {
             await channel.permissionOverwrites.edit(channel.guild.roles.everyone, {
@@ -200,8 +198,8 @@ class ChannelLockManager extends Service {
             skipped = 0;
         const errors: string[] = [];
 
-        const channelLocks = await this.application.prisma.channelLock.findMany({
-            where: { guildId: guild.id }
+        const lockedChannels = await this.application.database.drizzle.query.channelLocks.findMany({
+            where: eq(channelLocks.guildId, guild.id)
         });
 
         for (const channel of channels ?? guild.channels.cache.values()) {
@@ -209,7 +207,7 @@ class ChannelLockManager extends Service {
                 continue;
             }
 
-            if (channelLocks.find(lock => lock.channelId === channel.id)) {
+            if (lockedChannels.find(lock => lock.channelId === channel.id)) {
                 alreadyLocked++;
                 continue;
             }
@@ -262,7 +260,7 @@ class ChannelLockManager extends Service {
             success++;
         }
 
-        await this.application.prisma.channelLock.createMany({ data: lockRecords });
+        await this.application.database.drizzle.insert(channelLocks).values(lockRecords);
 
         return {
             permissionErrors,
@@ -282,8 +280,8 @@ class ChannelLockManager extends Service {
             skipped = 0;
         const errors: string[] = [];
 
-        const channelLocks = await this.application.prisma.channelLock.findMany({
-            where: { guildId: guild.id }
+        const lockedChannels = await this.application.database.query.channelLocks.findMany({
+            where: eq(channelLocks.guildId, guild.id)
         });
 
         for (const channel of channels ?? guild.channels.cache.values()) {
@@ -291,7 +289,7 @@ class ChannelLockManager extends Service {
                 continue;
             }
 
-            const channelLock = channelLocks.find(lock => lock.channelId === channel.id);
+            const channelLock = lockedChannels.find(lock => lock.channelId === channel.id);
 
             if (!channelLock) {
                 notLocked++;
@@ -358,9 +356,9 @@ class ChannelLockManager extends Service {
             success++;
         }
 
-        await this.application.prisma.channelLock.deleteMany({
-            where: { id: { in: lockRecords } }
-        });
+        await this.application.database.drizzle
+            .delete(channelLocks)
+            .where(inArray(channelLocks.id, lockRecords));
 
         return {
             permissionErrors,

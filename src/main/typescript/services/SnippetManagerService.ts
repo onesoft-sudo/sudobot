@@ -2,12 +2,12 @@ import { Inject } from "@framework/container/Inject";
 import { Permission } from "@framework/permissions/Permission";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
+import { PermissionLogicMode, Snippet, snippets } from "@main/models/Snippet";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import type DirectiveParsingService from "@main/services/DirectiveParsingService";
 import PermissionManagerService from "@main/services/PermissionManagerService";
 import { downloadFile } from "@main/utils/download";
 import { systemPrefix } from "@main/utils/utils";
-import { PermissionLogicMode, Snippet } from "@prisma/client";
 import {
     APIEmbed,
     Collection,
@@ -16,6 +16,7 @@ import {
     PermissionsString,
     Snowflake
 } from "discord.js";
+import { eq } from "drizzle-orm";
 import { existsSync } from "fs";
 import { mkdir, rm } from "fs/promises";
 import { join } from "path";
@@ -34,7 +35,7 @@ class SnippetManagerService extends Service {
     private readonly configurationManager!: ConfigurationManager;
 
     public override async boot(): Promise<void> {
-        const snippets = await this.application.prisma.snippet.findMany();
+        const snippets = await this.application.database.query.snippets.findMany();
 
         for (const snippet of snippets) {
             this.cache.set(`${snippet.guildId}_${snippet.name}`, snippet);
@@ -94,7 +95,7 @@ class SnippetManagerService extends Service {
             }
 
             if (snippet.permissions.length > 0) {
-                if (snippet.permissionMode === "AND") {
+                if (snippet.permissionMode === PermissionLogicMode.And) {
                     for (const permission of snippet.permissions) {
                         if (permission in PermissionFlagsBits) {
                             if (
@@ -206,8 +207,9 @@ class SnippetManagerService extends Service {
             attachments.push(name);
         }
 
-        const snippet = await this.application.prisma.snippet.create({
-            data: {
+        const [snippet] = await this.application.database.drizzle
+            .insert(snippets)
+            .values({
                 name: options.name,
                 guildId: options.guildId,
                 userId: options.userId,
@@ -220,8 +222,8 @@ class SnippetManagerService extends Service {
                 level: options.level,
                 permissions: options.permissions,
                 permissionMode: options.permissionMode
-            }
-        });
+            })
+            .returning();
 
         this.cache.set(`${options.guildId}_${options.name}`, snippet);
 
@@ -236,11 +238,9 @@ class SnippetManagerService extends Service {
         const snippet = this.cache.get(`${guildId}_${name}`);
 
         if (snippet) {
-            await this.application.prisma.snippet.delete({
-                where: {
-                    id: snippet.id
-                }
-            });
+            await this.application.database.drizzle
+                .delete(snippets)
+                .where(eq(snippets.id, snippet.id));
 
             this.cache.delete(`${guildId}_${name}`);
 
@@ -269,14 +269,12 @@ class SnippetManagerService extends Service {
             return null;
         }
 
-        await this.application.prisma.snippet.update({
-            where: {
-                id: snippet.id
-            },
-            data: {
+        await this.application.database.drizzle
+            .update(snippets)
+            .set({
                 name: newName
-            }
-        });
+            })
+            .where(eq(snippets.id, snippet.id));
 
         this.cache.delete(`${guildId}_${name}`);
         this.cache.set(`${guildId}_${newName}`, snippet);
@@ -309,14 +307,12 @@ class SnippetManagerService extends Service {
                 {
                     const randomize = value === "true" || value === "1" || value === "enabled";
 
-                    await this.application.prisma.snippet.update({
-                        where: {
-                            id: snippet.id
-                        },
-                        data: {
+                    await this.application.database.drizzle
+                        .update(snippets)
+                        .set({
                             randomize
-                        }
-                    });
+                        })
+                        .where(eq(snippets.id, snippet.id));
 
                     snippet.randomize = randomize;
                 }
@@ -339,14 +335,12 @@ class SnippetManagerService extends Service {
                         };
                     }
 
-                    await this.application.prisma.snippet.update({
-                        where: {
-                            id: snippet.id
-                        },
-                        data: {
+                    await this.application.database.drizzle
+                        .update(snippets)
+                        .set({
                             level
-                        }
-                    });
+                        })
+                        .where(eq(snippets.id, snippet.id));
 
                     snippet.level = level;
                 }
@@ -369,14 +363,12 @@ class SnippetManagerService extends Service {
                         }
                     }
 
-                    await this.application.prisma.snippet.update({
-                        where: {
-                            id: snippet.id
-                        },
-                        data: {
+                    await this.application.database.drizzle
+                        .update(snippets)
+                        .set({
                             permissions
-                        }
-                    });
+                        })
+                        .where(eq(snippets.id, snippet.id));
 
                     snippet.permissions = permissions;
                 }
@@ -386,14 +378,13 @@ class SnippetManagerService extends Service {
             case "pmode":
             case "permission_mode":
                 if (value.toUpperCase() === "AND" || value.toUpperCase() === "OR") {
-                    await this.application.prisma.snippet.update({
-                        where: {
-                            id: snippet.id
-                        },
-                        data: {
-                            permissionMode: value as PermissionLogicMode
-                        }
-                    });
+                    await this.application.database.drizzle
+                        .update(snippets)
+                        .set({
+                            permissionMode:
+                                `${value[0]}${value.slice(1).toLocaleLowerCase()}` as PermissionLogicMode
+                        })
+                        .where(eq(snippets.id, snippet.id));
 
                     snippet.permissionMode = value.toUpperCase() as PermissionLogicMode;
                 } else {
@@ -405,14 +396,12 @@ class SnippetManagerService extends Service {
                 break;
 
             case "content":
-                await this.application.prisma.snippet.update({
-                    where: {
-                        id: snippet.id
-                    },
-                    data: {
+                await this.application.database.drizzle
+                    .update(snippets)
+                    .set({
                         content: [value]
-                    }
-                });
+                    })
+                    .where(eq(snippets.id, snippet.id));
 
                 snippet.content = [value];
                 break;
@@ -447,14 +436,12 @@ class SnippetManagerService extends Service {
             fileNames.push(fileName);
         }
 
-        await this.application.prisma.snippet.update({
-            where: {
-                id: snippet.id
-            },
-            data: {
+        await this.application.database.drizzle
+            .update(snippets)
+            .set({
                 attachments: [...snippet.attachments, ...fileNames]
-            }
-        });
+            })
+            .where(eq(snippets.id, snippet.id));
 
         snippet.attachments.push(...fileNames);
         return snippet;

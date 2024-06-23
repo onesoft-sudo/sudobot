@@ -5,12 +5,13 @@ export const verificationEntries = pgTable("verification_entries", {
     id: serial("id").primaryKey(),
     userId: varchar("user_id").notNull(),
     guildId: varchar("guild_id").notNull(),
-    code: varchar("code").unique(),
-    attempts: integer("attempts").default(0),
-    metadata: json("metadata").default({}),
-    expiresAt: timestamp("expires_at"),
-    createdAt: timestamp("created_at").defaultNow(),
+    code: varchar("code").notNull().unique(),
+    attempts: integer("attempts").notNull().default(0),
+    metadata: json("metadata").notNull().default({}),
+    expiresAt: timestamp("expires_at").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
+        .notNull()
         .defaultNow()
         .$onUpdate(() => sql`current_timestamp`)
 });

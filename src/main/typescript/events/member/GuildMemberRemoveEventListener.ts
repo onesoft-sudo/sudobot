@@ -2,10 +2,10 @@ import { Inject } from "@framework/container/Inject";
 import EventListener from "@framework/events/EventListener";
 import { Events } from "@framework/types/ClientEvents";
 import { fetchUser } from "@framework/utils/entities";
+import { InfractionDeliveryStatus, infractions, InfractionType } from "@main/models/Infraction";
 import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
 import type InfractionManager from "@main/services/InfractionManager";
-import { InfractionDeliveryStatus, InfractionType } from "@prisma/client";
 import { AuditLogEvent, type GuildMember } from "discord.js";
 
 class GuildMemberRemoveEventListener extends EventListener<Events.GuildMemberRemove> {
@@ -33,16 +33,17 @@ class GuildMemberRemoveEventListener extends EventListener<Events.GuildMemberRem
             const executorId = log?.executor?.id ?? log?.executorId;
 
             if (log && (!executorId || executorId !== this.client.user?.id)) {
-                const infraction = await this.application.prisma.infraction.create({
-                    data: {
+                const [infraction] = await this.application.database.drizzle
+                    .insert(infractions)
+                    .values({
                         guildId: member.guild.id,
                         userId: member.id,
                         moderatorId: executorId ?? "0",
-                        type: InfractionType.KICK,
+                        type: InfractionType.Kick,
                         reason: log.reason ?? undefined,
-                        deliveryStatus: InfractionDeliveryStatus.NOT_DELIVERED
-                    }
-                });
+                        deliveryStatus: InfractionDeliveryStatus.NotDelivered
+                    })
+                    .returning({ id: infractions.id });
 
                 this.auditLoggingService.emitLogEvent(
                     member.guild.id,

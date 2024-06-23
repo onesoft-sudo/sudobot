@@ -2,8 +2,8 @@ import { Inject } from "@framework/container/Inject";
 import Duration from "@framework/datetime/Duration";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
+import type { Infraction } from "@main/models/Infraction";
 import { ModerationActionType } from "@main/schemas/ModerationActionSchema";
-import { Infraction } from "@prisma/client";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
     Guild,

@@ -8,9 +8,9 @@ import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { userInfo } from "@framework/utils/embeds";
 import { fetchUser } from "@framework/utils/entities";
 import { Colors } from "@main/constants/Colors";
+import { Infraction } from "@main/models/Infraction";
 import InfractionManager from "@main/services/InfractionManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
-import { Infraction } from "@prisma/client";
 import { APIEmbed, italic, time, User } from "discord.js";
 
 type InfractionViewCommandArgs = {
@@ -139,7 +139,7 @@ class InfractionViewCommand extends Command {
             ephemeral: true
         });
 
-        const infraction: Infraction | null = await this.infractionManager.getById(
+        const infraction: Infraction | undefined = await this.infractionManager.getById(
             context.guildId!,
             args.id
         );

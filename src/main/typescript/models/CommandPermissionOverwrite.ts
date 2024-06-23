@@ -24,7 +24,11 @@ export const commandPermissionOverwriteActionEnum = pgEnum(
 export const commandPermissionOverwrites = pgTable("command_permission_overwrites", {
     id: serial("id").primaryKey(),
     guildId: varchar("guild_id").notNull(),
-    commands: text("commands").notNull().array().default([]),
+    commands: text("commands")
+        .notNull()
+        .array()
+        .notNull()
+        .default(sql`'{}'`),
     requiredDiscordPermissions: json("required_discord_permissions").default(null),
     requiredSystemPermissions: json("required_system_permissions").default(null),
     requiredRoles: json("required_roles").default(null),
@@ -32,11 +36,12 @@ export const commandPermissionOverwrites = pgTable("command_permission_overwrite
     requiredChannels: json("required_channels").default(null),
     requiredLevel: integer("required_level"),
     disabled: boolean("disabled").default(false),
-    onMatch: commandPermissionOverwriteActionEnum("on_match").default(
-        CommandPermissionOverwriteAction.Allow
-    ),
-    createdAt: timestamp("created_at").defaultNow(),
+    onMatch: commandPermissionOverwriteActionEnum("on_match")
+        .notNull()
+        .default(CommandPermissionOverwriteAction.Allow),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
+        .notNull()
         .defaultNow()
         .$onUpdate(() => sql`current_timestamp`)
 });

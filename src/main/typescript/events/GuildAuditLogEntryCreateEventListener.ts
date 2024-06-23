@@ -2,9 +2,9 @@ import { Inject } from "@framework/container/Inject";
 import EventListener from "@framework/events/EventListener";
 import { Events } from "@framework/types/ClientEvents";
 import { fetchUser } from "@framework/utils/entities";
+import { InfractionDeliveryStatus, infractions, InfractionType } from "@main/models/Infraction";
 import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
-import { InfractionDeliveryStatus, InfractionType } from "@prisma/client";
 import { AuditLogEvent, Guild, GuildAuditLogsEntry, GuildMember, User } from "discord.js";
 
 class GuildAuditLogEntryCreateEventListener extends EventListener<Events.GuildAuditLogEntryCreate> {
@@ -36,19 +36,20 @@ class GuildAuditLogEntryCreateEventListener extends EventListener<Events.GuildAu
                 return;
             }
 
-            const infraction = await this.application.prisma.infraction.create({
-                data: {
+            const [infraction] = await this.application.database.drizzle
+                .insert(infractions)
+                .values({
                     guildId: guild.id,
                     moderatorId: executor?.id ?? "0",
                     userId: user.id,
                     type:
                         auditLogEntry.action === AuditLogEvent.MemberBanAdd
-                            ? InfractionType.BAN
-                            : InfractionType.UNBAN,
+                            ? InfractionType.Ban
+                            : InfractionType.Unban,
                     reason: auditLogEntry.reason ?? undefined,
-                    deliveryStatus: InfractionDeliveryStatus.NOT_DELIVERED
-                }
-            });
+                    deliveryStatus: InfractionDeliveryStatus.NotDelivered
+                })
+                .returning({ id: infractions.id });
 
             this.auditLoggingService.emitLogEvent(
                 guild.id,

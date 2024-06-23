@@ -1,11 +1,12 @@
-import type { Prisma } from "@prisma/client";
+import { queues } from "@main/models/Queue";
 import type { Snowflake } from "discord.js";
+import { and, eq } from "drizzle-orm";
 import type Application from "../app/Application";
 import { HasApplication } from "../types/HasApplication";
 import { isDevelopmentMode, requireNonNull } from "../utils/utils";
 import type QueueManager from "./QueueManager";
 
-export type StorableData = Prisma.InputJsonValue | typeof Prisma.JsonNull;
+export type StorableData = object | unknown[] | number | string | boolean | null;
 export type QueueOptions<T extends StorableData> = {
     data: T;
     guildId: Snowflake;
@@ -14,8 +15,8 @@ export type QueueOptions<T extends StorableData> = {
     messageId?: Snowflake;
     runsAt: Date;
     id?: number;
-    createdAt?: Date;
-    updatedAt?: Date;
+    createdAt?: Date | null;
+    updatedAt?: Date | null;
     repeat?: boolean;
 };
 
@@ -53,8 +54,8 @@ abstract class Queue<T extends StorableData = StorableData> extends HasApplicati
         this.repeat = options.repeat;
 
         this._id = options.id;
-        this._createdAt = options.createdAt;
-        this._updatedAt = options.updatedAt;
+        this._createdAt = options.createdAt ?? undefined;
+        this._updatedAt = options.updatedAt ?? undefined;
     }
 
     public abstract execute(data: T): Promise<void>;
@@ -98,8 +99,9 @@ abstract class Queue<T extends StorableData = StorableData> extends HasApplicati
             throw new Error("This queue has already been saved");
         }
 
-        const { id, createdAt, updatedAt } = await this.application.prisma.queue.create({
-            data: {
+        const [{ id, createdAt, updatedAt }] = await this.application.database.drizzle
+            .insert(queues)
+            .values({
                 name: (this.constructor as typeof Queue).uniqueName,
                 data: this.data,
                 guildId: this.guildId,
@@ -108,12 +110,12 @@ abstract class Queue<T extends StorableData = StorableData> extends HasApplicati
                 messageId: this.messageId,
                 runsAt: this.runsAt,
                 repeat: this.repeat
-            }
-        });
+            })
+            .returning();
 
         this._id = id;
-        this._createdAt = createdAt;
-        this._updatedAt = updatedAt;
+        this._createdAt = createdAt ?? undefined;
+        this._updatedAt = updatedAt ?? undefined;
 
         this.manager.add(this);
 
@@ -133,12 +135,9 @@ abstract class Queue<T extends StorableData = StorableData> extends HasApplicati
 
         this.application.logger.debug(
             "Delete result",
-            await this.application.prisma.queue.delete({
-                where: {
-                    id: this._id,
-                    guildId: this.guildId
-                }
-            })
+            await this.application.database.drizzle
+                .delete(queues)
+                .where(and(eq(queues.id, this._id!), eq(queues.guildId, this.guildId)))
         );
 
         this.manager.remove(this);

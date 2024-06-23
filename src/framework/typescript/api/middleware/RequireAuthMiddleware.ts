@@ -17,7 +17,9 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { users } from "@main/models/User";
 import { APIErrorCode } from "@main/types/APIErrorCode";
+import { and, eq } from "drizzle-orm";
 import type { NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
 import type Application from "../../app/Application";
@@ -72,11 +74,8 @@ export default async function RequireAuthMiddleware(
             return;
         }
 
-        const user = await application.prisma.user.findFirst({
-            where: {
-                id: payload.id,
-                token
-            }
+        const user = await application.database.query.users.findFirst({
+            where: and(eq(users.id, payload.id), eq(users.token, token))
         });
 
         if (!user || Date.now() > (user?.tokenExpiresAt?.getTime() ?? 0)) {

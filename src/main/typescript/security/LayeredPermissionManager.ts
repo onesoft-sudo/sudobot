@@ -22,9 +22,11 @@ import type { MemberPermissionData } from "@framework/contracts/PermissionManage
 import AbstractPermissionManager from "@framework/permissions/AbstractPermissionManager";
 import type { SystemPermissionLikeString } from "@framework/permissions/AbstractPermissionManagerService";
 import { Permission } from "@framework/permissions/Permission";
-import type { PermissionOverwrite } from "@prisma/client";
+import type { PermissionOverwrite } from "@main/models/PermissionOverwrite";
+import { permissionOverwrites } from "@main/models/PermissionOverwrite";
 import type { GuildMember, PermissionsString, Snowflake } from "discord.js";
 import { Collection } from "discord.js";
+import { asc, eq } from "drizzle-orm";
 
 type CachedPermissionOverwrite = Omit<PermissionOverwrite, "grantedSystemPermissions"> & {
     grantedSystemPermissions?: FluentSet<SystemPermissionLikeString>;
@@ -45,13 +47,9 @@ class LayeredPermissionManager extends AbstractPermissionManager {
         this.application.logger.perfStart("overwrites");
         this.overwrites.clear();
 
-        const overwrites = await this.application.prisma.permissionOverwrite.findMany({
-            orderBy: {
-                guildId: "asc"
-            },
-            where: {
-                disabled: false
-            }
+        const overwrites = await this.application.database.query.permissionOverwrites.findMany({
+            orderBy: asc(permissionOverwrites.guildId),
+            where: eq(permissionOverwrites.disabled, false)
         });
 
         for (const overwrite of overwrites) {

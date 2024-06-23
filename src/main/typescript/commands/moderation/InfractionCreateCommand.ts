@@ -9,11 +9,11 @@ import { Inject } from "@framework/container/Inject";
 import Duration from "@framework/datetime/Duration";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import InfractionViewCommand from "@main/commands/moderation/InfractionViewCommand";
+import { Infraction, InfractionType } from "@main/models/Infraction";
 import InfractionManager from "@main/services/InfractionManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
 import { ArgumentDefaultRules } from "@main/utils/ArgumentDefaultRules";
 import { ErrorMessages } from "@main/utils/ErrorMessages";
-import { Infraction, InfractionType } from "@prisma/client";
 import { User } from "discord.js";
 
 type InfractionCreateCommandArgs = {

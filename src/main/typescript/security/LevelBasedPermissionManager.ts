@@ -22,9 +22,10 @@ import type { MemberPermissionData } from "@framework/contracts/PermissionManage
 import AbstractPermissionManager from "@framework/permissions/AbstractPermissionManager";
 import type { SystemPermissionLikeString } from "@framework/permissions/AbstractPermissionManagerService";
 import { Permission } from "@framework/permissions/Permission";
-import type { PermissionLevel } from "@prisma/client";
+import { permissionLevels, type PermissionLevel } from "@main/models/PermissionLevel";
 import type { GuildMember, PermissionsString, Snowflake } from "discord.js";
 import { Collection } from "discord.js";
+import { eq } from "drizzle-orm";
 
 type MinimalPermissionLevelInfo = {
     level: number;
@@ -46,10 +47,8 @@ class LevelBasedPermissionManager extends AbstractPermissionManager {
     public override async boot(): Promise<void> {
         this.levels.clear();
 
-        const levels = await this.application.prisma.permissionLevel.findMany({
-            where: {
-                disabled: false
-            }
+        const levels = await this.application.database.query.permissionLevels.findMany({
+            where: eq(permissionLevels.disabled, false)
         });
 
         for (const level of levels) {

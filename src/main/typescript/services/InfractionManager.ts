@@ -27,10 +27,17 @@ import { emoji } from "@framework/utils/emoji";
 import { fetchMember, fetchUser } from "@framework/utils/entities";
 import { isDiscordAPIError } from "@framework/utils/errors";
 import { also } from "@framework/utils/utils";
+import {
+    Infraction,
+    InfractionCreatePayload,
+    InfractionDeliveryStatus,
+    InfractionType,
+    infractions
+} from "@main/models/Infraction";
+import { muteRecords } from "@main/models/MuteRecord";
 import MassUnbanQueue from "@main/queues/MassUnbanQueue";
 import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
-import { Infraction, InfractionDeliveryStatus, InfractionType, PrismaClient } from "@prisma/client";
 import { AsciiTable3 } from "ascii-table3";
 import { formatDistanceStrict, formatDistanceToNowStrict } from "date-fns";
 import {
@@ -59,6 +66,7 @@ import {
     italic,
     userMention
 } from "discord.js";
+import { and, eq, inArray, not } from "drizzle-orm";
 import InfractionChannelDeleteQueue from "../queues/InfractionChannelDeleteQueue";
 import RoleQueue from "../queues/RoleQueue";
 import UnbanQueue from "../queues/UnbanQueue";
@@ -71,37 +79,37 @@ import QueueService from "./QueueService";
 @Name("infractionManager")
 class InfractionManager extends Service {
     private readonly actionDoneNames: Record<InfractionType, string> = {
-        [InfractionType.BEAN]: "beaned",
-        [InfractionType.MASSKICK]: "kicked",
-        [InfractionType.KICK]: "kicked",
-        [InfractionType.MUTE]: "muted",
-        [InfractionType.WARNING]: "warned",
-        [InfractionType.MASSBAN]: "banned",
-        [InfractionType.BAN]: "banned",
-        [InfractionType.UNBAN]: "unbanned",
-        [InfractionType.UNMUTE]: "unmuted",
-        [InfractionType.BULK_DELETE_MESSAGE]: "bulk deleted messages",
-        [InfractionType.NOTE]: "noted",
-        [InfractionType.TIMEOUT]: "timed out",
-        [InfractionType.TIMEOUT_REMOVE]: "removed timeout",
-        [InfractionType.ROLE]: "modified roles",
-        [InfractionType.MOD_MESSAGE]: "sent a moderator message",
-        [InfractionType.SHOT]: "given a shot"
+        [InfractionType.Bean]: "beaned",
+        [InfractionType.MassKick]: "kicked",
+        [InfractionType.Kick]: "kicked",
+        [InfractionType.Mute]: "muted",
+        [InfractionType.Warning]: "warned",
+        [InfractionType.MassBan]: "banned",
+        [InfractionType.Ban]: "banned",
+        [InfractionType.Unban]: "unbanned",
+        [InfractionType.Unmute]: "unmuted",
+        [InfractionType.BulkDeleteMessage]: "bulk deleted messages",
+        [InfractionType.Note]: "noted",
+        [InfractionType.Timeout]: "timed out",
+        [InfractionType.TimeoutRemove]: "removed timeout",
+        [InfractionType.Role]: "modified roles",
+        [InfractionType.ModMessage]: "sent a moderator message",
+        [InfractionType.Shot]: "given a shot"
     };
 
     private readonly typeToPointKeyMap = {
-        [InfractionType.MASSBAN]: "massban",
-        [InfractionType.MASSKICK]: "masskick",
-        [InfractionType.MUTE]: "mute",
-        [InfractionType.BAN]: "ban",
-        [InfractionType.BULK_DELETE_MESSAGE]: "clear",
-        [InfractionType.ROLE]: "role",
-        [InfractionType.TIMEOUT]: "timeout",
-        [InfractionType.WARNING]: "warning",
-        [InfractionType.KICK]: "kick",
-        [InfractionType.MOD_MESSAGE]: "mod_message",
-        [InfractionType.NOTE]: "note",
-        [InfractionType.UNBAN]: "unban"
+        [InfractionType.MassBan]: "massban",
+        [InfractionType.MassKick]: "masskick",
+        [InfractionType.Mute]: "mute",
+        [InfractionType.Ban]: "ban",
+        [InfractionType.BulkDeleteMessage]: "clear",
+        [InfractionType.Role]: "role",
+        [InfractionType.Timeout]: "timeout",
+        [InfractionType.Warning]: "warning",
+        [InfractionType.Kick]: "kick",
+        [InfractionType.ModMessage]: "mod_message",
+        [InfractionType.Note]: "note",
+        [InfractionType.Unban]: "unban"
     } satisfies {
         [K in InfractionType]?: keyof NonNullable<GuildConfig["infractions"]>["points"];
     };
@@ -206,7 +214,7 @@ class InfractionManager extends Service {
         const embed = {
             author: {
                 name:
-                    infraction.type === InfractionType.ROLE
+                    infraction.type === InfractionType.Role
                         ? `Your role(s) have been changed in ${guild.name}`
                         : `You have been ${actionDoneName} in ${guild.name}`,
                 icon_url: guild.iconURL() ?? undefined
@@ -255,10 +263,10 @@ class InfractionManager extends Service {
         if (
             (
                 [
-                    InfractionType.BAN,
-                    InfractionType.MASSBAN,
-                    InfractionType.KICK,
-                    InfractionType.MASSKICK
+                    InfractionType.Ban,
+                    InfractionType.MassBan,
+                    InfractionType.Kick,
+                    InfractionType.MassKick
                 ] as InfractionType[]
             ).includes(infraction.type)
         ) {
@@ -393,43 +401,53 @@ class InfractionManager extends Service {
             "member" in options && options.member
                 ? options.member.user
                 : (options as { user: User }).user;
-        const infraction: Infraction = await this.application.prisma.$transaction(async prisma => {
-            let infraction: Infraction = await prisma.infraction.create({
-                data: {
-                    userId: user.id,
-                    guildId,
-                    moderatorId: moderator.id,
-                    reason: processReason ? this.processReason(guildId, reason) : reason,
-                    type,
-                    deliveryStatus:
-                        type === InfractionType.UNBAN || !notify
-                            ? InfractionDeliveryStatus.NOT_DELIVERED
-                            : InfractionDeliveryStatus.SUCCESS,
-                    ...payload
-                }
-            });
+        const infraction: Infraction = await this.application.database.drizzle.transaction(
+            async (tx): Promise<Infraction> => {
+                let [newInfraction] = await tx
+                    .insert(infractions)
+                    .values({
+                        userId: user.id,
+                        guildId,
+                        moderatorId: moderator.id,
+                        reason: processReason ? this.processReason(guildId, reason) : reason,
+                        type,
+                        deliveryStatus:
+                            type === InfractionType.Unban || !notify
+                                ? InfractionDeliveryStatus.NotDelivered
+                                : InfractionDeliveryStatus.Success,
+                        ...payload
+                    })
+                    .returning();
 
-            if (type !== InfractionType.UNBAN && notify) {
-                const status = await this.notify(user, infraction, transformNotificationEmbed);
+                if (type !== InfractionType.Unban && notify) {
+                    const status = await this.notify(
+                        user,
+                        newInfraction,
+                        transformNotificationEmbed
+                    );
 
-                if (status !== "notified") {
-                    infraction = await prisma.infraction.update({
-                        where: { id: infraction.id },
-                        data: {
-                            deliveryStatus:
-                                status === "failed"
-                                    ? InfractionDeliveryStatus.FAILED
-                                    : InfractionDeliveryStatus.FALLBACK
-                        }
-                    });
+                    if (status !== "notified") {
+                        const [updatedInfraction] = await tx
+                            .update(infractions)
+                            .set({
+                                deliveryStatus:
+                                    status === "failed"
+                                        ? InfractionDeliveryStatus.Failed
+                                        : InfractionDeliveryStatus.Fallback
+                            })
+                            .where(eq(infractions.id, newInfraction.id))
+                            .returning();
+
+                        newInfraction = updatedInfraction;
+                    }
                 }
+
+                callback?.(newInfraction);
+                return newInfraction;
             }
+        );
 
-            callback?.(infraction);
-            return infraction;
-        });
-
-        if (failIfNotNotified && infraction.deliveryStatus === InfractionDeliveryStatus.FAILED) {
+        if (failIfNotNotified && infraction.deliveryStatus === InfractionDeliveryStatus.Failed) {
             throw new Error("Failed to notify user");
         }
 
@@ -437,9 +455,9 @@ class InfractionManager extends Service {
         return infraction;
     }
 
-    public async getById(guildId: Snowflake, id: number): Promise<Infraction | null> {
-        return await this.application.prisma.infraction.findFirst({
-            where: { id, guildId }
+    public async getById(guildId: Snowflake, id: number): Promise<Infraction | undefined> {
+        return await this.application.database.query.infractions.findFirst({
+            where: and(eq(infractions.id, id), eq(infractions.guildId, guildId))
         });
     }
 
@@ -451,7 +469,7 @@ class InfractionManager extends Service {
     ): Promise<boolean> {
         reason = this.processReason(guildId, reason) ?? reason;
 
-        const infraction: Infraction | null = await this.getById(guildId, id);
+        const infraction: Infraction | undefined = await this.getById(guildId, id);
 
         if (!infraction) {
             return false;
@@ -488,14 +506,15 @@ class InfractionManager extends Service {
             }
         }
 
-        return (
-            (
-                await this.application.prisma.infraction.updateMany({
-                    where: { id, guildId },
-                    data: { reason }
+        return !!(
+            await this.application.database.drizzle
+                .update(infractions)
+                .set({ reason })
+                .where(and(eq(infractions.id, id), eq(infractions.guildId, guildId)))
+                .returning({
+                    id: infractions.id
                 })
-            ).count > 0
-        );
+        )[0];
     }
 
     private async updateInfractionQueues(
@@ -514,7 +533,7 @@ class InfractionManager extends Service {
 
         if (infraction.expiresAt) {
             switch (infraction.type) {
-                case InfractionType.BAN:
+                case InfractionType.Ban:
                     await this.queueService.bulkCancel(UnbanQueue, queue => {
                         return (
                             queue.data.userId === infraction.userId &&
@@ -524,7 +543,7 @@ class InfractionManager extends Service {
                     });
 
                     break;
-                case InfractionType.MUTE:
+                case InfractionType.Mute:
                     await this.queueService.bulkCancel(UnmuteQueue, queue => {
                         return (
                             queue.data.memberId === infraction.userId &&
@@ -534,7 +553,7 @@ class InfractionManager extends Service {
                     });
 
                     break;
-                case InfractionType.ROLE:
+                case InfractionType.Role:
                     await this.queueService.bulkCancel(RoleQueue, queue => {
                         return (
                             queue.data.memberId === infraction.userId &&
@@ -552,7 +571,7 @@ class InfractionManager extends Service {
 
         if (duration) {
             switch (infraction.type) {
-                case InfractionType.BAN:
+                case InfractionType.Ban:
                     await this.queueService
                         .create(UnbanQueue, {
                             data: {
@@ -566,7 +585,7 @@ class InfractionManager extends Service {
                         .schedule();
 
                     break;
-                case InfractionType.MUTE:
+                case InfractionType.Mute:
                     await this.queueService
                         .create(UnmuteQueue, {
                             data: {
@@ -580,7 +599,7 @@ class InfractionManager extends Service {
                         .schedule();
 
                     break;
-                case InfractionType.ROLE:
+                case InfractionType.Role:
                     {
                         const metadata = infraction.metadata as {
                             roleIds: Snowflake[];
@@ -618,7 +637,7 @@ class InfractionManager extends Service {
         duration: Duration | null,
         notify: boolean
     ): Promise<DurationUpdateResult> {
-        const infraction: Infraction | null = await this.getById(guildId, id);
+        const infraction: Infraction | undefined = await this.getById(guildId, id);
 
         if (!infraction || infraction.guildId !== guildId) {
             return {
@@ -629,7 +648,7 @@ class InfractionManager extends Service {
         }
 
         if (
-            !([InfractionType.BAN, InfractionType.MUTE, InfractionType.ROLE] as string[]).includes(
+            !([InfractionType.Ban, InfractionType.Mute, InfractionType.Role] as string[]).includes(
                 infraction.type
             )
         ) {
@@ -648,7 +667,7 @@ class InfractionManager extends Service {
             };
         }
 
-        if (infraction.type === InfractionType.MUTE && duration) {
+        if (infraction.type === InfractionType.Mute && duration) {
             const config = this.configManager.config[guildId]?.muting;
 
             if (!config?.role && duration.toMilliseconds() > 28 * 24 * 60 * 60 * 1000) {
@@ -661,13 +680,15 @@ class InfractionManager extends Service {
         }
 
         await this.updateInfractionQueues(infraction, duration);
-        const updatedInfraction: Infraction = await this.application.prisma.infraction.update({
-            where: { id, guildId },
-            data: {
+
+        const [updatedInfraction] = await this.application.database.drizzle
+            .update(infractions)
+            .set({
                 expiresAt: duration?.fromNow() ?? null,
                 metadata: { duration: duration?.toMilliseconds() ?? undefined }
-            }
-        });
+            })
+            .where(and(eq(infractions.id, id), eq(infractions.guildId, guildId)))
+            .returning();
 
         if (notify) {
             const user = await fetchUser(this.application.getClient(), infraction.userId);
@@ -706,10 +727,13 @@ class InfractionManager extends Service {
         };
     }
 
-    public async deleteById(guildId: Snowflake, id: number): Promise<Infraction | null> {
-        return await this.application.prisma.infraction.delete({
-            where: { id, guildId }
-        });
+    public async deleteById(guildId: Snowflake, id: number): Promise<Infraction | undefined> {
+        return (
+            await this.application.database.drizzle
+                .delete(infractions)
+                .where(and(eq(infractions.id, id), eq(infractions.guildId, guildId)))
+                .returning()
+        )[0];
     }
 
     public async deleteForUser(
@@ -718,51 +742,54 @@ class InfractionManager extends Service {
         type?: InfractionType
     ): Promise<number> {
         return (
-            await this.application.prisma.infraction.deleteMany({
-                where: {
-                    userId,
-                    guildId,
-                    type: type ? { equals: type } : undefined
-                }
-            })
-        ).count;
+            await this.application.database.drizzle
+                .delete(infractions)
+                .where(
+                    and(
+                        eq(infractions.userId, userId),
+                        eq(infractions.guildId, guildId),
+                        type ? eq(infractions.type, type) : undefined
+                    )
+                )
+                .returning({ id: infractions.id })
+        ).length;
     }
 
     public async getUserInfractions(guildId: Snowflake, id: Snowflake): Promise<Infraction[]> {
-        return await this.application.prisma.infraction.findMany({
-            where: { userId: id, guildId }
+        return await this.application.database.query.infractions.findMany({
+            where: and(eq(infractions.userId, id), eq(infractions.guildId, guildId))
         });
     }
 
     public prettifyInfractionType(type: InfractionType) {
         switch (type) {
-            case InfractionType.BAN:
+            case InfractionType.Ban:
                 return "Ban";
-            case InfractionType.MASSBAN:
+            case InfractionType.MassBan:
                 return "Mass Ban";
-            case InfractionType.KICK:
+            case InfractionType.Kick:
                 return "Kick";
-            case InfractionType.MASSKICK:
+            case InfractionType.MassKick:
                 return "Mass Kick";
-            case InfractionType.MUTE:
+            case InfractionType.Mute:
                 return "Mute";
-            case InfractionType.UNMUTE:
+            case InfractionType.Unmute:
                 return "Unmute";
-            case InfractionType.WARNING:
+            case InfractionType.Warning:
                 return "Warning";
-            case InfractionType.BEAN:
+            case InfractionType.Bean:
                 return "Bean";
-            case InfractionType.NOTE:
+            case InfractionType.Note:
                 return "Note";
-            case InfractionType.BULK_DELETE_MESSAGE:
+            case InfractionType.BulkDeleteMessage:
                 return "Bulk Message Deletion";
-            case InfractionType.TIMEOUT:
+            case InfractionType.Timeout:
                 return "Timeout";
-            case InfractionType.TIMEOUT_REMOVE:
+            case InfractionType.TimeoutRemove:
                 return "Timeout Remove";
-            case InfractionType.ROLE:
+            case InfractionType.Role:
                 return "Role Modification";
-            case InfractionType.MOD_MESSAGE:
+            case InfractionType.ModMessage:
                 return "Moderator Message";
             default:
                 return "Unknown";
@@ -790,7 +817,7 @@ class InfractionManager extends Service {
             moderator,
             reason,
             transformNotificationEmbed,
-            type: InfractionType.BEAN,
+            type: InfractionType.Bean,
             user,
             notify
         });
@@ -823,8 +850,8 @@ class InfractionManager extends Service {
             moderatorId: moderator.id,
             userId: user.id,
             reason: this.processReason(guildId, reason),
-            type: InfractionType.SHOT,
-            deliveryStatus: InfractionDeliveryStatus.NOT_DELIVERED,
+            type: InfractionType.Shot,
+            deliveryStatus: InfractionDeliveryStatus.NotDelivered,
             createdAt: new Date(),
             queueId: null,
             updatedAt: new Date(),
@@ -836,10 +863,10 @@ class InfractionManager extends Service {
             const status = await this.notify(user, infraction, transformNotificationEmbed);
             infraction.deliveryStatus =
                 status === "notified"
-                    ? InfractionDeliveryStatus.SUCCESS
+                    ? InfractionDeliveryStatus.Success
                     : status === "fallback"
-                      ? InfractionDeliveryStatus.FALLBACK
-                      : InfractionDeliveryStatus.FAILED;
+                      ? InfractionDeliveryStatus.Fallback
+                      : InfractionDeliveryStatus.Failed;
         }
 
         return {
@@ -883,8 +910,8 @@ class InfractionManager extends Service {
             moderatorId: moderator.id,
             userId: user.id,
             reason: this.processReason(guildId, reason),
-            type: InfractionType.BAN,
-            deliveryStatus: InfractionDeliveryStatus.NOT_DELIVERED,
+            type: InfractionType.Ban,
+            deliveryStatus: InfractionDeliveryStatus.NotDelivered,
             createdAt: new Date(),
             expiresAt: duration?.fromNow() ?? null,
             metadata: {
@@ -899,10 +926,10 @@ class InfractionManager extends Service {
             const status = await this.notify(user, infraction, transformNotificationEmbed);
             infraction.deliveryStatus =
                 status === "notified"
-                    ? InfractionDeliveryStatus.SUCCESS
+                    ? InfractionDeliveryStatus.Success
                     : status === "fallback"
-                      ? InfractionDeliveryStatus.FALLBACK
-                      : InfractionDeliveryStatus.FAILED;
+                      ? InfractionDeliveryStatus.Fallback
+                      : InfractionDeliveryStatus.Failed;
         }
 
         return {
@@ -945,7 +972,7 @@ class InfractionManager extends Service {
             moderator,
             reason,
             transformNotificationEmbed,
-            type: InfractionType.BAN,
+            type: InfractionType.Ban,
             user,
             notify,
             payload: {
@@ -1118,7 +1145,7 @@ class InfractionManager extends Service {
             moderator,
             reason,
             transformNotificationEmbed,
-            type: InfractionType.UNBAN,
+            type: InfractionType.Unban,
             user,
             notify: false,
             processReason: false
@@ -1192,7 +1219,7 @@ class InfractionManager extends Service {
             moderator,
             reason,
             transformNotificationEmbed,
-            type: InfractionType.KICK,
+            type: InfractionType.Kick,
             user: member.user,
             notify
         });
@@ -1418,7 +1445,7 @@ class InfractionManager extends Service {
             moderator,
             reason,
             transformNotificationEmbed,
-            type: InfractionType.MUTE,
+            type: InfractionType.Mute,
             user: member.user,
             notify,
             payload: {
@@ -1614,7 +1641,7 @@ class InfractionManager extends Service {
             moderator,
             reason,
             transformNotificationEmbed,
-            type: InfractionType.UNMUTE,
+            type: InfractionType.Unmute,
             user: member.user,
             notify,
             payload: {
@@ -1625,11 +1652,8 @@ class InfractionManager extends Service {
             processReason: false
         });
 
-        const records = await this.application.prisma.muteRecord.findMany({
-            where: {
-                memberId: member.id,
-                guildId: guild.id
-            }
+        const records = await this.application.database.query.muteRecords.findMany({
+            where: and(eq(muteRecords.memberId, member.id), eq(muteRecords.guildId, guild.id))
         });
 
         let roleRestoreSuccess = true;
@@ -1642,14 +1666,14 @@ class InfractionManager extends Service {
                 roleRestoreSuccess = false;
             }
 
-            this.application.prisma.muteRecord
-                .deleteMany({
-                    where: {
-                        id: {
-                            in: records.map(r => r.id)
-                        }
-                    }
-                })
+            this.application.database.drizzle
+                .delete(infractions)
+                .where(
+                    inArray(
+                        infractions.id,
+                        records.map(r => r.id)
+                    )
+                )
                 .then();
         }
 
@@ -1680,19 +1704,16 @@ class InfractionManager extends Service {
     }
 
     public async recordMute(member: GuildMember, roles: Snowflake[]) {
-        await this.application.prisma.muteRecord.deleteMany({
-            where: {
-                memberId: member.id,
-                guildId: member.guild.id
-            }
-        });
+        await this.application.database.drizzle
+            .delete(muteRecords)
+            .where(
+                and(eq(muteRecords.memberId, member.id), eq(muteRecords.guildId, member.guild.id))
+            );
 
-        await this.application.prisma.muteRecord.create({
-            data: {
-                memberId: member.id,
-                guildId: member.guild.id,
-                roles
-            }
+        await this.application.database.drizzle.insert(muteRecords).values({
+            memberId: member.id,
+            guildId: member.guild.id,
+            roles
         });
     }
 
@@ -1704,11 +1725,11 @@ class InfractionManager extends Service {
             return;
         }
 
-        const existing = await this.application.prisma.muteRecord.findFirst({
-            where: {
-                memberId: member.id,
-                guildId: member.guild.id
-            }
+        const existing = await this.application.database.query.muteRecords.findFirst({
+            where: and(
+                eq(muteRecords.memberId, member.id),
+                eq(muteRecords.guildId, member.guild.id)
+            )
         });
 
         if (!existing) {
@@ -1790,7 +1811,7 @@ class InfractionManager extends Service {
             moderator,
             reason,
             transformNotificationEmbed,
-            type: InfractionType.ROLE,
+            type: InfractionType.Role,
             user: member.user,
             notify,
             payload: {
@@ -1905,7 +1926,7 @@ class InfractionManager extends Service {
                 moderator,
                 reason,
                 transformNotificationEmbed,
-                type: InfractionType.BULK_DELETE_MESSAGE,
+                type: InfractionType.BulkDeleteMessage,
                 user,
                 notify: false
             });
@@ -2031,7 +2052,7 @@ class InfractionManager extends Service {
             moderator,
             reason,
             transformNotificationEmbed,
-            type: InfractionType.WARNING,
+            type: InfractionType.Warning,
             user: member.user,
             notify
         });
@@ -2089,7 +2110,7 @@ class InfractionManager extends Service {
                         also(embed, embed => {
                             embed.author!.name = `You have received a moderator message in ${guild.name}`;
                         })),
-                type: InfractionType.MOD_MESSAGE,
+                type: InfractionType.ModMessage,
                 user: member.user,
                 notify,
                 failIfNotNotified: true
@@ -2149,7 +2170,7 @@ class InfractionManager extends Service {
             moderator,
             reason,
             transformNotificationEmbed,
-            type: InfractionType.NOTE,
+            type: InfractionType.Note,
             user,
             notify: false
         });
@@ -2187,11 +2208,11 @@ class InfractionManager extends Service {
                 value: infraction.reason ?? italic("No reason provided")
             },
             {
-                name: infraction.type === InfractionType.SHOT ? "Patient" : "User",
+                name: infraction.type === InfractionType.Shot ? "Patient" : "User",
                 value: userInfo(user)
             },
             {
-                name: infraction.type === InfractionType.SHOT ? "💉 Doctor" : "Moderator",
+                name: infraction.type === InfractionType.Shot ? "💉 Doctor" : "Moderator",
                 value: userInfo(moderator)
             }
         ];
@@ -2209,15 +2230,15 @@ class InfractionManager extends Service {
         }
 
         if (
-            infraction.deliveryStatus !== InfractionDeliveryStatus.SUCCESS &&
+            infraction.deliveryStatus !== InfractionDeliveryStatus.Success &&
             includeNotificationStatusInEmbed
         ) {
             fields.push({
                 name: "Notification",
                 value:
-                    infraction.deliveryStatus === InfractionDeliveryStatus.FAILED
+                    infraction.deliveryStatus === InfractionDeliveryStatus.Failed
                         ? "Failed to deliver a DM to this user."
-                        : infraction.deliveryStatus === InfractionDeliveryStatus.FALLBACK
+                        : infraction.deliveryStatus === InfractionDeliveryStatus.Fallback
                           ? "Sent to fallback channel."
                           : "Not delivered."
             });
@@ -2232,15 +2253,15 @@ class InfractionManager extends Service {
                 icon_url: user.displayAvatarURL()
             },
             description:
-                infraction.type === InfractionType.ROLE
+                infraction.type === InfractionType.Role
                     ? `Roles for ${bold(user.username)} have been updated.`
                     : `${bold(user.username)} has been ${actionDoneName}.`,
             fields,
             timestamp: new Date().toISOString(),
             color:
                 actionDoneName.startsWith("un") ||
-                infraction.type === InfractionType.BEAN ||
-                infraction.type === InfractionType.SHOT
+                infraction.type === InfractionType.Bean ||
+                infraction.type === InfractionType.Shot
                     ? Colors.Green
                     : Colors.Red
         } satisfies APIEmbed;
@@ -2283,7 +2304,7 @@ class InfractionManager extends Service {
         const allUsers = userResolvables.map(resolvable =>
             typeof resolvable === "string" ? resolvable : resolvable.id
         );
-        const prismaInfractionCreatePayload: InfractionCreatePrismaPayload[] = [];
+        const infractionCreatePayloads: InfractionCreatePayload[] = [];
 
         try {
             const response = (await this.client.rest.post(
@@ -2327,10 +2348,10 @@ class InfractionManager extends Service {
         }
 
         for (const userId of bannedUsers) {
-            prismaInfractionCreatePayload.push({
+            infractionCreatePayloads.push({
                 guildId,
                 moderatorId: moderator.id,
-                type: InfractionType.MASSBAN,
+                type: InfractionType.MassBan,
                 userId,
                 reason,
                 expiresAt: duration?.fromNow(),
@@ -2338,15 +2359,14 @@ class InfractionManager extends Service {
                     deletionTimeframe: deletionTimeframe?.fromNowMilliseconds(),
                     duration: duration?.fromNowMilliseconds()
                 },
-                deliveryStatus: InfractionDeliveryStatus.NOT_DELIVERED
+                deliveryStatus: InfractionDeliveryStatus.NotDelivered
             });
         }
 
-        if (prismaInfractionCreatePayload.length > 0) {
-            this.application.prisma.infraction
-                .createMany({
-                    data: prismaInfractionCreatePayload
-                })
+        if (infractionCreatePayloads.length > 0) {
+            this.application.database.drizzle
+                .insert(infractions)
+                .values(infractionCreatePayloads)
                 .then();
         }
 
@@ -2406,7 +2426,7 @@ class InfractionManager extends Service {
 
         const members: GuildMember[] = [];
         const memberIds: Snowflake[] = [];
-        const prismaInfractionCreatePayload: InfractionCreatePrismaPayload[] = [];
+        const infractionCreatePayloads: InfractionCreatePayload[] = [];
 
         await Promise.all(
             memberResolvables.map(async resolvable => {
@@ -2435,13 +2455,13 @@ class InfractionManager extends Service {
                     await member.kick(`${moderator.username} - ${reason ?? "No reason provided"}`);
                     await onKickSuccess?.(member);
 
-                    prismaInfractionCreatePayload.push({
+                    infractionCreatePayloads.push({
                         guildId,
                         moderatorId: moderator.id,
-                        type: InfractionType.MASSKICK,
+                        type: InfractionType.MassKick,
                         userId: member.id,
                         reason,
-                        deliveryStatus: InfractionDeliveryStatus.NOT_DELIVERED
+                        deliveryStatus: InfractionDeliveryStatus.NotDelivered
                     });
                 } catch (error) {
                     this.application.logger.error(error);
@@ -2450,11 +2470,10 @@ class InfractionManager extends Service {
             })
         );
 
-        if (prismaInfractionCreatePayload.length > 0) {
-            this.application.prisma.infraction
-                .createMany({
-                    data: prismaInfractionCreatePayload
-                })
+        if (infractionCreatePayloads.length > 0) {
+            this.application.database.drizzle
+                .insert(infractions)
+                .values(infractionCreatePayloads)
                 .then();
         }
 
@@ -2480,16 +2499,26 @@ class InfractionManager extends Service {
         user,
         onlyNotified = false
     }: GeneratePlainTextExportOptions) {
-        const infractions = await this.application.prisma.infraction.findMany({
-            where: {
+        const infractionList = await this.application.database.query.infractions.findMany({
+            where: and(
+                eq(infractions.guildId, guild.id),
+                eq(infractions.userId, user.id),
+                onlyNotified
+                    ? not(eq(infractions.deliveryStatus, InfractionDeliveryStatus.NotDelivered))
+                    : undefined
+            )
+
+            /**
+             * {
                 guildId: guild.id,
                 userId: user.id,
                 deliveryStatus: onlyNotified
                     ? {
-                          not: InfractionDeliveryStatus.NOT_DELIVERED
+                          not: InfractionDeliveryStatus.NotDelivered
                       }
                     : undefined
             }
+             */
         });
 
         const table = new AsciiTable3("Infractions");
@@ -2525,7 +2554,7 @@ class InfractionManager extends Service {
             })
         );
 
-        for (const infraction of infractions) {
+        for (const infraction of infractionList) {
             const row: (string | Date | number | null)[] = columnsToInclude.map(column => {
                 switch (column) {
                     case "id":
@@ -2560,18 +2589,16 @@ class InfractionManager extends Service {
             table.addRow(...row);
         }
 
-        return { output: table.toString(), count: infractions.length };
+        return { output: table.toString(), count: infractionList.length };
     }
 
     public async getUserValidInfractions(guildId: Snowflake, userId: Snowflake) {
-        return await this.application.prisma.infraction.findMany({
-            where: {
-                guildId,
-                userId,
-                type: {
-                    in: Object.keys(this.typeToPointKeyMap) as InfractionType[]
-                }
-            }
+        return await this.application.database.query.infractions.findMany({
+            where: and(
+                eq(infractions.guildId, guildId),
+                eq(infractions.userId, userId),
+                inArray(infractions.type, Object.keys(this.typeToPointKeyMap) as InfractionType[])
+            )
         });
     }
 
@@ -2615,7 +2642,7 @@ class InfractionManager extends Service {
 
             let key: Key = this.typeToPointKeyMap[type as keyof typeof this.typeToPointKeyMap];
 
-            if (type === InfractionType.BAN) {
+            if (type === InfractionType.Ban) {
                 if (infraction.expiresAt) {
                     key = "tempban";
                 } else if (
@@ -2866,10 +2893,8 @@ type MessageBulkDeleteResult =
       }
     | Omit<Extract<InfractionCreateResult<false>, { status: "failed" }>, "infraction">;
 
-type InfractionCreatePrismaPayload = Parameters<PrismaClient["infraction"]["create"]>[0]["data"];
-
 type InfractionCreateOptions<E extends boolean> = CommonOptions<E> & {
-    payload?: Partial<Omit<InfractionCreatePrismaPayload, "type">>;
+    payload?: Partial<Omit<InfractionCreatePayload, "type">>;
     type: InfractionType;
     callback?: (infraction: Infraction) => Awaitable<void>;
     notify?: boolean;

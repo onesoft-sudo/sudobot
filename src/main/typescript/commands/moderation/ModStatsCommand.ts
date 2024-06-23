@@ -25,9 +25,10 @@ import { Inject } from "@framework/container/Inject";
 import Pagination from "@framework/pagination/Pagination";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { Colors } from "@main/constants/Colors";
+import { Infraction, infractions } from "@main/models/Infraction";
 import InfractionManager from "@main/services/InfractionManager";
-import { Infraction } from "@prisma/client";
 import { ActionRowBuilder, italic, StringSelectMenuBuilder, time, User } from "discord.js";
+import { and, asc, count, desc, eq, gte } from "drizzle-orm";
 
 type ModStatsCommandArgs = {
     user?: User;
@@ -64,12 +65,18 @@ export default class ModStatsCommand extends Command {
         } = {
             sortMode: "desc",
             filterMode: "all",
-            count: await this.application.prisma.infraction.count({
-                where: {
-                    moderatorId: user.id,
-                    guildId: context.guildId
-                }
-            })
+            count:
+                (
+                    await this.application.database.drizzle
+                        .select({ count: count() })
+                        .from(infractions)
+                        .where(
+                            and(
+                                eq(infractions.moderatorId, user.id),
+                                eq(infractions.guildId, context.guildId)
+                            )
+                        )
+                ).at(0)?.count ?? 0
         };
 
         if (state.count === 0) {
@@ -83,17 +90,20 @@ export default class ModStatsCommand extends Command {
         const pagination: Pagination<Infraction> = Pagination.withFetcher(
             async ({ limit, page }) => {
                 const { sortMode, createdAtFilters } = state;
-                const data = await this.application.prisma.infraction.findMany({
-                    where: {
-                        moderatorId: user.id,
-                        guildId: context.guildId,
-                        createdAt: createdAtFilters
-                    },
-                    orderBy: {
-                        createdAt: sortMode
-                    },
-                    take: limit,
-                    skip: (page - 1) * limit
+                const data = await this.application.database.query.infractions.findMany({
+                    where: and(
+                        eq(infractions.moderatorId, user.id),
+                        eq(infractions.guildId, context.guildId),
+                        createdAtFilters?.gte
+                            ? gte(infractions.createdAt, createdAtFilters.gte)
+                            : undefined
+                    ),
+                    orderBy:
+                        sortMode === "asc"
+                            ? asc(infractions.createdAt)
+                            : desc(infractions.createdAt),
+                    limit,
+                    offset: (page - 1) * limit
                 });
 
                 return { data };
@@ -226,13 +236,25 @@ export default class ModStatsCommand extends Command {
                                                             : 0)
                                           )
                                       };
-                            state.count = await this.application.prisma.infraction.count({
-                                where: {
-                                    moderatorId: user.id,
-                                    guildId: context.guildId,
-                                    createdAt: state.createdAtFilters
-                                }
-                            });
+
+                            state.count =
+                                (
+                                    await this.application.database.drizzle
+                                        .select({ count: count() })
+                                        .from(infractions)
+                                        .where(
+                                            and(
+                                                eq(infractions.moderatorId, user.id),
+                                                eq(infractions.guildId, context.guildId),
+                                                state.createdAtFilters?.gte
+                                                    ? gte(
+                                                          infractions.createdAt,
+                                                          state.createdAtFilters.gte
+                                                      )
+                                                    : undefined
+                                            )
+                                        )
+                                ).at(0)?.count ?? 0;
                             state.filterMode = filterMode;
                         }
                     }

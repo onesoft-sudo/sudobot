@@ -20,8 +20,9 @@ export const verificationRecords = pgTable("verification_records", {
     googleId: varchar("google_id"),
     email: varchar("email"),
     method: verificationMethodEnum("method").notNull(),
-    createdAt: timestamp("created_at").defaultNow(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
+        .notNull()
         .defaultNow()
         .$onUpdate(() => sql`current_timestamp`)
 });

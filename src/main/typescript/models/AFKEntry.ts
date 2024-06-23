@@ -6,11 +6,16 @@ export const afkEntries = pgTable("afk_entries", {
     reason: varchar("reason"),
     userId: varchar("user_id").notNull(),
     guildId: varchar("guild_id").notNull(),
-    mentions: varchar("mentions").notNull().array().default([]),
-    mentionCount: integer("mention_count").default(0),
-    global: boolean("global").default(false),
-    createdAt: timestamp("created_at").defaultNow(),
+    mentions: varchar("mentions")
+        .notNull()
+        .array()
+        .notNull()
+        .default(sql`'{}'`),
+    mentionCount: integer("mention_count").notNull().default(0),
+    global: boolean("global").notNull().default(false),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
+        .notNull()
         .defaultNow()
         .$onUpdate(() => sql`current_timestamp`)
 });

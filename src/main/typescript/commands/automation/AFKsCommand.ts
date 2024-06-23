@@ -4,6 +4,7 @@ import InteractionContext from "@framework/commands/InteractionContext";
 import LegacyContext from "@framework/commands/LegacyContext";
 import { Inject } from "@framework/container/Inject";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
+import { afkEntries } from "@main/models/AFKEntry";
 import AFKService from "@main/services/AFKService";
 import PermissionManagerService from "@main/services/PermissionManagerService";
 import {
@@ -16,6 +17,7 @@ import {
     escapeMarkdown,
     italic
 } from "discord.js";
+import { inArray } from "drizzle-orm";
 
 // TODO: Pagination
 class AFKsCommand extends Command {
@@ -231,13 +233,9 @@ class AFKsCommand extends Command {
             ids.push(this.afkService.cache.get(`${context.guildId}::${userId}`)!.id);
         }
 
-        await this.application.prisma.afkEntry.deleteMany({
-            where: {
-                id: {
-                    in: ids
-                }
-            }
-        });
+        await this.application.database.drizzle
+            .delete(afkEntries)
+            .where(inArray(afkEntries.id, ids));
 
         this.afkService.cache.delete(`global::${userId}`);
         this.afkService.cache.delete(`${context.guildId}::${userId}`);

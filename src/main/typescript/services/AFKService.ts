@@ -2,18 +2,19 @@ import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
 import { Colors } from "@main/constants/Colors";
-import { AfkEntry } from "@prisma/client";
+import { afkEntries, AFKEntry } from "@main/models/AFKEntry";
 import { formatDistanceToNowStrict } from "date-fns";
 import { Collection, escapeMarkdown, Message, messageLink, Snowflake, time } from "discord.js";
+import { and, eq, inArray } from "drizzle-orm";
 
 @Name("afkService")
 class AFKService extends Service implements HasEventListeners {
-    public readonly cache = new Collection<`${Snowflake | "global"}::${Snowflake}`, AfkEntry>();
+    public readonly cache = new Collection<`${Snowflake | "global"}::${Snowflake}`, AFKEntry>();
     protected readonly modified = new Set<`${Snowflake | "global"}::${Snowflake}`>();
     protected timeout?: ReturnType<typeof setTimeout>;
 
     public override async boot(): Promise<void> {
-        const entries = await this.application.prisma.afkEntry.findMany();
+        const entries = await this.application.database.query.afkEntries.findMany();
 
         for (const entry of entries) {
             this.cache.set(`${entry.guildId}::${entry.userId}`, entry);
@@ -29,14 +30,15 @@ class AFKService extends Service implements HasEventListeners {
             return null;
         }
 
-        const entry = await this.application.prisma.afkEntry.create({
-            data: {
+        const [entry] = await this.application.database.drizzle
+            .insert(afkEntries)
+            .values({
                 reason,
                 global: guildId === "global",
                 guildId,
                 userId
-            }
-        });
+            })
+            .returning();
 
         this.cache.set(key, entry);
         return entry;
@@ -68,13 +70,9 @@ class AFKService extends Service implements HasEventListeners {
             return 0;
         }
 
-        await this.application.prisma.afkEntry.deleteMany({
-            where: {
-                id: {
-                    in: ids
-                }
-            }
-        });
+        await this.application.database.drizzle
+            .delete(afkEntries)
+            .where(inArray(afkEntries.id, ids));
 
         this.application.logger.debug(`Removed ${ids.length} AFK entries for guild ${guildId}.`);
         return ids.length;
@@ -91,25 +89,21 @@ class AFKService extends Service implements HasEventListeners {
             };
         }
 
-        const inArray = [];
+        const list = [];
 
         if (globalEntry) {
-            inArray.push(globalEntry.id);
+            list.push(globalEntry.id);
             this.cache.delete(`global::${userId}`);
         }
 
         if (guildEntry) {
-            inArray.push(guildEntry.id);
+            list.push(guildEntry.id);
             this.cache.delete(`${guildId}::${userId}`);
         }
 
-        await this.application.prisma.afkEntry.deleteMany({
-            where: {
-                id: {
-                    in: inArray
-                }
-            }
-        });
+        await this.application.database.drizzle
+            .delete(afkEntries)
+            .where(inArray(afkEntries.id, list));
 
         return {
             global: globalEntry,
@@ -127,19 +121,20 @@ class AFKService extends Service implements HasEventListeners {
                     continue;
                 }
 
-                await this.application.prisma.afkEntry
-                    .update({
-                        where: {
-                            id: entry.id,
-                            guildId,
-                            userId
-                        },
-                        data: {
-                            reason: entry.reason,
-                            mentions: entry.mentions,
-                            mentionCount: entry.mentionCount
-                        }
+                await this.application.database.drizzle
+                    .update(afkEntries)
+                    .set({
+                        reason: entry.reason,
+                        mentions: entry.mentions,
+                        mentionCount: entry.mentionCount
                     })
+                    .where(
+                        and(
+                            eq(afkEntries.id, entry.id),
+                            eq(afkEntries.userId, userId),
+                            eq(afkEntries.guildId, guildId)
+                        )
+                    )
                     .catch(this.application.logger.error);
             }
 
@@ -188,15 +183,13 @@ class AFKService extends Service implements HasEventListeners {
         const entry = globalEntry ?? guildEntry;
 
         if (entry) {
-            await this.application.prisma.afkEntry.update({
-                where: {
-                    id: entry.id
-                },
-                data: {
+            await this.application.database.drizzle
+                .update(afkEntries)
+                .set({
                     global: !entry.global,
                     guildId
-                }
-            });
+                })
+                .where(and(eq(afkEntries.global, !entry.global), eq(afkEntries.guildId, guildId)));
 
             this.cache.delete(`${entry.global ? "global" : guildId}::${userId}`);
             this.cache.set(`${guildId}::${userId}`, {
@@ -209,10 +202,10 @@ class AFKService extends Service implements HasEventListeners {
         return entry;
     }
 
-    public generateAFKSummary(global: AfkEntry, guild?: AfkEntry): string;
-    public generateAFKSummary(global: AfkEntry | undefined, guild: AfkEntry): string;
+    public generateAFKSummary(global: AFKEntry, guild?: AFKEntry): string;
+    public generateAFKSummary(global: AFKEntry | undefined, guild: AFKEntry): string;
 
-    public generateAFKSummary(global?: AfkEntry, guild?: AfkEntry) {
+    public generateAFKSummary(global?: AFKEntry, guild?: AFKEntry) {
         let description = `You're no longer AFK. You've had **${(global?.mentionCount ?? 0) + (guild?.mentionCount ?? 0)}** mentions total.\n`;
         let mentions = "";
         let count = 0;

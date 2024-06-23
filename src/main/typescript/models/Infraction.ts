@@ -34,7 +34,7 @@ export const infractionDeliveryStatusEnum = pgEnum(
     InfractionDeliveryStatus
 );
 
-export const infraction = pgTable("infractions", {
+export const infractions = pgTable("infractions", {
     id: serial("id").primaryKey(),
     type: infractionTypeEnum("type").notNull(),
     userId: varchar("user_id").notNull(),
@@ -43,15 +43,16 @@ export const infraction = pgTable("infractions", {
     reason: varchar("reason"),
     expiresAt: timestamp("expires_at"),
     metadata: json("metadata"),
-    deliveryStatus: infractionDeliveryStatusEnum("delivery_status").default(
-        InfractionDeliveryStatus.Success
-    ),
+    deliveryStatus: infractionDeliveryStatusEnum("delivery_status")
+        .notNull()
+        .default(InfractionDeliveryStatus.Success),
     queueId: integer("queue_id"),
-    createdAt: timestamp("created_at").defaultNow(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
+        .notNull()
         .defaultNow()
         .$onUpdate(() => sql`current_timestamp`)
 });
 
-export type Infraction = typeof infraction.$inferSelect;
-export type InfractionCreatePayload = typeof infraction.$inferInsert;
+export type Infraction = typeof infractions.$inferSelect;
+export type InfractionCreatePayload = typeof infractions.$inferInsert;

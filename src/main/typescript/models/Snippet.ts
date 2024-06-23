@@ -14,18 +14,49 @@ export const snippets = pgTable("snippets", {
     name: varchar("name"),
     userId: varchar("user_id").notNull(),
     guildId: varchar("guild_id").notNull(),
-    aliases: varchar("aliases").notNull().array().default([]),
-    roles: varchar("roles").notNull().array().default([]),
-    channels: varchar("channels").notNull().array().default([]),
-    users: varchar("users").notNull().array().default([]),
-    attachments: varchar("attachments").notNull().array().default([]),
-    content: varchar("content").notNull().array().default([]),
-    randomize: boolean("randomize").default(false),
-    permissions: varchar("permissions").notNull().array().default([]),
-    permissionMode: permissionLogicModeEnum("permission_mode").default(PermissionLogicMode.And),
+    aliases: varchar("aliases")
+        .notNull()
+        .array()
+        .notNull()
+        .default(sql`'{}'`),
+    roles: varchar("roles")
+        .notNull()
+        .array()
+        .notNull()
+        .default(sql`'{}'`),
+    channels: varchar("channels")
+        .notNull()
+        .array()
+        .notNull()
+        .default(sql`'{}'`),
+    users: varchar("users")
+        .notNull()
+        .array()
+        .notNull()
+        .default(sql`'{}'`),
+    attachments: varchar("attachments")
+        .notNull()
+        .array()
+        .notNull()
+        .default(sql`ARRAY[]::varchar[]`),
+    content: varchar("content")
+        .notNull()
+        .array()
+        .notNull()
+        .default(sql`ARRAY[]::varchar[]`),
+    randomize: boolean("randomize").notNull().default(false),
+    permissions: varchar("permissions")
+        .notNull()
+        .array()
+        .notNull()
+        .default(sql`ARRAY[]::varchar[]`),
+    permissionMode: permissionLogicModeEnum("permission_mode")
+        .notNull()
+        .default(PermissionLogicMode.And),
     level: integer("level"),
-    createdAt: timestamp("created_at").defaultNow(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
+        .notNull()
         .defaultNow()
         .$onUpdate(() => sql`current_timestamp`)
 });

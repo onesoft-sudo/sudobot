@@ -7,8 +7,10 @@ import { Inject } from "@framework/container/Inject";
 import { auth, oauth2 } from "@googleapis/oauth2";
 import type VerificationService from "@main/automod/VerificationService";
 import { env } from "@main/env/env";
+import { verificationEntries } from "@main/models/VerificationEntry";
+import { VerificationMethod } from "@main/models/VerificationRecord";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
-import { VerificationMethod } from "@prisma/client";
+import { eq } from "drizzle-orm";
 import undici from "undici";
 import { z } from "zod";
 
@@ -134,17 +136,15 @@ class VerificationController extends Controller {
             return new Response({ status: 403, body: { error: "Failed to verify captcha." } });
         }
 
-        await this.application.prisma.verificationEntry.update({
-            where: {
-                id: entry.id
-            },
-            data: {
+        await this.application.database.drizzle
+            .update(verificationEntries)
+            .set({
                 metadata: {
                     ...(entry.metadata as Record<string, string>),
                     captcha_completed: true
                 }
-            }
-        });
+            })
+            .where(eq(verificationEntries.id, entry.id));
 
         return new Response({ status: 200, body: { message: "Captcha has been completed." } });
     }
@@ -221,7 +221,7 @@ class VerificationController extends Controller {
                 .service("verificationService")
                 .verifyWithEntry(entry, {
                     discordId: (userData as Record<string, string>).id,
-                    method: VerificationMethod.DISCORD
+                    method: VerificationMethod.Discord
                 });
 
             if (!result) {
@@ -340,7 +340,7 @@ class VerificationController extends Controller {
                 .service("verificationService")
                 .verifyWithEntry(entry, {
                     githubId: (userData as Record<string, number>).id?.toString(),
-                    method: VerificationMethod.GITHUB
+                    method: VerificationMethod.GitHub
                 });
 
             if (!result) {
@@ -418,7 +418,7 @@ class VerificationController extends Controller {
                 .service("verificationService")
                 .verifyWithEntry(entry, {
                     googleId: id,
-                    method: VerificationMethod.GOOGLE
+                    method: VerificationMethod.Google
                 });
 
             if (!result) {
@@ -544,7 +544,7 @@ class VerificationController extends Controller {
             .verifyWithEntry(entry, {
                 email,
                 emailToken,
-                method: VerificationMethod.EMAIL
+                method: VerificationMethod.Email
             });
 
         if (!result || result.error === "invalid_email") {

@@ -38,6 +38,6 @@ export function service(refOrName: typeof Service | ServiceName): Service {
     }
 }
 
-export const prisma = () => application().prisma;
+export const drizzle = () => application().database.drizzle;
 
 export { application as getApplication, client as getClient, container as getContainer };

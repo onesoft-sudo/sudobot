@@ -6,9 +6,9 @@ import { Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
+import { InfractionType } from "@main/models/Infraction";
 import InfractionManager from "@main/services/InfractionManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
-import { InfractionType } from "@prisma/client";
 import { bold, User } from "discord.js";
 
 type InfractionClearCommandArgs = {

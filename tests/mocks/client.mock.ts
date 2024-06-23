@@ -2,25 +2,7 @@ import "reflect-metadata";
 
 import Client from "@/core/Client";
 import { ClientUser } from "discord.js";
-import { vi } from "vitest";
 import { randomSnowflake } from "./snowflakes";
-
-vi.mock("@prisma/client", () => {
-    return {
-        __esModule: true,
-        PrismaClient: vi.fn().mockImplementation(() => {
-            return {
-                user: {
-                    findUnique: vi.fn(),
-                    create: vi.fn(),
-                    findMany: vi.fn(),
-                    update: vi.fn(),
-                    delete: vi.fn()
-                }
-            };
-        })
-    };
-});
 
 export function createClient() {
     const client = new Client({

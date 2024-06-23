@@ -20,6 +20,7 @@
 import FeatureFlagManager from "@framework/cluster/FeatureFlagManager";
 import type { DiscordKernelClassInterface } from "@framework/core/DiscordKernelClassInterface";
 import type { KernelInterface } from "@framework/core/KernelInterface";
+import path from "path";
 import type BaseClient from "../client/BaseClient";
 import Container from "../container/Container";
 import ClassLoader from "../import/ClassLoader";
@@ -124,23 +125,23 @@ class Application {
         queues = true
     }: { commands?: boolean; events?: boolean; permissions?: boolean; queues?: boolean } = {}) {
         await this.serviceManager.loadServices();
-        // FIXME
-        // if (permissions) {
-        //     await this.classLoader.loadPermissions(path.resolve(this.rootPath, "permissions"));
-        // }
 
-        // if (events) {
-        //     this.getClient().setMaxListenerCount(50);
-        //     await this.classLoader.loadEvents(path.resolve(this.rootPath, "events"));
-        // }
+        if (permissions) {
+            await this.classLoader.loadPermissions(path.resolve(this.rootPath, "permissions"));
+        }
 
-        // if (commands) {
-        //     await this.classLoader.loadCommands(path.resolve(this.rootPath, "commands"));
-        // }
+        if (events) {
+            this.getClient().setMaxListenerCount(50);
+            await this.classLoader.loadEvents(path.resolve(this.rootPath, "events"));
+        }
 
-        // if (queues) {
-        //     await this.classLoader.loadQueueClasses(path.resolve(this.rootPath, "queues"));
-        // }
+        if (commands) {
+            await this.classLoader.loadCommands(path.resolve(this.rootPath, "commands"));
+        }
+
+        if (queues) {
+            await this.classLoader.loadQueueClasses(path.resolve(this.rootPath, "queues"));
+        }
     }
 
     public createServiceManager(kernel: DiscordKernelClassInterface) {

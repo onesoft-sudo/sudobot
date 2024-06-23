@@ -15,7 +15,7 @@ import {
     ChatInputCommandInteraction,
     GuildMember,
     HeadingLevel,
-    Interaction,
+    type Interaction,
     ModalBuilder,
     ModalSubmitInteraction,
     PermissionsString,

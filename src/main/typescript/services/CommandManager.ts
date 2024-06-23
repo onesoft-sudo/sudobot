@@ -30,8 +30,8 @@ import { SystemPermissionLikeString } from "@framework/permissions/AbstractPermi
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { isDevelopmentMode } from "@framework/utils/utils";
+import { CommandPermissionOverwriteAction } from "@main/models/CommandPermissionOverwrite";
 import CommandRateLimiter from "@main/security/CommandRateLimiter";
-import { CommandPermissionOverwriteAction } from "@prisma/client";
 import {
     ApplicationCommandDataResolvable,
     ApplicationCommandOptionType,
@@ -614,8 +614,8 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
     ) {
         if (!base) {
             return {
-                allow: onMatch === "ALLOW" && other ? other : null,
-                deny: onMatch === "DENY" && other ? other : null
+                allow: onMatch === CommandPermissionOverwriteAction.Allow && other ? other : null,
+                deny: onMatch === CommandPermissionOverwriteAction.Deny && other ? other : null
             } satisfies CachedCommandPermissionOverwrites;
         }
 
@@ -623,7 +623,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             return base;
         }
 
-        const target = onMatch === "ALLOW" ? "allow" : "deny";
+        const target = onMatch === CommandPermissionOverwriteAction.Allow ? "allow" : "deny";
         const existing = base[target];
 
         if (!existing) {
@@ -678,13 +678,27 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
                 .getMemberPermissions(context.member));
 
         if (allow) {
-            if (await this.performChecks("ALLOW", allow, context, memberPermissions)) {
+            if (
+                await this.performChecks(
+                    CommandPermissionOverwriteAction.Allow,
+                    allow,
+                    context,
+                    memberPermissions
+                )
+            ) {
                 allowMatched = true;
             }
         }
 
         if (deny) {
-            if (await this.performChecks("DENY", deny, context, memberPermissions)) {
+            if (
+                await this.performChecks(
+                    CommandPermissionOverwriteAction.Deny,
+                    deny,
+                    context,
+                    memberPermissions
+                )
+            ) {
                 denyMatched = true;
             }
         }

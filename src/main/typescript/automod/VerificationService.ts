@@ -6,21 +6,21 @@ import { Events } from "@framework/types/ClientEvents";
 import { fetchMember, fetchUser } from "@framework/utils/entities";
 import { Colors } from "@main/constants/Colors";
 import { env } from "@main/env/env";
+import { verificationEntries, VerificationEntry } from "@main/models/VerificationEntry";
+import { VerificationMethod, verificationRecords } from "@main/models/VerificationRecord";
 import VerificationExpiredQueue from "@main/queues/VerificationExpiredQueue";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import type ModerationActionService from "@main/services/ModerationActionService";
-import { VerificationEntry, VerificationMethod } from "@prisma/client";
 import {
     ActionRowBuilder,
+    bold,
     ButtonBuilder,
     ButtonStyle,
     GuildMember,
-    Snowflake,
-    bold
+    Snowflake
 } from "discord.js";
+import { and, eq } from "drizzle-orm";
 import jwt from "jsonwebtoken";
-
-// TODO
 
 @Name("verificationService")
 class VerificationService extends Service {
@@ -59,12 +59,14 @@ class VerificationService extends Service {
 
     @GatewayEventListener(Events.GuildMemberRemove)
     public async onGuildMemberRemove(member: GuildMember) {
-        await this.application.prisma.verificationEntry.deleteMany({
-            where: {
-                userId: member.id,
-                guildId: member.guild.id
-            }
-        });
+        await this.application.database.drizzle
+            .delete(verificationEntries)
+            .where(
+                and(
+                    eq(verificationEntries.userId, member.id),
+                    eq(verificationEntries.guildId, member.guild.id)
+                )
+            );
 
         await this.clearVerificationQueues(member.guild.id, member.id);
     }
@@ -93,8 +95,9 @@ class VerificationService extends Service {
             }
         );
 
-        const entry = await this.application.prisma.verificationEntry.create({
-            data: {
+        const [entry] = await this.application.database.drizzle
+            .insert(verificationEntries)
+            .values({
                 guildId: member.guild.id,
                 userId: member.id,
                 code,
@@ -102,8 +105,8 @@ class VerificationService extends Service {
                 metadata: {
                     captcha_completed: false
                 }
-            }
-        });
+            })
+            .returning();
 
         await this.application
             .service("queueService")
@@ -166,14 +169,17 @@ class VerificationService extends Service {
     }
 
     public async onVerificationExpire(guildId: Snowflake, userId: Snowflake) {
-        const { count } = await this.application.prisma.verificationEntry.deleteMany({
-            where: {
-                userId,
-                guildId
-            }
-        });
+        const results = await this.application.database.drizzle
+            .delete(verificationEntries)
+            .where(
+                and(
+                    eq(verificationEntries.guildId, guildId),
+                    eq(verificationEntries.userId, userId)
+                )
+            )
+            .returning({ id: verificationEntries.id });
 
-        if (count === 0) {
+        if (results.length === 0) {
             return;
         }
 
@@ -192,10 +198,8 @@ class VerificationService extends Service {
     }
 
     public async getVerificationEntry(code: string) {
-        const entry = await this.application.prisma.verificationEntry.findUnique({
-            where: {
-                code
-            }
+        const entry = await this.application.database.query.verificationEntries.findFirst({
+            where: eq(verificationEntries.code, code)
         });
 
         if (!entry) {
@@ -250,7 +254,7 @@ class VerificationService extends Service {
             return null;
         }
 
-        if (payload.method === VerificationMethod.EMAIL) {
+        if (payload.method === VerificationMethod.Email) {
             if (
                 typeof entry.metadata !== "object" ||
                 !entry.metadata ||
@@ -269,14 +273,18 @@ class VerificationService extends Service {
             }
         }
 
-        const existingRecord = await this.application.prisma.verificationRecord.findFirst({
-            where: {
-                guildId: guild.id,
-                userId: entry.userId,
-                ...(payload as {
-                    email?: string;
-                })
-            }
+        const existingRecord = await this.application.database.query.verificationRecords.findFirst({
+            where: and(
+                eq(verificationRecords.guildId, guild.id),
+                eq(verificationRecords.userId, entry.userId),
+                payload.discordId
+                    ? eq(verificationRecords.discordId, payload.discordId)
+                    : undefined,
+                payload.email ? eq(verificationRecords.email, payload.email) : undefined,
+                payload.githubId ? eq(verificationRecords.githubId, payload.githubId) : undefined,
+                payload.googleId ? eq(verificationRecords.googleId, payload.googleId) : undefined,
+                payload.method ? eq(verificationRecords.method, payload.method) : undefined
+            )
         });
 
         if (existingRecord) {
@@ -299,18 +307,13 @@ class VerificationService extends Service {
             await member.roles.add(config.verified_roles, "Account verified.");
         }
 
-        await this.application.prisma.verificationEntry.delete({
-            where: {
-                id: entry.id
-            }
-        });
-
-        await this.application.prisma.verificationRecord.create({
-            data: {
-                guildId: guild.id,
-                userId: member.id,
-                ...payload
-            }
+        await this.application.database.drizzle
+            .delete(verificationEntries)
+            .where(eq(verificationEntries.id, entry.id));
+        await this.application.database.drizzle.insert(verificationRecords).values({
+            guildId: guild.id,
+            userId: member.id,
+            ...payload
         });
 
         await this.clearVerificationQueues(entry.guildId, entry.userId);
@@ -361,18 +364,16 @@ class VerificationService extends Service {
             }
         );
 
-        await this.application.prisma.verificationEntry.update({
-            where: {
-                id: entry.id
-            },
-            data: {
+        await this.application.database.drizzle
+            .update(verificationEntries)
+            .set({
                 metadata: {
                     ...(entry.metadata as Record<string, string>),
                     emailToken: token,
                     email
                 }
-            }
-        });
+            })
+            .where(eq(verificationEntries.id, entry.id));
 
         return token;
     }

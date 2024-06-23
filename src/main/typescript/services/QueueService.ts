@@ -2,6 +2,8 @@ import Queue, { QueueOptions, StorableData } from "@framework/queues/Queue";
 import QueueManager, { QueueClass } from "@framework/queues/QueueManager";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
+import { queues } from "@main/models/Queue";
+import { isNotNull } from "drizzle-orm";
 import { HasEventListeners } from "../types/HasEventListeners";
 
 @Name("queueService")
@@ -29,15 +31,11 @@ class QueueService extends Service implements HasEventListeners {
     }
 
     public async sync(): Promise<void> {
-        const queues = await this.application.prisma.queue.findMany({
-            where: {
-                NOT: {
-                    runsAt: null
-                }
-            }
+        const queuedJobs = await this.application.database.query.queues.findMany({
+            where: (isNotNull(queues.runsAt))
         });
 
-        for (const queueInfo of queues) {
+        for (const queueInfo of queuedJobs) {
             const {
                 name,
                 runsAt,
@@ -80,7 +78,7 @@ class QueueService extends Service implements HasEventListeners {
             this.application.logger.debug("Queued", queue.id);
         }
 
-        this.application.logger.info(`Synced ${queues.length} queued jobs`);
+        this.application.logger.info(`Synced ${queuedJobs.length} queued jobs`);
     }
 
     public create<T extends StorableData>(

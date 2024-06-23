@@ -1,7 +1,7 @@
 import type { Buildable } from "@framework/commands/Command";
 import { Command, type SubcommandMeta } from "@framework/commands/Command";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
-import { InfractionType } from "@prisma/client";
+import { InfractionType } from "@main/models/Infraction";
 
 class InfractionCommand extends Command {
     public override readonly name = "infraction";

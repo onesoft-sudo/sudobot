@@ -6,10 +6,26 @@ export const permissionLevels = pgTable("permission_levels", {
     guildId: varchar("guild_id").notNull(),
     level: integer("level").notNull(),
     disabled: boolean("disabled").default(false),
-    grantedDiscordPermissions: text("granted_discord_permissions").notNull().array().default([]),
-    grantedSystemPermissions: text("granted_system_permissions").notNull().array().default([]),
-    roles: text("roles").notNull().array().default([]),
-    users: text("users").notNull().array().default([]),
+    grantedDiscordPermissions: text("granted_discord_permissions")
+        .notNull()
+        .array()
+        .notNull()
+        .default(sql`'{}'`),
+    grantedSystemPermissions: text("granted_system_permissions")
+        .notNull()
+        .array()
+        .notNull()
+        .default(sql`'{}'`),
+    roles: text("roles")
+        .notNull()
+        .array()
+        .notNull()
+        .default(sql`'{}'`),
+    users: text("users")
+        .notNull()
+        .array()
+        .notNull()
+        .default(sql`'{}'`),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at")
         .defaultNow()

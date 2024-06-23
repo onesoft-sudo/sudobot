@@ -3,12 +3,13 @@ import { GatewayEventListener } from "@framework/events/GatewayEventListener";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
+import { ReactionRole, reactionRoles } from "@main/models/ReactionRole";
 import LevelBasedPermissionManager from "@main/security/LevelBasedPermissionManager";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import type PermissionManagerService from "@main/services/PermissionManagerService";
 import { safeMemberFetch } from "@main/utils/fetch";
-import { ReactionRole } from "@prisma/client";
 import { Client, GuildMember, PermissionsString, Routes, Snowflake } from "discord.js";
+import { inArray } from "drizzle-orm";
 
 @Name("reactionRoleService")
 class ReactionRoleService extends Service implements HasEventListeners {
@@ -26,15 +27,11 @@ class ReactionRoleService extends Service implements HasEventListeners {
     public async onReady(client: Client<true>) {
         this.application.logger.debug("Syncing reaction roles...");
 
-        const reactionRoles = await this.application.prisma.reactionRole.findMany({
-            where: {
-                guildId: {
-                    in: [...client.guilds.cache.keys()]
-                }
-            }
+        const reactionRoleList = await this.application.database.query.reactionRoles.findMany({
+            where: inArray(reactionRoles.guildId, [...client.guilds.cache.keys()])
         });
 
-        for (const reactionRole of reactionRoles) {
+        for (const reactionRole of reactionRoleList) {
             this.reactionRoleEntries.set(
                 `${reactionRole.guildId}_${reactionRole.channelId}_${reactionRole.messageId}_${reactionRole.emoji}`,
                 reactionRole
@@ -307,8 +304,9 @@ class ReactionRoleService extends Service implements HasEventListeners {
         roles: Snowflake[];
         mode?: "SINGLE" | "MULTIPLE";
     }) {
-        const reactionRole = await this.application.prisma.reactionRole.create({
-            data: {
+        const [reactionRole] = await this.application.database.drizzle
+            .insert(reactionRoles)
+            .values({
                 channelId,
                 guildId,
                 messageId,
@@ -316,8 +314,8 @@ class ReactionRoleService extends Service implements HasEventListeners {
                 emoji,
                 roles,
                 single: mode === "SINGLE"
-            }
-        });
+            })
+            .returning();
 
         this.reactionRoleEntries.set(
             `${reactionRole.guildId}_${reactionRole.channelId}_${reactionRole.messageId}_${reactionRole.emoji}`,

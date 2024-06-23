@@ -6,9 +6,9 @@ import { Inject } from "@framework/container/Inject";
 import Pagination from "@framework/pagination/Pagination";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { Colors } from "@main/constants/Colors";
+import { Infraction } from "@main/models/Infraction";
 import InfractionManager from "@main/services/InfractionManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
-import { Infraction } from "@prisma/client";
 import { italic, time, User } from "discord.js";
 
 type InfractionListCommandArgs = {

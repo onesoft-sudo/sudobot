@@ -4,18 +4,35 @@ import { boolean, integer, pgTable, serial, timestamp, varchar } from "drizzle-o
 export const reactionRoles = pgTable("reaction_roles", {
     id: serial("id").primaryKey(),
     emoji: varchar("emoji"),
-    isBuiltInEmoji: boolean("is_built_in_emoji").default(false),
+    isBuiltInEmoji: boolean("is_built_in_emoji").notNull().default(false),
     guildId: varchar("guild_id").notNull(),
     channelId: varchar("channel_id").notNull(),
     messageId: varchar("message_id").notNull(),
-    roles: varchar("roles").notNull().array().default([]),
-    requiredRoles: varchar("required_roles").notNull().array().default([]),
-    blacklistedUsers: varchar("blacklisted_users").notNull().array().default([]),
-    requiredPermissions: varchar("required_permissions").notNull().array().default([]),
+    roles: varchar("roles")
+        .notNull()
+        .array()
+        .notNull()
+        .default(sql`'{}'`),
+    requiredRoles: varchar("required_roles")
+        .notNull()
+        .array()
+        .notNull()
+        .default(sql`'{}'`),
+    blacklistedUsers: varchar("blacklisted_users")
+        .notNull()
+        .array()
+        .notNull()
+        .default(sql`'{}'`),
+    requiredPermissions: varchar("required_permissions")
+        .notNull()
+        .array()
+        .notNull()
+        .default(sql`'{}'`),
     level: integer("level"),
-    single: boolean("single").default(false),
-    createdAt: timestamp("created_at").defaultNow(),
+    single: boolean("single").notNull().default(false),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
+        .notNull()
         .defaultNow()
         .$onUpdate(() => sql`current_timestamp`)
 });

@@ -19,10 +19,15 @@
  */
 
 import type Kernel from "@framework/core/Kernel";
+import type { User } from "@main/models/User";
 
 declare global {
     var bootDate: number;
     var kernel: Kernel;
+
+    interface Globals {
+        user: User;
+    }
 }
 
 declare module "node:events" {

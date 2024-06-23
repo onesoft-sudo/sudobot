@@ -5,9 +5,9 @@ import { Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
+import { Infraction } from "@main/models/Infraction";
 import InfractionManager from "@main/services/InfractionManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
-import { Infraction } from "@prisma/client";
 
 type InfractionDeleteCommandArgs = {
     id: number;
@@ -50,7 +50,7 @@ class InfractionDeleteCommand extends Command {
             ephemeral: true
         });
 
-        const infraction: Infraction | null = await this.infractionManager.deleteById(
+        const infraction: Infraction | undefined = await this.infractionManager.deleteById(
             context.guildId!,
             args.id
         );
