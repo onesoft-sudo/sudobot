@@ -1,4 +1,28 @@
-# [9.1.0](https://github.com/onesoft-sudo/sudobot/compare/v8.30.0...v9.1.0) (2024-06-16)
+## [9.2.1](https://github.com/onesoft-sudo/sudobot/compare/v9.2.0...v9.2.1) (2024-06-22)
+
+
+### Bug Fixes
+
+* **logging:** message deletion log delay ([770ebf1](https://github.com/onesoft-sudo/sudobot/commit/770ebf18c02ebc044a9f88f815a63d12ace29da6))
+
+
+
+# [9.2.0](https://github.com/onesoft-sudo/sudobot/compare/v9.1.0...v9.2.0) (2024-06-22)
+
+
+### Bug Fixes
+
+* compatibility issues with TypeScript 5.5 ([dec8d93](https://github.com/onesoft-sudo/sudobot/commit/dec8d93f70fd9305a930428ee5f96ec921fbc74a))
+
+
+### Features
+
+* **automod:rules:** bypassers ([f168ede](https://github.com/onesoft-sudo/sudobot/commit/f168ede30306194529882af54e999f46bfe1a9bb))
+* **framework:concurrent:** semaphore condition ([d8f38cf](https://github.com/onesoft-sudo/sudobot/commit/d8f38cf2a1b3b8a091a2fae768c77fd7c11f86dc))
+
+
+
+# [9.1.0](https://github.com/onesoft-sudo/sudobot/compare/v9.0.0-beta.1...v9.1.0) (2024-06-16)
 
 
 ### Bug Fixes
@@ -323,33 +347,6 @@
 ### Features
 
 * **commands:ai:** support custom model names ([68d2b42](https://github.com/onesoft-sudo/sudobot/commit/68d2b4248a053e47d4cdf3e1dc50cf05bb0ff0e4))
-
-
-
-## [8.29.3](https://github.com/onesoft-sudo/sudobot/compare/v8.29.2...v8.29.3) (2024-03-13)
-
-
-### Bug Fixes
-
-* ai command ([025f94a](https://github.com/onesoft-sudo/sudobot/commit/025f94a1474add7884ed2e7f5ff9089e0f6f41ed))
-
-
-
-## [8.29.2](https://github.com/onesoft-sudo/sudobot/compare/v8.29.1...v8.29.2) (2024-03-13)
-
-
-### Bug Fixes
-
-* ai command ([523af9f](https://github.com/onesoft-sudo/sudobot/commit/523af9f74fee0b94e364a3c5bb1b0fb169d02529))
-
-
-
-## [8.29.1](https://github.com/onesoft-sudo/sudobot/compare/v8.29.0...v8.29.1) (2024-03-13)
-
-
-### Bug Fixes
-
-* **commands:ai:** gemini api ([f6d08ea](https://github.com/onesoft-sudo/sudobot/commit/f6d08eaddb65331e9b00a9aa06b7e60678562575))
 
 
 

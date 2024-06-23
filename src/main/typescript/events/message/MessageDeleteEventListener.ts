@@ -63,7 +63,7 @@ class MessageDeleteEventListener extends EventListener<Events.MessageDelete> {
                 message,
                 moderator
             );
-        }, 1000);
+        }, 100);
     }
 }
 
