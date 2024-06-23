@@ -34,13 +34,7 @@ jobs:
               run: make
 
             - name: "Install Dependencies"
-              run: npm install
-
-            - name: "Install Dev Dependencies"
               run: npm install -D
-
-            - name: "Generate prisma client"
-              run: npx prisma generate
 
             - name: "ESLint"
               run: npm run lint || echo "ESLint Failed"
@@ -90,13 +84,7 @@ jobs:
               run: make
 
             - name: "Install Dependencies"
-              run: npm install
-
-            - name: "Install Dev Dependencies"
               run: npm install -D
-
-            - name: "Generate prisma client"
-              run: npx prisma generate
 
             - name: "ESLint"
               run: npm run lint || echo "ESLint Failed"
