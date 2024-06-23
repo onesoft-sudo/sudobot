@@ -20,9 +20,6 @@
 import FeatureFlagManager from "@framework/cluster/FeatureFlagManager";
 import type { DiscordKernelClassInterface } from "@framework/core/DiscordKernelClassInterface";
 import type { KernelInterface } from "@framework/core/KernelInterface";
-import { isDevelopmentMode } from "@framework/utils/utils";
-import { PrismaClient } from "@prisma/client";
-import path from "node:path";
 import type BaseClient from "../client/BaseClient";
 import Container from "../container/Container";
 import ClassLoader from "../import/ClassLoader";
@@ -39,15 +36,11 @@ class Application {
     private _logger?: Logger;
     private _metadata?: Record<string, unknown>;
 
-    public readonly prisma = new PrismaClient({
-        errorFormat: "pretty",
-        log: isDevelopmentMode() ? ["error", "info", "query", "warn"] : ["error", "info", "warn"]
-    });
-
     public readonly classLoader = ClassLoader.getInstance(this);
     public readonly featureFlagManager = new FeatureFlagManager(this);
 
     private _serviceManager?: ServiceManager;
+    private _databaseService?: ServiceRecord["databaseService"];
 
     public constructor(
         public readonly rootPath: string,
@@ -63,6 +56,14 @@ class Application {
         }
 
         return this._serviceManager;
+    }
+
+    public get database() {
+        if (!this._databaseService) {
+            this._databaseService = this.service("databaseService");
+        }
+
+        return this._databaseService;
     }
 
     public static current() {
@@ -123,23 +124,23 @@ class Application {
         queues = true
     }: { commands?: boolean; events?: boolean; permissions?: boolean; queues?: boolean } = {}) {
         await this.serviceManager.loadServices();
+        // FIXME
+        // if (permissions) {
+        //     await this.classLoader.loadPermissions(path.resolve(this.rootPath, "permissions"));
+        // }
 
-        if (permissions) {
-            await this.classLoader.loadPermissions(path.resolve(this.rootPath, "permissions"));
-        }
+        // if (events) {
+        //     this.getClient().setMaxListenerCount(50);
+        //     await this.classLoader.loadEvents(path.resolve(this.rootPath, "events"));
+        // }
 
-        if (events) {
-            this.getClient().setMaxListenerCount(50);
-            await this.classLoader.loadEvents(path.resolve(this.rootPath, "events"));
-        }
+        // if (commands) {
+        //     await this.classLoader.loadCommands(path.resolve(this.rootPath, "commands"));
+        // }
 
-        if (commands) {
-            await this.classLoader.loadCommands(path.resolve(this.rootPath, "commands"));
-        }
-
-        if (queues) {
-            await this.classLoader.loadQueueClasses(path.resolve(this.rootPath, "queues"));
-        }
+        // if (queues) {
+        //     await this.classLoader.loadQueueClasses(path.resolve(this.rootPath, "queues"));
+        // }
     }
 
     public createServiceManager(kernel: DiscordKernelClassInterface) {

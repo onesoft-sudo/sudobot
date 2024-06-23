@@ -22,6 +22,7 @@ import type { ServiceManager } from "@framework/services/ServiceManager";
 import type AntiMemberJoinService from "@main/automod/AntiMemberJoinService";
 import type VerificationService from "@main/automod/VerificationService";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
+import type DatabaseService from "@main/services/DatabaseService";
 import type DirectiveParsingService from "@main/services/DirectiveParsingService";
 import type InviteTrackingService from "@main/services/InviteTrackingService";
 import type SystemAuditLoggingService from "@main/services/SystemAuditLoggingService";
@@ -59,6 +60,7 @@ export interface ServiceRecord {
     antiMemberJoinService: AntiMemberJoinService;
     verificationService: VerificationService;
     inviteTrackingService: InviteTrackingService;
+    databaseService: DatabaseService;
 }
 
 interface ServiceRecordLocal extends ServiceRecord {}

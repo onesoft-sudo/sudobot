@@ -32,7 +32,12 @@
             "@root/*": ["./*"]
         }
     },
-    "include": ["src/main/typescript/types/global/globals.d.ts", "src/**/*.ts", "build.blaze.ts"],
+    "include": [
+        "src/main/typescript/types/global/globals.d.ts",
+        "src/**/*.ts",
+        "build.blaze.ts",
+        "drizzle.config.ts"
+    ],
     "exclude": [
         "./backup",
         "./tmp",
