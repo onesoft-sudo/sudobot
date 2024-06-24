@@ -1,3 +1,12 @@
+# [9.5.0](https://github.com/onesoft-sudo/sudobot/compare/v9.4.0...v9.5.0) (2024-06-24)
+
+
+### Features
+
+* add moderation rule docs (1/3) ([849f276](https://github.com/onesoft-sudo/sudobot/commit/849f276362be53e746172618eeac5bf010311820))
+
+
+
 # [9.4.0](https://github.com/onesoft-sudo/sudobot/compare/v9.3.0...v9.4.0) (2024-06-23)
 
 
