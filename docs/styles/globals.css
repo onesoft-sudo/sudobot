@@ -51,9 +51,9 @@ body {
     border-radius: 5px;
 }
 
-#article pre,
-#article code {
-    font-family: "Ubuntu Mono", "SF Mono", "Consolas", "Droid Mono",
+#article pre:not(.no-auto-font),
+#article code:not(.no-auto-font) {
+    font-family: "JetBrainsMono NFM", "JetBrains Mono", "Ubuntu Mono", "SF Mono", "Consolas", "Droid Mono",
         "Roboto Mono", "Courier New", Courier, monospace;
 }
 

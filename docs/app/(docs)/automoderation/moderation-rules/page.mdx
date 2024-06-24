@@ -1,0 +1,108 @@
+---
+title: Automatic Moderation Rules - SudoBot
+short_name: Automatic Moderation Rules
+---
+
+import ConfigOption from "@/components/MDX/ConfigOption";
+import Callout from "@/components/Alerts/Callout";
+
+# Automatic Moderation Rules
+
+<Callout type="warning">
+This page is not yet complete. Some information may be missing or incorrect. Please check back later for updates.
+</Callout>
+
+Automatic Moderation Rules, or Moderation Rules (or simply "rules"), are a set of rules that are used to automatically moderate messages and user profiles in your server. These rules are used to filter out messages and user profiles that violate the rules you've set up.
+
+## What are Moderation Rules and how do they work?
+
+Moderation Rules are defined inside the guild-specific configuration file, and each rule may have an associated trigger condition and actions on trigger, alongside other behavior-controlling options.
+
+Moderation Rules are **order-specific**, that means, the order in which the rules are defined in the configuration file matters. The first rule that matches the trigger condition will be executed, and the rest of the rules may or may not be ignored depending on the rule's configuration.
+
+## Configuring Moderation Rules
+
+To configure Moderation Rules, you need to edit the guild-specific configuration file. The configuration file is located at `config/config.json`.
+The object you should add/edit is `rule_moderation`. For example, a Moderation Rule configuration might look like this:
+
+```json
+{
+    // This key is the Guild ID!
+    "847638624836373764": {
+        "rule_moderation": {
+            "enabled": true,
+            "rules": [
+                { "type": "word_filter",  "words":    ["word1", "word2"],   "actions": [{ "type": "delete_message" }] },
+                { "type": "regex_filter", "patterns": ["disc(o|0)rd\\.gg"], "actions": [{ "type": "delete_message" }] }
+            ]
+        }
+    }
+}
+```
+
+We&rsquo;ll explain the configuration options in the next section.
+
+## Rule Attributes
+
+Each rule is an object defined inside the `rule_moderation.rules` array. The following attributes are available for each rule:
+
+<ConfigOption 
+    optionKey="rule.type"
+    type="RuleTypeString"
+>
+The type of the rule. Currently, the following types are supported: 
+
+* `word_filter`
+* `regex_filter`
+* `anti_invite`
+* `domain_filter`
+* `mime_type_filter`
+* `file_extension_filter`
+* `repeated_text_filter`
+* `mass_mention_filter`
+* `image_filter`
+* `embed_filter`
+* `profile_filter`
+* `ai_scan`
+</ConfigOption>
+
+<ConfigOption 
+    optionKey="rule.name"
+    type="string"
+    optional
+>
+The name of the rule. This is optional and is used for identification purposes.
+</ConfigOption>
+
+<ConfigOption 
+    optionKey="rule.enabled"
+    type="boolean"
+    optional
+    defaultValue="true"
+>
+Whether the rule is enabled or not. If this is set to `false`, the rule will be ignored.
+</ConfigOption>
+
+<ConfigOption 
+    optionKey="rule.mode"
+    type={
+        <>
+            <span className="text-yellow-600">"normal"</span>
+            <span className="mx-2">|</span>
+            <span className="text-yellow-600">"inverse"</span>
+        </>
+    }
+    optional
+    defaultValue={`"normal"`}
+>
+The mode of the rule. If set to `inverse`, the rule will be triggered when the trigger condition is not met.
+</ConfigOption>
+
+<ConfigOption 
+    optionKey="rule.bail"
+    type="boolean"
+    optional
+    defaultValue="true"
+>
+Whether to stop processing the rules after this rule is triggered. If this is set to `false`, the next rule will be processed even if this rule is triggered.
+</ConfigOption>
