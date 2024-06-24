@@ -25,26 +25,20 @@ const hasStringArrayData = {
     data: z.array(z.string()).default([])
 };
 
+const MessageRuleConditionSchema = z.object({
+    roles: z.array(zSnowflake).optional(),
+    users: z.array(zSnowflake).optional(),
+    channels: z.array(zSnowflake).optional()
+});
+
 const Common = {
     name: z.string().nullable().default(null),
     actions: z.array(ModerationActionSchema).default([]),
     mode: z.enum(["normal", "invert"]).default("normal"),
     enabled: z.boolean().default(true),
     bail: z.boolean().default(true),
-    for: z
-        .object({
-            roles: z.array(zSnowflake).optional(),
-            users: z.array(zSnowflake).optional(),
-            channels: z.array(zSnowflake).optional()
-        })
-        .optional(),
-    exceptions: z
-        .object({
-            roles: z.array(zSnowflake).optional(),
-            users: z.array(zSnowflake).optional(),
-            channels: z.array(zSnowflake).optional()
-        })
-        .optional(),
+    for: MessageRuleConditionSchema.optional(),
+    exceptions: MessageRuleConditionSchema.optional(),
     is_bypasser: z.boolean().default(false),
     bypasses: z.array(z.string()).nullable().default(null)
 };
