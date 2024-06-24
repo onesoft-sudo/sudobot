@@ -3,14 +3,9 @@ title: Automatic Moderation Rules - SudoBot
 short_name: Automatic Moderation Rules
 ---
 
-import ConfigOption from "@/components/MDX/ConfigOption";
-import Callout from "@/components/Alerts/Callout";
+import { ConfigOption } from "@/components/MDX/ConfigOption";
 
 # Automatic Moderation Rules
-
-<Callout type="warning">
-This page is not yet complete. Some information may be missing or incorrect. Please check back later for updates.
-</Callout>
 
 Automatic Moderation Rules, or Moderation Rules (or simply "rules"), are a set of rules that are used to automatically moderate messages and user profiles in your server. These rules are used to filter out messages and user profiles that violate the rules you've set up.
 
@@ -32,8 +27,16 @@ The object you should add/edit is `rule_moderation`. For example, a Moderation R
         "rule_moderation": {
             "enabled": true,
             "rules": [
-                { "type": "word_filter",  "words":    ["word1", "word2"],   "actions": [{ "type": "delete_message" }] },
-                { "type": "regex_filter", "patterns": ["disc(o|0)rd\\.gg"], "actions": [{ "type": "delete_message" }] }
+                {
+                    "type": "word_filter",
+                    "words": ["word1", "word2"],
+                    "actions": [{ "type": "delete_message" }]
+                },
+                {
+                    "type": "regex_filter",
+                    "patterns": ["disc(o|0)rd\\.gg"],
+                    "actions": [{ "type": "delete_message" }]
+                }
             ]
         }
     }
@@ -50,59 +53,126 @@ Each rule is an object defined inside the `rule_moderation.rules` array. The fol
     optionKey="rule.type"
     type="RuleTypeString"
 >
-The type of the rule. Currently, the following types are supported: 
+The type of the rule. Currently, the following types are supported:
 
-* `word_filter`
-* `regex_filter`
-* `anti_invite`
-* `domain_filter`
-* `mime_type_filter`
-* `file_extension_filter`
-* `repeated_text_filter`
-* `mass_mention_filter`
-* `image_filter`
-* `embed_filter`
-* `profile_filter`
-* `ai_scan`
+-   `word_filter`
+-   `regex_filter`
+-   `anti_invite`
+-   `domain_filter`
+-   `mime_type_filter`
+-   `file_extension_filter`
+-   `repeated_text_filter`
+-   `mass_mention_filter`
+-   `image_filter`
+-   `embed_filter`
+-   `profile_filter`
+-   `ai_scan`
 </ConfigOption>
 
-<ConfigOption 
-    optionKey="rule.name"
-    type="string"
-    optional
->
-The name of the rule. This is optional and is used for identification purposes.
+<ConfigOption optionKey="rule.name" type="string" optional>
+    The name of the rule. This is optional and is used for identification
+    purposes.
 </ConfigOption>
 
-<ConfigOption 
+<ConfigOption
     optionKey="rule.enabled"
     type="boolean"
     optional
     defaultValue="true"
 >
-Whether the rule is enabled or not. If this is set to `false`, the rule will be ignored.
+    Whether the rule is enabled or not. If this is set to `false`, the rule will
+    be ignored.
 </ConfigOption>
 
-<ConfigOption 
+<ConfigOption
     optionKey="rule.mode"
     type={
-        <>
-            <span className="text-yellow-600">"normal"</span>
-            <span className="mx-2">|</span>
-            <span className="text-yellow-600">"inverse"</span>
-        </>
+        <ConfigOption.Types.Union>
+            <ConfigOption.Types.StringLiteral>
+                normal
+            </ConfigOption.Types.StringLiteral>
+            <ConfigOption.Types.StringLiteral>
+                inverse
+            </ConfigOption.Types.StringLiteral>
+        </ConfigOption.Types.Union>
     }
     optional
     defaultValue={`"normal"`}
 >
-The mode of the rule. If set to `inverse`, the rule will be triggered when the trigger condition is not met.
+    The mode of the rule. If set to `inverse`, the rule will be triggered when
+    the trigger condition is not met.
 </ConfigOption>
 
-<ConfigOption 
-    optionKey="rule.bail"
-    type="boolean"
-    optional
-    defaultValue="true"
+<ConfigOption optionKey="rule.bail" type="boolean" optional defaultValue="true">
+    Whether to stop processing the rules after this rule is triggered. If this
+    is set to `false`, the next rule will be processed even if this rule is
+    triggered.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.actions"
+    type={
+        <ConfigOption.Types.ArrayLiteral>
+            <ConfigOption.Types.Identifier url="https://github.com/onesoft-sudo/sudobot/blob/main/src/main/typescript/schemas/ModerationActionSchema.ts#L9">
+                ModerationAction
+            </ConfigOption.Types.Identifier>
+        </ConfigOption.Types.ArrayLiteral>
+    }
 >
-Whether to stop processing the rules after this rule is triggered. If this is set to `false`, the next rule will be processed even if this rule is triggered.
+    An array of actions to perform when the rule is triggered. Each action is a
+    `ModerationAction` object.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.for"
+    optional
+    type={
+        <ConfigOption.Types.Identifier url="https://github.com/onesoft-sudo/sudobot/blob/main/src/main/typescript/schemas/MessageRuleSchema.ts#L28">
+            MessageRuleCondition
+        </ConfigOption.Types.Identifier>
+    }
+>
+    The condition that must be met for the rule to be triggered. This is an
+    object that defines the condition.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.exceptions"
+    optional
+    type={
+        <ConfigOption.Types.Identifier url="https://github.com/onesoft-sudo/sudobot/blob/main/src/main/typescript/schemas/MessageRuleSchema.ts#L28">
+            MessageRuleCondition
+        </ConfigOption.Types.Identifier>
+    }
+>
+    The condition that must be met for the rule to be ignored. This is an object
+    that defines the condition.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.is_bypasser"
+    optional
+    defaultValue="false"
+    type="boolean"
+>
+    Whether this is a bypasser.
+    A bypasser is a special type of rule. When a bypasser matches, it will ignore specific rules as defined in the `bypasses` option.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.bypasses"
+    defaultValue="null"
+    type={
+        <ConfigOption.Types.Union>
+            <ConfigOption.Types.ArrayLiteral>
+                <ConfigOption.Types.Identifier>
+                    string
+                </ConfigOption.Types.Identifier>
+            </ConfigOption.Types.ArrayLiteral>
+            <ConfigOption.Types.Null />
+        </ConfigOption.Types.Union>
+    }
+>
+    An array of rule names that this rule bypasses.
+    This option is only used when `is_bypasser` is set to `true`.
 </ConfigOption>
