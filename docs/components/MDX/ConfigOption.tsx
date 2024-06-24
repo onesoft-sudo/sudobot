@@ -20,11 +20,13 @@ export function ConfigOption({
     defaultValue,
 }: ConfigOptionProps) {
     return (
-        <Element className="bg-gray-50 dark:bg-[rgba(255,255,255,0.08)] p-2 rounded-lg block my-4">
+        <Element className="bg-gray-50 dark:bg-[rgba(255,255,255,0.08)] p-2 rounded-lg block my-4 relative">
             <div className="font-bold md:text-lg mb-3 flex justify-between items-center not-prose">
-                <div className="inline-block">
-                    <code className="text-blue-400">{optionKey}</code>
-                    <code>{optional ? "?:" : ":"}</code>
+                <div className="flex items-start">
+                    <span>
+                        <code className="text-blue-400">{optionKey}</code>
+                        <code>{optional ? "?:" : ":"}</code>
+                    </span>
                     <div className="ml-2 inline-block px-1 rounded-lg bg-gray-200 dark:bg-[#333]">
                         {typeof type === "string" ? (
                             <code className="text-teal-400">{type}</code>
@@ -76,14 +78,22 @@ export function ConfigOption({
 
 export namespace ConfigOption {
     const Union = ({ children }: { children: ReactNode[] }) => (
-        <>
-            {children.map((type, index) => (
-                <Fragment key={index}>
-                    {index > 0 && <span className="mx-2">|</span>}
-                    {type}
-                </Fragment>
-            ))}
-        </>
+        <span>
+            {children.map((type, index) =>
+                children.length > 3 ? (
+                    <Fragment key={index}>
+                        <span className="mx-2">|</span>
+                        {type}
+                        <br />
+                    </Fragment>
+                ) : (
+                    <Fragment key={index}>
+                        {index > 0 && <span className="mx-2">|</span>}
+                        {type}
+                    </Fragment>
+                ),
+            )}
+        </span>
     );
 
     const StringLiteral = (

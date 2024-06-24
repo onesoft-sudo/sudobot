@@ -52,23 +52,51 @@ Each rule is an object defined inside the `rule_moderation.rules` array. The fol
 
 <ConfigOption 
     optionKey="rule.type"
-    type="RuleTypeString"
+    type={
+        <ConfigOption.Types.Union>
+            <ConfigOption.Types.StringLiteral>
+                word_filter
+            </ConfigOption.Types.StringLiteral>
+            <ConfigOption.Types.StringLiteral>
+                regex_filter
+            </ConfigOption.Types.StringLiteral>
+            <ConfigOption.Types.StringLiteral>
+                anti_invite
+            </ConfigOption.Types.StringLiteral>
+            <ConfigOption.Types.StringLiteral>
+                domain_filter
+            </ConfigOption.Types.StringLiteral>
+            <ConfigOption.Types.StringLiteral>
+                mime_type_filter
+            </ConfigOption.Types.StringLiteral>
+            <ConfigOption.Types.StringLiteral>
+                file_extension_filter
+            </ConfigOption.Types.StringLiteral>
+            <ConfigOption.Types.StringLiteral>
+               repeated_text_filter
+            </ConfigOption.Types.StringLiteral>
+            <ConfigOption.Types.StringLiteral>
+                mass_mention_filter
+            </ConfigOption.Types.StringLiteral>
+            <ConfigOption.Types.StringLiteral>
+                image_filter
+            </ConfigOption.Types.StringLiteral>
+            <ConfigOption.Types.StringLiteral>
+                embed_filter
+            </ConfigOption.Types.StringLiteral>
+            <ConfigOption.Types.StringLiteral>
+                profile_filter
+            </ConfigOption.Types.StringLiteral>
+            <ConfigOption.Types.StringLiteral>
+                ai_scan
+            </ConfigOption.Types.StringLiteral>
+            <ConfigOption.Types.StringLiteral>
+                file_filter
+            </ConfigOption.Types.StringLiteral>
+        </ConfigOption.Types.Union>
+    }
 >
-The type of the rule. Currently, the following types are supported:
-
--   `word_filter`
--   `regex_filter`
--   `anti_invite`
--   `domain_filter`
--   `mime_type_filter`
--   `file_extension_filter`
--   `repeated_text_filter`
--   `mass_mention_filter`
--   `image_filter`
--   `embed_filter`
--   `profile_filter`
--   `ai_scan`
--   `file_filter`
+    The type of the rule.
 </ConfigOption>
 
 <ConfigOption optionKey="rule.name" type="string" optional>
