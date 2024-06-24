@@ -4,6 +4,7 @@ short_name: Automatic Moderation Rules
 ---
 
 import { ConfigOption } from "@/components/MDX/ConfigOption";
+import Callout from "@/components/Alerts/Callout";
 
 # Automatic Moderation Rules
 
@@ -67,6 +68,7 @@ The type of the rule. Currently, the following types are supported:
 -   `embed_filter`
 -   `profile_filter`
 -   `ai_scan`
+-   `file_filter`
 </ConfigOption>
 
 <ConfigOption optionKey="rule.name" type="string" optional>
@@ -176,3 +178,618 @@ The type of the rule. Currently, the following types are supported:
     An array of rule names that this rule bypasses.
     This option is only used when `is_bypasser` is set to `true`.
 </ConfigOption>
+
+There might be additional attributes depending on the rule type.
+
+## Rule Types
+
+### Word Filter
+
+The Word Filter rule type is used to filter messages based on specific words or tokens. The rule will trigger if any of the words in the `words` array are found or any of the tokens in the `tokens` array are found.
+
+<Callout type="info">
+    Tokens are a way to match a word or a part of a word. For example, the token `word` will match `word`, `words`, `wording`, etc.
+    However, the token `word` will not match `w ord`, `wo rd`, etc.
+
+    A word is matched if it is surrounded by spaces or the beginning/end of the message. For example, the word `word` will match `word`, `word ing`, etc., but not `sword`, `wordy`, etc.
+</Callout>
+
+Example configuration for a Word Filter rule:
+
+```json
+{
+    "type": "word_filter",
+    "words": ["word1", "word2"],
+    "tokens": ["token1", "token2"],
+    "actions": [
+        { "type": "warn", "reason": "Automatic: Posted a blocked word" },
+        { "type": "delete_message" },
+    ]
+}
+```
+
+**Options specific to Word Filter**
+
+<ConfigOption
+    optionKey="rule.words"
+    optional
+    type={
+        <ConfigOption.Types.ArrayLiteral>
+            <ConfigOption.Types.Identifier>string</ConfigOption.Types.Identifier>
+        </ConfigOption.Types.ArrayLiteral>
+    }
+>
+    An array of words to filter.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.tokens"
+    optional
+    type={
+        <ConfigOption.Types.ArrayLiteral>
+            <ConfigOption.Types.Identifier>string</ConfigOption.Types.Identifier>
+        </ConfigOption.Types.ArrayLiteral>
+    }
+>
+    An array of tokens to filter.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.normalize"
+    defaultValue="true"
+    type="boolean"
+>
+    Whether to normalize the words, tokens, and the message before filtering.
+</ConfigOption>
+
+### Regex Filter
+
+The Regex Filter rule type is used to filter messages based on regular expressions. The rule will trigger if any of the patterns in the `patterns` array are found.
+
+Example configuration for a Regex Filter rule:
+
+```json
+{
+    "type": "regex_filter",
+    "patterns": ["disc(o|0)rd\\.gg"],
+    "actions": [
+        { "type": "warn", "reason": "Automatic: Posted a Discord invite link" },
+        { "type": "delete_message" },
+    ]
+}
+```
+
+**Options specific to Regex Filter**
+
+<ConfigOption
+    optionKey="rule.patterns"
+    type={
+        <ConfigOption.Types.Union>
+            <ConfigOption.Types.ArrayLiteral>
+                <ConfigOption.Types.Identifier>string</ConfigOption.Types.Identifier>
+            </ConfigOption.Types.ArrayLiteral>
+            <ConfigOption.Types.ArrayLiteral>
+                <ConfigOption.Types.TupleLiteral>
+                    <ConfigOption.Types.Identifier>string</ConfigOption.Types.Identifier>
+                    <ConfigOption.Types.Identifier>RegexFlagString</ConfigOption.Types.Identifier>
+                </ConfigOption.Types.TupleLiteral>
+            </ConfigOption.Types.ArrayLiteral>
+        </ConfigOption.Types.Union>
+    }
+>
+    An array of regular expressions to filter.
+    A `RegexFlagString` is a string that contains the flags for the regular expression, supported by JavaScript.
+</ConfigOption>
+
+### Anti-Invite
+
+The Anti-Invite rule type is used to filter messages that contain invite links. The rule will trigger if an invite link is found in the message.
+
+Example configuration for an Anti-Invite rule:
+
+```json
+{
+    "type": "anti_invite",
+    "actions": [
+        { "type": "warn", "reason": "Automatic: Posted a Discord invite link" },
+        { "type": "delete_message" },
+    ]
+}
+```
+
+**Options specific to Anti-Invite**
+
+
+<ConfigOption
+    optionKey="rule.allowed_invite_codes"
+    defaultValue="[]"
+    type={
+        <ConfigOption.Types.ArrayLiteral>
+            <ConfigOption.Types.Identifier>string</ConfigOption.Types.Identifier>
+        </ConfigOption.Types.ArrayLiteral>
+    }
+>
+    An array of invite codes that are allowed.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.allow_internal_invites"
+    defaultValue="true"
+    type="boolean"
+>
+    Whether to allow internal server invites.
+</ConfigOption>
+
+### Domain Filter
+
+The Domain Filter rule type is used to filter messages that contain URLs with specific domains. The rule will trigger if a URL with a domain in the `domains` array is found in the message.
+
+Example configuration for a Domain Filter rule:
+
+```json
+{
+    "type": "domain_filter",
+    "domains": ["example.com", "example.org"],
+    "actions": [
+        { "type": "warn", "reason": "Automatic: Posted a blocked domain" },
+        { "type": "delete_message" },
+    ]
+}
+```
+
+**Options specific to Domain Filter**
+
+<ConfigOption
+    optionKey="rule.domains"
+    type={
+        <ConfigOption.Types.ArrayLiteral>
+            <ConfigOption.Types.Identifier>string</ConfigOption.Types.Identifier>
+        </ConfigOption.Types.ArrayLiteral>
+    }
+>
+    An array of domains to filter.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.scan_links_only"
+    defaultValue="false"
+    type="boolean"
+>
+    Whether to scan only the links in the message.
+</ConfigOption>
+
+### MIME Type Filter
+
+The MIME Type Filter rule type is used to filter messages that contain attachments with specific MIME types. The rule will trigger if an attachment with a MIME type in the `mime_types` array is found in the message.
+
+Example configuration for a MIME Type Filter rule:
+
+```json
+{
+    "type": "mime_type_filter",
+    "data": ["image/png", "image/jpeg"],
+    "actions": [
+        { "type": "warn", "reason": "Automatic: Posted a file that is not allowed" },
+        { "type": "delete_message" },
+    ]
+}
+```
+
+**Options specific to MIME Type Filter**
+
+<ConfigOption
+    optionKey="rule.data"
+    type={
+        <ConfigOption.Types.ArrayLiteral>
+            <ConfigOption.Types.Identifier>string</ConfigOption.Types.Identifier>
+        </ConfigOption.Types.ArrayLiteral>
+    }
+>
+    An array of MIME types to filter.
+</ConfigOption>
+
+### File Extension Filter
+
+The File Extension Filter rule type is used to filter messages that contain attachments with specific file extensions. The rule will trigger if an attachment with a file extension in the `extensions` array is found in the message.
+
+Example configuration for a File Extension Filter rule:
+
+```json
+{
+    "type": "file_extension_filter",
+    "data": ["png", "jpg"],
+    "actions": [
+        { "type": "warn", "reason": "Automatic: Posted a file that is not allowed" },
+        { "type": "delete_message" },
+    ]
+}
+```
+
+**Options specific to File Extension Filter**
+
+<ConfigOption
+    optionKey="rule.data"
+    type={
+        <ConfigOption.Types.ArrayLiteral>
+            <ConfigOption.Types.Identifier>string</ConfigOption.Types.Identifier>
+        </ConfigOption.Types.ArrayLiteral>
+    }
+>
+    An array of file extensions to filter.
+</ConfigOption>
+
+### Repeated Text Filter
+
+The Repeated Text Filter rule type is used to filter messages that contain repeated text. The rule will trigger if the message contains repeated text.
+
+Example configuration for a Repeated Text Filter rule:
+
+```json
+{
+    "type": "repeated_text_filter",
+    "actions": [
+        { "type": "warn", "reason": "Automatic: Posted repeated text" },
+        { "type": "delete_message" },
+    ]
+}
+```
+
+**Options specific to Repeated Text Filter**
+
+<ConfigOption
+    optionKey="rule.max_repeated_chars"
+    defaultValue="20"
+    type="number"
+>
+    The maximum number of repeated characters allowed in the message.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.max_repeated_words"
+    defaultValue="15"
+    type="number"
+>
+    The maximum number of repeated words allowed in the message.
+</ConfigOption>
+
+### Mass Mention Filter
+
+The Mass Mention Filter rule type is used to filter messages that contain mass mentions. The rule will trigger if the message contains mass mentions.
+
+Example configuration for a Mass Mention Filter rule:
+
+```json
+{
+    "type": "mass_mention_filter",
+    "actions": [
+        { "type": "warn", "reason": "Automatic: Posted mass mentions" },
+        { "type": "delete_message" },
+    ]
+}
+```
+
+**Options specific to Mass Mention Filter**
+
+<ConfigOption
+    optionKey="rule.max_mentions"
+    defaultValue="15"
+    type="number"
+>
+    The maximum number of mentions allowed in the message.
+</ConfigOption>
+
+
+<ConfigOption
+    optionKey="rule.max_user_mentions"
+    defaultValue="-1"
+    type="number"
+>
+    The maximum number of user mentions allowed in the message. `-1` means no limit.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.max_role_mentions"
+    defaultValue="-1"
+    type="number"
+>
+    The maximum number of role mentions allowed in the message. `-1` means no limit.
+</ConfigOption>
+
+### Image Filter
+
+The Image Filter rule type is used to filter messages that contain images. The rule will trigger if the message contains images that have text with specific words or tokens.
+
+Example configuration for an Image Filter rule:
+
+```json
+{
+    "type": "image_filter",
+    "words": ["word1", "word2"],
+    "tokens": ["token1", "token2"],
+    "actions": [
+        { "type": "warn", "reason": "Automatic: Posted an image with blocked text" },
+        { "type": "delete_message" },
+    ]
+}
+```
+
+**Options specific to Image Filter**
+
+<ConfigOption
+    optionKey="rule.words"
+    optional
+    type={
+        <ConfigOption.Types.ArrayLiteral>
+            <ConfigOption.Types.Identifier>string</ConfigOption.Types.Identifier>
+        </ConfigOption.Types.ArrayLiteral>
+    }
+>
+    An array of words to filter in the image.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.tokens"
+    optional
+    type={
+        <ConfigOption.Types.ArrayLiteral>
+            <ConfigOption.Types.Identifier>string</ConfigOption.Types.Identifier>
+        </ConfigOption.Types.ArrayLiteral>
+    }
+>
+    An array of tokens to filter in the image.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.inherit_from_word_filter"
+    defaultValue="false"
+    type="boolean"
+>
+    Whether to inherit the words and tokens from the first Word Filter rule.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.scan_embeds"
+    defaultValue="false"
+    type="boolean"
+>
+    Whether to scan images inside embeds in the message.
+</ConfigOption>
+
+### Embed Filter
+
+The Embed Filter rule type is used to filter messages that contain embeds. The rule will trigger if the message contains embeds with specific words or tokens.
+
+Example configuration for an Embed Filter rule:
+
+```json
+{
+    "type": "embed_filter",
+    "words": ["word1", "word2"],
+    "tokens": ["token1", "token2"],
+    "actions": [
+        { "type": "warn", "reason": "Automatic: Posted an embed with blocked text" },
+        { "type": "delete_message" },
+    ]
+}
+```
+
+**Options specific to Embed Filter**
+
+<ConfigOption
+    optionKey="rule.words"
+    optional
+    type={
+        <ConfigOption.Types.ArrayLiteral>
+            <ConfigOption.Types.Identifier>string</ConfigOption.Types.Identifier>
+        </ConfigOption.Types.ArrayLiteral>
+    }
+>
+    An array of words to filter in the embeds.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.tokens"
+    optional
+    type={
+        <ConfigOption.Types.ArrayLiteral>
+            <ConfigOption.Types.Identifier>string</ConfigOption.Types.Identifier>
+        </ConfigOption.Types.ArrayLiteral>
+    }
+>
+    An array of tokens to filter in the embeds.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.inherit_from_word_filter"
+    defaultValue="false"
+    type="boolean"
+>
+    Whether to inherit the words and tokens from the first Word Filter rule.
+</ConfigOption>
+
+### Profile Filter
+
+The Profile Filter rule type is used to filter user profiles based on specific conditions. The rule will trigger if the user profile contains specific words or tokens, or matches specific regular expressions.
+
+Example configuration for a Profile Filter rule:
+
+```json
+{
+    "type": "profile_filter",
+    "words": ["word1", "word2"],
+    "tokens": ["token1", "token2"],
+    "regex_patterns": ["disc(o|0)rd\\.gg"],
+    "actions": [
+        { "type": "warn", "reason": "Automatic: Profile contains blocked text" },
+        { "type": "kick" },
+    ]
+}
+```
+**Options specific to Profile Filter**
+
+<ConfigOption
+    optionKey="rule.words"
+    optional
+    type={
+        <ConfigOption.Types.ArrayLiteral>
+            <ConfigOption.Types.Identifier>string</ConfigOption.Types.Identifier>
+        </ConfigOption.Types.ArrayLiteral>
+    }
+>
+    An array of words to filter in the user profile.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.tokens"
+    optional
+    type={
+        <ConfigOption.Types.ArrayLiteral>
+            <ConfigOption.Types.Identifier>string</ConfigOption.Types.Identifier>
+        </ConfigOption.Types.ArrayLiteral>
+    }
+>
+    An array of tokens to filter in the user profile.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.regex_patterns"
+    optional
+    type={
+        <ConfigOption.Types.ArrayLiteral>
+            <ConfigOption.Types.Identifier>string</ConfigOption.Types.Identifier>
+        </ConfigOption.Types.ArrayLiteral>
+    }
+>
+    An array of regular expressions to filter in the user profile.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.normalize"
+    defaultValue="true"
+    type="boolean"
+>
+    Whether to normalize the words, tokens, and the user profile texts before filtering.
+</ConfigOption>
+
+### AI Scan
+
+The AI Scan rule type is used to scan messages using AI. The rule will trigger if the AI detects specific content in the message.
+
+Example configuration for an AI Scan rule:
+
+```json
+{
+    "type": "ai_scan",
+    "actions": [
+        { "type": "warn", "reason": "Automatic: Detected inappropriate content" },
+        { "type": "delete_message" },
+    ]
+}
+```
+
+**Options specific to AI Scan**
+
+<ConfigOption
+    optionKey="rule.toxicity_threshold"
+    defaultValue="0.5"
+    type="number"
+>
+    The toxicity threshold for the AI scan. If the toxicity score of the message is greater than or equal to this threshold, the rule will trigger.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.identity_attack_threshold"
+    defaultValue="0.5"
+    type="number"
+>
+    The identity attack threshold for the AI scan. If the identity attack score of the message is greater than or equal to this threshold, the rule will trigger.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.insult_threshold"
+    defaultValue="0.5"
+    type="number"
+>
+    The insult threshold for the AI scan. If the insult score of the message is greater than or equal to this threshold, the rule will trigger.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.profanity_threshold"
+    defaultValue="0.5"
+    type="number"
+>
+    The profanity threshold for the AI scan. If the profanity score of the message is greater than or equal to this threshold, the rule will trigger.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.threat_threshold"
+    defaultValue="0.5"
+    type="number"
+>
+    The threat threshold for the AI scan. If the threat score of the message is greater than or equal to this threshold, the rule will trigger.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.sexually_explicit_threshold"
+    defaultValue="0.5"
+    type="number"
+>
+    The sexually explicit threshold for the AI scan. If the sexually explicit score of the message is greater than or equal to this threshold, the rule will trigger.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.flirtation_threshold"
+    defaultValue="0.5"
+    type="number"
+>
+    The flirtation threshold for the AI scan. If the flirtation score of the message is greater than or equal to this threshold, the rule will trigger.
+</ConfigOption>
+
+### File Filter
+
+The File Filter rule type is used to filter messages that contain files. The rule will trigger if the message contains files with a blocked hash.
+
+Example configuration for a File Filter rule:
+
+```json
+{
+    "type": "file_filter",
+    "hashes": ["hash1", "hash2"],
+    "check_mime_types": false,
+    "actions": [
+        { "type": "warn", "reason": "Automatic: Posted a file that is not allowed" },
+        { "type": "delete_message" },
+    ]
+}
+```
+
+**Options specific to File Filter**
+
+<ConfigOption
+    optionKey="rule.hashes"
+    type={
+        <ConfigOption.Types.GenericIdentifier genericTypes={[
+            <ConfigOption.Types.Identifier>string</ConfigOption.Types.Identifier>,
+            <ConfigOption.Types.Union>
+                <ConfigOption.Types.Identifier>string</ConfigOption.Types.Identifier>
+                <ConfigOption.Types.Null />
+            </ConfigOption.Types.Union>
+        ]}>
+            Record
+        </ConfigOption.Types.GenericIdentifier>
+    }
+>
+    A record of file hashes to filter. The key is the hash and the value is the MIME type of the file. If the MIME type is `null`, the MIME type will not be checked.
+</ConfigOption>
+
+<ConfigOption
+    optionKey="rule.check_mime_types"
+    defaultValue="false"
+    type="boolean"
+>
+    Whether to check the MIME types of the files.
+</ConfigOption>
+
+<Callout type="info">
+    Documentation of the experimental rules might not be included here at this time. Please refer to the source code for more information.
+</Callout>

@@ -127,11 +127,60 @@ export namespace ConfigOption {
         return <Identifier>null</Identifier>;
     }
 
+    function TupleLiteral({ children }: { children: ReactNode[] }) {
+        return (
+            <>
+                <span className="text-blue-500">[</span>
+                {children.map((child, index) => (
+                    <Fragment key={index}>
+                        {index > 0 && <span className="mr-2">,</span>}
+                        {child}
+                    </Fragment>
+                ))}
+                <span className="text-blue-500">]</span>
+            </>
+        );
+    }
+
+    function GenericIdentifier({
+        children,
+        url,
+        genericTypes,
+    }: {
+        genericTypes: ReactNode[];
+        children: ReactNode;
+        url?: string;
+    }) {
+        return (
+            <span className="text-teal-400">
+                {url ? (
+                    <Tooltip title="Click to go the definition of this type">
+                        <Link href={url} target="_blank" rel="noreferrer">
+                            {children}
+                        </Link>
+                    </Tooltip>
+                ) : (
+                    children
+                )}
+                <span className="text-blue-500">&lt;</span>
+                {genericTypes.map((type, index) => (
+                    <Fragment key={index}>
+                        {index > 0 && <span className="mr-2">,</span>}
+                        {type}
+                    </Fragment>
+                ))}
+                <span className="text-blue-500">&gt;</span>
+            </span>
+        );
+    }
+
     export const Types = {
         Union,
         StringLiteral,
         ArrayLiteral,
         Identifier,
         Null,
+        TupleLiteral,
+        GenericIdentifier,
     };
 }
