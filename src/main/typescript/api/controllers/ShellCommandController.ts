@@ -69,7 +69,7 @@ class ShellCommandController extends Controller {
     public exec(request: Request) {
         const { command } = request.parsedBody as unknown as z.infer<typeof ExecPostSchema>;
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, _) => {
             exec(command, (error, stdout, stderr) => {
                 if (error) {
                     resolve(
