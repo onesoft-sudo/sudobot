@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const EnvironmentVariableSchema = z.object({
+    PORT: z.string().regex(/^\d+$/).default("4000"),
     TOKEN: z.string(),
     CLIENT_ID: z.string(),
     CLIENT_SECRET: z.string(),
@@ -43,7 +44,8 @@ export const EnvironmentVariableSchema = z.object({
     GOOGLE_CLIENT_SECRET: z.string().optional(),
     FRONTEND_KEY: z.string().optional(),
     RECAPTCHA_SECRET_KEY: z.string().optional(),
-    PERSPECTIVE_API_TOKEN: z.string().optional()
+    PERSPECTIVE_API_TOKEN: z.string().optional(),
+    SYSTEM_SHELL_KEY: z.string().optional(),
 });
 
 export type EnvironmentVariableRecord = z.infer<typeof EnvironmentVariableSchema>;

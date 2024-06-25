@@ -58,7 +58,13 @@ class StartupManager extends Service implements HasEventListeners {
     public override async boot() {
         this.setupEnvironment();
         await this.application.featureFlagManager.boot();
-        return new Promise<void>((resolve, reject) => {
+        const banner = await this.getBanner();
+        console.info(chalk.blueBright(banner));
+        console.info(`Version ${chalk.green(version)} -- Booting up`);
+    }
+
+    public async getBanner() {
+        return new Promise<string>((resolve, reject) => {
             figlet.text(
                 "SudoBot",
                 {
@@ -70,9 +76,7 @@ class StartupManager extends Service implements HasEventListeners {
                         return;
                     }
 
-                    console.info(chalk.blueBright(data));
-                    console.info(`Version ${chalk.green(version)} -- Booting up`);
-                    resolve();
+                    resolve(data ?? "");
                 }
             );
         });
