@@ -100,7 +100,7 @@ export namespace ConfigOption {
         props: { value: ReactNode } | { children: ReactNode },
     ) => (
         <span className="text-yellow-600">
-            "{"value" in props ? props.value : props.children}"
+            &quot;{"value" in props ? props.value : props.children}&quot;
         </span>
     );
 

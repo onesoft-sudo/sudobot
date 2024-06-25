@@ -782,7 +782,7 @@ Example configuration for a File Filter rule:
 ```json
 {
     "type": "file_filter",
-    "hashes": ["hash1", "hash2"],
+    "hashes": { "d3d0bfbe67707d003ab937212ee96309b7f7beb6871391064917b70c20fa5a67": "image/png" },
     "check_mime_types": false,
     "actions": [
         { "type": "warn", "reason": "Automatic: Posted a file that is not allowed" },
