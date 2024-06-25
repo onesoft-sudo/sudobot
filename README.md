@@ -56,7 +56,7 @@ Thanks to all the active and indirect contributors!
 -   [dicoderin](https://github.com/dicoderin)
 -   [GuynnR](https://github.com/GuynnR)
 -   Hana (A Discord User)
--   [Kars](https://github.com/kars1996) (Contributed by giving away a domain and a hosting server to us)
+-   [Kars](https://github.com/kars1996) (Contributed by giving away a domain to us)
 -   [killerclaws12](https://github.com/killerclaws12)
 -   [MonzterDev](https://github.com/MonzterDev)
 -   [ninsaccplayzyt](https://github.com/ninsaccplayzyt)
