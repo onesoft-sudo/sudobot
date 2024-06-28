@@ -1,3 +1,12 @@
+# [9.7.0](https://github.com/onesoft-sudo/sudobot/compare/v9.6.0...v9.7.0) (2024-06-28)
+
+
+### Features
+
+* system update service ([e85195e](https://github.com/onesoft-sudo/sudobot/commit/e85195eb252def2517f02dbf50635f5e942b739a))
+
+
+
 # [9.6.0](https://github.com/onesoft-sudo/sudobot/compare/v9.5.0...v9.6.0) (2024-06-25)
 
 
@@ -37,15 +46,6 @@
 
 * introduce drizzle ([67fa240](https://github.com/onesoft-sudo/sudobot/commit/67fa240bd6bfaa437c06c75a1719f824546579b3))
 * move to drizzle from prisma ([7e2bfd5](https://github.com/onesoft-sudo/sudobot/commit/7e2bfd5fe3776ad04bccfb7e7871c85e75ede2e1))
-
-
-
-## [9.2.1](https://github.com/onesoft-sudo/sudobot/compare/v9.2.0...v9.2.1) (2024-06-22)
-
-
-### Bug Fixes
-
-* **logging:** message deletion log delay ([770ebf1](https://github.com/onesoft-sudo/sudobot/commit/770ebf18c02ebc044a9f88f815a63d12ace29da6))
 
 
 
