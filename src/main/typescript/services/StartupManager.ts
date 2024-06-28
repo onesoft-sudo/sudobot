@@ -25,7 +25,6 @@ import { version } from "@root/package.json";
 import archiver from "archiver";
 import axios from "axios";
 import chalk from "chalk";
-import { spawnSync } from "child_process";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
     ActivityType,
@@ -40,7 +39,6 @@ import {
 import figlet from "figlet";
 import { rm } from "fs/promises";
 import path from "path";
-import semver from "semver";
 import { setTimeout } from "timers/promises";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { safeChannelFetch, safeMessageFetch } from "../utils/fetch";
@@ -52,8 +50,6 @@ const { BACKUP_CHANNEL_ID, ERROR_WEBHOOK_URL, BACKUP_STORAGE } = process.env;
 @Name("startupManager")
 class StartupManager extends Service implements HasEventListeners {
     public interval: Timer | undefined = undefined;
-    public readonly packageJsonUrl =
-        "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/package.json";
 
     public override async boot() {
         this.setupEnvironment();
@@ -101,7 +97,7 @@ class StartupManager extends Service implements HasEventListeners {
         if (await FileSystem.exists(restartJsonFile)) {
             this.application.logger.info("Found restart.json file: ", restartJsonFile);
 
-            try {
+            respond: try {
                 const { guildId, messageId, channelId, time } = (await FileSystem.readFileContents(
                     restartJsonFile,
                     { json: true }
@@ -113,25 +109,25 @@ class StartupManager extends Service implements HasEventListeners {
                 };
 
                 if (!guildId || !channelId || !messageId) {
-                    return;
+                    break respond;
                 }
 
                 const guild = this.application.getClient().guilds.cache.get(guildId);
 
                 if (!guild) {
-                    return;
+                    break respond;
                 }
 
                 const channel = await safeChannelFetch(guild, channelId);
 
                 if (!channel || !channel.isTextBased()) {
-                    return;
+                    break respond;
                 }
 
                 const message = await safeMessageFetch(channel, messageId);
 
                 if (!message) {
-                    return;
+                    break respond;
                 }
 
                 await message.edit({
@@ -175,7 +171,7 @@ class StartupManager extends Service implements HasEventListeners {
         messageId,
         waitFor,
         key
-    }: RestartOptions) {
+    }: RestartOptions = {}) {
         setTimeout(waitFor).then(async () => {
             const restartJsonFile = path.join(systemPrefix("tmp", true), "restart.json");
 
@@ -349,45 +345,6 @@ class StartupManager extends Service implements HasEventListeners {
         );
         this.application.logger.info("Sending initial backup");
         this.sendConfigBackupCopy();
-    }
-
-    private systemUpdate(branch = "main") {
-        if (spawnSync(`git pull origin ${branch}`).error?.message.endsWith("ENOENT")) {
-            this.application.logger.error(
-                "Cannot perform an automatic update - the system does not have Git installed and available in $PATH."
-            );
-            return false;
-        }
-
-        if (spawnSync("npm run build").error) {
-            this.application.logger.error(
-                "Cannot perform an automatic update - failed to build the project"
-            );
-            return false;
-        }
-
-        const { version } = require("../../package.json");
-        this.application.logger.success(
-            `Successfully completed automatic update - system upgraded to version ${version}`
-        );
-        return true;
-    }
-
-    private async checkForUpdate() {
-        try {
-            const response = await axios.get(this.packageJsonUrl);
-            const newVersion = response.data?.version;
-
-            if (
-                typeof newVersion === "string" &&
-                semver.gt(newVersion, this.application.metadata.version as string)
-            ) {
-                this.application.logger.info("Found update - performing an automatic update");
-                this.systemUpdate();
-            }
-        } catch (e) {
-            this.application.logger.error(e);
-        }
     }
 }
 

@@ -47,6 +47,8 @@ jobs:
                   mkdir sudobot;
                   mkdir sudobot/lib;
                   mv build sudobot;
+                  mv src sudobot;
+                  mv package.json sudobot;
                   mv lib/build sudobot/lib;
                   tar -cvzf sudobot-release-linux.tar.gz sudobot
 
@@ -97,6 +99,8 @@ jobs:
                   mkdir sudobot;
                   mkdir sudobot/lib;
                   mv build sudobot;
+                  mv src sudobot;
+                  mv package.json sudobot;
                   mv lib/build sudobot/lib;
                   tar -cvzf sudobot-release-darwin.tar.gz sudobot
 
