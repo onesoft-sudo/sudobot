@@ -1,3 +1,17 @@
+# [9.6.0](https://github.com/onesoft-sudo/sudobot/compare/v9.5.0...v9.6.0) (2024-06-25)
+
+
+### Bug Fixes
+
+* eslint warnings ([511c800](https://github.com/onesoft-sudo/sudobot/commit/511c8005d24d0c7aaf35fa9babd4810d2af50439))
+
+
+### Features
+
+* sudobot system shell ([5231870](https://github.com/onesoft-sudo/sudobot/commit/5231870e614c8ddac0ac636850ef5c5c72e7319f))
+
+
+
 # [9.5.0](https://github.com/onesoft-sudo/sudobot/compare/v9.4.0...v9.5.0) (2024-06-24)
 
 
@@ -32,21 +46,6 @@
 ### Bug Fixes
 
 * **logging:** message deletion log delay ([770ebf1](https://github.com/onesoft-sudo/sudobot/commit/770ebf18c02ebc044a9f88f815a63d12ace29da6))
-
-
-
-# [9.2.0](https://github.com/onesoft-sudo/sudobot/compare/v9.1.0...v9.2.0) (2024-06-22)
-
-
-### Bug Fixes
-
-* compatibility issues with TypeScript 5.5 ([dec8d93](https://github.com/onesoft-sudo/sudobot/commit/dec8d93f70fd9305a930428ee5f96ec921fbc74a))
-
-
-### Features
-
-* **automod:rules:** bypassers ([f168ede](https://github.com/onesoft-sudo/sudobot/commit/f168ede30306194529882af54e999f46bfe1a9bb))
-* **framework:concurrent:** semaphore condition ([d8f38cf](https://github.com/onesoft-sudo/sudobot/commit/d8f38cf2a1b3b8a091a2fae768c77fd7c11f86dc))
 
 
 
