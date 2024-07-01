@@ -1,6 +1,6 @@
 {
     "name": "sudobot",
-    "version": "9.6.0",
+    "version": "9.7.0",
     "description": "A Discord bot for moderation purposes.",
     "author": {
         "name": "Ar Rakin",
@@ -47,8 +47,7 @@
         "deploy": "node scripts/deploy-commands.js",
         "gen:schema": "node scripts/generate-config-schema.js",
         "clean": "rm -frv build tsconfig.tsbuildinfo; make clean",
-        "test": "vitest",
-        "shell": "bun run src/main/typescript/shell/Shell.ts"
+        "test": "vitest"
     },
     "_moduleAliases": {
         "@sudobot": "build/out",
