@@ -46,6 +46,7 @@ export const EnvironmentVariableSchema = z.object({
     RECAPTCHA_SECRET_KEY: z.string().optional(),
     PERSPECTIVE_API_TOKEN: z.string().optional(),
     SYSTEM_SHELL_KEY: z.string().optional(),
+    SYSTEM_SHELL_EXEC_STREAM_PORT: z.string().regex(/^\d+/).optional()
 });
 
 export type EnvironmentVariableRecord = z.infer<typeof EnvironmentVariableSchema>;

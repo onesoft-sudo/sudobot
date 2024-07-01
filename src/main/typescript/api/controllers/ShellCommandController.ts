@@ -7,17 +7,12 @@ import Application from "@framework/app/Application";
 import { Inject } from "@framework/container/Inject";
 import { env } from "@main/env/env";
 import type ShellService from "@main/services/ShellService";
-import { exec } from "child_process";
 import type { Request as ExpressRequest, Response as ExpressResponse, NextFunction } from "express";
 import { z } from "zod";
 
 const CommandPostSchema = z.object({
     command: z.string().min(1),
     args: z.array(z.string()).default([])
-});
-
-const ExecPostSchema = z.object({
-    command: z.string().min(1)
 });
 
 const middleware = (
@@ -53,46 +48,15 @@ class ShellCommandController extends Controller {
         const { command, args } = request.parsedBody as unknown as z.infer<
             typeof CommandPostSchema
         >;
-        const { output, error } = await this.shellService.simpleExecute(command, args);
+        const { output, error, code } = await this.shellService.simpleExecute(command, args);
 
         return new Response({
             status: error ? 400 : 200,
             body: {
                 output,
-                error
+                error,
+                code
             }
-        });
-    }
-
-    @Action("POST", "/shell/exec", [middleware])
-    @Validate(ExecPostSchema)
-    public exec(request: Request) {
-        const { command } = request.parsedBody as unknown as z.infer<typeof ExecPostSchema>;
-
-        return new Promise((resolve, _) => {
-            exec(command, (error, stdout, stderr) => {
-                if (error) {
-                    resolve(
-                        new Response({
-                            status: 400,
-                            body: {
-                                output: null,
-                                error: error
-                            }
-                        })
-                    );
-                }
-
-                resolve(
-                    new Response({
-                        status: 200,
-                        body: {
-                            output: stdout || stderr,
-                            error: null
-                        }
-                    })
-                );
-            });
         });
     }
 }

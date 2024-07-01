@@ -217,7 +217,7 @@ export default class APIServer extends Service {
                     response.send(controllerResponse);
                 } else if (typeof controllerResponse === "number") {
                     response.send(controllerResponse.toString());
-                } else {
+                } else if (typeof controllerResponse !== "undefined") {
                     this.application.logger.warn(
                         "Invalid value was returned from the controller. Not sending a response."
                     );
