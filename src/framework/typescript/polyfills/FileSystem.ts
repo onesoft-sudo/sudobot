@@ -19,7 +19,7 @@
 
 import { existsSync } from "fs";
 import { readFile, writeFile } from "fs/promises";
-import type { Stringable } from "../types/Stringable";
+import type { StringLike } from "../types/StringLike";
 
 type ReadFileContentOptions<T extends boolean> = {
     json?: T;
@@ -81,7 +81,7 @@ export default class FileSystem {
      */
     public static async writeFileContents<J extends boolean = false>(
         path: string,
-        contents: J extends true ? object : Stringable,
+        contents: J extends true ? object : StringLike,
         json: J = false as J
     ): Promise<void> {
         if (process.versions.bun) {

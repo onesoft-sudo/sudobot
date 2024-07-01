@@ -1,12 +1,14 @@
 import Application from "@framework/app/Application";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
+import { StringLike } from "@framework/types/StringLike";
 import { f } from "@framework/utils/string";
 import { env } from "@main/env/env";
+import ShellCommand from "@main/shell/core/ShellCommand";
 import { _meta as meta, version } from "@root/package.json";
 import chalk from "chalk";
 import { spawn } from "child_process";
-import { Awaitable } from "discord.js";
+import { Collection } from "discord.js";
 import { lstat, readdir } from "fs/promises";
 import { createServer } from "http";
 import path from "path";
@@ -17,6 +19,7 @@ import { WebSocket } from "ws";
 class ShellService extends Service {
     public readonly wss: InstanceType<typeof WebSocket.Server>;
     public readonly server = createServer();
+    private readonly commands = new Collection<string, ShellCommand>();
 
     public constructor(application: Application) {
         super(application);
@@ -26,7 +29,20 @@ class ShellService extends Service {
         });
     }
 
-    public override boot(): Awaitable<void> {
+    public override async boot(): Promise<void> {
+        const classes = await this.application.classLoader.loadClassesFromDirectory(
+            path.resolve(__dirname, "../shell/commands")
+        );
+
+        for (const ShellCommandClass of classes) {
+            const command = new ShellCommandClass(this.application) as ShellCommand;
+            this.commands.set(command.name, command);
+
+            for (const alias of command.aliases) {
+                this.commands.set(alias, command);
+            }
+        }
+
         this.wss.on("connection", ws => {
             this.application.logger.debug("Connection established");
 
@@ -147,8 +163,8 @@ class ShellService extends Service {
         ws.on("message", onMessage);
     }
 
-    public async simpleExecute(command: string, args: string[]) {
-        this.application.logger.event("Executing shell command: ", command, args);
+    public async simpleExecute(command: string, options?: ShellExecuteOptions) {
+        this.application.logger.event("Executing shell command: ", command, options);
 
         switch (command) {
             case "version":
@@ -160,12 +176,12 @@ class ShellService extends Service {
                 };
 
             case "cd":
-                if (!args[0]) {
+                if (!options?.args?.[0]) {
                     return { output: null, error: "cd: missing operand", code: 2 };
                 }
 
                 try {
-                    process.chdir(args[0]);
+                    process.chdir(options.args[0]);
                     return { output: null, error: null, code: 0 };
                 } catch (error) {
                     return {
@@ -214,8 +230,52 @@ class ShellService extends Service {
             }
         }
 
-        return { output: null, error: `${command}: command not found`, code: 127 };
+        let outputBuffer = "";
+
+        const shellCommand = this.commands.get(command);
+
+        if (!shellCommand) {
+            return { output: null, error: `${command}: command not found`, code: 127 };
+        }
+
+        const print = (...args: StringLike[]) => {
+            outputBuffer += args.join(" ");
+        };
+
+        const println = (...args: StringLike[]) => {
+            outputBuffer += args.join(" ") + "\n";
+        };
+
+        const ret = await shellCommand.execute({
+            elevatedPrivileges: options?.elevatedPrivileges ?? false,
+            args: options?.args ?? [],
+            print,
+            println
+        });
+
+        if (typeof ret === "string") {
+            return { output: ret, error: null, code: 0 };
+        }
+
+        if (
+            typeof ret === "object" &&
+            ret &&
+            ("output" in ret || "error" in ret || "code" in ret)
+        ) {
+            return {
+                output: (ret as Record<string, string>).output ?? null,
+                error: (ret as Record<string, string>).error ?? null,
+                code: (ret as Record<string, number>).code ?? 0
+            };
+        }
+
+        return { output: outputBuffer === "" ? null : outputBuffer, error: null, code: 0 };
     }
 }
+
+type ShellExecuteOptions = {
+    args?: string[];
+    elevatedPrivileges?: boolean;
+};
 
 export default ShellService;

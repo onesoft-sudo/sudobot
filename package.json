@@ -47,7 +47,8 @@
         "deploy": "node scripts/deploy-commands.js",
         "gen:schema": "node scripts/generate-config-schema.js",
         "clean": "rm -frv build tsconfig.tsbuildinfo; make clean",
-        "test": "vitest"
+        "test": "vitest",
+        "shell": "bun run src/main/typescript/shell.ts"
     },
     "_moduleAliases": {
         "@sudobot": "build/out",

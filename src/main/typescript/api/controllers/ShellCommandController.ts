@@ -48,7 +48,7 @@ class ShellCommandController extends Controller {
         const { command, args } = request.parsedBody as unknown as z.infer<
             typeof CommandPostSchema
         >;
-        const { output, error, code } = await this.shellService.simpleExecute(command, args);
+        const { output, error, code } = await this.shellService.simpleExecute(command, { args });
 
         return new Response({
             status: error ? 400 : 200,
