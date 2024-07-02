@@ -1,3 +1,12 @@
+## [9.9.1](https://github.com/onesoft-sudo/sudobot/compare/v9.9.0...v9.9.1) (2024-07-02)
+
+
+### Bug Fixes
+
+* remove unnecessary console.log ([2d6dc3f](https://github.com/onesoft-sudo/sudobot/commit/2d6dc3f1beb49a5ed103f0a6632d273eec5659ec))
+
+
+
 # [9.9.0](https://github.com/onesoft-sudo/sudobot/compare/v9.8.0...v9.9.0) (2024-07-01)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * sudobot system shell ([5231870](https://github.com/onesoft-sudo/sudobot/commit/5231870e614c8ddac0ac636850ef5c5c72e7319f))
-
-
-
-# [9.5.0](https://github.com/onesoft-sudo/sudobot/compare/v9.4.0...v9.5.0) (2024-06-24)
-
-
-### Features
-
-* add moderation rule docs (1/3) ([849f276](https://github.com/onesoft-sudo/sudobot/commit/849f276362be53e746172618eeac5bf010311820))
 
 
 
