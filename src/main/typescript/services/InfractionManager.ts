@@ -2321,8 +2321,6 @@ class InfractionManager extends Service {
                 failed_users: Snowflake[];
             };
 
-            console.log(response);
-
             bannedUsers.push(...response.banned_users);
             failedUsers.push(...response.failed_users);
         } catch (error) {

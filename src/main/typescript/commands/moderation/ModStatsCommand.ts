@@ -27,7 +27,7 @@ import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { Colors } from "@main/constants/Colors";
 import { Infraction, infractions } from "@main/models/Infraction";
 import InfractionManager from "@main/services/InfractionManager";
-import { ActionRowBuilder, italic, StringSelectMenuBuilder, time, User } from "discord.js";
+import { ActionRowBuilder, StringSelectMenuBuilder, User, italic, time } from "discord.js";
 import { and, asc, count, desc, eq, gte } from "drizzle-orm";
 
 type ModStatsCommandArgs = {
@@ -86,7 +86,6 @@ export default class ModStatsCommand extends Command {
             return;
         }
 
-        console.log(state.count);
         const pagination: Pagination<Infraction> = Pagination.withFetcher(
             async ({ limit, page }) => {
                 const { sortMode, createdAtFilters } = state;

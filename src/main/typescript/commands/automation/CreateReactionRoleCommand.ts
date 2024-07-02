@@ -13,9 +13,9 @@ import { isSnowflake } from "@framework/utils/utils";
 import ReactionRoleService from "@main/services/ReactionRoleService";
 import {
     ChatInputCommandInteraction,
-    parseEmoji,
     PermissionFlagsBits,
-    Snowflake
+    Snowflake,
+    parseEmoji
 } from "discord.js";
 
 type CreateReactionRoleCommandArgs = {
@@ -141,8 +141,6 @@ class CreateReactionRoleCommand extends Command {
             await context.error("That's a message link from another server!");
             return;
         }
-
-        console.log(args.roles);
 
         const rolesUnprocessed: string[] = args.roles.split(/\s+/);
 

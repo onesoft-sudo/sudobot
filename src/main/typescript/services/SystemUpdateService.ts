@@ -99,10 +99,6 @@ class SystemUpdateService extends Service {
             const filePath = path.resolve(updatePath, "sudobot", file);
             const systemFilePath = path.join(__dirname, "../../../../", file);
 
-            console.log(filePath);
-            console.log(existsSync(filePath));
-            console.log(existsSync(systemFilePath));
-
             if (!existsSync(filePath) || existsSync(systemFilePath)) {
                 continue;
             }

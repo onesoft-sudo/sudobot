@@ -68,8 +68,6 @@ class ShellService extends Service {
                     return;
                 }
 
-                console.log(type, payload);
-
                 switch (type) {
                     case "raw_cmd":
                         this.executeShellCommand(payload, ws);
