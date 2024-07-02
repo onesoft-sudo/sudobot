@@ -1,3 +1,12 @@
+# [9.9.0](https://github.com/onesoft-sudo/sudobot/compare/v9.8.0...v9.9.0) (2024-07-01)
+
+
+### Features
+
+* better command system ([a0d49b7](https://github.com/onesoft-sudo/sudobot/commit/a0d49b74361fe603a21671d905bef6e19506dd97))
+
+
+
 # [9.8.0](https://github.com/onesoft-sudo/sudobot/compare/v9.7.0...v9.8.0) (2024-07-01)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * add moderation rule docs (1/3) ([849f276](https://github.com/onesoft-sudo/sudobot/commit/849f276362be53e746172618eeac5bf010311820))
-
-
-
-# [9.4.0](https://github.com/onesoft-sudo/sudobot/compare/v9.3.0...v9.4.0) (2024-06-23)
-
-
-### Features
-
-* add v9 release page ([a6657db](https://github.com/onesoft-sudo/sudobot/commit/a6657db2ffdfb91b18878307b0834848b47cfceb))
 
 
 
