@@ -1,16 +1,18 @@
 import ShellCommand from "@main/shell/core/ShellCommand";
 import type { ShellCommandContext } from "@main/shell/core/ShellCommandContext";
 
-class RebootCommand extends ShellCommand {
+class RebootShellCommand extends ShellCommand {
     public override readonly name: string = "reboot";
     public override readonly aliases: string[] = ["restart"];
 
-    public override async execute(context: ShellCommandContext): Promise<unknown> {
+    public override async execute(context: ShellCommandContext): Promise<void> {
         if (!context.elevatedPrivileges) {
-            return {
-                code: 1,
-                error: "reboot: Operation not permitted\nreboot: You may need elevated privileges to perform this action."
-            };
+            context.println("reboot: Operation not permitted", "stderr");
+            context.println(
+                "reboot: You may need elevated privileges to perform this action.",
+                "stderr"
+            );
+            context.exit(1);
         }
 
         context.println("Rebooting in 5 seconds. You will lose connection to the shell.");
@@ -18,4 +20,4 @@ class RebootCommand extends ShellCommand {
     }
 }
 
-export default RebootCommand;
+export default RebootShellCommand;

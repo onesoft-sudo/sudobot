@@ -1,10 +1,10 @@
 import Application from "@framework/app/Application";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
-import { StringLike } from "@framework/types/StringLike";
-import { f } from "@framework/utils/string";
 import { env } from "@main/env/env";
+import ExitError from "@main/shell/core/ExitError";
 import ShellCommand from "@main/shell/core/ShellCommand";
+import { ShellCommandContext } from "@main/shell/core/ShellCommandContext";
 import { _meta as meta, version } from "@root/package.json";
 import chalk from "chalk";
 import { spawn } from "child_process";
@@ -68,9 +68,15 @@ class ShellService extends Service {
                     return;
                 }
 
+                console.log(type, payload);
+
                 switch (type) {
-                    case "cmd":
+                    case "raw_cmd":
                         this.executeShellCommand(payload, ws);
+                        break;
+
+                    case "cmd":
+                        this.executeCommand(payload, ws);
                         break;
 
                     case "stdin":
@@ -110,8 +116,6 @@ class ShellService extends Service {
 
         const onMessage = (message: Buffer) => {
             const { payload, type, key } = JSON.parse(message.toString());
-
-            console.log(type.toUpperCase(), payload);
 
             if (key !== env.SYSTEM_SHELL_KEY) {
                 ws.send(JSON.stringify({ type: "error", payload: "Invalid key" }));
@@ -163,113 +167,137 @@ class ShellService extends Service {
         ws.on("message", onMessage);
     }
 
-    public async simpleExecute(command: string, options?: ShellExecuteOptions) {
+    private async simpleExecute(
+        command: string,
+        context: ShellCommandContext,
+        options?: ShellExecuteOptions
+    ) {
         this.application.logger.event("Executing shell command: ", command, options);
 
         switch (command) {
             case "version":
             case "v":
-                return {
-                    output: f`
-                    ${chalk.white.bold("SudoBot")} ${chalk.green(`Version ${version}`)} (${chalk.blue(meta.release_codename)})`,
-                    error: null
-                };
+                context.println(
+                    `${chalk.white.bold("SudoBot")} ${chalk.green(`Version ${version}`)} (${chalk.blue(meta.release_codename)})`
+                );
+                break;
 
             case "cd":
                 if (!options?.args?.[0]) {
-                    return { output: null, error: "cd: missing operand", code: 2 };
+                    context.println("cd: missing operand", "stderr");
+                    context.exit(2);
                 }
 
                 try {
                     process.chdir(options.args[0]);
-                    return { output: null, error: null, code: 0 };
+                    break;
                 } catch (error) {
-                    return {
-                        output: null,
-                        error: "cd: " + ((error as Error).message ?? `${error}`),
-                        code: 1
-                    };
+                    context.println("cd: " + ((error as Error).message ?? `${error}`), "stderr");
+                    context.exit(1) as void;
                 }
 
-            case "ls": {
-                try {
-                    const cwd = process.cwd();
-                    const files = await readdir(cwd);
-                    let output = "";
+                break;
 
-                    for (const file of files) {
-                        const stat = await lstat(path.join(cwd, file));
+            case "ls":
+                {
+                    try {
+                        const cwd = process.cwd();
+                        const files = await readdir(cwd);
+                        let output = "";
 
-                        if (stat.isDirectory()) {
-                            output += chalk.blue.bold(file) + "/\n";
-                        } else if (stat.isSymbolicLink()) {
-                            output += chalk.cyan(file) + "@\n";
-                        } else if (stat.isBlockDevice()) {
-                            output += chalk.yellow(file) + "\n";
-                        } else if (stat.isCharacterDevice()) {
-                            output += chalk.magenta(file) + "\n";
-                        } else if (stat.isFIFO()) {
-                            output += chalk.yellow.bold(file) + "\n";
-                        } else if (stat.isSocket()) {
-                            output += chalk.red(file) + "\n";
-                        } else if (stat.mode & 0o111) {
-                            output += chalk.green.bold(file) + "*\n";
-                        } else {
-                            output += file + "\n";
+                        for (const file of files) {
+                            const stat = await lstat(path.join(cwd, file));
+
+                            if (stat.isDirectory()) {
+                                output += chalk.blue.bold(file) + "/\n";
+                            } else if (stat.isSymbolicLink()) {
+                                output += chalk.cyan(file) + "@\n";
+                            } else if (stat.isBlockDevice()) {
+                                output += chalk.yellow(file) + "\n";
+                            } else if (stat.isCharacterDevice()) {
+                                output += chalk.magenta(file) + "\n";
+                            } else if (stat.isFIFO()) {
+                                output += chalk.yellow.bold(file) + "\n";
+                            } else if (stat.isSocket()) {
+                                output += chalk.red(file) + "\n";
+                            } else if (stat.mode & 0o111) {
+                                output += chalk.green.bold(file) + "*\n";
+                            } else {
+                                output += file + "\n";
+                            }
                         }
-                    }
 
-                    return {
-                        output: output.trimEnd(),
-                        error: null,
-                        code: 0
-                    };
-                } catch (error) {
-                    return { output: null, error: (error as Error).message ?? `${error}`, code: 1 };
+                        context.println(output.trimEnd());
+                    } catch (error) {
+                        context.println(
+                            "ls: " + ((error as Error).message ?? `${error}`),
+                            "stderr"
+                        );
+                        context.exit(1);
+                    }
                 }
-            }
+
+                break;
+
+            default:
+                return false;
         }
 
-        let outputBuffer = "";
+        return true;
+    }
+
+    public async executeCommand(
+        commandString: string,
+        ws: WebSocket,
+        defaultContext?: ShellCommandContext
+    ) {
+        const [command, ...args] = commandString.split(/\s+/);
+
+        if (!command) {
+            ws.send(JSON.stringify({ type: "sh_error", payload: "No command provided" }));
+            return;
+        }
 
         const shellCommand = this.commands.get(command);
 
         if (!shellCommand) {
-            return { output: null, error: `${command}: command not found`, code: 127 };
+            ws.send(
+                JSON.stringify({
+                    type: "sh_error",
+                    payload: `${command}: command not found`,
+                    code: 127
+                })
+            );
+            return;
         }
 
-        const print = (...args: StringLike[]) => {
-            outputBuffer += args.join(" ");
-        };
+        const context = defaultContext ?? new ShellCommandContext(ws, args, false);
 
-        const println = (...args: StringLike[]) => {
-            outputBuffer += args.join(" ") + "\n";
-        };
-
-        const ret = await shellCommand.execute({
-            elevatedPrivileges: options?.elevatedPrivileges ?? false,
-            args: options?.args ?? [],
-            print,
-            println
+        context.on("stdout", (data: string) => {
+            ws.send(JSON.stringify({ type: "stdout", payload: data }));
         });
 
-        if (typeof ret === "string") {
-            return { output: ret, error: null, code: 0 };
-        }
+        context.on("stderr", (data: string) => {
+            ws.send(JSON.stringify({ type: "stderr", payload: data }));
+        });
 
-        if (
-            typeof ret === "object" &&
-            ret &&
-            ("output" in ret || "error" in ret || "code" in ret)
-        ) {
-            return {
-                output: (ret as Record<string, string>).output ?? null,
-                error: (ret as Record<string, string>).error ?? null,
-                code: (ret as Record<string, number>).code ?? 0
-            };
-        }
+        context.on("exit", (code: number) => {
+            ws.send(JSON.stringify({ type: "exit", payload: code }));
+        });
 
-        return { output: outputBuffer === "" ? null : outputBuffer, error: null, code: 0 };
+        try {
+            await shellCommand.execute(context);
+            ws.send(JSON.stringify({ type: "exit", payload: 0 }));
+        } catch (error) {
+            if (error instanceof ExitError) {
+                ws.send(JSON.stringify({ type: "exit", payload: error.getCode() }));
+                return;
+            }
+
+            ws.send(
+                JSON.stringify({ type: "error", payload: (error as Error).message ?? `${error}` })
+            );
+        }
     }
 }
 

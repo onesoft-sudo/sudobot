@@ -1,4 +1,5 @@
 import { env } from "@main/env/env";
+import { AxiosError } from "axios";
 import chalk from "chalk";
 import readline from "readline/promises";
 
@@ -7,7 +8,7 @@ type ShellState = {
     promptOverride?: string;
 };
 
-class Shell implements AsyncIterable<string> {
+class ShellClient {
     public readonly rl = readline.createInterface({
         input: process.stdin as unknown as NodeJS.ReadableStream,
         output: process.stdout as unknown as NodeJS.WritableStream,
@@ -24,11 +25,11 @@ class Shell implements AsyncIterable<string> {
     private _wsConnected = false;
 
     public constructor() {
-        this.setPrompt(this.getPrompt());
+        this.setReadlinePrompt(this.getPrompt());
 
         this.rl.on("SIGINT", () => {
             console.log("^C");
-            this.prompt();
+            this.printPrompt();
             this.ws.send(
                 JSON.stringify({
                     type: "terminate",
@@ -63,12 +64,8 @@ class Shell implements AsyncIterable<string> {
         });
 
         this.ws.addEventListener("close", () => {
-            this.rl.close();
-
-            console.error(
-                `\n${chalk.red.bold("sbsh:")} ${chalk.white.bold("error:")} connection to shell service closed`
-            );
-
+            this.clearReadline();
+            console.error(`${chalk.red.bold("sbsh:")} connection to shell service closed`);
             process.exit(1);
         });
 
@@ -77,7 +74,7 @@ class Shell implements AsyncIterable<string> {
         });
     }
 
-    public awaitReady() {
+    public ready() {
         return new Promise<void>((resolve, reject) => {
             if (this._wsConnected) {
                 resolve();
@@ -89,20 +86,21 @@ class Shell implements AsyncIterable<string> {
         });
     }
 
-    public async *[Symbol.asyncIterator](): AsyncIterator<string> {
-        this.prompt();
+    public async start() {
+        await this.ready();
+        this.printPrompt();
 
         for await (const line of this.rl) {
-            yield line;
-            this.prompt();
+            await this.processInput(line);
+            this.printPrompt();
         }
     }
 
-    public prompt() {
+    public printPrompt() {
         this.rl.prompt(false);
     }
 
-    private setPrompt(prompt: string = this.getPrompt()) {
+    private setReadlinePrompt(prompt: string = this.getPrompt()) {
         this.rl.setPrompt(prompt);
     }
 
@@ -123,7 +121,13 @@ class Shell implements AsyncIterable<string> {
 
     public setExitCode(code: number) {
         this.state.lastExitCode = code;
-        this.setPrompt();
+        this.setReadlinePrompt();
+    }
+
+    private clearReadline() {
+        this.rl.setPrompt("");
+        this.rl.prompt();
+        this.rl.close();
     }
 
     public handleBuiltInCommands(command: string, args: string[]) {
@@ -166,6 +170,16 @@ class Shell implements AsyncIterable<string> {
         return true;
     }
 
+    public executeRawShellCommand(command: string) {
+        this.ws.send(
+            JSON.stringify({
+                type: "raw_cmd",
+                key: env.SYSTEM_SHELL_KEY,
+                payload: command
+            })
+        );
+    }
+
     public executeCommand(command: string) {
         this.ws.send(
             JSON.stringify({
@@ -175,6 +189,70 @@ class Shell implements AsyncIterable<string> {
             })
         );
     }
+
+    private async processInput(input: string) {
+        await this.handleCommand(input);
+    }
+
+    private async handleCommand(input: string) {
+        if (input[0] === "$" && input.slice(1).trim().length === 0) {
+            console.error(`${chalk.red.bold("sbsh:")} expected raw shell command after "$"`);
+            return;
+        }
+
+        const [command, ...args] = input.split(/\s+/);
+
+        if (this.handleBuiltInCommands(command, args)) {
+            return;
+        }
+
+        try {
+            if (input[0] === "$") {
+                this.executeRawShellCommand(input.slice(1));
+            } else {
+                this.executeCommand(input);
+            }
+
+            await new Promise<void>(resolve => {
+                const handler = (message: MessageEvent) => {
+                    const { type, payload } = JSON.parse(message.data.toString("utf-8"));
+
+                    if (type === "exit" || type === "signal" || type === "sh_error") {
+                        const code = +payload;
+                        this.ws.removeEventListener("message", handler);
+                        this.setExitCode(isNaN(code) ? 128 : code);
+
+                        if (type === "sh_error") {
+                            console.error(`${chalk.red.bold("sbsh:")} ${payload}`);
+                        }
+
+                        resolve();
+                        return;
+                    }
+                };
+
+                this.ws.addEventListener("message", handler);
+            });
+        } catch (error) {
+            if (error instanceof Error && error.name === "AbortError") {
+                console.error(
+                    `${chalk.red.bold("sbsh:")} ${chalk.white.bold("SIGINT")} received, aborting command execution`
+                );
+
+                return;
+            }
+
+            if (error instanceof AxiosError) {
+                console.error(
+                    `${error.response?.data.shortError ?? error.response?.data.error ?? error?.message}`
+                );
+                this.setExitCode(error.response?.data.code ?? 1);
+                return;
+            }
+
+            console.error(error);
+        }
+    }
 }
 
-export default Shell;
+export default ShellClient;

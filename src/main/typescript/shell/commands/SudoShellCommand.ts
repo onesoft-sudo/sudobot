@@ -1,20 +1,24 @@
 import ShellCommand from "@main/shell/core/ShellCommand";
-import type { ShellCommandContext } from "@main/shell/core/ShellCommandContext";
+import { ShellCommandContext } from "@main/shell/core/ShellCommandContext";
 
 class SudoShellCommand extends ShellCommand {
     public override readonly name: string = "sudo";
 
-    public override async execute(context: ShellCommandContext): Promise<unknown> {
+    public override usage(context: ShellCommandContext) {
+        context.println("Usage: sudo <command>");
+    }
+
+    public override async execute(context: ShellCommandContext): Promise<void> {
         if (!context.args[0]) {
-            return { code: 1, error: "Usage: sudo <command>" };
+            context.exit(1);
         }
 
         const service = this.application.service("shellService");
-
-        return await service.simpleExecute(context.args[0], {
-            elevatedPrivileges: true,
-            args: context.args.slice(1)
-        });
+        await service.executeCommand(
+            context.args.join(" "),
+            context.ws,
+            new ShellCommandContext(context.ws, context.args, true)
+        );
     }
 }
 

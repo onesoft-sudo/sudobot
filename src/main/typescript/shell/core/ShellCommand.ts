@@ -8,7 +8,8 @@ abstract class ShellCommand {
 
     public constructor(protected readonly application: Application) {}
 
-    public abstract execute(context: ShellCommandContext): Awaitable<unknown>;
+    public usage?(context: ShellCommandContext) : Awaitable<void>;
+    public abstract execute(context: ShellCommandContext): Awaitable<void>;
 }
 
 export default ShellCommand;
