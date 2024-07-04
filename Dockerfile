@@ -1,4 +1,4 @@
-FROM node:21-alpine
+FROM node:22-alpine
 
 WORKDIR /app
 
@@ -10,11 +10,9 @@ RUN npm install -D
 
 COPY tsconfig.json .
 COPY src ./src
-COPY prisma ./prisma
 COPY resources ./resources
 COPY ecosystem.config.js .
 
-RUN npx prisma generate
 RUN npm run build
 
 # -- Uncomment the following line if you want a smaller image size
