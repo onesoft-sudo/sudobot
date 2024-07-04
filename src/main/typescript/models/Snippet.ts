@@ -58,7 +58,7 @@ export const snippets = pgTable("snippets", {
     updatedAt: timestamp("updated_at")
         .notNull()
         .defaultNow()
-        .$onUpdate(() => sql`current_timestamp`)
+        .$onUpdate(() => new Date())
 });
 
 export type Snippet = typeof snippets.$inferSelect;

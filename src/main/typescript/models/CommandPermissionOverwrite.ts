@@ -43,7 +43,7 @@ export const commandPermissionOverwrites = pgTable("command_permission_overwrite
     updatedAt: timestamp("updated_at")
         .notNull()
         .defaultNow()
-        .$onUpdate(() => sql`current_timestamp`)
+        .$onUpdate(() => new Date())
 });
 
 export type CommandPermissionOverwrite = typeof commandPermissionOverwrites.$inferSelect;

@@ -1,4 +1,3 @@
-import { sql } from "drizzle-orm";
 import { boolean, json, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
 
 export const queues = pgTable("queues", {
@@ -13,7 +12,7 @@ export const queues = pgTable("queues", {
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at")
         .defaultNow()
-        .$onUpdate(() => sql`current_timestamp`),
+        .$onUpdate(() => new Date()),
     runsAt: timestamp("runs_at")
 });
 

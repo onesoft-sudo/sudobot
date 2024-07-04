@@ -34,7 +34,7 @@ export const reactionRoles = pgTable("reaction_roles", {
     updatedAt: timestamp("updated_at")
         .notNull()
         .defaultNow()
-        .$onUpdate(() => sql`current_timestamp`)
+        .$onUpdate(() => new Date())
 });
 
 export type ReactionRole = typeof reactionRoles.$inferSelect;

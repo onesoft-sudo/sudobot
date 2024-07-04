@@ -1,5 +1,4 @@
 import { pgEnum } from "@framework/database/Enum";
-import { sql } from "drizzle-orm";
 import { pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
 
 export enum VerificationMethod {
@@ -24,7 +23,7 @@ export const verificationRecords = pgTable("verification_records", {
     updatedAt: timestamp("updated_at")
         .notNull()
         .defaultNow()
-        .$onUpdate(() => sql`current_timestamp`)
+        .$onUpdate(() => new Date())
 });
 
 export type VerificationRecord = typeof verificationRecords.$inferSelect;

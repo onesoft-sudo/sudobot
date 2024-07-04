@@ -13,7 +13,7 @@ export const muteRecords = pgTable("mute_records", {
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at")
         .defaultNow()
-        .$onUpdate(() => sql`current_timestamp`)
+        .$onUpdate(() => new Date())
 });
 
 export type MuteRecord = typeof muteRecords.$inferSelect;

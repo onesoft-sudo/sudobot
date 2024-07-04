@@ -1,4 +1,3 @@
-import { sql } from "drizzle-orm";
 import { integer, json, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
 
 export const verificationEntries = pgTable("verification_entries", {
@@ -13,7 +12,7 @@ export const verificationEntries = pgTable("verification_entries", {
     updatedAt: timestamp("updated_at")
         .notNull()
         .defaultNow()
-        .$onUpdate(() => sql`current_timestamp`)
+        .$onUpdate(() => new Date())
 });
 
 export type VerificationEntry = typeof verificationEntries.$inferSelect;

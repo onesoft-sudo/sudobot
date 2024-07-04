@@ -1,4 +1,3 @@
-import { sql } from "drizzle-orm";
 import { json, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
 
 export const channelLocks = pgTable("channel_locks", {
@@ -9,7 +8,7 @@ export const channelLocks = pgTable("channel_locks", {
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at")
         .defaultNow()
-        .$onUpdate(() => sql`current_timestamp`)
+        .$onUpdate(() => new Date())
 });
 
 export type ChannelLock = typeof channelLocks.$inferSelect;

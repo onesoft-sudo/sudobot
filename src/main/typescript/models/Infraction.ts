@@ -1,5 +1,4 @@
 import { pgEnum } from "@framework/database/Enum";
-import { sql } from "drizzle-orm";
 import { integer, json, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
 
 export enum InfractionType {
@@ -51,7 +50,7 @@ export const infractions = pgTable("infractions", {
     updatedAt: timestamp("updated_at")
         .notNull()
         .defaultNow()
-        .$onUpdate(() => sql`current_timestamp`)
+        .$onUpdate(() => new Date())
 });
 
 export type Infraction = typeof infractions.$inferSelect;

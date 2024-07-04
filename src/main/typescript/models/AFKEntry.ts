@@ -17,7 +17,7 @@ export const afkEntries = pgTable("afk_entries", {
     updatedAt: timestamp("updated_at")
         .notNull()
         .defaultNow()
-        .$onUpdate(() => sql`current_timestamp`)
+        .$onUpdate(() => new Date())
 });
 
 export type AFKEntry = typeof afkEntries.$inferSelect;

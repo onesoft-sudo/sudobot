@@ -64,7 +64,7 @@ export default async function RequireAuthMiddleware(
 
         application.logger.debug(info, payload);
 
-        if (!payload?.id) {
+        if (typeof payload?.id !== "number") {
             throw new Error("ID not found");
         }
 

@@ -23,7 +23,7 @@ export const users = pgTable("users", {
     updatedAt: timestamp("updated_at")
         .notNull()
         .defaultNow()
-        .$onUpdate(() => sql`current_timestamp`)
+        .$onUpdate(() => new Date())
 });
 
 export type User = typeof users.$inferSelect;

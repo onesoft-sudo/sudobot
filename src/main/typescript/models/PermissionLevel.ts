@@ -29,7 +29,7 @@ export const permissionLevels = pgTable("permission_levels", {
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at")
         .defaultNow()
-        .$onUpdate(() => sql`current_timestamp`)
+        .$onUpdate(() => new Date())
 });
 
 export type PermissionLevel = typeof permissionLevels.$inferSelect;
