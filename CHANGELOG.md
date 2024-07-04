@@ -1,3 +1,12 @@
+## [9.9.2](https://github.com/onesoft-sudo/sudobot/compare/v9.9.1...v9.9.2) (2024-07-04)
+
+
+### Bug Fixes
+
+* **models:** invalid  logic ([ba39e54](https://github.com/onesoft-sudo/sudobot/commit/ba39e5495e76759c2360f8cfa893cfdb7847c77b))
+
+
+
 ## [9.9.1](https://github.com/onesoft-sudo/sudobot/compare/v9.9.0...v9.9.1) (2024-07-02)
 
 
@@ -31,20 +40,6 @@
 ### Features
 
 * system update service ([e85195e](https://github.com/onesoft-sudo/sudobot/commit/e85195eb252def2517f02dbf50635f5e942b739a))
-
-
-
-# [9.6.0](https://github.com/onesoft-sudo/sudobot/compare/v9.5.0...v9.6.0) (2024-06-25)
-
-
-### Bug Fixes
-
-* eslint warnings ([511c800](https://github.com/onesoft-sudo/sudobot/commit/511c8005d24d0c7aaf35fa9babd4810d2af50439))
-
-
-### Features
-
-* sudobot system shell ([5231870](https://github.com/onesoft-sudo/sudobot/commit/5231870e614c8ddac0ac636850ef5c5c72e7319f))
 
 
 
