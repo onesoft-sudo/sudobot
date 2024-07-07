@@ -83,6 +83,7 @@ jobs:
                   version-file: "./package.json"
                   git-user-name: "Conventional Release Action"
                   git-user-email: rakinar2@onesoftnet.eu.org
+                  git-push: false
 
             - name: Use Node.js 21.x
               uses: actions/setup-node@v3
@@ -145,6 +146,7 @@ jobs:
                   version-file: "./package.json"
                   git-user-name: "Conventional Release Action"
                   git-user-email: rakinar2@onesoftnet.eu.org
+                  git-push: false
 
             - name: Download Linux Release Artifact
               uses: actions/download-artifact@v2
