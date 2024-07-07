@@ -25,6 +25,7 @@ jobs:
                   version-file: "./package.json"
                   git-user-name: "Conventional Release Action"
                   git-user-email: rakinar2@onesoftnet.eu.org
+                  git-push: false
 
             - name: "Install Programs, Libraies and Tools"
               run: |
@@ -146,7 +147,6 @@ jobs:
                   version-file: "./package.json"
                   git-user-name: "Conventional Release Action"
                   git-user-email: rakinar2@onesoftnet.eu.org
-                  git-push: false
 
             - name: Download Linux Release Artifact
               uses: actions/download-artifact@v2
