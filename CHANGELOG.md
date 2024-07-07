@@ -1,3 +1,12 @@
+# [9.11.0](https://github.com/onesoft-sudo/sudobot/compare/v9.10.1...v9.11.0) (2024-07-07)
+
+
+### Features
+
+* better update interactions ([25757da](https://github.com/onesoft-sudo/sudobot/commit/25757dae25a54c6f6cd340633d97e9c65c3dd24c))
+
+
+
 ## [9.10.1](https://github.com/onesoft-sudo/sudobot/compare/v9.10.0...v9.10.1) (2024-07-07)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * remove unnecessary console.log ([2d6dc3f](https://github.com/onesoft-sudo/sudobot/commit/2d6dc3f1beb49a5ed103f0a6632d273eec5659ec))
-
-
-
-# [9.9.0](https://github.com/onesoft-sudo/sudobot/compare/v9.8.0...v9.9.0) (2024-07-01)
-
-
-### Features
-
-* better command system ([a0d49b7](https://github.com/onesoft-sudo/sudobot/commit/a0d49b74361fe603a21671d905bef6e19506dd97))
 
 
 
