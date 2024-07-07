@@ -1,3 +1,13 @@
+# [9.13.0](https://github.com/onesoft-sudo/sudobot/compare/v9.12.0...v9.13.0) (2024-07-07)
+
+
+### Features
+
+* release next version [ci test] ([348424e](https://github.com/onesoft-sudo/sudobot/commit/348424eb5223e5f0b73b4b83387de95bedb31223))
+* release next version [ci test] ([33eb648](https://github.com/onesoft-sudo/sudobot/commit/33eb6481cc4abdd8081792a2094f1cd948e63343))
+
+
+
 # [9.12.0](https://github.com/onesoft-sudo/sudobot/compare/v9.11.0...v9.12.0) (2024-07-07)
 
 
@@ -31,15 +41,6 @@
 ### Features
 
 * update command ([d4e1c0d](https://github.com/onesoft-sudo/sudobot/commit/d4e1c0d5fa4387a0ab5956065d15b7c9edadd507))
-
-
-
-## [9.9.2](https://github.com/onesoft-sudo/sudobot/compare/v9.9.1...v9.9.2) (2024-07-04)
-
-
-### Bug Fixes
-
-* **models:** invalid  logic ([ba39e54](https://github.com/onesoft-sudo/sudobot/commit/ba39e5495e76759c2360f8cfa893cfdb7847c77b))
 
 
 
