@@ -1,3 +1,12 @@
+# [9.16.0](https://github.com/onesoft-sudo/sudobot/compare/v9.15.0...v9.16.0) (2024-07-07)
+
+
+### Features
+
+* ci test ([e948fe5](https://github.com/onesoft-sudo/sudobot/commit/e948fe548c53d88b4ad76f1e8f4b2898676c149d))
+
+
+
 # [9.15.0](https://github.com/onesoft-sudo/sudobot/compare/v9.14.1...v9.15.0) (2024-07-07)
 
 
@@ -38,15 +47,6 @@
 
 * release next version [ci test] ([348424e](https://github.com/onesoft-sudo/sudobot/commit/348424eb5223e5f0b73b4b83387de95bedb31223))
 * release next version [ci test] ([33eb648](https://github.com/onesoft-sudo/sudobot/commit/33eb6481cc4abdd8081792a2094f1cd948e63343))
-
-
-
-# [9.12.0](https://github.com/onesoft-sudo/sudobot/compare/v9.11.0...v9.12.0) (2024-07-07)
-
-
-### Features
-
-* release next version [ci test] ([51df2cf](https://github.com/onesoft-sudo/sudobot/commit/51df2cf7bf04fbce8d890312895f1900cdebea27))
 
 
 
