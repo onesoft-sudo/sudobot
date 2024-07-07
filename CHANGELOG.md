@@ -1,3 +1,12 @@
+## [9.10.1](https://github.com/onesoft-sudo/sudobot/compare/v9.10.0...v9.10.1) (2024-07-07)
+
+
+### Bug Fixes
+
+* reword the about command embed footer ([47de955](https://github.com/onesoft-sudo/sudobot/commit/47de955ffa2cf8ce5c7695214e59250ba8e3f9bd))
+
+
+
 # [9.10.0](https://github.com/onesoft-sudo/sudobot/compare/v9.9.2...v9.10.0) (2024-07-07)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * better command system ([a0d49b7](https://github.com/onesoft-sudo/sudobot/commit/a0d49b74361fe603a21671d905bef6e19506dd97))
-
-
-
-# [9.8.0](https://github.com/onesoft-sudo/sudobot/compare/v9.7.0...v9.8.0) (2024-07-01)
-
-
-### Features
-
-* improved shell service ([85119b3](https://github.com/onesoft-sudo/sudobot/commit/85119b37eb0f517287449475e671377189b11113))
 
 
 
