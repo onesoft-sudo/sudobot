@@ -26,6 +26,7 @@ jobs:
                   git-user-name: "Conventional Release Action"
                   git-user-email: rakinar2@onesoftnet.eu.org
                   git-push: false
+                  skip-commit: true
 
             - name: "Install Programs, Libraies and Tools"
               run: |
@@ -85,6 +86,7 @@ jobs:
                   git-user-name: "Conventional Release Action"
                   git-user-email: rakinar2@onesoftnet.eu.org
                   git-push: false
+                  skip-commit: true
 
             - name: Use Node.js 21.x
               uses: actions/setup-node@v3
