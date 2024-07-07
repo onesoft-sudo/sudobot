@@ -18,31 +18,56 @@ type GitHubReleaseResponse = {
     tag_name: string;
     assets: GitHubReleaseAsset[];
     body: string;
+    created_at: string;
 };
 
 @Name("systemUpdateService")
 class SystemUpdateService extends Service {
-    public static readonly latestReleaseURL: string =
-        "https://api.github.com/repos/onesoft-sudo/sudobot/releases/latest";
+    public static readonly releasesURL: string =
+        "https://api.github.com/repos/onesoft-sudo/sudobot/releases";
     public static readonly filesToBackup = ["src", "build", "package.json"];
 
-    public async checkForUpdate(): Promise<GitHubReleaseResponse | null> {
-        const response: AxiosResponse<GitHubReleaseResponse> =
-            await getAxiosClient().get<GitHubReleaseResponse>(SystemUpdateService.latestReleaseURL);
+    public async checkForUpdate() {
+        const response: AxiosResponse<GitHubReleaseResponse[]> = await getAxiosClient().get<
+            GitHubReleaseResponse[]
+        >(SystemUpdateService.releasesURL);
 
-        const latestVersion = response.data.tag_name.startsWith("v")
-            ? response.data.tag_name.substring(1)
-            : response.data.tag_name;
+        const updateInfo = {
+            latestStable: null as GitHubReleaseResponse | null,
+            latestUnstable: null as GitHubReleaseResponse | null
+        };
 
-        if (semver.valid(latestVersion) === null) {
-            throw new Error("Invalid version string");
+        const latestStable = response.data.find(release =>
+            /^v?[1-9]+\.\d+\.\d+$/.test(release.tag_name)
+        );
+        const latestUnstable = response.data.find(
+            release => !/^v?[1-9]+\.\d+\.\d+$/.test(release.tag_name)
+        );
+
+        const latestStableVersion = latestStable?.tag_name.startsWith("v")
+            ? latestStable?.tag_name.substring(1)
+            : latestStable?.tag_name;
+
+        const latestUnstableVersion = latestUnstable?.tag_name.startsWith("v")
+            ? latestUnstable?.tag_name.substring(1)
+            : latestUnstable?.tag_name;
+
+        if (!latestStableVersion || semver.valid(latestStableVersion) === null) {
+            throw new Error("Invalid stable version string");
+        }
+        if (!latestUnstableVersion || semver.valid(latestUnstableVersion) === null) {
+            throw new Error("Invalid unstable version string");
         }
 
-        if (semver.gt(latestVersion, this.application.version)) {
-            return response.data;
+        if (semver.gt(latestStableVersion, this.application.version)) {
+            updateInfo.latestStable = latestStable ?? null;
         }
 
-        return null;
+        if (semver.gt(latestUnstableVersion, this.application.version)) {
+            updateInfo.latestUnstable = latestUnstable ?? null;
+        }
+
+        return updateInfo;
     }
 
     public canAutoUpdate(release: GitHubReleaseResponse) {
@@ -109,6 +134,8 @@ class SystemUpdateService extends Service {
 
     public async cleanUp(): Promise<void> {
         const tmpPath = systemPrefix("tmp");
+        const backupPath = systemPrefix("tmp/backup");
+        const newBackupPath = systemPrefix("tmp/backup-" + Date.now());
         const updateDirectory = path.join(tmpPath, "update");
         const updateTarGz = path.join(tmpPath, "update.tar.gz");
 
@@ -119,12 +146,39 @@ class SystemUpdateService extends Service {
         if (existsSync(updateTarGz)) {
             await rm(updateTarGz);
         }
+
+        if (existsSync(backupPath)) {
+            await rename(backupPath, newBackupPath);
+        }
     }
 
-    public async update() {
+    public async restoreBackup() {
+        const backupPath = systemPrefix("tmp/backup");
+
+        if (!existsSync(backupPath)) {
+            this.application.logger.error("No backup found to restore.");
+            return;
+        }
+
+        for (const file of SystemUpdateService.filesToBackup) {
+            const backupFilePath = path.join(backupPath, file);
+            const systemFilePath = path.join(__dirname, "../../../../", file);
+
+            if (!existsSync(backupFilePath)) {
+                continue;
+            }
+
+            await rename(backupFilePath, systemFilePath);
+        }
+    }
+
+    public async update(release: GitHubReleaseResponse | null = null, restart = true) {
         try {
             this.application.logger.debug("Checking for updates...");
-            const release = await this.checkForUpdate();
+
+            if (!release) {
+                release = (await this.checkForUpdate()).latestStable;
+            }
 
             if (release === null) {
                 this.application.logger.info("No updates available.");
@@ -158,10 +212,13 @@ class SystemUpdateService extends Service {
         } catch (error) {
             this.application.logger.error("An error has occurred while updating the system.");
             this.application.logger.error(error);
+            await this.restoreBackup();
             return;
         }
 
-        await this.application.service("startupManager").requestRestart();
+        if (restart) {
+            await this.application.service("startupManager").requestRestart();
+        }
     }
 }
 

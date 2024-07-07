@@ -220,7 +220,7 @@ class MessageReportingService extends Service {
         const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
             new StringSelectMenuBuilder()
                 .setCustomId(
-                    `report_action_${message.author.id}_${message.channelId}_${message.id}`
+                    `msgreport_report_action_${message.author.id}_${message.channelId}_${message.id}`
                 )
                 .setPlaceholder("Select an action to take")
                 .addOptions(MessageReportingService.ACTION_OPTIONS)
@@ -238,8 +238,10 @@ class MessageReportingService extends Service {
             return;
         }
 
-        if (interaction.isStringSelectMenu()) {
-            const [type, action, userId, channelId, messageId] = interaction.customId.split("_");
+        if (interaction.isStringSelectMenu() && interaction.customId.startsWith("msgreport_")) {
+            const [type, action, userId, channelId, messageId] = interaction.customId
+                .slice("msgreport_".length)
+                .split("_");
 
             if (action !== "action" || type !== "report" || !userId || !channelId || !messageId) {
                 await interaction.reply({
