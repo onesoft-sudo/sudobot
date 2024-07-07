@@ -121,7 +121,11 @@ class SystemUpdateService extends Service {
         const updatePath = systemPrefix("tmp/update");
 
         for (const file of SystemUpdateService.filesToReplace) {
-            const filePath = path.resolve(updatePath, "sudobot", file);
+            const filePath = path.resolve(
+                updatePath,
+                `sudobot-release-${process.platform === "darwin" ? "darwin" : "linux"}`,
+                file
+            );
             const systemFilePath = path.join(__dirname, "../../../../", file);
 
             if (!existsSync(filePath) || existsSync(systemFilePath)) {
@@ -193,7 +197,11 @@ class SystemUpdateService extends Service {
             }
 
             this.application.logger.info(`Downloading update version ${release.tag_name}.`);
-            await this.downloadUpdate(release.assets[0]);
+            await this.downloadUpdate(
+                release.assets.find(a =>
+                    a.name.includes(process.platform === "darwin" ? "darwin" : "linux")
+                ) ?? release.assets[0]
+            );
 
             this.application.logger.info("Unpacking update...");
             await this.unpackUpdate();
