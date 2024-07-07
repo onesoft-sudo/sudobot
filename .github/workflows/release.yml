@@ -75,11 +75,6 @@ jobs:
         steps:
             - uses: actions/checkout@v3
 
-            - name: Use Node.js 21.x
-              uses: actions/setup-node@v3
-              with:
-                  node-version: 21.x
-
             - name: Conventional Changelog Action (Update package.json)
               id: changelog
               uses: TriPSs/conventional-changelog-action@v3.15.0
@@ -88,6 +83,11 @@ jobs:
                   version-file: "./package.json"
                   git-user-name: "Conventional Release Action"
                   git-user-email: rakinar2@onesoftnet.eu.org
+
+            - name: Use Node.js 21.x
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 21.x
 
             - name: "Install Programs, Libraies and Tools"
               run: brew install curl pkg-config cairo pango libpng jpeg giflib librsvg
