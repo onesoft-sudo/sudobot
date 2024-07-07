@@ -6,7 +6,8 @@
         "rootDir": "./src",
         "baseUrl": "./",
         "paths": {
-            "@sudobot/*": ["../../build/*"]
+            "@sudobot/*": ["../../build/out/main/typescript/*"],
+            "@framework/*": ["../../build/out/framework/typescript/*"]
         },
         "resolveJsonModule": true,
         "outDir": "./build",

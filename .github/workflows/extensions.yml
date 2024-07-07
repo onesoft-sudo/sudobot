@@ -1,7 +1,7 @@
 name: Build Extensions
 
-on: 
-    push: 
+on:
+    push:
         branches: [main]
 #    schedule:
 #        - cron: '*/20 * * * *'
@@ -32,11 +32,8 @@ jobs:
                   sudo cp tarsum /usr/bin/tarsum;
                   rm -fr /tmp/tarsum;
 
-            - name: Install Main Dependencies
-              run: npm install -D
-
-            - name: Build Main Project
-              run: npm run build
+            - name: Build Main Projectc
+              run: ./blazew build
 
             - name: Build Extensions
               run: |

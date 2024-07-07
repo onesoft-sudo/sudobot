@@ -1,17 +1,14 @@
-import axios from "axios";
-import Command, { CommandMessage, CommandReturn } from "@sudobot/core/Command";
-import { logError } from "@sudobot/utils/Logger";
+import { Command, CommandMessage } from "@framework/commands/Command";
+import Context from "@framework/commands/Context";
+import { getAxiosClient } from "@sudobot/utils/axios";
 
 export default class AnimeCommand extends Command {
-    public readonly name = "anime";
-    public readonly validationRules = [];
-    public readonly permissions = [];
+    public override readonly name = "anime";
+    public override readonly description = "Fetch a random neko, waifu, or kitsune image";
+    public override readonly permissions = [];
+    public override readonly defer = true;
 
-    public readonly description = "Fetch a random neko, waifu, or kitsune image";
-
-    async execute(message: CommandMessage): Promise<CommandReturn> {
-        await this.deferIfInteraction(message);
-
+    public override async execute(context: Context<CommandMessage>) {
         const apis = [
             "https://nekos.best/api/v2/neko",
             "https://nekos.best/api/v2/waifu",
@@ -21,22 +18,22 @@ export default class AnimeCommand extends Command {
         const randomApi = apis[Math.floor(Math.random() * apis.length)];
 
         try {
-            const response = await axios.get(randomApi);
+            const response = await getAxiosClient().get(randomApi);
 
             if (response.status < 200 || response.status >= 300) {
                 throw new Error("Invalid status code");
             }
 
-            await this.deferredReply(message, {
+            await context.reply({
                 files: [
                     {
                         attachment: response.data.results[0].url
                     }
                 ]
             });
-        } catch (e) {
-            logError(e);
-            await this.error(message, "Failed to fetch an image");
+        } catch (error) {
+            this.application.logger.error(error);
+            await context.error("Failed to fetch an image.");
         }
     }
 }
