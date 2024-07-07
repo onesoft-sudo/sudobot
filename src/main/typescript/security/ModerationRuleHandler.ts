@@ -20,8 +20,6 @@ import ModerationRuleHandlerContract, {
     type ModerationRuleContext
 } from "../contracts/ModerationRuleHandlerContract";
 
-// FIXME: This class is not complete and is only a placeholder for the actual implementation.
-
 type MessageContext<T> = ModerationRuleContext<"message", { type: T }>;
 type ProfileContext<T> = ModerationRuleContext<"profile", { type: T }>;
 
@@ -1276,9 +1274,6 @@ class ModerationRuleHandler extends HasApplication implements ModerationRuleHand
             matched: false
         };
     }
-
-    // TODO: Implement file filter
-    // TODO: Implement AI auto moderation
 }
 
 export default ModerationRuleHandler;

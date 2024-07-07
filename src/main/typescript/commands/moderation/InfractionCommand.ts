@@ -54,8 +54,8 @@ class InfractionCommand extends Command {
 
         return [
             this.buildChatInput()
-                .addSubcommand(option =>
-                    option
+                .addSubcommand(subcommand =>
+                    subcommand
                         .setName("create")
                         .setDescription("Create a new infraction.")
                         .addUserOption(option =>
@@ -92,8 +92,8 @@ class InfractionCommand extends Command {
                                 )
                         )
                 )
-                .addSubcommand(option =>
-                    option
+                .addSubcommand(subcommand =>
+                    subcommand
                         .setName("delete")
                         .setDescription("Delete an infraction.")
                         .addIntegerOption(option =>
@@ -102,16 +102,16 @@ class InfractionCommand extends Command {
                                 .setDescription("The ID of the infraction to delete.")
                         )
                 )
-                .addSubcommand(option =>
-                    option
+                .addSubcommand(subcommand =>
+                    subcommand
                         .setName("view")
                         .setDescription("View an infraction.")
                         .addIntegerOption(option =>
                             option.setName("id").setDescription("The ID of the infraction to view.")
                         )
                 )
-                .addSubcommand(option =>
-                    option
+                .addSubcommand(subcommand =>
+                    subcommand
                         .setName("list")
                         .setDescription("List infractions for a user.")
                         .addUserOption(option =>
@@ -121,8 +121,8 @@ class InfractionCommand extends Command {
                                 .setRequired(true)
                         )
                 )
-                .addSubcommand(option =>
-                    option
+                .addSubcommand(subcommand =>
+                    subcommand
                         .setName("clear")
                         .setDescription("Clear all infractions of a user.")
                         .addUserOption(option =>
@@ -138,8 +138,8 @@ class InfractionCommand extends Command {
                                 .setChoices(...types)
                         )
                 )
-                .addSubcommand(option =>
-                    option
+                .addSubcommand(subcommand =>
+                    subcommand
                         .setName("reason")
                         .setDescription("Change the reason for an infraction.")
                         .addIntegerOption(option =>
@@ -162,8 +162,8 @@ class InfractionCommand extends Command {
                                 )
                         )
                 )
-                .addSubcommand(option =>
-                    option
+                .addSubcommand(subcommand =>
+                    subcommand
                         .setName("duration")
                         .setDescription("Change the duration of an infraction.")
                         .addIntegerOption(option =>

@@ -993,7 +993,6 @@ class AuditLoggingService extends Service {
         });
     }
 
-    // TODO: Invite tracing
     private async logGuildMemberAdd(member: GuildMember) {
         const memberCount = Math.max(member.guild.members.cache.size, member.guild.memberCount);
         const fields: APIEmbedField[] = [

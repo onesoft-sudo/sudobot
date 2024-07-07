@@ -9,7 +9,6 @@ type MassUnbanQueuePayload = {
     guildId: Snowflake;
 };
 
-// TODO: Logging
 class MassUnbanQueue extends Queue<MassUnbanQueuePayload> {
     public static override readonly uniqueName = "mass_unban";
 
@@ -43,7 +42,6 @@ class MassUnbanQueue extends Queue<MassUnbanQueuePayload> {
             await this.application.database.drizzle
                 .insert(infractions)
                 .values(infractionCreatePayloads)
-
                 .catch(console.error);
         }
 

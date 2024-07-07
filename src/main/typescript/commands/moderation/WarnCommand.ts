@@ -44,7 +44,6 @@ type WarnCommandArgs = {
     interactionName: "member",
     interactionType: GuildMemberArgument<true>
 })
-// TODO: Extract this to a ReasonArgument class
 @TakesArgument<WarnCommandArgs>({
     names: ["reason"],
     types: [RestStringArgument],

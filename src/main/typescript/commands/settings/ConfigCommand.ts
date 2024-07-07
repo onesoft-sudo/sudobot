@@ -333,7 +333,7 @@ class ConfigCommand extends Command {
                   .slice(context.argv[1].length)
                   .trimStart()
                   .slice(context.argv[2].length)
-                  .trim() // FIXME: Extract this into a method
+                  .trim()
             : context.options.getString("value", true);
         const cast = (
             context.isLegacy() ? "json" : context.options.getString("cast") ?? "string"
