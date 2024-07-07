@@ -1,3 +1,12 @@
+# [9.14.0](https://github.com/onesoft-sudo/sudobot/compare/v9.13.0...v9.14.0) (2024-07-07)
+
+
+### Features
+
+* release next version [ci test] ([06cbdea](https://github.com/onesoft-sudo/sudobot/commit/06cbdea14913381a9abe30601aefdeace2548fe9))
+
+
+
 # [9.13.0](https://github.com/onesoft-sudo/sudobot/compare/v9.12.0...v9.13.0) (2024-07-07)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * reword the about command embed footer ([47de955](https://github.com/onesoft-sudo/sudobot/commit/47de955ffa2cf8ce5c7695214e59250ba8e3f9bd))
-
-
-
-# [9.10.0](https://github.com/onesoft-sudo/sudobot/compare/v9.9.2...v9.10.0) (2024-07-07)
-
-
-### Features
-
-* update command ([d4e1c0d](https://github.com/onesoft-sudo/sudobot/commit/d4e1c0d5fa4387a0ab5956065d15b7c9edadd507))
 
 
 
