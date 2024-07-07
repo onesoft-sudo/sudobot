@@ -25,7 +25,7 @@ type GitHubReleaseResponse = {
 class SystemUpdateService extends Service {
     public static readonly releasesURL: string =
         "https://api.github.com/repos/onesoft-sudo/sudobot/releases";
-    public static readonly filesToBackup = ["src", "build", "package.json"];
+    public static readonly filesToReplace = ["src", "build", "package.json"];
 
     public async checkForUpdate() {
         const response: AxiosResponse<GitHubReleaseResponse[]> = await getAxiosClient().get<
@@ -106,7 +106,7 @@ class SystemUpdateService extends Service {
 
         await mkdir(backupPath, { recursive: true });
 
-        for (const file of SystemUpdateService.filesToBackup) {
+        for (const file of SystemUpdateService.filesToReplace) {
             const filePath = path.join(__dirname, "../../../../", file);
 
             if (!existsSync(filePath)) {
@@ -120,7 +120,7 @@ class SystemUpdateService extends Service {
     public async applyUpdate(): Promise<void> {
         const updatePath = systemPrefix("tmp/update");
 
-        for (const file of SystemUpdateService.filesToBackup) {
+        for (const file of SystemUpdateService.filesToReplace) {
             const filePath = path.resolve(updatePath, "sudobot", file);
             const systemFilePath = path.join(__dirname, "../../../../", file);
 
@@ -160,7 +160,7 @@ class SystemUpdateService extends Service {
             return;
         }
 
-        for (const file of SystemUpdateService.filesToBackup) {
+        for (const file of SystemUpdateService.filesToReplace) {
             const backupFilePath = path.join(backupPath, file);
             const systemFilePath = path.join(__dirname, "../../../../", file);
 
@@ -213,12 +213,14 @@ class SystemUpdateService extends Service {
             this.application.logger.error("An error has occurred while updating the system.");
             this.application.logger.error(error);
             await this.restoreBackup();
-            return;
+            return false;
         }
 
         if (restart) {
-            await this.application.service("startupManager").requestRestart();
+            await this.application.service("startupManager").requestRestart({ metadata: "update" });
         }
+
+        return true;
     }
 }
 

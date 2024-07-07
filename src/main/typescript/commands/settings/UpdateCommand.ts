@@ -127,7 +127,7 @@ class UpdateCommand extends Command {
 
         let updateStarted = false;
 
-        collector.on("collect", interaction => {
+        collector.on("collect", async interaction => {
             if (!interaction.isStringSelectMenu()) {
                 return;
             }
@@ -136,10 +136,22 @@ class UpdateCommand extends Command {
 
             const variant = interaction.values[0];
             const release = variant === "latest_stable" ? latestStable! : latestUnstable!;
+            const components = [
+                new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+                    new StringSelectMenuBuilder()
+                        .setCustomId("update_variant")
+                        .addOptions(
+                            selectOptions
+                                .map(option =>
+                                    option.value === variant ? { ...option, default: true } : option
+                                )
+                                .filter(option => option.value === variant)
+                        )
+                )
+            ];
 
-            interaction.deferUpdate().catch(this.application.logger.error);
-
-            reply
+            await interaction.deferUpdate().catch(this.application.logger.error);
+            await reply
                 .edit({
                     embeds: [
                         {
@@ -153,24 +165,34 @@ class UpdateCommand extends Command {
                             timestamp: new Date().toISOString()
                         }
                     ],
-                    components: [
-                        new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
-                            new StringSelectMenuBuilder()
-                                .setCustomId("update_variant")
-                                .addOptions(
-                                    selectOptions
-                                        .map(option =>
-                                            option.value === variant
-                                                ? { ...option, default: true }
-                                                : option
-                                        )
-                                        .filter(option => option.value === variant)
-                                )
-                        )
-                    ]
+                    components
                 })
                 .catch(this.application.logger.error);
-            this.systemUpdateService.update(release);
+
+            const result = await this.systemUpdateService.update(release, false);
+
+            if (result) {
+                await reply
+                    .edit({
+                        embeds: [
+                            {
+                                author: {
+                                    name: "System Update",
+                                    icon_url:
+                                        this.application.client.user?.displayAvatarURL() ??
+                                        undefined
+                                },
+                                color: Colors.Primary,
+                                description: `${context.emoji("restart")} The update has been successfully applied. Performing a restart..`,
+                                timestamp: new Date().toISOString()
+                            }
+                        ],
+                        components
+                    })
+                    .catch(this.application.logger.error);
+
+                await this.startupManager.requestRestart({ metadata: "update" });
+            }
         });
 
         collector.on("end", () => {

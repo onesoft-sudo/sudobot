@@ -98,15 +98,14 @@ class StartupManager extends Service implements HasEventListeners {
             this.application.logger.info("Found restart.json file: ", restartJsonFile);
 
             respond: try {
-                const { guildId, messageId, channelId, time } = (await FileSystem.readFileContents(
-                    restartJsonFile,
-                    { json: true }
-                )) as {
-                    guildId?: string;
-                    messageId?: string;
-                    channelId?: string;
-                    time: number;
-                };
+                const { guildId, messageId, channelId, time, metadata } =
+                    (await FileSystem.readFileContents(restartJsonFile, { json: true })) as {
+                        guildId?: string;
+                        messageId?: string;
+                        channelId?: string;
+                        time: number;
+                        metadata: unknown;
+                    };
 
                 if (!guildId || !channelId || !messageId) {
                     break respond;
@@ -130,19 +129,38 @@ class StartupManager extends Service implements HasEventListeners {
                     break respond;
                 }
 
-                await message.edit({
-                    embeds: [
-                        {
-                            color: Colors.Green,
-                            description: `### ${emoji(this.application.client, "restart")} System Restart\n${emoji(
-                                this.application.getClient(),
-                                "check"
-                            )} Operation completed. (took ${((Date.now() - time) / 1000).toFixed(
-                                2
-                            )}s)`
-                        }
-                    ]
-                });
+                if (metadata === "update") {
+                    await message.edit({
+                        embeds: [
+                            {
+                                author: {
+                                    name: "System Update",
+                                    icon_url:
+                                        this.application.client.user?.displayAvatarURL() ??
+                                        undefined
+                                },
+                                color: Colors.Green,
+                                description: `${emoji(this.application.client, "check")} System update successful. (took ${((Date.now() - time) / 1000).toFixed(2)}s)`,
+                                timestamp: new Date().toISOString()
+                            }
+                        ]
+                    });
+                } else {
+                    await message.edit({
+                        embeds: [
+                            {
+                                color: Colors.Green,
+                                description: `### ${emoji(this.application.client, "restart")} System Restart\n${emoji(
+                                    this.application.getClient(),
+                                    "check"
+                                )} Operation completed. (took ${(
+                                    (Date.now() - time) /
+                                    1000
+                                ).toFixed(2)}s)`
+                            }
+                        ]
+                    });
+                }
             } catch (e) {
                 this.application.logger.error(e);
             }
@@ -170,7 +188,8 @@ class StartupManager extends Service implements HasEventListeners {
         message,
         messageId,
         waitFor,
-        key
+        key,
+        metadata
     }: RestartOptions = {}) {
         setTimeout(waitFor).then(async () => {
             const restartJsonFile = path.join(systemPrefix("tmp", true), "restart.json");
@@ -183,7 +202,8 @@ class StartupManager extends Service implements HasEventListeners {
                     messageId,
                     message,
                     time: Date.now(),
-                    key
+                    key,
+                    metadata
                 })
             );
 
@@ -382,6 +402,11 @@ type RestartOptions = {
      * The key to use for the restart. This is a 2FA code.
      */
     key?: string | null;
+
+    /**
+     * Metadata to store in the restart.json file.
+     */
+    metadata?: unknown;
 };
 
 export default StartupManager;
