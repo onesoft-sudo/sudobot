@@ -1,3 +1,12 @@
+## [9.14.1](https://github.com/onesoft-sudo/sudobot/compare/v9.14.0...v9.14.1) (2024-07-07)
+
+
+### Bug Fixes
+
+* unhandled PermissionDeniedError in CommandManager ([12a8199](https://github.com/onesoft-sudo/sudobot/commit/12a81995f9a41ebd5b8abcace558821f7296d4ba))
+
+
+
 # [9.14.0](https://github.com/onesoft-sudo/sudobot/compare/v9.13.0...v9.14.0) (2024-07-07)
 
 
@@ -32,15 +41,6 @@
 ### Features
 
 * better update interactions ([25757da](https://github.com/onesoft-sudo/sudobot/commit/25757dae25a54c6f6cd340633d97e9c65c3dd24c))
-
-
-
-## [9.10.1](https://github.com/onesoft-sudo/sudobot/compare/v9.10.0...v9.10.1) (2024-07-07)
-
-
-### Bug Fixes
-
-* reword the about command embed footer ([47de955](https://github.com/onesoft-sudo/sudobot/commit/47de955ffa2cf8ce5c7695214e59250ba8e3f9bd))
 
 
 
