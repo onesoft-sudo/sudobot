@@ -27,6 +27,7 @@ import { Inject } from "@framework/container/Inject";
 import { CommandManagerServiceInterface } from "@framework/contracts/CommandManagerServiceInterface";
 import { MemberPermissionData } from "@framework/contracts/PermissionManagerInterface";
 import { SystemPermissionLikeString } from "@framework/permissions/AbstractPermissionManagerService";
+import { PermissionDeniedError } from "@framework/permissions/PermissionDeniedError";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { isDevelopmentMode } from "@framework/utils/utils";
@@ -321,6 +322,13 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         } catch (error) {
             if (error instanceof CommandAbortedError) {
                 await error.sendMessage(context);
+                return false;
+            }
+
+            if (error instanceof PermissionDeniedError) {
+                await context.error(
+                    error.message || "You don't have permission to run this command."
+                );
                 return false;
             }
 
