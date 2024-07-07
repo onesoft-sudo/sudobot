@@ -1,3 +1,12 @@
+# [9.10.0](https://github.com/onesoft-sudo/sudobot/compare/v9.9.2...v9.10.0) (2024-07-07)
+
+
+### Features
+
+* update command ([d4e1c0d](https://github.com/onesoft-sudo/sudobot/commit/d4e1c0d5fa4387a0ab5956065d15b7c9edadd507))
+
+
+
 ## [9.9.2](https://github.com/onesoft-sudo/sudobot/compare/v9.9.1...v9.9.2) (2024-07-04)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * improved shell service ([85119b3](https://github.com/onesoft-sudo/sudobot/commit/85119b37eb0f517287449475e671377189b11113))
-
-
-
-# [9.7.0](https://github.com/onesoft-sudo/sudobot/compare/v9.6.0...v9.7.0) (2024-06-28)
-
-
-### Features
-
-* system update service ([e85195e](https://github.com/onesoft-sudo/sudobot/commit/e85195eb252def2517f02dbf50635f5e942b739a))
 
 
 
