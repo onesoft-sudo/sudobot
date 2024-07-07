@@ -1,3 +1,18 @@
+# [9.15.0](https://github.com/onesoft-sudo/sudobot/compare/v9.14.1...v9.15.0) (2024-07-07)
+
+
+### Bug Fixes
+
+* unhandled PermissionDeniedError in CommandManager ([c91fbdd](https://github.com/onesoft-sudo/sudobot/commit/c91fbdd89ca0f300a607b7f502652b757db7aeae))
+
+
+### Features
+
+* ci test ([cd04d6d](https://github.com/onesoft-sudo/sudobot/commit/cd04d6df3e3b3237bd7f7b66ed5599ad0c330029))
+* ci test ([9a85dd1](https://github.com/onesoft-sudo/sudobot/commit/9a85dd1a44d9393af1d581a5405cf1823978e8b1))
+
+
+
 ## [9.14.1](https://github.com/onesoft-sudo/sudobot/compare/v9.14.0...v9.14.1) (2024-07-07)
 
 
@@ -32,15 +47,6 @@
 ### Features
 
 * release next version [ci test] ([51df2cf](https://github.com/onesoft-sudo/sudobot/commit/51df2cf7bf04fbce8d890312895f1900cdebea27))
-
-
-
-# [9.11.0](https://github.com/onesoft-sudo/sudobot/compare/v9.10.1...v9.11.0) (2024-07-07)
-
-
-### Features
-
-* better update interactions ([25757da](https://github.com/onesoft-sudo/sudobot/commit/25757dae25a54c6f6cd340633d97e9c65c3dd24c))
 
 
 
