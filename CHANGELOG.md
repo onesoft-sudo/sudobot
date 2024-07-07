@@ -1,3 +1,12 @@
+## [9.16.1](https://github.com/onesoft-sudo/sudobot/compare/v9.16.0...v9.16.1) (2024-07-07)
+
+
+### Bug Fixes
+
+* **services:updateManager:** update unpacking logic ([e315d63](https://github.com/onesoft-sudo/sudobot/commit/e315d63c440ea1e27766ab21dc74443a5661b865))
+
+
+
 # [9.16.0](https://github.com/onesoft-sudo/sudobot/compare/v9.15.0...v9.16.0) (2024-07-07)
 
 
@@ -37,16 +46,6 @@
 ### Features
 
 * release next version [ci test] ([06cbdea](https://github.com/onesoft-sudo/sudobot/commit/06cbdea14913381a9abe30601aefdeace2548fe9))
-
-
-
-# [9.13.0](https://github.com/onesoft-sudo/sudobot/compare/v9.12.0...v9.13.0) (2024-07-07)
-
-
-### Features
-
-* release next version [ci test] ([348424e](https://github.com/onesoft-sudo/sudobot/commit/348424eb5223e5f0b73b4b83387de95bedb31223))
-* release next version [ci test] ([33eb648](https://github.com/onesoft-sudo/sudobot/commit/33eb6481cc4abdd8081792a2094f1cd948e63343))
 
 
 
