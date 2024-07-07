@@ -19,7 +19,7 @@ jobs:
 
             - name: Conventional Changelog Action (Update package.json)
               id: changelog
-              uses: TriPSs/conventional-changelog-action@v3.15.0
+              uses: TriPSs/conventional-changelog-action@v5
               with:
                   github-token: ${{ secrets.__TOKEN }}
                   version-file: "./package.json"
@@ -79,7 +79,7 @@ jobs:
 
             - name: Conventional Changelog Action (Update package.json)
               id: changelog
-              uses: TriPSs/conventional-changelog-action@v3.15.0
+              uses: TriPSs/conventional-changelog-action@v5
               with:
                   github-token: ${{ secrets.__TOKEN }}
                   version-file: "./package.json"
@@ -143,7 +143,7 @@ jobs:
 
             - name: Conventional Changelog Action
               id: changelog
-              uses: TriPSs/conventional-changelog-action@v3.15.0
+              uses: TriPSs/conventional-changelog-action@v5
               with:
                   github-token: ${{ secrets.__TOKEN }}
                   version-file: "./package.json"
