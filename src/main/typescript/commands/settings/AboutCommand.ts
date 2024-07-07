@@ -76,7 +76,7 @@ class AboutCommand extends Command {
                         }
                     ],
                     footer: {
-                        text: `Copyright © OSN Developers 2022-${new Date().getFullYear()}. All rights reserved.`
+                        text: `Copyright © OSN Developers and the contributors 2022-${new Date().getFullYear()}.`
                     }
                 }
             ]
