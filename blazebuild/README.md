@@ -1,6 +1,6 @@
 <p align="center">
 <a href="https://github.com/onesoft-sudo/sudobot/tree/main/blazebuild" title="BlazeBuild" target="_blank">
-<img src="https://res.cloudinary.com/rakinar2/image/upload/v1720451755/brfmjkzdtemin6uddsfr" height="271px" width="600px">
+<img src="https://res.cloudinary.com/rakinar2/image/upload/v1720451755/brfmjkzdtemin6uddsfr" width="600px">
 </a> 
 </p>
 
