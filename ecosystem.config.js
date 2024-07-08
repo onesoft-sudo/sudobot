@@ -10,7 +10,7 @@ const config = {
     apps: [
         {
             name: "sudobot",
-            script: "build/index.js",
+            script: "build/out/main.js",
             env_production: {
                 NODE_ENV: "production"
             },
