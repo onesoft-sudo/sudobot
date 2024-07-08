@@ -2,10 +2,10 @@
 
 VERSION="1.0.0-alpha.1"
 
-set +e
+set -e # Exit on error
 
 if [ -z "$DEBUG" ]; then
-    set +x
+    set +x # Disable debug mode
 fi
 
 argv_0=$0
