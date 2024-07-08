@@ -2,7 +2,7 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-RUN apk add --no-cache python3 build-base g++ cairo-dev jpeg-dev pango-dev giflib-dev bash curl
+RUN apk add --no-cache python3 build-base g++ cairo-dev jpeg-dev pango-dev giflib-dev bash curl wget
 
 COPY package.json ./package.json
 COPY tsconfig.json ./tsconfig.json
