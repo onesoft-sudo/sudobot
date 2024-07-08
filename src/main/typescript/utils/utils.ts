@@ -83,7 +83,8 @@ export function wait(time: number) {
 export function systemPrefix(pathLike: string, createDirIfNotExists = false) {
     const directoryOrFile = path.resolve(
         env.SUDO_PREFIX ?? __dirname,
-        env.SUDO_PREFIX ? "" : "../..",
+        env.SUDO_PREFIX ? "" : "../../../..",
+        __filename.endsWith(".ts") ? "" : "..",
         pathLike
     );
 
