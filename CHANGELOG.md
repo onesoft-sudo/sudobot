@@ -1,3 +1,12 @@
+## [9.16.3](https://github.com/onesoft-sudo/sudobot/compare/v9.16.2...v9.16.3) (2024-07-08)
+
+
+### Bug Fixes
+
+* **utils:** invalid way of determining system prefix ([d110905](https://github.com/onesoft-sudo/sudobot/commit/d11090505819067170dc4fb47d11e4e645eaccde))
+
+
+
 ## [9.16.2](https://github.com/onesoft-sudo/sudobot/compare/v9.16.1...v9.16.2) (2024-07-08)
 
 
@@ -39,15 +48,6 @@
 
 * ci test ([cd04d6d](https://github.com/onesoft-sudo/sudobot/commit/cd04d6df3e3b3237bd7f7b66ed5599ad0c330029))
 * ci test ([9a85dd1](https://github.com/onesoft-sudo/sudobot/commit/9a85dd1a44d9393af1d581a5405cf1823978e8b1))
-
-
-
-## [9.14.1](https://github.com/onesoft-sudo/sudobot/compare/v9.14.0...v9.14.1) (2024-07-07)
-
-
-### Bug Fixes
-
-* unhandled PermissionDeniedError in CommandManager ([12a8199](https://github.com/onesoft-sudo/sudobot/commit/12a81995f9a41ebd5b8abcace558821f7296d4ba))
 
 
 
