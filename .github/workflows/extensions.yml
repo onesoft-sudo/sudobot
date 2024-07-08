@@ -21,10 +21,10 @@ jobs:
               with:
                   node-version: 21.x
 
-            - name: Install Tools
+            - name: Install tools
               run: |
                   sudo apt-get update;
-                  sudo apt-get install -y jq libarchive-dev;
+                  sudo apt-get install -y jq libarchive-dev gnupg;
                   cd /tmp;
                   git clone https://github.com/wahern/tarsum --depth=1;
                   cd tarsum;
@@ -32,21 +32,32 @@ jobs:
                   sudo cp tarsum /usr/bin/tarsum;
                   rm -fr /tmp/tarsum;
 
-            - name: Build Main Projectc
+            - name: Build main project
               run: ./blazew build
 
-            - name: Build Extensions
+            - name: Build extensions
               run: |
                   cd extensions;
                   bash ../scripts/build-extensions.sh;
 
-            - name: Build Index
+            - name: Build index
               run: node scripts/extensions.js --mkindex
+
+            - name: Prepare GPG keys for importing
+              run: echo "${{ secrets.COMMIT_GPG_KEY }}" > private.key
+
+            - name: Import GPG key
+              run: gpg --import private.key
+              
+            - name: Cleanup after importing GPG key
+              run: rm -f private.key
 
             - name: Commit and Push Changes
               run: |
                   git config --global user.email "rakinar2@onesoftnet.eu.org"
                   git config --global user.name "Ar Rakin"
+                  git config --global user.signingkey "6AE7B08C68169452"
+                  git config --global commit.gpgsign true
                   git add .
                   git commit -m "chore(extensions): build extensions [skip ci]"
                   git pull origin main
