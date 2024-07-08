@@ -59,6 +59,6 @@ jobs:
           git config --global user.signingkey "6AE7B08C68169452"
           git config --global commit.gpgsign true
           git add .
-          git commit -m "chore(extensions): build extensions [skip ci]"
+          git commit -sm "chore(extensions): build extensions [skip ci]"
           git pull origin main
           git push origin HEAD:main
