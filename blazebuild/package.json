@@ -2,6 +2,7 @@
   "name": "blazebuild",
   "main": "src/main/typescript/index.ts",
   "module": "src/main/typescript/index.ts",
+  "version": "1.0.0-beta.1",
   "type": "module",
   "devDependencies": {
     "@types/bun": "latest",
