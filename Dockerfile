@@ -2,21 +2,30 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-RUN apk add --no-cache python3 build-base g++ cairo-dev jpeg-dev pango-dev giflib-dev
+RUN apk add --no-cache python3 build-base g++ cairo-dev jpeg-dev pango-dev giflib-dev bash
 
-COPY .env.docke[r] ./.env
 COPY package.json .
-RUN npm install -D
-
 COPY tsconfig.json .
 COPY src ./src
-COPY resources ./resources
+COPY blazew .
+COPY blaze .
+COPY blazebuild .
+COPY build.blaze.ts
+COPY build_src .
+COPY eslint.config.mjs .
+
+RUN bash blazew build
+
+FROM node:22-alpine
+
+WORKDIR /app
+
+COPY --from=0 /app/node_modules ./node_modules
+COPY --from=0 /app/build ./build
+COPY --from=0 /app/package.json .
 COPY ecosystem.config.js .
-
-RUN npm run build
-
-# -- Uncomment the following line if you want a smaller image size
-# RUN npm prune --production
+COPY .env.docke[r] ./.env
+COPY config ./config
 
 EXPOSE 4000
 CMD ["npm", "run", "start:prod", "--", "--no-daemon"]

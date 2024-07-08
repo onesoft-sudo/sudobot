@@ -4,13 +4,6 @@
         "$schema": {
             "type": "string"
         },
-        "emojis": {
-            "type": "object",
-            "additionalProperties": {
-                "type": "string"
-            },
-            "default": {}
-        },
         "sync_emojis": {
             "type": "boolean",
             "default": false
@@ -31,13 +24,6 @@
                 }
             },
             "additionalProperties": false
-        },
-        "disabled_commands": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            },
-            "default": []
         },
         "restart_exit_code": {
             "type": "integer",
@@ -97,6 +83,30 @@
                         }
                     },
                     "default": {}
+                },
+                "register_application_commands_on_boot": {
+                    "type": "string",
+                    "enum": [
+                        "always_global",
+                        "guild",
+                        "none",
+                        "auto_global"
+                    ],
+                    "default": "auto_global"
+                },
+                "global_disabled": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": []
+                },
+                "system_banned_users": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": []
                 }
             },
             "additionalProperties": false,
@@ -106,14 +116,14 @@
             "type": "boolean",
             "default": false
         },
-        "default_permissions_mode": {
+        "command_permission_mode": {
             "type": "string",
             "enum": [
                 "ignore",
                 "overwrite",
                 "check"
             ],
-            "default": "check"
+            "default": "overwrite"
         },
         "api": {
             "type": "object",
@@ -155,7 +165,7 @@
                             "format": "date-time"
                         }
                     ],
-                    "default": "2024-03-09T16:04:58.705Z"
+                    "default": "2024-07-08T18:06:01.637Z"
                 }
             },
             "additionalProperties": false,
@@ -197,23 +207,15 @@
                     "type": "boolean",
                     "default": false
                 },
-                "channels": {
-                    "type": "object",
-                    "properties": {
-                        "echo_send_logs": {}
-                    },
-                    "additionalProperties": false
+                "webhook_url": {
+                    "type": "string",
+                    "format": "uri"
                 }
             },
+            "required": [
+                "webhook_url"
+            ],
             "additionalProperties": false
-        },
-        "sync_permission_managers_on_boot": {
-            "type": "boolean",
-            "default": false
-        },
-        "debug_mode": {
-            "type": "boolean",
-            "default": false
         },
         "statistics": {
             "type": "object",
