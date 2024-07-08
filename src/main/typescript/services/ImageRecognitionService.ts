@@ -20,25 +20,68 @@
 import { Inject } from "@framework/container/Inject";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
-import type { Tensor3D } from "@tensorflow/tfjs-node";
-import type { NSFWJS } from "nsfwjs";
-import Tesseract, { createWorker } from "tesseract.js";
 import { developmentMode } from "../utils/utils";
 import ConfigurationManager from "./ConfigurationManager";
 
+type TesseractWorker = {
+    recognize(image: ImageLike): Promise<RecognizeResult>;
+    terminate(): void;
+};
+
+type ImageLike = string | Buffer | Uint8Array;
+
+type RecognizeResult = {
+    data: string;
+};
+
+type Tensor3D = {
+    dispose(): void;
+};
+
+type TensorFlow = {
+    node: {
+        decodeImage(
+            image: Uint8Array | Buffer,
+            channels: number,
+            dtype: undefined | "float32" | "int32",
+            expandAnimations: boolean
+        ): Tensor3D;
+    };
+    enableProdMode(): void;
+};
+
+type NSFWJS = {
+    classify(tensor: Tensor3D): Promise<NSFWJSPrediction[]>;
+};
+
+type NSFWJSPrediction = {
+    className: string;
+    probability: number;
+};
+
+type NSFWJSImport = {
+    load(url?: string, options?: { size: number }): Promise<NSFWJS>;
+};
+
+type TesseractImport = {
+    createWorker(language: string): Promise<TesseractWorker>;
+};
+
 @Name("imageRecognitionService")
 class ImageRecognitionService extends Service {
-    protected worker: Tesseract.Worker | null = null;
+    protected worker: TesseractWorker | null = null;
     protected nsfwJsModel: NSFWJS | null = null;
     protected timeout: Timer | null = null;
-    protected tensorFlow: typeof import("@tensorflow/tfjs-node") | null = null;
-    protected nsfwJs: typeof import("nsfwjs") | null = null;
+    protected tensorFlow: TensorFlow | null = null;
+    protected nsfwJs: NSFWJSImport | null = null;
+    protected tesseract: TesseractImport | null = null;
 
     @Inject("configManager")
     private readonly configManager!: ConfigurationManager;
 
     public override async boot() {
         for (const guild in this.configManager.config) {
+            // FIXME
             if (
                 this.configManager.config[guild]?.rule_moderation?.rules.some(
                     rule => rule.type === "EXPERIMENTAL_nsfw_filter"
@@ -46,22 +89,25 @@ class ImageRecognitionService extends Service {
             ) {
                 this.application.logger.info("Loading NSFWJS model for NSFW image recognition");
 
-                this.tensorFlow = await import("@tensorflow/tfjs-node");
+                this.tensorFlow = await import("@tensorflow/tfjs-node" as string);
 
                 if (!developmentMode()) {
-                    this.tensorFlow.enableProdMode();
+                    this.tensorFlow?.enableProdMode();
                 }
 
-                this.nsfwJs = await import("nsfwjs");
-                this.nsfwJsModel = await this.nsfwJs.load(
-                    process.env.NSFWJS_MODEL_URL || undefined,
-                    process.env.NSFWJS_MODEL_IMAGE_SIZE
-                        ? {
-                              size: parseInt(process.env.NSFWJS_MODEL_IMAGE_SIZE)
-                          }
-                        : undefined
-                );
+                this.nsfwJs = await import("nsfwjs" as string);
+                this.nsfwJsModel =
+                    (await this.nsfwJs?.load(
+                        process.env.NSFWJS_MODEL_URL || undefined,
+                        process.env.NSFWJS_MODEL_IMAGE_SIZE
+                            ? {
+                                  size: parseInt(process.env.NSFWJS_MODEL_IMAGE_SIZE)
+                              }
+                            : undefined
+                    )) ?? null;
 
+                this.tesseract = await import("tesseract.js" as string);
+                console.log(this.tesseract?.createWorker);
                 break;
             }
         }
@@ -70,7 +116,7 @@ class ImageRecognitionService extends Service {
     protected async createWorkerIfNeeded() {
         if (!this.worker && !this.timeout) {
             this.application.logger.debug("Spawning new tesseract worker for image recognition");
-            this.worker = await createWorker("eng");
+            this.worker = (await this.tesseract?.createWorker("eng")) ?? null;
             this.setTimeout();
         } else if (this.worker && this.timeout) {
             this.application.logger.debug("Using existing tesseract worker for image recognition");
@@ -89,7 +135,7 @@ class ImageRecognitionService extends Service {
         }, 60_000);
     }
 
-    public async recognize(image: Tesseract.ImageLike) {
+    public async recognize(image: ImageLike) {
         await this.createWorkerIfNeeded();
         return this.worker!.recognize(image);
     }
