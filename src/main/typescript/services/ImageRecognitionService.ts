@@ -33,7 +33,7 @@ type ImageLike = string | Buffer | Uint8Array;
 type RecognizeResult = {
     data: {
         text: string;
-        words: string[];
+        words: Array<{ text: string }>;
     };
 };
 
