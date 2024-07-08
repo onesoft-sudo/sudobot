@@ -7,14 +7,6 @@
     "typescript.tsdk": "node_modules/typescript/lib",
     "window.commandCenter": true,
     "workbench.experimental.share.enabled": true,
-    "C_Cpp.files.exclude": {
-        "extensions/**": true,
-        "build/**": true,
-        "src/**": true,
-        "tmp/**": true,
-        "tests/**": true,
-        "node_modules/**": true
-    },
     "cSpell.words": [
         "afks",
         "antijoin",
@@ -49,6 +41,7 @@
         "estree",
         "extbuilds",
         "kickable",
+        "linebreak",
         "Lockdown",
         "managable",
         "manageafks",
@@ -93,6 +86,7 @@
         "tfjs",
         "Timeframe",
         "tsbuildinfo",
+        "tseslint",
         "Unban",
         "Unbans",
         "undici",
@@ -110,7 +104,7 @@
         "blazebuild": "Project"
     },
     "typescript.preferences.importModuleSpecifier": "non-relative",
-    "eslint.experimental.useFlatConfig": true,
+    "eslint.useFlatConfig": true,
     "editor.inlayHints.enabled": "on",
     "typescript.inlayHints.enumMemberValues.enabled": true,
     "typescript.inlayHints.parameterNames.enabled": "all",

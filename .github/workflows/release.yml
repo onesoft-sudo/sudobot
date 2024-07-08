@@ -1,156 +1,156 @@
 name: Releases
 on:
-    push:
-        branches:
-            - main
+  push:
+    branches:
+      - main
 
 jobs:
-    build_linux:
-        if: github.repository_owner == 'onesoft-sudo'
-        runs-on: ubuntu-latest
+  build_linux:
+    if: github.repository_owner == 'onesoft-sudo'
+    runs-on: ubuntu-latest
 
-        steps:
-            - uses: actions/checkout@v3
+    steps:
+      - uses: actions/checkout@v3
 
-            - name: Use Node.js 21.x
-              uses: actions/setup-node@v3
-              with:
-                  node-version: 21.x
+      - name: Use Node.js 21.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 21.x
 
-            - name: "Install Programs, Libraries and Tools"
-              run: |
-                  sudo apt update;
-                  sudo apt install build-essential libcurl4 libcurl4-gnutls-dev -y;
+      - name: "Install Programs, Libraries and Tools"
+        run: |
+          sudo apt update;
+          sudo apt install build-essential libcurl4 libcurl4-gnutls-dev -y;
 
-            - name: "Install Native Libraries"
-              run: |
-                  git clone https://github.com/Cogmasters/concord;
-                  cd concord;
-                  make;
-                  sudo make install;
-                  cd ..;
+      - name: "Install Native Libraries"
+        run: |
+          git clone https://github.com/Cogmasters/concord;
+          cd concord;
+          make;
+          sudo make install;
+          cd ..;
 
-            - name: "Build (Native)"
-              run: make
+      - name: "Build (Native)"
+        run: make
 
-            - name: "Build with BlazeBuild"
-              run: ./blazew build
+      - name: "Build with BlazeBuild"
+        run: ./blazew build
 
-            - name: "Package the built files"
-              run: |
-                  mkdir sudobot-release-linux;
-                  mkdir sudobot-release-linux/lib;
-                  mv build sudobot;
-                  mv src sudobot-release-linux;
-                  mv lib/build sudobot-release-linux/lib;
-                  tar -cvzf sudobot-release-linux-incomplete.tar.gz sudobot-release-linux
+      - name: "Package the built files"
+        run: |
+          mkdir sudobot-release-linux;
+          mkdir sudobot-release-linux/lib;
+          mv build sudobot;
+          mv src sudobot-release-linux;
+          mv lib/build sudobot-release-linux/lib;
+          tar -cvzf sudobot-release-linux-incomplete.tar.gz sudobot-release-linux
 
-            - name: Upload Release Artifacts
-              uses: actions/upload-artifact@v3
-              with:
-                  name: sudobot-release-linux-incomplete
-                  path: |
-                      ./sudobot-release-linux-incomplete.tar.gz
+      - name: Upload Release Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: sudobot-release-linux-incomplete
+          path: |
+            ./sudobot-release-linux-incomplete.tar.gz
 
-    build_macos:
-        if: github.repository_owner == 'onesoft-sudo'
-        runs-on: macos-latest
+  build_macos:
+    if: github.repository_owner == 'onesoft-sudo'
+    runs-on: macos-latest
 
-        steps:
-            - uses: actions/checkout@v3
+    steps:
+      - uses: actions/checkout@v3
 
-            - name: Use Node.js 21.x
-              uses: actions/setup-node@v3
-              with:
-                  node-version: 21.x
+      - name: Use Node.js 21.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 21.x
 
-            - name: "Install Programs, Libraries and Tools"
-              run: brew install curl pkg-config cairo pango libpng jpeg giflib librsvg
+      - name: "Install Programs, Libraries and Tools"
+        run: brew install curl pkg-config cairo pango libpng jpeg giflib librsvg
 
-            - name: "Install Native Libraries"
-              run: |
-                  git clone https://github.com/Cogmasters/concord;
-                  cd concord;
-                  make;
-                  sudo make install;
-                  cd ..;
+      - name: "Install Native Libraries"
+        run: |
+          git clone https://github.com/Cogmasters/concord;
+          cd concord;
+          make;
+          sudo make install;
+          cd ..;
 
-            - name: "Build (Native)"
-              run: make
+      - name: "Build (Native)"
+        run: make
 
-            - name: "Install Dependencies"
-              run: npm install -D
+      - name: "Install Dependencies"
+        run: npm install -D
 
-            - name: "Build with BlazeBuild"
-              run: ./blazew build
+      - name: "Build with BlazeBuild"
+        run: ./blazew build
 
-            - name: "Package the built files"
-              run: |
-                  mkdir sudobot-release-darwin;
-                  mkdir sudobot-release-darwin/lib;
-                  mv build sudobot-release-darwin;
-                  mv src sudobot-release-darwin;
-                  mv lib/build sudobot-release-darwin/lib;
-                  tar -cvzf sudobot-release-darwin-incomplete.tar.gz sudobot-release-darwin
+      - name: "Package the built files"
+        run: |
+          mkdir sudobot-release-darwin;
+          mkdir sudobot-release-darwin/lib;
+          mv build sudobot-release-darwin;
+          mv src sudobot-release-darwin;
+          mv lib/build sudobot-release-darwin/lib;
+          tar -cvzf sudobot-release-darwin-incomplete.tar.gz sudobot-release-darwin
 
-            - name: Upload Release Artifacts
-              uses: actions/upload-artifact@v3
-              with:
-                  name: sudobot-release-darwin-incomplete
-                  path: |
-                      ./sudobot-release-darwin-incomplete.tar.gz
+      - name: Upload Release Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: sudobot-release-darwin-incomplete
+          path: |
+            ./sudobot-release-darwin-incomplete.tar.gz
 
-    release:
-        needs: [build_linux, build_macos]
-        if: github.repository_owner == 'onesoft-sudo'
-        runs-on: ubuntu-latest
+  release:
+    needs: [build_linux, build_macos]
+    if: github.repository_owner == 'onesoft-sudo'
+    runs-on: ubuntu-latest
 
-        steps:
-            - uses: actions/checkout@v3
+    steps:
+      - uses: actions/checkout@v3
 
-            - name: Conventional Changelog Action
-              id: changelog
-              uses: TriPSs/conventional-changelog-action@v5
-              with:
-                  github-token: ${{ secrets.__TOKEN }}
-                  version-file: "./package.json"
-                  git-user-name: "Conventional Release Action"
-                  git-user-email: rakinar2@onesoftnet.eu.org
+      - name: Conventional Changelog Action
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v5
+        with:
+          github-token: ${{ secrets.__TOKEN }}
+          version-file: "./package.json"
+          git-user-name: "Conventional Release Action"
+          git-user-email: rakinar2@onesoftnet.eu.org
 
-            - name: Download Linux Release Artifact
-              uses: actions/download-artifact@v2
-              with:
-                  name: sudobot-release-linux-incomplete
+      - name: Download Linux Release Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: sudobot-release-linux-incomplete
 
-            - name: Download macOS Release Artifact
-              uses: actions/download-artifact@v2
-              with:
-                  name: sudobot-release-darwin-incomplete
+      - name: Download macOS Release Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: sudobot-release-darwin-incomplete
 
-            - name: Extract Artifacts
-              run: |
-                  tar -xvzf sudobot-release-linux-incomplete.tar.gz;
-                  tar -xvzf sudobot-release-darwin-incomplete.tar.gz;
+      - name: Extract Artifacts
+        run: |
+          tar -xvzf sudobot-release-linux-incomplete.tar.gz;
+          tar -xvzf sudobot-release-darwin-incomplete.tar.gz;
 
-            - name: Add package.json to Incomplete Artifacts
-              run: |
-                  cp package.json sudobot-release-linux/package.json;
-                  cp package.json sudobot-release-darwin/package.json;
+      - name: Add package.json to Incomplete Artifacts
+        run: |
+          cp package.json sudobot-release-linux/package.json;
+          cp package.json sudobot-release-darwin/package.json;
 
-            - name: Re-package Artifacts
-              run: |
-                  tar -cvzf sudobot-release-linux.tar.gz sudobot-release-linux;
-                  tar -cvzf sudobot-release-darwin.tar.gz sudobot-release-darwin;
+      - name: Re-package Artifacts
+        run: |
+          tar -cvzf sudobot-release-linux.tar.gz sudobot-release-linux;
+          tar -cvzf sudobot-release-darwin.tar.gz sudobot-release-darwin;
 
-            - name: Create Release
-              id: create_release
-              uses: ncipollo/release-action@v1
-              if: ${{ steps.changelog.outputs.skipped == 'false' }}
-              env:
-                  GITHUB_TOKEN: ${{ secrets.__TOKEN }}
-              with:
-                  tag: ${{ steps.changelog.outputs.tag }}
-                  name: ${{ steps.changelog.outputs.tag }}
-                  body: ${{ steps.changelog.outputs.clean_changelog }}
-                  artifactContentType: application/x-gzip
-                  artifacts: ./sudobot-release-linux.tar.gz,./sudobot-release-darwin.tar.gz
+      - name: Create Release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.__TOKEN }}
+        with:
+          tag: ${{ steps.changelog.outputs.tag }}
+          name: ${{ steps.changelog.outputs.tag }}
+          body: ${{ steps.changelog.outputs.clean_changelog }}
+          artifactContentType: application/x-gzip
+          artifacts: ./sudobot-release-linux.tar.gz,./sudobot-release-darwin.tar.gz

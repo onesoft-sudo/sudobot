@@ -5,5 +5,14 @@
     "jsxBracketSameLine": false,
     "arrowParens": "avoid",
     "singleQuote": false,
-    "jsxSingleQuote": false
+    "jsxSingleQuote": false,
+    "overrides": [
+        {
+            "files": ["*.yml", "*.yaml"],
+            "options": {
+                "singleQuote": false,
+                "tabWidth": 2
+            }
+        }
+    ]
 }

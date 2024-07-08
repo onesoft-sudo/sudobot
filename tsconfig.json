@@ -36,7 +36,8 @@
         "src/main/typescript/types/global/globals.d.ts",
         "src/**/*.ts",
         "build.blaze.ts",
-        "drizzle.config.ts"
+        "drizzle.config.ts",
+        "commitlint.config.ts"
     ],
     "exclude": [
         "./backup",

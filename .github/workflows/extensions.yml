@@ -1,53 +1,53 @@
 name: Build Extensions
 
 on:
-    push:
-        branches: [main]
-    schedule:
-        - cron: "*/20 * * * *"
+  push:
+    branches: [main]
+  schedule:
+    - cron: "*/20 * * * *"
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        if: github.event_name != 'push' || ( startsWith(github.event.head_commit.message, 'chore(extensions') || startsWith(github.event.head_commit.message, 'build(extensions') )
+  build:
+    runs-on: ubuntu-latest
+    if: github.event_name != 'push' || ( startsWith(github.event.head_commit.message, 'chore(extensions') || startsWith(github.event.head_commit.message, 'build(extensions') )
 
-        steps:
-            - uses: actions/checkout@v3
-              with:
-                  submodules: "true"
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: "true"
 
-            - name: Use Node.js 21.x
-              uses: actions/setup-node@v3
-              with:
-                  node-version: 21.x
+      - name: Use Node.js 21.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 21.x
 
-            - name: Install Tools
-              run: |
-                  sudo apt-get update;
-                  sudo apt-get install -y jq libarchive-dev;
-                  cd /tmp;
-                  git clone https://github.com/wahern/tarsum --depth=1;
-                  cd tarsum;
-                  make;
-                  sudo cp tarsum /usr/bin/tarsum;
-                  rm -fr /tmp/tarsum;
+      - name: Install Tools
+        run: |
+          sudo apt-get update;
+          sudo apt-get install -y jq libarchive-dev;
+          cd /tmp;
+          git clone https://github.com/wahern/tarsum --depth=1;
+          cd tarsum;
+          make;
+          sudo cp tarsum /usr/bin/tarsum;
+          rm -fr /tmp/tarsum;
 
-            - name: Build Main Projectc
-              run: ./blazew build
+      - name: Build Main Projectc
+        run: ./blazew build
 
-            - name: Build Extensions
-              run: |
-                  cd extensions;
-                  bash ../scripts/build-extensions.sh;
+      - name: Build Extensions
+        run: |
+          cd extensions;
+          bash ../scripts/build-extensions.sh;
 
-            - name: Build Index
-              run: node scripts/extensions.js --mkindex
+      - name: Build Index
+        run: node scripts/extensions.js --mkindex
 
-            - name: Commit and Push Changes
-              run: |
-                  git config --global user.email "rakinar2@onesoftnet.eu.org"
-                  git config --global user.name "Ar Rakin"
-                  git add .
-                  git commit -m "chore(extensions): build extensions [skip ci]"
-                  git pull origin main
-                  git push origin HEAD:main
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.email "rakinar2@onesoftnet.eu.org"
+          git config --global user.name "Ar Rakin"
+          git add .
+          git commit -m "chore(extensions): build extensions [skip ci]"
+          git pull origin main
+          git push origin HEAD:main
