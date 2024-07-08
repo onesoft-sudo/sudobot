@@ -2,7 +2,7 @@
 name: Docs Issue
 about: Report an issue about the documentation
 title: "[ISSUE]"
-labels: documentation
+labels: "type:docs"
 assignees: ''
 
 ---

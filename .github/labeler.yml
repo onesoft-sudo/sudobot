@@ -1,27 +1,34 @@
-documentation:
-- "docs/*"
-- "docs/**/*"
-- "README.md"
+"type:docs":
+  - "docs/*"
+  - "docs/**/*"
+  - "*.md"
 
-workflows:
-- ".github/*"
-- ".github/**/*"
+"type:ci":
+  - ".github/workflows/*"
+  - ".github/workflows/**/*"
 
-automod:
-- "src/automod/*"
-- "src/automod/**/*"
+"component:automod":
+  - "src/main/typescript/automod/*"
+  - "src/main/typescript/automod/**/*"
 
-api:
-- "src/api/*"
-- "src/api/**/*"
+"component:api":
+  - "src/main/typescript/api/*"
+  - "src/main/typescript/api/**/*"
 
-commands:
-- "src/commands/*"
-- "src/commands/**/*"
+"component:commands":
+  - "src/main/typescript/commands/*"
+  - "src/main/typescript/commands/**/*"
 
-setup-script:
-- "setup.js"
+"component:framework":
+  - "src/framework/typescript/*"
+  - "src/framework/typescript/**/*"
 
-tests:
-- "tests/*"
-- "tests/**/*"
+"contains:resources":
+  - "src/framework/resources/*"
+  - "src/framework/resources/**/*"
+  - "src/main/resources/*"
+  - "src/main/resources/**/*"
+
+"type:test":
+  - "tests/*"
+  - "tests/**/*"
