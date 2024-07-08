@@ -116,6 +116,7 @@ jobs:
           version-file: "./package.json"
           git-user-name: "Conventional Release Action"
           git-user-email: rakinar2@onesoftnet.eu.org
+          git-message: "release: {version} [skip ci]"
 
       - name: Download Linux Release Artifact
         uses: actions/download-artifact@v2
