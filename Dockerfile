@@ -6,11 +6,11 @@ RUN apk add --no-cache python3 build-base g++ cairo-dev jpeg-dev pango-dev gifli
 
 COPY package.json .
 COPY tsconfig.json .
-COPY src ./src
+COPY src .
 COPY blazew .
 COPY blaze .
 COPY blazebuild .
-COPY build.blaze.ts
+COPY build.blaze.ts .
 COPY build_src .
 COPY eslint.config.mjs .
 
@@ -25,7 +25,7 @@ COPY --from=0 /app/build ./build
 COPY --from=0 /app/package.json .
 COPY ecosystem.config.js .
 COPY .env.docke[r] ./.env
-COPY config ./config
+COPY config .
 
 EXPOSE 4000
 CMD ["npm", "run", "start:prod", "--", "--no-daemon"]
