@@ -1,3 +1,14 @@
+## [9.16.2](https://github.com/onesoft-sudo/sudobot/compare/v9.16.1...v9.16.2) (2024-07-08)
+
+
+### Bug Fixes
+
+* optional module loading ([b4e2fef](https://github.com/onesoft-sudo/sudobot/commit/b4e2fef747e58eeaf2a7cd80cf0ad7695ac1d4e6))
+* **security:ModerationRuleHandler:** invalid property access on string ([7f918b4](https://github.com/onesoft-sudo/sudobot/commit/7f918b4ba60167c05ebfd7567643242c37c7019d))
+* type errors ([005be10](https://github.com/onesoft-sudo/sudobot/commit/005be1035f95d4051985e53e43dfc82e88603617))
+
+
+
 ## [9.16.1](https://github.com/onesoft-sudo/sudobot/compare/v9.16.0...v9.16.1) (2024-07-07)
 
 
@@ -37,15 +48,6 @@
 ### Bug Fixes
 
 * unhandled PermissionDeniedError in CommandManager ([12a8199](https://github.com/onesoft-sudo/sudobot/commit/12a81995f9a41ebd5b8abcace558821f7296d4ba))
-
-
-
-# [9.14.0](https://github.com/onesoft-sudo/sudobot/compare/v9.13.0...v9.14.0) (2024-07-07)
-
-
-### Features
-
-* release next version [ci test] ([06cbdea](https://github.com/onesoft-sudo/sudobot/commit/06cbdea14913381a9abe30601aefdeace2548fe9))
 
 
 
