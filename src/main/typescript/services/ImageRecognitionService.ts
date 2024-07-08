@@ -31,7 +31,10 @@ type TesseractWorker = {
 type ImageLike = string | Buffer | Uint8Array;
 
 type RecognizeResult = {
-    data: string;
+    data: {
+        text: string;
+        words: string[];
+    };
 };
 
 type Tensor3D = {
