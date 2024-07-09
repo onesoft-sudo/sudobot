@@ -7,7 +7,7 @@ import { createWriteStream, existsSync } from "fs";
 import { mkdir, rename, rm } from "fs/promises";
 import path from "path";
 import semver from "semver";
-import tar from "tar";
+import * as tar from "tar";
 
 type GitHubReleaseAsset = {
     name: string;
