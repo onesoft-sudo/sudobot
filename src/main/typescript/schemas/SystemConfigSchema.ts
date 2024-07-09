@@ -56,7 +56,7 @@ export const SystemConfigSchema = z.object({
                 .enum(["always_global", "guild", "none", "auto_global"])
                 .default("auto_global"),
             global_disabled: z.array(z.string()).default([]),
-            system_banned_users: z.array(z.string()).default([]),
+            system_banned_users: z.array(z.string()).default([])
         })
         .default({}),
     enable_file_filter: z.boolean().default(false),
@@ -79,7 +79,7 @@ export const SystemConfigSchema = z.object({
                 .string()
                 .pipe(z.coerce.date())
                 .or(z.date())
-                .default(new Date())
+                .default(() => new Date())
         })
         .default({}),
     extensions: z
