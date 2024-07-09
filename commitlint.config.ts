@@ -25,7 +25,8 @@ const config: UserConfig = {
                 "i18n"
             ]
         ],
-        "signed-off-by": [RuleConfigSeverity.Error, "always", "Signed-off-by: "]
+        "signed-off-by": [RuleConfigSeverity.Error, "always", "Signed-off-by: "],
+        "body-max-length": [RuleConfigSeverity.Error, "always", 1024]
     },
     prompt: {
         settings: {},
