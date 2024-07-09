@@ -5,9 +5,14 @@ on:
       - main
 
 jobs:
-  build_linux:
+  build:
     if: github.repository_owner == 'onesoft-sudo'
-    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v3
@@ -17,55 +22,15 @@ jobs:
         with:
           node-version: 21.x
 
-      - name: "Install Programs, Libraries and Tools"
+      - name: Install Programs, Libraries and Tools (Linux)
         run: |
           sudo apt update;
           sudo apt install build-essential libcurl4 libcurl4-gnutls-dev -y;
+        if: matrix.os == 'ubuntu-latest'
 
-      - name: "Install Native Libraries"
-        run: |
-          git clone https://github.com/Cogmasters/concord;
-          cd concord;
-          make;
-          sudo make install;
-          cd ..;
-
-      - name: "Build (Native)"
-        run: make
-
-      - name: "Build with BlazeBuild"
-        run: ./blazew build
-
-      - name: "Package the built files"
-        run: |
-          mkdir sudobot-release-linux;
-          mkdir sudobot-release-linux/lib;
-          mv build sudobot;
-          mv src sudobot-release-linux;
-          mv lib/build sudobot-release-linux/lib;
-          tar -cvzf sudobot-release-linux-incomplete.tar.gz sudobot-release-linux
-
-      - name: Upload Release Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: sudobot-release-linux-incomplete
-          path: |
-            ./sudobot-release-linux-incomplete.tar.gz
-
-  build_macos:
-    if: github.repository_owner == 'onesoft-sudo'
-    runs-on: macos-latest
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Use Node.js 21.x
-        uses: actions/setup-node@v3
-        with:
-          node-version: 21.x
-
-      - name: "Install Programs, Libraries and Tools"
+      - name: Install Programs, Libraries and Tools (macOS)
         run: brew install curl pkg-config cairo pango libpng jpeg giflib librsvg
+        if: matrix.os == 'macos-latest'
 
       - name: "Install Native Libraries"
         run: |
@@ -75,38 +40,43 @@ jobs:
           sudo make install;
           cd ..;
 
-      - name: "Build (Native)"
+      - name: "Build Native Libraries with GNU Make"
         run: make
-
-      - name: "Install Dependencies"
-        run: npm install -D
 
       - name: "Build with BlazeBuild"
         run: ./blazew build
 
-      - name: "Package the built files"
+      - name: "Package the build output files"
         run: |
-          mkdir sudobot-release-darwin;
-          mkdir sudobot-release-darwin/lib;
-          mv build sudobot-release-darwin;
-          mv src sudobot-release-darwin;
-          mv lib/build sudobot-release-darwin/lib;
-          tar -cvzf sudobot-release-darwin-incomplete.tar.gz sudobot-release-darwin
+          OS="${{ matrix.os }}";
+          mkdir -p sudobot-release-${OS}/lib;
+          mv build sudobot;
+          mv src sudobot-release-${OS};
+          mv lib/build sudobot-release-${OS}/lib;
+          tar -cvzf sudobot-release-${OS}-incomplete.tar.gz sudobot-release-${OS};
 
       - name: Upload Release Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: sudobot-release-darwin-incomplete
+          name: sudobot-release-${{ matrix.os }}-incomplete
           path: |
-            ./sudobot-release-darwin-incomplete.tar.gz
+            ./sudobot-release-${{ matrix.os }}-incomplete.tar.gz
 
   release:
-    needs: [build_linux, build_macos]
+    needs: [build]
     if: github.repository_owner == 'onesoft-sudo'
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Prepare Git
+        run: |
+          echo "${{ secrets.COMMIT_GPG_KEY }}" > private.key
+          gpg --import private.key
+          rm -f private.key
+          git config --global user.signingkey "6AE7B08C68169452"
+          git config --global commit.gpgsign true
 
       - name: Conventional Changelog Action
         id: changelog
@@ -114,24 +84,32 @@ jobs:
         with:
           github-token: ${{ secrets.__TOKEN }}
           version-file: "./package.json"
-          git-user-name: "Conventional Release Action"
+          git-user-name: "Conventional Changelog Action"
           git-user-email: rakinar2@onesoftnet.eu.org
-          git-message: "release: {version} [skip ci]"
+          git-message: |
+            release: {version} [skip ci]
+
+            Signed-off-by: Ar Rakin <rakinar2@onesoftnet.eu.org>
 
       - name: Download Linux Release Artifact
         uses: actions/download-artifact@v2
         with:
-          name: sudobot-release-linux-incomplete
+          name: sudobot-release-ubuntu-latest-incomplete
 
       - name: Download macOS Release Artifact
         uses: actions/download-artifact@v2
         with:
-          name: sudobot-release-darwin-incomplete
+          name: sudobot-release-macos-latest-incomplete
 
       - name: Extract Artifacts
         run: |
-          tar -xvzf sudobot-release-linux-incomplete.tar.gz;
-          tar -xvzf sudobot-release-darwin-incomplete.tar.gz;
+          tar -xvzf sudobot-release-ubuntu-latest-incomplete.tar.gz;
+          tar -xvzf sudobot-release-macos-latest-incomplete.tar.gz;
+
+      - name: Rename Artifacts
+        run: |
+          mv sudobot-release-ubuntu-latest sudobot-release-linux;
+          mv sudobot-release-macos-latest sudobot-release-darwin;
 
       - name: Add package.json to Incomplete Artifacts
         run: |
