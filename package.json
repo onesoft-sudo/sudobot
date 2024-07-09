@@ -81,7 +81,7 @@
     "express": "^4.19.2",
     "express-rate-limit": "^6.11.2",
     "figlet": "^1.7.0",
-    "glob": "^10.4.5",
+    "glob": "^11.0.0",
     "json5": "^2.2.3",
     "jsonwebtoken": "^9.0.2",
     "module-alias": "^2.2.3",
