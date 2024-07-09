@@ -1,8 +1,9 @@
-FROM node:22-alpine
+FROM node:22-bookworm
 
 WORKDIR /app
 
-RUN apk add --no-cache python3 build-base g++ cairo-dev jpeg-dev pango-dev giflib-dev bash curl wget
+RUN apt-get update
+RUN apt-get install git build-essential librsvg2-dev libgif-dev giflib-tools libcurl4 libcurl4-gnutls-dev libgtk-3-dev libpango1.0-dev libpng-dev libpng++-dev libpng-tools libjpeg-tools libjpeg-progs libjpeg-dev -y
 
 COPY package.json ./package.json
 COPY tsconfig.json ./tsconfig.json
@@ -13,6 +14,8 @@ COPY blazebuild ./blazebuild
 COPY build.blaze.ts ./build.blaze.ts
 COPY build_src ./build_src
 COPY eslint.config.mjs ./eslint.config.mjs
+COPY vitest.config.mjs ./vitest.config.mjs
+COPY tests ./tests
 
 RUN ./blazew build
 
