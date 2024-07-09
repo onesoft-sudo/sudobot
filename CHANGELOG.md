@@ -1,3 +1,14 @@
+## [9.16.6](https://github.com/onesoft-sudo/sudobot/compare/v9.16.5...v9.16.6) (2024-07-09)
+
+
+### Bug Fixes
+
+* **caching:** not using cached values ([30e74e6](https://github.com/onesoft-sudo/sudobot/commit/30e74e677a667a33b7f86bba08d9284feed69a85))
+* remove console.log calls ([6f9c768](https://github.com/onesoft-sudo/sudobot/commit/6f9c768a7f99cbba99a40d9526698f11fa07e43a))
+* **services:** make sure to import `tar` correctly ([5b4d3f2](https://github.com/onesoft-sudo/sudobot/commit/5b4d3f21c3d2410e82b9a5be7a8f7953d3473a30))
+
+
+
 ## [9.16.5](https://github.com/onesoft-sudo/sudobot/compare/v9.16.4...v9.16.5) (2024-07-09)
 
 
@@ -34,15 +45,6 @@
 * optional module loading ([b4e2fef](https://github.com/onesoft-sudo/sudobot/commit/b4e2fef747e58eeaf2a7cd80cf0ad7695ac1d4e6))
 * **security:ModerationRuleHandler:** invalid property access on string ([7f918b4](https://github.com/onesoft-sudo/sudobot/commit/7f918b4ba60167c05ebfd7567643242c37c7019d))
 * type errors ([005be10](https://github.com/onesoft-sudo/sudobot/commit/005be1035f95d4051985e53e43dfc82e88603617))
-
-
-
-## [9.16.1](https://github.com/onesoft-sudo/sudobot/compare/v9.16.0...v9.16.1) (2024-07-07)
-
-
-### Bug Fixes
-
-* **services:updateManager:** update unpacking logic ([e315d63](https://github.com/onesoft-sudo/sudobot/commit/e315d63c440ea1e27766ab21dc74443a5661b865))
 
 
 
