@@ -79,7 +79,7 @@
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.31.4",
     "express": "^4.19.2",
-    "express-rate-limit": "^6.11.2",
+    "express-rate-limit": "^7.3.1",
     "figlet": "^1.7.0",
     "glob": "^11.0.0",
     "json5": "^2.2.3",
