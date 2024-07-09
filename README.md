@@ -68,8 +68,8 @@ SudoBot is licensed under the [GNU Affero General Public License v3.0](https://g
 
 #### Exceptions
 
-- [The emojis](https://www.onesoftnet.eu.org/downloads/sudo/emojis/) are licensed under the [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).<br />Which means you can use them in your projects, but you must give appropriate credit to the original creator.
-- [The SudoBot Logo](https://res.cloudinary.com/rakinar2/image/upload/f_auto,q_auto/em8aewnsfwj7mlfhqxtf) is licensed under the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-nc-sa/4.0/).<br />Which means you can use it in your projects, but you must give appropriate credit to the original creator and you can't use it for commercial purposes.
+- [The emojis](https://www.onesoftnet.eu.org/downloads/sudo/emojis/) are licensed under the [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
+- [The SudoBot Logo](https://res.cloudinary.com/rakinar2/image/upload/f_auto,q_auto/em8aewnsfwj7mlfhqxtf) is licensed under the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-nc-sa/4.0/).
 - [The documentation website of SudoBot](https://docs.sudobot.org) is dual-licensed under the [GNU Affero General Public License v3.0](https://gnu.org/licenses/agpl-3.0.html) and the [GNU Free Documentation License v1.3](https://gnu.org/licenses/fdl-1.3.html).<br />Read the [README.md](./docs/README.md) file in the `docs` directory for more information.
 
 ### Support
