@@ -12,3 +12,7 @@ updates:
       - "/blazebuild"
     schedule:
       interval: "weekly"
+    assignees:
+      - "virtual-designer"
+    commit-message:
+      prefix: "deps"
