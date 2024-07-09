@@ -110,7 +110,6 @@ class ImageRecognitionService extends Service {
                     )) ?? null;
 
                 this.tesseract = await import("tesseract.js" as string);
-                console.log(this.tesseract?.createWorker);
                 break;
             }
         }
