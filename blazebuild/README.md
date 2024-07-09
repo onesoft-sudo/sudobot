@@ -17,3 +17,7 @@
 <p align="center">
 A powerful, free and open-source build tool for JavaScript and TypeScript projects.
 </p>
+
+## Licensing
+
+BlazeBuild is licensed under the [GNU General Public License v3.0](https://gnu.org/licenses/agpl-3.0.html). You can find the full license text in the [LICENSE](./LICENSE) file distributed in this repository.
