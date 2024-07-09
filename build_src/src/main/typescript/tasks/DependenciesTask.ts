@@ -9,7 +9,7 @@ class DependenciesTask extends AbstractTask {
     @TaskAction
     protected override async run(): Promise<void> {
         IO.newline();
-        await $`bun install`;
+        await $`bun install --trust`;
     }
 
     @TaskOutputGenerator
