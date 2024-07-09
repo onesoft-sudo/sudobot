@@ -1,3 +1,13 @@
+## [9.16.4](https://github.com/onesoft-sudo/sudobot/compare/v9.16.3...v9.16.4) (2024-07-09)
+
+
+### Bug Fixes
+
+* **api:MainController:** reset started_at date of the server when it's not present ([385836b](https://github.com/onesoft-sudo/sudobot/commit/385836b5b8fa7b99a92eae3622e0ffd5c238ef92))
+* **schemas:systemConfig:** using unstable date as schema default ([0fb1318](https://github.com/onesoft-sudo/sudobot/commit/0fb1318923b307197a87a6409fad395ad443e112))
+
+
+
 ## [9.16.3](https://github.com/onesoft-sudo/sudobot/compare/v9.16.2...v9.16.3) (2024-07-08)
 
 
@@ -33,21 +43,6 @@
 ### Features
 
 * ci test ([e948fe5](https://github.com/onesoft-sudo/sudobot/commit/e948fe548c53d88b4ad76f1e8f4b2898676c149d))
-
-
-
-# [9.15.0](https://github.com/onesoft-sudo/sudobot/compare/v9.14.1...v9.15.0) (2024-07-07)
-
-
-### Bug Fixes
-
-* unhandled PermissionDeniedError in CommandManager ([c91fbdd](https://github.com/onesoft-sudo/sudobot/commit/c91fbdd89ca0f300a607b7f502652b757db7aeae))
-
-
-### Features
-
-* ci test ([cd04d6d](https://github.com/onesoft-sudo/sudobot/commit/cd04d6df3e3b3237bd7f7b66ed5599ad0c330029))
-* ci test ([9a85dd1](https://github.com/onesoft-sudo/sudobot/commit/9a85dd1a44d9393af1d581a5405cf1823978e8b1))
 
 
 
