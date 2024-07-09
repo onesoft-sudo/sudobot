@@ -75,11 +75,7 @@ export const SystemConfigSchema = z.object({
                 ])
                 .default("operational"),
             server_status_description: z.string().optional(),
-            server_status_started_at: z
-                .string()
-                .pipe(z.coerce.date())
-                .or(z.date())
-                .default(() => new Date())
+            server_status_started_at: z.string().pipe(z.coerce.date()).or(z.date()).optional()
         })
         .default({}),
     extensions: z
