@@ -10,7 +10,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "chalk": "4",
+    "chalk": "5",
     "glob": "^10.4.1",
     "reflect-metadata": "^0.2.2"
   },
