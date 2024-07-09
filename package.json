@@ -116,7 +116,7 @@
     "@types/pg": "^8.11.6",
     "@types/semver": "^7.5.8",
     "@types/tar": "^6.1.13",
-    "@types/uuid": "^9.0.8",
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^7.16.0",
     "@typescript-eslint/parser": "^7.16.0",
     "@vitest/coverage-v8": "^1.6.0",
