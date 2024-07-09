@@ -16,7 +16,7 @@
         },
         "license": "AGPL-3.0-or-later",
         "licenseURL": "https://spdx.org/licenses/AGPL-3.0-or-later.html",
-        "lastUpdated": "2024-07-09T02:44:46.638Z",
+        "lastUpdated": "2024-07-09T03:16:49.603Z",
         "readmeFileName": "README.md",
         "readmeFileURL": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/neko/README.md",
         "tarballs": [
@@ -26,7 +26,7 @@
                 "version": "1.0.0-3",
                 "checksum": "bf2a586bc68ece5e17dd3233f1f3a4d55bfe177cb6db905f6ca361f5726cc70168b667a52c4597dae0c5e1e7270c3f386ede57378ae4bdbcb99f9b8c9b00fba5",
                 "size": 1378,
-                "createdAt": "2024-07-09T02:44:46.296Z"
+                "createdAt": "2024-07-09T03:15:29.728Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-2.tar.gz",
@@ -34,7 +34,7 @@
                 "version": "1.0.0-2",
                 "checksum": "e021d99669b163b006e1fda4d18a751853204985e0f0e69321cebc0e2e8e6affd833cfa5201889f403f1940eeb4a6dd091fcb3b55e1191dce11fdac27f9d3963",
                 "size": 1387,
-                "createdAt": "2024-07-09T02:43:41.856Z"
+                "createdAt": "2024-07-09T03:15:29.728Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-1.tar.gz",
@@ -42,7 +42,7 @@
                 "version": "1.0.0-1",
                 "checksum": "eb8e2ec09ab2746bb4681cc2b421388e88365bdf53b349f768a68185eb52901b75b58c4e49ec75c4dcddf09490f05d26fc081bc26de98df6830dc483e3edba7c",
                 "size": 1405,
-                "createdAt": "2024-07-09T02:43:41.856Z"
+                "createdAt": "2024-07-09T03:15:29.728Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0.tar.gz",
@@ -50,7 +50,7 @@
                 "version": "1.0.0",
                 "checksum": "92b1ed74950a16d24d57b010c6b4574f4a742f501fed0b01393526a65b414840978045d6a3fdaee153c3b4759d173919640013e2205a2c2a40c61604b4cd70a3",
                 "size": 1406,
-                "createdAt": "2024-07-09T02:43:41.856Z"
+                "createdAt": "2024-07-09T03:15:29.728Z"
             }
         ]
     }
