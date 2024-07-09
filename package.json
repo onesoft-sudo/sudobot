@@ -87,7 +87,7 @@
     "module-alias": "^2.2.3",
     "pg": "^8.12.0",
     "pm2": "^5.4.2",
-    "reflect-metadata": "^0.1.14",
+    "reflect-metadata": "^0.2.2",
     "semver": "^7.6.2",
     "sharp": "^0.33.4",
     "socket.io": "^4.7.5",
