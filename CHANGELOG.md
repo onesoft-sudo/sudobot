@@ -1,3 +1,12 @@
+## [9.16.5](https://github.com/onesoft-sudo/sudobot/compare/v9.16.4...v9.16.5) (2024-07-09)
+
+
+### Reverts
+
+* unexpected license update by mistake ([15d6ca5](https://github.com/onesoft-sudo/sudobot/commit/15d6ca531fd913b333c88d597a41417deff2f6f9))
+
+
+
 ## [9.16.4](https://github.com/onesoft-sudo/sudobot/compare/v9.16.3...v9.16.4) (2024-07-09)
 
 
@@ -34,15 +43,6 @@
 ### Bug Fixes
 
 * **services:updateManager:** update unpacking logic ([e315d63](https://github.com/onesoft-sudo/sudobot/commit/e315d63c440ea1e27766ab21dc74443a5661b865))
-
-
-
-# [9.16.0](https://github.com/onesoft-sudo/sudobot/compare/v9.15.0...v9.16.0) (2024-07-07)
-
-
-### Features
-
-* ci test ([e948fe5](https://github.com/onesoft-sudo/sudobot/commit/e948fe548c53d88b4ad76f1e8f4b2898676c149d))
 
 
 
