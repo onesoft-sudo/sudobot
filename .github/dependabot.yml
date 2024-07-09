@@ -16,3 +16,6 @@ updates:
       - "virtual-designer"
     commit-message:
       prefix: "deps"
+      prefix-development: "deps(dev)"
+    labels:
+      - "type:deps"
