@@ -14,7 +14,7 @@ COPY build.blaze.ts ./build.blaze.ts
 COPY build_src ./build_src
 COPY eslint.config.mjs ./eslint.config.mjs
 
-RUN bash blazew build
+RUN ./blazew build
 
 FROM node:22-alpine
 
