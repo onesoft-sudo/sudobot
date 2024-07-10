@@ -69,8 +69,11 @@ class Blaze {
             IO.fatal(error);
         }
 
+        const argsForwardIndex = process.argv.indexOf("--");
         this._taskNames =
-            process.argv.length >= 3 ? process.argv.slice(2) : [Blaze.defaultTaskName];
+            process.argv.length >= 3
+                ? process.argv.slice(2, argsForwardIndex === -1 ? undefined : argsForwardIndex)
+                : [Blaze.defaultTaskName];
 
         try {
             for (const taskName of this._taskNames) {
