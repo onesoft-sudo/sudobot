@@ -4,7 +4,7 @@ const { glob } = require("glob");
 const path = require("path");
 
 (async () => {
-    const pages = await glob("app/**/page.{tsx,mdx}");
+    const pages = await glob("app/**/page.{tsx,mdx,md}");
     const index = [];
 
     async function loadDocsIndex(
@@ -25,7 +25,10 @@ const path = require("path");
                     `${href}${href === "/" ? "" : "/"}${filename}`,
                 );
                 const i = info.children.findIndex(
-                    c => c.name === "page.mdx" || c.name === "page.tsx",
+                    c =>
+                        c.name === "page.mdx" ||
+                        c.name === "page.md" ||
+                        c.name === "page.tsx",
                 );
                 const removed = i !== -1 ? info.children.splice(i, 1)[0] : null;
 
@@ -43,9 +46,14 @@ const path = require("path");
                 continue;
             }
 
-            if (filename !== "page.tsx" && filename !== "page.mdx") continue;
+            if (
+                filename !== "page.tsx" &&
+                filename !== "page.md" &&
+                filename !== "page.mdx"
+            )
+                continue;
 
-            const isMDX = file.endsWith(".mdx");
+            const isMDX = file.endsWith(".mdx") || file.endsWith(".md");
             const info = isMDX
                 ? await generateIndexForMDXPage(file)
                 : await generateIndexForTSXPage(file);
@@ -56,7 +64,7 @@ const path = require("path");
                 url: file
                     .replace(/[\/\\]\([a-z0-9A-Z_-]+\)/gi, "")
                     .replace(/^app[\/\\]/gi, "")
-                    .replace(/page\.(ts|md)x$/gi, "")
+                    .replace(/page\.(tsx|md|mdx)$/gi, "")
                     .replace(/\\/g, "/"),
                 path: file.replace(/\\/g, "/"),
                 data: {
@@ -112,7 +120,7 @@ const path = require("path");
     }
 
     for (const page of pages) {
-        const isMDX = page.endsWith(".mdx");
+        const isMDX = page.endsWith(".mdx") || page.endsWith(".md");
 
         index.push(
             isMDX
@@ -184,7 +192,7 @@ async function generateIndexForMDXPage(page) {
             page
                 .replace(/[\/\\]\([a-z0-9A-Z_-]+\)/gi, "")
                 .replace(/^app[\/\\]/gi, "")
-                .replace(/page\.(ts|md)x$/gi, "")
+                .replace(/page\.(tsx|md|mdx)$/gi, "")
                 .replace(/\\/g, "/"),
         path: page.replace(/\\/g, "/"),
     };

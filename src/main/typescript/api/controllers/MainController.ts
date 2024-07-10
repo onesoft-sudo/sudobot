@@ -41,7 +41,7 @@ class MainController extends Controller {
         return {
             status: server_status,
             description: server_status_description,
-            started: server_status_started_at
+            started: server_status_started_at ?? new Date(Date.now() + process.uptime() / 1000)
         };
     }
 }

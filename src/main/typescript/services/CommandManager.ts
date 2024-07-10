@@ -128,7 +128,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             registered = true;
         } else if (
             (mode === "auto_global" || global) &&
-            (process.argv.includes("--update-commands") || process.argv.includes("-u"))
+            (process.argv.includes("--update-commands") || process.argv.includes("-u") || clear)
         ) {
             if (isDevelopmentMode() && !global) {
                 this.client.guilds.cache

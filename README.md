@@ -1,6 +1,9 @@
 <p align="center">
 <a href="https://www.sudobot.org" title="Official Website of SudoBot" target="_blank">
-<img src="https://res.cloudinary.com/rakinar2/image/upload/f_auto,q_auto/em8aewnsfwj7mlfhqxtf" height="114px" width="348px">
+<!--
+<img src="https://res.cloudinary.com/rakinar2/image/upload/v1720629036/nnanzhwwmpa2k3ebw0yg.png" height="114px" width="348px">
+-->
+<img src="https://res.cloudinary.com/rakinar2/image/upload/v1720629036/ku8wq70utgbrbyhzdl9a.png" height="114px" width="348px">
 </a> 
 </p>
 
@@ -61,6 +64,17 @@ Thanks to all the active and indirect contributors!
 -   [MonzterDev](https://github.com/MonzterDev)
 -   [ninsaccplayzyt](https://github.com/ninsaccplayzyt)
 -   [Ryanmello07](https://github.com/Ryanmello07) (Contributed by giving away a hosting server and by giving a lot of suggestions/ideas to us)
+
+### License
+
+SudoBot is licensed under the [GNU Affero General Public License v3.0](https://gnu.org/licenses/agpl-3.0.html). You can find the full license text in the [LICENSE](./LICENSE) file distributed in this repository.
+
+#### Exceptions
+
+- [The emojis](https://www.onesoftnet.eu.org/downloads/sudo/emojis/) are licensed under the [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
+- [The SudoBot Logo](https://res.cloudinary.com/rakinar2/image/upload/v1720629036/ku8wq70utgbrbyhzdl9a.png) is licensed under the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-nc-sa/4.0/).
+- [The documentation website of SudoBot](https://docs.sudobot.org) is dual-licensed under the [GNU Affero General Public License v3.0](https://gnu.org/licenses/agpl-3.0.html) and the [GNU Free Documentation License v1.3](https://gnu.org/licenses/fdl-1.3.html).<br />Read the [README.md](./docs/README.md) file in the `docs` directory for more information.
+- [BlazeBuild](./blazebuild), the build tool that SudoBot uses, is licensed under the [GNU General Public License v3.0](https://gnu.org/licenses/gpl-3.0.html).
 
 ### Support
 

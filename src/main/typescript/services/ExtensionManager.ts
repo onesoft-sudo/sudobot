@@ -34,7 +34,7 @@ import { Response } from "express";
 import { existsSync } from "fs";
 import fs, { rm } from "fs/promises";
 import path from "path";
-import tar from "tar";
+import * as tar from "tar";
 import { cache } from "../utils/cache";
 import { downloadFile } from "../utils/download";
 import { request, systemPrefix, wait } from "../utils/utils";

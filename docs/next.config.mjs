@@ -8,13 +8,14 @@ import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    pageExtensions: ["js", "jsx", "mdx", "ts", "tsx"],
+    pageExtensions: ["js", "jsx", "mdx", "ts", "tsx", "md"],
     async rewrites() {
         return [{ source: "/:path*.(mdx?)", destination: "/:path*" }];
     },
 };
 
 const withMDX = createMDX({
+    extension: /\.mdx?$/,
     options: {
         remarkPlugins: [
             remarkGfm,

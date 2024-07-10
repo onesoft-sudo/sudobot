@@ -207,7 +207,7 @@ setup_bun() {
         fi
 
         mkdir -p "$bun_dir"
-        export BUN_INSTALL="$bun_dir" && export PATH="$BUN_INSTALL":"$PATH":"$BUN_INSTALL" && export SHELL=blazew && curl -fsSL https://bun.sh/install | bash -x $args > /dev/null 2>&1
+        export BUN_INSTALL="$bun_dir" && export PATH="$BUN_INSTALL":"$PATH":"$BUN_INSTALL" && export SHELL=blazew && curl -fsSL https://bun.sh/install | bash $args > /dev/null 2>&1
         bun=$(readlink -f "$bun_dir/bin/bun")
         setup_done=1
 

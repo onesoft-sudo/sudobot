@@ -55,7 +55,10 @@ class CommandPermissionOverwriteCacheStore extends GuildStore<
     public async fetch(guildId: Snowflake, name: string) {
         const cached = this.get(guildId, name);
 
-        if (cached && Date.now() - (this.getMetadata(guildId, name)?.timestamp ?? 0) < this.ttl) {
+        if (
+            cached !== undefined &&
+            Date.now() - (this.getMetadata(guildId, name)?.timestamp ?? 0) < this.ttl
+        ) {
             return cached;
         }
 
@@ -89,6 +92,7 @@ class CommandPermissionOverwriteCacheStore extends GuildStore<
                     existing ?? undefined,
                     cached
                 );
+
                 this.set(overwrite.guildId, actualName, merged);
             }
         }

@@ -164,8 +164,7 @@
                             "type": "string",
                             "format": "date-time"
                         }
-                    ],
-                    "default": "2024-07-08T18:06:01.637Z"
+                    ]
                 }
             },
             "additionalProperties": false,
