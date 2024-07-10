@@ -5,6 +5,7 @@ import PageInfo from "../MDX/PageInfo";
 import TableOfContents from "../MDX/TableOfContents";
 import DocsLinkList from "../Navbar/Sidebar";
 import Navigator from "../Navigation/Navigator";
+import { Box } from "@mui/material";
 
 export default function DocsLayout({ children }: PropsWithChildren) {
     return (
@@ -30,9 +31,14 @@ export default function DocsLayout({ children }: PropsWithChildren) {
                 </div>
             </div>
 
-            <div className="hidden lg:block mr-5 fixed right-0 max-w-[20vw] max-h-[calc(100vh-50px)] overflow-y-scroll">
+            <Box className="hidden lg:block mr-5 fixed right-0 max-w-[20vw] max-h-[calc(100vh-4rem)] overflow-y-scroll pb-8" sx={{
+                'scrollbarWidth': 0,
+                '::-webkit-scrollbar': {
+                    display: 'none'
+                }
+            }}>
                 <TableOfContents as={Fragment} />
-            </div>
+            </Box>
         </div>
     );
 }
