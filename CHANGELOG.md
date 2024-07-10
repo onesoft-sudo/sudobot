@@ -1,4 +1,4 @@
-## [9.16.18](https://github.com/onesoft-sudo/sudobot/compare/v9.16.5...v9.16.18) (2024-07-09)
+## [9.16.19](https://github.com/onesoft-sudo/sudobot/compare/v9.16.5...v9.16.19) (2024-07-10)
 
 
 ### Bug Fixes
