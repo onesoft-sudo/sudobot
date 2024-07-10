@@ -1,3 +1,13 @@
+## [9.16.20](https://github.com/onesoft-sudo/sudobot/compare/v9.16.19...v9.16.20) (2024-07-10)
+
+
+### Bug Fixes
+
+* command line option `-u`, `-g`, and `-c` ([91b71a9](https://github.com/onesoft-sudo/sudobot/commit/91b71a9297ef53a7befc2cbfa33cb03b3d00f889))
+* incorrect command line argument handling ([169f101](https://github.com/onesoft-sudo/sudobot/commit/169f1018a2f5d954081a2dcbd63a94fbaab45337))
+
+
+
 ## [9.16.19](https://github.com/onesoft-sudo/sudobot/compare/v9.16.5...v9.16.19) (2024-07-10)
 
 
@@ -34,17 +44,6 @@
 ### Bug Fixes
 
 * **utils:** invalid way of determining system prefix ([d110905](https://github.com/onesoft-sudo/sudobot/commit/d11090505819067170dc4fb47d11e4e645eaccde))
-
-
-
-## [9.16.2](https://github.com/onesoft-sudo/sudobot/compare/v9.16.1...v9.16.2) (2024-07-08)
-
-
-### Bug Fixes
-
-* optional module loading ([b4e2fef](https://github.com/onesoft-sudo/sudobot/commit/b4e2fef747e58eeaf2a7cd80cf0ad7695ac1d4e6))
-* **security:ModerationRuleHandler:** invalid property access on string ([7f918b4](https://github.com/onesoft-sudo/sudobot/commit/7f918b4ba60167c05ebfd7567643242c37c7019d))
-* type errors ([005be10](https://github.com/onesoft-sudo/sudobot/commit/005be1035f95d4051985e53e43dfc82e88603617))
 
 
 
