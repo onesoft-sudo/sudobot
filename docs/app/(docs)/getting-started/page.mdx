@@ -93,6 +93,11 @@ CLIENT_ID=your-bot-client-id
 # Client Secret of your bot from the Discord Developer Portal.
 CLIENT_SECRET=your-bot-client-secret
 
+# The ID of the guild where you want to register the commands,
+# during development mode, and where the bot will send error reports.
+# The bot will also search for emojis in this guild.
+HOME_GUILD_ID=your-home-guild-id
+
 # Your PostgreSQL database connection URL.
 # Sometimes your database provider might provide a connection URL 
 # exactly in this format. Otherwise if they give you the details
@@ -107,6 +112,11 @@ DB_URL=postgresql://username:password@hostname:port/database
 #
 # Replace `your-jwt-secret` with the generated secret.
 JWT_SECRET=your-jwt-secret
+
+# Optionally, you can uncomment the following to turn on debug mode 
+# to see more detailed logs, and enable certain development features.
+
+# NODE_ENV=development
 ```
 
 There are a lot of other environment variables that you can set, but these are the most important ones. You can check out all the environment variables in the [environment variable schema file](https://github.com/onesoft-sudo/sudobot/blob/main/src/main/typescript/schemas/EnvironmentVariableSchema.ts).
@@ -153,6 +163,39 @@ By default, BlazeBuild will use [Bun](https://bun.sh) to run the bot. If you wan
 
 This will start the bot, and you should see the bot online in your Discord server. 
 Congratulations! You have successfully set up a custom instance of SudoBot on your server 🎉
+
+## Next steps
+
+### Registering application commands
+
+The bot uses [Discord's Application Commands](https://discord.com/developers/docs/interactions/application-commands) for slash commands and context menus.
+To register the application commands to the Discord API, you can run the following command:
+
+```bash
+./blazew run -- -u
+```
+
+If you have debug mode enabled and have `HOME_GUILD_ID` set in the `.env` file, the bot will register the commands in the development guild.
+If you don't have debug mode enabled, the bot will register the commands globally.
+
+If you want to force the bot to register the commands globally, you can run the following command:
+
+```bash
+./blazew run -- -u -g
+```
+
+To clear the registered commands, you can run the following command:
+
+```bash
+./blazew run -- -c
+```
+
+Once again, if you have debug mode enabled, the bot will clear the commands in the development guild. Otherwise, it will clear the commands globally.
+To force the bot to clear the commands globally, you can run the following command:
+
+```bash
+./blazew run -- -c -g
+```
 
 ## Emojis
 
