@@ -4,7 +4,7 @@ const path = require("path");
 
 async function main() {
     const excluded = [];
-    const pages = await glob("app/**/page.{ts,md}x");
+    const pages = await glob("app/**/page.{tsx,md,mdx}");
     const routes = [];
 
     for (const page of pages) {
@@ -12,10 +12,13 @@ async function main() {
             .replace(/[\/\\]\([a-z0-9A-Z_-]+\)/gi, "")
             .replace(/^app[\/\\]/gi, "")
             .replace(/[\/\\]page\.(ts|md)x/gi, "")
-            .replace(/\\/g, '/');
-        
+            .replace(/\\/g, "/");
+
         route =
-            route === "" || route === "page.tsx" || route === "page.mdx"
+            route === "" ||
+            route === "page.tsx" ||
+            route === "page.mdx" ||
+            route === "page.md"
                 ? "/"
                 : `/${route}`;
 
@@ -27,7 +30,7 @@ async function main() {
 
         routes.push({
             path: route,
-            file: page.replace(/\\/g, '/'),
+            file: page.replace(/\\/g, "/"),
             lastmod,
         });
     }
