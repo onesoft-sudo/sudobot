@@ -12,10 +12,17 @@ class RunTask extends AbstractTask {
 
         setTimeout(async () => {
             let code: number;
-            const argv = process.argv.slice(process.argv.indexOf("--") + 1);
+            const indexOfArgForward = process.argv.indexOf("--");
+            const argv = indexOfArgForward >= 0 ? process.argv.slice(indexOfArgForward + 1) : [];
 
             if (process.argv.includes("--node")) {
                 await this.blaze.taskManager.executeTask("build");
+
+                IO.newline();
+                IO.println(
+                    `exec> node ${process.cwd()}/build/out/main/typescript/index.js ${argv.join(" ")}`
+                );
+
                 code =
                     spawnSync(
                         "node",
@@ -25,6 +32,10 @@ class RunTask extends AbstractTask {
                         }
                     ).status ?? -1;
             } else {
+                IO.newline();
+                IO.println(
+                    `exec> bun ${process.cwd()}/src/main/typescript/bun.ts ${argv.join(" ")}`
+                );
                 code =
                     spawnSync("bun", [`${process.cwd()}/src/main/typescript/bun.ts`, ...argv], {
                         stdio: "inherit"
