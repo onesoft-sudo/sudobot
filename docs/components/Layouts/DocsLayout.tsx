@@ -31,7 +31,7 @@ export default function DocsLayout({ children }: PropsWithChildren) {
                 </div>
             </div>
 
-            <Box className="hidden lg:block mr-5 fixed right-0 max-w-[20vw] max-h-[calc(100vh-4rem)] overflow-y-scroll pb-8" sx={{
+            <Box className="hidden lg:block mr-5 fixed right-0 min-w-[16rem] max-w-[20vw] max-h-[calc(100vh-4rem)] overflow-y-scroll pb-8" sx={{
                 'scrollbarWidth': 0,
                 '::-webkit-scrollbar': {
                     display: 'none'
