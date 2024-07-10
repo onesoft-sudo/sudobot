@@ -1,6 +1,6 @@
 name: Docker
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -16,12 +16,12 @@ jobs:
         run: echo "$(date +%s)" > TAG
 
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag ghcr.io/onesoft-sudo/sudobot:$(cat TAG)
+        run: docker build . --file Dockerfile --tag ghcr.io/onesoft-sudo/sudobot:$(cat TAG) --tag ghcr.io/onesoft-sudo/sudobot:latest
 
       - name: Login to GitHub Container Registry
         run: echo ${{ secrets.PAT_TOKEN }} | docker login ghcr.io -u virtual-designer --password-stdin
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
       - name: Push the Docker image
-        run: docker push ghcr.io/onesoft-sudo/sudobot:$(cat TAG)
+        run: docker push ghcr.io/onesoft-sudo/sudobot:$(cat TAG) && docker push ghcr.io/onesoft-sudo/sudobot:latest
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
