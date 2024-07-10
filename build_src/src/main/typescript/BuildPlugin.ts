@@ -4,7 +4,9 @@ import CompileTask from "./tasks/CompileTask";
 import CompileTypeScriptTask from "./tasks/CompileTypeScriptTask";
 import CopyResourcesTask from "./tasks/CopyResourcesTask";
 import DependenciesTask from "./tasks/DependenciesTask";
+import GenerateMigrationsTask from "./tasks/GenerateMigrationsTask";
 import LintTask from "./tasks/LintTask";
+import MigrateTask from "./tasks/MigrateTask";
 import ProcessCoverageReportsTask from "./tasks/ProcessCoverageReportsTask";
 import RunTask from "./tasks/RunTask";
 import TestTask from "./tasks/TestTask";
@@ -27,7 +29,9 @@ class BuildPlugin extends BlazePlugin {
             ProcessCoverageReportsTask,
             RunTask,
             TestTask,
-            CopyResourcesTask
+            CopyResourcesTask,
+            MigrateTask,
+            GenerateMigrationsTask
         ];
     }
 }
