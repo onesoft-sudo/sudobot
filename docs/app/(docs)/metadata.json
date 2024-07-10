@@ -1,5 +1,5 @@
 {
-    "sort_as": ["welcome", "getting-started"],
+    "sort_as": ["welcome", "getting-started", "getting-started-v8"],
     "entries": [
         {
             "type": "page",
