@@ -1,6 +1,9 @@
 <p align="center">
 <a href="https://www.sudobot.org" title="Official Website of SudoBot" target="_blank">
-<img src="https://res.cloudinary.com/rakinar2/image/upload/f_auto,q_auto/em8aewnsfwj7mlfhqxtf" height="114px" width="348px">
+<!--
+<img src="https://res.cloudinary.com/rakinar2/image/upload/v1720629036/nnanzhwwmpa2k3ebw0yg.png" height="114px" width="348px">
+-->
+<img src="https://res.cloudinary.com/rakinar2/image/upload/v1720629036/ku8wq70utgbrbyhzdl9a.png" height="114px" width="348px">
 </a> 
 </p>
 
