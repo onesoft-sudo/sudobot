@@ -155,9 +155,11 @@ class SDKManager extends UsesWrapper {
     }
 
     private transformArch(arch: typeof process.arch) {
-        if (arch === "x64") {
-            return "x64";
-        } else if (arch === "ia32") {
+        if (["x64", "arm64"].includes(arch)) {
+            return arch;
+        }
+
+        if (arch === "ia32") {
             return "x86";
         } else if (arch === "arm") {
             return "armv7l";
