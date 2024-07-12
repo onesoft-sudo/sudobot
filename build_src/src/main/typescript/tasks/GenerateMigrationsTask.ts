@@ -19,7 +19,7 @@ class GenerateMigrationsTask extends AbstractTask {
     @TaskAction
     protected override async run(): Promise<void> {
         IO.newline();
-        await $`bun x drizzle-kit generate`;
+        await $`npx drizzle-kit generate`;
     }
 
     @TaskInputGenerator

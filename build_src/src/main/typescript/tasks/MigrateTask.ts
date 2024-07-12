@@ -14,7 +14,7 @@ class MigrateTask extends AbstractTask {
     @TaskAction
     protected override async run(): Promise<void> {
         IO.newline();
-        await $`bun x drizzle-kit migrate`;
+        await $`npx drizzle-kit migrate`;
     }
 }
 
