@@ -137,20 +137,14 @@ class BlazeWrapper {
             detached: false
         });
 
-        if (child.exitCode !== null && child.exitCode !== 0) {
-            process.exit(child.exitCode);
-        }
-
-        if (child.exitCode === null) {
-            const code = await new Promise<number>(resolve => {
-                child.on("exit", code => {
-                    resolve(code ?? 1);
-                });
+        const code = await new Promise<number>(resolve => {
+            child.on("exit", code => {
+                resolve(code ?? 1);
             });
+        });
 
-            if (code !== 0) {
-                process.exit(code);
-            }
+        if (code !== 0) {
+            process.exit(code);
         }
     }
 

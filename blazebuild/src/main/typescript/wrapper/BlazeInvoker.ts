@@ -35,23 +35,18 @@ class BlazeInvoker extends UsesWrapper {
         IO.debug(`Invoking BlazeBuild: ${entryPath} ${this.wrapper.positionalArgs.join(" ")}`);
         const child = spawn(BUN_INTERPRETER, [entryPath, ...this.wrapper.positionalArgs], {
             stdio: this.wrapper.options.quiet ? "ignore" : "inherit",
-            env: process.env
+            env: process.env,
+            detached: false
         });
 
-        if (child.exitCode !== 0) {
-            process.exit(child.exitCode ?? 1);
-        }
-
-        if (child.exitCode === null) {
-            const code = await new Promise<number>(resolve => {
-                child.on("exit", code => {
-                    resolve(code ?? 1);
-                });
+        const code = await new Promise<number>(resolve => {
+            child.on("exit", code => {
+                resolve(code ?? 1);
             });
+        });
 
-            if (code !== 0) {
-                process.exit(code);
-            }
+        if (code !== 0) {
+            process.exit(code);
         }
     }
 }
