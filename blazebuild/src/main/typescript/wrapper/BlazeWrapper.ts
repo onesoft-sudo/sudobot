@@ -116,6 +116,15 @@ class BlazeWrapper {
             await this.sdkManager.install();
             await this.installDeps();
             await this.createLink();
+
+            if (existsSync(file("node_modules/.bin"))) {
+                this.addDirToPath(file("node_modules/.bin"));
+            }
+
+            if (existsSync(path.join(NODE_DIR, "bin"))) {
+                this.addDirToPath(path.resolve(NODE_DIR, "bin"));
+            }
+
             await this.invokeBlaze();
         }
     }
