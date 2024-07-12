@@ -158,6 +158,10 @@ class BlazeWrapper {
         const blazebuildDir = this._properties.get("blaze.srcpath", "blazebuild");
         const blazebuildPath = file(blazebuildDir);
 
+        if (!existsSync(blazebuildPath)) {
+            IO.fatal(`BlazeBuild not found at ${blazebuildPath}`);
+        }
+
         if (existsSync(file("node_modules/blazebuild"))) {
             return;
         }
@@ -169,7 +173,9 @@ class BlazeWrapper {
         }
 
         IO.info("Linking BlazeBuild...");
-        await symlink(blazebuildPath, path.join(process.cwd(), "node_modules/blazebuild"));
+        const linkPath = file("node_modules/blazebuild");
+        await symlink(blazebuildPath, linkPath, "dir");
+        IO.debug(`Linked BlazeBuild to ${blazebuildPath}`);
     }
     private invokeBlaze() {
         const invoker = new BlazeInvoker(this);
