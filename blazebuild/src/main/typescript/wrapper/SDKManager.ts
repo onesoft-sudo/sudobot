@@ -13,7 +13,7 @@ import { NODE_DIR, TMPDIR } from "./utils";
 class SDKManager extends UsesWrapper {
     private findInPath(executable: string) {
         const PATH = process.env.PATH ?? "";
-        const paths = PATH.split(":");
+        const paths = PATH.split(process.platform === "win32" ? ";" : ":");
 
         for (const p of paths) {
             const fullPath = path.join(p, executable);
