@@ -1,3 +1,12 @@
+## [9.17.2](https://github.com/onesoft-sudo/sudobot/compare/v9.17.1...v9.17.2) (2024-07-12)
+
+
+### Bug Fixes
+
+* **blazebuild:** sdk management ([15a702a](https://github.com/onesoft-sudo/sudobot/commit/15a702ad144ec4845f03f2c14a0cd3952785ccf9))
+
+
+
 ## [9.17.1](https://github.com/onesoft-sudo/sudobot/compare/v9.17.0...v9.17.1) (2024-07-12)
 
 
@@ -54,15 +63,6 @@
 * **caching:** not using cached values ([30e74e6](https://github.com/onesoft-sudo/sudobot/commit/30e74e677a667a33b7f86bba08d9284feed69a85))
 * remove console.log calls ([6f9c768](https://github.com/onesoft-sudo/sudobot/commit/6f9c768a7f99cbba99a40d9526698f11fa07e43a))
 * **services:** make sure to import `tar` correctly ([5b4d3f2](https://github.com/onesoft-sudo/sudobot/commit/5b4d3f21c3d2410e82b9a5be7a8f7953d3473a30))
-
-
-
-## [9.16.5](https://github.com/onesoft-sudo/sudobot/compare/v9.16.4...v9.16.5) (2024-07-09)
-
-
-### Reverts
-
-* unexpected license update by mistake ([15d6ca5](https://github.com/onesoft-sudo/sudobot/commit/15d6ca531fd913b333c88d597a41417deff2f6f9))
 
 
 
