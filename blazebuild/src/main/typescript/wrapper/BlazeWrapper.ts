@@ -1,4 +1,5 @@
 import chalk from "chalk";
+import { spawn } from "child_process";
 import { existsSync } from "fs";
 import { mkdir } from "fs/promises";
 import path from "path";
@@ -7,7 +8,7 @@ import BlazeInvoker from "./BlazeInvoker";
 import IO from "./IO";
 import Properties from "./Properties";
 import SDKManager from "./SDKManager";
-import { file, NODE_DIR, TMPDIR } from "./utils";
+import { BUN_INTERPRETER, file, NODE_DIR, TMPDIR } from "./utils";
 
 class BlazeWrapper {
     public readonly positionalArgs: ReadonlyArray<string>;
@@ -113,7 +114,42 @@ class BlazeWrapper {
             this.showVersion();
         } else {
             await this.sdkManager.install();
+            await this.installDeps();
             await this.invokeBlaze();
+        }
+    }
+
+    private async installDeps() {
+        const blazebuildDir = this._properties.get("blaze.srcpath", "blazebuild");
+        const blazebuildPath = file(blazebuildDir);
+
+        if (existsSync(path.join(blazebuildPath, "node_modules"))) {
+            return;
+        }
+
+        IO.info("Installing BlazeBuild dependencies...");
+
+        const child = spawn(BUN_INTERPRETER, ["install"], {
+            stdio: this.options.quiet ? "ignore" : "inherit",
+            env: process.env,
+            cwd: blazebuildPath,
+            detached: false
+        });
+
+        if (child.exitCode !== null && child.exitCode !== 0) {
+            process.exit(child.exitCode);
+        }
+
+        if (child.exitCode === null) {
+            const code = await new Promise<number>(resolve => {
+                child.on("exit", code => {
+                    resolve(code ?? 1);
+                });
+            });
+
+            if (code !== 0) {
+                process.exit(code);
+            }
         }
     }
 

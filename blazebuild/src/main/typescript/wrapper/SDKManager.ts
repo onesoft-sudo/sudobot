@@ -1,6 +1,7 @@
 import axios from "axios";
 import { exec } from "child_process";
 import { formatDistance } from "date-fns";
+import decompress from "decompress";
 import { createWriteStream, existsSync } from "fs";
 import { mkdir, rename, rm } from "fs/promises";
 import path from "path";
@@ -121,11 +122,17 @@ class SDKManager extends UsesWrapper {
         await mkdir(destination);
 
         try {
-            await tar.extract({
-                file,
-                C: destination,
-                z: true
-            });
+            if (file.endsWith(".tar.gz")) {
+                await tar.extract({
+                    file,
+                    C: destination,
+                    z: true
+                });
+            } else if (file.endsWith(".zip")) {
+                await decompress(file, destination);
+            } else {
+                throw new Error(`Unsupported archive format: ${file}`);
+            }
         } catch (error) {
             IO.fatal(`Failed to extract Node.js archive`, error);
         }

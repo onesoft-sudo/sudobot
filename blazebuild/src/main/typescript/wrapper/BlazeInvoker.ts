@@ -57,13 +57,21 @@ class BlazeInvoker extends UsesWrapper {
                 env: process.env
             });
 
-            if (child.exitCode !== null) {
-                process.exit(child.exitCode);
+            if (child.exitCode !== 0) {
+                process.exit(child.exitCode ?? 1);
             }
 
-            child.on("exit", code => {
-                process.exit(code ?? 1);
-            });
+            if (child.exitCode === null) {
+                const code = await new Promise<number>(resolve => {
+                    child.on("exit", code => {
+                        resolve(code ?? 1);
+                    });
+                });
+
+                if (code !== 0) {
+                    process.exit(code);
+                }
+            }
         }
     }
 }
