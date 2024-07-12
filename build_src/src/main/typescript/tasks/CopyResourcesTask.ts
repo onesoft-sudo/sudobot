@@ -35,7 +35,7 @@ class CopyResourcesTask extends AbstractTask {
         for (const module of modules) {
             await cp(
                 `${sourcesRootDirectory}/${module}/resources`,
-                ` ${buildOutputDirectory}/out/${module}/resources`,
+                `${buildOutputDirectory}/out/${module}/resources`,
                 {
                     recursive: true
                 }
