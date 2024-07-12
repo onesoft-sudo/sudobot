@@ -14,7 +14,6 @@ class SDKManager extends UsesWrapper {
     private findInPath(executable: string) {
         const PATH = process.env.PATH ?? "";
         const paths = PATH.split(process.platform === "win32" ? ";" : ":");
-        console.log(paths);
 
         for (const p of paths) {
             const fullPath = path.join(p, executable);
@@ -94,8 +93,8 @@ class SDKManager extends UsesWrapper {
         if (existsSync(destination)) {
             IO.info(`Node.js version ${version} was already downloaded (resolved from cache)`);
         } else {
-            IO.info(`Starting download of Node.js version: ${version}`);
             const file = this.getNodeDownloadURL(version);
+            IO.info(`Starting download of Node.js version: ${version} (${file})`);
             await this.downloadFile(file, destination, `Downloading Node.js v${version}`);
         }
 
@@ -129,7 +128,7 @@ class SDKManager extends UsesWrapper {
                     C: destination,
                     z: true
                 });
-            } else if (file.endsWith(".zip")) {
+            } else if (file.endsWith(".zip") || process.platform === "win32") {
                 await decompress(file, destination);
             } else {
                 throw new Error(`Unsupported archive format: ${file}`);
