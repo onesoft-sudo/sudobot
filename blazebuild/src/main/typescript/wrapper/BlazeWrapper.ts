@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import { spawn } from "child_process";
 import { existsSync } from "fs";
-import { mkdir } from "fs/promises";
+import { mkdir, symlink } from "fs/promises";
 import path from "path";
 import { parseArgs } from "util";
 import BlazeInvoker from "./BlazeInvoker";
@@ -115,6 +115,7 @@ class BlazeWrapper {
         } else {
             await this.sdkManager.install();
             await this.installDeps();
+            await this.createLink();
             await this.invokeBlaze();
         }
     }
@@ -153,6 +154,17 @@ class BlazeWrapper {
         }
     }
 
+    private async createLink() {
+        const blazebuildDir = this._properties.get("blaze.srcpath", "blazebuild");
+        const blazebuildPath = file(blazebuildDir);
+
+        if (existsSync(file("node_modules/blazebuild"))) {
+            return;
+        }
+
+        IO.info("Linking BlazeBuild...");
+        await symlink(blazebuildPath, path.join(process.cwd(), "node_modules/blazebuild"));
+    }
     private invokeBlaze() {
         const invoker = new BlazeInvoker(this);
         return invoker.invoke();
