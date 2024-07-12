@@ -5,7 +5,7 @@ import {
     TaskInputGenerator,
     TaskOutputGenerator
 } from "blazebuild";
-import { $ } from "bun";
+import { cp } from "fs/promises";
 
 @Task({
     description: "Copies the resources",
@@ -33,14 +33,18 @@ class CopyResourcesTask extends AbstractTask {
         }
 
         for (const module of modules) {
-            await $`cp -r ${sourcesRootDirectory}/${module}/resources ${buildOutputDirectory}/out/${module}/resources`;
+            await cp(
+                `${sourcesRootDirectory}/${module}/resources`,
+                ` ${buildOutputDirectory}/out/${module}/resources`,
+                {
+                    recursive: true
+                }
+            );
         }
     }
 
     @TaskOutputGenerator
     protected override generateOutput() {
-        const sourcesRootDirectory =
-            this.blaze.projectManager.properties.structure?.sourcesRootDirectory;
         const buildOutputDirectory =
             this.blaze.projectManager.properties.structure?.buildOutputDirectory;
         const modules = this.blaze.projectManager.properties.structure?.sourceModules;
