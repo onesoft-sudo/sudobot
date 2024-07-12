@@ -74,4 +74,4 @@ jobs:
         if: matrix.os == 'macos-latest'
 
       - name: Build with BlazeBuild
-        run: ./blazew build
+        run: BLAZEW_DEBUG=1 BLAZE_DEBUG=1 ./blazew build
