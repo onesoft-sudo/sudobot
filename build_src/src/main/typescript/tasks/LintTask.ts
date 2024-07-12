@@ -19,7 +19,7 @@ class LintTask extends AbstractTask {
     @TaskAction
     protected override async run() {
         IO.newline();
-        await $`eslint "${process.cwd()}/src"`;
+        await $`bun x eslint "${process.cwd()}/src"`;
     }
 
     @TaskInputGenerator

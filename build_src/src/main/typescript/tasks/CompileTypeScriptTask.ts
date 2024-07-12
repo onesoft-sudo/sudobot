@@ -20,7 +20,7 @@ class CompileTypeScriptTask extends AbstractTask {
     @TaskAction
     protected override async run(): Promise<void> {
         IO.newline();
-        await $`tsc`;
+        await $`bun x tsc`;
     }
 
     @TaskInputGenerator
