@@ -1,4 +1,3 @@
-import { spawn } from "child_process";
 import { existsSync } from "fs";
 import IO from "./IO";
 import UsesWrapper from "./UsesWrapper";
@@ -34,18 +33,36 @@ class BlazeInvoker extends UsesWrapper {
         const entryPath = this.findEntryPath();
         IO.debug(`Invoking BlazeBuild: ${entryPath} ${this.wrapper.positionalArgs.join(" ")}`);
 
-        const child = spawn(BUN_INTERPRETER, [entryPath, ...this.wrapper.positionalArgs], {
-            stdio: this.wrapper.options.quiet ? "ignore" : "inherit",
-            env: process.env
-        });
+        if (process.isBun) {
+            Bun.spawn({
+                cmd: [BUN_INTERPRETER, entryPath, ...this.wrapper.positionalArgs],
+                stdio: this.wrapper.options.quiet
+                    ? ["ignore", "ignore", "ignore"]
+                    : ["inherit", "inherit", "inherit"],
+                env: process.env,
+                onExit(subprocess, exitCode, signalCode, error) {
+                    if (error) {
+                        IO.error(error);
+                    }
 
-        if (child.exitCode !== null) {
-            process.exit(child.exitCode);
+                    process.exit(exitCode ?? 1);
+                }
+            });
+        } else {
+            const { spawn } = await import("child_process");
+            const child = spawn(BUN_INTERPRETER, [entryPath, ...this.wrapper.positionalArgs], {
+                stdio: this.wrapper.options.quiet ? "ignore" : "inherit",
+                env: process.env
+            });
+
+            if (child.exitCode !== null) {
+                process.exit(child.exitCode);
+            }
+
+            child.on("exit", code => {
+                process.exit(code ?? 1);
+            });
         }
-
-        child.on("exit", code => {
-            process.exit(code ?? 1);
-        });
     }
 }
 
