@@ -1,3 +1,12 @@
+## [9.17.1](https://github.com/onesoft-sudo/sudobot/compare/v9.17.0...v9.17.1) (2024-07-12)
+
+
+### Bug Fixes
+
+* **blazebuild:** invalid path splitting on windows ([a241862](https://github.com/onesoft-sudo/sudobot/commit/a2418625a7b00beb296d027988bbf768304635f5))
+
+
+
 # [9.17.0](https://github.com/onesoft-sudo/sudobot/compare/v9.16.20...v9.17.0) (2024-07-12)
 
 
@@ -54,16 +63,6 @@
 ### Reverts
 
 * unexpected license update by mistake ([15d6ca5](https://github.com/onesoft-sudo/sudobot/commit/15d6ca531fd913b333c88d597a41417deff2f6f9))
-
-
-
-## [9.16.4](https://github.com/onesoft-sudo/sudobot/compare/v9.16.3...v9.16.4) (2024-07-09)
-
-
-### Bug Fixes
-
-* **api:MainController:** reset started_at date of the server when it's not present ([385836b](https://github.com/onesoft-sudo/sudobot/commit/385836b5b8fa7b99a92eae3622e0ffd5c238ef92))
-* **schemas:systemConfig:** using unstable date as schema default ([0fb1318](https://github.com/onesoft-sudo/sudobot/commit/0fb1318923b307197a87a6409fad395ad443e112))
 
 
 
