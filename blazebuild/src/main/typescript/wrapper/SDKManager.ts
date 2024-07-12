@@ -70,15 +70,29 @@ class SDKManager extends UsesWrapper {
             IO.debug(`Found Node.js at: ${nodePath}`);
             const version = await this.getExecutionOutput(nodePath, "--version");
 
-            if (version !== expectedNodeVersion) {
-                IO.warn(
-                    `Node.js version mismatch: required ${expectedNodeVersion}, found ${version}`
-                );
-                await this.installNode(expectedNodeVersion);
-            } else {
+            if (version === expectedNodeVersion) {
                 IO.debug(`Node.js version: ${version}`);
+                return;
             }
-        } else {
+
+            IO.warn(
+                `Node.js global version mismatch: required ${expectedNodeVersion}, found ${version}`
+            );
+        }
+
+        if (!existsSync(NODE_INTERPRETER)) {
+            IO.info("Node.js not found, installing...");
+            await this.installNode(expectedNodeVersion);
+            return;
+        }
+
+        const localVersion = await this.getExecutionOutput(NODE_INTERPRETER, "--version");
+
+        if (localVersion !== expectedNodeVersion) {
+            IO.warn(
+                `Node.js local version mismatch: required ${expectedNodeVersion}, found ${localVersion}`
+            );
+
             await this.installNode(expectedNodeVersion);
         }
     }

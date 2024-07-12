@@ -88,7 +88,7 @@ function Check-Bun() {
 
     Write-Log "Checking if Bun is already installed" Debug
     
-    if (-not (Test-Path $tmp_dir/bun/bin/bun)) {
+    if (-not (Test-Path $tmp_dir/bun/bin)) {
         Write-Log "Could not find Bun installation"
         Install-Bun
         $current_version = & $bun_path --version

@@ -12,7 +12,7 @@ class IO {
             return;
         }
 
-        console.warn(chalk.bold.yellow("error ") + chalk.reset(""), ...args);
+        console.warn(chalk.bold.yellow("warn  ") + chalk.reset(""), ...args);
     }
 
     public static error(...args: unknown[]) {
