@@ -1,3 +1,12 @@
+## [9.17.4](https://github.com/onesoft-sudo/sudobot/compare/v9.17.3...v9.17.4) (2024-07-12)
+
+
+### Bug Fixes
+
+* **blazebuild:** command line argument parsing ([4bbb4a1](https://github.com/onesoft-sudo/sudobot/commit/4bbb4a1875486dc5e95c9ea31fd1023fea2b3768))
+
+
+
 ## [9.17.3](https://github.com/onesoft-sudo/sudobot/compare/v9.17.2...v9.17.3) (2024-07-12)
 
 
@@ -51,16 +60,6 @@
 * **blazebuild:** auto install deps ([8397379](https://github.com/onesoft-sudo/sudobot/commit/83973795ab04bd5dd9b7c9a50903fe4805a3375e))
 * **blazebuild:** better blazebuild wrapper ([363a5cf](https://github.com/onesoft-sudo/sudobot/commit/363a5cf6039682321053abb91dce78b2e0215bd5))
 * **blazebuild:** support windows ([9b844f0](https://github.com/onesoft-sudo/sudobot/commit/9b844f02e5de9caafc8594e5ab95092e561f1923))
-
-
-
-## [9.16.20](https://github.com/onesoft-sudo/sudobot/compare/v9.16.19...v9.16.20) (2024-07-10)
-
-
-### Bug Fixes
-
-* command line option `-u`, `-g`, and `-c` ([91b71a9](https://github.com/onesoft-sudo/sudobot/commit/91b71a9297ef53a7befc2cbfa33cb03b3d00f889))
-* incorrect command line argument handling ([169f101](https://github.com/onesoft-sudo/sudobot/commit/169f1018a2f5d954081a2dcbd63a94fbaab45337))
 
 
 
