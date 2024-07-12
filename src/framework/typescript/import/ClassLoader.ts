@@ -23,7 +23,6 @@ import type { Awaitable } from "discord.js";
 import type { Router } from "express";
 import { lstat, readdir } from "node:fs/promises";
 import path, { basename, dirname } from "node:path";
-import APIServer from "../api/APIServer";
 import type Controller from "../api/http/Controller";
 import Application from "../app/Application";
 import type { Command } from "../commands/Command";
@@ -207,7 +206,7 @@ class ClassLoader {
             await import(filepath);
         const controller = Container.getInstance().resolveByClass(ControllerClass);
         this.loadEventsFromMetadata(controller, true);
-        this.application.getService(APIServer).loadController(controller, ControllerClass, router);
+        this.application.service("apiServer").loadController(controller, ControllerClass, router);
         this.application.logger.info("Loaded Controller: ", ControllerClass.name);
     }
 

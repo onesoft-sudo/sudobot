@@ -17,7 +17,6 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import APIServer from "@framework/api/APIServer";
 import { Inject } from "@framework/container/Inject";
 import EventListener from "@framework/events/EventListener";
 import { Logger } from "@framework/log/Logger";
@@ -42,9 +41,6 @@ class ReadyEventListener extends EventListener<Events.Ready, Client> {
     public readonly startupManager!: StartupManager;
 
     @Inject()
-    public readonly server!: APIServer;
-
-    @Inject()
     public readonly queueService!: QueueService;
 
     @Inject()
@@ -60,7 +56,7 @@ class ReadyEventListener extends EventListener<Events.Ready, Client> {
         this.startupManager.onReady();
         this.commandManager.onReady();
         this.queueService.onReady();
-        this.server.onReady();
+        this.application.service("apiServer").onReady();
 
         const homeGuild = await this.client.getHomeGuild();
 

@@ -69,12 +69,12 @@ export default class APIServer extends Service {
             (this.application.service("configManager") as ConfigurationManagerServiceInterface)
                 .systemConfig.api.enabled
         ) {
-            await this.boot();
+            await this.setup();
             await this.start();
         }
     }
 
-    public override async boot() {
+    public async setup() {
         this.expressApp.use(this.onError);
         this.expressApp.use(cors());
 
