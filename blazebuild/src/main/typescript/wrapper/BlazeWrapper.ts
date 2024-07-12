@@ -162,6 +162,12 @@ class BlazeWrapper {
             return;
         }
 
+        if (!existsSync(file("node_modules"))) {
+            await mkdir(file("node_modules"), {
+                recursive: true
+            });
+        }
+
         IO.info("Linking BlazeBuild...");
         await symlink(blazebuildPath, path.join(process.cwd(), "node_modules/blazebuild"));
     }
