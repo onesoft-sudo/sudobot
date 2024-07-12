@@ -8,7 +8,7 @@ import path from "path";
 import * as tar from "tar";
 import IO from "./IO";
 import UsesWrapper from "./UsesWrapper";
-import { NODE_DIR, TMPDIR } from "./utils";
+import { NODE_DIR, NODE_INTERPRETER, TMPDIR } from "./utils";
 
 class SDKManager extends UsesWrapper {
     private findInPath(executable: string) {
@@ -101,11 +101,7 @@ class SDKManager extends UsesWrapper {
         await this.extractNode(version, destination);
         IO.info("Unpacked and installed Node.js to: ", NODE_DIR);
 
-        const currentVersion = await this.getExecutionOutput(
-            path.join(TMPDIR, "node", "bin", "node" + (process.platform === "win32" ? ".exe" : "")),
-            "--version"
-        );
-
+        const currentVersion = await this.getExecutionOutput(NODE_INTERPRETER, "--version");
         IO.info(`Node.js version: ${currentVersion}`);
     }
 
