@@ -1,3 +1,12 @@
+## [9.17.3](https://github.com/onesoft-sudo/sudobot/compare/v9.17.2...v9.17.3) (2024-07-12)
+
+
+### Bug Fixes
+
+* apiServer loading error (race condition) ([a5cc78f](https://github.com/onesoft-sudo/sudobot/commit/a5cc78ff69a96ecee8446557eb748f38c6a59f96))
+
+
+
 ## [9.17.2](https://github.com/onesoft-sudo/sudobot/compare/v9.17.1...v9.17.2) (2024-07-12)
 
 
@@ -52,17 +61,6 @@
 
 * command line option `-u`, `-g`, and `-c` ([91b71a9](https://github.com/onesoft-sudo/sudobot/commit/91b71a9297ef53a7befc2cbfa33cb03b3d00f889))
 * incorrect command line argument handling ([169f101](https://github.com/onesoft-sudo/sudobot/commit/169f1018a2f5d954081a2dcbd63a94fbaab45337))
-
-
-
-## [9.16.19](https://github.com/onesoft-sudo/sudobot/compare/v9.16.5...v9.16.19) (2024-07-10)
-
-
-### Bug Fixes
-
-* **caching:** not using cached values ([30e74e6](https://github.com/onesoft-sudo/sudobot/commit/30e74e677a667a33b7f86bba08d9284feed69a85))
-* remove console.log calls ([6f9c768](https://github.com/onesoft-sudo/sudobot/commit/6f9c768a7f99cbba99a40d9526698f11fa07e43a))
-* **services:** make sure to import `tar` correctly ([5b4d3f2](https://github.com/onesoft-sudo/sudobot/commit/5b4d3f21c3d2410e82b9a5be7a8f7953d3473a30))
 
 
 
