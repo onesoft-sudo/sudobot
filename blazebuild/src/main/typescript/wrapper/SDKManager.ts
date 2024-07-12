@@ -63,7 +63,7 @@ class SDKManager extends UsesWrapper {
     }
 
     public async checkNode() {
-        const nodePath = this.findInPath("node");
+        const nodePath = this.findInPath(process.platform === "win32" ? "node.exe" : "node");
         const expectedNodeVersion = this.wrapper.properties.get("node.version", "21.0.0");
 
         if (nodePath) {
@@ -102,7 +102,7 @@ class SDKManager extends UsesWrapper {
         IO.info("Unpacked and installed Node.js to: ", NODE_DIR);
 
         const currentVersion = await this.getExecutionOutput(
-            path.join(TMPDIR, "node", "bin", "node"),
+            path.join(TMPDIR, "node", "bin", "node" + (process.platform === "win32" ? ".exe" : "")),
             "--version"
         );
 
