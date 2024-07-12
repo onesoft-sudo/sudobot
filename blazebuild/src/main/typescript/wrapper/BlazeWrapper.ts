@@ -174,13 +174,8 @@ class BlazeWrapper {
 
         IO.info("Linking BlazeBuild...");
         const linkPath = file("node_modules/blazebuild");
-        try {
-            await symlink(blazebuildPath, linkPath, "dir");
-            IO.debug(`Linked BlazeBuild to ${blazebuildPath}`);
-        } catch (error) {
-            console.error(error);
-            process.exit(1);
-        }
+        await symlink(blazebuildPath, linkPath, "dir");
+        IO.debug(`Linked BlazeBuild to ${blazebuildPath}`);
     }
     private invokeBlaze() {
         const invoker = new BlazeInvoker(this);
