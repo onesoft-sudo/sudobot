@@ -32,9 +32,9 @@ class BlazeInvoker extends UsesWrapper {
 
     public async invoke() {
         const entryPath = this.findEntryPath();
-        IO.debug(`Invoking BlazeBuild: ${entryPath} ${this.wrapper.positionalArgs.join(" ")}`);
+        IO.debug(`Invoking BlazeBuild: ${entryPath} ${process.argv.slice(2).join(" ")}`);
         const PATH = `${process.env.PATH}:${file("node_modules/.bin")}`;
-        const child = spawn(BUN_INTERPRETER, [entryPath, ...this.wrapper.positionalArgs], {
+        const child = spawn(BUN_INTERPRETER, [entryPath, ...process.argv.slice(2)], {
             stdio: this.wrapper.options.quiet ? "ignore" : "inherit",
             env: {
                 ...process.env,
