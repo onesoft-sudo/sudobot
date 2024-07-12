@@ -29,15 +29,15 @@ function Write-Log {
             Write-Host "$message"
         }
         Warn {
-            Write-Warning "warn   " -NoNewline -ForegroundColor Yellow
+            Write-Host "warn   " -NoNewline -ForegroundColor Yellow
             Write-Warning "$message"
         }
         Error {
-            Write-Error "error  " -NoNewline -ForegroundColor Red
+            Write-Host "error  " -NoNewline -ForegroundColor Red
             Write-Error "$message"
         }
         Debug {
-            Write-Verbose "debug  " -NoNewline -ForegroundColor Cyan
+            Write-Host "debug  " -NoNewline -ForegroundColor Cyan
             Write-Verbose "$message"
         }
     }
@@ -67,6 +67,9 @@ function Get-BlazeProperty {
 
 function Install-Bun() {
     Write-Log "Installing Bun $bun_version"
+    $env:BUN_INSTALL = $tmp_dir + "/bun"
+    $env:SHELL = "blazew"
+    $env:PATH = $tmp_dir + "/bun/bin" + ";" + $env:PATH + ";" + $tmp_dir + "/bun/bin"
     & ([scriptblock]::Create((irm bun.sh/install.ps1))) -Version $bun_version -NoPathUpdate -NoRegisterInstallation -NoCompletions -DownloadWithoutCurl
 
     if ($LASTEXITCODE -ne 0) {
