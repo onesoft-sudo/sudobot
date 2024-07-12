@@ -14,6 +14,7 @@ class SDKManager extends UsesWrapper {
     private findInPath(executable: string) {
         const PATH = process.env.PATH ?? "";
         const paths = PATH.split(process.platform === "win32" ? ";" : ":");
+        console.log(paths);
 
         for (const p of paths) {
             const fullPath = path.join(p, executable);
