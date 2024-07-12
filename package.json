@@ -37,7 +37,7 @@
     "scripts": {
         "start": "node build/out/main/typescript/main.js",
         "start:bun": "bun --tsconfig-override=tsconfig.bun.json src/bun.ts",
-        "prepare": "husky && rm -fr node_modules/blazebuild; node -e \"process.exit(process.platform === 'win32' ? 0 : 1)\" && cmd.exe /c mklink /d $(pwd)/node_modules/blazebuild $(pwd)/blazebuild; node -e \"process.exit(process.platform !== 'win32' ? 0 : 1)\" && ln -s $(pwd)/blazebuild $(pwd)/node_modules/blazebuild;",
+        "prepare": "husky && rm -fr node_modules/blazebuild; node -e \"const { symlinkSync } = require('fs'); const path = require('path'); symlinkSync(path.join(process.cwd(), 'blazebuild'), path.join(process.cwd(), 'node_modules/blazebuild'), 'dir');\"",
         "dev": "bun run src/main/typescript/bun.ts",
         "start:blazew": "node build/out/main/typescript/main.js",
         "lint": "eslint src",
