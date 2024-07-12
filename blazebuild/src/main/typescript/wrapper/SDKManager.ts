@@ -122,14 +122,14 @@ class SDKManager extends UsesWrapper {
         await mkdir(destination);
 
         try {
-            if (file.endsWith(".tar.gz")) {
+            if (file.endsWith(".zip") || process.platform === "win32") {
+                await decompress(file, destination);
+            } else if (file.endsWith(".tar.gz")) {
                 await tar.extract({
                     file,
                     C: destination,
                     z: true
                 });
-            } else if (file.endsWith(".zip") || process.platform === "win32") {
-                await decompress(file, destination);
             } else {
                 throw new Error(`Unsupported archive format: ${file}`);
             }
