@@ -34,20 +34,22 @@ class BlazeInvoker extends UsesWrapper {
         IO.debug(`Invoking BlazeBuild: ${entryPath} ${this.wrapper.positionalArgs.join(" ")}`);
 
         if (process.isBun) {
-            Bun.spawn({
-                cmd: [BUN_INTERPRETER, entryPath, ...this.wrapper.positionalArgs],
-                stdio: this.wrapper.options.quiet
-                    ? ["ignore", "ignore", "ignore"]
-                    : ["inherit", "inherit", "inherit"],
-                env: process.env,
-                onExit(subprocess, exitCode, signalCode, error) {
-                    if (error) {
-                        IO.error(error);
-                    }
+            const shellPromise =
+                Bun.$`${BUN_INTERPRETER} ${entryPath} ${this.wrapper.positionalArgs}`.env(
+                    process.env as Record<string, string>
+                );
 
-                    process.exit(exitCode ?? 1);
-                }
-            });
+            let result: Awaited<typeof shellPromise>;
+
+            if (this.wrapper.options.quiet) {
+                result = await shellPromise.quiet();
+            } else {
+                result = await shellPromise;
+            }
+
+            if (result.exitCode !== 0) {
+                process.exit(result.exitCode);
+            }
         } else {
             const { spawn } = await import("child_process");
             const child = spawn(BUN_INTERPRETER, [entryPath, ...this.wrapper.positionalArgs], {
