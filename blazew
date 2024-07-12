@@ -1,319 +1,206 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
-VERSION="1.0.0-alpha.1"
-
-if [ ! -z "$DEBUG" ]; then
-    set -x # Disable debug mode
-fi
+set -e
 
 argv_0=$0
 projectdir=$(dirname $0)
 projectdir=$(readlink -f "$projectdir")
+
 tmp_dir="$projectdir/.blaze"
+
 nvm_dir="$tmp_dir/nvm"
 node_dir="$tmp_dir/nvm/versions/node"
 bun_dir="$tmp_dir/bun"
 nvm_home="$tmp_dir/nvm_home"
+
 bun="bun"
 node="node"
 npm="npm"
 
-mkdir -p "$tmp_dir"
-mkdir -p "$nvm_home"
+has_curl=$(command -v curl)
+has_wget=$(command -v wget)
 
-getprop() {
-   value=$(cat "$projectdir/blaze/wrapper/blaze_wrapper.properties" | grep "$1" | cut -d'=' -f2)
-   echo $value
-}
-
-print() {
-    echo -en "\033[${1}m$2\033[0m"
-    echo -e "   $3"
-}
-
-blaze_srcpath=$(getprop "blaze.srcpath")
-
-if [ -z "$blaze_srcpath" ]; then
-    blaze_srcpath="build_src"
-fi
-
-blaze_srcpath="$projectdir/$blaze_srcpath"
-
-if [ ! -d "$blaze_srcpath" ]; then
-    print "1;31" "error  " "BlazeBuild source path \"$blaze_srcpath\" not found."
+if [ -z "$has_curl" ] && [ -z "$has_wget" ]; then
+    echo "error: No curl or wget found. Please install one of them."
     exit 1
 fi
 
-startup() {
-    echo -e "\033[1;34mBlazeBuild Wrapper version $VERSION\033[0m\n"
+mkdir -p "$tmp_dir"
+# mkdir -p "$nvm_home"
+
+getprop() {
+    value=$(cat "$projectdir/blaze/wrapper/blaze_wrapper.properties" | grep "$1" | cut -d'=' -f2)
+    echo $value
 }
 
-help() {
-    startup
-    echo "Usage: $argv_0 [options] [tasks...]"
-    echo ""
-    echo "Options:"
-    echo "  --setup   Setup BlazeBuild"
-    echo "  --help    Show this help message"
-    echo "  --version Show the version of BlazeBuild"
-    echo ""
-    echo "Tasks:"
-    echo "  Any arguments or task names that should"
-    echo "  be passed to BlazeBuild."
-    echo "  Run \`$argv_0 tasks' to see a list of"
-    echo "  available tasks."
-    exit 0
+print() {
+    printf "\033[${1}m$2\033[0m"
+    printf "   $3\n"
 }
 
-source_bashrc() {
-    if [ -f "$HOME/.bashrc" ]; then
-        source "$HOME/.bashrc"
-    elif [ -f "$HOME/.bash_profile" ]; then
-        source "$HOME/.bash_profile"
+blaze_srcpath=$(getprop "blaze.srcpath")
+blaze_srcpath=$(readlink -f "$blaze_srcpath")
+
+if [ -z "$blaze_srcpath" ]; then
+    print "31" "error" "blaze.srcpath is not set in blaze_wrapper.properties"
+    exit 1
+fi
+
+pushd() {
+    if [ -z "$1" ]; then
+        return 1
+    fi
+
+    if [ -z "$DIRSTACK" ]; then
+        DIRSTACK="$1"
+    else
+        DIRSTACK="$1:$DIRSTACK"
+    fi
+
+    cd "$1"
+}
+
+popd() {
+    if [ -z "$DIRSTACK" ]; then
+        return 1
+    fi
+
+    cd "$(echo "$DIRSTACK" | cut -d: -f1)"
+    DIRSTACK=$(echo "$DIRSTACK" | cut -d: -f2-)
+}
+
+summary() {
+    title=$1
+
+    if [ -z "$title" ]; then
+        title="Final"
+    fi
+
+    printf "\033[1m -- $title Configuration Summary -- \033[0m\n\n"
+    print "32" "info" "Project root directory:  $projectdir"
+    print "32" "info" "BlazeBuild directory:    $blaze_srcpath"
+    print "32" "info" "Temporary directory:     $tmp_dir"
+    print "32" "info" "NVM directory:           $nvm_dir"
+    print "32" "info" "NVM home directory:      $nvm_home"
+    print "32" "info" "Node directory:          $node_dir"
+    print "32" "info" "Node executable:         $node"
+    print "32" "info" "Bun executable:          $bun"
+
+    printf "\n"
+}
+
+# if [ -f "$nvm_dir/nvm.sh" ]; then
+#     . "$nvm_dir/nvm.sh"
+# fi
+
+# mkdir -p $nvm_dir
+
+install_nvm() {
+    if [ ! -f "$nvm_dir/nvm.sh" ] || [ -z "$(command -v nvm)" ]; then
+        print "33" "warn" "Could not find nvm installation"
+        print "32" "info" "Installing nvm"
+
+        if [ ! -z "$has_curl" ]; then
+            (export NVM_DIR="$nvm_dir" && export HOME="$nvm_home" && (curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash)) >"$tmp_dir/nvm_install.log" 2>&1
+        elif [ ! -z "$has_wget" ]; then
+            (export NVM_DIR="$nvm_dir" && export HOME="$nvm_home" && (wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash)) >"$tmp_dir/nvm_install.log" 2>&1
+        else
+            print "1;31" "error" "No curl or wget found."
+            exit 1
+        fi
+
+        . "$nvm_dir/nvm.sh"
+    else
+        print "32" "info" "Found nvm installation"
     fi
 }
 
-export_nvm() {
-    NVM_DIR=$nvm_dir
-
-    if [ ! -d "$nvm_dir" ]; then 
-        mkdir -p "$nvm_dir"
-    fi
-
-    if [ -f "$NVM_DIR/nvm.sh" ]; then 
-        source "$NVM_DIR/nvm.sh"
-    fi
+nvm_install_node() {
+    install_nvm
+    pushd $nvm_dir
+    nvm install "$1"
+    nvm use "$1" >/dev/null 2>&1
+    popd
+    node="$node_dir/v$1/bin/node"
 }
 
-setup_nvm() {
-    has_curl=$(command -v curl)
-    has_wget=$(command -v wget)
-
-    if [ ! -z "$(command -v nvm)" ]; then
-        print 34 "info   " "NVM already installed."
-        export_nvm
-        return
-    fi
-
-    print 34 "info   " "Installing NVM..."
-
-    if [ ! -d "$nvm_dir" ]; then 
-        mkdir -p "$nvm_dir"
-    fi
+bun_run_installer() {
+    rm -rf "$bun_dir"
+    mkdir -p "$bun_dir"
 
     if [ ! -z "$has_curl" ]; then
-        (export NVM_DIR="$nvm_dir" && export HOME="$nvm_home" && (curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash)) > /dev/null 2>&1
-    elif [ ! -z "$has_wget" ]; then
-        (export NVM_DIR="$nvm_dir" && export HOME="$nvm_home" && (wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash)) > /dev/null 2>&1
+        export BUN_INSTALL="$bun_dir" && export PATH="$BUN_INSTALL":"$PATH":"$BUN_INSTALL" && export SHELL=blazew && (curl -fsSL https://bun.sh/install | bash -s "bun-v$1") >"$tmp_dir/bun_install.log" 2>&1
     else
-        print "1;31" "error  " "No curl or wget found."
+        export BUN_INSTALL="$bun_dir" && export PATH="$BUN_INSTALL":"$PATH":"$BUN_INSTALL" && export SHELL=blazew && (wget -qO- https://bun.sh/install | bash -s "bun-v$1") >"$tmp_dir/bun_install.log" 2>&1
+    fi
+
+    bun="$bun_dir/bin/bun"
+}
+
+install_node() {
+    local node_version=$(getprop "node.version")
+
+    if [ -z "$node_version" ]; then
+        print "31" "error" "node.version is not set in blaze_wrapper.properties"
         exit 1
     fi
 
-    source_bashrc
-    export_nvm
-}
-
-node_version=$(getprop "node.version")
-bun_version=$(getprop "bun.version")
-setup_done=0
-
-setup_node() {
-    export_nvm
-
-    setup_node=$1
-    node_on_path=$(command -v node)
-    path=""
-
-    if [ -z "$node_on_path" ]; then
-        setup_node=1
+    if [ -z "$(command -v node)" ]; then
+        print "33" "warn" "Could not find node installation"
+        print "32" "info" "Installing node"
+        nvm_install_node "$node_version"
     else
-        node_version_installed=$(node -v)
+        print "32" "info" "Found node installation"
+        local version=$(node -v | cut -c 2-)
+        print "32" "info" "Existing node version: $version"
 
-        if [[ "$node_version_installed" != "v$node_version"* ]]; then
-            setup_node=1
+        if [ "$version" != "$node_version" ]; then
+            print "33" "warn" "Node version mismatch: required $node_version, found $version"
+            print "32" "info" "Installing node version: $node_version"
+            nvm_install_node "$node_version"
+        else
+            node="$(command -v node)"
         fi
-    fi
-    
-    if [ $setup_node -eq 1 ] && [ -d "$node_dir" ]; then 
-        find_result=$(find "$node_dir" -maxdepth 1 -type d -name "v$node_version*" | tail -n1)
-        
-        if [ ! -z "$find_result" ]; then
-            node="$find_result/bin/node"
-            npm="$find_result/bin/npm"
-            path=$(readlink -f "$find_result/bin")
-            setup_node=2
-        fi
-    fi
-
-    if [ $setup_node -eq 1 ]; then 
-        if [ ! -e "$nvm_dir/current" ]; then
-            setup_nvm
-        fi
-
-        print 34 "info   " "Installing Node.js ($node_version)..."
-        
-        if [ -z $DEBUG ]; then 
-            nvm install "$node_version" > /dev/null 2>&1
-            nvm use "$node_version" > /dev/null 2>&1
-        else 
-            nvm install "$node_version"
-            nvm use "$node_version"
-        fi
-
-        find_result=$(find "$node_dir" -maxdepth 1 -type d -name "v$node_version*" | tail -n1)
-        node="$find_result/bin/node"
-        npm="$find_result/bin/npm"
-        path=$(readlink -f "$find_result/bin")
-        setup_done=1
-
-        print 34 "info   " "Node.js version: $($node -v)"
-        print 34 "info   " "NPM version: $($npm -v)"
-        print 34 "info   " "NVM version: $(nvm -v)"
-    elif [ $setup_node -eq 0 ]; then
-        node=$(command -v node)
-        npm=$(command -v npm)
-    fi
-
-    if [ ! -z "$path" ]; then
-        export PATH="$path":$PATH:"$path"
     fi
 }
 
-setup_bun() {
-    setup_bun=$1
-    bun_on_path=$(command -v bun)
+install_bun() {
+    local bun_version=$(getprop "bun.version")
 
-    if [ -d "$bun_dir" ]; then
-        bun="$bun_dir/bin/bun"
-    elif [ -z "$bun_on_path" ]; then
-        setup_bun=1
+    if [ -z "$bun_version" ]; then
+        print "31" "error" "bun.version is not set in blaze_wrapper.properties"
+        exit 1
+    fi
+
+    export PATH="$bun_dir/bin":"$PATH":"$bun_dir/bin"
+
+    if [ -z "$(command -v bun)" ]; then
+        print "33" "warn" "Could not find bun installation"
+        print "32" "info" "Installing bun"
+        bun_run_installer $bun_version
     else
-        bun_version_installed=$(bun -v)
+        existing_version=$(bun --version)
 
-        if [ "$bun_version_installed" != "$bun_version" ]; then
-            setup_bun=1
+        if [ "$existing_version" != "$bun_version" ]; then
+            print "33" "warn" "Bun version mismatch in existing installation: required $bun_version, found $existing_version"
+            print "32" "info" "Installing bun version: $bun_version"
+            bun_run_installer $bun_version
         else
             bun="$(command -v bun)"
         fi
     fi
-        
-    if [ $setup_bun -eq 1 ]; then
-        print 34 "info   " "Installing Bun ($bun_version)..."
-        args=()
-
-        if [ "$bun_version" != "latest" ]; then
-            args=("-s" "bun-v$bun_version")
-        fi
-
-        mkdir -p "$bun_dir"
-        export BUN_INSTALL="$bun_dir" && export PATH="$BUN_INSTALL":"$PATH":"$BUN_INSTALL" && export SHELL=blazew && curl -fsSL https://bun.sh/install | bash $args > /dev/null 2>&1
-        bun=$(readlink -f "$bun_dir/bin/bun")
-        setup_done=1
-
-        print 34 "info   " "Bun version: $($bun -v)"
-    elif [ -d "$bun_dir" ]; then 
-        bun=$(readlink -f "$bun_dir/bin/bun")
-    else 
-        bun=$(command -v bun)
-    fi
 }
 
-setup_runtime() {
-    do_setup_node=0
-    do_setup_bun=0
-
-    setup_node $do_setup_node
-    setup_bun $do_setup_bun
-}
-
-setup=0
-argsetup=0
-
-for arg in "$@"; do
-    if [ "$arg" == "--setup" ]; then
-        setup=1
-        argsetup=1
-    fi
-done
-
-if [ ! -d "$blaze_srcpath/node_modules" ] || [ ! -d "$projectdir/node_modules/blazebuild" ]; then
-    setup=1
+if [ "$BLAZEW_DEBUG" = "1" ]; then
+    summary "Initial"
 fi
 
-setup_runtime
+# install_node
+install_bun
 
-has_bun=$(command -v bun)
-cmd="$nvm_dir/versions/node/$node_version/bin/npm"
-
-if [ "$node" == "node" ]; then
-    cmd="npm"
+if [ "$BLAZEW_DEBUG" = "1" ]; then
+    printf "\n"
+    summary
 fi
 
-file="$blaze_srcpath/build/out/main/typescript/cli.js"
-if [ ! -z "$has_bun" ] || [ $setup_done -eq 1 ] || [ -x "$bun" ]; then
-    cmd=$bun
-    has_bun=1
-    file="$blaze_srcpath/src/main/typescript/cli.ts"
-fi
-
-blaze_cmd() {
-    node_path=$(dirname "$node")
-    final_path=$(readlink -f "$node_path")
-    wrapper=$(readlink -f "$projectdir/blaze/wrapper/blaze_wrapper.mjs")
-
-    if [ -z "$has_bun" ]; then
-        print "1;31" "error  " "Bun not found. Please install Bun to use BlazeBuild."
-        exit 1
-    else
-        export PATH="$final_path":$PATH:"$final_path" && bash -c "exec -a \"$argv_0\" $cmd $wrapper $file --- $*"
-    fi
-}
-
-if [ ! -e "$projectdir/.blaze" ]; then
-    print 34 "info   " "Creating $projectdir/.blaze directory..."
-    mkdir -p "$projectdir/.blaze"
-
-    if [ $? -ne 0 ]; then
-        print "1;31" "error  " "Failed to create .blaze/ directory!"
-        exit 1
-    fi
-fi
-
-if [ $setup -eq 1 ]; then
-    print 34 "info   " "Project directory: $projectdir"
-    print 34 "info   " "Setting up BlazeBuild in: $blaze_srcpath"
-    rm -rf "$blaze_srcpath/node_modules"
-
-    path=$(readlink -f "$cmd")
-    pushd "$blaze_srcpath" > /dev/null 2>&1 || exit 1
-    print 34 "info   " "Installing dependencies for BlazeBuild..."
-    print 36 "command" "$path install"
-    $path install
-    popd > /dev/null 2>&1  || exit 1
-
-    print 34 "info   " "Finishing up..."
-    mkdir -p "$projectdir/node_modules"
-
-    if [ -L "$projectdir/node_modules/blazebuild" ] || [ -d "$projectdir/node_modules/blazebuild" ]; then
-        rm -rf "$projectdir/node_modules/blazebuild" || exit 1
-    fi
-
-    ln -s "$(readlink -f "$blaze_srcpath")" "$projectdir/node_modules/blazebuild" || exit 1
-
-    if [ -z "$has_bun" ]; then
-        print 34 "info   " "Building BlazeBuild (for node)..."
-        pushd "$blaze_srcpath" > /dev/null 2>&1 || exit 1
-        npx tsc
-        popd > /dev/null 2>&1 || exit 1
-    fi
-
-    print "1;32" "success" "Setup completed."
-fi
-
-if [ $argsetup -eq 1 ]; then
-    exit 0
-fi
-
-# shellcheck disable=SC2068
-blaze_cmd $@
+$bun $projectdir/blaze/wrapper/blaze_wrapper.js $@
