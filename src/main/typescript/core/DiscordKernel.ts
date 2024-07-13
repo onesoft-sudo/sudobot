@@ -294,7 +294,7 @@ class DiscordKernel extends Kernel {
                 throw new Error("Invalid response received");
             }
         } catch (error) {
-            this.logger.error(error);
+            this.logger.error(`${error instanceof Error ? error.message : `${error}`}`);
             return false;
         }
 
