@@ -60,5 +60,6 @@ jobs:
           git config --global commit.gpgsign true
           git add .
           git commit -sm "chore(extensions): build extensions [skip ci]"
+          git config pull.rebase false
           git pull origin main
           git push origin HEAD:main
