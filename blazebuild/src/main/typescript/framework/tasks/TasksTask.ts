@@ -39,7 +39,7 @@ class TasksTask extends AbstractTask {
                 }
 
                 IO.println(
-                    chalk`{cyan ${name}} - {dim ${details.options?.description ?? details.task.details?.description ?? "No description"}}`
+                    `${chalk.cyan(name)} - ${chalk.white.dim(details.options?.description ?? details.task.details?.description ?? "No description")}`
                 );
             }
         }

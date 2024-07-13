@@ -57,23 +57,29 @@ class TaskManager extends Manager {
         arg2?: (new (blaze: Blaze) => AbstractTask<R>) | TaskRegisterOptions<R>,
         arg3?: TaskRegisterOptions<R>
     ) {
-        if (typeof arg1 === "object" && arg1 && !arg2 && !arg3) {
+        if (typeof arg1 === "function" && (!arg2 || typeof arg2 === "object")) {
+            this.registerWithClassAndOptions(arg1, arg2);
+            return;
+        }
+
+        if (typeof arg1 === "object" && typeof arg1 !== "function" && arg1 && !arg2 && !arg3) {
             this.registerWithOptionsOnly(arg1);
             return;
         }
 
-        if (typeof arg1 === "string" && typeof arg2 === "object" && arg2 && !arg3) {
+        if (
+            typeof arg1 === "string" &&
+            typeof arg2 === "object" &&
+            typeof arg2 !== "function" &&
+            arg2 &&
+            !arg3
+        ) {
             this.registerWithNameAndOptions(arg1, arg2);
             return;
         }
 
         if (typeof arg1 === "string" && typeof arg2 === "function") {
             this.registerWithNameAndClass(arg1, arg2, arg3);
-            return;
-        }
-
-        if (typeof arg1 === "function" && (!arg2 || typeof arg2 === "object")) {
-            this.registerWithClassAndOptions(arg1, arg2);
             return;
         }
 
@@ -395,6 +401,14 @@ class TaskManager extends Manager {
         }
 
         IO.progress?.setStatus(`Task :${name}`);
+
+        if (options?.parseArgsOptions || task.definedParseArgsOptions) {
+            task.parseArgs({
+                ...(options?.parseArgsOptions ?? task.definedParseArgsOptions),
+                args: this.blaze.cliArgs
+            });
+        }
+
         await options?.doFirst?.call(task);
         IO.println(`> Task ${chalk.white.dim(`:${name}`)}`);
         await task.execute();
@@ -481,6 +495,10 @@ export type TaskRegisterOptions<R, T extends AbstractTask<R> = AbstractTask<R>> 
     group?: string;
     outputs?: Iterable<FileResolvable>;
     inputs?: Iterable<FileResolvable>;
+    parseArgsOptions?: Omit<
+        NonNullable<Parameters<typeof AbstractTask.prototype.parseArgs>[0]>,
+        "args"
+    >;
 };
 
 type TaskRegisterOptionsWithoutName<R> = Omit<TaskRegisterOptions<R>, "name">;

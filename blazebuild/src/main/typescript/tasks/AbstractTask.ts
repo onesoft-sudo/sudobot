@@ -1,3 +1,4 @@
+import { parseArgs, type ParseArgsConfig } from "util";
 import type Blaze from "../core/Blaze";
 import File from "../io/File";
 import type { FileResolvable } from "../types/file";
@@ -13,6 +14,9 @@ abstract class AbstractTask<R = void> {
     private _output = new Set<File>();
     private _hasComputedInput = false;
     private _hasComputedOutput = false;
+    private _positionalArgs: string[] = [];
+    private _optionValues: Record<string, string | boolean> = {};
+    protected readonly parseArgsOptions?: ParseArgsConfig;
 
     public constructor(protected readonly blaze: Blaze) {}
 
@@ -20,6 +24,10 @@ abstract class AbstractTask<R = void> {
     protected run?(): Awaitable<R>;
     protected generateOutput?(result: R): Awaitable<Iterable<FileResolvable>>;
     protected dependencies?(): Awaitable<Iterable<TaskResolvable<any>>>;
+
+    public get definedParseArgsOptions() {
+        return this.parseArgsOptions;
+    }
 
     public get io() {
         return {
@@ -141,6 +149,25 @@ abstract class AbstractTask<R = void> {
 
     public get name() {
         return this.determineName();
+    }
+
+    public parseArgs<T extends Parameters<typeof parseArgs>[0]>(config: T) {
+        const result = parseArgs(config);
+        this._positionalArgs = result.positionals;
+        this._optionValues = result.values as typeof this._optionValues;
+        return result;
+    }
+
+    public get positionalArgs() {
+        return this._positionalArgs;
+    }
+
+    public get optionValues() {
+        return this._optionValues;
+    }
+
+    public getOptionValues() {
+        return this._optionValues;
     }
 }
 

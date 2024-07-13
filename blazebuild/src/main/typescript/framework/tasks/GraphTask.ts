@@ -8,18 +8,21 @@ import { TaskAction } from "../../tasks/TaskAction";
     group: "Help"
 })
 class GraphTask extends AbstractTask {
+    protected override readonly parseArgsOptions = {
+        allowPositionals: true
+    };
+
     @TaskAction
     public override async run() {
-        this.blaze.taskNames.shift();
-        const taskName = this.blaze.taskNames.shift();
-
-        if (!taskName) {
-            IO.fatal("No task specified. Please specify a task to graph.");
+        if (this.positionalArgs.length === 0) {
+            IO.fatal("No task specified. Please specify at least one task to graph.");
         }
 
-        const graph = await this.blaze.taskManager.getTaskGraph(taskName);
-        IO.newline();
-        IO.println(await graph.toString());
+        for (const taskName of this.positionalArgs) {
+            const graph = await this.blaze.taskManager.getTaskGraph(taskName);
+            IO.newline();
+            IO.println(await graph.toString());
+        }
     }
 }
 

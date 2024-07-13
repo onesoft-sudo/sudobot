@@ -35,7 +35,7 @@ class BlazeInvoker extends UsesWrapper {
         IO.debug(`Invoking BlazeBuild: ${entryPath} ${process.argv.slice(2).join(" ")}`);
         const PATH = `${process.env.PATH}:${file("node_modules/.bin")}`;
         const child = spawn(BUN_INTERPRETER, [entryPath, ...process.argv.slice(2)], {
-            stdio: this.wrapper.options.quiet ? "ignore" : "inherit",
+            stdio: "inherit",
             env: {
                 ...process.env,
                 PATH

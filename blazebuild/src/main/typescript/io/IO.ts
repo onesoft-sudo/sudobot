@@ -7,9 +7,14 @@ const now = performance.now();
 
 class IO {
     private static _progress?: Progress;
+    private static _quiet = false;
+
+    public static setQuiet(quiet: boolean): void {
+        this._quiet = quiet;
+    }
 
     public static createProgress(total: number): void {
-        if (!process.stdout.isTTY) {
+        if (!process.stdout.isTTY || this._quiet) {
             return;
         }
 
@@ -25,6 +30,10 @@ class IO {
         message: unknown,
         consoleMethod: "log" | "error" | "warn" | "info" | "debug" = "log"
     ): void {
+        if (this._quiet) {
+            return;
+        }
+
         if (this._progress) {
             this._progress.print(message, consoleMethod);
             return;
@@ -37,6 +46,10 @@ class IO {
     }
 
     public static newline() {
+        if (this._quiet) {
+            return;
+        }
+
         if (this._progress) {
             console.log(`\r${" ".repeat(process.stdout.columns - 1)}`);
             return;
@@ -46,6 +59,10 @@ class IO {
     }
 
     public static println(message: unknown): void {
+        if (this._quiet) {
+            return;
+        }
+
         if (this._progress) {
             this._progress.print(message);
             return;
@@ -55,24 +72,36 @@ class IO {
     }
 
     public static debug(message: string): void {
+        if (this._quiet) {
+            return;
+        }
+
         if (process.env.BLAZE_DEBUG !== "1") {
             return;
         }
 
         if (this._progress) {
-            this._progress.print(chalk.white.dim(message), "debug");
+            this._progress.print(chalk.white.dim("debug: ") + chalk.white.dim(message), "debug");
             return;
         }
 
-        console.debug(chalk.white.dim(message));
+        console.debug(chalk.white.dim("debug: ") + chalk.white.dim(message));
     }
 
     public static destroyProgress(): void {
+        if (this._quiet) {
+            return;
+        }
+
         this._progress?.destroy();
         this._progress = undefined;
     }
 
     public static error(error: unknown): void {
+        if (this._quiet) {
+            return;
+        }
+
         this.destroyProgress();
 
         if (error instanceof Error) {
@@ -85,8 +114,11 @@ class IO {
     }
 
     public static fatal(error: unknown): never {
-        IO.error(error);
-        IO.buildFailed();
+        if (!this._quiet) {
+            IO.error(error);
+            IO.buildFailed();
+        }
+
         IO.exit(1);
     }
 
@@ -122,6 +154,10 @@ class IO {
     }
 
     public static buildSuccessful(): void {
+        if (this._quiet) {
+            return;
+        }
+
         this.destroyProgress();
 
         console.log("\r" + " ".repeat(process.stdout.columns - 1));
@@ -141,6 +177,10 @@ class IO {
     }
 
     public static buildFailed(): void {
+        if (this._quiet) {
+            return;
+        }
+
         this.destroyProgress();
         console.log("\r" + " ".repeat(process.stdout.columns - 1));
         console.log(`${chalk.red.bold("BUILD FAILED")} in ${this.timeDiffFromStartup()}`);

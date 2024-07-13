@@ -3,7 +3,6 @@ import { spawn } from "child_process";
 import { existsSync } from "fs";
 import { mkdir, symlink } from "fs/promises";
 import path from "path";
-import { parseArgs } from "util";
 import BlazeInvoker from "./BlazeInvoker";
 import IO from "./IO";
 import Properties from "./Properties";
@@ -11,54 +10,15 @@ import SDKManager from "./SDKManager";
 import { BUN_INTERPRETER, file, NODE_DIR, TMPDIR } from "./utils";
 
 class BlazeWrapper {
-    public readonly positionalArgs: ReadonlyArray<string>;
-    public readonly options: ReturnType<
-        typeof parseArgs<{ options: ReturnType<BlazeWrapper["optionDefinitions"]> }>
-    >["values"];
-    public readonly argv0: string;
+    public readonly argv0: string = "blazew";
     private _properties = new Properties();
     public readonly sdkManager = new SDKManager(this);
-
-    public constructor() {
-        try {
-            const { positionals, values } = parseArgs({
-                args: process.argv,
-                allowPositionals: true,
-                strict: true,
-                options: this.optionDefinitions()
-            });
-
-            if (positionals[0] === process.argv0) {
-                positionals.shift();
-                positionals.shift();
-            }
-
-            this.positionalArgs = positionals;
-            this.options = values;
-            this.argv0 = values.progname ?? "blazew";
-        } catch (error) {
-            IO.fatal(error instanceof Error ? error.message : `${error}`);
-        }
-    }
 
     public get properties() {
         return this._properties;
     }
 
     public async boot() {
-        if (this.options.debug && this.options.quiet) {
-            IO.fatal("Cannot have both debug and quiet flags enabled");
-        }
-
-        if (this.options.quiet) {
-            IO.setNoOutput(true);
-        }
-
-        if (this.options.debug) {
-            process.env.BLAZE_DEBUG = "1";
-            process.env.BLAZEW_DEBUG = "1";
-        }
-
         this._properties = await Properties.fromFile(
             file("blaze/wrapper/blaze_wrapper.properties")
         );
@@ -80,53 +40,24 @@ class BlazeWrapper {
         process.env.PATH = `${dir}${process.platform === "win32" ? ";" : ":"}${process.env.PATH}`;
     }
 
-    private optionDefinitions() {
-        return {
-            help: {
-                short: "h",
-                type: "boolean" as const
-            },
-            version: {
-                short: "v",
-                type: "boolean" as const
-            },
-            progname: {
-                type: "string" as const
-            },
-            quiet: {
-                short: "q",
-                type: "boolean" as const
-            },
-            debug: {
-                type: "boolean" as const
-            }
-        } satisfies NonNullable<NonNullable<Parameters<typeof parseArgs>[0]>["options"]>;
-    }
-
     private getVersion() {
         return this._properties.get("blaze.version", "1.0.0-alpha.1");
     }
 
     public async run() {
-        if (this.options.help) {
-            this.showHelp();
-        } else if (this.options.version) {
-            this.showVersion();
-        } else {
-            await this.sdkManager.install();
-            await this.installDeps();
-            await this.createLink();
+        await this.sdkManager.install();
+        await this.installDeps();
+        await this.createLink();
 
-            if (existsSync(file("node_modules/.bin"))) {
-                this.addDirToPath(file("node_modules/.bin"));
-            }
-
-            if (existsSync(path.join(NODE_DIR, "bin"))) {
-                this.addDirToPath(path.resolve(NODE_DIR, "bin"));
-            }
-
-            await this.invokeBlaze();
+        if (existsSync(file("node_modules/.bin"))) {
+            this.addDirToPath(file("node_modules/.bin"));
         }
+
+        if (existsSync(path.join(NODE_DIR, "bin"))) {
+            this.addDirToPath(path.resolve(NODE_DIR, "bin"));
+        }
+
+        await this.invokeBlaze();
     }
 
     private async installDeps() {
@@ -140,7 +71,7 @@ class BlazeWrapper {
         IO.info("Installing BlazeBuild dependencies...");
 
         const child = spawn(BUN_INTERPRETER, ["install"], {
-            stdio: this.options.quiet ? "ignore" : "inherit",
+            stdio: "inherit",
             env: process.env,
             cwd: blazebuildPath,
             detached: false
