@@ -1,3 +1,17 @@
+# [9.18.0](https://github.com/onesoft-sudo/sudobot/compare/v9.17.5...v9.18.0) (2024-07-13)
+
+
+### Bug Fixes
+
+* **kernel:** better error messages during 2FA failure ([dc3b7c0](https://github.com/onesoft-sudo/sudobot/commit/dc3b7c050fbab80dc0fee445a82ce70fac944d5c))
+
+
+### Features
+
+* **blazebuild:** better CLI argument parsing ([4b2c988](https://github.com/onesoft-sudo/sudobot/commit/4b2c988cd9c6c0648a827aa2144ddcf9df480127))
+
+
+
 ## [9.17.5](https://github.com/onesoft-sudo/sudobot/compare/v9.17.4...v9.17.5) (2024-07-13)
 
 
@@ -31,15 +45,6 @@
 ### Bug Fixes
 
 * **blazebuild:** sdk management ([15a702a](https://github.com/onesoft-sudo/sudobot/commit/15a702ad144ec4845f03f2c14a0cd3952785ccf9))
-
-
-
-## [9.17.1](https://github.com/onesoft-sudo/sudobot/compare/v9.17.0...v9.17.1) (2024-07-12)
-
-
-### Bug Fixes
-
-* **blazebuild:** invalid path splitting on windows ([a241862](https://github.com/onesoft-sudo/sudobot/commit/a2418625a7b00beb296d027988bbf768304635f5))
 
 
 
