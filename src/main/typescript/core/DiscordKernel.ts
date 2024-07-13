@@ -30,8 +30,6 @@ import { existsSync } from "fs";
 import { readFile } from "fs/promises";
 import path from "path";
 import { createInterface } from "readline/promises";
-import ConfigurationManager from "../services/ConfigurationManager";
-import LogStreamingService from "../services/LogStreamingService";
 import { systemPrefix } from "../utils/utils";
 import Client from "./Client";
 
@@ -146,11 +144,11 @@ class DiscordKernel extends Kernel {
         const logger = new Logger("system", true);
 
         logger.on("log", message => {
-            const logServerEnabled = this.getApplication()?.getService(ConfigurationManager, false)
+            const logServerEnabled = this.getApplication()?.service("configManager", false)
                 ?.systemConfig?.log_server?.enabled;
 
             if (logServerEnabled) {
-                this.getApplication().getService(LogStreamingService, false)?.log(message);
+                this.getApplication().service("logStreamingService", false)?.log(message);
             }
         });
 

@@ -17,7 +17,6 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { env } from "@main/env/env";
 import type { AxiosRequestConfig } from "axios";
 import axios from "axios";
 import type {
@@ -82,8 +81,8 @@ export function wait(time: number) {
 
 export function systemPrefix(pathLike: string, createDirIfNotExists = false) {
     const directoryOrFile = path.resolve(
-        env.SUDO_PREFIX ?? __dirname,
-        env.SUDO_PREFIX ? "" : "../../../..",
+        process.env.SUDO_PREFIX ?? __dirname,
+        process.env.SUDO_PREFIX ? "" : "../../../..",
         __filename.endsWith(".ts") ? "" : "..",
         pathLike
     );
