@@ -12,15 +12,14 @@ class RunTask extends AbstractTask {
 
         setTimeout(async () => {
             let code: number;
-            const indexOfArgForward = process.argv.indexOf("--");
-            const argv = indexOfArgForward >= 0 ? process.argv.slice(indexOfArgForward + 1) : [];
+            const argv = this.blaze.cliArgs;
 
             if (process.argv.includes("--node")) {
                 await this.blaze.taskManager.executeTask("build");
 
                 IO.newline();
                 IO.println(
-                    `exec> node ${process.cwd()}/build/out/main/typescript/index.js ${argv.join(" ")}`
+                    `[exec] node ${process.cwd()}/build/out/main/typescript/index.js ${argv.join(" ")}`
                 );
 
                 code =
@@ -34,7 +33,7 @@ class RunTask extends AbstractTask {
             } else {
                 IO.newline();
                 IO.println(
-                    `exec> bun ${process.cwd()}/src/main/typescript/bun.ts ${argv.join(" ")}`
+                    `[exec] bun ${process.cwd()}/src/main/typescript/bun.ts ${argv.join(" ")}`
                 );
                 code =
                     spawnSync("bun", [`${process.cwd()}/src/main/typescript/bun.ts`, ...argv], {
@@ -46,7 +45,7 @@ class RunTask extends AbstractTask {
                 IO.error("Failed to run the project");
                 IO.exit(1);
             }
-        }, 1000);
+        }, 600);
     }
 }
 
