@@ -120,7 +120,7 @@
     "@typescript-eslint/eslint-plugin": "^7.16.1",
     "@typescript-eslint/parser": "^7.16.1",
     "@vitest/coverage-v8": "^1.6.0",
-    "drizzle-kit": "^0.22.8",
+    "drizzle-kit": "^0.23.0",
     "eslint": "^8.57.0",
     "husky": "latest",
     "prettier": "^3.3.3",
