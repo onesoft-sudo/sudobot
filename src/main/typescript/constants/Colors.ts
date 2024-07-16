@@ -21,7 +21,7 @@ import { Colors as DiscordColors } from "discord.js";
 
 export const Colors = {
     ...DiscordColors,
-    Primary: 0x007bff,
+    Primary: 0x0060fa,
     Danger: DiscordColors.Red,
     Success: DiscordColors.Green
 } as const;
