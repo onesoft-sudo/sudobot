@@ -41,3 +41,6 @@ fly.toml
 
 # AI model data
 *.traineddata
+
+# Data
+/data
