@@ -1,3 +1,12 @@
+## [9.18.1](https://github.com/onesoft-sudo/sudobot/compare/v9.18.0...v9.18.1) (2024-07-16)
+
+
+### Bug Fixes
+
+* update theme color for v9 ([7002577](https://github.com/onesoft-sudo/sudobot/commit/7002577af8950889ed6fdc13ed80817c488f6494))
+
+
+
 # [9.18.0](https://github.com/onesoft-sudo/sudobot/compare/v9.17.5...v9.18.0) (2024-07-13)
 
 
@@ -36,15 +45,6 @@
 ### Bug Fixes
 
 * apiServer loading error (race condition) ([a5cc78f](https://github.com/onesoft-sudo/sudobot/commit/a5cc78ff69a96ecee8446557eb748f38c6a59f96))
-
-
-
-## [9.17.2](https://github.com/onesoft-sudo/sudobot/compare/v9.17.1...v9.17.2) (2024-07-12)
-
-
-### Bug Fixes
-
-* **blazebuild:** sdk management ([15a702a](https://github.com/onesoft-sudo/sudobot/commit/15a702ad144ec4845f03f2c14a0cd3952785ccf9))
 
 
 
