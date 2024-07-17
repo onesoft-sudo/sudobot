@@ -1,3 +1,12 @@
+## [9.18.2](https://github.com/onesoft-sudo/sudobot/compare/v9.18.1...v9.18.2) (2024-07-17)
+
+
+### Bug Fixes
+
+* **api:** invalid endpoint /challenge/auth/discord ([246461d](https://github.com/onesoft-sudo/sudobot/commit/246461d25eac5ff42de96d5ceafe3ed151f89c9a))
+
+
+
 ## [9.18.1](https://github.com/onesoft-sudo/sudobot/compare/v9.18.0...v9.18.1) (2024-07-16)
 
 
@@ -36,15 +45,6 @@
 ### Bug Fixes
 
 * **blazebuild:** command line argument parsing ([4bbb4a1](https://github.com/onesoft-sudo/sudobot/commit/4bbb4a1875486dc5e95c9ea31fd1023fea2b3768))
-
-
-
-## [9.17.3](https://github.com/onesoft-sudo/sudobot/compare/v9.17.2...v9.17.3) (2024-07-12)
-
-
-### Bug Fixes
-
-* apiServer loading error (race condition) ([a5cc78f](https://github.com/onesoft-sudo/sudobot/commit/a5cc78ff69a96ecee8446557eb748f38c6a59f96))
 
 
 
