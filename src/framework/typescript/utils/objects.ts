@@ -158,3 +158,9 @@ export const toDotted = (object: Record<string, unknown>, arrayAccess = false) =
     recurse(object);
     return result;
 };
+
+export const pickCastArray = <T = never>(target: object, key: string): T[] => {
+    return key in target
+        ? [target[key as keyof typeof target]]
+        : target[`${key}s` as keyof typeof target];
+};
