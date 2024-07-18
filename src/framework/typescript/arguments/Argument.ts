@@ -26,6 +26,7 @@ import { ErrorType, InvalidArgumentError } from "./InvalidArgumentError";
 export type Casted<T> = {
     value?: Argument<T>;
     error?: InvalidArgumentError;
+    abort?: boolean;
 };
 
 export type ArgumentConstructor<T = unknown> = (new (
@@ -43,6 +44,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
     protected readonly rules?: NonNullable<ArgumentTypeOptions["rules"]>[number];
     protected readonly interaction?: ChatInputCommandInteraction;
     protected isRequired = false;
+    public readonly abortAfterParsing: boolean = false;
 
     public constructor(
         protected readonly context: Context,
@@ -104,7 +106,8 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
             ).setRequired(isRequired);
 
             return {
-                value: await casted.toTransformed()
+                value: await casted.toTransformed(),
+                abort: casted.abortAfterParsing
             };
         } catch (error) {
             if (error instanceof InvalidArgumentError) {
@@ -204,7 +207,8 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
             }
 
             return {
-                value: await casted.toTransformed()
+                value: await casted.toTransformed(),
+                abort: casted.abortAfterParsing
             };
         } catch (error) {
             if (error instanceof InvalidArgumentError) {

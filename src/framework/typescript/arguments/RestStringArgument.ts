@@ -22,6 +22,8 @@ import Argument from "./Argument";
 import { ErrorType } from "./InvalidArgumentError";
 
 class RestStringArgument extends Argument<string> {
+    public override readonly abortAfterParsing = true;
+
     public override toString(): string {
         return this.getValue();
     }

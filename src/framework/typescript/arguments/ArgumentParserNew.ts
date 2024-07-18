@@ -16,289 +16,447 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
-import "reflect-metadata"; // FIXME: Remove this line when the issue is fixed
+import "reflect-metadata";
 
-import Application from "@framework/app/Application";
 import type { ArgumentConstructor } from "@framework/arguments/Argument";
-import ParserConfigError from "@framework/arguments/ParserConfigError";
-import StringArgument from "@framework/arguments/StringArgument";
-import { pickCastArray } from "@framework/utils/objects";
-import Client from "@main/core/Client";
-import type { ChatInputCommandInteraction, Message } from "discord.js";
-import type { ParseArgsConfig } from "util";
-import { parseArgs } from "util";
-import type { ArgumentPayload } from "../commands/Command";
-import type InteractionContext from "../commands/InteractionContext";
-import LegacyContext from "../commands/LegacyContext";
-import { HasClient } from "../types/HasClient";
+import { ErrorType } from "@framework/arguments/InvalidArgumentError";
+import type InteractionContext from "@framework/commands/InteractionContext";
+import type LegacyContext from "@framework/commands/LegacyContext";
+import assert from "assert";
+import type { ChatInputCommandInteraction } from "discord.js";
 
-type ArgumentParseResult =
-    | {
-          error: null | undefined;
-          payload: ArgumentPayload;
-          abort: undefined;
-      }
-    | {
-          error: string;
-          payload: undefined;
-          abort: undefined;
-      }
-    | {
-          error: undefined;
-          payload: undefined;
-          abort: boolean;
-      };
+type ArgumentParserContext = LegacyContext | InteractionContext<ChatInputCommandInteraction>;
 
-type ArgumentParseOptions<
-    C extends LegacyContext | InteractionContext<ChatInputCommandInteraction> =
-        | LegacyContext
-        | InteractionContext<ChatInputCommandInteraction>
-> = {
-    context: C;
-    options?: CommandArgumentOptions;
-    config: ArgumentParserConfig;
+type ArgumentParserConfig = {
+    context: ArgumentParserContext;
+    schema: ArgumentParserSchema;
 };
 
-type ArgumentDefinition<T> = {
-    optional?: boolean;
-    useCanonicalName?: boolean;
-} & (
-    | {
-          type: ArgumentConstructor<T>;
-      }
-    | {
-          types: ArgumentConstructor<T>[];
-      }
-) &
-    (
-        | {
-              name: string;
-          }
-        | {
-              names: string[];
-          }
-    );
+type ArgumentParserSchema = {
+    overloads: ArgumentParserOverload[];
+    options?: OptionSchema[];
+};
 
-type ArgumentDefinitionOverload = {
+type OptionSchema = {
+    id: string;
+    longNames?: string[];
+    shortNames?: string[];
+    required?: boolean;
+    errors?: {
+        [R in ErrorType.Required | ErrorType.InvalidOptionValue]: string;
+    };
+    requiresValue?: boolean;
+    canonicalName?: string;
+    canonicalNameType?: "long" | "short";
+};
+
+type ArgumentParserOverload = {
     name?: string;
-} & (
-    | {
-          definition: ArgumentDefinition<unknown>;
-      }
-    | {
-          definitions: ArgumentDefinition<unknown>[];
-      }
-);
+    definitions: ArgumentParserDefinition[];
+};
 
-type ArgumentParserConfig =
-    | {
-          overloads: ArgumentDefinitionOverload[];
-      }
-    | ArgumentDefinition<unknown>[];
+type ArgumentParserDefinition = {
+    names: string[];
+    types: ArgumentConstructor<unknown>[];
+    optional?: boolean;
+    errorMessages?: {
+        [x in ErrorType]?: string;
+    }[];
+    rules?: ArgumentRules[];
+    useCanonical?: boolean;
+    interactionName?: string;
+};
 
-type CommandArgumentOptions = NonNullable<ParseArgsConfig["options"]>;
+type CommonResult<T> = {
+    error?: string;
+    value?: T;
+    errorType?: string;
+};
 
-class ArgumentParser extends HasClient {
-    public async parse({ context, options, ...args }: ArgumentParseOptions) {
-        if (context.isLegacy()) {
-            return this.parseLegacy({ context, options, ...args });
-        } else {
-            return this.parseInteraction({ context, options, ...args });
+type CommonArgs<T extends object> = T & {
+    context: ArgumentParserContext;
+    schema: ArgumentParserSchema;
+};
+
+type ParserGlobalState = {
+    argIndex: number;
+    definitionIndex: number;
+    parsedArgs: Record<string, unknown>;
+    parsedOptions: Record<string, unknown>;
+};
+
+class ArgumentParser {
+    public async parse({ context, schema }: ArgumentParserConfig): Promise<
+        CommonResult<NonNullable<Awaited<ReturnType<typeof this.parseOverload>>>["value"]> & {
+            errors?: Record<string, string>;
         }
-    }
+    > {
+        let result: Awaited<ReturnType<typeof this.parseOverload>> | undefined;
+        const errors: Record<string, string> = {};
+        const parsedOptions: Record<string, unknown> = {};
+        let index = 0;
 
-    public async parseLegacy({ context, config }: ArgumentParseOptions<LegacyContext>) {
-        const { commandContent } = context;
+        assert(schema.overloads.length > 0, "No overloads provided");
 
-        if (!commandContent) {
+        for (const overload of schema.overloads) {
+            result = await this.parseOverload({ context, overload, schema, parsedOptions });
+
+            if (!result.error) {
+                break;
+            }
+
+            errors[overload.name ?? index++] = result.error;
+        }
+
+        if (!result) {
             return {
-                error: "No command content provided.",
-                payload: undefined,
-                abort: false
+                error: "The arguments did not satisfy any of the available overloads",
+                errors
             };
         }
 
-        const overloads: ArgumentDefinitionOverload[] =
-            "overloads" in config ? config.overloads : [{ definitions: config }];
-
-        for (const overload of overloads) {
-            const result = await this.parseOverload(context, overload);
-            console.log("Overload", result);
+        if (result.error) {
+            return {
+                error: result.error,
+                errorType: result.errorType,
+                errors
+            };
         }
-    }
 
-    private async parseOverload(
-        context: LegacyContext | InteractionContext<ChatInputCommandInteraction>,
-        overload: ArgumentDefinitionOverload
-    ) {
-        const definitions = pickCastArray<ArgumentDefinition<unknown>>(overload, "definition");
-        let definitionIndex = 0;
-        const parsedArgs: unknown[] = [];
-
-        for (const definition of definitions) {
-            const types = pickCastArray<ArgumentConstructor<unknown>>(definition, "type");
-            const names = pickCastArray<string>(definition, "name");
-            const useCanonicalName = !definition.useCanonicalName && names.length === 1;
-            const interactionName = names[0];
-
-            if (types.length === 0 || names.length === 0) {
-                throw new ParserConfigError(
-                    `Invalid definition at index ${definitionIndex}: No types or names were provided.`
-                );
+        for (const optionSchema of schema.options ?? []) {
+            if (!optionSchema.required) {
+                continue;
             }
 
-            if (!definition.optional) {
-                if (context.isLegacy() && !context.args[definitionIndex]) {
-                    return {
-                        error: `Missing required argument at index ${definitionIndex}: ${names[0]}`,
-                        payload: undefined,
-                        abort: false
-                    };
-                }
-
-                if (!context.isLegacy() && !context.commandMessage.options.get(interactionName)) {
-                    return {
-                        error: `Missing required argument at index ${definitionIndex} (via interaction): ${interactionName}`,
-                        payload: undefined,
-                        abort: false
-                    };
-                }
+            if (!(optionSchema.id in parsedOptions)) {
+                const optName =
+                    optionSchema.canonicalName ??
+                    optionSchema.longNames?.at(0) ??
+                    optionSchema.shortNames?.at(0) ??
+                    optionSchema.id;
+                const optType =
+                    optionSchema.canonicalNameType ??
+                    (optionSchema.longNames?.at(0) || !optionSchema.shortNames?.at(0)
+                        ? "long"
+                        : "short");
+                return {
+                    error:
+                        optionSchema.errors?.[ErrorType.Required] ??
+                        `Option \`${optType === "long" ? "--" : "-"}${optName}\` is required`
+                };
             }
-
-            let typeIndex = 0;
-
-            for (const type of types) {
-                const name = useCanonicalName ? names[0] : names[typeIndex];
-
-                if (!name) {
-                    throw new ParserConfigError(
-                        `Invalid definition at index ${definitionIndex}: No name was provided for type ${typeIndex}.`
-                    );
-                }
-
-                try {
-                    const { value, error } = context.isLegacy()
-                        ? await type.performCast(
-                              context,
-                              context.commandContent,
-                              context.argv,
-                              context.args[definitionIndex],
-                              definitionIndex,
-                              name
-                          )
-                        : await type.performCastFromInteraction(
-                              context,
-                              context.commandMessage,
-                              name
-                          );
-
-                    if (error) {
-                        return {
-                            error: error.message,
-                            payload: undefined,
-                            abort: false
-                        };
-                    }
-
-                    parsedArgs.push(value?.getValue());
-                } catch (error) {
-                    return {
-                        error: error instanceof Error ? error.message : `${error}`,
-                        payload: undefined,
-                        abort: false
-                    };
-                }
-
-                typeIndex++;
-            }
-
-            definitionIndex++;
         }
 
         return {
-            error: undefined,
-            payload: {
-                args: parsedArgs
-            },
-            abort: false
+            value: result?.value,
+            errors
         };
     }
 
-    public async parseInteraction({
-        context
-    }: ArgumentParseOptions<InteractionContext<ChatInputCommandInteraction>>) {}
-
-    private parseArgumentVector({
+    public async parseOverload({
         context,
-        options = {}
-    }: Pick<ArgumentParseOptions<LegacyContext>, "context" | "options">):
-        | {
-              positionals: string[];
-              values: {
-                  [key: string]: unknown;
-              };
-              error?: undefined;
-          }
-        | {
-              error: TypeError;
-              positionals: undefined;
-              values: undefined;
-          } {
-        const { args } = context;
+        overload,
+        schema,
+        parsedOptions
+    }: CommonArgs<{
+        overload: ArgumentParserOverload;
+        parsedOptions: Record<string, unknown>;
+    }>): Promise<CommonResult<Pick<ParserGlobalState, "parsedArgs" | "parsedOptions">>> {
+        console.log("Parsing overload", overload.name ?? "(unnamed)");
+        console.log("---------------------");
+
+        assert(overload.definitions.length > 0, "No definitions provided");
+
+        const state: ParserGlobalState = {
+            argIndex: 0,
+            definitionIndex: 0,
+            parsedArgs: {},
+            parsedOptions
+        };
+
+        for (
+            let definitionIndex = 0;
+            definitionIndex < overload.definitions.length;
+            definitionIndex++
+        ) {
+            const result = await this.parseArgumentDefinition({
+                context,
+                definition: overload.definitions[definitionIndex],
+                schema,
+                state
+            });
+
+            if (result.error) {
+                return {
+                    error: result.error,
+                    errorType: "overload_exhausted"
+                };
+            }
+
+            assert(result.value, "No value provided");
+            state.parsedArgs[result.value.name] = result.value.value;
+
+            if (result.abortParsingDefinitions) {
+                break;
+            }
+
+            state.argIndex++;
+        }
+
+        return {
+            value: { parsedArgs: state.parsedArgs, parsedOptions: state.parsedOptions }
+        };
+    }
+
+    public async parseArgumentDefinition({
+        context,
+        definition,
+        schema,
+        state
+    }: CommonArgs<{ definition: ArgumentParserDefinition; state: ParserGlobalState }>): Promise<
+        CommonResult<{ name: string; value: unknown }> & {
+            abortParsingDefinitions?: boolean;
+        }
+    > {
+        let result: CommonResult<{ name: string; value: unknown }> | undefined;
+
+        console.log("Parsing definition", definition.names);
+
+        if (!schema.options) {
+            assert(definition.types.length > 0, "No types provided");
+            assert(definition.names.length > 0, "No names provided");
+        } else if (context.isLegacy() && context.args[state.argIndex].startsWith("-")) {
+            while (context.args[state.argIndex]?.startsWith("-")) {
+                const { error, silent } = await this.parseOption({
+                    context,
+                    definition,
+                    schema,
+                    state
+                });
+
+                if (error) {
+                    if (silent) {
+                        continue;
+                    }
+
+                    return { error };
+                }
+            }
+        }
+
+        if (!definition.optional) {
+            const errorMessageRecord = definition.errorMessages?.[0];
+            const name = definition.names[definition.useCanonical ? 0 : state.definitionIndex];
+
+            if (context.isLegacy() && context.args[state.argIndex] === undefined) {
+                return {
+                    error:
+                        errorMessageRecord?.[ErrorType.Required] ??
+                        `Argument at index #${state.argIndex} (${name}) is required but was not provided`
+                };
+            }
+
+            const interactionName = definition.interactionName ?? name;
+
+            if (!context.isLegacy() && !context.options.get(interactionName)) {
+                return {
+                    error:
+                        errorMessageRecord?.[ErrorType.Required] ??
+                        `Argument at index #${state.argIndex} (${interactionName}) is required but was not provided (via interaction)`
+                };
+            }
+        }
+
+        for (let typeIndex = 0; typeIndex < definition.types.length; typeIndex++) {
+            result = await this.parseType({
+                context,
+                type: definition.types[typeIndex],
+                typeIndex,
+                schema,
+                definition,
+                state
+            });
+
+            if (!result.error) {
+                return result;
+            }
+        }
+
+        return {
+            error: result?.error ?? "The arguments did not satisfy any of the available types",
+            value: result?.value
+        };
+    }
+
+    public async parseOption({
+        context,
+        schema,
+        state
+    }: CommonArgs<{ definition: ArgumentParserDefinition; state: ParserGlobalState }> & {
+        context: LegacyContext;
+    }): Promise<CommonResult<void> & { silent?: boolean }> {
+        if (!schema.options) {
+            return {
+                error: "Options are not allowed"
+            };
+        }
+
+        const isLong = context.args[state.argIndex].startsWith("--");
+        const optArg = context.args[state.argIndex].slice(isLong ? 2 : 1);
+
+        if (isLong) {
+            const [name, immediateValue] = optArg.split(/=(.+)/);
+            const optionSchema = schema.options.find(option => option.longNames?.includes(name));
+
+            if (!optionSchema) {
+                return {
+                    error: `Unknown option \`--${name}\``
+                };
+            }
+
+            if (name in state.parsedOptions) {
+                state.argIndex++;
+
+                if (optionSchema.requiresValue) {
+                    state.argIndex++;
+                }
+
+                return {
+                    error: `Option \`--${name}\` was already provided`,
+                    silent: true
+                };
+            }
+
+            const value =
+                immediateValue ??
+                (context.args[state.argIndex + 1]?.startsWith("-") === false
+                    ? context.args[state.argIndex + 1]
+                    : null);
+
+            if (optionSchema.requiresValue) {
+                if (value === null) {
+                    return {
+                        error: `Option \`--${name}\` requires a value`
+                    };
+                }
+
+                state.parsedOptions[optionSchema.id] = value;
+                state.argIndex++;
+            } else {
+                state.parsedOptions[optionSchema.id] = true;
+            }
+
+            state.argIndex++;
+        } else {
+            const optionNames = optArg.split("");
+            let inc = 1;
+
+            for (let optionIndex = 0; optionIndex < optionNames.length; optionIndex++) {
+                const optionName = optionNames[optionIndex];
+                const optionSchema = schema.options.find(schema =>
+                    schema.shortNames?.includes(optionNames[optionIndex])
+                );
+
+                if (!optionSchema) {
+                    return {
+                        error: `Unknown option \`-${optionName}\``
+                    };
+                }
+
+                if (optionName in state.parsedOptions) {
+                    inc++;
+
+                    if (optionSchema.requiresValue) {
+                        inc++;
+                    }
+
+                    continue;
+                }
+
+                const isLast = optionNames.length - 1 === optionIndex;
+
+                if (
+                    (!isLast && optionSchema.requiresValue) ||
+                    (isLast && context.args[state.argIndex + 1]?.startsWith("-") !== false)
+                ) {
+                    return {
+                        error: `Option \`-${optionName}\` requires a value`
+                    };
+                }
+
+                state.parsedOptions[optionSchema.id] = optionSchema.requiresValue
+                    ? context.args[state.argIndex + 1]
+                    : true;
+
+                if (optionSchema.requiresValue) {
+                    state.argIndex++;
+                }
+            }
+
+            state.argIndex += inc;
+        }
+
+        return {
+            value: undefined as void
+        };
+    }
+
+    public async parseType({
+        context,
+        type,
+        definition,
+        state,
+        typeIndex
+    }: CommonArgs<{
+        type: ArgumentConstructor<unknown>;
+        definition: ArgumentParserDefinition;
+        state: ParserGlobalState;
+        typeIndex: number;
+    }>): Promise<
+        CommonResult<{ name: string; value: unknown }> & { abortParsingDefinitions?: boolean }
+    > {
+        const useCanonical = definition.useCanonical !== false && definition.names.length === 1;
+        const name = definition.names[useCanonical ? 0 : state.definitionIndex];
+        const errorMessageRecord = definition.errorMessages?.[useCanonical ? 0 : typeIndex];
+        const rules = definition.rules?.[useCanonical ? 0 : typeIndex];
 
         try {
-            return parseArgs({
-                args,
-                allowPositionals: true,
-                strict: true,
-                options
-            });
+            const { abort, error, value } = context.isLegacy()
+                ? await type.performCast(
+                      context,
+                      context.commandContent,
+                      context.argv,
+                      context.args[state.argIndex],
+                      state.argIndex,
+                      name,
+                      rules,
+                      !definition.optional
+                  )
+                : await type.performCastFromInteraction(
+                      context,
+                      context.commandMessage,
+                      name,
+                      rules,
+                      !definition.optional
+                  );
+
+            if (error) {
+                return { error: errorMessageRecord?.[error.meta.type] ?? error.message };
+            }
+
+            return {
+                value: {
+                    name,
+                    value: value?.getValue()
+                },
+                abortParsingDefinitions: abort
+            };
         } catch (error) {
-            return { error: error as TypeError, positionals: undefined, values: undefined };
+            return {
+                error: error instanceof Error ? error.message : `${error}`
+            };
         }
     }
 }
-
-const application = new Application("", "", "");
-const client = new Client({ intents: [] });
-application.setClient(client);
-const parser = new ArgumentParser(client);
-
-const argv = process.argv.slice(2);
-const args = argv.slice(1);
-
-parser
-    .parse({
-        context: new LegacyContext(
-            argv[0],
-            argv.join(" "),
-            {} as unknown as Message<true>,
-            args,
-            argv
-        ),
-        options: {
-            clean: {
-                type: "boolean",
-                short: "c"
-            }
-        },
-        config: {
-            overloads: [
-                {
-                    definitions: [
-                        {
-                            type: StringArgument,
-                            name: "name"
-                        },
-                        {
-                            type: StringArgument,
-                            name: "value"
-                        }
-                    ]
-                }
-            ]
-        }
-    })
-    .then(console.log);
 
 export default ArgumentParser;
