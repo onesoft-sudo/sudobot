@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type { Logger } from "@framework/log/Logger";
 import type {
     Awaitable,
     ChatInputCommandInteraction,
@@ -30,7 +31,7 @@ import type {
 import { ApplicationCommandType, ContextMenuCommandBuilder, SlashCommandBuilder } from "discord.js";
 import type Application from "../app/Application";
 import type Argument from "../arguments/Argument";
-import ArgumentParser from "../arguments/ArgumentParser";
+import type ArgumentParser from "../arguments/ArgumentParserNew";
 import type { CommandManagerServiceInterface } from "../contracts/CommandManagerServiceInterface";
 import type { ConfigurationManagerServiceInterface } from "../contracts/ConfigurationManagerServiceInterface";
 import type { MemberPermissionData } from "../contracts/PermissionManagerInterface";
@@ -48,7 +49,7 @@ import type { ContextOf } from "./Context";
 import Context from "./Context";
 import { ContextType } from "./ContextType";
 import type InteractionContext from "./InteractionContext";
-import LegacyContext from "./LegacyContext";
+import type LegacyContext from "./LegacyContext";
 
 export type CommandMessage =
     | Message<true>
@@ -84,7 +85,7 @@ export type PlainPermissionResolvable = PermissionsString | bigint;
  * Represents an abstract command.
  * @template T - The type of context the command supports.
  */
-abstract class Command<T extends ContextType = ContextType.ChatInput | ContextType.Legacy, N extends boolean = false>
+abstract class Command<T extends ContextType = ContextType.ChatInput | ContextType.Legacy>
     implements Builder<CommandBuilders>
 {
     /**
@@ -115,7 +116,10 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
     /**
      * The supported contexts of the command.
      */
-    public readonly supportedContexts: readonly T[] = [ContextType.Legacy, ContextType.ChatInput] as T[];
+    public readonly supportedContexts: readonly T[] = [
+        ContextType.Legacy,
+        ContextType.ChatInput
+    ] as T[];
 
     /**
      * Whether the command should be deferred.
@@ -244,15 +248,23 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
     private _initialized = false;
 
     /**
+     * The logger for the command.
+     */
+    protected readonly logger: Logger;
+
+    /**
      * Creates a new instance of the Command class.
      *
      * @param application - The client instance.
      */
     public constructor(protected readonly application: Application) {
-        this.argumentParser = new ArgumentParser(application.getClient());
+        this.argumentParser = (
+            application.service("commandManager") satisfies CommandManagerServiceInterface
+        ).getArgumentParser();
         this.internalPermissionManager = application.service(
             "permissionManager"
         ) satisfies PermissionManagerServiceInterface;
+        this.logger = application.logger;
     }
 
     /**
@@ -396,7 +408,11 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      * @param context - The command context.
      * @param args - The command arguments.
      */
-    public abstract execute(context: Context, ...args: ArgumentPayload<N>): Promise<void>;
+    public abstract execute(
+        context: Context,
+        args?: Record<string, unknown>,
+        options?: Record<string, unknown>
+    ): Promise<void>;
 
     /**
      * Handles the case when a subcommand is not found.
@@ -440,9 +456,9 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      * Prepares and begins to execute the command.
      *
      * @param context - The command context.
-     * @param subcommand
+     * @param rootCommand - The root command.
      */
-    public async run(context: Context, subcommand = false) {
+    public async run(context: Context, rootCommand?: Command) {
         const state: CommandExecutionState<false> = {
             memberPermissions: undefined,
             isSystemAdmin: undefined
@@ -470,12 +486,11 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
         }
 
         if (context.isLegacy() || context.isChatInput()) {
-            const { error, payload, abort } = await this.argumentParser.parse(
-                context as LegacyContext | InteractionContext<ChatInputCommandInteraction>,
-                this as Command<ContextType.Legacy | ContextType.ChatInput>,
-                context instanceof LegacyContext ? context.commandContent : undefined,
-                subcommand
-            );
+            const { error, value, abort } = await this.argumentParser.parse({
+                command: rootCommand ?? (this as Command),
+                context,
+                parseSubCommand: !!rootCommand
+            });
 
             if (abort) {
                 return;
@@ -486,7 +501,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
                 return;
             }
 
-            await this.execute(context, ...payload!);
+            await this.execute(context, value?.parsedArgs ?? {}, value?.parsedOptions ?? {});
         } else {
             await this.execute(context);
         }
@@ -796,7 +811,9 @@ export type AuthorizeOptions<K extends Exclude<keyof PolicyActions, number>> = {
 };
 
 export type Arguments = Record<string | number, unknown>;
-export type ArgumentPayload<N extends boolean = false> = Array<Argument<unknown> | null | (N extends true ? undefined : never)> | [Arguments | (N extends true ? undefined : never)];
+export type ArgumentPayload<N extends boolean = false> =
+    | Array<Argument<unknown> | null | (N extends true ? undefined : never)>
+    | [Arguments | (N extends true ? undefined : never)];
 export type CommandExecutionState<L extends boolean = false> = {
     memberPermissions: MemberPermissionData | (L extends false ? undefined : never);
     isSystemAdmin: boolean | (L extends false ? undefined : never);

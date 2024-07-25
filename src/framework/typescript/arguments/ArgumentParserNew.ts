@@ -18,8 +18,10 @@
  */
 import "reflect-metadata";
 
+import Application from "@framework/app/Application";
 import type { ArgumentConstructor } from "@framework/arguments/Argument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
+import type { Command } from "@framework/commands/Command";
 import type InteractionContext from "@framework/commands/InteractionContext";
 import type LegacyContext from "@framework/commands/LegacyContext";
 import assert from "assert";
@@ -29,11 +31,13 @@ type ArgumentParserContext = LegacyContext | InteractionContext<ChatInputCommand
 
 type ArgumentParserConfig = {
     context: ArgumentParserContext;
+    command: Command;
     schema: ArgumentParserSchema;
+    parseSubCommand?: boolean;
 };
 
-type ArgumentParserSchema = {
-    overloads: ArgumentParserOverload[];
+export type ArgumentParserSchema = {
+    overloads?: ArgumentParserOverload[];
     options?: OptionSchema[];
 };
 
@@ -62,15 +66,18 @@ type ArgumentParserDefinition = {
     errorMessages?: {
         [x in ErrorType]?: string;
     }[];
-    rules?: ArgumentRules[];
+    rules?: Partial<ArgumentRules>[];
     useCanonical?: boolean;
     interactionName?: string;
+    interactionType?: ArgumentConstructor<unknown>;
+    interactionRuleIndex?: number;
 };
 
 type CommonResult<T> = {
     error?: string;
     value?: T;
     errorType?: string;
+    abort?: boolean;
 };
 
 type CommonArgs<T extends object> = T & {
@@ -83,10 +90,15 @@ type ParserGlobalState = {
     definitionIndex: number;
     parsedArgs: Record<string, unknown>;
     parsedOptions: Record<string, unknown>;
+    skipIndexes: number[];
 };
 
 class ArgumentParser {
-    public async parse({ context, schema }: ArgumentParserConfig): Promise<
+    public async parse({
+        context,
+        command,
+        parseSubCommand = true
+    }: Omit<ArgumentParserConfig, "schema">): Promise<
         CommonResult<NonNullable<Awaited<ReturnType<typeof this.parseOverload>>>["value"]> & {
             errors?: Record<string, string>;
         }
@@ -95,11 +107,58 @@ class ArgumentParser {
         const errors: Record<string, string> = {};
         const parsedOptions: Record<string, unknown> = {};
         let index = 0;
+        let subcommandParseResult: Awaited<ReturnType<typeof this.parseSubcommand>> | undefined;
+        const baseSchema = (Reflect.getMetadata("command:schema", command.constructor) as
+            | ArgumentParserSchema
+            | undefined) ?? {
+            overloads: []
+        };
 
-        assert(schema.overloads.length > 0, "No overloads provided");
+        if (parseSubCommand) {
+            subcommandParseResult = await this.parseSubcommand({
+                context,
+                command,
+                schema: baseSchema
+            });
+        }
+
+        if (subcommandParseResult && subcommandParseResult.abort) {
+            return { abort: true };
+        }
+
+        if (subcommandParseResult && subcommandParseResult.error) {
+            return { error: subcommandParseResult.error };
+        }
+
+        const schema =
+            (subcommandParseResult?.value
+                ? ((Reflect.getMetadata(
+                      "command:schema",
+                      subcommandParseResult.value.constructor
+                  ) as ArgumentParserSchema | undefined) ?? {
+                      overloads: []
+                  })
+                : null) ?? baseSchema;
+
+        if (!schema.overloads?.length) {
+            return {
+                value: {
+                    parsedArgs: {},
+                    parsedOptions: {}
+                }
+            };
+        }
 
         for (const overload of schema.overloads) {
-            result = await this.parseOverload({ context, overload, schema, parsedOptions });
+            result = await this.parseOverload({
+                context,
+                overload,
+                schema,
+                parsedOptions,
+                command,
+                skipIndexes: [],
+                defaultState: subcommandParseResult?.defaultState
+            });
 
             if (!result.error) {
                 break;
@@ -153,26 +212,165 @@ class ArgumentParser {
         };
     }
 
-    public async parseOverload({
-        context,
-        overload,
-        schema,
-        parsedOptions
-    }: CommonArgs<{
-        overload: ArgumentParserOverload;
-        parsedOptions: Record<string, unknown>;
-    }>): Promise<CommonResult<Pick<ParserGlobalState, "parsedArgs" | "parsedOptions">>> {
-        console.log("Parsing overload", overload.name ?? "(unnamed)");
-        console.log("---------------------");
+    private async parseSubcommand({ context, command, schema }: ArgumentParserConfig): Promise<
+        CommonResult<Command | null> & {
+            defaultState?: ParserGlobalState;
+        }
+    > {
+        if (!command.hasSubcommands) {
+            return { value: null };
+        }
 
-        assert(overload.definitions.length > 0, "No definitions provided");
-
+        const { commandName } = context;
+        let subcommandName = context.isLegacy() ? undefined : context.options.getSubcommand(true);
         const state: ParserGlobalState = {
             argIndex: 0,
             definitionIndex: 0,
             parsedArgs: {},
-            parsedOptions
+            parsedOptions: {},
+            skipIndexes: []
         };
+
+        if (context.isLegacy()) {
+            while (context.args[state.argIndex]?.startsWith("-")) {
+                const { error, silent, errorType } = await this.parseOption({
+                    context,
+                    schema,
+                    state
+                });
+
+                if (error) {
+                    if (silent) {
+                        continue;
+                    }
+
+                    if (errorType === "option_not_allowed") {
+                        return {
+                            error: "Options are not allowed to be used with this command, before subcommand name!"
+                        };
+                    }
+
+                    return { error };
+                }
+            }
+
+            subcommandName = context.args[state.argIndex++];
+        }
+
+        const onSubcommandNotFoundHandler =
+            command.onSubcommandNotFound?.bind(command) ??
+            Reflect.getMetadata("command:subcommand_not_found_error", command.constructor);
+
+        if (!subcommandName) {
+            if (typeof onSubcommandNotFoundHandler === "function") {
+                try {
+                    await onSubcommandNotFoundHandler(context, undefined, "not_specified");
+                } catch (error) {
+                    Application.current().logger.error(error);
+                }
+
+                return {
+                    abort: true
+                };
+            }
+
+            return {
+                error: `A subcommand is required! The valid subcommands are: \`${command.subcommands.join("`, `")}\`.`
+            };
+        }
+
+        if (!command.subcommands.includes(subcommandName)) {
+            if (typeof onSubcommandNotFoundHandler === "function") {
+                try {
+                    await onSubcommandNotFoundHandler(context, subcommandName, "not_found");
+                } catch (error) {
+                    Application.current().logger.error(error);
+                }
+
+                return {
+                    abort: true
+                };
+            }
+
+            return {
+                error: `\`${subcommandName}\` is not a valid subcommand for \`${commandName}\`. The valid subcommands are: \`${command.subcommands.join("`, `")}\`.`
+            };
+        }
+
+        const commandManager = Application.current().service("commandManager");
+        const canonicalName = commandManager.getCommand(commandName)?.name ?? commandName;
+        const baseCommand = commandManager.getCommand(canonicalName);
+
+        const subcommand =
+            baseCommand && baseCommand.isolatedSubcommands === false
+                ? baseCommand
+                : commandManager.getCommand(`${canonicalName}::${subcommandName}`);
+
+        if (!subcommand) {
+            if (typeof onSubcommandNotFoundHandler === "function") {
+                await onSubcommandNotFoundHandler(context, subcommandName, "not_found");
+
+                return {
+                    abort: true
+                };
+            }
+
+            return {
+                error: `\`${subcommandName}\` is not a valid subcommand for \`${commandName}\`. The valid subcommands are: \`${command.subcommands.join("`, `")}\`.`
+            };
+        }
+
+        return {
+            value: subcommand,
+            defaultState: context.isLegacy()
+                ? {
+                      ...state,
+                      parsedArgs: {}
+                  }
+                : undefined
+        };
+    }
+
+    private nextArgIndex(state: ParserGlobalState, inc = 1) {
+        if (state.skipIndexes.includes(state.argIndex)) {
+            state.argIndex++;
+        }
+
+        state.argIndex += inc;
+        return state.argIndex;
+    }
+
+    public async parseOverload({
+        context,
+        overload,
+        schema,
+        parsedOptions,
+        command,
+        skipIndexes = [],
+        defaultState
+    }: CommonArgs<{
+        overload: ArgumentParserOverload;
+        parsedOptions: Record<string, unknown>;
+        command: Command;
+        skipIndexes?: number[];
+        defaultState?: ParserGlobalState;
+    }>): Promise<CommonResult<Pick<ParserGlobalState, "parsedArgs" | "parsedOptions">>> {
+        Application.current().logger.debug("Parsing overload", overload.name ?? "(unnamed)");
+        Application.current().logger.debug("---------------------");
+
+        assert(overload.definitions.length > 0, "No definitions provided");
+
+        const state: ParserGlobalState = defaultState
+            ? { ...defaultState }
+            : {
+                  argIndex: 0,
+                  definitionIndex: 0,
+                  parsedArgs: {},
+                  parsedOptions,
+                  skipIndexes
+              };
+
+        Application.current().logger.debug("Initial state", defaultState);
 
         for (
             let definitionIndex = 0;
@@ -183,7 +381,8 @@ class ArgumentParser {
                 context,
                 definition: overload.definitions[definitionIndex],
                 schema,
-                state
+                state,
+                command
             });
 
             if (result.error) {
@@ -200,7 +399,7 @@ class ArgumentParser {
                 break;
             }
 
-            state.argIndex++;
+            this.nextArgIndex(state);
         }
 
         return {
@@ -212,15 +411,20 @@ class ArgumentParser {
         context,
         definition,
         schema,
-        state
-    }: CommonArgs<{ definition: ArgumentParserDefinition; state: ParserGlobalState }>): Promise<
-        CommonResult<{ name: string; value: unknown }> & {
+        state,
+        command
+    }: CommonArgs<{
+        definition: ArgumentParserDefinition;
+        state: ParserGlobalState;
+        command: Command;
+    }>): Promise<
+        CommonResult<{ name: string; value: null | unknown }> & {
             abortParsingDefinitions?: boolean;
         }
     > {
         let result: CommonResult<{ name: string; value: unknown }> | undefined;
 
-        console.log("Parsing definition", definition.names);
+        Application.current().logger.debug("Parsing definition", definition.names);
 
         if (!schema.options) {
             assert(definition.types.length > 0, "No types provided");
@@ -229,7 +433,6 @@ class ArgumentParser {
             while (context.args[state.argIndex]?.startsWith("-")) {
                 const { error, silent } = await this.parseOption({
                     context,
-                    definition,
                     schema,
                     state
                 });
@@ -244,41 +447,63 @@ class ArgumentParser {
             }
         }
 
-        if (!definition.optional) {
-            const errorMessageRecord = definition.errorMessages?.[0];
-            const name = definition.names[definition.useCanonical ? 0 : state.definitionIndex];
+        const errorMessageRecord = definition.errorMessages?.[0];
 
-            if (context.isLegacy() && context.args[state.argIndex] === undefined) {
+        if (context.isLegacy() && context.args[state.argIndex] === undefined) {
+            if (definition.optional) {
                 return {
-                    error:
-                        errorMessageRecord?.[ErrorType.Required] ??
-                        `Argument at index #${state.argIndex} (${name}) is required but was not provided`
+                    value: {
+                        name: definition.names[0],
+                        value: null
+                    }
                 };
             }
 
-            const interactionName = definition.interactionName ?? name;
+            return {
+                error:
+                    errorMessageRecord?.[ErrorType.Required] ??
+                    `Argument at index #${state.argIndex} (${definition.names.join(", ")}) is required but was not provided`
+            };
+        }
 
-            if (!context.isLegacy() && !context.options.get(interactionName)) {
+        const interactionName = definition.interactionName ?? definition.names[0];
+
+        if (!context.isLegacy() && !context.options.get(interactionName)) {
+            if (definition.optional) {
                 return {
-                    error:
-                        errorMessageRecord?.[ErrorType.Required] ??
-                        `Argument at index #${state.argIndex} (${interactionName}) is required but was not provided (via interaction)`
+                    value: {
+                        name: interactionName,
+                        value: null
+                    }
                 };
             }
+
+            return {
+                error:
+                    errorMessageRecord?.[ErrorType.Required] ??
+                    `Argument at index #${state.argIndex} (${interactionName}) is required but was not provided (via interaction)`
+            };
         }
 
         for (let typeIndex = 0; typeIndex < definition.types.length; typeIndex++) {
             result = await this.parseType({
                 context,
-                type: definition.types[typeIndex],
+                type:
+                    (context.isChatInput() ? definition.interactionType : null) ??
+                    definition.types[typeIndex],
                 typeIndex,
                 schema,
                 definition,
-                state
+                state,
+                command
             });
 
             if (!result.error) {
                 return result;
+            }
+
+            if (context.isChatInput() && definition.interactionType) {
+                break;
             }
         }
 
@@ -292,12 +517,15 @@ class ArgumentParser {
         context,
         schema,
         state
-    }: CommonArgs<{ definition: ArgumentParserDefinition; state: ParserGlobalState }> & {
+    }: CommonArgs<{
+        state: ParserGlobalState;
+    }> & {
         context: LegacyContext;
     }): Promise<CommonResult<void> & { silent?: boolean }> {
         if (!schema.options) {
             return {
-                error: "Options are not allowed"
+                error: "Options are not allowed",
+                errorType: "option_not_allowed"
             };
         }
 
@@ -315,10 +543,10 @@ class ArgumentParser {
             }
 
             if (name in state.parsedOptions) {
-                state.argIndex++;
+                this.nextArgIndex(state);
 
                 if (optionSchema.requiresValue) {
-                    state.argIndex++;
+                    this.nextArgIndex(state);
                 }
 
                 return {
@@ -341,12 +569,12 @@ class ArgumentParser {
                 }
 
                 state.parsedOptions[optionSchema.id] = value;
-                state.argIndex++;
+                this.nextArgIndex(state);
             } else {
                 state.parsedOptions[optionSchema.id] = true;
             }
 
-            state.argIndex++;
+            this.nextArgIndex(state);
         } else {
             const optionNames = optArg.split("");
             let inc = 1;
@@ -389,11 +617,11 @@ class ArgumentParser {
                     : true;
 
                 if (optionSchema.requiresValue) {
-                    state.argIndex++;
+                    this.nextArgIndex(state);
                 }
             }
 
-            state.argIndex += inc;
+            this.nextArgIndex(state, inc);
         }
 
         return {
@@ -412,13 +640,19 @@ class ArgumentParser {
         definition: ArgumentParserDefinition;
         state: ParserGlobalState;
         typeIndex: number;
+        command: Command;
     }>): Promise<
         CommonResult<{ name: string; value: unknown }> & { abortParsingDefinitions?: boolean }
     > {
         const useCanonical = definition.useCanonical !== false && definition.names.length === 1;
-        const name = definition.names[useCanonical ? 0 : state.definitionIndex];
+        const name = definition.names[useCanonical ? 0 : typeIndex];
         const errorMessageRecord = definition.errorMessages?.[useCanonical ? 0 : typeIndex];
-        const rules = definition.rules?.[useCanonical ? 0 : typeIndex];
+        const rules =
+            definition.rules?.[
+                ((context.isChatInput() ? definition.interactionRuleIndex : null) ?? useCanonical)
+                    ? 0
+                    : typeIndex
+            ];
 
         try {
             const { abort, error, value } = context.isLegacy()
