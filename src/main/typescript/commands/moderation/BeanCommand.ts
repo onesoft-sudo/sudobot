@@ -26,6 +26,7 @@ import { Inject } from "@framework/container/Inject";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { also } from "@framework/utils/utils";
 import { ArgumentDefaultRules } from "@main/utils/ArgumentDefaultRules";
+import { protectSystemAdminsFromCommands } from "@main/utils/troll";
 import { GuildMember } from "discord.js";
 import { Colors } from "../../constants/Colors";
 import { Limits } from "../../constants/Limits";
@@ -105,6 +106,10 @@ class BeanCommand extends Command {
         args: BeanCommandArgs
     ): Promise<void> {
         const { member, reason } = args;
+
+        if (await protectSystemAdminsFromCommands(this.application, context, member.id)) {
+            return;
+        }
 
         if (
             !context.member ||

@@ -70,7 +70,8 @@ export const GuildConfigSchema = z.object({
                         )
                         .default({})
                 })
-                .optional()
+                .optional(),
+            troll_command_immune_users: z.array(zSnowflake).default([])
         })
         .default({}),
     permissions: z
