@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import UserArgument from "@framework/arguments/UserArgument";
 import { Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
@@ -15,13 +15,21 @@ type InfractionListCommandArgs = {
     user: User;
 };
 
-@TakesArgument<InfractionListCommandArgs>({
-    names: ["user"],
-    types: [UserArgument<true>],
-    optional: false,
-    errorMessages: [UserArgument.defaultErrors],
-    interactionName: "user",
-    interactionType: UserArgument<true>
+@ArgumentSchema({
+    overloads: [
+        {
+            definitions: [
+                {
+                    names: ["user"],
+                    types: [UserArgument<true>],
+                    optional: false,
+                    errorMessages: [UserArgument.defaultErrors],
+                    interactionName: "user",
+                    interactionType: UserArgument<true>
+                }
+            ]
+        }
+    ]
 })
 class InfractionListCommand extends Command {
     public override readonly name = "infraction::list";

@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import GuildMemberArgument from "@framework/arguments/GuildMemberArgument";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
@@ -38,23 +38,31 @@ type BeanCommandArgs = {
     reason?: string;
 };
 
-@TakesArgument<BeanCommandArgs>({
-    names: ["member"],
-    types: [GuildMemberArgument<true>],
-    optional: false,
-    errorMessages: [GuildMemberArgument.defaultErrors],
-    interactionName: "member",
-    interactionType: GuildMemberArgument<true>
-})
-@TakesArgument<BeanCommandArgs>({
-    names: ["reason"],
-    types: [RestStringArgument],
-    optional: true,
-    errorMessages: [ErrorMessages.Reason],
-    rules: [ArgumentDefaultRules.Reason],
-    interactionRuleIndex: 0,
-    interactionName: "reason",
-    interactionType: RestStringArgument
+@ArgumentSchema({
+    overloads: [
+        {
+            definitions: [
+                {
+                    names: ["member"],
+                    types: [GuildMemberArgument<true>],
+                    optional: false,
+                    errorMessages: [GuildMemberArgument.defaultErrors],
+                    interactionName: "member",
+                    interactionType: GuildMemberArgument<true>
+                },
+                {
+                    names: ["reason"],
+                    types: [RestStringArgument],
+                    optional: true,
+                    errorMessages: [ErrorMessages.Reason],
+                    rules: [ArgumentDefaultRules.Reason],
+                    interactionRuleIndex: 0,
+                    interactionName: "reason",
+                    interactionType: RestStringArgument
+                }
+            ]
+        }
+    ]
 })
 class BeanCommand extends Command {
     public override readonly name = "bean";

@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import DurationArgument from "@framework/arguments/DurationArgument";
 import GuildMemberArgument from "@framework/arguments/GuildMemberArgument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
@@ -45,45 +45,53 @@ type BanCommandArgs = {
     user: User;
 };
 
-@TakesArgument<BanCommandArgs>({
-    names: ["member", "user"],
-    types: [GuildMemberArgument<true>, UserArgument<true>],
-    optional: false,
-    rules: [
+@ArgumentSchema({
+    overloads: [
         {
-            "interaction:no_required_check": true
+            definitions: [
+                {
+                    names: ["member", "user"],
+                    types: [GuildMemberArgument<true>, UserArgument<true>],
+                    optional: false,
+                    rules: [
+                        {
+                            "interaction:no_required_check": true
+                        }
+                    ],
+                    errorMessages: [GuildMemberArgument.defaultErrors, UserArgument.defaultErrors],
+                    interactionName: "user"
+                },
+                {
+                    names: ["duration", "reason"],
+                    types: [DurationArgument, RestStringArgument],
+                    optional: true,
+                    errorMessages: [
+                        {
+                            [ErrorType.InvalidType]: "Invalid reason or duration provided."
+                        },
+                        {
+                            [ErrorType.InvalidRange]: `The reason must be between 1 and ${Limits.Reason} characters long.`,
+                            [ErrorType.InvalidType]: "Invalid reason or duration provided."
+                        }
+                    ],
+                    rules: [{}, ArgumentDefaultRules.Reason],
+                    interactionName: "duration",
+                    interactionType: DurationArgument,
+                    interactionRuleIndex: 0
+                },
+                {
+                    names: ["reason"],
+                    types: [RestStringArgument],
+                    optional: true,
+                    errorMessages: [ErrorMessages.Reason],
+                    rules: [ArgumentDefaultRules.Reason],
+                    interactionRuleIndex: 0,
+                    interactionName: "reason",
+                    interactionType: RestStringArgument
+                }
+            ]
         }
-    ],
-    errorMessages: [GuildMemberArgument.defaultErrors, UserArgument.defaultErrors],
-    interactionName: "user"
-})
-@TakesArgument<BanCommandArgs>({
-    names: ["duration", "reason"],
-    types: [DurationArgument, RestStringArgument],
-    optional: true,
-    errorMessages: [
-        {
-            [ErrorType.InvalidType]: "Invalid reason or duration provided."
-        },
-        {
-            [ErrorType.InvalidRange]: `The reason must be between 1 and ${Limits.Reason} characters long.`,
-            [ErrorType.InvalidType]: "Invalid reason or duration provided."
-        }
-    ],
-    rules: [{}, ArgumentDefaultRules.Reason],
-    interactionName: "duration",
-    interactionType: DurationArgument,
-    interactionRuleIndex: 0
-})
-@TakesArgument<BanCommandArgs>({
-    names: ["reason"],
-    types: [RestStringArgument],
-    optional: true,
-    errorMessages: [ErrorMessages.Reason],
-    rules: [ArgumentDefaultRules.Reason],
-    interactionRuleIndex: 0,
-    interactionName: "reason",
-    interactionType: RestStringArgument
+    ]
 })
 class BanCommand extends Command {
     public override readonly name = "ban";
@@ -177,7 +185,7 @@ class BanCommand extends Command {
         }
 
         const deletionTimeframeString = context.isChatInput()
-            ? context.options.getString("deletion_timeframe") ?? undefined
+            ? (context.options.getString("deletion_timeframe") ?? undefined)
             : undefined;
         let deletionTimeframe: Duration | undefined;
 
@@ -224,8 +232,8 @@ class BanCommand extends Command {
             await context.error(
                 result.errorType === "api_error_unban" && result.errorDescription
                     ? `Error while removing the created ban: ${result.errorDescription}`
-                    : result.errorDescription ??
-                          "Failed to ban user. Maybe I don't have the permissions to do so."
+                    : (result.errorDescription ??
+                          "Failed to ban user. Maybe I don't have the permissions to do so.")
             );
 
             return;

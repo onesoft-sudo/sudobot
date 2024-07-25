@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import ArgumentParser from "@framework/arguments/ArgumentParserNew";
 import { Command } from "@framework/commands/Command";
 import CommandAbortedError from "@framework/commands/CommandAbortedError";
 import Context from "@framework/commands/Context";
@@ -57,6 +58,7 @@ import type ConfigurationManager from "./ConfigurationManager";
 
 @Name("commandManager")
 class CommandManager extends Service implements CommandManagerServiceInterface {
+    public readonly argumentParser = new ArgumentParser();
     public readonly commands = new Collection<string, Command>();
     public readonly store = new CommandPermissionOverwriteCacheStore(this);
     public readonly ratelimiter = new CommandRateLimiter(this.application);
@@ -147,6 +149,10 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
                 `Registered ${commands.length} application ${guildId ? "guild " : ""}commands`
             );
         }
+    }
+
+    public getArgumentParser() {
+        return this.argumentParser;
     }
 
     public getCommand(name: string): Command | null {
@@ -273,7 +279,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         }
 
         if (command.hasSubcommands) {
-            const subcommandName = argv[1];
+            const subcommandName = argv.find((a, i) => i !== 0 && !a.startsWith("-"));
             const key = command.isolatedSubcommands
                 ? `${this.getCanonicalName(commandName)}::${subcommandName}`
                 : this.getCanonicalName(commandName);
@@ -285,10 +291,9 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             }
 
             if (!subcommand) {
-                const errorHandler = Reflect.getMetadata(
-                    "command:subcommand_not_found_error",
-                    command.constructor
-                );
+                const errorHandler =
+                    command?.onSubcommandNotFound?.bind(command) ??
+                    Reflect.getMetadata("command:subcommand_not_found_error", command.constructor);
 
                 if (typeof errorHandler === "string") {
                     return context.error(errorHandler);
@@ -315,9 +320,9 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         return void (await this.execCommand(command, context));
     }
 
-    private async execCommand(command: Command, context: Context, subcommand = false) {
+    private async execCommand(command: Command, context: Context, rootCommand?: Command) {
         try {
-            await command.run(context, subcommand);
+            await command.run(context, rootCommand);
             return true;
         } catch (error) {
             if (error instanceof CommandAbortedError) {
@@ -393,6 +398,8 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             await command.run(
                 context,
                 !!subcommand && baseCommand.isolatedSubcommands && baseCommand.hasSubcommands
+                    ? baseCommand
+                    : undefined
             );
             return true;
         } catch (error) {
@@ -751,7 +758,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             return false;
         }
 
-        return this.execCommand(subcommand, context, true);
+        return this.execCommand(subcommand, context, command);
     }
 }
 

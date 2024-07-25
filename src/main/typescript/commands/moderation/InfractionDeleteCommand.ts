@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import IntegerArgument from "@framework/arguments/IntegerArgument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import { Command, CommandMessage } from "@framework/commands/Command";
@@ -13,18 +13,26 @@ type InfractionDeleteCommandArgs = {
     id: number;
 };
 
-@TakesArgument<InfractionDeleteCommandArgs>({
-    names: ["id"],
-    types: [IntegerArgument],
-    optional: false,
-    errorMessages: [
+@ArgumentSchema({
+    overloads: [
         {
-            [ErrorType.InvalidType]: "Invalid infraction ID provided.",
-            [ErrorType.Required]: "Infraction ID is required."
+            definitions: [
+                {
+                    names: ["id"],
+                    types: [IntegerArgument],
+                    optional: false,
+                    errorMessages: [
+                        {
+                            [ErrorType.InvalidType]: "Invalid infraction ID provided.",
+                            [ErrorType.Required]: "Infraction ID is required."
+                        }
+                    ],
+                    interactionName: "id",
+                    interactionType: IntegerArgument
+                }
+            ]
         }
-    ],
-    interactionName: "id",
-    interactionType: IntegerArgument
+    ]
 })
 class InfractionDeleteCommand extends Command {
     public override readonly name = "infraction::delete";

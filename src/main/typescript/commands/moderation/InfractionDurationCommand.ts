@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import DurationArgument from "@framework/arguments/DurationArgument";
 import IntegerArgument from "@framework/arguments/IntegerArgument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
@@ -17,31 +17,39 @@ type InfractionDurationCommandArgs = {
     duration: Duration | string;
 };
 
-@TakesArgument<InfractionDurationCommandArgs>({
-    names: ["id"],
-    types: [IntegerArgument],
-    optional: false,
-    errorMessages: [
+@ArgumentSchema({
+    overloads: [
         {
-            [ErrorType.InvalidType]: "Invalid infraction ID provided.",
-            [ErrorType.Required]: "Infraction ID is required."
+            definitions: [
+                {
+                    names: ["id"],
+                    types: [IntegerArgument],
+                    optional: false,
+                    errorMessages: [
+                        {
+                            [ErrorType.InvalidType]: "Invalid infraction ID provided.",
+                            [ErrorType.Required]: "Infraction ID is required."
+                        }
+                    ],
+                    interactionName: "id",
+                    interactionType: IntegerArgument
+                },
+                {
+                    names: ["duration"],
+                    types: [DurationArgument, StringArgument],
+                    optional: false,
+                    errorMessages: [
+                        {
+                            [ErrorType.InvalidType]: "Invalid duration provided.",
+                            [ErrorType.Required]: "Duration is required."
+                        }
+                    ],
+                    interactionName: "duration",
+                    interactionType: StringArgument
+                }
+            ]
         }
-    ],
-    interactionName: "id",
-    interactionType: IntegerArgument
-})
-@TakesArgument<InfractionDurationCommandArgs>({
-    names: ["duration"],
-    types: [DurationArgument, StringArgument],
-    optional: false,
-    errorMessages: [
-        {
-            [ErrorType.InvalidType]: "Invalid duration provided.",
-            [ErrorType.Required]: "Duration is required."
-        }
-    ],
-    interactionName: "duration",
-    interactionType: StringArgument
+    ]
 })
 class InfractionDurationCommand extends Command {
     public override readonly name = "infraction::duration";
