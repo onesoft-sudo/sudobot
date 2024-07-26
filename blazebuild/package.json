@@ -18,7 +18,8 @@
     "decompress": "^4.2.1",
     "glob": "^10.4.5",
     "reflect-metadata": "^0.2.2",
-    "tar": "^7.4.0"
+    "tar": "^7.4.0",
+    "semver": "^7.6.3"
   },
   "exports": {
     ".": "./src/main/typescript/index.ts",
