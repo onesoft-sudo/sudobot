@@ -157,7 +157,6 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         throw new InvalidArgumentError(
             (typeof ruleLike === "string" ? ruleLike : ruleLike?.message) ?? message,
             {
-                position: this.position,
                 type
             }
         );
@@ -199,7 +198,6 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
                 throw new InvalidArgumentError(
                     `Invalid argument received at position #${position}`,
                     {
-                        position,
                         type: ErrorType.InvalidType
                     }
                 );
