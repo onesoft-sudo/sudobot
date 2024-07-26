@@ -13,8 +13,8 @@ export const afkEntries = pgTable("afk_entries", {
         .default(sql`'{}'`),
     mentionCount: integer("mention_count").notNull().default(0),
     global: boolean("global").notNull().default(false),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
-    updatedAt: timestamp("updated_at")
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
         .notNull()
         .defaultNow()
         .$onUpdate(() => new Date())

@@ -20,7 +20,6 @@
 import type { Awaitable, ChatInputCommandInteraction } from "discord.js";
 import type Context from "../commands/Context";
 import type { ArgumentInterface } from "./ArgumentInterface";
-import type { ArgumentTypeOptions } from "./ArgumentTypes";
 import { ErrorType, InvalidArgumentError } from "./InvalidArgumentError";
 
 export type Casted<T> = {
@@ -41,7 +40,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
     protected transformedValue!: T;
     public readonly position: number;
     public readonly name?: string;
-    protected readonly rules?: NonNullable<ArgumentTypeOptions["rules"]>[number];
+    protected readonly rules?: Partial<ArgumentRules>;
     protected readonly interaction?: ChatInputCommandInteraction;
     protected isRequired = false;
     public readonly abortAfterParsing: boolean = false;
@@ -53,7 +52,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         value: string,
         position: number,
         name?: string,
-        rules?: NonNullable<ArgumentTypeOptions["rules"]>[number],
+        rules?: Partial<ArgumentRules>,
         interaction?: ChatInputCommandInteraction
     ) {
         this.commandContent = commandContent;
@@ -90,7 +89,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         context: Context,
         interaction: ChatInputCommandInteraction,
         name: string,
-        rules?: NonNullable<ArgumentTypeOptions["rules"]>[number],
+        rules?: Partial<ArgumentRules>,
         isRequired = false
     ) {
         try {
@@ -182,7 +181,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         value: string,
         position: number,
         name?: string,
-        rules?: NonNullable<ArgumentTypeOptions["rules"]>[number],
+        rules?: Partial<ArgumentRules>,
         isRequired = false
     ): Promise<Casted<unknown>> {
         try {
@@ -228,7 +227,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         value: string,
         position: number,
         name?: string,
-        rules?: NonNullable<ArgumentTypeOptions["rules"]>[number],
+        rules?: Partial<ArgumentRules>,
         interaction?: ChatInputCommandInteraction
     ) {
         return new (this as unknown as new (

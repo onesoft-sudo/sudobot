@@ -17,7 +17,11 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { ArgumentParserSchema } from "@framework/arguments/ArgumentParserNew";
+import type {
+    ArgumentParserDefinition,
+    ArgumentParserSchema,
+    OptionSchema
+} from "@framework/arguments/ArgumentParserNew";
 
 declare global {
     interface ArgumentRules {
@@ -28,11 +32,49 @@ declare global {
     }
 }
 
-export function ArgumentSchema(config: ArgumentParserSchema): ClassDecorator {
+export type ArgumentSchemaDecoratorType = ((config: ArgumentParserSchema) => ClassDecorator) & {
+    Overload(definitions: ArgumentParserDefinition[]): ClassDecorator;
+    Overload(name: string, definitions: ArgumentParserDefinition[]): ClassDecorator;
+    Options(schemas: OptionSchema[]): ClassDecorator;
+};
+
+export const ArgumentSchema: ArgumentSchemaDecoratorType = (
+    config: ArgumentParserSchema
+): ClassDecorator => {
     return target => Reflect.defineMetadata("command:schema", config, target);
-}
+};
+
+ArgumentSchema.Overload = (
+    nameOrDefinitions: string | ArgumentParserDefinition[],
+    definitions?: ArgumentParserDefinition[]
+): ClassDecorator => {
+    const finalDefs = typeof nameOrDefinitions === "string" ? definitions : nameOrDefinitions;
+    const name = typeof nameOrDefinitions === "string" ? nameOrDefinitions : undefined;
+
+    return target => {
+        const metadata =
+            (Reflect.getMetadata("command:schema", target) as ArgumentParserSchema) ?? {};
+
+        metadata.overloads ??= [];
+        metadata.overloads?.push({ name, definitions: finalDefs ?? [] });
+
+        Reflect.defineMetadata("command:schema", metadata, target);
+    };
+};
+
+ArgumentSchema.Options = (schemas: OptionSchema[]): ClassDecorator => {
+    return target => {
+        const metadata =
+            (Reflect.getMetadata("command:schema", target) as ArgumentParserSchema) ?? {};
+
+        metadata.options ??= [];
+        metadata.options?.push(...schemas);
+
+        Reflect.defineMetadata("command:schema", metadata, target);
+    };
+};
 
 // HACK: This needs to be removed
-export function TakesArgument() {
+export const TakesArgument = () => {
     return () => void 0;
-}
+};

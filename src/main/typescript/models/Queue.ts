@@ -9,11 +9,11 @@ export const queues = pgTable("queues", {
     name: varchar("name").notNull(),
     repeat: boolean("repeat").default(false),
     data: json("data").default({}),
-    createdAt: timestamp("created_at").defaultNow(),
-    updatedAt: timestamp("updated_at")
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
         .defaultNow()
         .$onUpdate(() => new Date()),
-    runsAt: timestamp("runs_at")
+    runsAt: timestamp("runs_at", { withTimezone: true })
 });
 
 export type Queue = typeof queues.$inferSelect;

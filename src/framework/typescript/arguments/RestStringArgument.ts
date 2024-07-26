@@ -50,6 +50,20 @@ class RestStringArgument extends Argument<string> {
             return this.error("Invalid argument received", ErrorType.InvalidType);
         }
 
+        if (
+            this.rules?.["range:min"] &&
+            this.transformedValue!.length < this.rules?.["range:min"]
+        ) {
+            return this.error("String is too short", ErrorType.InvalidRange);
+        }
+
+        if (
+            this.rules?.["range:max"] &&
+            this.transformedValue!.length > this.rules?.["range:max"]
+        ) {
+            return this.error("String is too long", ErrorType.InvalidRange);
+        }
+
         return true;
     }
 

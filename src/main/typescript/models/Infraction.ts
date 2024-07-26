@@ -40,14 +40,14 @@ export const infractions = pgTable("infractions", {
     moderatorId: varchar("moderator_id").notNull(),
     guildId: varchar("guild_id").notNull(),
     reason: varchar("reason"),
-    expiresAt: timestamp("expires_at"),
+    expiresAt: timestamp("expires_at", { withTimezone: true }),
     metadata: json("metadata"),
     deliveryStatus: infractionDeliveryStatusEnum("delivery_status")
         .notNull()
         .default(InfractionDeliveryStatus.Success),
     queueId: integer("queue_id"),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
-    updatedAt: timestamp("updated_at")
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
         .notNull()
         .defaultNow()
         .$onUpdate(() => new Date())

@@ -41,7 +41,7 @@ export type ArgumentParserSchema = {
     options?: OptionSchema[];
 };
 
-type OptionSchema = {
+export type OptionSchema = {
     id: string;
     longNames?: string[];
     shortNames?: string[];
@@ -54,12 +54,12 @@ type OptionSchema = {
     canonicalNameType?: "long" | "short";
 };
 
-type ArgumentParserOverload = {
+export type ArgumentParserOverload = {
     name?: string;
     definitions: ArgumentParserDefinition[];
 };
 
-type ArgumentParserDefinition = {
+export type ArgumentParserDefinition = {
     names: string[];
     types: ArgumentConstructor<unknown>[];
     optional?: boolean;
@@ -649,9 +649,8 @@ class ArgumentParser {
         const errorMessageRecord = definition.errorMessages?.[useCanonical ? 0 : typeIndex];
         const rules =
             definition.rules?.[
-                ((context.isChatInput() ? definition.interactionRuleIndex : null) ?? useCanonical)
-                    ? 0
-                    : typeIndex
+                (context.isChatInput() ? definition.interactionRuleIndex : null) ??
+                    (useCanonical ? 0 : typeIndex)
             ];
 
         try {
