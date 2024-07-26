@@ -31,7 +31,7 @@ import type {
 import { ApplicationCommandType, ContextMenuCommandBuilder, SlashCommandBuilder } from "discord.js";
 import type Application from "../app/Application";
 import type Argument from "../arguments/Argument";
-import type ArgumentParser from "../arguments/ArgumentParserNew";
+import type ArgumentParser from "../arguments/ArgumentParser";
 import type { CommandManagerServiceInterface } from "../contracts/CommandManagerServiceInterface";
 import type { ConfigurationManagerServiceInterface } from "../contracts/ConfigurationManagerServiceInterface";
 import type { MemberPermissionData } from "../contracts/PermissionManagerInterface";
