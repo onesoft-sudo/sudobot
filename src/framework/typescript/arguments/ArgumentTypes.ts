@@ -36,6 +36,9 @@ export type ArgumentSchemaDecoratorType = ((config: ArgumentParserSchema) => Cla
     Overload(definitions: ArgumentParserDefinition[]): ClassDecorator;
     Overload(name: string, definitions: ArgumentParserDefinition[]): ClassDecorator;
     Options(schemas: OptionSchema[]): ClassDecorator;
+    Definition<T extends Record<string, unknown> = Record<string, unknown>>(
+        definition: ArgumentParserDefinition<T>
+    ): ClassDecorator;
 };
 
 export const ArgumentSchema: ArgumentSchemaDecoratorType = (
@@ -57,6 +60,31 @@ ArgumentSchema.Overload = (
 
         metadata.overloads ??= [];
         metadata.overloads?.push({ name, definitions: finalDefs ?? [] });
+
+        Reflect.defineMetadata("command:schema", metadata, target);
+    };
+};
+
+ArgumentSchema.Definition = <
+    T extends Record<string, unknown> = Record<string, unknown>,
+    K extends [keyof T, ...(keyof T)[]] = [keyof T, ...(keyof T)[]]
+>(
+    definition: ArgumentParserDefinition<T, K>
+): ClassDecorator => {
+    return target => {
+        const metadata =
+            (Reflect.getMetadata("command:schema", target) as ArgumentParserSchema) ?? {};
+
+        metadata.overloads ??= [];
+
+        const existingDefs = metadata.overloads?.[0]?.definitions ?? [];
+        existingDefs?.push(definition as ArgumentParserDefinition);
+
+        if (metadata.overloads.length === 0) {
+            metadata.overloads.push({ definitions: existingDefs });
+        } else {
+            metadata.overloads[0].definitions = existingDefs;
+        }
 
         Reflect.defineMetadata("command:schema", metadata, target);
     };

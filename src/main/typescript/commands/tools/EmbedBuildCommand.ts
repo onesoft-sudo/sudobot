@@ -1,12 +1,12 @@
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
+import { ErrorType } from "@framework/arguments/InvalidArgumentError";
+import RestStringArgument from "@framework/arguments/RestStringArgument";
 import { Command } from "@framework/commands/Command";
-import { PermissionFlags } from "@framework/permissions/PermissionFlag";
-import type LegacyContext from "@framework/commands/LegacyContext";
 import type InteractionContext from "@framework/commands/InteractionContext";
+import type LegacyContext from "@framework/commands/LegacyContext";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { type ChatInputCommandInteraction, EmbedBuilder, type GuildBasedChannel } from "discord.js";
 import JSON5 from "json5";
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
-import RestStringArgument from "@framework/arguments/RestStringArgument";
-import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import { z } from "zod";
 
 const EmbedZodSchema = z.object({
@@ -54,7 +54,7 @@ type EmbedBuildCommandArgs = {
     schema: string;
 };
 
-@TakesArgument<EmbedBuildCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["schema"],
     types: [RestStringArgument],
     optional: false,
@@ -102,7 +102,7 @@ class EmbedBuildCommand extends Command {
         }
 
         const channel = context.isChatInput()
-            ? (context.options.getChannel("channel") as GuildBasedChannel) ?? context.channel
+            ? ((context.options.getChannel("channel") as GuildBasedChannel) ?? context.channel)
             : context.channel;
 
         if (!channel?.isTextBased()) {

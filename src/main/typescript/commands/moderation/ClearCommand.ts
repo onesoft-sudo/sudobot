@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import IntegerArgument from "@framework/arguments/IntegerArgument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import UserArgument from "@framework/arguments/UserArgument";
@@ -42,7 +42,7 @@ type ClearCommandArgs = {
     count?: number;
 };
 
-@TakesArgument<ClearCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["user", "count"],
     types: [UserArgument<true>, IntegerArgument],
     optional: true,
@@ -64,7 +64,7 @@ type ClearCommandArgs = {
     interactionType: UserArgument<true>,
     interactionRuleIndex: 0
 })
-@TakesArgument<ClearCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["count"],
     types: [IntegerArgument],
     optional: true,
@@ -207,7 +207,7 @@ class ClearCommand extends Command {
             channel: ((context.isChatInput() ? context.options.getChannel("channel") : undefined) ??
                 context.channel) as GuildTextBasedChannel,
             reason: context.isChatInput()
-                ? context.options.getString("reason") ?? undefined
+                ? (context.options.getString("reason") ?? undefined)
                 : undefined,
             respond: true,
             filters

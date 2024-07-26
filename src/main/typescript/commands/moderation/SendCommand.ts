@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
 import UserArgument from "@framework/arguments/UserArgument";
@@ -36,7 +36,7 @@ type SendCommandArgs = {
     user: User;
 };
 
-@TakesArgument<SendCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["user"],
     types: [UserArgument<true>],
     optional: false,
@@ -49,7 +49,7 @@ type SendCommandArgs = {
     interactionName: "user",
     interactionType: UserArgument<true>
 })
-@TakesArgument<SendCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["content"],
     types: [RestStringArgument],
     errorMessages: [

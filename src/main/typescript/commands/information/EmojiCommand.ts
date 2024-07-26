@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import StringArgument from "@framework/arguments/StringArgument";
 import type { Buildable } from "@framework/commands/Command";
@@ -17,7 +17,7 @@ type EmojiCommandArgs = {
     emoji: string;
 };
 
-@TakesArgument<EmojiCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["emoji"],
     types: [StringArgument],
     optional: false,

@@ -59,9 +59,17 @@ export type ArgumentParserOverload = {
     definitions: ArgumentParserDefinition[];
 };
 
-export type ArgumentParserDefinition = {
-    names: string[];
-    types: ArgumentConstructor<unknown>[];
+export type ArgumentParserDefinition<
+    T extends Record<string, unknown> = Record<string, unknown>,
+    K extends [keyof T, ...(keyof T)[]] = [keyof T, ...(keyof T)[]]
+> = {
+    names: K;
+    types: {
+        [M in Extract<keyof T, number>]: ArgumentConstructor<T[M]>;
+    } & {
+        length: number;
+        [key: number]: ArgumentConstructor<unknown>;
+    };
     optional?: boolean;
     errorMessages?: {
         [x in ErrorType]?: string;

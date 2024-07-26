@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import UserArgument from "@framework/arguments/UserArgument";
 import { Command } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
@@ -34,7 +34,7 @@ type ModStatsCommandArgs = {
     user?: User;
 };
 
-@TakesArgument<ModStatsCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["user"],
     types: [UserArgument<true>],
     optional: true,

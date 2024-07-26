@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import DurationArgument from "@framework/arguments/DurationArgument";
 import GuildMemberArgument from "@framework/arguments/GuildMemberArgument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
@@ -40,7 +40,7 @@ type MuteCommandArgs = {
     duration?: Duration;
 };
 
-@TakesArgument<MuteCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["member"],
     types: [GuildMemberArgument<true>],
     optional: false,
@@ -58,7 +58,7 @@ type MuteCommandArgs = {
     ],
     interactionName: "member"
 })
-@TakesArgument<MuteCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["duration", "reason"],
     types: [DurationArgument, RestStringArgument],
     optional: true,
@@ -76,7 +76,7 @@ type MuteCommandArgs = {
     interactionName: "duration",
     interactionType: DurationArgument
 })
-@TakesArgument<MuteCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["reason"],
     types: [RestStringArgument],
     optional: true,

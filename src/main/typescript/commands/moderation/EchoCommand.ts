@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import ChannelArgument from "@framework/arguments/ChannelArgument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
@@ -36,7 +36,7 @@ type EchoCommandArgs = {
     channel?: GuildBasedChannel;
 };
 
-@TakesArgument<EchoCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["channel", "content"],
     types: [ChannelArgument<true>, RestStringArgument],
     optional: false,
@@ -60,7 +60,7 @@ type EchoCommandArgs = {
     interactionName: "channel",
     interactionType: ChannelArgument<true>
 })
-@TakesArgument<EchoCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["content"],
     types: [RestStringArgument],
     optional: true,

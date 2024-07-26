@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import UserArgument from "@framework/arguments/UserArgument";
 import type { Buildable } from "@framework/commands/Command";
 import { Command } from "@framework/commands/Command";
@@ -11,7 +11,7 @@ type SystemUnbanCommandArgs = {
     user: User;
 };
 
-@TakesArgument<SystemUnbanCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["user"],
     types: [UserArgument<true>],
     optional: false,

@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import StringArgument from "@framework/arguments/StringArgument";
 import { Command } from "@framework/commands/Command";
@@ -11,7 +11,7 @@ type SnippetPushFileCommandArgs = {
     name: string;
 };
 
-@TakesArgument<SnippetPushFileCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["name"],
     types: [StringArgument],
     optional: false,

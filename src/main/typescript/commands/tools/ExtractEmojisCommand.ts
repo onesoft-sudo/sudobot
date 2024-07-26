@@ -1,7 +1,7 @@
-import { type Buildable, Command } from "@framework/commands/Command";
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
-import StringArgument from "@framework/arguments/StringArgument";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
+import StringArgument from "@framework/arguments/StringArgument";
+import { type Buildable, Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
 import { fetchChannel, fetchMessage } from "@framework/utils/entities";
 import { EmbedBuilder, parseEmoji } from "discord.js";
@@ -10,7 +10,7 @@ type ExtractEmojisCommandArgs = {
     message: string;
 };
 
-@TakesArgument<ExtractEmojisCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["message"],
     types: [StringArgument],
     optional: false,

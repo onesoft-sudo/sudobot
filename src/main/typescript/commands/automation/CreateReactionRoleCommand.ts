@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
 import StringArgument from "@framework/arguments/StringArgument";
@@ -24,36 +24,38 @@ type CreateReactionRoleCommandArgs = {
     roles: string;
 };
 
-@TakesArgument<CreateReactionRoleCommandArgs>({
-    names: ["link"],
-    types: [StringArgument],
-    optional: false,
-    errorMessages: [
-        {
-            [ErrorType.Required]: "You must provide a message link."
-        }
-    ]
-})
-@TakesArgument<CreateReactionRoleCommandArgs>({
-    names: ["emoji"],
-    types: [StringArgument],
-    optional: false,
-    errorMessages: [
-        {
-            [ErrorType.Required]: "You must provide an emoji."
-        }
-    ]
-})
-@TakesArgument<CreateReactionRoleCommandArgs>({
-    names: ["roles"],
-    types: [RestStringArgument],
-    optional: false,
-    errorMessages: [
-        {
-            [ErrorType.Required]: "You must provide at least one role."
-        }
-    ]
-})
+@ArgumentSchema.Overload([
+    {
+        names: ["link"],
+        types: [StringArgument],
+        optional: false,
+        errorMessages: [
+            {
+                [ErrorType.Required]: "You must provide a message link."
+            }
+        ]
+    },
+    {
+        names: ["emoji"],
+        types: [StringArgument],
+        optional: false,
+        errorMessages: [
+            {
+                [ErrorType.Required]: "You must provide an emoji."
+            }
+        ]
+    },
+    {
+        names: ["roles"],
+        types: [RestStringArgument],
+        optional: false,
+        errorMessages: [
+            {
+                [ErrorType.Required]: "You must provide at least one role."
+            }
+        ]
+    }
+])
 class CreateReactionRoleCommand extends Command {
     public override readonly name = "createreactionrole";
     public override readonly description: string = "Create a reaction role trigger.";

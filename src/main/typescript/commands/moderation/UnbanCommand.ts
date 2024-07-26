@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
 import UserArgument from "@framework/arguments/UserArgument";
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
@@ -36,7 +36,7 @@ type UnbanCommandArgs = {
     reason?: string;
 };
 
-@TakesArgument<UnbanCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["user"],
     types: [UserArgument<true>],
     optional: false,
@@ -48,7 +48,7 @@ type UnbanCommandArgs = {
     errorMessages: [UserArgument.defaultErrors],
     interactionName: "user"
 })
-@TakesArgument<UnbanCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["reason"],
     types: [RestStringArgument],
     optional: true,

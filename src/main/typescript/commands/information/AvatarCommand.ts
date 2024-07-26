@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import GuildMemberArgument from "@framework/arguments/GuildMemberArgument";
 import UserArgument from "@framework/arguments/UserArgument";
 import type { Buildable } from "@framework/commands/Command";
@@ -19,7 +19,7 @@ type AvatarCommandArgs = {
     user: GuildMember | User;
 };
 
-@TakesArgument<AvatarCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["user", "user"],
     types: [GuildMemberArgument<true>, UserArgument<true>],
     optional: true,
@@ -51,12 +51,12 @@ class AvatarCommand extends Command {
         if (
             !(context.isLegacy()
                 ? context.argv[0].startsWith("g")
-                : context.options.getBoolean("global") ?? false)
+                : (context.options.getBoolean("global") ?? false))
         ) {
             try {
                 member = user
-                    ? context.guild!.members.cache.get(user.id) ??
-                      (await context.guild!.members.fetch(user.id))
+                    ? (context.guild!.members.cache.get(user.id) ??
+                      (await context.guild!.members.fetch(user.id)))
                     : (context.member! as GuildMember);
             } catch (e) {
                 return void (await context.error("Failed to fetch member."));

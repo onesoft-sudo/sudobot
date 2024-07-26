@@ -1,26 +1,26 @@
-import { type Buildable, Command } from "@framework/commands/Command";
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
+import RestStringArgument from "@framework/arguments/RestStringArgument";
+import { type Buildable, Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
 import { ContextType } from "@framework/commands/ContextType";
+import { Inject } from "@framework/container/Inject";
+import { GatewayEventListener } from "@framework/events/GatewayEventListener";
 import ClassLoader from "@framework/import/ClassLoader";
 import FatalError from "@main/core/FatalError";
-import { GatewayEventListener } from "@framework/events/GatewayEventListener";
+import TranslationService from "@main/services/TranslationService";
 import {
     type ApplicationCommandOptionChoiceData,
     EmbedBuilder,
     type Interaction,
     User
 } from "discord.js";
-import TranslationService from "@main/services/TranslationService";
-import { Inject } from "@framework/container/Inject";
-import RestStringArgument from "@framework/arguments/RestStringArgument";
 
 type TranslateCommandArgs = {
     text: string;
 };
 
-@TakesArgument<TranslateCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["text"],
     types: [RestStringArgument],
     optional: false,
@@ -30,7 +30,7 @@ type TranslateCommandArgs = {
         }
     ]
 })
-class TranslateCommand extends Command<ContextType, true> {
+class TranslateCommand extends Command<ContextType> {
     public override readonly name: string = "translate";
     public override readonly description: string = "Translate text to another language.";
     public override readonly defer = true;
@@ -158,8 +158,7 @@ class TranslateCommand extends Command<ContextType, true> {
             if (from !== "auto" && !this.languages[from] && !this.displayNames.of(from)) {
                 throw new Error();
             }
-        }
-        catch {
+        } catch {
             await context.error("Invalid language specified in the `from` option");
             return;
         }
@@ -168,8 +167,7 @@ class TranslateCommand extends Command<ContextType, true> {
             if (to !== "auto" && !this.languages[to] && !this.displayNames.of(to)) {
                 throw new Error();
             }
-        }
-        catch {
+        } catch {
             await context.error("Invalid language specified in the `to` option");
             return;
         }

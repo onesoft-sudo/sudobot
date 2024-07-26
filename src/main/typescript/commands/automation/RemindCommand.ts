@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import DurationArgument from "@framework/arguments/DurationArgument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
@@ -13,13 +13,13 @@ type RemindCommandArgs = {
     message: string;
 };
 
-@TakesArgument<RemindCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["after"],
     types: [DurationArgument],
     optional: false,
     errorMessages: [DurationArgument.defaultErrors]
 })
-@TakesArgument<RemindCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["message"],
     types: [RestStringArgument],
     optional: false,
