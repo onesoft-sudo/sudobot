@@ -1,31 +1,31 @@
 /*
-* This file is part of SudoBot.
-*
-* Copyright (C) 2021-2024 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021-2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 import type { Awaitable, ChatInputCommandInteraction } from "discord.js";
 import type Context from "../commands/Context";
 import type { ArgumentInterface } from "./ArgumentInterface";
-import type { ArgumentTypeOptions } from "./ArgumentTypes";
 import { ErrorType, InvalidArgumentError } from "./InvalidArgumentError";
 
 export type Casted<T> = {
     value?: Argument<T>;
     error?: InvalidArgumentError;
+    abort?: boolean;
 };
 
 export type ArgumentConstructor<T = unknown> = (new (
@@ -40,9 +40,10 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
     protected transformedValue!: T;
     public readonly position: number;
     public readonly name?: string;
-    protected readonly rules?: NonNullable<ArgumentTypeOptions["rules"]>[number];
+    protected readonly rules?: Partial<ArgumentRules>;
     protected readonly interaction?: ChatInputCommandInteraction;
     protected isRequired = false;
+    public readonly abortAfterParsing: boolean = false;
 
     public constructor(
         protected readonly context: Context,
@@ -51,7 +52,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         value: string,
         position: number,
         name?: string,
-        rules?: NonNullable<ArgumentTypeOptions["rules"]>[number],
+        rules?: Partial<ArgumentRules>,
         interaction?: ChatInputCommandInteraction
     ) {
         this.commandContent = commandContent;
@@ -88,16 +89,24 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         context: Context,
         interaction: ChatInputCommandInteraction,
         name: string,
-        rules?: NonNullable<ArgumentTypeOptions["rules"]>[number],
+        rules?: Partial<ArgumentRules>,
         isRequired = false
     ) {
         try {
-            const casted = this.castFrom(context, "", [], "", 0, name, rules, interaction).setRequired(
-                isRequired
-            );
+            const casted = this.castFrom(
+                context,
+                "",
+                [],
+                "",
+                0,
+                name,
+                rules,
+                interaction
+            ).setRequired(isRequired);
 
             return {
-                value: await casted.toTransformed()
+                value: await casted.toTransformed(),
+                abort: casted.abortAfterParsing
             };
         } catch (error) {
             if (error instanceof InvalidArgumentError) {
@@ -148,7 +157,6 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         throw new InvalidArgumentError(
             (typeof ruleLike === "string" ? ruleLike : ruleLike?.message) ?? message,
             {
-                position: this.position,
                 type
             }
         );
@@ -172,11 +180,11 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         value: string,
         position: number,
         name?: string,
-        rules?: NonNullable<ArgumentTypeOptions["rules"]>[number],
+        rules?: Partial<ArgumentRules>,
         isRequired = false
     ): Promise<Casted<unknown>> {
         try {
-            const casted = await this.castFrom(
+            const casted = this.castFrom(
                 context,
                 commandContent,
                 argv,
@@ -190,14 +198,14 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
                 throw new InvalidArgumentError(
                     `Invalid argument received at position #${position}`,
                     {
-                        position,
                         type: ErrorType.InvalidType
                     }
                 );
             }
 
             return {
-                value: await casted.toTransformed()
+                value: await casted.toTransformed(),
+                abort: casted.abortAfterParsing
             };
         } catch (error) {
             if (error instanceof InvalidArgumentError) {
@@ -217,11 +225,20 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         value: string,
         position: number,
         name?: string,
-        rules?: NonNullable<ArgumentTypeOptions["rules"]>[number],
+        rules?: Partial<ArgumentRules>,
         interaction?: ChatInputCommandInteraction
     ) {
         return new (this as unknown as new (
             ...args: ConstructorParameters<typeof Argument<unknown>>
-        ) => Argument<unknown>)(context, commandContent, argv, value, position, name, rules, interaction);
+        ) => Argument<unknown>)(
+            context,
+            commandContent,
+            argv,
+            value,
+            position,
+            name,
+            rules,
+            interaction
+        );
     }
 }

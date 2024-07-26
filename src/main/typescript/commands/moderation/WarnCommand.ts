@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import GuildMemberArgument from "@framework/arguments/GuildMemberArgument";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
@@ -36,7 +36,7 @@ type WarnCommandArgs = {
     reason?: string;
 };
 
-@TakesArgument<WarnCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["member"],
     types: [GuildMemberArgument<true>],
     optional: false,
@@ -44,7 +44,7 @@ type WarnCommandArgs = {
     interactionName: "member",
     interactionType: GuildMemberArgument<true>
 })
-@TakesArgument<WarnCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["reason"],
     types: [RestStringArgument],
     optional: true,

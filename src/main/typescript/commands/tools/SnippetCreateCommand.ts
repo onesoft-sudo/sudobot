@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
 import StringArgument from "@framework/arguments/StringArgument";
@@ -15,7 +15,7 @@ type SnippetCreateCommandArgs = {
     content: string;
 };
 
-@TakesArgument<SnippetCreateCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["name"],
     types: [StringArgument],
     optional: false,
@@ -32,7 +32,7 @@ type SnippetCreateCommandArgs = {
         }
     ]
 })
-@TakesArgument<SnippetCreateCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["content"],
     types: [RestStringArgument],
     optional: false,

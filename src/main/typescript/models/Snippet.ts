@@ -54,8 +54,8 @@ export const snippets = pgTable("snippets", {
         .notNull()
         .default(PermissionLogicMode.And),
     level: integer("level"),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
-    updatedAt: timestamp("updated_at")
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
         .notNull()
         .defaultNow()
         .$onUpdate(() => new Date())

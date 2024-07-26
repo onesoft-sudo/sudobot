@@ -1,5 +1,5 @@
 import Application from "@framework/app/Application";
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import StringArgument from "@framework/arguments/StringArgument";
 import { Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
@@ -24,12 +24,12 @@ type HelpCommandArgs = {
     subcommand?: string;
 };
 
-@TakesArgument<HelpCommand>({
+@ArgumentSchema.Definition({
     names: ["command"],
     types: [StringArgument],
     optional: true
 })
-@TakesArgument<HelpCommand>({
+@ArgumentSchema.Definition({
     names: ["subcommand"],
     types: [StringArgument],
     optional: true
@@ -134,7 +134,7 @@ class HelpCommand extends Command {
             const commandHead = `${prefix}${baseName}` + (isSubcommand ? ` ${subcommand}` : "");
             const metadata =
                 rootCommand.isolatedSubcommands && subcommand
-                    ? rootCommand.subcommandMeta[subcommand] ?? {}
+                    ? (rootCommand.subcommandMeta[subcommand] ?? {})
                     : resolvedCommand;
             let description = `## ${commandHead}\n`;
 
@@ -183,7 +183,7 @@ class HelpCommand extends Command {
                 description += "### Permissions\n";
 
                 for (const permission of finalPermissions) {
-                    description += `${inlineCode(typeof permission === "string" ? permission : (await Permission.resolve(permission))?.toString() ?? "Unknown")}${commandPermissionSuffix}`;
+                    description += `${inlineCode(typeof permission === "string" ? permission : ((await Permission.resolve(permission))?.toString() ?? "Unknown"))}${commandPermissionSuffix}`;
                 }
 
                 description = description.slice(0, -commandPermissionSuffix.length) + "\n";
@@ -193,7 +193,7 @@ class HelpCommand extends Command {
                 description += "### Required System Permissions\n";
 
                 for (const permission of metadata.systemPermissions) {
-                    description += `${inlineCode(typeof permission === "string" ? permission : typeof permission === "bigint" ? permissionBigintToString(permission) ?? "Unknown" : (await Permission.resolve(permission))?.toString() ?? "Unknown")}, `;
+                    description += `${inlineCode(typeof permission === "string" ? permission : typeof permission === "bigint" ? (permissionBigintToString(permission) ?? "Unknown") : ((await Permission.resolve(permission))?.toString() ?? "Unknown"))}, `;
                 }
 
                 description =
@@ -242,14 +242,16 @@ class HelpCommand extends Command {
             }
 
             await context.reply({
-                embeds:[{
-                    description,
-                    color: Colors.Primary,
-                    thumbnail: {
-                        url: this.application.client.user!.displayAvatarURL()
-                    },
-                    timestamp: new Date().toISOString()
-                }],
+                embeds: [
+                    {
+                        description,
+                        color: Colors.Primary,
+                        thumbnail: {
+                            url: this.application.client.user!.displayAvatarURL()
+                        },
+                        timestamp: new Date().toISOString()
+                    }
+                ],
                 components: HelpCommand.minimalResponseComponents
             });
 

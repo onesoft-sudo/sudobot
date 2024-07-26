@@ -1,3 +1,4 @@
+import type ArgumentParser from "@framework/arguments/ArgumentParser";
 import type { Command } from "@framework/commands/Command";
 import type CommandRateLimiterContract from "@framework/contracts/CommandRateLimiterContract";
 import type { Awaitable } from "discord.js";
@@ -23,4 +24,5 @@ export interface CommandManagerServiceInterface {
     ): Awaitable<void>;
     getCommand(name: string): Command | null;
     getRateLimiter(): CommandRateLimiterContract;
+    getArgumentParser(): ArgumentParser;
 }

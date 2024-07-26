@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
 import type { Buildable } from "@framework/commands/Command";
@@ -24,13 +24,21 @@ type EvalCommandArgs = {
     code: string;
 };
 
-@TakesArgument<EvalCommandArgs>({
-    names: ["code"],
-    types: [RestStringArgument],
-    optional: false,
-    errorMessages: [
+@ArgumentSchema({
+    overloads: [
         {
-            [ErrorType.Required]: "You must provide code to evaluate."
+            definitions: [
+                {
+                    names: ["code"],
+                    types: [RestStringArgument],
+                    optional: false,
+                    errorMessages: [
+                        {
+                            [ErrorType.Required]: "You must provide code to evaluate."
+                        }
+                    ]
+                }
+            ]
         }
     ]
 })

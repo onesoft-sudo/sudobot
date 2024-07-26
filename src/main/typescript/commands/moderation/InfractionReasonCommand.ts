@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import IntegerArgument from "@framework/arguments/IntegerArgument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
@@ -16,28 +16,36 @@ type InfractionReasonCommandArgs = {
     reason: string;
 };
 
-@TakesArgument<InfractionReasonCommandArgs>({
-    names: ["id"],
-    types: [IntegerArgument],
-    optional: false,
-    errorMessages: [
+@ArgumentSchema({
+    overloads: [
         {
-            [ErrorType.InvalidType]: "Invalid infraction ID provided.",
-            [ErrorType.Required]: "Infraction ID is required."
+            definitions: [
+                {
+                    names: ["id"],
+                    types: [IntegerArgument],
+                    optional: false,
+                    errorMessages: [
+                        {
+                            [ErrorType.InvalidType]: "Invalid infraction ID provided.",
+                            [ErrorType.Required]: "Infraction ID is required."
+                        }
+                    ],
+                    interactionName: "id",
+                    interactionType: IntegerArgument
+                },
+                {
+                    names: ["reason"],
+                    types: [RestStringArgument],
+                    optional: false,
+                    errorMessages: [ErrorMessages.Reason],
+                    rules: [ArgumentDefaultRules.Reason],
+                    interactionRuleIndex: 0,
+                    interactionName: "reason",
+                    interactionType: RestStringArgument
+                }
+            ]
         }
-    ],
-    interactionName: "id",
-    interactionType: IntegerArgument
-})
-@TakesArgument<InfractionReasonCommandArgs>({
-    names: ["reason"],
-    types: [RestStringArgument],
-    optional: false,
-    errorMessages: [ErrorMessages.Reason],
-    rules: [ArgumentDefaultRules.Reason],
-    interactionRuleIndex: 0,
-    interactionName: "reason",
-    interactionType: RestStringArgument
+    ]
 })
 class InfractionReasonCommand extends Command {
     public override readonly name = "infraction::reason";

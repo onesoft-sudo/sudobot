@@ -16,423 +16,734 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
+import "reflect-metadata";
 
-import type { Awaitable, ChatInputCommandInteraction } from "discord.js";
-import Application from "../app/Application";
-import type { ArgumentPayload, Command } from "../commands/Command";
-import Context from "../commands/Context";
-import type InteractionContext from "../commands/InteractionContext";
-import LegacyContext from "../commands/LegacyContext";
-import { HasClient } from "../types/HasClient";
-import { notIn } from "../utils/utils";
-import type Argument from "./Argument";
-import type { ArgumentTypeOptions } from "./ArgumentTypes";
+import Application from "@framework/app/Application";
+import type { ArgumentConstructor } from "@framework/arguments/Argument";
+import { ErrorType, InvalidArgumentError } from "@framework/arguments/InvalidArgumentError";
+import type { Command } from "@framework/commands/Command";
+import type InteractionContext from "@framework/commands/InteractionContext";
+import type LegacyContext from "@framework/commands/LegacyContext";
+import assert from "assert";
+import type { ChatInputCommandInteraction } from "discord.js";
 
-type ParseResult =
-    | {
-          error: null | undefined;
-          payload: ArgumentPayload;
-          abort: undefined;
-      }
-    | {
-          error: string;
-          payload: undefined;
-          abort: undefined;
-      }
-    | {
-          error: undefined;
-          payload: undefined;
-          abort: boolean;
-      };
+type ArgumentParserContext = LegacyContext | InteractionContext<ChatInputCommandInteraction>;
 
-class ArgumentParser extends HasClient {
-    public async parseArguments(
-        context: LegacyContext,
-        commandContent: string,
-        command: Command,
-        subcommand = false
-    ) {
-        const isDynamic = Reflect.getMetadata("command:dynamic", command.constructor);
-        const argTypes =
-            (Reflect.getMetadata("command:types", command.constructor) as ArgumentTypeOptions[]) ||
-            [];
-        let payload: ArgumentPayload;
-        const { args, argv } = context;
-        const commandManager = Application.current().service("commandManager");
+type ArgumentParserConfig = {
+    context: ArgumentParserContext;
+    command: Command;
+    schema: ArgumentParserSchema;
+    parseSubCommand?: boolean;
+};
 
-        if (isDynamic && !subcommand) {
-            const paramTypes = Reflect.getMetadata(
-                "design:paramtypes",
-                command.constructor,
-                "execute"
-            ) as unknown[] | undefined;
+export type ArgumentParserSchema = {
+    overloads?: ArgumentParserOverload[];
+    options?: OptionSchema[];
+};
 
-            if (paramTypes === undefined) {
-                throw new Error("Dynamic command is missing parameter types metadata");
+export type OptionSchema = {
+    id: string;
+    longNames?: string[];
+    shortNames?: string[];
+    required?: boolean;
+    errors?: {
+        [R in ErrorType.Required | ErrorType.OptionRequiresValue]: string;
+    };
+    requiresValue?: boolean;
+    canonicalName?: string;
+    canonicalNameType?: "long" | "short";
+};
+
+export type ArgumentParserOverload = {
+    name?: string;
+    definitions: ArgumentParserDefinition[];
+};
+
+export type ArgumentParserDefinition<
+    T extends Record<string, unknown> = Record<string, unknown>,
+    K extends [keyof T, ...(keyof T)[]] = [keyof T, ...(keyof T)[]]
+> = {
+    names: K;
+    types: {
+        [M in Extract<keyof T, number>]: ArgumentConstructor<T[M]>;
+    } & {
+        length: number;
+        [key: number]: ArgumentConstructor<unknown>;
+    };
+    optional?: boolean;
+    errorMessages?: {
+        [x in ErrorType]?: string;
+    }[];
+    rules?: Partial<ArgumentRules>[];
+    useCanonical?: boolean;
+    interactionName?: string;
+    interactionType?: ArgumentConstructor<unknown>;
+    interactionRuleIndex?: number;
+};
+
+type CommonResult<T> = {
+    errorTypeForwarded?: ErrorType;
+    error?: string;
+    value?: T;
+    errorType?: string;
+    abort?: boolean;
+};
+
+type CommonArgs<T extends object> = T & {
+    context: ArgumentParserContext;
+    schema: ArgumentParserSchema;
+};
+
+type ParserGlobalState = {
+    argIndex: number;
+    definitionIndex: number;
+    parsedArgs: Record<string, unknown>;
+    parsedOptions: Record<string, unknown>;
+    skipIndexes: number[];
+};
+
+class ArgumentParser {
+    public async parse({
+        throwOnError = false,
+        ...args
+    }: Omit<ArgumentParserConfig, "schema"> & { throwOnError?: boolean }): Promise<
+        CommonResult<NonNullable<Awaited<ReturnType<typeof this.parseOverload>>>["value"]> & {
+            errors?: Record<string, [ErrorType | undefined, string]>;
+        }
+    > {
+        const result = await this.parseInternal(args);
+
+        if (throwOnError && result.error) {
+            throw new InvalidArgumentError(result.error, {
+                type: result.errorTypeForwarded
+            });
+        }
+
+        return result;
+    }
+
+    public async parseInternal({
+        context,
+        command,
+        parseSubCommand = false
+    }: Omit<ArgumentParserConfig, "schema">): Promise<
+        CommonResult<NonNullable<Awaited<ReturnType<typeof this.parseOverload>>>["value"]> & {
+            errors?: Record<string, [ErrorType | undefined, string]>;
+        }
+    > {
+        let result: Awaited<ReturnType<typeof this.parseOverload>> | undefined;
+        const errors: Record<string, [ErrorType | undefined, string]> = {};
+        const parsedOptions: Record<string, unknown> = {};
+        let index = 0;
+        let subcommandParseResult: Awaited<ReturnType<typeof this.parseSubcommand>> | undefined;
+        const baseSchema = (Reflect.getMetadata("command:schema", command.constructor) as
+            | ArgumentParserSchema
+            | undefined) ?? {
+            overloads: []
+        };
+
+        if (parseSubCommand) {
+            subcommandParseResult = await this.parseSubcommand({
+                context,
+                command,
+                schema: baseSchema
+            });
+        }
+
+        if (subcommandParseResult && subcommandParseResult.abort) {
+            return { abort: true };
+        }
+
+        if (subcommandParseResult && subcommandParseResult.error) {
+            return {
+                error: subcommandParseResult.error,
+                errorType: subcommandParseResult.errorType
+            };
+        }
+
+        const schema =
+            (subcommandParseResult?.value
+                ? ((Reflect.getMetadata(
+                      "command:schema",
+                      subcommandParseResult.value.constructor
+                  ) as ArgumentParserSchema | undefined) ?? {
+                      overloads: []
+                  })
+                : null) ?? baseSchema;
+
+        if (!schema.overloads?.length) {
+            return {
+                value: {
+                    parsedArgs: {},
+                    parsedOptions: {}
+                }
+            };
+        }
+
+        for (const overload of schema.overloads) {
+            result = await this.parseOverload({
+                context,
+                overload,
+                schema,
+                parsedOptions,
+                command,
+                skipIndexes: [],
+                defaultState: subcommandParseResult?.defaultState
+            });
+
+            if (!result.error) {
+                break;
             }
 
-            if (!([Context, Object, LegacyContext] as unknown[]).includes(paramTypes[0])) {
-                throw new Error(
-                    "First parameter of the execute method in a dynamic command must be a valid context"
-                );
+            errors[overload.name ?? index++] = [result.errorTypeForwarded, result.error];
+        }
+
+        if (!result) {
+            return {
+                error: "The arguments did not satisfy any of the available overloads",
+                errors
+            };
+        }
+
+        if (result.error) {
+            return {
+                error: result.error,
+                errorType: result.errorType,
+                errors,
+                errorTypeForwarded: result.errorTypeForwarded
+            };
+        }
+
+        for (const optionSchema of schema.options ?? []) {
+            if (!optionSchema.required) {
+                continue;
             }
 
-            const { error, value } = await this.parseArgumentsUsingParamTypes(
-                commandContent,
-                args,
-                argv,
-                paramTypes,
-                context
-            );
-
-            if (error) {
+            if (!(optionSchema.id in parsedOptions)) {
+                const optName =
+                    optionSchema.canonicalName ??
+                    optionSchema.longNames?.at(0) ??
+                    optionSchema.shortNames?.at(0) ??
+                    optionSchema.id;
+                const optType =
+                    optionSchema.canonicalNameType ??
+                    (optionSchema.longNames?.at(0) || !optionSchema.shortNames?.at(0)
+                        ? "long"
+                        : "short");
                 return {
-                    error,
-                    context
+                    error:
+                        optionSchema.errors?.[ErrorType.Required] ??
+                        `Option \`${optType === "long" ? "--" : "-"}${optName}\` is required`,
+                    errorTypeForwarded: ErrorType.Required
                 };
             }
-
-            payload = value!;
-        } else {
-            const { error, value, abort } = await this.parseArgumentsUsingCustomTypes(
-                commandContent,
-                args,
-                argv,
-                argTypes,
-                subcommand,
-                commandManager.getCommand(argv[0])?.subcommands ?? [],
-                command.onSubcommandNotFound?.bind(command) ??
-                    Reflect.getMetadata("command:subcommand_not_found_error", command.constructor),
-                context
-            );
-
-            if (abort) {
-                return {
-                    abort: true
-                };
-            }
-
-            if (error) {
-                return {
-                    error,
-                    context
-                };
-            }
-
-            payload = [value!];
         }
 
         return {
-            context,
-            payload
+            value: result?.value,
+            errors,
+            errorTypeForwarded: result?.errorTypeForwarded
         };
     }
 
-    private async parseArgumentsUsingCustomTypes(
-        commandContent: string,
-        args: string[],
-        argv: string[],
-        types: ArgumentTypeOptions[],
-        subcommand = false,
-        allowedSubcommands: string[] | undefined,
-        onSubcommandNotFound:
-            | string
-            | ((
-                  context: Context,
-                  subcommand: string,
-                  errorType: "not_found" | "not_specified"
-              ) => Awaitable<void>)
-            | undefined,
-        context: Context
-    ) {
-        const parsedArguments: Record<string, unknown> = {};
-        let lastError;
-
-        if (subcommand && args[0] === undefined) {
-            if (typeof onSubcommandNotFound === "function" && context) {
-                await onSubcommandNotFound(context, args[0], "not_specified");
-
-                return {
-                    abort: true
-                };
-            }
-
-            return {
-                error: (onSubcommandNotFound as string | undefined) ?? "A subcommand is required!"
-            };
+    private async parseSubcommand({ context, command, schema }: ArgumentParserConfig): Promise<
+        CommonResult<Command | null> & {
+            defaultState?: ParserGlobalState;
+        }
+    > {
+        if (!command.hasSubcommands) {
+            return { value: null };
         }
 
-        if (subcommand && allowedSubcommands && !allowedSubcommands.includes(args[0])) {
-            if (typeof onSubcommandNotFound === "function" && context) {
-                await onSubcommandNotFound(context, args[0], "not_found");
+        const { commandName } = context;
+        let subcommandName = context.isLegacy() ? undefined : context.options.getSubcommand(true);
+        const state: ParserGlobalState = {
+            argIndex: 0,
+            definitionIndex: 0,
+            parsedArgs: {},
+            parsedOptions: {},
+            skipIndexes: []
+        };
 
-                return {
-                    abort: true
-                };
+        if (context.isLegacy()) {
+            while (context.args[state.argIndex]?.startsWith("-")) {
+                const { error, silent, errorType } = await this.parseOption({
+                    context,
+                    schema,
+                    state
+                });
+
+                if (error) {
+                    if (silent) {
+                        continue;
+                    }
+
+                    if (errorType === "option_not_allowed") {
+                        return {
+                            error: "Options are not allowed to be used with this command, before subcommand name!"
+                        };
+                    }
+
+                    return { error };
+                }
             }
 
-            return {
-                error:
-                    (onSubcommandNotFound as string | undefined) ?? "Invalid subcommand provided."
-            };
+            subcommandName = context.args[state.argIndex++];
         }
 
-        if (subcommand) {
-            const commandManager = Application.current().service("commandManager");
-            const canonicalName = commandManager.getCommand(argv[0])?.name ?? argv[0];
-            const baseCommand = commandManager.getCommand(canonicalName);
+        const onSubcommandNotFoundHandler =
+            command.onSubcommandNotFound?.bind(command) ??
+            Reflect.getMetadata("command:subcommand_not_found_error", command.constructor);
 
-            const command =
-                baseCommand && baseCommand.isolatedSubcommands === false
-                    ? baseCommand
-                    : commandManager.getCommand(`${canonicalName}::${args[0]}`);
-
-            if (!command) {
-                if (typeof onSubcommandNotFound === "function" && context) {
-                    await onSubcommandNotFound(context, args[0], "not_found");
-
-                    return {
-                        abort: true
-                    };
+        if (!subcommandName) {
+            if (typeof onSubcommandNotFoundHandler === "function") {
+                try {
+                    await onSubcommandNotFoundHandler(context, undefined, "not_specified");
+                } catch (error) {
+                    Application.current().logger.error(error);
                 }
 
                 return {
-                    error:
-                        (onSubcommandNotFound as string | undefined) ??
-                        "Invalid subcommand provided."
+                    abort: true
                 };
             }
 
-            types =
-                (Reflect.getMetadata(
-                    "command:types",
-                    command.constructor
-                ) as ArgumentTypeOptions[]) ?? [];
+            return {
+                error: `A subcommand is required! The valid subcommands are: \`${command.subcommands.join("`, `")}\`.`
+            };
         }
 
-        for (let i = 0; i < types.length; i++) {
-            const argIndex = subcommand && types.length ? i + 1 : i;
-            const arg = args[argIndex];
-            const expectedArgInfo = types[i];
-            const names = Array.isArray(expectedArgInfo.names)
-                ? expectedArgInfo.names
-                : [expectedArgInfo.names];
+        if (!command.subcommands.includes(subcommandName)) {
+            if (typeof onSubcommandNotFoundHandler === "function") {
+                try {
+                    await onSubcommandNotFoundHandler(context, subcommandName, "not_found");
+                } catch (error) {
+                    Application.current().logger.error(error);
+                }
 
-            if (names.length === 0) {
-                throw new Error("Argument names must be provided");
+                return {
+                    abort: true
+                };
             }
 
-            if (!arg) {
-                if (expectedArgInfo.default !== undefined || expectedArgInfo.optional) {
-                    for (const name of names) {
-                        if (notIn(parsedArguments, name)) {
-                            parsedArguments[name] = expectedArgInfo.default ?? null;
-                        }
+            return {
+                error: `\`${subcommandName}\` is not a valid subcommand for \`${commandName}\`. The valid subcommands are: \`${command.subcommands.join("`, `")}\`.`
+            };
+        }
+
+        const commandManager = Application.current().service("commandManager");
+        const canonicalName = commandManager.getCommand(commandName)?.name ?? commandName;
+        const baseCommand = commandManager.getCommand(canonicalName);
+
+        const subcommand =
+            baseCommand && baseCommand.isolatedSubcommands === false
+                ? baseCommand
+                : commandManager.getCommand(`${canonicalName}::${subcommandName}`);
+
+        if (!subcommand) {
+            if (typeof onSubcommandNotFoundHandler === "function") {
+                await onSubcommandNotFoundHandler(context, subcommandName, "not_found");
+
+                return {
+                    abort: true
+                };
+            }
+
+            return {
+                error: `\`${subcommandName}\` is not a valid subcommand for \`${commandName}\`. The valid subcommands are: \`${command.subcommands.join("`, `")}\`.`
+            };
+        }
+
+        return {
+            value: subcommand,
+            defaultState: context.isLegacy()
+                ? {
+                      ...state,
+                      parsedArgs: {}
+                  }
+                : undefined
+        };
+    }
+
+    private nextArgIndex(state: ParserGlobalState, inc = 1) {
+        if (state.skipIndexes.includes(state.argIndex)) {
+            state.argIndex++;
+        }
+
+        state.argIndex += inc;
+        return state.argIndex;
+    }
+
+    public async parseOverload({
+        context,
+        overload,
+        schema,
+        parsedOptions,
+        command,
+        skipIndexes = [],
+        defaultState
+    }: CommonArgs<{
+        overload: ArgumentParserOverload;
+        parsedOptions: Record<string, unknown>;
+        command: Command;
+        skipIndexes?: number[];
+        defaultState?: ParserGlobalState;
+    }>): Promise<
+        CommonResult<Pick<ParserGlobalState, "parsedArgs" | "parsedOptions">> & {
+            errorTypeForwarded?: ErrorType;
+        }
+    > {
+        Application.current().logger.debug("Parsing overload", overload.name ?? "(unnamed)");
+        Application.current().logger.debug("---------------------");
+
+        assert(overload.definitions.length > 0, "No definitions provided");
+
+        const state: ParserGlobalState = defaultState
+            ? { ...defaultState }
+            : {
+                  argIndex: 0,
+                  definitionIndex: 0,
+                  parsedArgs: {},
+                  parsedOptions,
+                  skipIndexes
+              };
+
+        Application.current().logger.debug("Initial state", defaultState);
+
+        for (
+            let definitionIndex = 0;
+            definitionIndex < overload.definitions.length;
+            definitionIndex++
+        ) {
+            const result = await this.parseArgumentDefinition({
+                context,
+                definition: overload.definitions[definitionIndex],
+                schema,
+                state,
+                command
+            });
+
+            if (result.error) {
+                return {
+                    error: result.error,
+                    errorType: "definition_parse_failed",
+                    errorTypeForwarded: result.errorTypeForwarded
+                };
+            }
+
+            assert(result.value, "No value provided");
+            state.parsedArgs[result.value.name] = result.value.value;
+
+            if (result.abortParsingDefinitions) {
+                break;
+            }
+
+            this.nextArgIndex(state);
+        }
+
+        return {
+            value: { parsedArgs: state.parsedArgs, parsedOptions: state.parsedOptions }
+        };
+    }
+
+    public async parseArgumentDefinition({
+        context,
+        definition,
+        schema,
+        state,
+        command
+    }: CommonArgs<{
+        definition: ArgumentParserDefinition;
+        state: ParserGlobalState;
+        command: Command;
+    }>): Promise<
+        CommonResult<{ name: string; value: null | unknown }> & {
+            abortParsingDefinitions?: boolean;
+            errorTypeForwarded?: ErrorType;
+        }
+    > {
+        let result: CommonResult<{ name: string; value: unknown }> | undefined;
+
+        Application.current().logger.debug("Parsing definition", definition.names);
+
+        if (!schema.options) {
+            assert(definition.types.length > 0, "No types provided");
+            assert(definition.names.length > 0, "No names provided");
+        } else if (context.isLegacy() && context.args[state.argIndex]?.startsWith("-")) {
+            while (context.args[state.argIndex]?.startsWith("-")) {
+                const { error, silent } = await this.parseOption({
+                    context,
+                    schema,
+                    state
+                });
+
+                if (error) {
+                    if (silent) {
+                        continue;
+                    }
+
+                    return { error };
+                }
+            }
+        }
+
+        const errorMessageRecord = definition.errorMessages?.[0];
+
+        if (context.isLegacy() && context.args[state.argIndex] === undefined) {
+            if (definition.optional) {
+                return {
+                    value: {
+                        name: definition.names[0],
+                        value: null
+                    }
+                };
+            }
+
+            return {
+                errorTypeForwarded: ErrorType.Required,
+                error:
+                    errorMessageRecord?.[ErrorType.Required] ??
+                    `Argument at index #${state.argIndex} (${definition.names.join(", ")}) is required but was not provided`
+            };
+        }
+
+        const interactionName = definition.interactionName ?? definition.names[0];
+
+        if (!context.isLegacy() && !context.options.get(interactionName)) {
+            if (definition.optional) {
+                return {
+                    value: {
+                        name: interactionName,
+                        value: null
+                    }
+                };
+            }
+
+            return {
+                errorTypeForwarded: ErrorType.Required,
+                error:
+                    errorMessageRecord?.[ErrorType.Required] ??
+                    `Argument at index #${state.argIndex} (${interactionName}) is required but was not provided (via interaction)`
+            };
+        }
+
+        for (let typeIndex = 0; typeIndex < definition.types.length; typeIndex++) {
+            result = await this.parseType({
+                context,
+                type:
+                    (context.isChatInput() ? definition.interactionType : null) ??
+                    definition.types[typeIndex],
+                typeIndex,
+                schema,
+                definition,
+                state,
+                command
+            });
+
+            if (!result.error) {
+                return result;
+            }
+
+            if (context.isChatInput() && definition.interactionType) {
+                break;
+            }
+        }
+
+        return {
+            error: result?.error ?? "The arguments did not satisfy any of the available types",
+            value: result?.value
+        };
+    }
+
+    public async parseOption({
+        context,
+        schema,
+        state
+    }: CommonArgs<{
+        state: ParserGlobalState;
+    }> & {
+        context: LegacyContext;
+    }): Promise<CommonResult<void> & { silent?: boolean }> {
+        if (!schema.options) {
+            return {
+                error: "Options are not allowed",
+                errorType: "option_not_allowed"
+            };
+        }
+
+        assert(!!context.args[state.argIndex]);
+
+        const isLong = context.args[state.argIndex].startsWith("--");
+        const optArg = context.args[state.argIndex].slice(isLong ? 2 : 1);
+
+        if (isLong) {
+            const [name, immediateValue] = optArg.split(/=(.+)/);
+            const optionSchema = schema.options.find(option => option.longNames?.includes(name));
+
+            if (!optionSchema) {
+                return {
+                    error: `Unknown option \`--${name}\``
+                };
+            }
+
+            if (name in state.parsedOptions) {
+                this.nextArgIndex(state);
+
+                if (optionSchema.requiresValue) {
+                    this.nextArgIndex(state);
+                }
+
+                return {
+                    error: `Option \`--${name}\` was already provided`,
+                    silent: true
+                };
+            }
+
+            const value =
+                immediateValue ??
+                (context.args[state.argIndex + 1]?.startsWith("-") === false
+                    ? context.args[state.argIndex + 1]
+                    : null);
+
+            if (optionSchema.requiresValue) {
+                if (value === null) {
+                    return {
+                        errorTypeForwarded: ErrorType.OptionRequiresValue,
+                        error:
+                            optionSchema.errors?.[ErrorType.OptionRequiresValue] ??
+                            `Option \`--${name}\` requires a value`
+                    };
+                }
+
+                state.parsedOptions[optionSchema.id] = value;
+                this.nextArgIndex(state);
+            } else {
+                state.parsedOptions[optionSchema.id] = true;
+            }
+
+            this.nextArgIndex(state);
+        } else {
+            const optionNames = optArg.split("");
+            let inc = 1;
+
+            for (let optionIndex = 0; optionIndex < optionNames.length; optionIndex++) {
+                const optionName = optionNames[optionIndex];
+                const optionSchema = schema.options.find(schema =>
+                    schema.shortNames?.includes(optionNames[optionIndex])
+                );
+
+                if (!optionSchema) {
+                    return {
+                        error: `Unknown option \`-${optionName}\``
+                    };
+                }
+
+                if (optionName in state.parsedOptions) {
+                    inc++;
+
+                    if (optionSchema.requiresValue) {
+                        inc++;
                     }
 
                     continue;
                 }
 
+                const isLast = optionNames.length - 1 === optionIndex;
+
+                if (
+                    (!isLast && optionSchema.requiresValue) ||
+                    (isLast && context.args[state.argIndex + 1]?.startsWith("-") !== false)
+                ) {
+                    return {
+                        errorTypeForwarded: ErrorType.OptionRequiresValue,
+                        error:
+                            optionSchema.errors?.[ErrorType.OptionRequiresValue] ??
+                            `Option \`-${optionName}\` requires a value`
+                    };
+                }
+
+                state.parsedOptions[optionSchema.id] = optionSchema.requiresValue
+                    ? context.args[state.argIndex + 1]
+                    : true;
+
+                if (optionSchema.requiresValue) {
+                    this.nextArgIndex(state);
+                }
+            }
+
+            this.nextArgIndex(state, inc);
+        }
+
+        return {
+            value: undefined as void
+        };
+    }
+
+    public async parseType({
+        context,
+        type,
+        definition,
+        state,
+        typeIndex
+    }: CommonArgs<{
+        type: ArgumentConstructor<unknown>;
+        definition: ArgumentParserDefinition;
+        state: ParserGlobalState;
+        typeIndex: number;
+        command: Command;
+    }>): Promise<
+        CommonResult<{ name: string; value: unknown }> & { abortParsingDefinitions?: boolean }
+    > {
+        const useCanonical = definition.useCanonical !== false && definition.names.length === 1;
+        const name = definition.names[useCanonical ? 0 : typeIndex];
+        const errorMessageRecord = definition.errorMessages?.[useCanonical ? 0 : typeIndex];
+        const rules =
+            definition.rules?.[
+                (context.isChatInput() ? definition.interactionRuleIndex : null) ??
+                    (useCanonical ? 0 : typeIndex)
+            ];
+
+        try {
+            const { abort, error, value } = context.isLegacy()
+                ? await type.performCast(
+                      context,
+                      context.commandContent,
+                      context.argv,
+                      context.args[state.argIndex],
+                      state.argIndex,
+                      name,
+                      rules,
+                      !definition.optional
+                  )
+                : await type.performCastFromInteraction(
+                      context,
+                      context.commandMessage,
+                      name,
+                      rules,
+                      !definition.optional
+                  );
+
+            if (error) {
                 return {
                     error:
-                        expectedArgInfo.errorMessages?.[0]?.Required ??
-                        `${expectedArgInfo.names.join(", or ")} is required!`
+                        (error.meta.type ? errorMessageRecord?.[error.meta.type] : null) ??
+                        error.message,
+                    errorTypeForwarded: error.meta.type
                 };
             }
 
-            const argTypes = Array.isArray(expectedArgInfo.types)
-                ? expectedArgInfo.types
-                : [expectedArgInfo.types];
-
-            let argTypeIndex = 0;
-
-            for (const argType of argTypes) {
-                const name = names[argTypeIndex] ?? names.at(-1);
-
-                if (name in parsedArguments) {
-                    break;
-                }
-
-                const { error, value } = await argType.performCast(
-                    context,
-                    commandContent,
-                    argv,
-                    arg,
-                    argIndex,
+            return {
+                value: {
                     name,
-                    expectedArgInfo.rules?.[argTypeIndex],
-                    !expectedArgInfo.optional
-                );
-
-                if (value && !error) {
-                    parsedArguments[name] = value.getValue();
-                    lastError = undefined;
-                    break;
-                }
-
-                lastError = error;
-
-                if (error && error.meta.noSkip) {
-                    break;
-                }
-
-                argTypeIndex++;
-            }
-
-            if (lastError) {
-                return {
-                    error:
-                        (expectedArgInfo.errorMessages?.[argTypeIndex] ??
-                            expectedArgInfo.errorMessages?.at(-1))?.[lastError.meta.type] ??
-                        lastError.message
-                };
-            }
+                    value: value?.getValue()
+                },
+                abortParsingDefinitions: abort
+            };
+        } catch (error) {
+            return {
+                error: error instanceof Error ? error.message : `${error}`
+            };
         }
-
-        return {
-            error: null,
-            value: parsedArguments
-        };
-    }
-
-    private async parseArgumentsUsingParamTypes(
-        commandContent: string,
-        args: string[],
-        argv: string[],
-        types: unknown[],
-        context: Context
-    ) {
-        const parsedArguments = [];
-
-        for (let i = 0; i < types.length; i++) {
-            const arg = args[i];
-            const argType = types[i] as typeof Argument;
-
-            if (arg === undefined) {
-                return {
-                    error: `${argType.name} is required!`
-                };
-            }
-
-            const { error, value } = await argType.performCast(
-                context,
-                commandContent,
-                argv,
-                arg,
-                i,
-                undefined,
-                undefined,
-                true
-            );
-
-            if (error) {
-                return {
-                    error: error.message
-                };
-            }
-
-            parsedArguments.push(value!);
-        }
-
-        return {
-            error: null,
-            value: parsedArguments
-        };
-    }
-
-    public async parse(
-        context: LegacyContext | InteractionContext,
-        command: Command,
-        commandContent?: string,
-        subcommand = false
-    ): Promise<ParseResult> {
-        if (context instanceof LegacyContext) {
-            return await this.parseArguments(context, commandContent!, command, subcommand);
-        } else if (context.isChatInput()) {
-            return await this.parseFromInteraction(
-                context as InteractionContext<ChatInputCommandInteraction>,
-                command
-            );
-        }
-
-        return { error: null, payload: [], abort: undefined };
-    }
-
-    public async parseFromInteraction(
-        context: InteractionContext<ChatInputCommandInteraction>,
-        command: Command
-    ): Promise<ParseResult> {
-        const interaction = context.commandMessage as ChatInputCommandInteraction;
-        const expectedArgs =
-            (Reflect.getMetadata("command:types", command.constructor) as ArgumentTypeOptions[]) ||
-            [];
-        const isDynamic = Reflect.getMetadata("command:dynamic", command.constructor);
-
-        if (isDynamic) {
-            throw new Error("Dynamic commands are not supported with interactions");
-        }
-
-        const args: Record<string, unknown> = {};
-
-        for (const expectedArgInfo of expectedArgs) {
-            const type =
-                expectedArgInfo.interactionType ??
-                (Array.isArray(expectedArgInfo.types)
-                    ? expectedArgInfo.types[0]
-                    : expectedArgInfo.types);
-
-            if (!expectedArgInfo.interactionName) {
-                if (expectedArgInfo.names.length === 0) {
-                    throw new Error("Argument names must be provided");
-                } else if (expectedArgInfo.names.length > 1) {
-                    throw new Error("Only 1 argument name is allowed for auto-parsing!");
-                }
-            }
-
-            const name = expectedArgInfo.interactionName ?? expectedArgInfo.names[0];
-
-            if (
-                !expectedArgInfo.rules?.[expectedArgInfo.interactionRuleIndex ?? 0]?.[
-                    "interaction:no_required_check"
-                ] &&
-                !interaction.options.get(name)
-            ) {
-                if (expectedArgInfo.optional || expectedArgInfo.default !== undefined) {
-                    args[name] = expectedArgInfo.default ?? null;
-                    continue;
-                }
-
-                return {
-                    error: expectedArgInfo.errorMessages?.[0]?.Required ?? `${name} is required!`,
-                    payload: undefined,
-                    abort: undefined
-                };
-            }
-
-            const { error, value } = await type.performCastFromInteraction(
-                context,
-                interaction,
-                name,
-                expectedArgInfo.rules?.[expectedArgInfo.interactionRuleIndex ?? 0],
-                !expectedArgInfo.optional
-            );
-
-            if (error) {
-                return {
-                    error: error.message,
-                    payload: undefined,
-                    abort: undefined
-                };
-            }
-
-            args[name] = value?.getValue();
-        }
-
-        return {
-            error: null,
-            payload: [args],
-            abort: undefined
-        };
     }
 }
 

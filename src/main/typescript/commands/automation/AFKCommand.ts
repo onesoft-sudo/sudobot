@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
 import type { Buildable } from "@framework/commands/Command";
@@ -15,24 +15,26 @@ type AFKCommandArgs = {
     reason?: string;
 };
 
-@TakesArgument<AFKCommandArgs>({
-    names: ["reason"],
-    types: [RestStringArgument],
-    optional: true,
-    errorMessages: [
-        {
-            [ErrorType.InvalidRange]: "The reason must be between 1 and 1024 characters long."
-        }
-    ],
-    rules: [
-        {
-            "range:max": 1024,
-            "range:min": 1
-        }
-    ],
-    interactionName: "reason",
-    interactionType: RestStringArgument
-})
+@ArgumentSchema.Overload([
+    {
+        names: ["reason"],
+        types: [RestStringArgument],
+        optional: true,
+        errorMessages: [
+            {
+                [ErrorType.InvalidRange]: "The reason must be between 1 and 1024 characters long."
+            }
+        ],
+        rules: [
+            {
+                "range:max": 1024,
+                "range:min": 1
+            }
+        ],
+        interactionName: "reason",
+        interactionType: RestStringArgument
+    }
+])
 class AFKCommand extends Command {
     public override readonly name = "afk";
     public override readonly description: string = "Sets your AFK status.";

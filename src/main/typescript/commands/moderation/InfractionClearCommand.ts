@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import StringArgument from "@framework/arguments/StringArgument";
 import UserArgument from "@framework/arguments/UserArgument";
@@ -16,26 +16,34 @@ type InfractionClearCommandArgs = {
     type?: string;
 };
 
-@TakesArgument<InfractionClearCommandArgs>({
-    names: ["user"],
-    types: [UserArgument<true>],
-    optional: false,
-    errorMessages: [UserArgument.defaultErrors],
-    interactionName: "user",
-    interactionType: UserArgument<true>
-})
-@TakesArgument<InfractionClearCommandArgs>({
-    names: ["type"],
-    types: [StringArgument],
-    optional: true,
-    errorMessages: [
+@ArgumentSchema({
+    overloads: [
         {
-            [ErrorType.InvalidType]: "Invalid infraction type provided.",
-            [ErrorType.Required]: "Infraction type is required."
+            definitions: [
+                {
+                    names: ["user"],
+                    types: [UserArgument<true>],
+                    optional: false,
+                    errorMessages: [UserArgument.defaultErrors],
+                    interactionName: "user",
+                    interactionType: UserArgument<true>
+                },
+                {
+                    names: ["type"],
+                    types: [StringArgument],
+                    optional: true,
+                    errorMessages: [
+                        {
+                            [ErrorType.InvalidType]: "Invalid infraction type provided.",
+                            [ErrorType.Required]: "Infraction type is required."
+                        }
+                    ],
+                    interactionName: "type",
+                    interactionType: StringArgument
+                }
+            ]
         }
-    ],
-    interactionName: "type",
-    interactionType: StringArgument
+    ]
 })
 class InfractionClearCommand extends Command {
     public override readonly name = "infraction::clear";

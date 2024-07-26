@@ -5,8 +5,8 @@ export const channelLocks = pgTable("channel_locks", {
     guildId: varchar("guild_id").notNull(),
     channelId: varchar("channel_id").notNull(),
     permissions: json("permissions").notNull(),
-    createdAt: timestamp("created_at").defaultNow(),
-    updatedAt: timestamp("updated_at")
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
         .defaultNow()
         .$onUpdate(() => new Date())
 });

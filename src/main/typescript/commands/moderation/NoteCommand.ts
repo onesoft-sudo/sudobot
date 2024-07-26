@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
 import UserArgument from "@framework/arguments/UserArgument";
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
@@ -36,7 +36,7 @@ type NoteCommandArgs = {
     reason?: string;
 };
 
-@TakesArgument<NoteCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["user"],
     types: [UserArgument<true>],
     optional: false,
@@ -44,7 +44,7 @@ type NoteCommandArgs = {
     interactionName: "user",
     interactionType: UserArgument<true>
 })
-@TakesArgument<NoteCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["reason"],
     types: [RestStringArgument],
     optional: true,

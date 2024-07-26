@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import DurationArgument from "@framework/arguments/DurationArgument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
@@ -17,14 +17,14 @@ type QueueAddCommandArgs = {
     command: string;
 };
 
-@TakesArgument<QueueAddCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["runAfter"],
     types: [DurationArgument],
     optional: false,
     errorMessages: [DurationArgument.defaultErrors],
     interactionName: "run_after"
 })
-@TakesArgument<QueueAddCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["command"],
     types: [RestStringArgument],
     optional: false,

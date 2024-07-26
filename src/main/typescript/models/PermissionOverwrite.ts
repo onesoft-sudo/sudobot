@@ -28,8 +28,8 @@ export const permissionOverwrites = pgTable("permission_overwrites", {
     priority: integer("priority").notNull().default(0),
     merge: boolean("merge").notNull().default(true),
     disabled: boolean("disabled").notNull().default(false),
-    createdAt: timestamp("created_at").defaultNow(),
-    updatedAt: timestamp("updated_at")
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
         .defaultNow()
         .$onUpdate(() => new Date())
 });

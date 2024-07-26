@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
 import StringArgument from "@framework/arguments/StringArgument";
@@ -22,36 +22,44 @@ type InfractionCreateCommandArgs = {
     reason?: string;
 };
 
-@TakesArgument<InfractionCreateCommandArgs>({
-    names: ["user"],
-    types: [UserArgument<true>],
-    optional: false,
-    errorMessages: [UserArgument.defaultErrors],
-    interactionName: "user",
-    interactionType: UserArgument<true>
-})
-@TakesArgument<InfractionCreateCommandArgs>({
-    names: ["type"],
-    types: [StringArgument],
-    optional: false,
-    errorMessages: [
+@ArgumentSchema({
+    overloads: [
         {
-            [ErrorType.InvalidType]: "Invalid infraction type provided.",
-            [ErrorType.Required]: "Infraction type is required."
+            definitions: [
+                {
+                    names: ["user"],
+                    types: [UserArgument<true>],
+                    optional: false,
+                    errorMessages: [UserArgument.defaultErrors],
+                    interactionName: "user",
+                    interactionType: UserArgument<true>
+                },
+                {
+                    names: ["type"],
+                    types: [StringArgument],
+                    optional: false,
+                    errorMessages: [
+                        {
+                            [ErrorType.InvalidType]: "Invalid infraction type provided.",
+                            [ErrorType.Required]: "Infraction type is required."
+                        }
+                    ],
+                    interactionName: "type",
+                    interactionType: StringArgument
+                },
+                {
+                    names: ["reason"],
+                    types: [RestStringArgument],
+                    optional: true,
+                    errorMessages: [ErrorMessages.Reason],
+                    rules: [ArgumentDefaultRules.Reason],
+                    interactionRuleIndex: 0,
+                    interactionName: "reason",
+                    interactionType: RestStringArgument
+                }
+            ]
         }
-    ],
-    interactionName: "type",
-    interactionType: StringArgument
-})
-@TakesArgument<InfractionCreateCommandArgs>({
-    names: ["reason"],
-    types: [RestStringArgument],
-    optional: true,
-    errorMessages: [ErrorMessages.Reason],
-    rules: [ArgumentDefaultRules.Reason],
-    interactionRuleIndex: 0,
-    interactionName: "reason",
-    interactionType: RestStringArgument
+    ]
 })
 class InfractionCreateCommand extends Command {
     public override readonly name = "infraction::create";

@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import GuildMemberArgument from "@framework/arguments/GuildMemberArgument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
@@ -36,7 +36,7 @@ type ModMessageCommandArgs = {
     message?: string;
 };
 
-@TakesArgument<ModMessageCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["member"],
     types: [GuildMemberArgument<true>],
     optional: false,
@@ -44,7 +44,7 @@ type ModMessageCommandArgs = {
     interactionName: "member",
     interactionType: GuildMemberArgument<true>
 })
-@TakesArgument<ModMessageCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["message"],
     types: [RestStringArgument],
     optional: false,

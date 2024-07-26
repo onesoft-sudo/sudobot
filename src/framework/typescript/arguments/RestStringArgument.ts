@@ -22,6 +22,8 @@ import Argument from "./Argument";
 import { ErrorType } from "./InvalidArgumentError";
 
 class RestStringArgument extends Argument<string> {
+    public override readonly abortAfterParsing = true;
+
     public override toString(): string {
         return this.getValue();
     }
@@ -46,6 +48,20 @@ class RestStringArgument extends Argument<string> {
     public override postTransformValidation(): boolean {
         if (!this.transformedValue) {
             return this.error("Invalid argument received", ErrorType.InvalidType);
+        }
+
+        if (
+            this.rules?.["range:min"] &&
+            this.transformedValue!.length < this.rules?.["range:min"]
+        ) {
+            return this.error("String is too short", ErrorType.InvalidRange);
+        }
+
+        if (
+            this.rules?.["range:max"] &&
+            this.transformedValue!.length > this.rules?.["range:max"]
+        ) {
+            return this.error("String is too long", ErrorType.InvalidRange);
         }
 
         return true;

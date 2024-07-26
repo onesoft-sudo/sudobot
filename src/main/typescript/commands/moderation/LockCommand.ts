@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import ChannelArgument from "@framework/arguments/ChannelArgument";
 import type { Buildable } from "@framework/commands/Command";
 import { Command } from "@framework/commands/Command";
@@ -12,7 +12,7 @@ type LockCommandArgs = {
     channel?: GuildBasedChannel;
 };
 
-@TakesArgument<LockCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["channel"],
     types: [ChannelArgument<true>],
     optional: true,

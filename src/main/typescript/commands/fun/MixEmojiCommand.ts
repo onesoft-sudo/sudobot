@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import StringArgument from "@framework/arguments/StringArgument";
 import type { Buildable } from "@framework/commands/Command";
@@ -12,7 +12,7 @@ type MixEmojiCommandArgs = {
     second: string;
 };
 
-@TakesArgument<MixEmojiCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["first"],
     types: [StringArgument],
     optional: false,
@@ -22,7 +22,7 @@ type MixEmojiCommandArgs = {
         }
     ]
 })
-@TakesArgument<MixEmojiCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["second"],
     types: [StringArgument],
     optional: false,

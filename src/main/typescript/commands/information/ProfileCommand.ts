@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import GuildMemberArgument from "@framework/arguments/GuildMemberArgument";
 import UserArgument from "@framework/arguments/UserArgument";
 import type { Buildable } from "@framework/commands/Command";
@@ -27,7 +27,7 @@ type ProfileCommandArgs = {
     member: GuildMember | User;
 };
 
-@TakesArgument<ProfileCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["member", "member"],
     types: [GuildMemberArgument<true>, UserArgument<true>],
     optional: true,

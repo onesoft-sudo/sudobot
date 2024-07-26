@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import StringArgument from "@framework/arguments/StringArgument";
 import { Command } from "@framework/commands/Command";
@@ -12,7 +12,7 @@ type SnippetRenameCommandArgs = {
     newName: string;
 };
 
-@TakesArgument<SnippetRenameCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["name"],
     types: [StringArgument],
     optional: false,
@@ -29,7 +29,7 @@ type SnippetRenameCommandArgs = {
         }
     ]
 })
-@TakesArgument<SnippetRenameCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["newName"],
     types: [StringArgument],
     optional: false,

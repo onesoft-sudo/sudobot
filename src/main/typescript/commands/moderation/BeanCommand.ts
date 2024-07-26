@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import GuildMemberArgument from "@framework/arguments/GuildMemberArgument";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
@@ -26,6 +26,7 @@ import { Inject } from "@framework/container/Inject";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { also } from "@framework/utils/utils";
 import { ArgumentDefaultRules } from "@main/utils/ArgumentDefaultRules";
+import { protectSystemAdminsFromCommands } from "@main/utils/troll";
 import { GuildMember } from "discord.js";
 import { Colors } from "../../constants/Colors";
 import { Limits } from "../../constants/Limits";
@@ -38,23 +39,31 @@ type BeanCommandArgs = {
     reason?: string;
 };
 
-@TakesArgument<BeanCommandArgs>({
-    names: ["member"],
-    types: [GuildMemberArgument<true>],
-    optional: false,
-    errorMessages: [GuildMemberArgument.defaultErrors],
-    interactionName: "member",
-    interactionType: GuildMemberArgument<true>
-})
-@TakesArgument<BeanCommandArgs>({
-    names: ["reason"],
-    types: [RestStringArgument],
-    optional: true,
-    errorMessages: [ErrorMessages.Reason],
-    rules: [ArgumentDefaultRules.Reason],
-    interactionRuleIndex: 0,
-    interactionName: "reason",
-    interactionType: RestStringArgument
+@ArgumentSchema({
+    overloads: [
+        {
+            definitions: [
+                {
+                    names: ["member"],
+                    types: [GuildMemberArgument<true>],
+                    optional: false,
+                    errorMessages: [GuildMemberArgument.defaultErrors],
+                    interactionName: "member",
+                    interactionType: GuildMemberArgument<true>
+                },
+                {
+                    names: ["reason"],
+                    types: [RestStringArgument],
+                    optional: true,
+                    errorMessages: [ErrorMessages.Reason],
+                    rules: [ArgumentDefaultRules.Reason],
+                    interactionRuleIndex: 0,
+                    interactionName: "reason",
+                    interactionType: RestStringArgument
+                }
+            ]
+        }
+    ]
 })
 class BeanCommand extends Command {
     public override readonly name = "bean";
@@ -97,6 +106,10 @@ class BeanCommand extends Command {
         args: BeanCommandArgs
     ): Promise<void> {
         const { member, reason } = args;
+
+        if (await protectSystemAdminsFromCommands(this.application, context, member.id)) {
+            return;
+        }
 
         if (
             !context.member ||

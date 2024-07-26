@@ -7,9 +7,9 @@ export const verificationEntries = pgTable("verification_entries", {
     code: varchar("code").notNull().unique(),
     attempts: integer("attempts").notNull().default(0),
     metadata: json("metadata").notNull().default({}),
-    expiresAt: timestamp("expires_at").notNull(),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
-    updatedAt: timestamp("updated_at")
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
         .notNull()
         .defaultNow()
         .$onUpdate(() => new Date())

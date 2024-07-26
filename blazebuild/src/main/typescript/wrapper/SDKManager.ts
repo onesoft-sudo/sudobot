@@ -5,14 +5,14 @@ import decompress from "decompress";
 import { createWriteStream, existsSync } from "fs";
 import { mkdir, rename, rm } from "fs/promises";
 import path from "path";
+import semver from "semver";
 import * as tar from "tar";
 import IO from "./IO";
 import UsesWrapper from "./UsesWrapper";
 import { NODE_DIR, NODE_INTERPRETER, TMPDIR } from "./utils";
 
 class SDKManager extends UsesWrapper {
-    private findInPath(executable: string) {
-        const PATH = process.env.PATH ?? "";
+    private findInPath(executable: string, PATH = process.env.PATH ?? "") {
         const paths = PATH.split(process.platform === "win32" ? ";" : ":");
 
         for (const p of paths) {
@@ -63,15 +63,24 @@ class SDKManager extends UsesWrapper {
     }
 
     public async checkNode() {
-        const nodePath = this.findInPath(process.platform === "win32" ? "node.exe" : "node");
+        const nodePath = this.findInPath(
+            process.platform === "win32" ? "node.exe" : "node",
+            process.env.ORIG_PATH
+        );
         const expectedNodeVersion = this.wrapper.properties.get("node.version", "21.0.0");
 
         if (nodePath) {
             IO.debug(`Found Node.js at: ${nodePath}`);
             const version = await this.getExecutionOutput(nodePath, "--version");
 
-            if (version === expectedNodeVersion) {
-                IO.debug(`Node.js version: ${version}`);
+            if (semver.gte(version, expectedNodeVersion)) {
+                IO.debug(
+                    `Node.js version: ${version}` +
+                        (expectedNodeVersion !== version
+                            ? ` (compatible with ${expectedNodeVersion})`
+                            : "")
+                );
+
                 return;
             }
 
@@ -88,7 +97,7 @@ class SDKManager extends UsesWrapper {
 
         const localVersion = await this.getExecutionOutput(NODE_INTERPRETER, "--version");
 
-        if (localVersion !== expectedNodeVersion) {
+        if (semver.lt(localVersion, expectedNodeVersion)) {
             IO.warn(
                 `Node.js local version mismatch: required ${expectedNodeVersion}, found ${localVersion}`
             );

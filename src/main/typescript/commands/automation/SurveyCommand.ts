@@ -1,5 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, HeadingLevel } from "@discordjs/builders";
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import StringArgument from "@framework/arguments/StringArgument";
 import type { Buildable } from "@framework/commands/Command";
@@ -11,7 +11,7 @@ type SurveyCommandArgs = {
     name: string;
 };
 
-@TakesArgument<SurveyCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["name"],
     types: [StringArgument],
     optional: false,

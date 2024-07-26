@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import IntegerArgument from "@framework/arguments/IntegerArgument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import { Command } from "@framework/commands/Command";
@@ -15,7 +15,7 @@ type QueueViewCommandArgs = {
     id: number;
 };
 
-@TakesArgument<QueueViewCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["id"],
     types: [IntegerArgument],
     optional: false,

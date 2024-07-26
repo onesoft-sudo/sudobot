@@ -27,6 +27,8 @@ class BlazeWrapper {
             await mkdir(TMPDIR);
         }
 
+        process.env.ORIG_PATH = process.env.PATH ?? "";
+
         if (existsSync(file("node_modules/.bin"))) {
             this.addDirToPath(file("node_modules/.bin"));
         }

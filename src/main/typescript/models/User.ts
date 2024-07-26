@@ -17,10 +17,10 @@ export const users = pgTable("users", {
     recoveryToken: varchar("recovery_token"),
     recoveryCode: varchar("recovery_code"),
     recoveryAttempts: integer("recovery_attempts").notNull().default(0),
-    recoveryTokenExpiresAt: timestamp("recovery_token_expires_at"),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
-    tokenExpiresAt: timestamp("token_expires_at"),
-    updatedAt: timestamp("updated_at")
+    recoveryTokenExpiresAt: timestamp("recovery_token_expires_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    tokenExpiresAt: timestamp("token_expires_at", { withTimezone: true }),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
         .notNull()
         .defaultNow()
         .$onUpdate(() => new Date())

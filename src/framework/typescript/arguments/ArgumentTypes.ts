@@ -17,9 +17,11 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { requireNonNull } from "../utils/utils";
-import type { ArgumentConstructor } from "./Argument";
-import type { ErrorType } from "./InvalidArgumentError";
+import type {
+    ArgumentParserDefinition,
+    ArgumentParserSchema,
+    OptionSchema
+} from "@framework/arguments/ArgumentParser";
 
 declare global {
     interface ArgumentRules {
@@ -30,86 +32,77 @@ declare global {
     }
 }
 
-export type Rule = {
-    value: unknown;
-    message?: string;
-    name: string;
-    position: number;
-    rules: ArgumentRules;
+export type ArgumentSchemaDecoratorType = ((config: ArgumentParserSchema) => ClassDecorator) & {
+    Overload(definitions: ArgumentParserDefinition[]): ClassDecorator;
+    Overload(name: string, definitions: ArgumentParserDefinition[]): ClassDecorator;
+    Options(schemas: OptionSchema[]): ClassDecorator;
+    Definition<T extends Record<string, unknown> = Record<string, unknown>>(
+        definition: ArgumentParserDefinition<T>
+    ): ClassDecorator;
 };
 
-export type ArgumentTypeOptions<T = unknown, N extends string[] = string[]> = {
-    types: Array<ArgumentConstructor<T>> | ArgumentConstructor<T>;
-    interactionType?: ArgumentConstructor<T>;
-    interactionName?: string;
-    optional?: boolean;
-    default?: unknown;
-    errorMessages?: Array<{
-        [key in ErrorType]?: string;
-    }>;
-    names: N;
-    rules?: {
-        [K in keyof ArgumentRules]?: ArgumentRules[K];
-    }[];
-    interactionRuleIndex?: number;
+export const ArgumentSchema: ArgumentSchemaDecoratorType = (
+    config: ArgumentParserSchema
+): ClassDecorator => {
+    return target => Reflect.defineMetadata("command:schema", config, target);
 };
 
-export type ArgumentOptionsFor<T> = {
-    [K in keyof T]: ArgumentTypeOptions<T[K]>;
-}[keyof T];
+ArgumentSchema.Overload = (
+    nameOrDefinitions: string | ArgumentParserDefinition[],
+    definitions?: ArgumentParserDefinition[]
+): ClassDecorator => {
+    const finalDefs = typeof nameOrDefinitions === "string" ? definitions : nameOrDefinitions;
+    const name = typeof nameOrDefinitions === "string" ? nameOrDefinitions : undefined;
 
-export type ArrayOfArguments<T> = {
-    [K: number]: {
-        [K in keyof T]: ArgumentTypeOptions<T[K], K extends string ? K[] : never>;
-    }[keyof T];
+    return target => {
+        const metadata =
+            (Reflect.getMetadata("command:schema", target) as ArgumentParserSchema) ?? {};
+
+        metadata.overloads ??= [];
+        metadata.overloads?.unshift({ name, definitions: finalDefs ?? [] });
+
+        Reflect.defineMetadata("command:schema", metadata, target);
+    };
 };
 
-export function ArgumentTypes<T = Record<string, unknown>>(types: ArrayOfArguments<T>) {
-    return (target: object, _key?: unknown, _descriptor?: unknown) => {
-        const arr: ArgumentTypeOptions[] = [];
+ArgumentSchema.Definition = <
+    T extends Record<string, unknown> = Record<string, unknown>,
+    K extends [keyof T, ...(keyof T)[]] = [keyof T, ...(keyof T)[]]
+>(
+    definition: ArgumentParserDefinition<T, K>
+): ClassDecorator => {
+    return target => {
+        const metadata =
+            (Reflect.getMetadata("command:schema", target) as ArgumentParserSchema) ?? {};
 
-        for (const index in types) {
-            arr[index] = types[index];
+        metadata.overloads ??= [];
+
+        const existingDefs = metadata.overloads?.[0]?.definitions ?? [];
+        existingDefs?.unshift(definition as ArgumentParserDefinition);
+
+        if (metadata.overloads.length === 0) {
+            metadata.overloads.unshift({ definitions: existingDefs });
+        } else {
+            metadata.overloads[0].definitions = existingDefs;
         }
 
-        Reflect.defineMetadata("command:types", arr, target);
+        Reflect.defineMetadata("command:schema", metadata, target);
     };
-}
+};
 
-export function TakesArgument<T>(
-    options: ArgumentTypeOptions<T[keyof T]>
-): ClassDecorator & MethodDecorator;
-
-export function TakesArgument<T, _O extends ArgumentOptionsFor<T> = ArgumentOptionsFor<T>>(
-    names: _O["names"],
-    types: _O["types"],
-    optional?: _O["optional"],
-    errors?: _O["errorMessages"][]
-): ClassDecorator & MethodDecorator;
-
-export function TakesArgument<T, _O extends ArgumentOptionsFor<T> = ArgumentOptionsFor<T>>(
-    typeOrName: _O | _O["names"],
-    types?: _O["types"],
-    optional?: _O["optional"],
-    errors?: NonNullable<_O["errorMessages"]>[]
-) {
-    return (target: object, _key?: unknown, _descriptor?: unknown) => {
+ArgumentSchema.Options = (schemas: OptionSchema[]): ClassDecorator => {
+    return target => {
         const metadata =
-            (Reflect.getMetadata("command:types", target) as ArgumentTypeOptions[] | undefined) ||
-            [];
+            (Reflect.getMetadata("command:schema", target) as ArgumentParserSchema) ?? {};
 
-        metadata.unshift(
-            (Array.isArray(typeOrName) && typeof typeOrName[0] === "string") ||
-                typeof typeOrName === "string"
-                ? {
-                      names: Array.isArray(typeOrName) ? typeOrName : ([typeOrName] as string[]),
-                      types: requireNonNull(types),
-                      optional: optional,
-                      errorMessages: (errors as ArgumentTypeOptions["errorMessages"]) ?? []
-                  }
-                : (typeOrName as _O)
-        );
+        metadata.options ??= [];
+        metadata.options?.unshift(...schemas);
 
-        Reflect.defineMetadata("command:types", metadata, target);
+        Reflect.defineMetadata("command:schema", metadata, target);
     };
-}
+};
+
+// HACK: This needs to be removed
+export const TakesArgument = () => {
+    return () => void 0;
+};

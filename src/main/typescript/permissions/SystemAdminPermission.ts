@@ -49,7 +49,9 @@ class SystemAdminPermission extends Permission {
         if (has) {
             this.logger.debug(`User @${member.user.username} has system.admin permission`);
         } else {
-            this.logger.debug(`User @${member.user.username} does not have system.admin permission`);
+            this.logger.debug(
+                `User @${member.user.username} does not have system.admin permission`
+            );
         }
 
         return has;

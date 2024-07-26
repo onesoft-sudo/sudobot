@@ -1,25 +1,25 @@
-import { type Buildable, Command } from "@framework/commands/Command";
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
-import type Context from "@framework/commands/Context";
-import type { GuildBasedChannel } from "discord.js";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import ChannelArgument from "@framework/arguments/ChannelArgument";
-import Duration from "@framework/datetime/Duration";
 import DurationArgument from "@framework/arguments/DurationArgument";
-import { isDiscordAPIError } from "@framework/utils/errors";
+import { type Buildable, Command } from "@framework/commands/Command";
+import type Context from "@framework/commands/Context";
+import Duration from "@framework/datetime/Duration";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
+import { isDiscordAPIError } from "@framework/utils/errors";
+import type { GuildBasedChannel } from "discord.js";
 
 type SetSlowmodeCommandArgs = {
     duration: Duration;
     channel?: GuildBasedChannel;
 };
 
-@TakesArgument<SetSlowmodeCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["duration"],
     types: [DurationArgument],
     optional: false,
     errorMessages: [DurationArgument.defaultErrors]
 })
-@TakesArgument<SetSlowmodeCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["channel"],
     types: [ChannelArgument<true>],
     optional: true,

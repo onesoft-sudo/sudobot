@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import DurationArgument from "@framework/arguments/DurationArgument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
@@ -23,7 +23,7 @@ type ExpireCommandArgs = {
     time: Duration;
 };
 
-@TakesArgument<ExpireCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["time"],
     types: [DurationArgument],
     optional: false,
@@ -35,7 +35,7 @@ type ExpireCommandArgs = {
         }
     ]
 })
-@TakesArgument<ExpireCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["content"],
     types: [RestStringArgument],
     optional: false,

@@ -30,8 +30,8 @@ export const reactionRoles = pgTable("reaction_roles", {
         .default(sql`'{}'`),
     level: integer("level"),
     single: boolean("single").notNull().default(false),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
-    updatedAt: timestamp("updated_at")
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
         .notNull()
         .defaultNow()
         .$onUpdate(() => new Date())

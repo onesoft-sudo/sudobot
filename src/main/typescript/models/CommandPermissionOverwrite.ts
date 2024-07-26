@@ -39,8 +39,8 @@ export const commandPermissionOverwrites = pgTable("command_permission_overwrite
     onMatch: commandPermissionOverwriteActionEnum("on_match")
         .notNull()
         .default(CommandPermissionOverwriteAction.Allow),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
-    updatedAt: timestamp("updated_at")
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
         .notNull()
         .defaultNow()
         .$onUpdate(() => new Date())

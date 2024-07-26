@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
 import StringArgument from "@framework/arguments/StringArgument";
@@ -14,7 +14,7 @@ type SnippetEditCommandArgs = {
     value: string;
 };
 
-@TakesArgument<SnippetEditCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["name"],
     types: [StringArgument],
     optional: false,
@@ -31,7 +31,7 @@ type SnippetEditCommandArgs = {
         }
     ]
 })
-@TakesArgument<SnippetEditCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["attribute"],
     types: [StringArgument],
     optional: false,
@@ -48,7 +48,7 @@ type SnippetEditCommandArgs = {
         }
     ]
 })
-@TakesArgument<SnippetEditCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["value"],
     types: [RestStringArgument],
     optional: false,

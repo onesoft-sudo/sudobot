@@ -1,4 +1,4 @@
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
 import StringArgument from "@framework/arguments/StringArgument";
@@ -14,7 +14,7 @@ type PixabayCommandArgs = {
     query: string;
 };
 
-@TakesArgument<PixabayCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["type"],
     types: [StringArgument],
     optional: false,
@@ -25,7 +25,7 @@ type PixabayCommandArgs = {
     ],
     interactionName: "query"
 })
-@TakesArgument<PixabayCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["query"],
     types: [RestStringArgument],
     optional: false,

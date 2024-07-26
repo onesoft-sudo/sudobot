@@ -10,8 +10,8 @@ export const muteRecords = pgTable("mute_records", {
         .array()
         .notNull()
         .default(sql`'{}'`),
-    createdAt: timestamp("created_at").defaultNow(),
-    updatedAt: timestamp("updated_at")
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
         .defaultNow()
         .$onUpdate(() => new Date())
 });

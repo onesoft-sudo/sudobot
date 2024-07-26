@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TakesArgument } from "@framework/arguments/ArgumentTypes";
+import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import DurationArgument from "@framework/arguments/DurationArgument";
 import GuildMemberArgument from "@framework/arguments/GuildMemberArgument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
@@ -38,7 +38,7 @@ type RoleCommandArgs = {
     duration?: Duration;
 };
 
-@TakesArgument<RoleCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["member"],
     types: [GuildMemberArgument<true>],
     optional: false,
@@ -46,7 +46,7 @@ type RoleCommandArgs = {
     interactionName: "member",
     interactionType: GuildMemberArgument<true>
 })
-@TakesArgument<RoleCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["duration", "roles"],
     types: [DurationArgument, RestRoleArgument<true>],
     optional: false,
@@ -67,7 +67,7 @@ type RoleCommandArgs = {
     interactionName: "duration",
     interactionType: DurationArgument
 })
-@TakesArgument<RoleCommandArgs>({
+@ArgumentSchema.Definition({
     names: ["roles"],
     types: [RestRoleArgument<true>],
     optional: true,
@@ -172,13 +172,13 @@ class RoleCommand extends Command {
             guildId: context.guildId,
             moderator: context.user,
             reason: context.isChatInput()
-                ? context.options.getString("reason") ?? undefined
+                ? (context.options.getString("reason") ?? undefined)
                 : undefined,
             member,
             generateOverviewEmbed: true,
             notify: context.isChatInput() && !!context.options.getBoolean("notify"),
             mode: context.isChatInput()
-                ? (context.options.getString("mode") as "give" | "take" | null) ?? "give"
+                ? ((context.options.getString("mode") as "give" | "take" | null) ?? "give")
                 : context.commandName === "takerole"
                   ? "take"
                   : "give",
