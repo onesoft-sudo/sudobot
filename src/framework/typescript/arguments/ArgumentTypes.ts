@@ -59,7 +59,7 @@ ArgumentSchema.Overload = (
             (Reflect.getMetadata("command:schema", target) as ArgumentParserSchema) ?? {};
 
         metadata.overloads ??= [];
-        metadata.overloads?.push({ name, definitions: finalDefs ?? [] });
+        metadata.overloads?.unshift({ name, definitions: finalDefs ?? [] });
 
         Reflect.defineMetadata("command:schema", metadata, target);
     };
@@ -78,10 +78,10 @@ ArgumentSchema.Definition = <
         metadata.overloads ??= [];
 
         const existingDefs = metadata.overloads?.[0]?.definitions ?? [];
-        existingDefs?.push(definition as ArgumentParserDefinition);
+        existingDefs?.unshift(definition as ArgumentParserDefinition);
 
         if (metadata.overloads.length === 0) {
-            metadata.overloads.push({ definitions: existingDefs });
+            metadata.overloads.unshift({ definitions: existingDefs });
         } else {
             metadata.overloads[0].definitions = existingDefs;
         }
@@ -96,7 +96,7 @@ ArgumentSchema.Options = (schemas: OptionSchema[]): ClassDecorator => {
             (Reflect.getMetadata("command:schema", target) as ArgumentParserSchema) ?? {};
 
         metadata.options ??= [];
-        metadata.options?.push(...schemas);
+        metadata.options?.unshift(...schemas);
 
         Reflect.defineMetadata("command:schema", metadata, target);
     };

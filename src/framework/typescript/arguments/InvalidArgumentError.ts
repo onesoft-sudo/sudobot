@@ -20,14 +20,13 @@
 export enum ErrorType {
     Required = "Required",
     InvalidType = "InvalidType",
-    InvalidOptionValue = "InvalidOptionValue",
+    OptionRequiresValue = "OptionRequiresValue",
     InvalidRange = "InvalidRange",
     EntityNotFound = "EntityNotFound"
 }
 
 export type Meta = {
-    position: number;
-    type: ErrorType;
+    type?: ErrorType;
     cause?: unknown;
     noSkip?: boolean;
 };

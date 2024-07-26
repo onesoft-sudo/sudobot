@@ -20,7 +20,7 @@ import "reflect-metadata";
 
 import Application from "@framework/app/Application";
 import type { ArgumentConstructor } from "@framework/arguments/Argument";
-import { ErrorType } from "@framework/arguments/InvalidArgumentError";
+import { ErrorType, InvalidArgumentError } from "@framework/arguments/InvalidArgumentError";
 import type { Command } from "@framework/commands/Command";
 import type InteractionContext from "@framework/commands/InteractionContext";
 import type LegacyContext from "@framework/commands/LegacyContext";
@@ -47,7 +47,7 @@ export type OptionSchema = {
     shortNames?: string[];
     required?: boolean;
     errors?: {
-        [R in ErrorType.Required | ErrorType.InvalidOptionValue]: string;
+        [R in ErrorType.Required | ErrorType.OptionRequiresValue]: string;
     };
     requiresValue?: boolean;
     canonicalName?: string;
@@ -82,6 +82,7 @@ export type ArgumentParserDefinition<
 };
 
 type CommonResult<T> = {
+    errorTypeForwarded?: ErrorType;
     error?: string;
     value?: T;
     errorType?: string;
@@ -103,16 +104,35 @@ type ParserGlobalState = {
 
 class ArgumentParser {
     public async parse({
+        throwOnError = false,
+        ...args
+    }: Omit<ArgumentParserConfig, "schema"> & { throwOnError?: boolean }): Promise<
+        CommonResult<NonNullable<Awaited<ReturnType<typeof this.parseOverload>>>["value"]> & {
+            errors?: Record<string, [ErrorType | undefined, string]>;
+        }
+    > {
+        const result = await this.parseInternal(args);
+
+        if (throwOnError && result.error) {
+            throw new InvalidArgumentError(result.error, {
+                type: result.errorTypeForwarded
+            });
+        }
+
+        return result;
+    }
+
+    public async parseInternal({
         context,
         command,
-        parseSubCommand = true
+        parseSubCommand = false
     }: Omit<ArgumentParserConfig, "schema">): Promise<
         CommonResult<NonNullable<Awaited<ReturnType<typeof this.parseOverload>>>["value"]> & {
-            errors?: Record<string, string>;
+            errors?: Record<string, [ErrorType | undefined, string]>;
         }
     > {
         let result: Awaited<ReturnType<typeof this.parseOverload>> | undefined;
-        const errors: Record<string, string> = {};
+        const errors: Record<string, [ErrorType | undefined, string]> = {};
         const parsedOptions: Record<string, unknown> = {};
         let index = 0;
         let subcommandParseResult: Awaited<ReturnType<typeof this.parseSubcommand>> | undefined;
@@ -135,7 +155,10 @@ class ArgumentParser {
         }
 
         if (subcommandParseResult && subcommandParseResult.error) {
-            return { error: subcommandParseResult.error };
+            return {
+                error: subcommandParseResult.error,
+                errorType: subcommandParseResult.errorType
+            };
         }
 
         const schema =
@@ -172,7 +195,7 @@ class ArgumentParser {
                 break;
             }
 
-            errors[overload.name ?? index++] = result.error;
+            errors[overload.name ?? index++] = [result.errorTypeForwarded, result.error];
         }
 
         if (!result) {
@@ -186,7 +209,8 @@ class ArgumentParser {
             return {
                 error: result.error,
                 errorType: result.errorType,
-                errors
+                errors,
+                errorTypeForwarded: result.errorTypeForwarded
             };
         }
 
@@ -209,14 +233,16 @@ class ArgumentParser {
                 return {
                     error:
                         optionSchema.errors?.[ErrorType.Required] ??
-                        `Option \`${optType === "long" ? "--" : "-"}${optName}\` is required`
+                        `Option \`${optType === "long" ? "--" : "-"}${optName}\` is required`,
+                    errorTypeForwarded: ErrorType.Required
                 };
             }
         }
 
         return {
             value: result?.value,
-            errors
+            errors,
+            errorTypeForwarded: result?.errorTypeForwarded
         };
     }
 
@@ -362,7 +388,11 @@ class ArgumentParser {
         command: Command;
         skipIndexes?: number[];
         defaultState?: ParserGlobalState;
-    }>): Promise<CommonResult<Pick<ParserGlobalState, "parsedArgs" | "parsedOptions">>> {
+    }>): Promise<
+        CommonResult<Pick<ParserGlobalState, "parsedArgs" | "parsedOptions">> & {
+            errorTypeForwarded?: ErrorType;
+        }
+    > {
         Application.current().logger.debug("Parsing overload", overload.name ?? "(unnamed)");
         Application.current().logger.debug("---------------------");
 
@@ -396,7 +426,8 @@ class ArgumentParser {
             if (result.error) {
                 return {
                     error: result.error,
-                    errorType: "overload_exhausted"
+                    errorType: "definition_parse_failed",
+                    errorTypeForwarded: result.errorTypeForwarded
                 };
             }
 
@@ -428,6 +459,7 @@ class ArgumentParser {
     }>): Promise<
         CommonResult<{ name: string; value: null | unknown }> & {
             abortParsingDefinitions?: boolean;
+            errorTypeForwarded?: ErrorType;
         }
     > {
         let result: CommonResult<{ name: string; value: unknown }> | undefined;
@@ -437,7 +469,7 @@ class ArgumentParser {
         if (!schema.options) {
             assert(definition.types.length > 0, "No types provided");
             assert(definition.names.length > 0, "No names provided");
-        } else if (context.isLegacy() && context.args[state.argIndex].startsWith("-")) {
+        } else if (context.isLegacy() && context.args[state.argIndex]?.startsWith("-")) {
             while (context.args[state.argIndex]?.startsWith("-")) {
                 const { error, silent } = await this.parseOption({
                     context,
@@ -468,6 +500,7 @@ class ArgumentParser {
             }
 
             return {
+                errorTypeForwarded: ErrorType.Required,
                 error:
                     errorMessageRecord?.[ErrorType.Required] ??
                     `Argument at index #${state.argIndex} (${definition.names.join(", ")}) is required but was not provided`
@@ -487,6 +520,7 @@ class ArgumentParser {
             }
 
             return {
+                errorTypeForwarded: ErrorType.Required,
                 error:
                     errorMessageRecord?.[ErrorType.Required] ??
                     `Argument at index #${state.argIndex} (${interactionName}) is required but was not provided (via interaction)`
@@ -537,6 +571,8 @@ class ArgumentParser {
             };
         }
 
+        assert(!!context.args[state.argIndex]);
+
         const isLong = context.args[state.argIndex].startsWith("--");
         const optArg = context.args[state.argIndex].slice(isLong ? 2 : 1);
 
@@ -572,7 +608,10 @@ class ArgumentParser {
             if (optionSchema.requiresValue) {
                 if (value === null) {
                     return {
-                        error: `Option \`--${name}\` requires a value`
+                        errorTypeForwarded: ErrorType.OptionRequiresValue,
+                        error:
+                            optionSchema.errors?.[ErrorType.OptionRequiresValue] ??
+                            `Option \`--${name}\` requires a value`
                     };
                 }
 
@@ -616,7 +655,10 @@ class ArgumentParser {
                     (isLast && context.args[state.argIndex + 1]?.startsWith("-") !== false)
                 ) {
                     return {
-                        error: `Option \`-${optionName}\` requires a value`
+                        errorTypeForwarded: ErrorType.OptionRequiresValue,
+                        error:
+                            optionSchema.errors?.[ErrorType.OptionRequiresValue] ??
+                            `Option \`-${optionName}\` requires a value`
                     };
                 }
 
@@ -682,7 +724,12 @@ class ArgumentParser {
                   );
 
             if (error) {
-                return { error: errorMessageRecord?.[error.meta.type] ?? error.message };
+                return {
+                    error:
+                        (error.meta.type ? errorMessageRecord?.[error.meta.type] : null) ??
+                        error.message,
+                    errorTypeForwarded: error.meta.type
+                };
             }
 
             return {
