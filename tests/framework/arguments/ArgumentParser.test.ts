@@ -1,7 +1,7 @@
 import "reflect-metadata";
 
 import Application from "@framework/app/Application";
-import ArgumentParser from "@framework/arguments/ArgumentParserNew";
+import ArgumentParser from "@framework/arguments/ArgumentParser";
 import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import { InvalidArgumentError } from "@framework/arguments/InvalidArgumentError";
 import NumberArgument from "@framework/arguments/NumberArgument";

@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import ArgumentParser from "@framework/arguments/ArgumentParserNew";
+import ArgumentParser from "@framework/arguments/ArgumentParser";
 import { Command } from "@framework/commands/Command";
 import CommandAbortedError from "@framework/commands/CommandAbortedError";
 import Context from "@framework/commands/Context";

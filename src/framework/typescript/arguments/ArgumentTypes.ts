@@ -21,7 +21,7 @@ import type {
     ArgumentParserDefinition,
     ArgumentParserSchema,
     OptionSchema
-} from "@framework/arguments/ArgumentParserNew";
+} from "@framework/arguments/ArgumentParser";
 
 declare global {
     interface ArgumentRules {

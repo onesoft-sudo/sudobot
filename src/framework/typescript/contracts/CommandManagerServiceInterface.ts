@@ -1,4 +1,4 @@
-import type ArgumentParser from "@framework/arguments/ArgumentParserNew";
+import type ArgumentParser from "@framework/arguments/ArgumentParser";
 import type { Command } from "@framework/commands/Command";
 import type CommandRateLimiterContract from "@framework/contracts/CommandRateLimiterContract";
 import type { Awaitable } from "discord.js";
