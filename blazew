@@ -7,15 +7,8 @@ projectdir=$(dirname $0)
 projectdir=$(readlink -f "$projectdir")
 
 tmp_dir="$projectdir/.blaze"
-
-nvm_dir="$tmp_dir/nvm"
-node_dir="$tmp_dir/nvm/versions/node"
 bun_dir="$tmp_dir/bun"
-nvm_home="$tmp_dir/nvm_home"
-
 bun="bun"
-node="node"
-npm="npm"
 
 has_curl=$(command -v curl)
 has_wget=$(command -v wget)
@@ -26,7 +19,6 @@ if [ -z "$has_curl" ] && [ -z "$has_wget" ]; then
 fi
 
 mkdir -p "$tmp_dir"
-# mkdir -p "$nvm_home"
 
 getprop() {
     value=$(cat "$projectdir/blaze/wrapper/blaze_wrapper.properties" | grep "$1" | cut -d'=' -f2)
@@ -80,48 +72,9 @@ summary() {
     print "32" "info" "Project root directory:  $projectdir"
     print "32" "info" "BlazeBuild directory:    $blaze_srcpath"
     print "32" "info" "Temporary directory:     $tmp_dir"
-    print "32" "info" "NVM directory:           $nvm_dir"
-    print "32" "info" "NVM home directory:      $nvm_home"
-    print "32" "info" "Node directory:          $node_dir"
-    print "32" "info" "Node executable:         $node"
     print "32" "info" "Bun executable:          $bun"
 
     printf "\n"
-}
-
-# if [ -f "$nvm_dir/nvm.sh" ]; then
-#     . "$nvm_dir/nvm.sh"
-# fi
-
-# mkdir -p $nvm_dir
-
-install_nvm() {
-    if [ ! -f "$nvm_dir/nvm.sh" ] || [ -z "$(command -v nvm)" ]; then
-        print "33" "warn" "Could not find nvm installation"
-        print "32" "info" "Installing nvm"
-
-        if [ ! -z "$has_curl" ]; then
-            (export NVM_DIR="$nvm_dir" && export HOME="$nvm_home" && (curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash)) >"$tmp_dir/nvm_install.log" 2>&1
-        elif [ ! -z "$has_wget" ]; then
-            (export NVM_DIR="$nvm_dir" && export HOME="$nvm_home" && (wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash)) >"$tmp_dir/nvm_install.log" 2>&1
-        else
-            print "1;31" "error" "No curl or wget found."
-            exit 1
-        fi
-
-        . "$nvm_dir/nvm.sh"
-    else
-        print "32" "info" "Found nvm installation"
-    fi
-}
-
-nvm_install_node() {
-    install_nvm
-    pushd $nvm_dir
-    nvm install "$1"
-    nvm use "$1" >/dev/null 2>&1
-    popd
-    node="$node_dir/v$1/bin/node"
 }
 
 bun_run_installer() {
@@ -135,33 +88,6 @@ bun_run_installer() {
     fi
 
     bun="$bun_dir/bin/bun"
-}
-
-install_node() {
-    local node_version=$(getprop "node.version")
-
-    if [ -z "$node_version" ]; then
-        print "31" "error" "node.version is not set in blaze_wrapper.properties"
-        exit 1
-    fi
-
-    if [ -z "$(command -v node)" ]; then
-        print "33" "warn" "Could not find node installation"
-        print "32" "info" "Installing node"
-        nvm_install_node "$node_version"
-    else
-        print "32" "info" "Found node installation"
-        local version=$(node -v | cut -c 2-)
-        print "32" "info" "Existing node version: $version"
-
-        if [ "$version" != "$node_version" ]; then
-            print "33" "warn" "Node version mismatch: required $node_version, found $version"
-            print "32" "info" "Installing node version: $node_version"
-            nvm_install_node "$node_version"
-        else
-            node="$(command -v node)"
-        fi
-    fi
 }
 
 install_bun() {
@@ -195,7 +121,6 @@ if [ "$BLAZEW_DEBUG" = "1" ]; then
     summary "Initial"
 fi
 
-# install_node
 install_bun
 
 if [ "$BLAZEW_DEBUG" = "1" ]; then
