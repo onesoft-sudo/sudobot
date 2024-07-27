@@ -39,6 +39,10 @@ type ShotCommandArgs = {
     reason?: string;
 };
 
+type ShotCommandOptions = {
+    nickname?: string;
+};
+
 @ArgumentSchema({
     overloads: [
         {
@@ -63,6 +67,15 @@ type ShotCommandArgs = {
                 }
             ]
         }
+    ],
+    options: [
+        {
+            id: "nickname",
+            longNames: ["nickname"],
+            shortNames: ["n"],
+            requiresValue: true,
+            required: false
+        }
     ]
 })
 class ShotCommand extends Command {
@@ -72,6 +85,10 @@ class ShotCommand extends Command {
     public override readonly permissions = [PermissionFlags.ManageMessages];
     public override readonly defer = true;
     public override readonly usage = ["<member: GuildMember> [reason: RestString]"];
+    public override readonly options: Record<string, string> = {
+        "-n, --nickname=[nickname]":
+            "The nickname to show for the executor (doctor) of this command in the summary embed. Defaults to the executor's details."
+    };
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;
@@ -102,7 +119,8 @@ class ShotCommand extends Command {
 
     public override async execute(
         context: Context<CommandMessage>,
-        args: ShotCommandArgs
+        args: ShotCommandArgs,
+        options: ShotCommandOptions
     ): Promise<void> {
         const { member, reason } = args;
 
@@ -134,6 +152,15 @@ class ShotCommand extends Command {
         }
 
         overviewEmbed.color = Colors.Primary;
+
+        if (options.nickname) {
+            const field = overviewEmbed.fields?.find(field => field.name === "💉 Doctor");
+
+            if (field) {
+                field.value = options.nickname;
+            }
+        }
+
         await context.reply({ embeds: [overviewEmbed] });
     }
 }
