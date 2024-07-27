@@ -272,7 +272,9 @@ class HelpCommand extends Command {
             commands[command.group].push(command);
         }
 
-        const pagination = Pagination.withData(Object.entries(commands))
+        const pagination = Pagination.withData(
+            Object.entries(commands).sort((a, b) => a[0].localeCompare(b[0]))
+        )
             .setLimit(1)
             .setActionRowBuilder(row => [...HelpCommand.responseComponents, row])
             .setMaxTimeout(Pagination.DEFAULT_TIMEOUT)
