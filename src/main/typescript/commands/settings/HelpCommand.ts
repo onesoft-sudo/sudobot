@@ -162,7 +162,7 @@ class HelpCommand extends Command {
                     `\nRun \`${prefix}help ${resolvedCommand.name} <subcommand>\` for more information.\n`;
             }
 
-            const options = metadata.options ? Object.values(metadata.options) : null;
+            const options = metadata.options ? Object.entries(metadata.options) : null;
 
             if (options?.length) {
                 description += "### Options\n";
