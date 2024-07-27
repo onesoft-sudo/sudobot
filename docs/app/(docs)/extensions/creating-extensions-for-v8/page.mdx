@@ -1,35 +1,21 @@
 ---
-title: Extending SudoBot with Extensions
-short_name: Extending SudoBot with Extensions
+title: Creating Extensions for SudoBot v8
+short_name: Creating Extensions for SudoBot v8
 ---
 
 import Callout from "@/components/Alerts/Callout";
 
-# Extending SudoBot with Extensions
+# Creating Extensions for SudoBot v8
 
 SudoBot has support for extensions, and it was introduced in version 6.17. Extensions can extend the bot's feature, by adding commands, event listeners, services and a lot more stuff. You can install/uninstall/disable extensions, or create your own to make the bot behave exactly how you want. Extensions can be written using JavaScript and TypeScript.
 
 In this article, you'll learn how SudoBot's extension system works.
 
-## The extensions directory
+## The `extensions` directory
 
-To start using extensions, you need to create a root directory where extensions will be installed.
-In this guide, we'll name the directory `installed_extensions/`. To create a directory named `installed_extensions/` in the main project root, run the following:
+The `extensions` is a special directory in the project root. Every installed extension stays inside this directory. If you want to install extensions, you have to create a directory named `extensions/` in the project root.
 
-```bash
-mkdir installed_extensions
-```
-
-Every installed extension goes inside this directory.
-
-Now to tell SudoBot where to look for extensions, add the `EXTENSIONS_DIRECTORY` environment variable to your `.env` file:
-
-```bash
-# Path to the extensions root directory
-EXTENSIONS_DIRECTORY=/example/path/to/extensions/directory
-```
-
-Each installed extension has a directory associated with it inside the `installed_extensions/` directory. Inside of that inner directory, there is a special file `extension.json` which contains meta information about the extension, and how to build it.
+Each installed extension has a directory associated with it inside the `extensions/` directory. Inside of that inner directory, there is a special file `extension.json` which contains meta information about the extension, and how to build it.
 
 The `extension.json` file looks something like this:
 
@@ -46,13 +32,13 @@ The `extension.json` file looks something like this:
 
 ## Creating your first SudoBot extension
 
-To get started, first create a directory named `installed_extensions` inside the project root. In that directory, create another directory for your extension. The name of this directory usually should be your extension's name. In this example, we'll name the extension "hello".
+To get started, first create a directory named `extensions` inside the project root. In that directory, create another directory for your extension. The name of this directory usually should be your extension's name. In this example, we'll name the extension "hello".
 
 Then inside your extension's directory, create the `extension.json` file, and the `src/` directory. Inside `src`, create `events` and `commands` directories. The final directory tree should look something like this:
 
 ```
 + sudobot/ [project root]
-  + installed_extensions/
+  + extensions/
     + hello/
       + src/
         + commands/
@@ -80,7 +66,7 @@ We'll be using TypeScript to write the extension in this example. If you'd like 
 First, run `npm init` to initialize your extension project. This will ask you a few questions and create a `package.json` file. Then run:
 
 ```bash
-npm install --save ../.. # Path to the sudobot project root
+npm link --save ../.. # Path to the sudobot project root
 ```
 
 <Callout type="info">
@@ -93,43 +79,27 @@ Then we can go ahead and install the dependencies and also set up TypeScript.
 
 ```shell
 npm install module-alias
-npm install -D typescript @types/node
+npm install -D typescript
 npx tsc --init
 ```
 
 This will add `typescript` as a dev dependency and also create the `tsconfig.json` file which contains the configuration for the TypeScript compiler.
 
-Now open up `tsconfig.json` file, and add the following (you can tweak these options if you want):
+Now open up `tsconfig.json` file, and add the following to the `compilerOptions` object:
 
 ```json
-{
-    "compilerOptions": {
-        "target": "ES2021",
-        "module": "commonjs",
-        "rootDir": "./src",
-        "baseUrl": "./",
-        "paths": {
-            "@sudobot/*": ["node_modules/sudobot/build/out/main/typescript/*"],
-            "@framework/*": [
-                "node_modules/sudobot/build/out/framework/typescript/*"
-            ]
-        },
-        "resolveJsonModule": true,
-        "outDir": "./build",
-        "newLine": "lf",
-        "noEmitHelpers": true,
-        "noEmitOnError": true,
-        "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
-        "strict": true,
-        "skipLibCheck": true
-    },
-    "exclude": ["./tests", "./build"]
-}
+"paths": {
+    "@sudobot/*": "node_modules/sudobot/build/*"
+},
+"target": "ES2021",
+"experimentalDecorators": true,
+"module": "commonjs",
+"rootDir": "./src",
+"outDir": "./build",
+"resolveJsonModule": true,
 ```
 
-This sets up the `@sudobot` and `@framework` import aliases for TypeScript, specifies the source root and build directory, and a few other things that are needed.
+This sets up the `@sudobot` import alias for TypeScript, specifies the source root and build directory, and a few other things that are needed.
 
 <Callout type="info">
     Remember to build the bot beforehand! As you can see, this alias points to
@@ -140,8 +110,7 @@ Then open up `package.json` file and add the following inside the root object:
 
 ```json
 "_moduleAliases": {
-    "@framework": "node_modules/sudobot/build/out/framework/typescript",
-    "@sudobot": "node_modules/sudobot/build/out/main/typescript"
+    "@sudobot": "node_modules/sudobot/build"
 },
 "scripts": {
     "build": "tsc"
@@ -158,11 +127,9 @@ We need to create the entry point now! Make a file `src/index.ts` and put the fo
 import "module-alias/register";
 import { Extension } from "@sudobot/core/Extension";
 
-class HelloExtension extends Extension {
+export default class HelloExtension extends Extension {
     // ...
 }
-
-export default HelloExtension;
 ```
 
 That's actually all we need inside this file.
@@ -172,36 +139,36 @@ That's actually all we need inside this file.
 Alright, let's add a command to the extension! Create a file `src/commands/HelloCommand.ts` and inside of that file, put the following code:
 
 ```typescript
-import { Command, type CommandMessage } from "@framework/commands/Command";
-import type Context from "@framework/commands/Context";
+import BaseCommand, {
+    BasicCommandContext,
+    CommandMessage,
+    CommandReturn,
+} from "@sudobot/core/Command";
 
-class HelloCommand extends Command {
-    public override readonly name = "hello";
-    public override readonly description = "A simple hello-world command.";
+export default class HelloCommand extends BaseCommand {
+    public readonly name = "hello";
+    public readonly description = "A simple hello-world command.";
 
-    public override async execute(context: Context<CommandMessage>) {
-        await context.reply("Hello world, from the hello extension!");
+    async execute(message: CommandMessage, context: BasicCommandContext) {
+        await message.reply("Hello world, from the hello extension!");
     }
 }
-
-export default HelloCommand;
 ```
 
 This command just responds to the user with "Hello world, from the hello extension!".
 
 #### Adding event listeners to the extension
 
-Now, let's add an event listener to the extension! Create a file `src/events/MessageCreateEventListener.ts` and inside of that file, put the following code:
+Now, let's add an event listener to the extension! Create a file `src/events/MessageCreateEvent.ts` and inside of that file, put the following code:
 
 ```typescript
-import EventListener from "@framework/events/EventListener";
-import { Events } from "@framework/types/ClientEvents";
-import type { Message } from "discord.js";
+import EventListener from "@sudobot/core/EventListener";
+import { Message } from "discord.js";
 
-class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
-    public override readonly name = Events.MessageCreate;
+export default class MessageCreateEvent extends EventListener<"messageCreate"> {
+    public readonly name = "messageCreate";
 
-    public override async execute(message: Message<boolean>): Promise<void> {
+    async execute(message: Message) {
         if (message.author.bot) {
             return;
         }
@@ -211,30 +178,19 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
         }
     }
 }
-
-export default MessageCreateEventListener;
 ```
 
-This event listener listens to `MessageCreate` event, and whenever someone sends a message with content "ping", it will reply to them.
+This event listener listens to `messageCreate` event, and whenever someone sends a message with content "ping", it will reply to them.
 
 #### Building the extension
 
-Building your newly created extension involves the same procedures as any other TypeScript project.
-Install the dependencies and run the TypeScript compiler from the extension's directory (installed_extensions/hello):
+Go to the project root, and run the `extensions.js` script to build all the installed extensions:
 
 ```bash
-npm install -D
-npm run build
+node scripts/extensions.js --build
 ```
 
-If using [Bun](https://bun.sh):
-
-```bash
-bun install -D
-bun run build
-```
-
-This will take a little bit time. After that, you're ready to go. You can now start the bot from the main project root (assuming you've build it already):
+This will take a little bit time. After that, you're ready to go. You can now start the bot (assuming you've build it already):
 
 ```bash
 npm start
