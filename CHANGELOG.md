@@ -1,3 +1,12 @@
+## [9.19.1](https://github.com/onesoft-sudo/sudobot/compare/v9.19.0...v9.19.1) (2024-07-27)
+
+
+### Bug Fixes
+
+* help command group list sort ([96950db](https://github.com/onesoft-sudo/sudobot/commit/96950db2f62fd43c2d355113a1ce364b519d6425))
+
+
+
 # [9.19.0](https://github.com/onesoft-sudo/sudobot/compare/v9.18.2...v9.19.0) (2024-07-26)
 
 
@@ -50,15 +59,6 @@
 ### Features
 
 * **blazebuild:** better CLI argument parsing ([4b2c988](https://github.com/onesoft-sudo/sudobot/commit/4b2c988cd9c6c0648a827aa2144ddcf9df480127))
-
-
-
-## [9.17.5](https://github.com/onesoft-sudo/sudobot/compare/v9.17.4...v9.17.5) (2024-07-13)
-
-
-### Bug Fixes
-
-* environment variable parsing errors when using 2FA ([aa6cfac](https://github.com/onesoft-sudo/sudobot/commit/aa6cfac16443b845044455702c97b3a7edfead23))
 
 
 
