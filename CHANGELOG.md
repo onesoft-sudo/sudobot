@@ -1,3 +1,17 @@
+# [9.20.0](https://github.com/onesoft-sudo/sudobot/compare/v9.19.1...v9.20.0) (2024-07-27)
+
+
+### Bug Fixes
+
+* **commands:help:** incompletely showing command options ([6b9f655](https://github.com/onesoft-sudo/sudobot/commit/6b9f65512374ac150e0e83d4b1409602827f525b))
+
+
+### Features
+
+* **commands:shot:** `--nickname/-n` option ([8a29414](https://github.com/onesoft-sudo/sudobot/commit/8a2941470881b5ca68c4235d3ea943af5f4d9091))
+
+
+
 ## [9.19.1](https://github.com/onesoft-sudo/sudobot/compare/v9.19.0...v9.19.1) (2024-07-27)
 
 
@@ -45,20 +59,6 @@
 ### Bug Fixes
 
 * update theme color for v9 ([7002577](https://github.com/onesoft-sudo/sudobot/commit/7002577af8950889ed6fdc13ed80817c488f6494))
-
-
-
-# [9.18.0](https://github.com/onesoft-sudo/sudobot/compare/v9.17.5...v9.18.0) (2024-07-13)
-
-
-### Bug Fixes
-
-* **kernel:** better error messages during 2FA failure ([dc3b7c0](https://github.com/onesoft-sudo/sudobot/commit/dc3b7c050fbab80dc0fee445a82ce70fac944d5c))
-
-
-### Features
-
-* **blazebuild:** better CLI argument parsing ([4b2c988](https://github.com/onesoft-sudo/sudobot/commit/4b2c988cd9c6c0648a827aa2144ddcf9df480127))
 
 
 
