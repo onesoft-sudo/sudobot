@@ -1,7 +1,3 @@
-#!/bin/sh
-
-. "$(dirname "$0")/_/husky.sh"
-
 if [ "$SUDOBOT_USE_COMMITLINT_ON_COMMIT" = "1" ]; then
     npx --no -- commitlint --edit "${1}"
 fi
