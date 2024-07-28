@@ -4,12 +4,12 @@ const path = require("path");
 
 try {
     const { defineConfig } = require("drizzle-kit");
-    
+
     module.exports = defineConfig({
         dialect: "postgresql",
         out: "./drizzle",
-        schema: readdirSync(path.resolve(__dirname, "src/main/typescript/models")).map(file =>
-            path.resolve(__dirname, "src/main/typescript/models", file)
+        schema: readdirSync(path.resolve(__dirname, "src/main/typescript/models")).map(
+            (file: string) => path.resolve(__dirname, "src/main/typescript/models", file)
         ),
         dbCredentials: {
             url: process.env.DB_URL
@@ -19,7 +19,6 @@ try {
         // Always ask for confirmation
         strict: true
     });
-}
-catch (error) {
+} catch (error) {
     console.error(error);
 }
