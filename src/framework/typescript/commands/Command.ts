@@ -581,11 +581,24 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
             return true;
         }
 
-        if (!isSystemAdmin && this.systemAdminOnly) {
-            throw new PermissionDeniedError(
-                "This command can only be used by system administrators."
-            );
-        }
+         const responses = [
+         "SyntaxError: Unexpected token F in JSON at position 420",
+         "SyntaxError: Unexpected token L in JSON at position 69",
+         "SyntaxError: Unexpected identifier",
+         "UnhandledPromiseRejectionWarning: DiscordAPIError: Missing Permissions",
+         "TypeError: Cannot read property 'messages' of undefined",
+         "UnhandledPromiseRejectionWarning: MongoError: bad auth: Authentication failed.",
+         "Uncaught LogicError: You don't smell like a bot admin",
+         "TypeError: Cannot read property 'skill issue'. Property 'skill issue' undefined.",
+         "Uncaught (in promise): Can't promise about this"
+         ];
+
+          const code = interaction.options.getString('code');
+
+          if (!isSystemAdmin && this.systemAdminOnly) {
+             const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+               throw new PermissionDeniedError(randomResponse);
+         }
 
         try {
             if (
