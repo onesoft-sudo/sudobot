@@ -1,7 +1,4 @@
 import { AbstractTask, IO, Task, TaskAction } from "blazebuild";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { migrate } from "drizzle-orm/node-postgres/migrator";
-import { Pool } from "pg";
 
 @Task({
     description: "Runs the database migrations",
@@ -16,6 +13,10 @@ class MigrateTask extends AbstractTask {
             IO.fatal("DB_URL environment variable is not set");
         }
 
+        const { drizzle } = await import(String("drizzle-orm/node-postgres"));
+        const { migrate } = await import(String("drizzle-orm/node-postgres/migrator"));
+        const { Pool } = await import(String("pg"));
+        
         const pool = new Pool({
             connectionString: process.env.DB_URL
         });
