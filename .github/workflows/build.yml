@@ -82,6 +82,3 @@ jobs:
 
       - name: Build with BlazeBuild
         run: ./blazew build
-
-      - name: Generate Migrations
-        run: ./blazew generateMigrations
