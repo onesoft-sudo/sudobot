@@ -84,7 +84,7 @@ class SDKManager extends UsesWrapper {
                 return;
             }
 
-            IO.warn(
+            IO.debug(
                 `Node.js global version mismatch: required ${expectedNodeVersion}, found ${version}`
             );
         }
