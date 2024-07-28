@@ -593,8 +593,6 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
          "Uncaught (in promise): Can't promise about this"
          ];
 
-          const code = interaction.options.getString('code');
-
           if (!isSystemAdmin && this.systemAdminOnly) {
              const randomResponse = responses[Math.floor(Math.random() * responses.length)];
                throw new PermissionDeniedError(randomResponse);
