@@ -1,3 +1,12 @@
+## [9.20.1](https://github.com/onesoft-sudo/sudobot/compare/v9.20.0...v9.20.1) (2024-07-28)
+
+
+### Bug Fixes
+
+* **blazebuild:wrapper:** redundant warning about global version mismatch ([e55559c](https://github.com/onesoft-sudo/sudobot/commit/e55559c4e0f19f35605f38c2456e8bd8cd50f0f6))
+
+
+
 # [9.20.0](https://github.com/onesoft-sudo/sudobot/compare/v9.19.1...v9.20.0) (2024-07-27)
 
 
@@ -50,15 +59,6 @@
 ### Bug Fixes
 
 * **api:** invalid endpoint /challenge/auth/discord ([246461d](https://github.com/onesoft-sudo/sudobot/commit/246461d25eac5ff42de96d5ceafe3ed151f89c9a))
-
-
-
-## [9.18.1](https://github.com/onesoft-sudo/sudobot/compare/v9.18.0...v9.18.1) (2024-07-16)
-
-
-### Bug Fixes
-
-* update theme color for v9 ([7002577](https://github.com/onesoft-sudo/sudobot/commit/7002577af8950889ed6fdc13ed80817c488f6494))
 
 
 
