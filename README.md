@@ -51,6 +51,14 @@ Alternatively, you can create your own Discord API application and then host Sud
 
 Please look at [this page](https://docs.sudobot.org/getting-started) of the documentation.
 
+### Source Code & Downloads
+
+You can browse the source code at the [GitHub repository](https://github.com/onesoft-sudo/sudobot) or [Subversion repository](https://svn.onesoftnet.eu.org/viewvc).
+You can also download release tarballs at [OSN's download server](https://downloads.onesoftnet.eu.org):
+
+-  HTTP: [https://downloads.onesoftnet.eu.org](https://downloads.onesoftnet.eu.org)
+-  FTP: [ftp://ftp.onesoftnet.eu.org](ftp://ftp.onesoftnet.eu.org) with anonymous read access.
+
 ### Contributors [A-Z]
 
 Thanks to all the active and indirect contributors!
