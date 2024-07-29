@@ -112,7 +112,7 @@
     "@types/glob": "^8.1.0",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/module-alias": "^2.0.4",
-    "@types/node": "^20.14.10",
+    "@types/node": "^22.0.0",
     "@types/pg": "^8.11.6",
     "@types/semver": "^7.5.8",
     "@types/tar": "^6.1.13",
