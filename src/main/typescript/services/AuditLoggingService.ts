@@ -23,7 +23,8 @@ import {
     LogMemberWarningAddPayload,
     LogMessageBulkDeletePayload,
     LogRaidAlertPayload,
-    LogUserNoteAddPayload
+    LogUserNoteAddPayload,
+    LoggingExclusionType
 } from "@main/schemas/LoggingSchema";
 import { MessageRuleType } from "@main/schemas/MessageRuleSchema";
 import ConfigurationManager from "@main/services/ConfigurationManager";
@@ -139,7 +140,9 @@ class AuditLoggingService extends Service {
                         loadedEvents.add(event);
                     }
                 } else {
-                    this.channels.set(`${guildId}::${LogEventType.MessageDelete}`, null);
+                    for (const event of override.events) {
+                        this.channels.set(`${guildId}::${event}`, null);
+                    }
                 }
 
                 index++;
@@ -164,11 +167,148 @@ class AuditLoggingService extends Service {
 
         const channel = this.channels.get(`${guildId}::${type}`);
 
-        if ((defaultEnabled && channel === null) || (!defaultEnabled && !channel)) {
+        if ((defaultEnabled && channel === null) || (!defaultEnabled && channel === undefined)) {
             return null;
         }
 
+        if (config.unsubscribed_events.includes(type)) {
+            this.logger.debug("Unsubscribed event");
+            return null;
+        }
+
+        for (const exclusion of config.exclusions) {
+            if (this.testExclusion(exclusion, type, ...args)) {
+                this.logger.debug("Exclusion triggered");
+                return null;
+            }
+        }
+
         return this.logHandlers[type].call(this, ...args);
+    }
+
+    private testExclusion<T extends LogEventType>(
+        exclusion: LoggingExclusionType,
+        type: T,
+        ...args: LogEventArgs[T]
+    ) {
+        if (exclusion.events !== undefined) {
+            const includes = exclusion.events.includes(type);
+
+            if (!includes) {
+                return exclusion.mode === "include";
+            }
+        }
+
+        let target: string | string[] | undefined;
+
+        this.logger.debug("Testing: ", type);
+
+        switch (type) {
+            case LogEventType.GuildMemberAdd:
+            case LogEventType.GuildMemberRemove:
+                if (exclusion.type === "user") {
+                    target = (args[0] as GuildMember).id;
+                }
+
+                break;
+
+            case LogEventType.MessageUpdate:
+            case LogEventType.SystemUserMessageSave:
+            case LogEventType.MessageDelete:
+                if (exclusion.type === "user") {
+                    target = (args[0] as Message<true>).author.id;
+                } else if (exclusion.type === "channel") {
+                    target = (args[0] as Message<true>).channelId;
+                } else if (
+                    exclusion.type === "category_channel" &&
+                    (args[0] as Message<true>).channel.parentId
+                ) {
+                    target = (args[0] as Message<true>).channel.parentId!;
+                }
+
+                break;
+
+            case LogEventType.MemberBanAdd:
+            case LogEventType.MemberBanRemove:
+            case LogEventType.UserNoteAdd:
+            case LogEventType.MemberModeratorMessageAdd:
+                if (exclusion.type === "user") {
+                    target = (args[0] as { user: User }).user.id;
+                }
+
+                break;
+
+            case LogEventType.MemberMassBan:
+            case LogEventType.MemberMassKick:
+            case LogEventType.MemberMassUnban:
+            case LogEventType.RaidAlert:
+                break;
+
+            case LogEventType.GuildMemberKick:
+            case LogEventType.MemberMuteAdd:
+            case LogEventType.MemberMuteRemove:
+            case LogEventType.MemberRoleModification:
+            case LogEventType.MemberWarningAdd:
+                if (exclusion.type === "user") {
+                    target = (args[0] as { member: GuildMember }).member.id;
+                }
+
+                break;
+
+            case LogEventType.MessageDeleteBulk:
+                {
+                    const payload = args[0] as LogMessageBulkDeletePayload;
+
+                    if (exclusion.type === "user") {
+                        target = payload.user?.id;
+                    } else {
+                        target =
+                            exclusion.type === "channel"
+                                ? payload.channel.id
+                                : (payload.channel.parentId ?? undefined);
+                    }
+                }
+
+                break;
+
+            case LogEventType.SystemAutoModRuleModeration:
+                {
+                    const entity = args[1] as Message<true> | GuildMember;
+
+                    if (entity instanceof Message) {
+                        target =
+                            exclusion.type === "category_channel"
+                                ? (entity.channel.parentId ?? undefined)
+                                : exclusion.type === "channel"
+                                  ? entity.channelId
+                                  : entity.author.id;
+                    } else {
+                        target = entity.id;
+                    }
+                }
+
+                break;
+        }
+
+        if (target === undefined) {
+            return false;
+        }
+
+        target = Array.isArray(target) ? target : [target];
+
+        for (const id of exclusion.snowflakes) {
+            const includes = target.includes(id);
+
+            if (exclusion.mode === "exclude" && includes) {
+                return true;
+            }
+
+            if (exclusion.mode === "include" && !includes) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private configFor(guildId: Snowflake) {
@@ -303,13 +443,13 @@ class AuditLoggingService extends Service {
                     await configManager.write();
                 }
             }
+        } else {
+            this.application.logger.debug("LoggingService: Cache HIT");
         }
 
         if (webhookClient.status === "error") {
             return;
         }
-
-        this.application.logger.debug("LoggingService: Cache HIT");
 
         const { webhook } = webhookClient;
 

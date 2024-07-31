@@ -180,6 +180,15 @@ const LogConfigOverride = z
         })
     );
 
+const LoggingExclusionSchema = z.object({
+    type: z.enum(["user", "channel", "category_channel"]),
+    mode: z.enum(["exclude", "include"]).default("exclude"),
+    snowflakes: z.array(zSnowflake),
+    events: z.array(LogEventSchema).optional()
+});
+
+export type LoggingExclusionType = z.infer<typeof LoggingExclusionSchema>;
+
 export const LoggingSchema = z.object({
     enabled: z.boolean().default(false),
     bulk_delete_send_json: z.boolean().default(true),
@@ -190,5 +199,7 @@ export const LoggingSchema = z.object({
         .describe("Whether to consider all events as enabled if no override is found"),
     primary_channel: zSnowflake.optional(),
     hooks: z.record(zSnowflake, zSnowflake).default({}),
-    overrides: z.array(LogConfigOverride).default([])
+    overrides: z.array(LogConfigOverride).default([]),
+    exclusions: z.array(LoggingExclusionSchema).default([]),
+    unsubscribed_events: z.array(LogEventSchema).default([])
 });
