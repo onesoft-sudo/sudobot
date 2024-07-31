@@ -105,7 +105,8 @@ class WelcomerService extends Service implements HasEventListeners {
     private preprocess(text: string, member: GuildMember) {
         return text
             .replace(/:mention:/gi, `<@${member.id}>`)
-            .replace(/:username:/gi, member.user.username);
+            .replace(/:username:/gi, member.user.username)
+            .replace(/:guild:/gi, member.guild.name);
     }
 
     @GatewayEventListener("interactionCreate")
