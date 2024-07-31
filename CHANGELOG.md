@@ -1,3 +1,12 @@
+## [9.20.2](https://github.com/onesoft-sudo/sudobot/compare/v9.20.1...v9.20.2) (2024-07-31)
+
+
+### Bug Fixes
+
+* **welcomer:** `:guild:` placeholder is not replaced ([3b66ee4](https://github.com/onesoft-sudo/sudobot/commit/3b66ee410d91fe77fa74cbaa9a421bbd0823c075))
+
+
+
 ## [9.20.1](https://github.com/onesoft-sudo/sudobot/compare/v9.20.0...v9.20.1) (2024-07-28)
 
 
@@ -50,15 +59,6 @@
 * new argument parser completed ([ab8238d](https://github.com/onesoft-sudo/sudobot/commit/ab8238d549a6f82e1e0bf7f07d9d62ed483b689e))
 * **trolling:** prevent users from using troll commands against the bot or sysadmins ([8c5265a](https://github.com/onesoft-sudo/sudobot/commit/8c5265aff952cb8b7bf9451afa342591f960ee0b))
 * usable argument parsing ([41bb6c5](https://github.com/onesoft-sudo/sudobot/commit/41bb6c52aa85f8d51d7769d1ecea965dea1b1efd))
-
-
-
-## [9.18.2](https://github.com/onesoft-sudo/sudobot/compare/v9.18.1...v9.18.2) (2024-07-17)
-
-
-### Bug Fixes
-
-* **api:** invalid endpoint /challenge/auth/discord ([246461d](https://github.com/onesoft-sudo/sudobot/commit/246461d25eac5ff42de96d5ceafe3ed151f89c9a))
 
 
 
