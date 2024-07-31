@@ -1,3 +1,12 @@
+# [9.21.0](https://github.com/onesoft-sudo/sudobot/compare/v9.20.2...v9.21.0) (2024-07-31)
+
+
+### Features
+
+* **logging:** unsubcribe to events and exclusion overrides ([c34f6ac](https://github.com/onesoft-sudo/sudobot/commit/c34f6ac0f815da781f553acc8479c82ffd41f548))
+
+
+
 ## [9.20.2](https://github.com/onesoft-sudo/sudobot/compare/v9.20.1...v9.20.2) (2024-07-31)
 
 
@@ -36,29 +45,6 @@
 ### Bug Fixes
 
 * help command group list sort ([96950db](https://github.com/onesoft-sudo/sudobot/commit/96950db2f62fd43c2d355113a1ce364b519d6425))
-
-
-
-# [9.19.0](https://github.com/onesoft-sudo/sudobot/compare/v9.18.2...v9.19.0) (2024-07-26)
-
-
-### Bug Fixes
-
-* afk command malfunctioning ([ff48821](https://github.com/onesoft-sudo/sudobot/commit/ff4882179e3f932905f2edd6175bcff5d486c829))
-* **blazebuild:** allow higher versions of node to be installed ([eafceef](https://github.com/onesoft-sudo/sudobot/commit/eafceef591921facf4cbe65b4ec607e7b65e28ec))
-* **blazebuild:** install missing type definitions ([6814821](https://github.com/onesoft-sudo/sudobot/commit/6814821c2f6d1df3fa91e1f315b783c54b322110))
-* correct all imports to ArgumentParser ([7d03379](https://github.com/onesoft-sudo/sudobot/commit/7d03379989219f5da53b4b8025c5c87d5eb27444))
-* **framework:arguments:** error handling issues ([ca1b059](https://github.com/onesoft-sudo/sudobot/commit/ca1b05921122a8a988dfa6d8ed93a8faaeb25471))
-* remove the old argument parser ([eb51d4f](https://github.com/onesoft-sudo/sudobot/commit/eb51d4f9b412353a13253e28c2fafd57167dd39d))
-* typescript build errors ([922a1ff](https://github.com/onesoft-sudo/sudobot/commit/922a1ffaed75909a8a4629b6761ed19e7dcc8f02))
-
-
-### Features
-
-* introduce new argument parser ([5c2b4bc](https://github.com/onesoft-sudo/sudobot/commit/5c2b4bcff66933562df8dd4350023683414ae9cb))
-* new argument parser completed ([ab8238d](https://github.com/onesoft-sudo/sudobot/commit/ab8238d549a6f82e1e0bf7f07d9d62ed483b689e))
-* **trolling:** prevent users from using troll commands against the bot or sysadmins ([8c5265a](https://github.com/onesoft-sudo/sudobot/commit/8c5265aff952cb8b7bf9451afa342591f960ee0b))
-* usable argument parsing ([41bb6c5](https://github.com/onesoft-sudo/sudobot/commit/41bb6c52aa85f8d51d7769d1ecea965dea1b1efd))
 
 
 
