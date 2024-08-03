@@ -9,6 +9,7 @@ import { GuildMember, Message, Snowflake, TextChannel } from "discord.js";
 import { MessageAutoModServiceContract } from "../contracts/MessageAutoModServiceContract";
 import {
     MessageRuleScope,
+    ModerationRuleContextType,
     type default as ModerationRuleHandlerContract
 } from "../contracts/ModerationRuleHandlerContract";
 import { MessageRuleType } from "../schemas/MessageRuleSchema";
@@ -91,7 +92,8 @@ class RuleModerationService
         await this.moderateMemberOrMessage({
             message,
             member: message.member!,
-            guildId: message.guildId!
+            guildId: message.guildId!,
+            contextType: "message"
         });
     }
 
@@ -143,6 +145,12 @@ class RuleModerationService
     public async moderateMemberOrMessage(options: ModerateOptions): Promise<boolean> {
         const { guildId, message, contextType = "message" } = options;
         let { member } = options;
+
+        if (!member || !message) {
+            this.application.logger.bug("Member or message is missing");
+            throw new Error("Member or message is missing");
+        }
+
         const config = this.configFor(guildId!);
 
         if (!config?.enabled) {
@@ -150,15 +158,6 @@ class RuleModerationService
         }
 
         if (message && config.global_disabled_channels.includes(message.channelId)) {
-            return false;
-        }
-
-        if (!(await this.shouldModerate(message ?? member))) {
-            this.application.logger.debug(
-                "Rule moderation is disabled for this user",
-                message ? message.author.id : member.user.id
-            );
-
             return false;
         }
 
@@ -176,15 +175,30 @@ class RuleModerationService
             member = fetchedMember;
         }
 
+        if (!(await this.shouldModerate(message?.member ?? member))) {
+            this.application.logger.debug(
+                "Rule moderation is disabled for this user",
+                message ? message.author.id : member.user.id
+            );
+
+            return false;
+        }
+
         const rules = config.rules;
         let count = 0;
         let moderated = false;
 
-        const contextTypes = Reflect.getMetadata(
-            "rule:context:types",
-            this.ruleHandler.constructor.prototype
-        );
-        const scopes = Reflect.getMetadata(
+        type Type = MessageRuleType["type"];
+
+        const contextTypes: {
+            [key in Type]?: ModerationRuleContextType[];
+        } = Reflect.getMetadata("rule:context:types", this.ruleHandler.constructor.prototype);
+
+        const scopes:
+            | {
+                  [key in Type]?: MessageRuleScope[];
+              }
+            | undefined = Reflect.getMetadata(
             "rule:context:scopes",
             this.ruleHandler.constructor.prototype
         );
@@ -203,10 +217,15 @@ class RuleModerationService
                     options.scopes?.includes(scope)
                 ) === undefined
             ) {
+                this.application.logger.debug("Unsupported scope", rule.type);
                 continue;
             }
 
             if (!rule.enabled || !(await this.checkPreconditions(member, rule, message))) {
+                this.application.logger.debug(
+                    "Rule is not enabled or preconditions do not match",
+                    rule.type
+                );
                 continue;
             }
 
@@ -225,13 +244,15 @@ class RuleModerationService
                 continue;
             }
 
-            if (contextTypes?.[rule.type] && !contextTypes?.[rule.type].includes(contextType)) {
+            if (contextTypes?.[rule.type] && !contextTypes?.[rule.type]?.includes(contextType)) {
                 this.application.logger.debug(
-                    `Rule type ${rule.type} does not expect a message or profile context`
+                    `Rule type ${rule.type} does not expect a ${contextType} context`
                 );
 
                 continue;
             }
+
+            this.application.logger.debug("Checking rule", rule.type);
 
             const result = await handler.call(this.ruleHandler, {
                 type: contextType,
@@ -412,8 +433,6 @@ class RuleModerationService
 
         return true;
     }
-
-    private async handleBypasser() {}
 }
 
 type ModerateOptions = {

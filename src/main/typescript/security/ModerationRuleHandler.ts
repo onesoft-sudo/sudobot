@@ -69,10 +69,7 @@ type GoogleResponse = {
 };
 
 class ModerationRuleHandler extends HasApplication implements ModerationRuleHandlerContract {
-    protected readonly computedRegexCache = new WeakMap<
-        Array<string | [string, string]>,
-        RegExp[]
-    >();
+    protected computedRegexCache = new WeakMap<Array<string | [string, string]>, RegExp[]>();
 
     @Inject("inviteTrackingService")
     private readonly inviteTrackingService!: InviteTrackingService;
@@ -80,7 +77,14 @@ class ModerationRuleHandler extends HasApplication implements ModerationRuleHand
     @Inject("imageRecognitionService")
     private readonly imageRecognitionService!: ImageRecognitionService;
 
-    public async boot() {}
+    public async boot() {
+        setInterval(
+            () => {
+                this.computedRegexCache = new WeakMap();
+            },
+            1000 * 60 * 60
+        );
+    }
 
     @AcceptsMessageRuleScopes(MessageRuleScope.Content)
     public domain_filter(context: ModerationRuleContext<"message", { type: "domain_filter" }>) {
