@@ -71,7 +71,13 @@ Thanks to all the active and indirect contributors!
 -   [killerclaws12](https://github.com/killerclaws12)
 -   [MonzterDev](https://github.com/MonzterDev)
 -   [ninsaccplayzyt](https://github.com/ninsaccplayzyt)
--   [Ryanmello07](https://github.com/Ryanmello07) (Contributed by giving away a hosting server and by giving a lot of suggestions/ideas to us)
+-   [Ryanmello07](https://github.com/Ryanmello07) (Contributed by giving away a hosting server and doing a lot of other things to help us)
+
+### Mailing Lists
+
+If you prefer communicating over emails or mailing lists, you can send your message at <sudobot@lists.onesoftnet.eu.org>, which is a mailing list specifically for discussions, bug reports and questions about SudoBot.
+For more information about this mailing list, check out the [list info](https://lists.onesoftnet.eu.org/mailman/listinfo/sudobot) page. 
+Mail archives for this mailing list can be found [here](https://lists.onesoftnet.eu.org/pipermail/sudobot).
 
 ### License
 
@@ -87,6 +93,7 @@ SudoBot is licensed under the [GNU Affero General Public License v3.0](https://g
 ### Support
 
 -   **Email**: rakinar2@onesoftnet.eu.org
+-   **Mailing List**: sudobot@lists.onesoftnet.eu.org
 -   **Website**: https://www.sudobot.org
 -   **Discord Servers**: [OneSoftNet Server](https://discord.gg/892GWhTzgs)
 
