@@ -164,7 +164,7 @@ After configuring the bot, you can run it using the following command:
 By default, BlazeBuild will use [Bun](https://bun.sh) to run the bot. If you want to use Node.js instead, you can run the following command:
 
 ```bash
-./blazew run -- --node
+./blazew run --node
 ```
 
 This will start the bot, and you should see the bot online in your Discord server. 
@@ -178,7 +178,7 @@ The bot uses [Discord's Application Commands](https://discord.com/developers/doc
 To register the application commands to the Discord API, you can run the following command:
 
 ```bash
-./blazew run -- -- -u
+./blazew run -- -u
 ```
 
 If you have debug mode enabled and have `HOME_GUILD_ID` set in the `.env` file, the bot will register the commands in the development guild.
@@ -187,20 +187,20 @@ If you don't have debug mode enabled, the bot will register the commands globall
 If you want to force the bot to register the commands globally, you can run the following command:
 
 ```bash
-./blazew run -- -- -u -g
+./blazew run -- -u -g
 ```
 
 To clear the registered commands, you can run the following command:
 
 ```bash
-./blazew run -- -- -c
+./blazew run -- -c
 ```
 
 Once again, if you have debug mode enabled, the bot will clear the commands in the development guild. Otherwise, it will clear the commands globally.
 To force the bot to clear the commands globally, you can run the following command:
 
 ```bash
-./blazew run -- -- -c -g
+./blazew run -- -c -g
 ```
 
 ## Emojis
