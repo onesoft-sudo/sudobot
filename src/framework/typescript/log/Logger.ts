@@ -29,7 +29,8 @@ export enum LogLevel {
     Critical,
     Success,
     Event,
-    Performance
+    Performance,
+    Bug
 }
 
 export class Logger {
@@ -57,6 +58,7 @@ export class Logger {
         this.critical = this.critical.bind(this);
         this.success = this.success.bind(this);
         this.event = this.event.bind(this);
+        this.bug = this.bug.bind(this);
     }
 
     public on(event: "log", listener: (message: string) => void) {
@@ -72,10 +74,12 @@ export class Logger {
                   ? "debug"
                   : level === LogLevel.Warn
                     ? "warn"
-                    : "error";
+                    : level === LogLevel.Bug
+                      ? "trace"
+                      : "error";
         const beginning = `${
             this.logTime ? `${chalk.gray(this.formatter.format(new Date()))} ` : ""
-        }${this.colorize(`${this.name}:${levelName}`, level)}`;
+        }${this.colorize(`[${this.name}:${levelName}]`, level)}`;
         this.print(methodName, beginning, ...args);
 
         if (level === LogLevel.Fatal) {
@@ -84,7 +88,10 @@ export class Logger {
         }
     }
 
-    public print(methodName: "log" | "info" | "warn" | "error" | "debug", ...args: unknown[]) {
+    public print(
+        methodName: "log" | "info" | "warn" | "error" | "debug" | "trace",
+        ...args: unknown[]
+    ) {
         if (process.env.SUPPRESS_LOGS) {
             return;
         }
@@ -121,6 +128,9 @@ export class Logger {
 
             case LogLevel.Performance:
                 return chalk.magenta(text);
+
+            case LogLevel.Bug:
+                return chalk.red(text);
         }
     }
 
@@ -130,6 +140,10 @@ export class Logger {
         }
 
         this.log(LogLevel.Debug, ...args);
+    }
+
+    public bug(...args: unknown[]) {
+        this.log(LogLevel.Bug, chalk.red("BUG:"), ...args);
     }
 
     public perfStart(id: string, ...args: unknown[]) {
