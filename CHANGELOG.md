@@ -1,3 +1,18 @@
+# [9.22.0](https://github.com/onesoft-sudo/sudobot/compare/v9.21.0...v9.22.0) (2024-08-03)
+
+
+### Bug Fixes
+
+* **commands:afk:** issues with reason verification ([1b9ad56](https://github.com/onesoft-sudo/sudobot/commit/1b9ad567819e98a0a1ae4e601a1a9bfef3c10f83))
+* **services:moderation_rules:** crashes during member permission checks ([8319428](https://github.com/onesoft-sudo/sudobot/commit/8319428e15567f084f6609919ea040fad725e14a))
+
+
+### Features
+
+* **logger:** add new logging mode `BUG` ([89f4a76](https://github.com/onesoft-sudo/sudobot/commit/89f4a7673519821029eef414096ba6351a846835))
+
+
+
 # [9.21.0](https://github.com/onesoft-sudo/sudobot/compare/v9.20.2...v9.21.0) (2024-07-31)
 
 
@@ -36,15 +51,6 @@
 ### Features
 
 * **commands:shot:** `--nickname/-n` option ([8a29414](https://github.com/onesoft-sudo/sudobot/commit/8a2941470881b5ca68c4235d3ea943af5f4d9091))
-
-
-
-## [9.19.1](https://github.com/onesoft-sudo/sudobot/compare/v9.19.0...v9.19.1) (2024-07-27)
-
-
-### Bug Fixes
-
-* help command group list sort ([96950db](https://github.com/onesoft-sudo/sudobot/commit/96950db2f62fd43c2d355113a1ce364b519d6425))
 
 
 
