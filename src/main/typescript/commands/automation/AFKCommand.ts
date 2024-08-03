@@ -9,7 +9,7 @@ import RuleModerationService from "@main/automod/RuleModerationService";
 import { Colors } from "@main/constants/Colors";
 import { MessageRuleScope } from "@main/contracts/ModerationRuleHandlerContract";
 import AFKService from "@main/services/AFKService";
-import { ChatInputCommandInteraction, Collection, Message } from "discord.js";
+import { ChatInputCommandInteraction, Collection, italic, Message } from "discord.js";
 
 type AFKCommandArgs = {
     reason?: string;
@@ -99,7 +99,8 @@ class AFKCommand extends Command {
             } as unknown as Message,
             {
                 scopes: [MessageRuleScope.Content],
-                skipActions: true
+                skipActions: true,
+                contextType: "message"
             }
         ));
     }
@@ -114,8 +115,12 @@ class AFKCommand extends Command {
                 : context.isChatInput()
                   ? context.options.getBoolean("global")
                   : null) ?? false;
+        const alreadyAFK = this.afkService.isAFK(
+            context.user.id,
+            isGlobal ? "global" : context.guild.id
+        );
 
-        if (this.afkService.isAFK(context.user.id, isGlobal ? "global" : context.guild.id)) {
+        if (alreadyAFK) {
             const global = this.afkService.getAFK(context.user.id, "global");
             const guild = this.afkService.getAFK(context.user.id, context.guild.id);
 
@@ -123,37 +128,42 @@ class AFKCommand extends Command {
                 context.user.id,
                 isGlobal ? "global" : context.guild.id
             );
-            await context.reply({
-                embeds: [
-                    {
-                        description: this.afkService.generateAFKSummary(global, guild!),
-                        color: Colors.Primary
-                    }
-                ]
-            });
 
-            return;
+            if (context.isLegacy()) {
+                await context.reply({
+                    embeds: [
+                        {
+                            description: this.afkService.generateAFKSummary(global, guild!),
+                            color: Colors.Primary
+                        }
+                    ]
+                });
+
+                return;
+            }
         }
 
-        const switchContext = this.afkService.isAFK(
-            context.user.id,
-            isGlobal ? context.guild.id : "global"
-        );
-
-        if (switchContext) {
-            await this.afkService.switchContext(
+        if (!alreadyAFK) {
+            const switchContext = this.afkService.isAFK(
                 context.user.id,
-                isGlobal ? "global" : context.guild.id
+                isGlobal ? context.guild.id : "global"
             );
 
-            await context.reply(
-                `Switched your AFK context to ${isGlobal ? "global" : "this server"}.`
-            );
+            if (switchContext) {
+                await this.afkService.switchContext(
+                    context.user.id,
+                    isGlobal ? "global" : context.guild.id
+                );
 
-            return;
+                await context.reply(
+                    `Switched your AFK context to ${isGlobal ? "global" : "this server"}.`
+                );
+
+                return;
+            }
         }
 
-        if (!(await this.verifyReason(context, args.reason))) {
+        if (args.reason && !(await this.verifyReason(context, args.reason))) {
             return void context.error("Your AFK reason violates this server's rules.");
         }
 
@@ -166,7 +176,9 @@ class AFKCommand extends Command {
         await context.reply({
             embeds: [
                 {
-                    description: `You are AFK now${args.reason ? ` with the reason: ${args.reason}` : ""}.`,
+                    description: alreadyAFK
+                        ? `Your AFK reason has been updated to: ${args.reason ?? italic("none")}`
+                        : `You are AFK now${args.reason ? ` with the reason: ${args.reason}` : ""}.`,
                     color: Colors.Primary
                 }
             ]
