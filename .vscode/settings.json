@@ -42,6 +42,8 @@
         "estree",
         "extbuilds",
         "fargs",
+        "httpcat",
+        "httpdog",
         "kickable",
         "linebreak",
         "Lockdown",
