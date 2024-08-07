@@ -234,10 +234,16 @@ bun install -D
 bun run build
 ```
 
-This will take a little bit time. After that, you're ready to go. You can now start the bot from the main project root (assuming you've build it already):
+This will take a little bit time. After that, you're ready to go. You can now start the bot from the main project root (assuming you've built it already):
 
 ```bash
 npm start
+```
+
+Or using Bun (no build step required):
+
+```bash
+bun dev
 ```
 
 And then if everything was configured correctly, the `hello` command will be loaded and can be executed on any server.
