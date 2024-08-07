@@ -55,6 +55,8 @@ Next, navigate to the directory where you have cloned the repository using Git, 
 cd sudobot
 ```
 
+### Building SudoBot for Node.js
+
 Now, to build the project, we'll use [BlazeBuild](https://github.com/onesoft-sudo/sudobot/tree/main/blazebuild), which is a blazingly fast build tool, for TypeScript and JavaScript projects.
 To use BlazeBuild, you don't need to install anything including BlazeBuild itself, as it will be installed and set-up automatically during the build process.
 BlazeBuild will also make sure to install any missing SDKs or tools required for building the project.
@@ -69,11 +71,15 @@ This will build, compile and package the project into a `build` directory in the
 Depending on your system, the build process may take a few seconds to a few minutes to complete.
 We recommend using a system with at least 8GB of RAM and 2 CPU cores for faster build times.
 
-If you don't have enough resources, this command will fail with heap allocation errors. If that happens, or if you don't want to build it yourself, don't worry. You can download prebuilt versions for every release. The builds are tested on Node.js **v21**, however they should also work with **v20**.
+If you don't have enough memory, this command might fail with heap allocation errors. If that happens, or if you don't want to build it yourself, don't worry. You can download prebuilt versions for every release. The builds are tested on Node.js **v21**, however they should also work with **v20**.
 You might see that only Linux and macOS (darwin) releases are available. This doesn't mean you cannot run the bot on Windows systems - only the native bindings are platform dependent. You don't need to worry about that in most cases and the bot will just work fine.
 You can download the prebuilt versions in the GitHub releases page: https://github.com/onesoft-sudo/sudobot/releases/latest
 
 As always if you ever encounter errors with commands or you see something is not working as you expect, you can join our [Discord Server](https://discord.gg/892GWhTzgs) and ask for help!
+
+### Building SudoBot for Bun
+
+If you'd like to use Bun instead of Node.js to run SudoBot, then you don't need to build the bot because Bun supports TypeScript natively. Just skip to the next part and follow the commands and instructions specifically for Bun.
 
 ## Configuration
 
