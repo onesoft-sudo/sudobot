@@ -1,3 +1,12 @@
+# [9.23.0](https://github.com/onesoft-sudo/sudobot/compare/v9.22.0...v9.23.0) (2024-08-07)
+
+
+### Features
+
+* **commands:fun:** add HTTP cat/dog command ([1a67fb2](https://github.com/onesoft-sudo/sudobot/commit/1a67fb23e1d2b2673426db57d857041b2bb62d06))
+
+
+
 # [9.22.0](https://github.com/onesoft-sudo/sudobot/compare/v9.21.0...v9.22.0) (2024-08-03)
 
 
@@ -37,20 +46,6 @@
 ### Bug Fixes
 
 * **blazebuild:wrapper:** redundant warning about global version mismatch ([e55559c](https://github.com/onesoft-sudo/sudobot/commit/e55559c4e0f19f35605f38c2456e8bd8cd50f0f6))
-
-
-
-# [9.20.0](https://github.com/onesoft-sudo/sudobot/compare/v9.19.1...v9.20.0) (2024-07-27)
-
-
-### Bug Fixes
-
-* **commands:help:** incompletely showing command options ([6b9f655](https://github.com/onesoft-sudo/sudobot/commit/6b9f65512374ac150e0e83d4b1409602827f525b))
-
-
-### Features
-
-* **commands:shot:** `--nickname/-n` option ([8a29414](https://github.com/onesoft-sudo/sudobot/commit/8a2941470881b5ca68c4235d3ea943af5f4d9091))
 
 
 
