@@ -17,6 +17,10 @@ This guide will help you get started with SudoBot. You will learn how to build t
 
 ## Prerequisites
 
+<Callout type="warning">
+    This guide assumes you have a Linux/Unix-based system where you'll install SudoBot. Windows users, please [scroll down](#windows-compatibility) to see how you can run SudoBot on Windows.
+</Callout>
+
 Before you start, you need to have the following installed on your system:
 
 - A Discord API Application token (bot token). Go to the [Discord Developer Portal](https://discord.com/developers/applications) to create a new application, and get the token.
@@ -208,6 +212,75 @@ To force the bot to clear the commands globally, you can run the following comma
 ```bash
 ./blazew run -- -c -g
 ```
+
+## Windows Compatibility
+
+SudoBot was created with Linux/Unix-based systems in mind, since in most cases you're going to end up running SudoBot on a production server which is usually Linux/Unix-based.
+However, that doesn't mean you can't run SudoBot on Windows &mdash; but please keep in mind that some things might need tweaks or you might need to do some things differently to make it work on Windows.
+
+**First of all**, BlazeBuild on Windows is still experimental, known to have some issues. So please run the following commands as alternatives:
+
+**Install dependencies**
+
+```bash
+bun install
+```
+
+If using Node:
+
+```bash
+npm install -D
+```
+
+**Build the project (Skip this if using Bun)**
+
+```bash
+npm run build
+```
+
+**Run the Database Migrations**
+
+Please first make sure you have the right credentials in your `.env` file. Then, create a new file named `migrate.ts` in the project root with the following contents:
+
+```typescript
+import "dotenv/config";
+
+const { drizzle } = await import(String("drizzle-orm/node-postgres"));
+const { migrate } = await import(String("drizzle-orm/node-postgres/migrator"));
+const { Pool } = await import(String("pg"));
+
+const pool = new Pool({
+    connectionString: process.env.DB_URL
+});
+
+const db = drizzle(pool);
+await migrate(db, { migrationsFolder: "drizzle" });
+await pool.end();
+```
+
+Then run this file:
+
+```bash
+bun migrate.ts
+```
+
+And if everything was correctly set up, your database will have the new tables created for SudoBot.
+
+**Starting the Bot**
+
+Be sure to set up the configuration files before starting the bot! After doing that, run the following:
+
+```bash
+bun dev
+```
+
+Or, if using Node:
+
+```bash
+npm run start
+```
+
+Also note, to pass any options that you could pass to `./blazew run`, you can just pass it normally to `bun dev` if using `bun`, or after a `--` argument if using `npm run start`.
 
 ## Emojis
 
