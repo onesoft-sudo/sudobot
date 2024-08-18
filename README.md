@@ -94,7 +94,7 @@ SudoBot is licensed under the [GNU Affero General Public License v3.0](https://g
 
 -   **Email**: rakinar2@onesoftnet.eu.org
 -   **Mailing List**: sudobot@onesoftnet.eu.org
--   **Website**: https://www.sudobot.onesoftnet.eu.org
+-   **Website**: https://sudobot.onesoftnet.eu.org
 -   **Discord Servers**: [OneSoftNet Server](https://discord.gg/892GWhTzgs)
 
 ### Extra
