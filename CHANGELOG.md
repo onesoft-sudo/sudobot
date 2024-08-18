@@ -1,3 +1,13 @@
+## [9.23.2](https://github.com/onesoft-sudo/sudobot/compare/v9.23.1...v9.23.2) (2024-08-18)
+
+
+### Bug Fixes
+
+* **cluster:** feature flag proxy URL ([551075b](https://github.com/onesoft-sudo/sudobot/commit/551075b703471bad90e6367be248c37ad2050bcd))
+* **commands:help:** broken links ([e30409d](https://github.com/onesoft-sudo/sudobot/commit/e30409de3d0c38531927c4e7f8064008d34c45db))
+
+
+
 ## [9.23.1](https://github.com/onesoft-sudo/sudobot/compare/v9.23.0...v9.23.1) (2024-08-18)
 
 
@@ -37,15 +47,6 @@
 ### Features
 
 * **logging:** unsubcribe to events and exclusion overrides ([c34f6ac](https://github.com/onesoft-sudo/sudobot/commit/c34f6ac0f815da781f553acc8479c82ffd41f548))
-
-
-
-## [9.20.2](https://github.com/onesoft-sudo/sudobot/compare/v9.20.1...v9.20.2) (2024-07-31)
-
-
-### Bug Fixes
-
-* **welcomer:** `:guild:` placeholder is not replaced ([3b66ee4](https://github.com/onesoft-sudo/sudobot/commit/3b66ee410d91fe77fa74cbaa9a421bbd0823c075))
 
 
 
