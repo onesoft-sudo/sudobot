@@ -66,12 +66,12 @@ class AboutCommand extends Command {
                         },
                         {
                             name: "Support",
-                            value: "[Contact Us](https://docs.sudobot.org/getting-started#help--support)",
+                            value: "[Contact Us](https://docs.sudobot.onesoftnet.eu.org/getting-started#help--support)",
                             inline: true
                         },
                         {
                             name: "Documentation",
-                            value: "[SudoBot Docs](https://docs.sudobot.org)",
+                            value: "[SudoBot Docs](https://docs.sudobot.onesoftnet.eu.org)",
                             inline: true
                         }
                     ],
