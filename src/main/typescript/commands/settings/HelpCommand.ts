@@ -44,12 +44,12 @@ class HelpCommand extends Command {
             new ButtonBuilder()
                 .setStyle(ButtonStyle.Link)
                 .setLabel("Docs")
-                .setURL("https://docs.sudobot.org")
+                .setURL("https://docs.sudobot.onesoftnet.eu.org")
                 .setEmoji("📘"),
             new ButtonBuilder()
                 .setStyle(ButtonStyle.Link)
                 .setLabel("Website")
-                .setURL("https://www.sudobot.org")
+                .setURL("https://sudobot.onesoftnet.eu.org")
                 .setEmoji("🌐"),
             new ButtonBuilder()
                 .setStyle(ButtonStyle.Link)
@@ -69,12 +69,12 @@ class HelpCommand extends Command {
             new ButtonBuilder()
                 .setStyle(ButtonStyle.Link)
                 .setLabel("Docs")
-                .setURL("https://docs.sudobot.org")
+                .setURL("https://docs.sudobot.onesoftnet.eu.org")
                 .setEmoji("📘"),
             new ButtonBuilder()
                 .setStyle(ButtonStyle.Link)
                 .setLabel("Website")
-                .setURL("https://www.sudobot.org")
+                .setURL("https://sudobot.onesoftnet.eu.org")
                 .setEmoji("🌐"),
             new ButtonBuilder()
                 .setStyle(ButtonStyle.Link)
