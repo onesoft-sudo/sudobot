@@ -1,3 +1,12 @@
+## [9.23.1](https://github.com/onesoft-sudo/sudobot/compare/v9.23.0...v9.23.1) (2024-08-18)
+
+
+### Bug Fixes
+
+* **commands:about:** broken links ([4535188](https://github.com/onesoft-sudo/sudobot/commit/4535188e26ee628c0848063b362fd952f00b75af))
+
+
+
 # [9.23.0](https://github.com/onesoft-sudo/sudobot/compare/v9.22.0...v9.23.0) (2024-08-07)
 
 
@@ -37,15 +46,6 @@
 ### Bug Fixes
 
 * **welcomer:** `:guild:` placeholder is not replaced ([3b66ee4](https://github.com/onesoft-sudo/sudobot/commit/3b66ee410d91fe77fa74cbaa9a421bbd0823c075))
-
-
-
-## [9.20.1](https://github.com/onesoft-sudo/sudobot/compare/v9.20.0...v9.20.1) (2024-07-28)
-
-
-### Bug Fixes
-
-* **blazebuild:wrapper:** redundant warning about global version mismatch ([e55559c](https://github.com/onesoft-sudo/sudobot/commit/e55559c4e0f19f35605f38c2456e8bd8cd50f0f6))
 
 
 
