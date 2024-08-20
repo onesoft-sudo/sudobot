@@ -9,7 +9,7 @@ import Providers from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_DOMAIN),
+    metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_DOMAIN!),
     title: "SudoBot Documentation",
     description: "A guide to get you started with SudoBot!",
     alternates: {
