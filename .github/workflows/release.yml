@@ -49,10 +49,11 @@ jobs:
       - name: "Package the build output files"
         run: |
           OS="${{ matrix.os }}";
-          mkdir -p sudobot-release-${OS}/lib;
-          mv build sudobot;
+          mkdir sudobot-release-${OS};
+          mv build sudobot-release-${OS};
           mv src sudobot-release-${OS};
-          mv lib/build sudobot-release-${OS}/lib;
+          mkdir sudobot-release-${OS}/lib;
+          mv lib/build sudobot-release-${OS}/lib/build;
           tar -cvzf sudobot-release-${OS}-incomplete.tar.gz sudobot-release-${OS};
 
       - name: Upload Release Artifacts
