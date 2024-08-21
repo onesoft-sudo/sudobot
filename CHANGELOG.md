@@ -1,3 +1,12 @@
+## [9.23.3](https://github.com/onesoft-sudo/sudobot/compare/v9.23.2...v9.23.3) (2024-08-21)
+
+
+### Bug Fixes
+
+* regenerate release [trigger ci] ([02cccba](https://github.com/onesoft-sudo/sudobot/commit/02cccba6b3b89fb2883f508152d02d8e8ff0dc80))
+
+
+
 ## [9.23.2](https://github.com/onesoft-sudo/sudobot/compare/v9.23.1...v9.23.2) (2024-08-18)
 
 
@@ -38,15 +47,6 @@
 ### Features
 
 * **logger:** add new logging mode `BUG` ([89f4a76](https://github.com/onesoft-sudo/sudobot/commit/89f4a7673519821029eef414096ba6351a846835))
-
-
-
-# [9.21.0](https://github.com/onesoft-sudo/sudobot/compare/v9.20.2...v9.21.0) (2024-07-31)
-
-
-### Features
-
-* **logging:** unsubcribe to events and exclusion overrides ([c34f6ac](https://github.com/onesoft-sudo/sudobot/commit/c34f6ac0f815da781f553acc8479c82ffd41f548))
 
 
 
