@@ -63,6 +63,46 @@ class GuildController extends Controller {
 
         return guilds;
     }
+
+    @Action("GET", "/guilds/:id/roles")
+    @RequireAuth()
+    public async getRoles(request: Request) {
+        const {id} = request.params;
+        const guild = this.application.client.guilds.cache.get(id);
+
+        if (!guild) {
+            return this.error(404, {
+                message: "Guild not found.",
+                code: APIErrorCode.GuildNotFound
+            });
+        }
+
+        return guild.roles.cache.map(role => ({
+            id: role.id,
+            name: role.name,
+            color: role.color,
+        }));
+    }
+
+    @Action("GET", "/guilds/:id/channels")
+    @RequireAuth()
+    public async getChannels(request: Request) {
+        const {id} = request.params;
+        const guild = this.application.client.guilds.cache.get(id);
+
+        if (!guild) {
+            return this.error(404, {
+                message: "Guild not found.",
+                code: APIErrorCode.GuildNotFound
+            });
+        }
+
+        return guild.channels.cache.map(channel => ({
+            id: channel.id,
+            name: channel.name,
+            type: channel.type,
+        }));
+    }
 }
 
 export default GuildController;
