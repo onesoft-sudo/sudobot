@@ -1,3 +1,12 @@
+# [9.24.0](https://github.com/onesoft-sudo/sudobot/compare/v9.23.3...v9.24.0) (2024-08-22)
+
+
+### Features
+
+* **api:** add `/guilds/:id/roles` and `/guilds/:id/channels` endpoints ([a604ccf](https://github.com/onesoft-sudo/sudobot/commit/a604ccff3f62d33c2d5d796158d79198e1ab370f))
+
+
+
 ## [9.23.3](https://github.com/onesoft-sudo/sudobot/compare/v9.23.2...v9.23.3) (2024-08-21)
 
 
@@ -32,21 +41,6 @@
 ### Features
 
 * **commands:fun:** add HTTP cat/dog command ([1a67fb2](https://github.com/onesoft-sudo/sudobot/commit/1a67fb23e1d2b2673426db57d857041b2bb62d06))
-
-
-
-# [9.22.0](https://github.com/onesoft-sudo/sudobot/compare/v9.21.0...v9.22.0) (2024-08-03)
-
-
-### Bug Fixes
-
-* **commands:afk:** issues with reason verification ([1b9ad56](https://github.com/onesoft-sudo/sudobot/commit/1b9ad567819e98a0a1ae4e601a1a9bfef3c10f83))
-* **services:moderation_rules:** crashes during member permission checks ([8319428](https://github.com/onesoft-sudo/sudobot/commit/8319428e15567f084f6609919ea040fad725e14a))
-
-
-### Features
-
-* **logger:** add new logging mode `BUG` ([89f4a76](https://github.com/onesoft-sudo/sudobot/commit/89f4a7673519821029eef414096ba6351a846835))
 
 
 
