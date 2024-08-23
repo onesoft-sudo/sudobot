@@ -15,6 +15,14 @@ class IO {
         this._quiet = quiet;
     }
 
+    private static noInfinity(value: number) {
+        if (Number.isFinite(value)) {
+            return value;
+        }
+
+        return 0;
+    }
+
     public static createProgress(total: number): void {
         if (!process.stdout.isTTY || this._quiet) {
             return;
@@ -43,7 +51,9 @@ class IO {
 
         console[consoleMethod].call(
             console,
-            typeof message === "string" ? message.padEnd(process.stdout.columns, " ") : message
+            typeof message === "string"
+                ? message.padEnd(this.noInfinity(process.stdout.columns), " ")
+                : message
         );
     }
 
@@ -53,7 +63,7 @@ class IO {
         }
 
         if (this._progress) {
-            console.log(`\r${" ".repeat(Math.max(process.stdout.columns - 1, 0))}`);
+            console.log(`\r${" ".repeat(this.noInfinity(process.stdout.columns - 1))}`);
             return;
         }
 
@@ -162,10 +172,10 @@ class IO {
 
         this.destroyProgress();
 
-        console.log("\r" + " ".repeat(Math.max(process.stdout.columns - 1, 0)));
+        console.log("\r" + " ".repeat(this.noInfinity(process.stdout.columns - 1)));
         console.log(
             `${chalk.green.bold("BUILD SUCCESSFUL")} in ${this.timeDiffFromStartup()}`.padEnd(
-                process.stdout.columns,
+                this.noInfinity(process.stdout.columns),
                 " "
             )
         );
@@ -184,7 +194,7 @@ class IO {
         }
 
         this.destroyProgress();
-        console.log("\r" + " ".repeat(Math.max(process.stdout.columns - 1, 0)));
+        console.log("\r" + " ".repeat(this.noInfinity(process.stdout.columns - 1)));
         console.log(`${chalk.red.bold("BUILD FAILED")} in ${this.timeDiffFromStartup()}`);
     }
 
