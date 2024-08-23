@@ -1,3 +1,13 @@
+## [9.24.1](https://github.com/onesoft-sudo/sudobot/compare/v9.24.0...v9.24.1) (2024-08-23)
+
+
+### Bug Fixes
+
+* **blazebuild:** column number resolves to Infinity when on non-TTY environment ([3bcbca0](https://github.com/onesoft-sudo/sudobot/commit/3bcbca036a0fb274a6c053e50730239dd4f3eda8))
+* **blazebuild:** syntax error ([6c17b5f](https://github.com/onesoft-sudo/sudobot/commit/6c17b5fe7228358d8fcd9b54f2fe015a3a21235d))
+
+
+
 # [9.24.0](https://github.com/onesoft-sudo/sudobot/compare/v9.23.3...v9.24.0) (2024-08-22)
 
 
@@ -32,15 +42,6 @@
 ### Bug Fixes
 
 * **commands:about:** broken links ([4535188](https://github.com/onesoft-sudo/sudobot/commit/4535188e26ee628c0848063b362fd952f00b75af))
-
-
-
-# [9.23.0](https://github.com/onesoft-sudo/sudobot/compare/v9.22.0...v9.23.0) (2024-08-07)
-
-
-### Features
-
-* **commands:fun:** add HTTP cat/dog command ([1a67fb2](https://github.com/onesoft-sudo/sudobot/commit/1a67fb23e1d2b2673426db57d857041b2bb62d06))
 
 
 
