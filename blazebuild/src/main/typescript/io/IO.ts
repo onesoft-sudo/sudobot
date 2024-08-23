@@ -168,7 +168,7 @@ class IO {
 
         this.destroyProgress();
 
-        console.log("\r" + " ".repeat(this.noInfinity(process.stdout.columns - 1));
+        console.log("\r" + " ".repeat(this.noInfinity(process.stdout.columns - 1)));
         console.log(
             `${chalk.green.bold("BUILD SUCCESSFUL")} in ${this.timeDiffFromStartup()}`.padEnd(
                 this.noInfinity(process.stdout.columns),
@@ -190,7 +190,7 @@ class IO {
         }
 
         this.destroyProgress();
-        console.log("\r" + " ".repeat(this.noInfinity(process.stdout.columns) - 1));
+        console.log("\r" + " ".repeat(this.noInfinity(process.stdout.columns - 1)));
         console.log(`${chalk.red.bold("BUILD FAILED")} in ${this.timeDiffFromStartup()}`);
     }
 
