@@ -3,6 +3,8 @@ import { performance } from "perf_hooks";
 import Blaze from "../core/Blaze";
 import Progress from "./Progress";
 
+process.stdout.columns = 0;
+process.stdout.rows = 0;
 const now = performance.now();
 
 class IO {
@@ -51,7 +53,7 @@ class IO {
         }
 
         if (this._progress) {
-            console.log(`\r${" ".repeat(process.stdout.columns - 1)}`);
+            console.log(`\r${" ".repeat(Math.max(process.stdout.columns - 1, 0))}`);
             return;
         }
 
@@ -160,7 +162,7 @@ class IO {
 
         this.destroyProgress();
 
-        console.log("\r" + " ".repeat(process.stdout.columns - 1));
+        console.log("\r" + " ".repeat(Math.max(process.stdout.columns - 1, 0)));
         console.log(
             `${chalk.green.bold("BUILD SUCCESSFUL")} in ${this.timeDiffFromStartup()}`.padEnd(
                 process.stdout.columns,
@@ -182,7 +184,7 @@ class IO {
         }
 
         this.destroyProgress();
-        console.log("\r" + " ".repeat(process.stdout.columns - 1));
+        console.log("\r" + " ".repeat(Math.max(process.stdout.columns - 1, 0)));
         console.log(`${chalk.red.bold("BUILD FAILED")} in ${this.timeDiffFromStartup()}`);
     }
 
