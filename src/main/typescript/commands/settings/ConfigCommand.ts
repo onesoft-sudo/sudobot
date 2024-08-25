@@ -47,7 +47,7 @@ class ConfigCommand extends Command {
     @Inject()
     private readonly permissionManagerService!: PermissionManagerService;
 
-    protected readonly dottedConfig = {
+    protected dottedConfig = {
         guild: {} as Record<string, string[]>,
         system: [] as string[]
     };
@@ -206,6 +206,11 @@ class ConfigCommand extends Command {
     }
 
     private reloadDottedConfig(configType: "guild" | "system" | null = null) {
+        this.dottedConfig = {
+            guild: {} as Record<string, string[]>,
+            system: [] as string[]
+        };
+
         if (!configType || configType === "guild") {
             const guildConfig: Record<string, string[]> = {};
 
@@ -277,7 +282,7 @@ class ConfigCommand extends Command {
         }
 
         const configType = (
-            context.isLegacy() ? "guild" : context.options.getString("config_type") ?? "guild"
+            context.isLegacy() ? "guild" : (context.options.getString("config_type") ?? "guild")
         ) as "guild" | "system";
         const config = configType === "guild" ? context.config : this.configManager.systemConfig;
 
@@ -336,12 +341,12 @@ class ConfigCommand extends Command {
                   .trim()
             : context.options.getString("value", true);
         const cast = (
-            context.isLegacy() ? "json" : context.options.getString("cast") ?? "string"
+            context.isLegacy() ? "json" : (context.options.getString("cast") ?? "string")
         ) as CastType;
         const save = context.isLegacy() ? false : context.options.getBoolean("save");
         const noCreate = context.isLegacy() ? false : context.options.getBoolean("no_create");
         const configType = (
-            context.isLegacy() ? "guild" : context.options.getString("config_type") ?? "guild"
+            context.isLegacy() ? "guild" : (context.options.getString("config_type") ?? "guild")
         ) as "guild" | "system";
         const config = configType === "guild" ? context.config : this.configManager.systemConfig;
 
