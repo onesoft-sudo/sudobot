@@ -1,3 +1,12 @@
+## [9.24.4](https://github.com/onesoft-sudo/sudobot/compare/v9.24.3...v9.24.4) (2024-08-25)
+
+
+### Bug Fixes
+
+* **commands:joke:** api ninjas dad joke api does not allow limit query param anymore ([a22b973](https://github.com/onesoft-sudo/sudobot/commit/a22b973ac511dab745ae5ce3513a5593a9c8ce06))
+
+
+
 ## [9.24.3](https://github.com/onesoft-sudo/sudobot/compare/v9.24.2...v9.24.3) (2024-08-25)
 
 
@@ -33,15 +42,6 @@
 ### Features
 
 * **api:** add `/guilds/:id/roles` and `/guilds/:id/channels` endpoints ([a604ccf](https://github.com/onesoft-sudo/sudobot/commit/a604ccff3f62d33c2d5d796158d79198e1ab370f))
-
-
-
-## [9.23.3](https://github.com/onesoft-sudo/sudobot/compare/v9.23.2...v9.23.3) (2024-08-21)
-
-
-### Bug Fixes
-
-* regenerate release [trigger ci] ([02cccba](https://github.com/onesoft-sudo/sudobot/commit/02cccba6b3b89fb2883f508152d02d8e8ff0dc80))
 
 
 
