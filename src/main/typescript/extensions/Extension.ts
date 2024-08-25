@@ -32,6 +32,9 @@ import { z, type ZodSchema } from "zod";
 
 export const ExtensionMetadataSchema = z.object({
     main: z.string().optional(),
+    src_main: z.string().optional(),
+    src_directory: z.string().optional(),
+    build_directory: z.string().optional(),
     language: z.enum(["typescript", "javascript"]).optional(),
     build_command: z.string().optional(),
     resources: z.string().optional(),

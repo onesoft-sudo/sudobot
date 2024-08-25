@@ -305,7 +305,7 @@ export default class ExtensionManager extends Service {
 
         for (const extensionName of extensions) {
             const extensionDirectory = path.resolve(this.extensionsPath, extensionName);
-            const isDirectory = (await fs.lstat(extensionDirectory)).isDirectory();
+            const isDirectory = (await fs.stat(extensionDirectory)).isDirectory();
 
             if (!isDirectory || extensionName === ".extbuilds") {
                 continue;
@@ -333,10 +333,49 @@ export default class ExtensionManager extends Service {
                 continue;
             }
 
-            const { main = "./src/index.js", id } = parseResult.data;
+            const {
+                main = "index.js",
+                src_main = "index.ts",
+                id,
+                src_directory = "",
+                build_directory = ""
+            } = parseResult.data;
+
+            const loadingTypeScript = process.isBun && __filename.endsWith(".ts");
+            const mainModule = path.join(
+                extensionDirectory,
+                loadingTypeScript ? src_directory : build_directory,
+                loadingTypeScript ? src_main : main
+            );
+
+            const tsconfigPath = path.join(extensionDirectory, "tsconfig.json");
+            const bunTsconfigPath = path.join(extensionDirectory, "tsconfig.bun.json");
+            const nodeTsconfigPath = path.join(extensionDirectory, "tsconfig.node.json");
+
+            if (loadingTypeScript && !existsSync(bunTsconfigPath)) {
+                this.application.logger.error(
+                    `Extension ${extensionName} is being loaded in Bun-TypeScript mode but does not have a "tsconfig.bun.json" file!`
+                );
+                this.application.logger.error("Ignoring extension");
+                continue;
+            }
+
+            if (!existsSync(tsconfigPath)) {
+                if (process.platform === "win32") {
+                    await fs.cp(
+                        loadingTypeScript ? bunTsconfigPath : nodeTsconfigPath,
+                        tsconfigPath
+                    );
+                } else {
+                    await fs.symlink(
+                        loadingTypeScript ? bunTsconfigPath : nodeTsconfigPath,
+                        tsconfigPath
+                    );
+                }
+            }
 
             const initializer = await this.loadExtensionInitializer({
-                extensionPath: path.resolve(extensionDirectory, main),
+                extensionPath: mainModule,
                 extensionName,
                 extensionId: id,
                 meta: parseResult.data
