@@ -43,7 +43,7 @@ class JokeCommand extends Command {
         }
 
         const url: string = isDadJoke
-            ? "https://api.api-ninjas.com/v1/dadjokes?limit=1"
+            ? "https://api.api-ninjas.com/v1/dadjokes"
             : "https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist";
 
         try {
