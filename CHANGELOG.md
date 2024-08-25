@@ -1,3 +1,12 @@
+## [9.24.3](https://github.com/onesoft-sudo/sudobot/compare/v9.24.2...v9.24.3) (2024-08-25)
+
+
+### Bug Fixes
+
+* config command causing JS not an object error ([087da86](https://github.com/onesoft-sudo/sudobot/commit/087da863c9b71d6b9d3d36aeacc28411a5f20ee2))
+
+
+
 ## [9.24.2](https://github.com/onesoft-sudo/sudobot/compare/v9.24.1...v9.24.2) (2024-08-23)
 
 
@@ -33,16 +42,6 @@
 ### Bug Fixes
 
 * regenerate release [trigger ci] ([02cccba](https://github.com/onesoft-sudo/sudobot/commit/02cccba6b3b89fb2883f508152d02d8e8ff0dc80))
-
-
-
-## [9.23.2](https://github.com/onesoft-sudo/sudobot/compare/v9.23.1...v9.23.2) (2024-08-18)
-
-
-### Bug Fixes
-
-* **cluster:** feature flag proxy URL ([551075b](https://github.com/onesoft-sudo/sudobot/commit/551075b703471bad90e6367be248c37ad2050bcd))
-* **commands:help:** broken links ([e30409d](https://github.com/onesoft-sudo/sudobot/commit/e30409de3d0c38531927c4e7f8064008d34c45db))
 
 
 
