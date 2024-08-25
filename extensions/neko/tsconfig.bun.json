@@ -1,4 +1,5 @@
-{"compilerOptions": {
+{
+    "compilerOptions": {
         "target": "ES2021",
         "experimentalDecorators": true,
         "module": "commonjs",
@@ -15,18 +16,9 @@
         "strict": true,
         "skipLibCheck": true,
         "paths": {
-            "@sudobot/*": [
-                "node_modules/sudobot/src/main/typescript/*"
-            ],
-            "@framework/*": [
-                "node_modules/sudobot/src/framework/typescript/*"
-            ]
+            "@sudobot/*": ["node_modules/sudobot/src/main/typescript/*"],
+            "@framework/*": ["node_modules/sudobot/src/framework/typescript/*"]
         }
     },
-    "exclude": [
-        "./tmp",
-        "./scripts",
-        "./tests",
-        "./build"
-    ]
+    "exclude": ["./tmp", "./scripts", "./tests", "./build"]
 }
