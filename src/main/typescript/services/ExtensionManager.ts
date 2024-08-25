@@ -32,7 +32,7 @@ import { ExtensionInfo } from "@main/extensions/ExtensionInfo";
 import { Snowflake } from "discord.js";
 import { Response } from "express";
 import { existsSync } from "fs";
-import fs, { rm } from "fs/promises";
+import fs, { readlink, rm } from "fs/promises";
 import path from "path";
 import * as tar from "tar";
 import { cache } from "../utils/cache";
@@ -360,7 +360,13 @@ export default class ExtensionManager extends Service {
                 continue;
             }
 
-            if (!existsSync(tsconfigPath)) {
+            const tsconfigExists = existsSync(tsconfigPath);
+
+            if (!tsconfigExists || await readlink(tsconfigPath).catch(() => "") !== (loadingTypeScript ? bunTsconfigPath : nodeTsconfigPath)) {
+                if (tsconfigExists) {
+                    await fs.rm(tsconfigPath);
+                }
+                
                 if (process.platform === "win32") {
                     await fs.cp(
                         loadingTypeScript ? bunTsconfigPath : nodeTsconfigPath,
