@@ -1,3 +1,12 @@
+## [9.24.5](https://github.com/onesoft-sudo/sudobot/compare/v9.24.4...v9.24.5) (2024-08-25)
+
+
+### Bug Fixes
+
+* **extensions:** issues while loading extensions with bun ([045bc23](https://github.com/onesoft-sudo/sudobot/commit/045bc2322cc99b0c3f61bb9281a7370c95ebfcc1))
+
+
+
 ## [9.24.4](https://github.com/onesoft-sudo/sudobot/compare/v9.24.3...v9.24.4) (2024-08-25)
 
 
@@ -33,15 +42,6 @@
 
 * **blazebuild:** column number resolves to Infinity when on non-TTY environment ([3bcbca0](https://github.com/onesoft-sudo/sudobot/commit/3bcbca036a0fb274a6c053e50730239dd4f3eda8))
 * **blazebuild:** syntax error ([6c17b5f](https://github.com/onesoft-sudo/sudobot/commit/6c17b5fe7228358d8fcd9b54f2fe015a3a21235d))
-
-
-
-# [9.24.0](https://github.com/onesoft-sudo/sudobot/compare/v9.23.3...v9.24.0) (2024-08-22)
-
-
-### Features
-
-* **api:** add `/guilds/:id/roles` and `/guilds/:id/channels` endpoints ([a604ccf](https://github.com/onesoft-sudo/sudobot/commit/a604ccff3f62d33c2d5d796158d79198e1ab370f))
 
 
 
