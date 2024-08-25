@@ -1,3 +1,12 @@
+## [9.24.6](https://github.com/onesoft-sudo/sudobot/compare/v9.24.5...v9.24.6) (2024-08-25)
+
+
+### Bug Fixes
+
+* **extensionManager:** remove pre-linked tsconfig in extension directory if any ([fad5975](https://github.com/onesoft-sudo/sudobot/commit/fad5975996493b77588eb154b1f612b9b18590cd))
+
+
+
 ## [9.24.5](https://github.com/onesoft-sudo/sudobot/compare/v9.24.4...v9.24.5) (2024-08-25)
 
 
@@ -32,16 +41,6 @@
 
 * **blazebuild:** invalid argument passed to String.prototype.repeat() ([402d4a3](https://github.com/onesoft-sudo/sudobot/commit/402d4a3eb7bdacba8adad5afa906819e52fd1a3c))
 * **blazebuild:** invalid argument passed to String.prototype.repeat() ([da7251c](https://github.com/onesoft-sudo/sudobot/commit/da7251c9dead022f77a7a0664181cc2120343141))
-
-
-
-## [9.24.1](https://github.com/onesoft-sudo/sudobot/compare/v9.24.0...v9.24.1) (2024-08-23)
-
-
-### Bug Fixes
-
-* **blazebuild:** column number resolves to Infinity when on non-TTY environment ([3bcbca0](https://github.com/onesoft-sudo/sudobot/commit/3bcbca036a0fb274a6c053e50730239dd4f3eda8))
-* **blazebuild:** syntax error ([6c17b5f](https://github.com/onesoft-sudo/sudobot/commit/6c17b5fe7228358d8fcd9b54f2fe015a3a21235d))
 
 
 
