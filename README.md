@@ -71,7 +71,7 @@ Thanks to all the active and indirect contributors!
 -   [killerclaws12](https://github.com/killerclaws12)
 -   [MonzterDev](https://github.com/MonzterDev)
 -   [ninsaccplayzyt](https://github.com/ninsaccplayzyt)
--   [Ryanmello07](https://github.com/Ryanmello07) (Contributed by giving away a hosting server and doing a lot of other things to help us)
+-   [Ryanmello07](https://github.com/Ryanmello07) (Contributed by giving away a hosting server and domain name to us)
 
 ### Mailing Lists
 
