@@ -146,9 +146,9 @@ class RuleModerationService
         const { guildId, message, contextType = "message" } = options;
         let { member } = options;
 
-        if (!member || !message) {
-            this.application.logger.bug("Member or message is missing");
-            throw new Error("Member or message is missing");
+        if (!member && !message) {
+            this.application.logger.bug("Member and message is missing");
+            throw new Error("Member and message is missing");
         }
 
         const config = this.configFor(guildId!);
