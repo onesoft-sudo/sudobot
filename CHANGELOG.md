@@ -1,3 +1,12 @@
+## [9.24.7](https://github.com/onesoft-sudo/sudobot/compare/v9.24.6...v9.24.7) (2024-08-26)
+
+
+### Bug Fixes
+
+* **commands:config:** undefined `this.dottedConfig?.system` ([946eac1](https://github.com/onesoft-sudo/sudobot/commit/946eac1584f7432736ede97d11ae2bfaa3ae34ad))
+
+
+
 ## [9.24.6](https://github.com/onesoft-sudo/sudobot/compare/v9.24.5...v9.24.6) (2024-08-25)
 
 
@@ -31,16 +40,6 @@
 ### Bug Fixes
 
 * config command causing JS not an object error ([087da86](https://github.com/onesoft-sudo/sudobot/commit/087da863c9b71d6b9d3d36aeacc28411a5f20ee2))
-
-
-
-## [9.24.2](https://github.com/onesoft-sudo/sudobot/compare/v9.24.1...v9.24.2) (2024-08-23)
-
-
-### Bug Fixes
-
-* **blazebuild:** invalid argument passed to String.prototype.repeat() ([402d4a3](https://github.com/onesoft-sudo/sudobot/commit/402d4a3eb7bdacba8adad5afa906819e52fd1a3c))
-* **blazebuild:** invalid argument passed to String.prototype.repeat() ([da7251c](https://github.com/onesoft-sudo/sudobot/commit/da7251c9dead022f77a7a0664181cc2120343141))
 
 
 
