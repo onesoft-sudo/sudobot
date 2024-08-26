@@ -1,3 +1,12 @@
+## [9.24.8](https://github.com/onesoft-sudo/sudobot/compare/v9.24.7...v9.24.8) (2024-08-26)
+
+
+### Bug Fixes
+
+* **services:rules:** member update rule checks fail with a BUG message ([f09852c](https://github.com/onesoft-sudo/sudobot/commit/f09852cdc3b3c8bc5e1ee9c16e605d6048f1d91e))
+
+
+
 ## [9.24.7](https://github.com/onesoft-sudo/sudobot/compare/v9.24.6...v9.24.7) (2024-08-26)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **commands:joke:** api ninjas dad joke api does not allow limit query param anymore ([a22b973](https://github.com/onesoft-sudo/sudobot/commit/a22b973ac511dab745ae5ce3513a5593a9c8ce06))
-
-
-
-## [9.24.3](https://github.com/onesoft-sudo/sudobot/compare/v9.24.2...v9.24.3) (2024-08-25)
-
-
-### Bug Fixes
-
-* config command causing JS not an object error ([087da86](https://github.com/onesoft-sudo/sudobot/commit/087da863c9b71d6b9d3d36aeacc28411a5f20ee2))
 
 
 
