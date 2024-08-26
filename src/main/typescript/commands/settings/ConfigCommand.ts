@@ -256,8 +256,8 @@ class ConfigCommand extends Command {
 
         const config =
             configType === "guild"
-                ? this.dottedConfig.guild[interaction.guildId!]
-                : this.dottedConfig.system;
+                ? (this.dottedConfig?.guild?.[interaction.guildId!] ?? [])
+                : (this.dottedConfig?.system ?? []);
         const keys = [];
 
         for (const key of config) {
