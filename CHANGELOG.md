@@ -1,3 +1,12 @@
+# [9.25.0](https://github.com/onesoft-sudo/sudobot/compare/v9.24.8...v9.25.0) (2024-08-27)
+
+
+### Features
+
+* finalize verification system ([3000548](https://github.com/onesoft-sudo/sudobot/commit/3000548246b0f361c428086a2203f9ec8d699c60))
+
+
+
 ## [9.24.8](https://github.com/onesoft-sudo/sudobot/compare/v9.24.7...v9.24.8) (2024-08-26)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **extensions:** issues while loading extensions with bun ([045bc23](https://github.com/onesoft-sudo/sudobot/commit/045bc2322cc99b0c3f61bb9281a7370c95ebfcc1))
-
-
-
-## [9.24.4](https://github.com/onesoft-sudo/sudobot/compare/v9.24.3...v9.24.4) (2024-08-25)
-
-
-### Bug Fixes
-
-* **commands:joke:** api ninjas dad joke api does not allow limit query param anymore ([a22b973](https://github.com/onesoft-sudo/sudobot/commit/a22b973ac511dab745ae5ce3513a5593a9c8ce06))
 
 
 
