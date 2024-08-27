@@ -1,3 +1,12 @@
+## [9.25.1](https://github.com/onesoft-sudo/sudobot/compare/v9.25.0...v9.25.1) (2024-08-27)
+
+
+### Bug Fixes
+
+* better error messages on VPN check fail ([58747cf](https://github.com/onesoft-sudo/sudobot/commit/58747cf4220526f3f1fd55dcd7d5b7862511c5cb))
+
+
+
 # [9.25.0](https://github.com/onesoft-sudo/sudobot/compare/v9.24.8...v9.25.0) (2024-08-27)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **extensionManager:** remove pre-linked tsconfig in extension directory if any ([fad5975](https://github.com/onesoft-sudo/sudobot/commit/fad5975996493b77588eb154b1f612b9b18590cd))
-
-
-
-## [9.24.5](https://github.com/onesoft-sudo/sudobot/compare/v9.24.4...v9.24.5) (2024-08-25)
-
-
-### Bug Fixes
-
-* **extensions:** issues while loading extensions with bun ([045bc23](https://github.com/onesoft-sudo/sudobot/commit/045bc2322cc99b0c3f61bb9281a7370c95ebfcc1))
 
 
 
