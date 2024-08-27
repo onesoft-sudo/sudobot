@@ -74,9 +74,7 @@ export class Logger {
                   ? "debug"
                   : level === LogLevel.Warn
                     ? "warn"
-                    : level === LogLevel.Bug
-                      ? "trace"
-                      : "error";
+                    : "error";
         const beginning = `${
             this.logTime ? `${chalk.gray(this.formatter.format(new Date()))} ` : ""
         }${this.colorize(`[${this.name}:${levelName}]`, level)}`;

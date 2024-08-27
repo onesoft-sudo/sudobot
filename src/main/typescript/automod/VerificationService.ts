@@ -3,23 +3,27 @@ import { GatewayEventListener } from "@framework/events/GatewayEventListener";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { Events } from "@framework/types/ClientEvents";
-import { fetchMember, fetchUser } from "@framework/utils/entities";
+import { BUG } from "@framework/utils/devflow";
+import { fetchChannel, fetchMember, fetchUser } from "@framework/utils/entities";
 import { Colors } from "@main/constants/Colors";
 import { env } from "@main/env/env";
-import { verificationEntries, VerificationEntry } from "@main/models/VerificationEntry";
+import { verificationEntries } from "@main/models/VerificationEntry";
 import { VerificationMethod, verificationRecords } from "@main/models/VerificationRecord";
 import VerificationExpiredQueue from "@main/queues/VerificationExpiredQueue";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import type ModerationActionService from "@main/services/ModerationActionService";
+import { getAxiosClient } from "@main/utils/axios";
+import { formatDistanceToNowStrict } from "date-fns";
 import {
     ActionRowBuilder,
-    bold,
+    APIEmbed,
     ButtonBuilder,
     ButtonStyle,
     GuildMember,
+    Interaction,
     Snowflake
 } from "discord.js";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import jwt from "jsonwebtoken";
 
 @Name("verificationService")
@@ -32,6 +36,69 @@ class VerificationService extends Service {
 
     private configFor(guildId: Snowflake) {
         return this.configManager.config[guildId]?.member_verification;
+    }
+
+    public async onInteractionCreate(interaction: Interaction) {
+        if (
+            !interaction.isButton() ||
+            !interaction.inGuild() ||
+            !interaction.customId.startsWith("verify_")
+        ) {
+            return;
+        }
+
+        const memberId = interaction.customId.split("_")[1];
+
+        if (interaction.user.id !== memberId) {
+            return void (await interaction.reply({
+                content: "This button is not under your control.",
+                ephemeral: true
+            }));
+        }
+
+        const config = this.configFor(interaction.guildId);
+
+        if (!config?.enabled) {
+            return void (await interaction.reply({
+                content: "This server does not have verification enabled.",
+                ephemeral: true
+            }));
+        }
+
+        if (config.method !== "channel_interaction") {
+            return void (await interaction.reply({
+                content: "This server does not have this verification method enabled.",
+                ephemeral: true
+            }));
+        }
+
+        await interaction.deferReply({ ephemeral: true });
+
+        const entry = await this.application.database.query.verificationEntries.findFirst({
+            where(fields, operators) {
+                return operators.and(
+                    operators.eq(fields.userId, interaction.user.id),
+                    operators.eq(fields.guildId, interaction.guildId)
+                );
+            }
+        });
+
+        if (!entry) {
+            return void (await interaction.editReply({
+                content: "This verification session has expired."
+            }));
+        }
+
+        const url = `${env.FRONTEND_URL}/verify/guilds/${encodeURIComponent(interaction.guildId)}/challenge/onboarding?t=${encodeURIComponent(entry.token)}&u=${encodeURIComponent(interaction.user.id)}`;
+
+        await interaction.editReply({
+            content: `Please click the button below. Alternatively, you can verify yourself by copy-pasting the following link in your browser.\n${url}`,
+            components: [
+                new ActionRowBuilder<ButtonBuilder>().addComponents(
+                    new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel("Verify").setURL(url)
+                )
+            ]
+        });
     }
 
     @GatewayEventListener(Events.GuildMemberAdd)
@@ -71,321 +138,260 @@ class VerificationService extends Service {
         await this.clearVerificationQueues(member.guild.id, member.id);
     }
 
-    public async startVerification(member: GuildMember, reason?: string) {
+    public async startVerification(member: GuildMember, reason: string) {
         const config = this.configFor(member.guild.id);
 
-        if (!config?.enabled) {
+        if (!config || !member.manageable) {
             return;
         }
 
-        if (config.unverified_roles.length > 0) {
-            await member.roles.add(config.unverified_roles, reason);
+        await member.roles.add(config.unverified_roles, reason).catch(this.logger.error);
+        await member.roles.remove(config.verified_roles, reason).catch(this.logger.error);
+
+        const options = {
+            expiresIn: config.max_duration,
+            issuer: env.JWT_ISSUER
+        };
+
+        if (!options.expiresIn) {
+            delete options.expiresIn;
         }
 
-        const code = jwt.sign(
-            {
-                memberId: member.id,
-                guildId: member.guild.id
-            },
+        const token = jwt.sign(
+            { id: member.id, guildId: member.guild.id },
             env.JWT_SECRET,
-            {
-                expiresIn: config.max_duration ?? "1d",
-                issuer: env.JWT_ISSUER,
-                subject: "Member Verification"
-            }
+            options
         );
 
-        const [entry] = await this.application.database.drizzle
+        await this.application.database.drizzle
             .insert(verificationEntries)
             .values({
                 guildId: member.guild.id,
                 userId: member.id,
-                code,
-                expiresAt: new Date(Date.now() + (config.max_duration ?? 24 * 60 * 60) * 1000),
-                metadata: {
-                    captcha_completed: false
+                token,
+                method: config.method as VerificationMethod,
+                expiresAt: config.max_duration
+                    ? new Date(Date.now() + config.max_duration * 1000)
+                    : null
+            })
+            .execute();
+
+        const url = `${env.FRONTEND_URL}/verify/guilds/${encodeURIComponent(member.guild.id)}/challenge/onboarding?t=${encodeURIComponent(token)}&u=${encodeURIComponent(member.id)}`;
+
+        switch (config.method) {
+            case "channel_interaction":
+                if (!config.channel) {
+                    break;
                 }
-            })
-            .returning();
 
-        await this.application
-            .service("queueService")
-            .create(VerificationExpiredQueue, {
-                data: {
+                try {
+                    const channel = await fetchChannel(member.guild, config.channel);
+
+                    if (!channel?.isTextBased()) {
+                        break;
+                    }
+
+                    await channel.send({
+                        content: `Welcome <@${member.user.id}>, this server requires you to verify before you can interact with others. Please verify yourself by clicking button below.`,
+                        components: [
+                            new ActionRowBuilder<ButtonBuilder>().addComponents(
+                                new ButtonBuilder()
+                                    .setStyle(ButtonStyle.Secondary)
+                                    .setLabel("Start Verification")
+                                    .setCustomId(`verify_${member.id}`)
+                            )
+                        ]
+                    });
+                } catch (error) {
+                    this.logger.error("Failed to send verification message to channel: ", error);
+                }
+
+                break;
+
+            case "dm_interaction":
+                {
+                    const embed: APIEmbed = {
+                        author: {
+                            name: "Verification Required",
+                            icon_url: member.guild.iconURL() ?? undefined
+                        },
+                        color: Colors.Primary,
+                        footer: config.max_duration
+                            ? {
+                                  text: `Expires in ${formatDistanceToNowStrict(new Date(Date.now() - config.max_duration * 1000))}`
+                              }
+                            : undefined,
+                        description:
+                            config.verification_message ??
+                            `Hello **${member.user.username}**,\n\n**${member.guild.name}** requires new members to verify themselves before they can interact with others. Please verify yourself by clicking the button below.\n\nAlternatively, you can verify yourself copy-pasting the following link in your browser: ${url}\n\nSincerely,\n*The Staff of ${member.guild.name}*`
+                    };
+
+                    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+                        new ButtonBuilder()
+                            .setStyle(ButtonStyle.Link)
+                            .setURL(url)
+                            .setLabel("Verify")
+                    );
+
+                    try {
+                        await member.send({ embeds: [embed], components: [row] });
+                    } catch (error) {
+                        this.logger.error("Failed to send verification message to user: ", error);
+                    }
+                }
+
+                break;
+
+            default:
+                BUG("Unknown verification method");
+        }
+
+        if (config.max_duration) {
+            await this.application
+                .service("queueService")
+                .create(VerificationExpiredQueue, {
                     guildId: member.guild.id,
-                    memberId: member.id
-                },
-                guildId: member.guild.id,
-                runsAt: entry.expiresAt
-            })
-            .schedule();
-
-        await this.sendVerificationMessage(member, entry.code).catch(this.application.logger.error);
+                    data: { memberId: member.id, guildId: member.guild.id },
+                    runsAt: new Date(Date.now() + config.max_duration * 1000)
+                })
+                .schedule();
+        }
     }
 
-    private async clearVerificationQueues(guildId: Snowflake, userId: Snowflake) {
+    public async onVerificationExpire(guildId: Snowflake, memberId: Snowflake) {
+        const guild = this.application.client.guilds.cache.get(guildId);
+
+        if (!guild) {
+            return;
+        }
+
+        const config = this.configFor(guildId);
+
+        if (!config) {
+            return;
+        }
+
+        const target =
+            (await fetchMember(guild, memberId)) ??
+            (await fetchUser(this.application.client, memberId));
+
+        if (!target) {
+            return;
+        }
+
+        await this.moderationActionService.takeActions(guild, target, config.expired_actions);
+    }
+
+    public async clearVerificationQueues(guildId: Snowflake, memberId: Snowflake) {
         await this.application
             .service("queueService")
             .bulkCancel(VerificationExpiredQueue, queue => {
-                return queue.data.guildId === guildId && queue.data.memberId === userId;
+                return queue.data.memberId === memberId && queue.data.guildId === guildId;
             });
     }
 
-    private async sendVerificationMessage(member: GuildMember, code: string) {
-        const config = this.configFor(member.guild.id);
-
-        if (!config?.enabled || !env.SYSTEM_API_URL) {
-            return;
-        }
-
-        await member.send({
-            embeds: [
-                {
-                    author: {
-                        name: "Verification Required",
-                        icon_url: member.guild.iconURL() ?? undefined
-                    },
-                    description:
-                        config.verification_message ??
-                        `Welcome to ${bold(member.guild.name)}! Please verify your account to gain access to the server.`,
-                    color: Colors.Primary,
-                    footer: {
-                        text: "This message was sent to you because you joined a server that requires account verification."
-                    },
-                    timestamp: new Date().toISOString()
-                }
-            ],
-            components: [
-                new ActionRowBuilder<ButtonBuilder>().addComponents(
-                    new ButtonBuilder()
-                        .setLabel("Verify")
-                        .setStyle(ButtonStyle.Link)
-                        .setURL(
-                            `${env.FRONTEND_URL}/guilds/${encodeURIComponent(member.guild.id)}/verify?token=${encodeURIComponent(code)}`
-                        )
-                )
-            ]
-        });
-    }
-
-    public async onVerificationExpire(guildId: Snowflake, userId: Snowflake) {
-        const results = await this.application.database.drizzle
-            .delete(verificationEntries)
-            .where(
-                and(
-                    eq(verificationEntries.guildId, guildId),
-                    eq(verificationEntries.userId, userId)
-                )
-            )
-            .returning({ id: verificationEntries.id });
-
-        if (results.length === 0) {
-            return;
-        }
-
-        const actions = this.configFor(guildId)?.expired_actions;
-        const guild = this.application.client.guilds.cache.get(guildId);
-
-        if (actions?.length && guild) {
-            const memberOrUser =
-                (await fetchMember(guild, userId)) ??
-                (await fetchUser(this.application.client, userId));
-
-            if (memberOrUser) {
-                await this.moderationActionService.takeActions(guild, memberOrUser, actions);
-            }
-        }
-    }
-
-    public async getVerificationEntry(code: string) {
-        const entry = await this.application.database.query.verificationEntries.findFirst({
-            where: eq(verificationEntries.code, code)
-        });
-
-        if (!entry) {
-            return null;
-        }
-
-        if (entry.expiresAt.getTime() < Date.now()) {
-            await this.onVerificationExpire(entry.guildId, entry.userId);
-            await this.clearVerificationQueues(entry.guildId, entry.userId);
-            return null;
-        }
-
-        return entry;
-    }
-
-    public async verifyByCode(code: string, payload: VerificationPayload) {
-        const entry = await this.getVerificationEntry(code);
-
-        if (!entry) {
-            return null;
-        }
-
-        return this.verifyWithEntry(entry, payload);
-    }
-
-    public async verifyWithEntry(entry: VerificationEntry, payload: VerificationPayload) {
-        const config = this.configFor(entry.guildId);
-
-        if (!config?.enabled) {
-            return null;
-        }
-
-        const guild = this.application.client.guilds.cache.get(entry.guildId);
-
-        if (!guild) {
-            return null;
-        }
-
-        if (
-            !!config?.require_captcha &&
-            !(entry.metadata as Record<string, boolean> | null)?.captcha_completed
-        ) {
-            return null;
-        }
-
-        if (
-            !config ||
-            !config.allowed_methods.includes(
-                payload.method.toLowerCase() as Lowercase<VerificationMethod>
-            )
-        ) {
-            return null;
-        }
-
-        if (payload.method === VerificationMethod.Email) {
-            if (
-                typeof entry.metadata !== "object" ||
-                !entry.metadata ||
-                !("email" in entry.metadata) ||
-                !("emailToken" in entry.metadata) ||
-                entry.metadata.email !== payload.email ||
-                entry.metadata.emailToken !== payload.emailToken
-            ) {
-                return {
-                    error: "invalid_email"
-                };
-            }
-
-            if (payload.emailToken) {
-                delete payload.emailToken;
-            }
-        }
-
-        const existingRecord = await this.application.database.query.verificationRecords.findFirst({
-            where: and(
-                eq(verificationRecords.guildId, guild.id),
-                eq(verificationRecords.userId, entry.userId),
-                payload.discordId
-                    ? eq(verificationRecords.discordId, payload.discordId)
-                    : undefined,
-                payload.email ? eq(verificationRecords.email, payload.email) : undefined,
-                payload.githubId ? eq(verificationRecords.githubId, payload.githubId) : undefined,
-                payload.googleId ? eq(verificationRecords.googleId, payload.googleId) : undefined,
-                payload.method ? eq(verificationRecords.method, payload.method) : undefined
-            )
-        });
-
-        if (existingRecord) {
-            return {
-                error: "record_exists"
-            };
-        }
-
-        const member = await fetchMember(guild, entry.userId);
-
-        if (!member) {
-            return null;
-        }
-
-        if (config.unverified_roles.length > 0) {
-            await member.roles.remove(config.unverified_roles, "Account verified.");
-        }
-
-        if (config.verified_roles.length > 0) {
-            await member.roles.add(config.verified_roles, "Account verified.");
-        }
-
-        await this.application.database.drizzle
-            .delete(verificationEntries)
-            .where(eq(verificationEntries.id, entry.id));
-        await this.application.database.drizzle.insert(verificationRecords).values({
-            guildId: guild.id,
-            userId: member.id,
-            ...payload
-        });
-
-        await this.clearVerificationQueues(entry.guildId, entry.userId);
-        await member
-            .send({
-                embeds: [
-                    {
-                        author: {
-                            name: "Verification Complete",
-                            icon_url: member.guild.iconURL() ?? undefined
-                        },
-                        description:
-                            config.success_message ??
-                            `You have successfully verified your account in ${bold(member.guild.name)}!`,
-                        color: Colors.Green,
-                        footer: {
-                            text: "This message was sent to you because you verified your account in a server."
-                        },
-                        timestamp: new Date().toISOString()
-                    }
-                ]
-            })
-            .catch(this.application.logger.error);
-
-        return {
-            guildId: guild.id,
-            userId: member.id
-        };
-    }
-
-    public async generateEmailToken(entry: VerificationEntry, email: string) {
-        const config = this.configFor(entry.guildId);
-
-        if (!config?.enabled) {
-            return null;
-        }
-
-        const token = jwt.sign(
-            {
-                guildId: entry.guildId,
-                userId: entry.userId,
-                email
-            },
-            env.JWT_SECRET,
-            {
-                expiresIn: "6h",
-                issuer: env.JWT_ISSUER
-            }
+    private async checkProxy(ip: string) {
+        const response = await getAxiosClient().get(
+            `https://proxycheck.io/v2/${encodeURIComponent(ip)}?vpn=1&asn=1` +
+                (env.PROXYCHECKIO_API_KEY
+                    ? `&key=${encodeURIComponent(env.PROXYCHECKIO_API_KEY)}`
+                    : "")
         );
+
+        this.logger.debug(ip, response.data);
+
+        if (response.data.status !== "ok" || !response.data[ip]) {
+            return true;
+        }
+
+        return (
+            response.data[ip].proxy === "yes" ||
+            response.data[ip].tor === "yes" ||
+            response.data[ip].vpn === "yes" ||
+            response.data[ip].type === "VPN" ||
+            response.data[ip].type === "Tor"
+        );
+    }
+
+    public async attemptVerification(guildId: string, memberId: string, ip: string, token: string) {
+        const proxyCheck = await this.checkProxy(ip);
+        let error: string | undefined;
+        const config = this.configFor(guildId);
+
+        if (!config?.enabled) {
+            return { error: "This server does not have verification enabled." };
+        }
+
+        verify: {
+            if (proxyCheck) {
+                error = "You seem to be using a VPN or proxy. Please disable it and try again.";
+                break verify;
+            }
+
+            const entry = await this.application.database.query.verificationEntries.findFirst({
+                where(fields, operators) {
+                    return operators.and(
+                        operators.eq(fields.userId, memberId),
+                        operators.eq(fields.guildId, guildId),
+                        operators.eq(fields.token, token)
+                    );
+                }
+            });
+
+            if (!entry) {
+                return { error: "We're unable to verify you." };
+            }
+
+            await this.application.database.drizzle
+                .delete(verificationEntries)
+                .where(eq(verificationEntries.id, entry.id))
+                .execute();
+
+            await this.application.database.drizzle
+                .insert(verificationRecords)
+                .values({
+                    userId: memberId,
+                    method: entry.method,
+                    guildId
+                })
+                .execute();
+
+            await this.clearVerificationQueues(guildId, memberId);
+
+            const guild = this.application.client.guilds.cache.get(guildId);
+
+            if (!guild) {
+                return { success: true };
+            }
+
+            const member = await fetchMember(guild, memberId);
+
+            if (!member) {
+                return { success: true };
+            }
+
+            await member.roles
+                .add(config.verified_roles, "User has been verified.")
+                .catch(this.logger.error);
+            await member.roles
+                .remove(config.unverified_roles, "User has been verified.")
+                .catch(this.logger.error);
+            return { success: true };
+        }
 
         await this.application.database.drizzle
             .update(verificationEntries)
-            .set({
-                metadata: {
-                    ...(entry.metadata as Record<string, string>),
-                    emailToken: token,
-                    email
-                }
-            })
-            .where(eq(verificationEntries.id, entry.id));
+            .set({ attempts: sql`${verificationEntries.attempts} + 1` })
+            .where(
+                and(
+                    eq(verificationEntries.userId, memberId),
+                    eq(verificationEntries.guildId, guildId),
+                    eq(verificationEntries.token, token)
+                )
+            );
 
-        return token;
+        return { error };
     }
 }
-
-export type VerificationPayload = {
-    githubId?: string;
-    googleId?: string;
-    discordId?: string;
-    email?: string;
-    emailToken?: string;
-    method: VerificationMethod;
-};
 
 export default VerificationService;

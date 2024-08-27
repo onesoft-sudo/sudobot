@@ -20,6 +20,7 @@
 import { Inject } from "@framework/container/Inject";
 import EventListener from "@framework/events/EventListener";
 import { Events } from "@framework/types/ClientEvents";
+import type VerificationService from "@main/automod/VerificationService";
 import { Interaction } from "discord.js";
 import type CommandManager from "../../services/CommandManager";
 
@@ -29,9 +30,16 @@ class InteractionCreateEventListener extends EventListener<Events.InteractionCre
     @Inject("commandManager")
     private readonly commandManager!: CommandManager;
 
+    @Inject("verificationService")
+    private readonly verificationService!: VerificationService;
+
     public override async execute(interaction: Interaction): Promise<void> {
         if (interaction.isCommand()) {
             await this.commandManager.runCommandFromInteraction(interaction);
+        }
+
+        if (interaction.isButton()) {
+            await this.verificationService.onInteractionCreate(interaction);
         }
     }
 }

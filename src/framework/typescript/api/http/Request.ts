@@ -19,8 +19,8 @@
 
 import type { Request as ExpressRequest } from "express";
 
-interface Request extends ExpressRequest {
-    parsedBody?: Record<string, string>;
+interface Request<T = Record<string, string>> extends ExpressRequest {
+    parsedBody?: T;
     user?: Globals["user"];
     userId?: number;
 }

@@ -214,7 +214,6 @@ export const GuildConfigSchema = z.object({
             unverified_roles: z.array(zSnowflake).default([]),
             verified_roles: z.array(zSnowflake).default([]),
             expired_actions: z.array(ModerationActionSchema).default([]),
-            require_captcha: z.boolean().optional(),
             verification_message: z.string().optional(),
             success_message: z.string().optional(),
             max_duration: z
@@ -222,9 +221,8 @@ export const GuildConfigSchema = z.object({
                 .describe("Max verification duration (in seconds)")
                 .int()
                 .optional(),
-            allowed_methods: z
-                .array(z.enum(["discord", "google", "github", "email"]))
-                .default(["discord", "google", "github", "email"])
+            method: z.enum(["channel_interaction", "dm_interaction"]).default("dm_interaction"),
+            channel: zSnowflake.optional(),
         })
         .optional(),
     quick_mute: z
