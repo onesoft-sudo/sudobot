@@ -324,7 +324,8 @@ class VerificationService extends Service {
 
         verify: {
             if (proxyCheck) {
-                error = "You seem to be using a VPN or proxy. Please disable it and try again.";
+                error =
+                    "You seem to be using a VPN or proxy. Please disable it, reload this page and try again.";
                 break verify;
             }
 
