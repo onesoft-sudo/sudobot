@@ -16,6 +16,7 @@ export const EnvironmentVariableSchema = z.object({
     DISCORD_OAUTH2_REDIRECT_URI: z.string().optional(),
     DISCORD_OAUTH2_RP_REDIRECT_URI: z.string().optional(),
     FRONTEND_URL: z.string().optional(),
+    FRONTEND_GUILD_MEMBER_VERIFICATION_URL: z.string().optional(),
     SUDO_PREFIX: z.string().optional(),
     ERROR_WEBHOOK_URL: z.string().optional(),
     BACKUP_CHANNEL_ID: z.string().optional(),

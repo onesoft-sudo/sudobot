@@ -89,7 +89,7 @@ class VerificationService extends Service {
             }));
         }
 
-        const url = `${env.FRONTEND_URL}/verify/guilds/${encodeURIComponent(interaction.guildId)}/challenge/onboarding?t=${encodeURIComponent(entry.token)}&u=${encodeURIComponent(interaction.user.id)}`;
+        const url = this.getVerificationURL(interaction.guildId, interaction.user.id, entry.token);
 
         await interaction.editReply({
             content: `Please click the button below. Alternatively, you can verify yourself by copy-pasting the following link in your browser.\n${url}`,
@@ -138,6 +138,15 @@ class VerificationService extends Service {
         await this.clearVerificationQueues(member.guild.id, member.id);
     }
 
+    private getVerificationDomain() {
+        return env.FRONTEND_GUILD_MEMBER_VERIFICATION_URL ?? env.FRONTEND_URL;
+    }
+
+    private getVerificationURL(guildId: string, memberId: string, token: string) {
+        const domain = this.getVerificationDomain();
+        return `${domain}${domain === env.FRONTEND_URL ? "/verify" : ""}/guilds/${encodeURIComponent(guildId)}/challenge/onboarding?t=${encodeURIComponent(token)}&u=${encodeURIComponent(memberId)}`;
+    }
+
     public async startVerification(member: GuildMember, reason: string) {
         const config = this.configFor(member.guild.id);
 
@@ -176,7 +185,7 @@ class VerificationService extends Service {
             })
             .execute();
 
-        const url = `${env.FRONTEND_URL}/verify/guilds/${encodeURIComponent(member.guild.id)}/challenge/onboarding?t=${encodeURIComponent(token)}&u=${encodeURIComponent(member.id)}`;
+        const url = this.getVerificationURL(member.guild.id, member.id, token);
 
         switch (config.method) {
             case "channel_interaction":
