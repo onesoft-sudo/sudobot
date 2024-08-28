@@ -1,3 +1,12 @@
+# [9.26.0](https://github.com/onesoft-sudo/sudobot/compare/v9.25.1...v9.26.0) (2024-08-28)
+
+
+### Features
+
+* **services:verification:** allow different domains for verification urls ([47bd45c](https://github.com/onesoft-sudo/sudobot/commit/47bd45cedf6cc9fb46ec2b3e74f9d16911f211b2))
+
+
+
 ## [9.25.1](https://github.com/onesoft-sudo/sudobot/compare/v9.25.0...v9.25.1) (2024-08-27)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * **commands:config:** undefined `this.dottedConfig?.system` ([946eac1](https://github.com/onesoft-sudo/sudobot/commit/946eac1584f7432736ede97d11ae2bfaa3ae34ad))
-
-
-
-## [9.24.6](https://github.com/onesoft-sudo/sudobot/compare/v9.24.5...v9.24.6) (2024-08-25)
-
-
-### Bug Fixes
-
-* **extensionManager:** remove pre-linked tsconfig in extension directory if any ([fad5975](https://github.com/onesoft-sudo/sudobot/commit/fad5975996493b77588eb154b1f612b9b18590cd))
 
 
 
