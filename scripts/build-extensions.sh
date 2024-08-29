@@ -31,15 +31,13 @@ for extension in $extensions; do
 
     npm install -D
 
-    if [ -f "$extension/tsconfig.node.json" ] || [ -f "$extension/tsconfig.bun.json" ]; then
-        if [ -z "$BUN" ] || [ "$BUN" != "1" ]; then
-            echo "PREPARE $name"
-            rm -f "$extension/tsconfig.json"
-            ln -s "$extension/tsconfig.node.json" "$extension/tsconfig.json"
-        else
-            echo "Bun extension build with this script is not supported yet"
-            continue
-        fi
+    if [ -z "$BUN" ] || [ "$BUN" != "1" ]; then
+        echo "PREPARE $name"
+        rm -f "tsconfig.json"
+        ln -s "tsconfig.node.json" "tsconfig.json"
+    else
+        echo "Bun extension build with this script is not supported yet"
+        continue
     fi
 
     if [ $? -eq 0 ]; then
