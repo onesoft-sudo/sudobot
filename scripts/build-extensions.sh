@@ -1,12 +1,18 @@
 #!/bin/bash
 
-extensions=$(find . -maxdepth 1 -type d -not -name . -not -name .git -not -name .extbuild -not -name .extbuilds)
+dir="."
+
+if [ ! -z "$1" ]; then
+    dir="$1"
+fi
+
+extensions=$(find $dir -maxdepth 1 -type d -not -wholename $dir -not -name . -not -name .git -not -name .extbuild -not -name .extbuilds)
 failed_builds=()
 extbuilds_final_dir=$(pwd)/.extbuilds
 
 for extension in $extensions; do
     name=$(basename $extension)
-    echo "BUILD $name"
+    echo "PROCESS $name"
 
     cd $extension
     echo "PWD $(pwd)"
@@ -25,10 +31,22 @@ for extension in $extensions; do
 
     npm install -D
 
+    if [ -f "$extension/tsconfig.node.json" ] || [ -f "$extension/tsconfig.bun.json" ]; then
+        if [ -z "$BUN" ] || [ "$BUN" != "1" ]; then
+            echo "PREPARE $name"
+            rm -f "$extension/tsconfig.json"
+            ln -s "$extension/tsconfig.node.json" "$extension/tsconfig.json"
+        else
+            echo "Bun extension build with this script is not supported yet"
+            continue
+        fi
+    fi
+
     if [ $? -eq 0 ]; then
         if [ -z "$build_command" ] || test "$build_command" = "null"; then
             echo "NOBUILD $name"
         else
+            echo "BUILD $name"
             eval $build_command
 
             if [ $? -ne 0 ]; then

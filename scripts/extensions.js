@@ -25,7 +25,7 @@ require("dotenv/config");
 const chalk = require("chalk");
 const { spawnSync } = require("child_process");
 const { existsSync, lstatSync, readdirSync, readFileSync, writeFileSync, rmSync } = require("fs");
-const { readFile } = require("fs/promises");
+const { readFile, symlink, unlink } = require("fs/promises");
 const path = require("path");
 const { chdir, cwd } = require("process");
 const { z } = require("zod");
@@ -39,7 +39,9 @@ function error(...args) {
 }
 
 if (!existsSync(extensionsPath)) {
-    error("You're not using any extension! To get started, create an `extensions` folder in the project root.");
+    error(
+        "You're not using any extension! To get started, create an `extensions` folder in the project root."
+    );
 }
 
 function getRecuriveJavaScriptFiles(dir) {
@@ -137,7 +139,9 @@ async function writeCacheIndex() {
 
         if (commandPaths === null) {
             const directory = path.join(
-                ...(process.env.EXTENSIONS_DIRECTORY ? [process.env.EXTENSIONS_DIRECTORY] : [__dirname, "../extensions"]),
+                ...(process.env.EXTENSIONS_DIRECTORY
+                    ? [process.env.EXTENSIONS_DIRECTORY]
+                    : [__dirname, "../extensions"]),
                 extensionName,
                 commands
             );
@@ -149,7 +153,9 @@ async function writeCacheIndex() {
 
         if (eventPaths === null) {
             const directory = path.join(
-                ...(process.env.EXTENSIONS_DIRECTORY ? [process.env.EXTENSIONS_DIRECTORY] : [__dirname, "../extensions"]),
+                ...(process.env.EXTENSIONS_DIRECTORY
+                    ? [process.env.EXTENSIONS_DIRECTORY]
+                    : [__dirname, "../extensions"]),
                 extensionName,
                 events
             );
@@ -161,7 +167,9 @@ async function writeCacheIndex() {
 
         if (servicePaths === null) {
             const directory = path.join(
-                ...(process.env.EXTENSIONS_DIRECTORY ? [process.env.EXTENSIONS_DIRECTORY] : [__dirname, "../extensions"]),
+                ...(process.env.EXTENSIONS_DIRECTORY
+                    ? [process.env.EXTENSIONS_DIRECTORY]
+                    : [__dirname, "../extensions"]),
                 extensionName,
                 services
             );
@@ -220,7 +228,9 @@ const MAX_CHARS = 7;
 
 function actionLog(action, description) {
     console.log(
-        chalk.green.bold(`${action}${action.length >= MAX_CHARS ? "" : " ".repeat(MAX_CHARS - action.length)} `),
+        chalk.green.bold(
+            `${action}${action.length >= MAX_CHARS ? "" : " ".repeat(MAX_CHARS - action.length)} `
+        ),
         description
     );
 }
@@ -256,12 +266,26 @@ async function buildExtensions() {
             });
 
             actionLog("RELINK", extensionName);
-            spawnSyncCatchExit(`npm install --save ${path.relative(cwd(), path.resolve(__dirname, ".."))}`, {
-                encoding: "utf-8",
-                shell: true,
-                stdio: "inherit"
-            });
+            spawnSyncCatchExit(
+                `npm install --save ${path.relative(cwd(), path.resolve(__dirname, ".."))}`,
+                {
+                    encoding: "utf-8",
+                    shell: true,
+                    stdio: "inherit"
+                }
+            );
         }
+
+        actionLog("PREPARE", extensionName);
+
+        if (existsSync("tsconfig.json")) {
+            await unlink("tsconfig.json").catch(() => {});
+        }
+
+        await symlink(
+            `tsconfig.${process.env.BUN === "1" ? "bun" : "node"}.json`,
+            "tsconfig.json"
+        ).catch(() => {});
 
         actionLog("BUILD", extensionName);
         const { build_command } = readMeta(extensionName, extensionDirectory);
@@ -280,7 +304,10 @@ async function buildExtensions() {
         count++;
     }
 
-    actionLog("SUCCESS", `in ${((Date.now() - startTime) / 1000).toFixed(2)}s, built ${count} extensions`);
+    actionLog(
+        "SUCCESS",
+        `in ${((Date.now() - startTime) / 1000).toFixed(2)}s, built ${count} extensions`
+    );
     chdir(workingDirectory);
 }
 
@@ -340,11 +367,21 @@ async function writeExtensionIndex() {
             const revB = isNaN(dashVB) ? 0 : parseInt(dashVB);
             const result = semver.rcompare(vA, vB);
 
-            if (splitA[0] === splitB[0] && vA.includes("-") && !isNaN(dashVA) && (!vB.includes("-") || isNaN(dashVB))) {
+            if (
+                splitA[0] === splitB[0] &&
+                vA.includes("-") &&
+                !isNaN(dashVA) &&
+                (!vB.includes("-") || isNaN(dashVB))
+            ) {
                 return -1;
             }
 
-            if (splitA[0] === splitB[0] && vB.includes("-") && !isNaN(dashVB) && (!vA.includes("-") || isNaN(dashVA))) {
+            if (
+                splitA[0] === splitB[0] &&
+                vB.includes("-") &&
+                !isNaN(dashVB) &&
+                (!vA.includes("-") || isNaN(dashVA))
+            ) {
                 return 1;
             }
 
@@ -385,7 +422,8 @@ async function writeExtensionIndex() {
             services: servicePaths.length,
             main,
             iconURL: icon
-                ? "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions" + path.join("/", extensionName, icon)
+                ? "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions" +
+                  path.join("/", extensionName, icon)
                 : null,
             author:
                 typeof packageJson.author === "string"
@@ -396,7 +434,10 @@ async function writeExtensionIndex() {
             license: packageJson.license,
             licenseURL: `https://spdx.org/licenses/${packageJson.license}.html`,
             homepage: packageJson.homepage,
-            repository: typeof packageJson.repository === "string" ? packageJson.repository : packageJson.repository?.url,
+            repository:
+                typeof packageJson.repository === "string"
+                    ? packageJson.repository
+                    : packageJson.repository?.url,
             issues: typeof packageJson.bugs === "string" ? packageJson.bugs : packageJson.bugs?.url,
             lastUpdated: new Date(),
             readmeFileName: readmeFileName,
@@ -421,7 +462,11 @@ async function writeExtensionIndex() {
     console.log("Wrote index file: ", indexFile);
 }
 
-if (process.argv.includes("--clear-cache") || process.argv.includes("--clean") || process.argv.includes("--delcache")) {
+if (
+    process.argv.includes("--clear-cache") ||
+    process.argv.includes("--clean") ||
+    process.argv.includes("--delcache")
+) {
     const indexFile = path.join(extensionsPath, "index.json");
 
     if (!existsSync(indexFile)) {
@@ -458,7 +503,9 @@ if (process.argv.includes("--clear-cache") || process.argv.includes("--clean") |
     console.log("Options:");
     console.log("  --build [--tsc]    |  Builds all the installed extensions, if needed.");
     console.log("                     |  The `--tsc` flag will only run the typescript compiler.");
-    console.log("  --cache            |  Creates cache indexes for installed extensions, to improve the startup time.");
+    console.log(
+        "  --cache            |  Creates cache indexes for installed extensions, to improve the startup time."
+    );
     console.log("  --clean            |  Clears all installed extension cache.");
     console.log(
         "  --mkindex          |  Creates indexes for all the available extensions, in the extensions/ top level directory."
