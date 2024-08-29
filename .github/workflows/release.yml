@@ -60,7 +60,7 @@ jobs:
           tar -cvzf sudobot-release-${OS}-incomplete.tar.gz sudobot-release-${OS};
 
       - name: Upload Release Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sudobot-release-${{ matrix.os }}-incomplete
           path: |
