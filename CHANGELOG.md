@@ -1,5 +1,10 @@
 # Changelog
 
+### 29-08-2024 [Conventional Release Action <rakinar2@onesoftnet.eu.org>]
+
+* release: v9.26.1 [skip ci]
+* release: v15.7.0 [skip ci]
+
 ### 29-08-2024 [Ar Rakin <rakinar2@onesoftnet.eu.org>]
 
 * fix: update blaze_wrapper.properties
@@ -8,10 +13,6 @@
 * ci: fix release workflow
 * * now using onesoft-sudo/conventional-release-action workflow
 * chore(extensions): build extensions [skip ci]
-
-### 29-08-2024 [Conventional Release Action <rakinar2@onesoftnet.eu.org>]
-
-* release: v15.7.0 [skip ci]
 
 ### 28-08-2024 [Ar Rakin <rakinar2@onesoftnet.eu.org>]
 
