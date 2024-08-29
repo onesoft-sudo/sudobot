@@ -20,7 +20,9 @@
 </p>
 
 <p align="center">
-A free and open source Discord bot for moderation purposes. <a href="https://docs.sudobot.online/features/screenshots/">Click here</a> to see the screenshots.
+A free and open source Discord bot for moderation purposes.<br />
+<a href="https://docs.sudobot.online" target="_blank">Documentation</a>&nbsp;&bull;
+<a href="https://docs.sudobot.online/features/screenshots/" target="_blank">Screenshots</a>
 </p>
 
 <!--
