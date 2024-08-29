@@ -18,10 +18,10 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Use Node.js 21.x
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 21.x
 
@@ -60,7 +60,7 @@ jobs:
           tar -cvzf sudobot-release-${OS}-incomplete.tar.gz sudobot-release-${OS};
 
       - name: Upload Release Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sudobot-release-${{ matrix.os }}-incomplete
           path: |
@@ -72,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Prepare Git
         run: |
@@ -84,7 +84,7 @@ jobs:
 
       - name: Conventional Release Action
         id: auto_release
-        uses: onesoft-sudo/conventional-release-action@v1.2.6
+        uses: onesoft-sudo/conventional-release-action@main
         with:
           version-json-file: "./package.json"
           git-user-name: "Conventional Release Action"
