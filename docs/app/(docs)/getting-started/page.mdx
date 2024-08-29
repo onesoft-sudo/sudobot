@@ -120,8 +120,9 @@ HOME_GUILD_ID=your-home-guild-id
 # separately, you can format it to look like this.
 DB_URL=postgresql://username:password@hostname:port/database
 
-# JWT Secret for generating JWT tokens.
-# On systems with openssl installed, you can generate a random 
+# JWT Secret for generating JWT tokens. This is like a password for
+# the bot's internal use.
+# On Linux/Unix systems with OpenSSL installed, you can generate a random 
 # secret using the following command:
 #
 #    openssl rand -base64 32
