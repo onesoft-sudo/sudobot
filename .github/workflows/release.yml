@@ -84,7 +84,7 @@ jobs:
 
       - name: Conventional Release Action
         id: auto_release
-        uses: onesoft-sudo/conventional-release-action@v1.2.5
+        uses: onesoft-sudo/conventional-release-action@main
         with:
           version-json-file: "./package.json"
           git-user-name: "Conventional Release Action"
