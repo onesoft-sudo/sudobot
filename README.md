@@ -16,6 +16,7 @@
 <a href="https://github.com/onesoft-sudo/sudobot/releases/latest"><img alt="GitHub package.json version" src="https://img.shields.io/github/package-json/v/onesoft-sudo/sudobot?style=flat&logo=npm&logoColor=white&label=Version&labelColor=%23000&color=rgb(50%2C%2050%2C%2050)&cacheSeconds=60"></a>
 <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/w/onesoft-sudo/sudobot?style=flat&logo=git&logoColor=white&label=Commits&labelColor=%23000&color=rgb(50%2C%2050%2C%2050)&cacheSeconds=60">
 <a href="https://discord.gg/892GWhTzgs"><img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscord.com%2Fapi%2Fguilds%2F964969362073198652%2Fwidget.json&query=presence_count&suffix=%20online&style=flat&logo=discord&logoColor=white&label=Discord&labelColor=%23000&color=rgb(50%2C%2050%2C%2050)&cacheSeconds=60&link=https%3A%2F%2Fdiscord.gg%2F892GWhTzgs" alt="Discord" /></a>
+<img alt="Uptime Robot ratio (7 days)" src="https://img.shields.io/uptimerobot/ratio/7/m797587935-30e6fe2182045bda2a330f8b?style=flat&logo=rescuetime&label=Main%20Instance%20Uptime&labelColor=rgb(0%2C0%2C0)&color=rgb(50%2C50%2C50)&cacheSeconds=60">
 </p>
 
 <p align="center">
