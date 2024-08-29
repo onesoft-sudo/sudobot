@@ -4,6 +4,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   build:
     if: github.repository_owner == 'onesoft-sudo'
@@ -79,18 +82,18 @@ jobs:
           git config --global user.signingkey "6AE7B08C68169452"
           git config --global commit.gpgsign true
 
-      - name: Conventional Changelog Action
-        id: changelog
-        uses: TriPSs/conventional-changelog-action@v5
+      - name: Conventional Release Action
+        id: auto_release
+        uses: onesoft-sudo/conventional-release-action@v1
         with:
-          github-token: ${{ secrets.__TOKEN }}
-          version-file: "./package.json"
-          git-user-name: "Conventional Changelog Action"
+          version-json-file: "./package.json"
+          git-user-name: "Conventional Release Action"
           git-user-email: rakinar2@onesoftnet.eu.org
-          git-message: |
-            release: {version} [skip ci]
-
-            Signed-off-by: Ar Rakin <rakinar2@onesoftnet.eu.org>
+          commit-message-format: "release: v%s [skip ci]"
+          git-sign-off: true
+          changelog-file: CHANGELOG.md
+          changelog-format: markdown
+          allowed-commit-types: feat,fix,refactor,perf,ci,build,test,revert,chore,release,deps
 
       - name: Download Linux Release Artifact
         uses: actions/download-artifact@v2
@@ -124,13 +127,13 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: ncipollo/release-action@v1
-        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        uses: ncipollo/release-action@v2
+        if: ${{ steps.auto_release.outputs.tag != '' }}
         env:
           GITHUB_TOKEN: ${{ secrets.__TOKEN }}
         with:
-          tag: ${{ steps.changelog.outputs.tag }}
-          name: ${{ steps.changelog.outputs.tag }}
-          body: ${{ steps.changelog.outputs.clean_changelog }}
+          tag: ${{ steps.auto_release.outputs.tag }}
+          name: ${{ steps.auto_release.outputs.tag }}
+          body: ${{ steps.auto_release.outputs.release_notes }}
           artifactContentType: application/x-gzip
           artifacts: ./sudobot-release-linux.tar.gz,./sudobot-release-darwin.tar.gz
