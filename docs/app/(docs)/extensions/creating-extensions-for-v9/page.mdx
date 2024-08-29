@@ -35,11 +35,14 @@ The `extension.json` file looks something like this:
 
 ```json5
 {
-    main: "./build/index.js" /* The entry point. */,
-    commands: "./build/commands" /* Commands directory. The bot will load commands from this directory. */,
-    events: "./build/events" /* Event handlers directory. The bot will load event handlers from this directory. */,
+    id: "org.example.sudobot.extension.hello" /* Extension ID */,
+    main: "index.js" /* The entry point file name. */,
+    src_main: "index.ts" /* The entry point file name. */,
+    commands: "commands" /* Commands directory. The bot will load commands from this directory. */,
+    events: "events" /* Event handlers directory. The bot will load event handlers from this directory. */,
     language: "typescript" /* The language being used for this extension. Can be either "javascript" or "typescript". */,
     main_directory: "./build" /* The main directory where the entry point is located. */,
+    src_directory: "./src" /* The source directory where the source file of the entry point is located. */,
     build_command: "npm run build" /* Command to build the extension. In this case `npm run build` invokes `tsc`. */,
 }
 ```
@@ -64,12 +67,15 @@ Now add the following to your `extension.json` file:
 
 ```json
 {
-    "main": "./build/index.js",
-    "commands": "./build/commands",
-    "events": "./build/events",
-    "language": "typescript",
-    "main_directory": "./build",
-    "build_command": "npm run build"
+    id: "org.example.sudobot.extension.hello",
+    main: "index.js",
+    src_main: "index.ts",
+    commands: "commands",
+    events: "events",
+    language: "typescript",
+    main_directory: "./build",
+    src_directory: "./src",
+    build_command: "npm run build"
 }
 ```
 
@@ -97,9 +103,9 @@ npm install -D typescript @types/node
 npx tsc --init
 ```
 
-This will add `typescript` as a dev dependency and also create the `tsconfig.json` file which contains the configuration for the TypeScript compiler.
+This will add `typescript` as a dev dependency and also create a `tsconfig.node.json` file which contains the configuration for the TypeScript compiler.
 
-Now open up `tsconfig.json` file, and add the following (you can tweak these options if you want):
+Now open up `tsconfig.node.json` file, and add the following (you can tweak these options if you want):
 
 ```json
 {
@@ -130,6 +136,12 @@ Now open up `tsconfig.json` file, and add the following (you can tweak these opt
 ```
 
 This sets up the `@sudobot` and `@framework` import aliases for TypeScript, specifies the source root and build directory, and a few other things that are needed.
+After this, create a symbolic link named `tsconfig.json` that points to `tsconfig.node.json`. On windows, just copy the file. The command to create the symbolic link
+on a Unix/Linux based system would be the following:
+
+```bash
+ln -s ./tsconfig.node.json ./tsconfig.json
+```
 
 <Callout type="info">
     Remember to build the bot beforehand! As you can see, this alias points to
@@ -240,11 +252,8 @@ This will take a little bit time. After that, you're ready to go. You can now st
 npm start
 ```
 
-Or using Bun (no build step required):
-
-```bash
-bun dev
-```
+**Please note that if you're using Bun to run the bot, the extensions will need to be configured differently. We'll include the instructions on how to do it
+manually and also how you can automate it, very soon.**
 
 And then if everything was configured correctly, the `hello` command will be loaded and can be executed on any server.
 
