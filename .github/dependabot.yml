@@ -19,3 +19,15 @@ updates:
       prefix-development: "deps(dev)"
     labels:
       - "type:deps"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      # Check for updates to GitHub Actions every week
+      interval: "weekly"
+    assignees:
+      - "virtual-designer"
+    commit-message:
+      prefix: "ci"
+      prefix-development: "ci(dev)"
+    labels:
+      - "type:ci"
