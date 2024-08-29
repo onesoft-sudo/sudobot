@@ -96,12 +96,12 @@ jobs:
           allowed-commit-types: feat,fix,refactor,perf,ci,build,test,revert,chore,release,deps
 
       - name: Download Linux Release Artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: sudobot-release-ubuntu-latest-incomplete
 
       - name: Download macOS Release Artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: sudobot-release-macos-latest-incomplete
 
