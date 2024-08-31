@@ -18,54 +18,65 @@ class GuildMemberRemoveEventListener extends EventListener<Events.GuildMemberRem
     protected readonly infractionManager!: InfractionManager;
 
     public override execute(member: GuildMember): void {
+        if (member.id === this.application.client.user?.id) {
+            return;
+        }
+
         setTimeout(async () => {
-            const logs = await member.guild.fetchAuditLogs({
-                type: AuditLogEvent.MemberKick,
-                limit: 10
-            });
+            try {
+                const logs = await member.guild.fetchAuditLogs({
+                    type: AuditLogEvent.MemberKick,
+                    limit: 10
+                });
 
-            const log = logs.entries.find(
-                entry =>
-                    (entry.target?.id ?? entry.targetId) === member.id &&
-                    Date.now() - entry.createdTimestamp < 3000
-            );
+                const log = logs.entries.find(
+                    entry =>
+                        (entry.target?.id ?? entry.targetId) === member.id &&
+                        Date.now() - entry.createdTimestamp < 3000
+                );
 
-            const executorId = log?.executor?.id ?? log?.executorId;
+                const executorId = log?.executor?.id ?? log?.executorId;
 
-            if (log && (!executorId || executorId !== this.client.user?.id)) {
-                const [infraction] = await this.application.database.drizzle
-                    .insert(infractions)
-                    .values({
-                        guildId: member.guild.id,
-                        userId: member.id,
-                        moderatorId: executorId ?? "0",
-                        type: InfractionType.Kick,
-                        reason: log.reason ?? undefined,
-                        deliveryStatus: InfractionDeliveryStatus.NotDelivered
-                    })
-                    .returning({ id: infractions.id });
+                if (log && (!executorId || executorId !== this.client.user?.id)) {
+                    const [infraction] = await this.application.database.drizzle
+                        .insert(infractions)
+                        .values({
+                            guildId: member.guild.id,
+                            userId: member.id,
+                            moderatorId: executorId ?? "0",
+                            type: InfractionType.Kick,
+                            reason: log.reason ?? undefined,
+                            deliveryStatus: InfractionDeliveryStatus.NotDelivered
+                        })
+                        .returning({ id: infractions.id });
+
+                    this.auditLoggingService.emitLogEvent(
+                        member.guild.id,
+                        LogEventType.GuildMemberKick,
+                        {
+                            member,
+                            moderator:
+                                log.executor ??
+                                (executorId
+                                    ? ((await fetchUser(this.client, executorId)) ?? undefined)
+                                    : undefined),
+                            reason: log.reason ?? undefined,
+                            infractionId: infraction.id
+                        }
+                    );
+                }
 
                 this.auditLoggingService.emitLogEvent(
                     member.guild.id,
-                    LogEventType.GuildMemberKick,
-                    {
-                        member,
-                        moderator:
-                            log.executor ??
-                            (executorId
-                                ? (await fetchUser(this.client, executorId)) ?? undefined
-                                : undefined),
-                        reason: log.reason ?? undefined,
-                        infractionId: infraction.id
-                    }
+                    LogEventType.GuildMemberRemove,
+                    member
+                );
+            } catch (error) {
+                this.application.logger.error(
+                    "An error occurred while processing the GuildMemberRemove event",
+                    error
                 );
             }
-
-            this.auditLoggingService.emitLogEvent(
-                member.guild.id,
-                LogEventType.GuildMemberRemove,
-                member
-            );
         }, 2500);
     }
 }
