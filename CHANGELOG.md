@@ -2,6 +2,10 @@
 
 ### 31-08-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **fix:** config permission checks    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
   * **test:** add tests for @framework/utils/objects.ts    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
@@ -35,6 +39,10 @@
 
 ### 31-08-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v9.26.6 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v9.26.4 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
