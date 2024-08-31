@@ -70,6 +70,10 @@ class ModerationActionService extends Service {
             }
         }
 
+        if (failedActions.length) {
+            this.application.logger.debug("Failed actions: ", failedActions);
+        }
+
         return {
             failedActions,
             infractions
