@@ -23,6 +23,7 @@ import { Service } from "@framework/services/Service";
 import { ExtensionMetadataSchema, type Extension } from "@main/extensions/Extension";
 import { Snowflake } from "discord.js";
 import fs, { writeFile } from "fs/promises";
+import JSON5 from "json5";
 import path from "path";
 import { AnyZodObject, z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
@@ -91,8 +92,8 @@ export default class ConfigurationManager
         this.application.logger.debug(`Loading guild configuration from file: ${this.configPath}`);
         const configFileContents = await fs.readFile(this.configPath, { encoding: "utf-8" });
 
-        const configJSON = JSON.parse(configFileContents);
-        const systemConfigJSON = JSON.parse(systemConfigFileContents);
+        const configJSON = JSON5.parse(configFileContents);
+        const systemConfigJSON = JSON5.parse(systemConfigFileContents);
 
         if ("$schema" in configJSON) {
             this.configSchemaInfo = configJSON.$schema;

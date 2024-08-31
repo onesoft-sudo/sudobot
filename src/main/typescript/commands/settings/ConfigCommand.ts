@@ -4,8 +4,11 @@ import InteractionContext from "@framework/commands/InteractionContext";
 import LegacyContext from "@framework/commands/LegacyContext";
 import { Inject } from "@framework/container/Inject";
 import { GatewayEventListener } from "@framework/events/GatewayEventListener";
-import { get, has, set, toDotted } from "@framework/utils/objects";
+import { get, has, set, unset } from "@framework/utils/objects";
+import { getZodPropertyPaths } from "@framework/utils/zod";
 import { Colors } from "@main/constants/Colors";
+import { GuildConfigSchema } from "@main/schemas/GuildConfigSchema";
+import { SystemConfigSchema } from "@main/schemas/SystemConfigSchema";
 import ConfigurationManager from "@main/services/ConfigurationManager";
 import PermissionManagerService from "@main/services/PermissionManagerService";
 import {
@@ -39,6 +42,9 @@ class ConfigCommand extends Command {
         },
         restore: {
             description: "Restore the previously saved configuration."
+        },
+        unset: {
+            description: "Unset a configuration key"
         }
     };
 
@@ -48,8 +54,8 @@ class ConfigCommand extends Command {
     private readonly permissionManagerService!: PermissionManagerService;
 
     protected dottedConfig = {
-        guild: {} as Record<string, string[]>,
-        system: [] as string[]
+        guild: getZodPropertyPaths(GuildConfigSchema),
+        system: getZodPropertyPaths(SystemConfigSchema)
     };
 
     public override build(): Buildable[] {
@@ -63,6 +69,33 @@ class ConfigCommand extends Command {
                             option
                                 .setName("key")
                                 .setDescription("The configuration key to view or change.")
+                                .setAutocomplete(true)
+                                .setRequired(true)
+                        )
+                        .addStringOption(option =>
+                            option
+                                .setName("config_type")
+                                .setDescription("The configuration type")
+                                .setChoices(
+                                    {
+                                        name: "Guild",
+                                        value: "guild"
+                                    },
+                                    {
+                                        name: "System",
+                                        value: "system"
+                                    }
+                                )
+                        )
+                )
+                .addSubcommand(subcommand =>
+                    subcommand
+                        .setName("unset")
+                        .setDescription("Unset a configuration key")
+                        .addStringOption(option =>
+                            option
+                                .setName("key")
+                                .setDescription("The configuration key to unset.")
                                 .setAutocomplete(true)
                                 .setRequired(true)
                         )
@@ -173,7 +206,7 @@ class ConfigCommand extends Command {
 
         if (
             !context.isLegacy() &&
-            (subcommand === "get" || subcommand === "set") &&
+            (subcommand === "get" || subcommand === "set" || subcommand === "unset") &&
             context.options.getString("config_type") === "system" &&
             !(await this.permissionManagerService.isSystemAdmin(context.member!))
         ) {
@@ -189,6 +222,8 @@ class ConfigCommand extends Command {
                 return this.get(context);
             case "set":
                 return this.set(context);
+            case "unset":
+                return this.unset(context);
             case "save":
                 return this.save(context);
             case "restore":
@@ -203,32 +238,6 @@ class ConfigCommand extends Command {
                 );
                 return;
         }
-    }
-
-    private reloadDottedConfig(configType: "guild" | "system" | null = null) {
-        this.dottedConfig = {
-            guild: {} as Record<string, string[]>,
-            system: [] as string[]
-        };
-
-        if (!configType || configType === "guild") {
-            const guildConfig: Record<string, string[]> = {};
-
-            for (const key in this.configManager.config) {
-                guildConfig[key] = Object.keys(toDotted(this.configManager.config[key]!));
-            }
-
-            this.dottedConfig.guild = guildConfig;
-        }
-
-        if (!configType || configType === "system") {
-            this.dottedConfig.system = Object.keys(toDotted(this.configManager.systemConfig));
-        }
-    }
-
-    @GatewayEventListener("ready")
-    public async onReady() {
-        this.reloadDottedConfig();
     }
 
     @GatewayEventListener("interactionCreate")
@@ -256,7 +265,7 @@ class ConfigCommand extends Command {
 
         const config =
             configType === "guild"
-                ? (this.dottedConfig?.guild?.[interaction.guildId!] ?? [])
+                ? (this.dottedConfig?.guild ?? [])
                 : (this.dottedConfig?.system ?? []);
         const keys = [];
 
@@ -311,6 +320,50 @@ class ConfigCommand extends Command {
                     })
                 )}`
             )
+            .setColor(Colors.Green)
+            .setTimestamp();
+
+        await context.replyEmbed(embed);
+    }
+
+    private async unset(context: LegacyContext | InteractionContext<ChatInputCommandInteraction>) {
+        const key = context.isLegacy() ? context.args[1] : context.options.getString("key", true);
+
+        if (!key) {
+            await context.error("You must provide a configuration key to unset.");
+            return;
+        }
+
+        const configType = (
+            context.isLegacy() ? "guild" : (context.options.getString("config_type") ?? "guild")
+        ) as "guild" | "system";
+        const config = configType === "guild" ? context.config : this.configManager.systemConfig;
+
+        if (!config) {
+            await context.error("No configuration exists for this server.");
+            return;
+        }
+
+        if (!has(config, key)) {
+            await context.error(
+                `The configuration key \`${escapeInlineCode(key)}\` does not exist.`
+            );
+            return;
+        }
+
+        try {
+            unset(config, key);
+        } catch (error) {
+            await context.error(
+                `The configuration key \`${escapeInlineCode(key)}\` could not be unset: ${(error as Error)?.message}`
+            );
+
+            return;
+        }
+
+        const embed = new EmbedBuilder()
+            .setTitle("Configuration Key Unset")
+            .setDescription(`### ${inlineCode(key)}\n\nSuccessfully unset this key.`)
             .setColor(Colors.Green)
             .setTimestamp();
 
@@ -430,7 +483,9 @@ class ConfigCommand extends Command {
                 break;
         }
 
-        set(config, key, finalValue);
+        set(config, key, finalValue, {
+            create: !noCreate
+        });
 
         const embed = new EmbedBuilder();
         const error = this.configManager.testConfig();
@@ -484,7 +539,6 @@ class ConfigCommand extends Command {
         }
 
         await context.replyEmbed(embed);
-        this.reloadDottedConfig(configType);
     }
 
     private async save(context: LegacyContext | InteractionContext<ChatInputCommandInteraction>) {

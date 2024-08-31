@@ -17,6 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import assert from "assert";
+
 export function omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
     const shallowCopy = { ...obj };
 
@@ -38,9 +40,9 @@ export function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pi
 }
 
 type AccessOptions = {
-    noCreate?: boolean;
-    noModify?: boolean;
-    noArrayAccess?: boolean;
+    create?: boolean;
+    modify?: boolean;
+    arrayAccess?: boolean;
     returnExists?: boolean;
 };
 
@@ -48,8 +50,17 @@ const access = (
     object: object | unknown[],
     accessor: string,
     setter?: (value: unknown) => unknown,
-    options?: AccessOptions
+    options: AccessOptions = {
+        create: true,
+        modify: true,
+        arrayAccess: false,
+        returnExists: false
+    }
 ) => {
+    if (typeof accessor !== "string" || !accessor.length) {
+        throw new Error("Accessor must be a non-empty string");
+    }
+
     const accessors = accessor.split(".");
     let current: unknown = object;
     let prevAccessor: string | undefined;
@@ -62,7 +73,7 @@ const access = (
         const last = access === accessors[accessors.length - 1];
 
         if (current instanceof Object) {
-            if (!options?.noArrayAccess && /\[\d+\]$/.test(access)) {
+            if (options.arrayAccess && /\[\d+\]$/.test(access)) {
                 const array = current[
                     access.slice(0, access.indexOf("[")) as keyof typeof current
                 ] as unknown as Array<unknown>;
@@ -81,16 +92,15 @@ const access = (
 
                 current = array[index];
 
-                if (options?.returnExists && last) {
+                if (options.returnExists && last) {
                     return index in array;
                 }
 
-                if (
-                    setter &&
-                    last &&
-                    (!options?.noModify || !(index in array)) &&
-                    (!options?.noCreate || index < array.length)
-                ) {
+                setArray: if (setter && last) {
+                    if (!options.modify && index in array && !options.create && !(index in array)) {
+                        break setArray;
+                    }
+
                     array[index] = setter(current);
                 }
             } else {
@@ -98,18 +108,28 @@ const access = (
                     return options?.returnExists ? false : undefined;
                 }
 
-                const value = current[access as keyof typeof current];
+                let value = current[access as keyof typeof current];
 
                 if (options?.returnExists && last) {
                     return access in current;
                 }
 
-                if (
-                    setter &&
-                    last &&
-                    (!options?.noModify || !(access in current)) &&
-                    (!options?.noCreate || access in current)
-                ) {
+                if (!(access in current) && options.create) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    current[access as keyof typeof current] = {} as any;
+                    value = current[access as keyof typeof current];
+                }
+
+                setObject: if (setter && last) {
+                    if (
+                        !options.modify &&
+                        access in current &&
+                        !options.create &&
+                        !(access in current)
+                    ) {
+                        break setObject;
+                    }
+
                     (current as Record<PropertyKey, unknown>)[access as PropertyKey] =
                         setter(current);
                 }
@@ -118,10 +138,10 @@ const access = (
             }
         } else {
             if (last) {
-                return options?.returnExists ? false : undefined;
+                return options.returnExists ? false : undefined;
             }
 
-            return current;
+            return setter ? current : undefined;
         }
     }
 
@@ -131,10 +151,23 @@ const access = (
 export const get = <V = unknown>(
     object: object | unknown[],
     accessor: string,
-    options?: AccessOptions
+    options: AccessOptions = {
+        create: false,
+        modify: false,
+        arrayAccess: false,
+        returnExists: false
+    }
 ) => access(object, accessor, undefined, options) as V;
-export const has = (object: object | unknown[], accessor: string, options?: AccessOptions) =>
-    access(object, accessor, undefined, { ...options, returnExists: true });
+export const has = (
+    object: object | unknown[],
+    accessor: string,
+    options: AccessOptions = {
+        create: false,
+        modify: false,
+        arrayAccess: false,
+        returnExists: false
+    }
+) => access(object, accessor, undefined, { ...options, returnExists: true });
 export const set = (
     object: object | unknown[],
     accessor: string,
@@ -163,4 +196,68 @@ export const pickCastArray = <T = never>(target: object, key: string): T[] => {
     return key in target
         ? [target[key as keyof typeof target]]
         : target[`${key}s` as keyof typeof target];
+};
+
+/**
+ * Unsets a property from an object or array.
+ *
+ * @param object The object or array to unset the property from.
+ * @param accessor The accessor to the property to unset.
+ */
+export const unset = (object: object | unknown[], accessor: string) => {
+    assert(accessor, "Accessor must be provided");
+
+    const accessors = accessor.split(".");
+    const lastAccessor = accessors.pop()!;
+    let current: unknown = object;
+
+    for (const access of accessors) {
+        if (current instanceof Object) {
+            if (!/\[\d+\]$/.test(access)) {
+                current = current[access as keyof typeof current];
+            } else {
+                const array = current[
+                    access.slice(0, access.indexOf("[")) as keyof typeof current
+                ] as unknown as Array<unknown>;
+
+                if (!Array.isArray(array)) {
+                    throw new Error(`Cannot access index ${access} of non-array value`);
+                }
+
+                const index = parseInt(access.match(/\d+/)![0]);
+
+                if (Number.isNaN(index)) {
+                    throw new Error(`Invalid index ${index}`);
+                }
+
+                current = array[index];
+            }
+        } else {
+            throw new Error(`Cannot access property ${access} of non-object value`);
+        }
+    }
+
+    if (current instanceof Object) {
+        if (!/\[\d+\]$/.test(lastAccessor)) {
+            delete current[lastAccessor as keyof typeof current];
+        } else {
+            const array = current[
+                lastAccessor.slice(0, lastAccessor.indexOf("[")) as keyof typeof current
+            ] as unknown as Array<unknown>;
+
+            if (!Array.isArray(array)) {
+                throw new Error(`Cannot access index ${lastAccessor} of non-array value`);
+            }
+
+            const index = parseInt(lastAccessor.match(/\d+/)![0]);
+
+            if (Number.isNaN(index)) {
+                throw new Error(`Invalid index ${index}`);
+            }
+
+            array.splice(index, 1);
+        }
+    } else {
+        throw new Error(`Cannot access property ${lastAccessor} of non-object value`);
+    }
 };
