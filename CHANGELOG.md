@@ -2,6 +2,15 @@
 
 ### 31-08-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * fix!: config command and trigger release
+  * **docs:** add missing configuration file guide    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **chore:** add debug logs in ModerationActionService    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
   * **fix:** config permission checks    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
@@ -39,6 +48,10 @@
 
 ### 31-08-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v9.26.7 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v9.26.6 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
