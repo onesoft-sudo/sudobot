@@ -2,6 +2,13 @@
 
 ### 31-08-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **fix(commands):** missing arguments when registering slash commands    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **docs:** update getting started page to include windows specific db migration guide    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
   * **fix:** build script in package.json    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
@@ -9,6 +16,13 @@
   * **chore(extensions):** build extensions [skip ci]    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 31-08-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v9.26.3 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 30-08-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
