@@ -4,6 +4,15 @@
         "main": {
             "type": "string"
         },
+        "src_main": {
+            "type": "string"
+        },
+        "src_directory": {
+            "type": "string"
+        },
+        "build_directory": {
+            "type": "string"
+        },
         "language": {
             "type": "string",
             "enum": [

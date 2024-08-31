@@ -7,7 +7,7 @@
         "email": "rakinar2@onesoftnet.eu.org",
         "url": "https://virtual-designer.github.io"
     },
-    "main": "build/out/index.js",
+    "main": "build/out/main/main.js",
     "license": "AGPL-3.0-or-later",
     "keywords": [
         "bot",
@@ -42,7 +42,7 @@
         "start:blazew": "node build/out/main/typescript/main.js",
         "lint": "eslint src",
         "lint:fix": "eslint src --fix",
-        "build": "tsc && mv build/out/src _build && rm -fr build/out && mv _build build/out",
+        "build": "tsc && mv build/out/src _build && rm -fr build/out && mv _build build/out && cp -r src/main/resources build/out/main",
         "start:prod": "pm2 start ./ecosystem.config.js",
         "deploy": "node scripts/deploy-commands.js",
         "gen:schema": "node scripts/generate-config-schema.js",

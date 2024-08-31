@@ -115,6 +115,13 @@
                                             }
                                         },
                                         "additionalProperties": false
+                                    },
+                                    "troll_command_immune_users": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/additionalProperties/anyOf/0/anyOf/1/properties/commands/properties/channels/properties/list/items"
+                                        },
+                                        "default": []
                                     }
                                 },
                                 "additionalProperties": false,
@@ -1641,6 +1648,55 @@
                                             ]
                                         },
                                         "default": []
+                                    },
+                                    "exclusions": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "user",
+                                                        "channel",
+                                                        "category_channel"
+                                                    ]
+                                                },
+                                                "mode": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "exclude",
+                                                        "include"
+                                                    ],
+                                                    "default": "exclude"
+                                                },
+                                                "snowflakes": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/additionalProperties/anyOf/0/anyOf/1/properties/commands/properties/channels/properties/list/items"
+                                                    }
+                                                },
+                                                "events": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/additionalProperties/anyOf/0/anyOf/1/properties/logging/properties/overrides/items/anyOf/0/properties/events/items"
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "snowflakes"
+                                            ],
+                                            "additionalProperties": false
+                                        },
+                                        "default": []
+                                    },
+                                    "unsubscribed_events": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/additionalProperties/anyOf/0/anyOf/1/properties/logging/properties/overrides/items/anyOf/0/properties/events/items"
+                                        },
+                                        "default": []
                                     }
                                 },
                                 "additionalProperties": false
@@ -1922,9 +1978,6 @@
                                         },
                                         "default": []
                                     },
-                                    "require_captcha": {
-                                        "type": "boolean"
-                                    },
                                     "verification_message": {
                                         "type": "string"
                                     },
@@ -1935,23 +1988,16 @@
                                         "type": "integer",
                                         "description": "Max verification duration (in seconds)"
                                     },
-                                    "allowed_methods": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string",
-                                            "enum": [
-                                                "discord",
-                                                "google",
-                                                "github",
-                                                "email"
-                                            ]
-                                        },
-                                        "default": [
-                                            "discord",
-                                            "google",
-                                            "github",
-                                            "email"
-                                        ]
+                                    "method": {
+                                        "type": "string",
+                                        "enum": [
+                                            "channel_interaction",
+                                            "dm_interaction"
+                                        ],
+                                        "default": "dm_interaction"
+                                    },
+                                    "channel": {
+                                        "$ref": "#/additionalProperties/anyOf/0/anyOf/1/properties/commands/properties/channels/properties/list/items"
                                     }
                                 },
                                 "required": [
