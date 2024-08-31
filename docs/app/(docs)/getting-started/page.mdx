@@ -250,6 +250,12 @@ You might get an error saying something like `symlink(): Operation not permitted
 npm run build
 ```
 
+**Copy the resource files**
+
+Please copy the following resources from `src` to `build`:
+
+* `src/main/resources` should be copied to `build/out/main` and the name should still be `resources`
+
 **Run the Database Migrations**
 
 Please first make sure you have the right credentials in your `.env` file. Then, create a new file named `migrate.ts` in the project root with the following contents:
