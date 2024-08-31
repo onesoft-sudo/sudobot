@@ -4,6 +4,7 @@ import InteractionContext from "@framework/commands/InteractionContext";
 import LegacyContext from "@framework/commands/LegacyContext";
 import { Inject } from "@framework/container/Inject";
 import { GatewayEventListener } from "@framework/events/GatewayEventListener";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { get, has, set, unset } from "@framework/utils/objects";
 import { getZodPropertyPaths } from "@framework/utils/zod";
 import { Colors } from "@main/constants/Colors";
@@ -47,6 +48,7 @@ class ConfigCommand extends Command {
             description: "Unset a configuration key"
         }
     };
+    public override readonly permissions = [PermissionFlags.ManageGuild];
 
     @Inject()
     private readonly configManager!: ConfigurationManager;
