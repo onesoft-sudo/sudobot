@@ -20,7 +20,25 @@
 </p>
 
 <p align="center">
-A free and open source Discord bot for moderation purposes. <a href="https://docs.sudobot.online/features/screenshots/">Click here</a> to see the screenshots.
+A free and open source Discord bot for moderation purposes.<br />
+<a href="https://docs.sudobot.online" target="_blank">Documentation</a>&nbsp;&bull;
+<a href="https://docs.sudobot.online/features/screenshots/" target="_blank">Screenshots</a>
+<br />
+<br />
+<a href="https://idx.google.com/import?url=https%3A%2F%2Fgithub.com%2Fonesoft-sudo%2Fsudobot" align="center">
+  <picture>
+    <source
+      media="(prefers-color-scheme: dark)"
+      srcset="https://cdn.idx.dev/btn/open_dark_32.svg">
+    <source
+      media="(prefers-color-scheme: light)"
+      srcset="https://cdn.idx.dev/btn/open_light_32.svg">
+    <img
+      height="32"
+      alt="Open in IDX"
+      src="https://cdn.idx.dev/btn/open_purple_32.svg">
+  </picture>
+</a>
 </p>
 
 <!--
