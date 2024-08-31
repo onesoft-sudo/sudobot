@@ -34,7 +34,11 @@ class AvatarCommand extends Command {
     public override readonly aliases = ["avt", "av", "pfp", "gav", "gavatar", "gavt", "gpfp"];
 
     public override build(): Buildable[] {
-        return [this.buildChatInput()];
+        return [
+            this.buildChatInput().addUserOption(option =>
+                option.setName("user").setDescription("The user to lookup").setRequired(true)
+            )
+        ];
     }
 
     public override async execute(
