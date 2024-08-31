@@ -130,6 +130,10 @@ DB_URL=postgresql://username:password@hostname:port/database
 # Replace `your-jwt-secret` with the generated secret.
 JWT_SECRET=your-jwt-secret
 
+# The directory where the bot will store persistent data like
+# configuration files, logs, and more.
+SUDO_PREFIX=/path/to/sudobot/storage
+
 # Optionally, you can uncomment the following to turn on debug mode 
 # to see more detailed logs, and enable certain development features.
 
@@ -145,6 +149,11 @@ Some of these settings are guild-wide, and some are global.
 The guild-wide configuration file is `config.json`, and the global system-level configuration file is `system.json`.
 The files are located at `config/` in the project root. These configuration files don't contain any specific setting, they are just a starting point for you to configure the bot.
 You can edit these files to your liking.
+
+Then, go to the `SUDO_PREFIX` directory, and copy the `config` directory to the `SUDO_PREFIX` directory.
+This should also copy the `config.json` and `system.json` files to the `SUDO_PREFIX` directory, that you just edited.
+
+**Remember, this step is important. Otherwise, any updates to the configuration files will be lost when you update the bot using Git.**
 
 To see all the possible configuration options, please refer to these schema files:
 
