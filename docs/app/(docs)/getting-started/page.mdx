@@ -267,6 +267,34 @@ Then run this file:
 bun migrate.ts
 ```
 
+If you'd like to use Node.js for this, then create a `migrate.js` file instead and paste the following:
+
+```javascript
+require("dotenv/config");
+
+async function main() {
+    const { drizzle } = await import(String("drizzle-orm/node-postgres"));
+    const { migrate } = await import(String("drizzle-orm/node-postgres/migrator"));
+    const { Pool } = await import(String("pg"));
+    
+    const pool = new Pool({
+        connectionString: process.env.DB_URL
+    });
+    
+    const db = drizzle(pool);
+    await migrate(db, { migrationsFolder: "drizzle" });
+    await pool.end();
+}
+
+main();
+```
+
+And run:
+
+```bash
+node migrate.js
+```
+
 And if everything was correctly set up, your database will have the new tables created for SudoBot.
 
 **Starting the Bot**
