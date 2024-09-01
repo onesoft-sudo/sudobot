@@ -5,6 +5,7 @@ import type { Buildable } from "@framework/commands/Command";
 import { Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { userFlagsToString } from "@framework/utils/user";
 import InfractionManager from "@main/services/InfractionManager";
 import { EmbedBuilder, GuildMember, time, User, userMention } from "discord.js";
@@ -26,6 +27,7 @@ class UserLookupCommand extends Command {
     public override readonly aliases = ["user", "info"];
     public override readonly usage = ["<user: User | GuildMember>"];
     public override readonly systemPermissions = [];
+    public override readonly permissions = [PermissionFlags.ManageMessages];
 
     @Inject()
     private readonly infractionManager!: InfractionManager;
