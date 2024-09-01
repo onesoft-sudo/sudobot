@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar/Navbar";
 import Progress from "@/components/Navigation/Progress";
+import { BASE_URL } from "@/utils/links";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { PropsWithChildren } from "react";
@@ -9,7 +10,7 @@ import Providers from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL),
+    metadataBase: new URL(BASE_URL),
     title: {
         default: "SudoBot Documentation",
         template: "%s | SudoBot Documentation",
