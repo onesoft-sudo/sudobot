@@ -6,7 +6,7 @@
 | ------- | ------------------- |
 | 10.x    | :white_check_mark:  |
 | 9.x     | :white_check_mark:  |
-| 8.x     | :x:                 |
+| 8.x     | :white_check_mark:  |
 | 7.x     | :x:                 |
 | 6.x     | :x:                 |
 | 5.x     | :x:                 |
