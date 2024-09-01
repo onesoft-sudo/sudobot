@@ -1,0 +1,320 @@
+---
+title: Version Control System (VCS) Guide
+short_name: VCS Guide
+---
+
+# Version Control System (VCS) Guide
+
+Version Control Systems (VCS) are extremely important tools for managing
+codebases, tracking changes, and collaborating with other developers. This guide
+provides an overview of VCS concepts, common workflows, and best practices that
+we follow at OSN.  
+**This is not a tutorial on how to use Git or SVN, but rather a
+guide on what standards we follow at OSN.**
+
+## What VCS do we use?
+
+At OSN, we prefer using Git as our primary VCS. Git is a modern, distributed VCS
+that is widely used in the industry. For more information,
+[refer here](https://git-scm.com/).
+
+We also use Subversion (SVN) for some of our projects. SVN is a centralized VCS
+that used to be popular before Git. It usually does not have as many features as
+Git, but it is still widely used in some organizations. For more information,
+[refer here](https://subversion.apache.org/).
+
+We use [GitHub](https://github.com) as our Git hosting platform.
+As for SVN, we have our own SVN server:
+[svn.onesoftnet.eu.org](https://svn.onesoftnet.eu.org).
+
+## Introduction to Semantic Versioning
+
+Semantic Versioning (Semver) is a versioning scheme that is widely used in the
+software industry. It is a simple set of rules and requirements that dictate how
+version numbers are assigned and incremented. The format is as follows:
+
+```
+MAJOR.MINOR.PATCH
+```
+
+1. **MAJOR**: Incremented when you make incompatible API changes.
+2. **MINOR**: Incremented when you add functionality in a backwards-compatible
+   manner.
+3. **PATCH**: Incremented when you make backwards-compatible bug fixes.
+
+For more information, [refer here](https://semver.org/).
+
+**OSN Projects follow a superset of Semver**.  
+In addition to the rules described
+in [Semver](https://semver.org/), we also have the following rules:
+
+    1. **Pre-release versions**: We use the `-alpha`, `-beta`, and `-rc` suffixes
+        for pre-release versions. For example, `1.0.0-alpha.1`, `1.0.0-beta.1`,
+        `1.0.0-rc.1`. Each of these suffixes have specific meanings:
+
+        - `-alpha`: This is the first stage of the release cycle. It is used for
+            initial testing and feedback, when features are still being added.
+
+        - `-beta`: This is the second stage of the release cycle. It is used for
+            feature complete testing and feedback.
+
+        - `-rc`: This is the third stage of the release cycle. It is used for
+            final testing and feedback before the final release.
+
+    2. **Build metadata**: We use the `+` suffix for build metadata. For example,
+        `1.0.0+exp.sha.5114f85`. This can be used to identify the build number, commit
+        hash, or any other build-related information.
+        We usually only use this for internal builds, however it can be used for
+        public releases as well, if needed.<br />
+        We use the following formats for build metadata:
+
+            - `exp`: Experimental build: This is usually used for internal builds
+                that are not meant for public release.
+            - `sha`: Commit hash: This is used to identify the commit hash of the
+                build.
+            - `build`: Build number: This is used to identify the build number of
+                the build.
+
+        You can either use all of these formats or only some of them, depending on
+        your requirements. When combining multiple formats, separate them with a
+        dot (`.`). For example, `1.0.0+exp.sha.5114f85.build.123`.
+
+    3. **Exceptions for security patches**: We use the `PATCH` version for
+        security patches. However, if the security issue is severe (>= 8.0 in
+        [CVSS](https://www.first.org/cvss/calculator/3.1)), we increment the
+        `MAJOR` version. For example, if the current version is `1.0.0`, and
+        a security patch is released, the new version will be `1.0.1`. If the
+        security issue is severe, the new version will be `2.0.0`.
+        This helps users to quickly identify the severely affeted version and
+        the version with the security patch.
+
+## Conventional Commits
+
+Conventional Commits is a specification for adding human and machine readable
+meaning to commit messages. It is a simple set of rules for creating an explicit
+commit history. For information, see the
+[Conventional Commits specification](https://www.conventionalcommits.org/).
+
+We follow a superset of the Conventional Commits specification. The advantage of
+this is that it helps in generating release notes, changelogs, and automating
+the creation of new releases.
+
+#### Commit Scope Format
+
+When making commits, please specify a scope for the commit. The scope should be
+the name of the module or component that you are working on. For example:
+
+```git-commit
+feat(kernel): add new feature
+```
+
+In this example, `kernel` is the module or component that the commit is related
+to. You might also divide the scope into multiple parts, separated by a colon
+(`:`) to indicate submodules or subcomponents. For example:
+
+```git-commit
+feat(kernel:core): add new feature
+```
+
+In this example, `kernel` is the main module and `core` is a submodule of the
+`kernel` module.
+
+#### Additional commit types
+
+Our superset defines the following additional commit types:
+
+    1. **`release`**: This commit type is used for release commits. It is used to
+        indicate that a new version has been released. For example: <br />
+
+        ```git-commit
+        release: v1.0.0 [skip ci]
+        ```
+
+        The `[skip ci]` tag is used to indicate that this commit should not trigger
+        a CI build.
+
+    2. **`deps`**: This commit type is used for dependency updates. It is used to
+        indicate that a dependency has been updated. For example: <br />
+
+        ```git-commit
+        deps: update dependencies
+        ```
+
+        This commit type may have a subject. The subject is usually `dev` to indicate
+        a development dependency update, or maybe a specific package name to indicate
+        a specific dependency update. For example: <br />
+
+        ```git-commit
+        deps(dev): update dev dependencies
+        ```
+
+In addition to the rules described in the original Conventional Commits
+specification, we also have the following rules:
+
+    1. **Always use `BREAKING CHANGE` in the commit message if there are
+        breaking changes**: If you make a change that breaks backward
+        compatibility, always use the `BREAKING CHANGE` keyword in the commit
+        message and then provide information about the change.
+        This helps users to quickly identify the breaking changes in
+        the release notes. This also helps in identifying the `MAJOR` version
+        bump in the release notes, whether it is a security patch or a breaking
+        change. For example: <br />
+
+        ```git-commit
+        feat(kernel:core)!: add new feature
+
+        BREAKING CHANGE: This commit breaks backward compatibility.
+        ```
+
+        The `!` symbol is used to indicate that this commit is a starting point
+        of a new major version, according to the Semver specification.
+
+    2. **Always use `SECURITY` in the commit message for security patches**:
+        If you make a security patch, always use the `SECURITY` keyword in the
+        commit message and then provide information about the security issue.
+        This helps users to quickly identify the security patches in the release
+        notes. For example: <br />
+
+        ```git-commit
+        fix(kernel:core)!: fix security issue
+
+        SECURITY: This commit fixes a security issue.
+        ```
+
+    3. **Always use `DEPRECATED` in the commit message for deprecated features**:
+        If you deprecate a feature, always use the `DEPRECATED` keyword in the
+        commit message and then provide information about the deprecation.
+        This helps users to quickly identify the deprecated features in the
+        release notes. The commit type should be `feat` in this case.
+        For example: <br />
+
+        ```git-commit
+        feat(kernel:core)!: deprecate old feature
+
+        DEPRECATED: This commit deprecates an old feature.
+        ```
+
+    4. **Use the `release` commit type for release commits**: If you are making
+        a release commit, always use the `release` commit type, as described
+        [above](#additional-commit-types).
+
+    5. **Use the `deps` commit type for dependency updates**: If you are making
+        a dependency update, always use the `deps` commit type, as described
+        [above](#additional-commit-types).
+
+## Branching Strategy
+
+We follow the an extended version of the
+[GitHub Flow](https://guides.github.com/introduction/flow/) workflow.
+Thee only main branch is `main` &mdash; this is the branch that is always
+deployed to production. Notable development works are done in feature branches,
+which are then merged into the `main` branch via pull requests.
+If the feature or fix you're working on is small, you can commit directly to the
+`main` branch.
+
+We also have the following additional branches:
+
+1. **Release Branches**: We create release branches for each major version. For
+   example, if the current version is `1.0.0`, the release branch will be
+   `1.x`. This branch is used for bug fixes and security patches for
+   that specific version without merging them into the `main` branch. Once all
+   the bug fixes and security patches are done, we create a new release from
+   this branch.
+
+    After the release reaches its EOL (End of Life), we archive the branch and
+    stop providing support for that version.
+
+2. **Bugfix Branches**: We create bugfix branches for working on a notable bug
+   fix or security patch. These branches are created from the `main` branch and
+   are merged back into the `main` branch via pull requests.
+   These branches are prefixed by `fix/`.
+
+3. **Feature Branches**: We create feature branches for working on new features.
+   These branches are created from the `main` branch and are merged back into
+   the `main` branch via pull requests.
+   These branches are prefixed by `feat/`.
+
+## Automation of Releases and Changelog Generation
+
+We use GitHub Actions for automating the release process and generating
+changelogs. We have a custom GitHub Action that automatically generates
+changelogs based on the commit messages and creates a new release on GitHub.
+The action is available on GitHub marketplace:
+[Conventional Release Action](https://github.com/marketplace/actions/conventional-release-action).
+
+The action uses the commit messages to generate the changelog and release notes,
+and then bumps the version number based on the commit messages and the rules
+of our superset of the Conventional Commits specification and Semver.
+
+#### Tips to leaverage the action
+
+1. **Forcing pre-release versions**: If you want to force a pre-release version,
+   you can use a prerelease specifier in your commit message. For example: <br />
+
+    ```git-commit
+     feat(kernel:core): add new feature [prerelease]
+    ```
+
+    The identifier must be inside square brackets (`[]`) and must be one of
+    `prerelease`, `alpha`, `beta`. This will force the action to bump the
+    version to a pre-release version.
+
+2. **Forcing build metadata**: If you want to force build metadata, you can use
+   add the `Build-metadata` footer in your commit message. For example: <br />
+
+    ```git-commit
+    feat(kernel:core): add new feature
+
+    Build-metadata: exp.sha.5114f85.build.123
+    ```
+
+    This will force the action to add the build metadata to the version.
+
+3. **Forcing a specific version suffix**: If you want to force a specific version
+   suffix, you can use the `Version-suffix` footer in your commit message. For
+   example: <br />
+
+    ```git-commit
+    feat(kernel:core): add new feature
+
+    Version-suffix: -alpha.1
+    ```
+
+    This will force the action to use the specified version suffix.
+
+## Signing off commits and using GPG signatures
+
+We require developers to sign off their commits and optionally use GPG
+signatures for signing commits.
+Please note that "signing off" and "GPG signing" are two different things.
+
+1. **Signing off commits**: When you make a commit, you must sign off the commit
+   by adding a `Signed-off-by` line at the end of the commit message. This is
+   usually done by adding `Signed-off-by: Your Name <youremail@addr.com>`. This
+   is a way to certify that you have the rights to submit the code under the
+   project's license. For example: <br />
+
+    ```git-commit
+    feat(kernel:core): add new feature
+
+    Signed-off-by: John Doe <johndoe@acme.com>
+    ```
+
+    If you're using the Git CLI, you can add the `-s` flag to automatically add
+    the `Signed-off-by` line. For example: <br />
+
+    ```bash
+    git commit -sm "feat(kernel:core): add new feature"
+    ```
+
+    This is a good practice to follow, especially when contributing to open
+    source projects.
+
+2. **Using GPG signatures**: GPG signatures are used to sign commits and tags.
+   This is a way to certify that the commit or tag was made by you and not by
+   someone else. This is especially useful for verifying the authenticity of
+   commits and tags in open source projects. For more information on how to
+   use GPG signatures with Git, see the
+   [GitHub documentation](https://docs.github.com/en/github/authenticating-to-github/managing-commit-signature-verification).
+   GitHub shows a "Verified" badge next to commits and tags that are signed with
+   GPG signatures.
