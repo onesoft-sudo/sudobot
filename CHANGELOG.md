@@ -1,7 +1,28 @@
 # Changelog
 
+### 01-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **fix:** add ManageMessages permission requirement for userlookup command    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 01-09-2024 - [[Ar Rakin](mailto:rakinar2@gmail.com)]
+
+  * **chore:** update security policy
+
 ### 31-08-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **chore:** update SECURITY.md    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **docs:** add instructions for copying resource files on windows    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
   * fix!: config command and trigger release
   * **docs:** add missing configuration file guide    
       
@@ -48,6 +69,10 @@
 
 ### 31-08-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v10.0.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v9.26.7 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
