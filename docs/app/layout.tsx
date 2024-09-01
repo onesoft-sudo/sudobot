@@ -9,11 +9,14 @@ import Providers from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    metadataBase: new URL((process.env.NEXT_PUBLIC_BASE_DOMAIN?.startsWith("localhost") ? "http" : "https") + "://" + process.env.NEXT_PUBLIC_BASE_DOMAIN!),
-    title: "SudoBot Documentation",
+    metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL),
+    title: {
+        default: "SudoBot Documentation",
+        template: "%s | SudoBot Documentation",
+    },
     description: "A guide to get you started with SudoBot!",
     alternates: {
-        canonical: "./"
+        canonical: "./",
     },
 };
 
