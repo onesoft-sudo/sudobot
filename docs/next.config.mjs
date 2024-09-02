@@ -1,6 +1,6 @@
-import rehypePrism from "@mapbox/rehype-prism";
 import createMDX from "@next/mdx";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypePrettyCode from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
@@ -12,6 +12,11 @@ const nextConfig = {
     async rewrites() {
         return [{ source: "/:path*.(mdx?)", destination: "/:path*" }];
     },
+};
+
+/** @type {import('rehype-pretty-code').Options} */
+const rehypePrettyCodeOptions = {
+    theme: "material-theme-ocean",
 };
 
 const withMDX = createMDX({
@@ -31,7 +36,7 @@ const withMDX = createMDX({
                     properties: { className: "autolink", tabindex: -1 },
                 },
             ],
-            rehypePrism,
+            [rehypePrettyCode, rehypePrettyCodeOptions],
         ],
     },
     webpack(config) {

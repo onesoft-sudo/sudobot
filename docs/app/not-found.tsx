@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import { MdError } from "react-icons/md";
 
 export const metadata = {
-    title: "404 Not Found - SudoBot Documentation",
+    title: "404 Not Found",
     description: "This page doesn't exist!",
 };
 

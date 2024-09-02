@@ -1,5 +1,5 @@
 ---
-title: GNU Affero General Public License v3.0 - SudoBot
+title: GNU Affero General Public License v3.0
 short_name: AGPL-3.0
 ---
 

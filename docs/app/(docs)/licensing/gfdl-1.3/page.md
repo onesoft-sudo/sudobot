@@ -1,5 +1,5 @@
 ---
-title: GNU Free Documentation License v1.3 - SudoBot
+title: GNU Free Documentation License v1.3
 short_name: GFDL-1.3
 ---
 
