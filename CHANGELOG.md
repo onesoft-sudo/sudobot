@@ -1,7 +1,84 @@
 # Changelog
 
+### 02-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **build:** exp.sha.69d7c0e.build.1    
+      
+    **Build-metadata:**  exp.sha.69d7c0e.build.1  
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **deps:** bump @mui/material from 5.16.7 to 6.0.1 in /docs    
+      
+      
+  * **chore:** update CONTRIBUTING.md    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **chore:** update CODEOWNERS    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **docs:** dev guides (#214)    
+      
+    **docs:**  dev guides  
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 02-09-2024 - [[dependabot[bot]](mailto:49699333+dependabot[bot]@users.noreply.github.com)]
+
+  * **ci:** bump actions/labeler from 4 to 5    
+      
+    **Bumps [actions/labeler](https:** //github.com/actions/labeler) from 4 to 5.  
+    **- [Release notes](https:** //github.com/actions/labeler/releases)  
+    **- [Commits](https:** //github.com/actions/labeler/compare/v4...v5)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  actions/labeler  
+    **  dependency-type:**  direct:production  
+    **  update-type:**  version-update:semver-major  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+  * **deps:** bump @mui/material from 5.16.7 to 6.0.1 in /docs    
+      
+    **Bumps [@mui/material](https:** //github.com/mui/material-ui/tree/HEAD/packages/mui-material) from 5.16.7 to 6.0.1.  
+    **- [Release notes](https:** //github.com/mui/material-ui/releases)  
+    **- [Changelog](https:** //github.com/mui/material-ui/blob/master/CHANGELOG.md)  
+    **- [Commits](https:** //github.com/mui/material-ui/commits/v6.0.1/packages/mui-material)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  "@mui/material"  
+    **  dependency-type:**  direct:production  
+    **  update-type:**  version-update:semver-major  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+
 ### 01-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **chore:** update .editorconfig    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **docs:** fix build errors due to a missing environment variable    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **docs:** add vcs guide page for developers    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **docs:** use title templates    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **docs:** allow robots.txt and sitemap.xml URLs to be customized    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
   * **fix:** add ManageMessages permission requirement for userlookup command    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
@@ -9,6 +86,13 @@
   * **chore(extensions):** build extensions [skip ci]    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 01-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.0.1 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 01-09-2024 - [[Ar Rakin](mailto:rakinar2@gmail.com)]
