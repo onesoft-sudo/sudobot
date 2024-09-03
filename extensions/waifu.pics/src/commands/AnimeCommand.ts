@@ -14,65 +14,40 @@ export default class AnimeCommand extends Command {
     public override build(): Buildable[] {
         return [
             this.buildChatInput()
-                .addSubcommand(subcommand =>
-                    subcommand
-                        .setName("waifu")
-                        .setDescription("Fetch a random anime waifu image.")
-                        .addBooleanOption(option =>
-                            option
-                                .setName("nsfw")
-                                .setDescription("Whether the image should be NSFW.")
+                .addStringOption(option =>
+                    option
+                        .setName("category")
+                        .setDescription("The category of the image to fetch.")
+                        .setRequired(true)
+                        .addChoices(
+                            {
+                                name: "Waifu",
+                                value: "waifu"
+                            },
+                            {
+                                name: "Neko",
+                                value: "neko"
+                            },
+                            {
+                                name: "Shinobu",
+                                value: "shinobu"
+                            },
+                            {
+                                name: "Megumin",
+                                value: "megumin"
+                            },
+                            {
+                                name: "Bully",
+                                value: "bully"
+                            },
+                            {
+                                name: "Cuddle",
+                                value: "cuddle"
+                            }
                         )
                 )
-                .addSubcommand(subcommand =>
-                    subcommand
-                        .setName("neko")
-                        .setDescription("Fetch a random anime neko image.")
-                        .addBooleanOption(option =>
-                            option
-                                .setName("nsfw")
-                                .setDescription("Whether the image should be NSFW.")
-                        )
-                )
-                .addSubcommand(subcommand =>
-                    subcommand
-                        .setName("shinobu")
-                        .setDescription("Fetch a random anime shinobu image.")
-                        .addBooleanOption(option =>
-                            option
-                                .setName("nsfw")
-                                .setDescription("Whether the image should be NSFW.")
-                        )
-                )
-                .addSubcommand(subcommand =>
-                    subcommand
-                        .setName("megumin")
-                        .setDescription("Fetch a random anime megumin image.")
-                        .addBooleanOption(option =>
-                            option
-                                .setName("nsfw")
-                                .setDescription("Whether the image should be NSFW.")
-                        )
-                )
-                .addSubcommand(subcommand =>
-                    subcommand
-                        .setName("bully")
-                        .setDescription("Fetch a random anime bully image.")
-                        .addBooleanOption(option =>
-                            option
-                                .setName("nsfw")
-                                .setDescription("Whether the image should be NSFW.")
-                        )
-                )
-                .addSubcommand(subcommand =>
-                    subcommand
-                        .setName("cuddle")
-                        .setDescription("Fetch a random anime cuddle image.")
-                        .addBooleanOption(option =>
-                            option
-                                .setName("nsfw")
-                                .setDescription("Whether the image should be NSFW.")
-                        )
+                .addBooleanOption(option =>
+                    option.setName("nsfw").setDescription("Whether to fetch an NSFW image.")
                 )
         ];
     }
@@ -80,7 +55,9 @@ export default class AnimeCommand extends Command {
     public override async execute(
         context: LegacyContext | InteractionContext<ChatInputCommandInteraction>
     ) {
-        const category = context.isLegacy() ? context.args[0] : context.options.getSubcommand();
+        const category = context.isLegacy()
+            ? context.args[0]
+            : context.options.getString("category", true);
 
         if (!category || !this.validCategories.includes(category)) {
             return void (await context.reply(
@@ -89,6 +66,21 @@ export default class AnimeCommand extends Command {
         }
 
         const nsfw = context.isLegacy() ? false : !!context.options.getBoolean("nsfw");
+
+        if (
+            nsfw &&
+            ((context.channel.isThread() &&
+                context.channel.parent?.isTextBased() &&
+                !context.channel.parent.nsfw) ||
+                (!context.channel.isThread() &&
+                    context.channel.isTextBased() &&
+                    !context.channel.nsfw))
+        ) {
+            return void (await context.reply(
+                "Cannot post NSFW media as this channel is not marked as NSFW."
+            ));
+        }
+
         const url = `https://api.waifu.pics/${nsfw ? "nsfw" : "sfw"}/${category}`;
 
         try {
@@ -102,7 +94,8 @@ export default class AnimeCommand extends Command {
                 await context.reply({
                     files: [
                         {
-                            attachment: response.data.url
+                            attachment: response.data.url,
+                            spoiler: nsfw
                         }
                     ]
                 });
