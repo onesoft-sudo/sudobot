@@ -2,6 +2,15 @@
 
 ### 03-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **fix:** update release codename    
+      
+    **Build-metadata:**  {numdate}.sha.{id}  
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **feat:** updated api announcement    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
   * **feat(commands:tools):** add `archive` command    
       
     **Build-metadata:**  {numdate}.sha.{id}  
@@ -30,6 +39,10 @@
 
 ### 03-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v10.2.0+20240803173910.sha.bed108f3 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v10.1.0 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
