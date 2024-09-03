@@ -2,6 +2,11 @@
 
 ### 03-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **feat(commands:tools):** add `archive` command    
+      
+    **Build-metadata:**  {numdate}.sha.{id}  
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
   * **feat:** upgrade discord.js to v14.16.1    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
@@ -21,6 +26,13 @@
   * **chore(extensions:neko):** remove tsconfig.json    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+
+### 03-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.1.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 02-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
