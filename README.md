@@ -92,6 +92,10 @@ Thanks to all the active and indirect contributors!
 -   [ninsaccplayzyt](https://github.com/ninsaccplayzyt)
 -   [Ryanmello07](https://github.com/Ryanmello07) (Contributed by helping us improve, also by giving away a hosting server and domain name to us)
 
+### Todo List
+
+Please refer to the [Project Management Page](https://github.com/orgs/onesoft-sudo/projects/3).
+
 ### Mailing Lists
 
 If you prefer communicating over emails or mailing lists, you can send your message at <sudobot@onesoftnet.eu.org>, which is a mailing list specifically for discussions, bug reports and questions about SudoBot.
