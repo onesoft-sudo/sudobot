@@ -143,10 +143,17 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
             return this.commandMessage.editReply(optionsToPass);
         }
 
-        return this.commandMessage.reply({
-            ...optionsToPass,
-            fetchReply: true
-        });
+        return this.commandMessage.reply(
+            typeof optionsToPass === "string"
+                ? {
+                      content: optionsToPass,
+                      fetchReply: true
+                  }
+                : {
+                      ...optionsToPass,
+                      fetchReply: true
+                  }
+        );
     }
 
     public replyEmbed(...embeds: Array<APIEmbed | EmbedBuilder>) {
@@ -180,7 +187,7 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
     }
 
     public async success(options: Parameters<this["commandMessage"]["reply"]>[0]) {
-        return this.reply(
+        const args =
             typeof options === "string"
                 ? `${this.emoji("check") ?? ""} ${options}`
                 : {
@@ -189,8 +196,8 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
                       content: `${this.emoji("check")} ${
                           (options as MessageCreateOptions).content ?? "Operation successful."
                       }`
-                  }
-        );
+                  };
+        return this.reply(args);
     }
 }
 
