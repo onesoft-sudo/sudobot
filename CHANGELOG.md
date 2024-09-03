@@ -1,30 +1,16 @@
 # Changelog
 
-### 03-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
-
-  * **release:** v10.3.1 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-  * **release:** v10.3.1-0+20240803180328.sha.682c1360 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-  * **release:** v10.3.0+20240803174535.sha.5a049fce [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-  * **release:** v10.2.0+20240803173910.sha.bed108f3 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-  * **release:** v10.1.0 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-
 ### 03-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **chore(extensions:waifu.pics):** support all categories    
+      
+    **Build-metadata:**  {numdate}.sha.{id}  
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **feat(utils:axios):** log outgoing http requests    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
   * **fix:** archive command failing with cannot send empty message error    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
@@ -71,6 +57,33 @@
   * **chore(extensions:neko):** remove tsconfig.json    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+
+### 03-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.3.2 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.3.1 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.3.1-0+20240803180328.sha.682c1360 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.3.0+20240803174535.sha.5a049fce [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.2.0+20240803173910.sha.bed108f3 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.1.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 02-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
