@@ -95,6 +95,13 @@ export const GuildConfigSchema = z.object({
             allow_mentions: z.boolean().default(true)
         })
         .optional(),
+    channel_archives: z
+        .object({
+            enabled: z.boolean().optional().default(false),
+            archive_category: zSnowflake,
+            ignored_channels: z.array(zSnowflake).default([])
+        })
+        .optional(),
     infractions: z
         .object({
             send_ids_to_user: z.boolean().default(false),
@@ -222,7 +229,7 @@ export const GuildConfigSchema = z.object({
                 .int()
                 .optional(),
             method: z.enum(["channel_interaction", "dm_interaction"]).default("dm_interaction"),
-            channel: zSnowflake.optional(),
+            channel: zSnowflake.optional()
         })
         .optional(),
     quick_mute: z
