@@ -31,8 +31,8 @@
         "email": "sudobot@onesoftnet.eu.org"
     },
     "_meta": {
-        "release_codename": "Chocolate Cake",
-        "release_short_codename": "Cake"
+        "release_codename": "Delicious Donut",
+        "release_short_codename": "Donut"
     },
     "scripts": {
         "start": "node build/out/main/typescript/main.js",
