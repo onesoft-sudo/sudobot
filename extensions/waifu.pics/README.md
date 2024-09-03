@@ -1,3 +1,3 @@
-# Neko Commands
+# waifu.pics
 
-Fun commands that use The Neko API.
+This extension allows you to get random waifu images from [waifu.pics](https://waifu.pics/).
