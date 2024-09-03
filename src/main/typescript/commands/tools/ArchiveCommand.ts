@@ -72,7 +72,7 @@ class ArchiveCommand extends Command {
             });
         } catch (error) {
             if (isDiscordAPIError(error)) {
-                await context.error(`${error.message}`);
+                await context.error(`${error.message ?? `An error occurred while archiving ${channel}: Code ${error.status}`}`);
                 return;
             }
         }
