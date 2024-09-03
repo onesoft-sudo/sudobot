@@ -21,8 +21,8 @@ import type { AxiosRequestConfig } from "axios";
 import axios from "axios";
 import type {
     Channel,
+    GuildBasedChannel,
     GuildMember,
-    NewsChannel,
     PermissionOverwrites,
     PermissionResolvable,
     TextBasedChannel,
@@ -54,18 +54,20 @@ export function pick<T, K extends Array<keyof T>>(
     return {} as Pick<T, K extends Array<infer E> ? E : never>;
 }
 
-export function isTextableChannel(
-    channel: Channel | ThreadChannel,
+export function isTextBasedChannel(
+    channel: GuildBasedChannel | Channel | ThreadChannel,
     DMs = false
-): channel is TextChannel | NewsChannel | ThreadChannel {
-    return [
-        ...(DMs ? [ChannelType.DM, ChannelType.GroupDM] : []),
-        ChannelType.GuildAnnouncement,
-        ChannelType.GuildText,
-        ChannelType.PrivateThread,
-        ChannelType.PublicThread,
-        ChannelType.GuildVoice
-    ].includes(channel.type);
+): channel is Extract<GuildBasedChannel, { send: unknown }> {
+    return (
+        [
+            ...(DMs ? [ChannelType.DM, ChannelType.GroupDM] : []),
+            ChannelType.GuildAnnouncement,
+            ChannelType.GuildText,
+            ChannelType.PrivateThread,
+            ChannelType.PublicThread,
+            ChannelType.GuildVoice
+        ].includes(channel.type) && "send" in channel
+    );
 }
 
 export function developmentMode() {

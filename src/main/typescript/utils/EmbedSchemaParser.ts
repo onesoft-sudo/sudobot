@@ -18,6 +18,7 @@
  */
 
 import Application from "@framework/app/Application";
+import type { TextBasedChannel } from "@framework/types/TextBasedChannel";
 import type {
     APIEmbed,
     APIMessage,
@@ -27,7 +28,6 @@ import type {
     Message,
     MessageCreateOptions,
     MessageEditOptions,
-    TextBasedChannel,
     User
 } from "discord.js";
 import { EmbedBuilder } from "discord.js";

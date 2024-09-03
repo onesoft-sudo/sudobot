@@ -17,7 +17,12 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { ClientEvents as DiscordClientEvents, Message } from "discord.js";
+import type {
+    Channel,
+    ClientEvents as DiscordClientEvents,
+    Message,
+    PartialGroupDMChannel
+} from "discord.js";
 
 declare global {
     // FIXME
@@ -27,6 +32,10 @@ declare global {
         normalMessageDelete: [message: Message];
     }
 }
+
+export type NonPartialGroupDMChannel<Structure extends { channel: Channel }> = Structure & {
+    channel: Exclude<Structure["channel"], PartialGroupDMChannel>;
+};
 
 enum Events {
     ApplicationCommandPermissionsUpdate = "applicationCommandPermissionsUpdate",

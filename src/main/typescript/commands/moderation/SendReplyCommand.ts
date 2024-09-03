@@ -9,6 +9,7 @@ import { HasEventListeners } from "@framework/types/HasEventListeners";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import DirectiveParsingService from "@main/services/DirectiveParsingService";
 import type SystemAuditLoggingService from "@main/services/SystemAuditLoggingService";
+import { isTextBasedChannel } from "@main/utils/utils";
 import {
     ActionRowBuilder,
     type APIEmbed,
@@ -113,17 +114,19 @@ class SendReplyCommand
                         : { parse: [], roles: [], users: [] }
             } satisfies MessageCreateOptions | MessagePayload;
 
-            try {
-                await interaction.channel?.send({
-                    ...options,
-                    reply: {
-                        messageReference: messageId,
-                        failIfNotExists: true
-                    }
-                });
-                await interaction.editReply("The reply has been sent.");
-            } catch (error) {
-                await interaction.editReply("An error has occurred while sending the reply.");
+            if (isTextBasedChannel(interaction.channel)) {
+                try {
+                    await interaction.channel?.send({
+                        ...options,
+                        reply: {
+                            messageReference: messageId,
+                            failIfNotExists: true
+                        }
+                    });
+                    await interaction.editReply("The reply has been sent.");
+                } catch (error) {
+                    await interaction.editReply("An error has occurred while sending the reply.");
+                }
             }
 
             this.systemAuditLogging.logEchoCommandExecuted({

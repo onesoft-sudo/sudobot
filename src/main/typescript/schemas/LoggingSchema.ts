@@ -4,12 +4,12 @@ import type { MessageRuleType } from "@main/schemas/MessageRuleSchema";
 import type { ModerationActionType } from "@main/schemas/ModerationActionSchema";
 import { zSnowflake } from "@main/schemas/SnowflakeSchema";
 import type {
-    Collection,
     Guild,
     GuildMember,
     GuildTextBasedChannel,
     Message,
     PartialMessage,
+    ReadonlyCollection,
     Snowflake,
     User
 } from "discord.js";
@@ -129,7 +129,7 @@ export type LogMessageBulkDeletePayload = Omit<
     LogModerationActionCommonPayload,
     "moderator" | "guild"
 > & {
-    messages: Collection<string, Message<boolean> | PartialMessage | undefined>;
+    messages: ReadonlyCollection<string, Message<boolean> | PartialMessage | undefined>;
     channel: GuildTextBasedChannel;
     moderator?: User;
     infractionId?: number;

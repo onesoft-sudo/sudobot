@@ -1,9 +1,10 @@
 import { Inject } from "@framework/container/Inject";
 import EventListener from "@framework/events/EventListener";
+import { NonPartialGroupDMChannel } from "@framework/types/ClientEvents";
 import { fetchUser } from "@framework/utils/entities";
 import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
-import { AuditLogEvent, Events, Message, Snowflake } from "discord.js";
+import { AuditLogEvent, Events, Message, PartialMessage, Snowflake } from "discord.js";
 
 class MessageDeleteEventListener extends EventListener<Events.MessageDelete> {
     public override readonly name = Events.MessageDelete;
@@ -49,8 +50,20 @@ class MessageDeleteEventListener extends EventListener<Events.MessageDelete> {
         return undefined;
     }
 
-    public override async execute(message: Message) {
-        if (message.author.bot || message.webhookId || !message.inGuild()) {
+    public override async execute(message: NonPartialGroupDMChannel<Message | PartialMessage>) {
+        if (message.partial) {
+            try {
+                await message.fetch();
+            } catch (error) {
+                this.application.logger.error(
+                    "Failed to fetch message in MessageDeleteEventListener",
+                    error
+                );
+                return;
+            }
+        }
+
+        if (message.author?.bot || message.webhookId || !message.inGuild()) {
             return;
         }
 

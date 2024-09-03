@@ -42,7 +42,7 @@ import path from "path";
 import { setTimeout } from "timers/promises";
 import { HasEventListeners } from "../types/HasEventListeners";
 import { safeChannelFetch, safeMessageFetch } from "../utils/fetch";
-import { chunkedString, systemPrefix } from "../utils/utils";
+import { chunkedString, isTextBasedChannel, systemPrefix } from "../utils/utils";
 import ConfigurationManager from "./ConfigurationManager";
 
 const { BACKUP_CHANNEL_ID, ERROR_WEBHOOK_URL, BACKUP_STORAGE } = process.env;
@@ -292,7 +292,7 @@ class StartupManager extends Service implements HasEventListeners {
 
         const channel = this.client.channels.cache.get(BACKUP_CHANNEL_ID);
 
-        if (!channel?.isTextBased()) {
+        if (!channel || !isTextBasedChannel(channel)) {
             return;
         }
 

@@ -6,7 +6,7 @@ import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
 import {
     AuditLogEvent,
-    type Collection,
+    ReadonlyCollection,
     type GuildTextBasedChannel,
     type Message,
     type PartialMessage
@@ -19,7 +19,7 @@ class MessageBulkDeleteEventListener extends EventListener<Events.MessageDeleteB
     protected readonly auditLoggingService!: AuditLoggingService;
 
     public override execute(
-        messages: Collection<string, Message<boolean> | PartialMessage>,
+        messages: ReadonlyCollection<string, Message<boolean> | PartialMessage>,
         channel: GuildTextBasedChannel
     ): void {
         setTimeout(async () => {
@@ -48,7 +48,7 @@ class MessageBulkDeleteEventListener extends EventListener<Events.MessageDeleteB
                     moderator:
                         log?.executor ??
                         (executorId
-                            ? (await fetchUser(this.client, executorId)) ?? undefined
+                            ? ((await fetchUser(this.client, executorId)) ?? undefined)
                             : undefined),
                     reason: log?.reason ?? undefined
                 }

@@ -5,6 +5,7 @@ import { Service } from "@framework/services/Service";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
 import { TriggerType } from "@main/schemas/TriggerSchema";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
+import { isTextBasedChannel } from "@main/utils/utils";
 import {
     ActionRowBuilder,
     ActivityType,
@@ -227,6 +228,10 @@ class TriggerService extends Service implements HasEventListeners {
             this.lastStickyMessageQueues[`${message.guildId!}_${message.channelId!}`] = true;
 
             setTimeout(async () => {
+                if (!isTextBasedChannel(message.channel)) {
+                    return;
+                }
+
                 const lastStickyMessage =
                     this.lastStickyMessages[`${message.guildId!}_${message.channelId!}`];
 

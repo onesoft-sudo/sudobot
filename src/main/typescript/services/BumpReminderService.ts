@@ -4,6 +4,7 @@ import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { fetchUser } from "@framework/utils/entities";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
+import { isTextBasedChannel } from "@main/utils/utils";
 import { Message, MessageType, User, time } from "discord.js";
 
 @Name("bumpReminderService")
@@ -61,7 +62,8 @@ class BumpReminderService extends Service {
         if (
             !enabled ||
             disabled_channels?.includes(message.channelId!) ||
-            !message.interaction?.user
+            !message.interactionMetadata?.user ||
+            !isTextBasedChannel(message.channel)
         ) {
             return;
         }
