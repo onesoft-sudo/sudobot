@@ -2,6 +2,11 @@
 
 ### 03-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **chore(extensions:waifu.pics):** change subcommands to be a single option with choices    
+      
+    **Build-metadata:**  {numdate}.sha.{id}  
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
   * **fix:** update release codename    
       
     **Build-metadata:**  {numdate}.sha.{id}  
@@ -39,6 +44,10 @@
 
 ### 03-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v10.3.0+20240803174535.sha.5a049fce [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v10.2.0+20240803173910.sha.bed108f3 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
