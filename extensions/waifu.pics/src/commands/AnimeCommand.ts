@@ -1,55 +1,89 @@
 import { Buildable, Command } from "@framework/commands/Command";
 import InteractionContext from "@framework/commands/InteractionContext";
 import LegacyContext from "@framework/commands/LegacyContext";
+import { GatewayEventListener } from "@framework/events/GatewayEventListener";
+import { HasEventListeners } from "@framework/types/HasEventListeners";
 import { getAxiosClient } from "@sudobot/utils/axios";
-import { ChatInputCommandInteraction } from "discord.js";
+import {
+    ApplicationCommandOptionChoiceData,
+    ChatInputCommandInteraction,
+    type Interaction
+} from "discord.js";
 
-export default class AnimeCommand extends Command {
+export default class AnimeCommand extends Command implements HasEventListeners {
     public override readonly name = "anime";
     public override readonly description = "Fetch a random anime waifu image.";
     public override readonly permissions = [];
     public override readonly defer = true;
-    private readonly validCategories = ["waifu", "neko", "shinobu", "megumin", "bully", "cuddle"];
+    private readonly validCategories = [
+        "waifu",
+        "neko",
+        "shinobu",
+        "megumin",
+        "bully",
+        "cuddle",
+        "cry",
+        "hug",
+        "awoo",
+        "kiss",
+        "lick",
+        "pat",
+        "smug",
+        "bonk",
+        "yeet",
+        "blush",
+        "smile",
+        "wave",
+        "highfive",
+        "handhold",
+        "nom",
+        "bite",
+        "glomp",
+        "slap",
+        "kill",
+        "kick",
+        "happy",
+        "wink",
+        "poke",
+        "dance",
+        "cringe"
+    ];
 
     public override build(): Buildable[] {
         return [
-            this.buildChatInput()
-                .addStringOption(option =>
-                    option
-                        .setName("category")
-                        .setDescription("The category of the image to fetch.")
-                        .setRequired(true)
-                        .addChoices(
-                            {
-                                name: "Waifu",
-                                value: "waifu"
-                            },
-                            {
-                                name: "Neko",
-                                value: "neko"
-                            },
-                            {
-                                name: "Shinobu",
-                                value: "shinobu"
-                            },
-                            {
-                                name: "Megumin",
-                                value: "megumin"
-                            },
-                            {
-                                name: "Bully",
-                                value: "bully"
-                            },
-                            {
-                                name: "Cuddle",
-                                value: "cuddle"
-                            }
-                        )
-                )
-                .addBooleanOption(option =>
-                    option.setName("nsfw").setDescription("Whether to fetch an NSFW image.")
-                )
+            this.buildChatInput().addStringOption(option =>
+                option
+                    .setName("category")
+                    .setDescription("The category of the image to fetch.")
+                    .setRequired(true)
+                    .setAutocomplete(true)
+            )
         ];
+    }
+
+    @GatewayEventListener("interactionCreate")
+    public async onInteractionCreate(interaction: Interaction) {
+        if (!interaction.isAutocomplete() || interaction.commandName !== this.name) {
+            return;
+        }
+
+        const query = interaction.options.getString("category", true);
+        const results: ApplicationCommandOptionChoiceData[] = [];
+
+        for (const category of this.validCategories) {
+            if (results.length >= 25) {
+                break;
+            }
+
+            if (category.startsWith(query.toLowerCase())) {
+                results.push({
+                    name: category[0].toUpperCase() + category.slice(1),
+                    value: category
+                });
+            }
+        }
+
+        await interaction.respond(results);
     }
 
     public override async execute(
@@ -65,23 +99,7 @@ export default class AnimeCommand extends Command {
             ));
         }
 
-        const nsfw = context.isLegacy() ? false : !!context.options.getBoolean("nsfw");
-
-        if (
-            nsfw &&
-            ((context.channel.isThread() &&
-                context.channel.parent?.isTextBased() &&
-                !context.channel.parent.nsfw) ||
-                (!context.channel.isThread() &&
-                    context.channel.isTextBased() &&
-                    !context.channel.nsfw))
-        ) {
-            return void (await context.reply(
-                "Cannot post NSFW media as this channel is not marked as NSFW."
-            ));
-        }
-
-        const url = `https://api.waifu.pics/${nsfw ? "nsfw" : "sfw"}/${category}`;
+        const url = `https://api.waifu.pics/sfw/${category}`;
 
         try {
             const response = await getAxiosClient().get(url);
@@ -94,8 +112,7 @@ export default class AnimeCommand extends Command {
                 await context.reply({
                     files: [
                         {
-                            attachment: response.data.url,
-                            spoiler: nsfw
+                            attachment: response.data.url
                         }
                     ]
                 });
