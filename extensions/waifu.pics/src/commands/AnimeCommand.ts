@@ -89,9 +89,9 @@ export default class AnimeCommand extends Command implements HasEventListeners {
     public override async execute(
         context: LegacyContext | InteractionContext<ChatInputCommandInteraction>
     ) {
-        const category = context.isLegacy()
-            ? context.args[0]
-            : context.options.getString("category", true);
+        const category = (
+            context.isLegacy() ? context.args[0] : context.options.getString("category", true)
+        )?.toLowerCase();
 
         if (!category || !this.validCategories.includes(category)) {
             return void (await context.reply(
