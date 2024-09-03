@@ -2,6 +2,12 @@
 
 ### 03-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **chore:** update readme    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **chore:** update TODO.md    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
   * **fix(commandManager):** command names are not being parsed correctly with newlines    
       
     **Build-metadata:**  {numdate}.sha.{id}  
@@ -66,6 +72,10 @@
 
 ### 03-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v10.4.1+20240803190805.sha.2a66db0f [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v10.4.0+20240803184934.sha.5004a1c5 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
