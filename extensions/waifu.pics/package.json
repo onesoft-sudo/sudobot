@@ -1,0 +1,21 @@
+{
+    "name": "waifu.pics",
+    "version": "1.0.0",
+    "main": "build/index.js",
+    "author": "Ryan Mello",
+    "license": "AGPL-3.0-or-later",
+    "dependencies": {
+        "sudobot": "file:../.."
+    },
+    "devDependencies": {
+        "@types/node": "^20.11.17",
+        "typescript": "^5.5.4"
+    },
+    "_moduleAliases": {
+        "@framework": "node_modules/sudobot/build/out/framework/typescript",
+        "@sudobot": "node_modules/sudobot/build/out/main/typescript"
+    },
+    "scripts": {
+        "build": "tsc"
+    }
+}

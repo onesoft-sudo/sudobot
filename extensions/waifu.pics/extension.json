@@ -1,0 +1,15 @@
+{
+    "name": "waifu.pics",
+    "id": "me.ryanmello.waifu.pics",
+    "icon": "./icon.png",
+    "main": "index.js",
+    "src_main": "index.ts",
+    "commands": "commands",
+    "events": "events",
+    "services": "services",
+    "language": "typescript",
+    "main_directory": "build",
+    "src_directory": "src",
+    "build_command": "npm run build",
+    "resources": "./resources"
+}
