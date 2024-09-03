@@ -75,6 +75,9 @@ class ArchiveCommand extends Command {
                 await context.error(`${error.message ?? `An error occurred while archiving ${channel}: Code ${error.status}`}`);
                 return;
             }
+
+            await context.error(`An error occurred while archiving ${channel}`);
+            return;
         }
 
         await context.success(`Channel ${channel} has been archived.`);
