@@ -239,7 +239,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         }
 
         const content = message.content.slice(foundPrefix.length).trim();
-        const argv = content.split(/ +/);
+        const argv = content.split(/\s+/);
         const [rawCommandName, ...args] = argv;
         const commandName = rawCommandName.toLowerCase();
         const command = this.getCommand(commandName);
