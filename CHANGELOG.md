@@ -2,6 +2,11 @@
 
 ### 03-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **fix(commandManager):** command names are not being parsed correctly with newlines    
+      
+    **Build-metadata:**  {numdate}.sha.{id}  
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
   * **chore(extensions:waifu.pics):** support all categories    
       
     **Build-metadata:**  {numdate}.sha.{id}  
@@ -61,6 +66,10 @@
 
 ### 03-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v10.4.0+20240803184934.sha.5004a1c5 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v10.3.2 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
