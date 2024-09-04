@@ -10,7 +10,7 @@ import chalk from "chalk";
 import { spawn } from "child_process";
 import { Collection } from "discord.js";
 import { lstat, readdir } from "fs/promises";
-import { createServer } from "http";
+import { createServer, Server } from "http";
 import path from "path";
 import { URLSearchParams } from "url";
 import { WebSocket } from "ws";
@@ -18,7 +18,7 @@ import { WebSocket } from "ws";
 @Name("shellService")
 class ShellService extends Service {
     public readonly wss: InstanceType<typeof WebSocket.Server>;
-    public readonly server = createServer();
+    public readonly server: Server = createServer();
     private readonly commands = new Collection<string, ShellCommand>();
 
     public constructor(application: Application) {
