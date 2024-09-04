@@ -1,5 +1,69 @@
 # Changelog
 
+### 04-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **fix:** type errors in ShellService http server    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **chore:** delete extensions/.extbuilds/antirickroll directory    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **chore:** delete extensions/.extbuilds/urlfish directory    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+
+### 04-09-2024 - [[Ryanmello07](mailto:67509637+Ryanmello07@users.noreply.github.com)]
+
+  * Update page.mdx    
+      
+    replaced discord link  
+      
+    **Signed-off-by:**  Ryanmello07 <67509637+Ryanmello07@users.noreply.github.com>  
+
+### 03-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.4.2 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.4.1 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.4.1+20240803190805.sha.2a66db0f [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.4.0+20240803184934.sha.5004a1c5 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.3.2 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.3.1 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.3.1-0+20240803180328.sha.682c1360 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.3.0+20240803174535.sha.5a049fce [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.2.0+20240803173910.sha.bed108f3 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.1.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 03-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
   * **chore(extensions):** build extensions [skip ci]    
@@ -80,45 +144,6 @@
   * **chore(extensions:neko):** remove tsconfig.json    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
-      
-
-### 03-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
-
-  * **release:** v10.4.1 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-  * **release:** v10.4.1+20240803190805.sha.2a66db0f [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-  * **release:** v10.4.0+20240803184934.sha.5004a1c5 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-  * **release:** v10.3.2 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-  * **release:** v10.3.1 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-  * **release:** v10.3.1-0+20240803180328.sha.682c1360 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-  * **release:** v10.3.0+20240803174535.sha.5a049fce [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-  * **release:** v10.2.0+20240803173910.sha.bed108f3 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-  * **release:** v10.1.0 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 02-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
