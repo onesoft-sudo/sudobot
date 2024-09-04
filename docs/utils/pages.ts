@@ -119,7 +119,7 @@ function loadDocsPages() {
             ({
                 name: page.short_name ?? "Unnamed",
                 url: page.url,
-            } satisfies DocsPageWithoutChildren),
+            }) satisfies DocsPageWithoutChildren,
     );
     const pages: Record<string, DocsPageWithoutChildren[]> = {};
 
@@ -213,4 +213,8 @@ export const flatten = (
         }
         return acc;
     }, []);
+};
+
+export const isBlogPath = (path: string) => {
+    return path.startsWith("/blog/") || path === "/blog";
 };

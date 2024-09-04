@@ -5,6 +5,7 @@ import Image from "next/image";
 import logo from "../../images/sudobot.png";
 import Search from "../Searching/Search";
 import NavbarClientSide from "./NavbarClientSide";
+import { NavbarTitle } from "./NavbarTitle";
 
 export default function Navbar() {
     return (
@@ -12,7 +13,7 @@ export default function Navbar() {
             <a className={styles.logoWrapper} href="/">
                 <Image src={logo.src} alt="Logo" height={128} width={128} />
                 <span className="mobile">SudoBot</span>
-                <span className="desktop">SudoBot Docs</span>
+                <NavbarTitle />
             </a>
 
             <ul className={`${styles.ul} desktop`}>

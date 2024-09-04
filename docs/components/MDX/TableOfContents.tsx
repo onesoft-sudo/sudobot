@@ -76,10 +76,10 @@ export default function TableOfContents({
                 {headings.map(heading => (
                     <li key={heading.id}>
                         <a
-                            className={`my-2 block ${
+                            className={`my-2 block pl-[15px] ${
                                 activeId === heading.id || onlyOne
-                                    ? "text-blue-500 [border-left:3px_solid_#007bff] pl-[15px]"
-                                    : "pl-[18px] hover:text-blue-500"
+                                    ? "text-blue-500 after:[content:'●'] after:ml-2 after:inline-block after:text-blue-500"
+                                    : "hover:text-blue-500"
                             }`}
                             href={`#${heading.id}`}
                             onClick={event => {

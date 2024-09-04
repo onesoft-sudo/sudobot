@@ -1,0 +1,92 @@
+---
+title: "What's new in v9.0 Chocolate Cake?"
+short_name: "What's new in v9.0?"
+openGraph:
+    type: "article"
+    authors:
+        - Ar Rakin
+    images:
+        - url: https://docs.sudobot.onesoftnet.eu.org/sudobot-v9-9.png
+          height: 250
+          width: 250
+---
+
+import Callout from "@/components/Alerts/Callout";
+import BlogPageFooter from "@/components/MDX/BlogPageFooter";
+import { Authors } from "@/data/authors";
+import sudobot9 from "@/images/sudobot-v9.png";
+import { DISCORD_URL } from "@/utils/links";
+
+# Introducing SudoBot v9.0 (Chocolate Cake)
+
+<ImageWithSkeleton
+    src={sudobot9.src}
+    alt="SudoBot 8 Branding"
+    width={sudobot9.width}
+    height={sudobot9.height}
+    blurDataURL={sudobot9.blurDataURL}
+    style={{ width: "100%", transform: "scale(0.7)" }}
+    placeholder="blur"
+/>
+
+Hello to all the sudoers out there! We've released version 9.0 of SudoBot, as always, packed with a bunch of new features, fixes and improvements! If you have any questions or suggestions, feel free to let us know!<br />
+
+SudoBot 9.0 is named **Chocolate Cake**! 🍰  
+This release is a major release, and we've made a core rewrite of SudoBot, so make sure to read the changes below! We've also restructured the internal framework and foundation for a better developer experience and maintainability.
+
+## Changes
+
+### Compatibility
+
+-   Now supporting [Node.js 22](https://nodejs.org) and [Bun 1.12+](https://bun.sh)
+-   Now using [Drizzle ORM](https://orm.drizzle.team) 0.31.2 for database operations
+-   Now supporting [TypeScript 5.5](https://devblogs.microsoft.com/typescript/announcing-typescript-5-5/) for better type safety and developer experience
+
+### New Features
+
+-   Moderation Rule Bypassers
+-   Verification System with multiple strategies
+-   Nekos and Anime girls...
+
+### Improvements and Refactorings
+
+-   Rewrote the core of SudoBot for better performance and maintainability
+-   Refactored the internal structure for better developer experience
+-   Improved the internal logging system
+-   Improved the internal caching system and memory management
+-   Restructured the internal framework and foundation for better maintainability and scalability
+-   Improved extension API and overall better developer experience
+
+### Fixes
+
+-   Minor performance fixes and improvements
+
+### Deprecations
+
+-   Removed support for Node.js 20 and below
+-   Removed support for Bun 1.10 and below
+-   Removed support for TypeScript 5.2 and below
+-   No longer using [Prisma ORM](https://prisma.io)
+
+## Updating
+
+To update your instance, simply download the [latest release](https://github.com/onesoft-sudo/sudobot/releases/latest).
+You can also use [Git](https://git-scm.com) to update your instance, by running this command:
+
+```bash
+git pull origin main
+```
+
+However, this will update your instance to the latest **unstable** version.
+
+<Callout type="warning">
+    Please note that this release is a breaking change, and you may need to
+    update your extensions and configurations to match the new version. If you
+    have any questions or need help, feel free to ask in our [Discord
+    server](https://discord.gg/892GWhTzgs)!
+</Callout>
+
+<BlogPageFooter
+    author={Authors.AR_RAKIN}
+    postedAt="2024-06-16T00:00:00+06:00"
+/>
