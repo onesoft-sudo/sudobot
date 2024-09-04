@@ -1,0 +1,79 @@
+---
+title: "What's new in v10.0 Delicious Donut?"
+short_name: "What's new in v10.0?"
+description: "SudoBot v10.0 Delicious Donut is a major release with a bunch of new features, fixes and improvements! Read the changes below!"
+openGraph:
+    type: "article"
+    authors:
+        - Ar Rakin
+    images:
+        - url: https://docs.sudobot.onesoftnet.eu.org/sudobot-v10.png
+          height: 597
+          width: 1061
+---
+
+import Callout from "@/components/Alerts/Callout";
+import BlogPageFooter from "@/components/MDX/BlogPageFooter";
+import { Authors } from "@/data/authors";
+import sudobot10 from "@/images/sudobot-v10.png";
+import { DISCORD_URL } from "@/utils/links";
+
+# Introducing SudoBot v10.0 Delicious Donut 🍩
+
+<ImageWithSkeleton
+    src={sudobot10.src}
+    alt="SudoBot 10 Branding"
+    width={sudobot10.width}
+    height={sudobot10.height}
+    blurDataURL={sudobot10.blurDataURL}
+    style={{ width: "100%", transform: "scale(0.7)" }}
+    placeholder="blur"
+/>
+
+Hello to all the Superusers out there! We are announcing the release of SudoBot v10.0 Delicious Donut! 🍩
+This is a major release with a bunch of new features, important fixes and improvements.
+Here is a list of changes in this release:
+
+## New Features & Improvements
+
+-   **Archive command**: You can now use the `-archive` command to archive a channel.
+-   **Discord.js v14.16.1**: SudoBot now uses Discord.js v14.16.1, which supports user-installable applications.
+    That means, now we can move forward with the user-installable applications feature.
+-   **One step forward to supporting Windows**: We are working on supporting Windows.
+    We have made some changes in the codebase to make it compatible with Windows to some extent.
+
+## Bug Fixes
+
+-   **Fixed privilege escalation vulnerability**: We've fixed a privilege escalation vulnerability in the bot.
+    For this, we've deprecated all versions of v9.0 prior to v9.26.7. It is highly recommended to update your bot to the latest version.
+    For more details, check out [CVE-2024-45307](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-45307).
+-   **Fixed command parsing and management**: We've fixed the issue where commands won't execute if there is a newline after the command name.
+
+## Deprecations & Upgrades
+
+-   **Bun &lt;= v1.1.16**: We have deprecated Bun versions older than v1.1.16.
+-   **TypeScript v5.5.3**: The minimum TypeScript version required to compile SudoBot is now v5.5.3.
+
+## Refactorings
+
+-   **Refactored the command handler**: We've refactored the command handler to make it more efficient and maintainable.
+
+## How to update?
+
+SudoBot v10.0 is backward compatible with v9.0. You can update your bot by running the following command if you use Git:
+
+```bash
+git pull origin main
+```
+
+If you don't use Git, you can download the latest release from the
+[GitHub releases page](https://github.com/onesoft-sudo/sudobot/releases/latest).
+
+## Join our Discord server
+
+If you have any questions or need help with the update, feel free to join our [Discord server](https://sudobot.online/discord).
+
+<BlogPageFooter
+    author={Authors.AR_RAKIN}
+    postedAt="2024-09-04T23:26:00+06:00"
+/>
