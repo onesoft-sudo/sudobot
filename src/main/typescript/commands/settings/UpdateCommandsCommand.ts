@@ -61,12 +61,13 @@ class UpdateCommandsCommand extends Command {
             : context.args.includes("--clear") || context.args.includes("-c");
 
         try {
-            await this.commandManager.updateApplicationCommands({
+            const count = await this.commandManager.updateApplicationCommands({
                 clear,
                 global: !local
             });
+
             await context.success(
-                `Successfully updated the ${local ? "local " : ""}application commands.`
+                `Successfully updated **${count}** ${local ? "local " : ""}application commands.`
             );
         } catch (error) {
             if (isDiscordAPIError(error)) {

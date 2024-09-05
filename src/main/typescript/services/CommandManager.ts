@@ -98,7 +98,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
 
         if (!commands.length && !clear) {
             this.application.logger.debug("No commands to update");
-            return false;
+            return 0;
         }
 
         const guildId = global ? undefined : env.HOME_GUILD_ID;
@@ -113,7 +113,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             `Updated ${commands.length} application ${guildId ? "guild " : ""}commands`
         );
 
-        return true;
+        return commands.length;
     }
 
     public async registerApplicationCommands() {
