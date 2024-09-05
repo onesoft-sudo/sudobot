@@ -1,6 +1,5 @@
 import { Box } from "@mui/material";
 import { Fragment, PropsWithChildren } from "react";
-import EditButton from "../MDX/EditButton";
 import PageInfo from "../MDX/PageInfo";
 import TableOfContents from "../MDX/TableOfContents";
 import DocsLinkList from "../Navbar/Sidebar";
@@ -19,7 +18,6 @@ export default function DocsLayout({ children }: PropsWithChildren) {
                     id="article"
                     className="prose prose-neutral prose-invert prose-code:before:hidden prose-code:after:hidden mt-8 p-3 text-wrap max-w-[100vw] relative"
                 >
-                    <EditButton />
                     {children}
                 </article>
                 <br />

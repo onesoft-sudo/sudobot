@@ -24,6 +24,10 @@ export async function GET(request: NextRequest) {
 
     if (lowercasedIndex) {
         for (const i in lowercasedIndex) {
+            if (results.length >= 15) {
+                break;
+            }
+
             const titleIncludes = lowercasedIndex[i].title?.includes(query);
             const descriptionIncludes =
                 lowercasedIndex[i].description?.includes(query);
@@ -35,8 +39,8 @@ export async function GET(request: NextRequest) {
                     match: titleIncludes
                         ? ("title" as const)
                         : descriptionIncludes
-                        ? ("description" as const)
-                        : ("data" as const),
+                          ? ("description" as const)
+                          : ("data" as const),
                 });
             }
         }

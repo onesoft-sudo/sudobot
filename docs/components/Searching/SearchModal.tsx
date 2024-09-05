@@ -17,10 +17,7 @@ export type SearchResultItem = {
 };
 
 export default function SearchModal({ onClose }: SearchModalProps) {
-    const [query, isQueued, setQuery] = useDebouncedState<string | null>(
-        null,
-        500,
-    );
+    const [query, , setQuery] = useDebouncedState<string | null>(null, 500);
     const [results, setResults] = useState<SearchResultItem[] | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isNotFound, setIsNotFound] = useState(false);
@@ -32,25 +29,17 @@ export default function SearchModal({ onClose }: SearchModalProps) {
 
         const controller = new AbortController();
 
-        if (!isLoading) {
-            setIsLoading(true);
-        }
+        setIsLoading(true);
 
         fetch(`/search?q=${encodeURIComponent(query)}`, {
             signal: controller.signal,
         })
             .then(response => response.json())
             .then(data => {
-                if (isNotFound) {
-                    setIsNotFound(false);
-                }
-
+                setIsNotFound(false);
                 setIsLoading(false);
                 setResults(data.results);
-
-                if (data.results.length === 0) {
-                    setIsNotFound(true);
-                }
+                setIsNotFound(data.results.length === 0);
             })
             .catch(console.error);
 

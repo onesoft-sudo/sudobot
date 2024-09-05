@@ -2,16 +2,18 @@
 
 import useIsDesktop from "@/hooks/useIsDesktop";
 import usePlatform from "@/hooks/usePlatform";
-import styles from "@/styles/Search.module.css";
 import { Button } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MdSearch } from "react-icons/md";
-import SearchModal from "./SearchModal";
+import SearchInput from "./SearchInput";
+import SearchResults from "./SearchResults";
 
 export default function Search() {
     const platform = usePlatform();
     const isDesktop = useIsDesktop();
-    const [modalOpen, setModalOpen] = useState(false);
+    const ref = useRef<HTMLInputElement>(null);
+    const [query, setQuery] = useState<string | null>(null);
+    const [toggled, setToggled] = useState(false);
 
     useEffect(() => {
         const callback = (event: KeyboardEvent) => {
@@ -21,46 +23,59 @@ export default function Search() {
                     event.code === "KeyK")
             ) {
                 event.preventDefault();
-                setTimeout(() => setModalOpen(true), 120);
-            } else if (event.code === "Escape" && modalOpen) {
-                event.preventDefault();
-                setModalOpen(false);
+                ref.current?.focus();
             }
         };
 
         window.addEventListener("keydown", callback);
 
         return () => window.removeEventListener("keydown", callback);
-    }, [modalOpen]);
+    }, [platform]);
 
     return (
         <>
-            <div className={styles.root}>
+            <div className="relative">
+                {isDesktop && <SearchInput ref={ref} setQuery={setQuery} />}
+
+                {query && isDesktop && (
+                    <SearchResults
+                        query={query}
+                        onClose={() => setQuery(null)}
+                    />
+                )}
+
                 {!isDesktop && (
                     <Button
-                        style={{ minWidth: 0, color: "#fff" }}
-                        className="text-white"
-                        onClick={() => setModalOpen(true)}
+                        className="min-w-0 text-white"
+                        onClick={() => {
+                            setToggled(true);
+                        }}
                     >
-                        <MdSearch size={23} style={{ color: "white" }} />
+                        <MdSearch size={23} />
                     </Button>
                 )}
-                {isDesktop && <MdSearch size={25} />}
-                {isDesktop && (
+
+                {!isDesktop && toggled && (
                     <div
-                        className={styles.input}
-                        onClick={() => setModalOpen(true)}
+                        className="fixed top-0 left-0 w-screen h-screen bg-black/30 z-[100000005]"
+                        onClick={() => setToggled(false)}
                     >
-                        Search anything
+                        <div
+                            className="overflow-y-scroll bg-neutral-900 w-[calc(100vw-2rem)] h-[calc(80vh-4rem)] mx-[1rem] rounded-lg p-[1rem] absolute bottom-4"
+                            onClickCapture={event => event.stopPropagation()}
+                        >
+                            <SearchInput ref={ref} setQuery={setQuery} />
+
+                            {query && (
+                                <SearchResults
+                                    query={query}
+                                    onClose={() => setQuery(null)}
+                                />
+                            )}
+                        </div>
                     </div>
                 )}
-                {isDesktop && (
-                    <span className={styles.shortcut}>
-                        {platform === "darwin" ? "⌘" : "Ctrl +"} K
-                    </span>
-                )}
             </div>
-            {modalOpen && <SearchModal onClose={() => setModalOpen(false)} />}
         </>
     );
 }
