@@ -432,7 +432,7 @@ class ArgumentParser {
             }
 
             assert(result.value, "No value provided");
-            state.parsedArgs[result.value.name] = result.value.value;
+            state.parsedArgs[result.value.name] ??= result.value.value;
 
             if (result.abortParsingDefinitions) {
                 break;
