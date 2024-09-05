@@ -2,6 +2,14 @@
 
 ### 05-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **fix:** clear command filter parsing    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **fix:** argument parser    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
   * **fix:** check message rules on message update    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
@@ -13,6 +21,13 @@
   * **chore(extensions):** build extensions [skip ci]    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 05-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.4.4 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 04-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
