@@ -2,6 +2,22 @@
 
 ### 05-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **feat:** add upcmds command    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **fix(commands:upcmds):** show command count on success    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **feat(commands):** add `-upcmds` command    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **docs:** separate sitemaps    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
   * **fix:** clear command filter parsing    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
@@ -25,6 +41,10 @@
 
 ### 05-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v10.4.6 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v10.4.4 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
