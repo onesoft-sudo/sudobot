@@ -79,7 +79,7 @@ class RemindCommand extends Command {
             .schedule();
 
         await context.success(
-            `The system will remind you in ${after.formatForDiscord("R")} with the message: ${message}`
+            `The system will remind you ${after.formatForDiscord("R")} with the message: ${message}`
         );
     }
 }
