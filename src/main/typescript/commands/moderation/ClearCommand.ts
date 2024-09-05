@@ -174,6 +174,8 @@ class ClearCommand extends Command {
     ): Promise<void> {
         const { user, count } = args;
 
+        console.log(args);
+
         if (!user && !count) {
             await context.error("You must specify a message count or a user to clear messages.");
             return;
@@ -187,7 +189,7 @@ class ClearCommand extends Command {
 
         if (context.isChatInput()) {
             const filterString = context.options.getString("filters") ?? "";
-            const filterArray = filterString.split(",");
+            const filterArray = filterString.split(",").filter(Boolean);
 
             for (const filter of filterArray) {
                 if (ClearCommand.filters[filter]) {
@@ -216,10 +218,6 @@ class ClearCommand extends Command {
         if (result.status === "failed") {
             await context.error(result.errorDescription ?? "Failed to perform this action.");
             return;
-        }
-
-        if (context.isChatInput()) {
-            await context.success("Operation completed.");
         }
     }
 }
