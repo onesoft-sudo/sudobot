@@ -32,6 +32,7 @@ import { PermissionDeniedError } from "@framework/permissions/PermissionDeniedEr
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { isDevelopmentMode } from "@framework/utils/utils";
+import { env } from "@main/env/env";
 import { CommandPermissionOverwriteAction } from "@main/models/CommandPermissionOverwrite";
 import CommandRateLimiter from "@main/security/CommandRateLimiter";
 import {
@@ -70,6 +71,51 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         await this.registerApplicationCommands();
     }
 
+    public getApplicationCommandDataResolvableList(): ApplicationCommandDataResolvable[] {
+        return this.commands
+            .filter(
+                (command, key) =>
+                    !command.name.includes("::") &&
+                    command.name === key &&
+                    command.supportsInteraction()
+            )
+            .map(command =>
+                command.build().map(builder => builder.toJSON() as ApplicationCommandDataResolvable)
+            )
+            .flat();
+    }
+
+    public async updateApplicationCommands({
+        commands,
+        clear,
+        global
+    }: ApplicationCommandUpdateOptions = {}) {
+        if (clear) {
+            commands = [];
+        } else {
+            commands ??= this.getApplicationCommandDataResolvableList();
+        }
+
+        if (!commands.length && !clear) {
+            this.application.logger.debug("No commands to update");
+            return false;
+        }
+
+        const guildId = global ? undefined : env.HOME_GUILD_ID;
+
+        if (guildId) {
+            await this.client.application?.commands.set(commands, guildId);
+        } else {
+            await this.client.application?.commands.set(commands);
+        }
+
+        this.application.logger.info(
+            `Updated ${commands.length} application ${guildId ? "guild " : ""}commands`
+        );
+
+        return true;
+    }
+
     public async registerApplicationCommands() {
         const existingApplicationCommands = await this.client.application?.commands.fetch();
 
@@ -92,21 +138,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
 
         const clear = process.argv.includes("--clear-commands") || process.argv.includes("-c");
         const global = process.argv.includes("--global-commands") || process.argv.includes("-g");
-        const commands = clear
-            ? []
-            : this.commands
-                  .filter(
-                      (command, key) =>
-                          !command.name.includes("::") &&
-                          command.name === key &&
-                          command.supportsInteraction()
-                  )
-                  .map(command =>
-                      command
-                          .build()
-                          .map(builder => builder.toJSON() as ApplicationCommandDataResolvable)
-                  )
-                  .flat();
+        const commands = clear ? [] : this.getApplicationCommandDataResolvableList();
 
         if (!clear && !commands.length) {
             this.application.logger.debug("No commands to register");
@@ -761,5 +793,11 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         return this.execCommand(subcommand, context, command);
     }
 }
+
+type ApplicationCommandUpdateOptions = {
+    clear?: boolean;
+    global?: boolean;
+    commands?: ApplicationCommandDataResolvable[];
+};
 
 export default CommandManager;
