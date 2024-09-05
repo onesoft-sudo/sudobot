@@ -41,7 +41,13 @@ type Binding = {
 export type MetadataType = typeof metadata;
 
 class DiscordKernel extends Kernel {
-    protected readonly intents = [
+    protected readonly intents = (process.env.DISCORD_INTENTS?.split(":")?.map(intent => {
+        if (!(intent in GatewayIntentBits)) {
+            throw new Error(`Invalid intent in DISCORD_INTENTS: ${intent}`);
+        }
+
+        return GatewayIntentBits[intent as keyof typeof GatewayIntentBits];
+    }) as GatewayIntentBits[] | undefined) || [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMessages,
