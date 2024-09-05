@@ -1,7 +1,37 @@
 # Changelog
 
+### 05-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **fix:** check message rules on message update    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **chore:** add debug logs    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 04-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **docs:** add more information to v10 release page    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **docs:** add v10 release blog post    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **docs:** add v10 release blog post    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **docs:** add blog pages support    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
   * **fix:** type errors in ShellService http server    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
@@ -15,11 +45,47 @@
 
 ### 04-09-2024 - [[Ryanmello07](mailto:67509637+Ryanmello07@users.noreply.github.com)]
 
+  * **docs:** created anime command docs    
+      
+    **Signed-off-by:**  Ryanmello07 <67509637+Ryanmello07@users.noreply.github.com>  
+  * Update page.mdx    
+      
+    **Signed-off-by:**  Ryanmello07 <67509637+Ryanmello07@users.noreply.github.com>  
+  * Update page.mdx    
+      
+    Updated discord link  
+      
+    **Signed-off-by:**  Ryanmello07 <67509637+Ryanmello07@users.noreply.github.com>  
+  * Update page.mdx    
+      
+    **Signed-off-by:**  Ryanmello07 <67509637+Ryanmello07@users.noreply.github.com>  
+  * Update page.mdx    
+      
+    Added new info  
+      
+    **Signed-off-by:**  Ryanmello07 <67509637+Ryanmello07@users.noreply.github.com>  
+  * Update page.mdx    
+      
+    Updated discord link  
+      
+    **Signed-off-by:**  Ryanmello07 <67509637+Ryanmello07@users.noreply.github.com>  
+  * Update page.mdx    
+      
+    Updated discord link  
+      
+    **Signed-off-by:**  Ryanmello07 <67509637+Ryanmello07@users.noreply.github.com>  
   * Update page.mdx    
       
     replaced discord link  
       
     **Signed-off-by:**  Ryanmello07 <67509637+Ryanmello07@users.noreply.github.com>  
+
+### 04-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.4.3 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
 
 ### 03-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
