@@ -1012,6 +1012,8 @@ class ModerationRuleHandler extends HasApplication implements ModerationRuleHand
                 };
             }
 
+            this.application.logger.debug("Result", JSON.stringify(result, null, 2));
+
             const {
                 TOXICITY: { summaryScore: toxicity },
                 THREAT: { summaryScore: threat },
