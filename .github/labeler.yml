@@ -1,34 +1,11 @@
 "type:docs":
-  - "docs/*"
-  - "docs/**/*"
-  - "*.md"
-
-"type:ci":
-  - ".github/workflows/*"
-  - ".github/workflows/**/*"
-
-"component:automod":
-  - "src/main/typescript/automod/*"
-  - "src/main/typescript/automod/**/*"
-
-"component:api":
-  - "src/main/typescript/api/*"
-  - "src/main/typescript/api/**/*"
-
-"component:commands":
-  - "src/main/typescript/commands/*"
-  - "src/main/typescript/commands/**/*"
-
-"component:framework":
-  - "src/framework/typescript/*"
-  - "src/framework/typescript/**/*"
-
-"contains:resources":
-  - "src/framework/resources/*"
-  - "src/framework/resources/**/*"
-  - "src/main/resources/*"
-  - "src/main/resources/**/*"
+- changed-files:
+  - any-glob-to-any-file: docs/**
 
 "type:test":
-  - "tests/*"
-  - "tests/**/*"
+- changed-files:
+  - any-glob-to-any-file: tests/**
+
+"type:ci":
+- changed-files:
+  - any-glob-to-any-file: .github/workflows/**
