@@ -1,5 +1,30 @@
 # Changelog
 
+### 05-09-2024 - [[Ryanmello07](mailto:67509637+Ryanmello07@users.noreply.github.com)]
+
+  * **fix(commands:remind):** Grammar Correction    
+      
+    **Signed-off-by:**  Ryanmello07 <67509637+Ryanmello07@users.noreply.github.com>  
+
+### 05-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.7.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.6.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.4.6 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.4.4 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 05-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
   * **feat:** set custom intents    
@@ -52,21 +77,6 @@
   * **chore(extensions):** build extensions [skip ci]    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
-      
-
-### 05-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
-
-  * **release:** v10.6.0 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-  * **release:** v10.4.6 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-  * **release:** v10.4.4 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 04-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
