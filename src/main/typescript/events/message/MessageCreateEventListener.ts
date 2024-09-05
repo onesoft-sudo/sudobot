@@ -21,6 +21,7 @@ import { Inject } from "@framework/container/Inject";
 import EventListener from "@framework/events/EventListener";
 import type { Logger } from "@framework/log/Logger";
 import { Events } from "@framework/types/ClientEvents";
+import type AIAutoModeration from "@main/automod/AIAutoModeration";
 import type TriggerService from "@main/automod/TriggerService";
 import type AFKService from "@main/services/AFKService";
 import { Message, MessageType } from "discord.js";
@@ -51,12 +52,16 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
     @Inject("afkService")
     private readonly afkService!: AFKService;
 
+    @Inject("aiAutoModeration")
+    private readonly aiAutoModeration!: AIAutoModeration;
+
     private readonly listeners: Array<(message: Message) => unknown> = [];
 
     public override async onInitialize() {
         this.listeners.push(
             this.ruleModerationService.onMessageCreate.bind(this.ruleModerationService),
             this.spamModerationService.onMessageCreate.bind(this.spamModerationService),
+            this.aiAutoModeration.onMessageCreate.bind(this.aiAutoModeration),
             this.triggerService.onMessageCreate.bind(this.triggerService)
         );
     }
