@@ -2,6 +2,21 @@
 
 ### 05-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **feat:** set custom intents    
+      
+    introducing `DISCORD_INTENTS` environment variable, which contains  
+    **intents the bot will request from Discord, separated by colons ':** '.  
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **docs:** include absolute URL in sitemap index    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **docs:** improved searching    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
   * **feat:** add upcmds command    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
@@ -41,6 +56,10 @@
 
 ### 05-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v10.6.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v10.4.6 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
