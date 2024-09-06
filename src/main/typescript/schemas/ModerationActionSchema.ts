@@ -56,4 +56,16 @@ export const ModerationActionSchema = z.union([
     })
 ]);
 
+export const ModerationActionNameSchema = z.enum([
+    "ban",
+    "kick",
+    "mute",
+    "role",
+    "none",
+    "warn",
+    "verbal_warn",
+    "clear",
+    "delete_message"
+]);
+
 export type ModerationActionType = z.infer<typeof ModerationActionSchema>;
