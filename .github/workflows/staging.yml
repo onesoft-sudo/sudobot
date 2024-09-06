@@ -37,7 +37,7 @@ jobs:
         run: |
           out=$(curl -fSsL -X POST \
             -H 'Authorization: Bearer ${{ secrets.UPDATE_KEY }}' \
-            https://ci.sudobot.online/deploy-staging.php -i | head -n1 | grep -o "200 OK");
+            https://ci.sudobot.online/deploy-staging.php -i | head -n1 | grep -o "HTTP/2 200");
 
           if [ -z "$out" ]; then
             exit 1;
