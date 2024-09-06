@@ -137,3 +137,9 @@ jobs:
           body: ${{ steps.auto_release.outputs.release_notes }}
           artifactContentType: application/x-gzip
           artifacts: ./sudobot-release-linux.tar.gz,./sudobot-release-darwin.tar.gz
+
+  deploy-staging:
+    needs: [build, release]
+    if: github.repository_owner == 'onesoft-sudo'
+    uses: ./.github/workflows/staging.yml 
+    secrets: inherit
