@@ -1,9 +1,9 @@
 name: Releases
+
 on:
   push:
     branches:
       - main
-      - dev
 
 permissions:
   contents: write
@@ -142,6 +142,6 @@ jobs:
 
   deploy-staging:
     needs: [build, release]
-    if: always()
+    if: github.repository_owner == 'onesoft-sudo'
     uses: ./.github/workflows/staging.yml 
     secrets: inherit
