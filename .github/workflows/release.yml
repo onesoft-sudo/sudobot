@@ -142,6 +142,6 @@ jobs:
 
   deploy-staging:
     needs: [build, release]
-    if: github.repository_owner == 'onesoft-sudo'
+    if: always()
     uses: ./.github/workflows/staging.yml 
     secrets: inherit
