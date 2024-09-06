@@ -2,14 +2,14 @@ name: Deploy to Staging Environment
 
 on: [workflow_call]
 
+permissions:
+  deployments: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Create Deployment
         id: create_deployment
         run: |
