@@ -1,13 +1,30 @@
 # Changelog
 
-### 05-09-2024 - [[Ryanmello07](mailto:67509637+Ryanmello07@users.noreply.github.com)]
+### 06-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
-  * **fix(commands:remind):** Grammar Correction    
+  * **chore:** force new release [prerelease]    
       
-    **Signed-off-by:**  Ryanmello07 <67509637+Ryanmello07@users.noreply.github.com>  
+    **Build-metadata:**  {numdate}.sha.{id}  
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **ci:** update release workflow    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **ci:** add staging deployment workflow    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
 
 ### 05-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v10.7.1 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v10.7.0 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
@@ -24,6 +41,12 @@
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
+
+### 05-09-2024 - [[Ryanmello07](mailto:67509637+Ryanmello07@users.noreply.github.com)]
+
+  * **fix(commands:remind):** Grammar Correction    
+      
+    **Signed-off-by:**  Ryanmello07 <67509637+Ryanmello07@users.noreply.github.com>  
 
 ### 05-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 

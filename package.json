@@ -1,6 +1,6 @@
 {
     "name": "sudobot",
-    "version": "10.7.1",
+    "version": "10.7.2-0+20240806121454.sha.f0f069a2",
     "description": "A Discord bot for moderation purposes.",
     "author": {
         "name": "Ar Rakin",
