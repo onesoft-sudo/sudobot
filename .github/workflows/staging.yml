@@ -30,7 +30,7 @@ jobs:
             exit 1;
           fi;
 
-          id=$(cat $out | jq -r .id);
+          id=$(echo $out | jq -r .id);
 
           if [ -z "$id" ]; then
             echo "Invalid ID"
