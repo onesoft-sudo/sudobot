@@ -108,19 +108,26 @@ if (-not ((Get-CimInstance Win32_ComputerSystem)).SystemType -match "x64-based")
 $bunDownloadURL = "https://github.com/oven-sh/bun/releases/download/bun-v$bunVersion/bun-windows-x64.zip"
 $zipPath = Join-Path $blazeDir "bun.zip"
 
-if (-not (Test-Path $zipPath)) {
-    Write-Host "Downloading Bun from $bunDownloadURL"
-    Invoke-WebRequest -Uri $bunDownloadURL -OutFile $zipPath
+if (Test-Path $zipPath) {
+    Remove-Item -Force $zipPath
 }
+
+Write-Host "Downloading Bun from $bunDownloadURL"
+Invoke-WebRequest -Uri $bunDownloadURL -OutFile $zipPath
 
 $bunInstallPath = Join-Path $blazeDir "bun"
 
-if (-not (Test-Path $bunInstallPath)) {
-    Write-Host "Installing Bun to $bunInstallPath"
-    Expand-Archive -Path $zipPath -DestinationPath $bunInstallPath
+if (Test-Path $bunInstallPath) {
+    Remove-Item -Recurse -Force $bunInstallPath
 }
 
+Write-Host "Installing Bun to $bunInstallPath"
+Expand-Archive -Path $zipPath -DestinationPath $bunInstallPath
 Remove-Item -Force $zipPath
+Rename-Item -Force (Join-Path $bunInstallPath "bun-windows-x64") $bunDir
+New-Item -ItemType Directory -Path $bunDir/bin | Out-Null
+Move-Item -Force (Join-Path $bunDir "bun.exe") (Join-Path $bunDir/bin "bun.exe")
+
 Test-Bun
 
 Write-Host "Bun installed successfully"
