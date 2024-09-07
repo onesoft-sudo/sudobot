@@ -141,6 +141,5 @@ $env:Path = "$bunBinDir;$env:Path"
 
 $blazeBuildArgs = $args -join " "
 Debug-Log "Executing BlazeBuild with arguments: $blazeBuildArgs"
-$blazeBuildCommand = "$bunPath run $wrapperJSFile $blazeBuildArgs"
-& $blazeBuildCommand
+& $bunPath run $wrapperJSFile $args
 exit $LASTEXITCODE
