@@ -4,8 +4,8 @@ $blazeDir = (Join-Path (Get-Location) ".blaze").Replace("\", "/")
 $blazewDir = (Join-Path (Get-Location) "blaze/wrapper").Replace("\", "/")
 $propertiesFile = Join-Path $blazewDir "blaze_wrapper.properties"
 $wrapperJSFile = Join-Path $blazewDir "blaze_wrapper.js"
-$bunDir = Join-Path $blazeDir "bun/bin"
-$bunPath = Join-Path $bunDir "bun.exe"
+$bunBinDir = Join-Path $blazeDir "bun/bin"
+$bunPath = Join-Path $bunBinDir "bun.exe"
 $debugMode = $false
 
 if ($env:BLAZEW_DEBUG -eq "1") {
@@ -124,9 +124,7 @@ if (Test-Path $bunInstallPath) {
 Write-Host "Installing Bun to $bunInstallPath"
 Expand-Archive -Path $zipPath -DestinationPath $bunInstallPath
 Remove-Item -Force $zipPath
-Rename-Item -Force (Join-Path $bunInstallPath "bun-windows-x64") $bunDir
-New-Item -ItemType Directory -Path $bunDir/bin | Out-Null
-Move-Item -Force (Join-Path $bunDir "bun.exe") (Join-Path $bunDir/bin "bun.exe")
+Rename-Item -Path (Join-Path $bunInstallPath "bun-windows-x64") -NewName $bunBinDir
 
 Test-Bun
 
@@ -139,7 +137,7 @@ if (-not (Test-Path $wrapperJSFile)) {
     exit 1
 }
 
-$env:Path = "$bunDir;$env:Path"
+$env:Path = "$bunBinDir;$env:Path"
 
 $blazeBuildArgs = $args -join " "
 Debug-Log "Executing BlazeBuild with arguments: $blazeBuildArgs"
