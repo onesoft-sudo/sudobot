@@ -117,7 +117,7 @@ $bunInstallPath = Join-Path $blazeDir "bun"
 
 if (-not (Test-Path $bunInstallPath)) {
     Write-Host "Installing Bun to $bunInstallPath"
-    Expand-Archive -Path $zipPath -DestinationPath $unzipDir
+    Expand-Archive -Path $zipPath -DestinationPath $bunInstallPath
 }
 
 Remove-Item -Force $zipPath
