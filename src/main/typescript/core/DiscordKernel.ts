@@ -86,6 +86,7 @@ class DiscordKernel extends Kernel {
         "@automod/RuleModerationService",
         "@automod/RaidProtectionService",
         "@automod/VerificationService",
+        "@automod/AIAutoModeration",
         "@services/QuickMuteService",
         "@services/ChannelLockManager",
         "@services/ReactionRoleService",

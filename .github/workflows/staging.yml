@@ -1,47 +1,61 @@
 name: Deploy to Staging Environment
 
-on: [workflow_call]
+on:
+ workflow_call:
+ push:
+   branches:
+     - dev
+
+permissions:
+  deployments: write
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: github.repository_owner == 'onesoft-sudo'
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Create Deployment
         id: create_deployment
         run: |
           # Create a deployment
-          curl -X POST \
+          out=$(curl -fSsL -X POST \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/deployments \
-            -d '{"ref": "${{ github.sha }}", "environment": "staging", "auto_merge": false, "required_contexts": [], "description": "Deploying new release"}'
+            -d '{"ref": "${{ github.sha }}", "environment": "Staging", "auto_merge": false, "required_contexts": [], "description": "Deploying new release"}');
+          
+          if [ -z "$out" ]; then
+            echo "Invalid output"
+            exit 1;
+          fi;
+
+          id=$(echo $out | jq -r .id);
+
+          if [ -z "$id" ]; then
+            echo "Invalid ID"
+            exit 1;
+          fi;
+
+          echo "id=$id" >> $GITHUB_OUTPUT;
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set Deployment Status to Pending
-        id: set_deployment_status_pending
         run: |
           curl -X POST \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/deployments/${{ steps.create_deployment.outputs.id }}/statuses \
-            -d '{"state": "pending", "environment": "staging"}'
+            -d '{"state": "pending", "environment": "Staging"}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy
         run: |
-          out=$(curl -fSsL -X POST \
+          curl -fSsL -X POST \
             -H 'Authorization: Bearer ${{ secrets.UPDATE_KEY }}' \
-            https://ci.sudobot.online/deploy-staging.php -i | head -n1 | grep -o "HTTP/2 200");
-
-          if [ -z "$out" ]; then
-            exit 1;
-          fi;
+            https://ci.sudobot.online/deploy-staging.php
 
       - name: Set Deployment Status to Success
         if: success()
@@ -50,7 +64,7 @@ jobs:
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/deployments/${{ steps.create_deployment.outputs.id }}/statuses \
-            -d '{"state": "success", "environment": "staging"}'
+            -d '{"state": "success", "environment": "Staging"}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -61,7 +75,7 @@ jobs:
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/deployments/${{ steps.create_deployment.outputs.id }}/statuses \
-            -d '{"state": "failure", "environment": "staging"}'
+            -d '{"state": "failure", "environment": "Staging"}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       

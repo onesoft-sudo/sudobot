@@ -41,6 +41,7 @@ class ModerationActionService extends Service {
         payload: TakeActionPayload = {}
     ): Promise<TakeActionResult> {
         const failedActions: ModerationActionType["type"][] = [];
+        const failedActionResults: unknown[] = [];
         const infractions: Infraction[] = [];
         const user = target instanceof GuildMember ? target.user : target;
 
@@ -65,6 +66,7 @@ class ModerationActionService extends Service {
 
             if (result?.status !== "success") {
                 failedActions.push(action.type);
+                failedActionResults.push(result);
             } else if (result && "infraction" in result && result.infraction) {
                 infractions.push(result.infraction);
             }
@@ -72,6 +74,7 @@ class ModerationActionService extends Service {
 
         if (failedActions.length) {
             this.application.logger.debug("Failed actions: ", failedActions);
+            this.application.logger.debug("Failed action results: ", failedActionResults);
         }
 
         return {
