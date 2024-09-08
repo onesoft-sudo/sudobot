@@ -23,36 +23,44 @@ class MessageBulkDeleteEventListener extends EventListener<Events.MessageDeleteB
         channel: GuildTextBasedChannel
     ): void {
         setTimeout(async () => {
-            const logs = await channel.guild.fetchAuditLogs({
-                type: AuditLogEvent.MessageBulkDelete,
-                limit: 10
-            });
+            try {
+                const logs = await channel.guild.fetchAuditLogs({
+                    type: AuditLogEvent.MessageBulkDelete,
+                    limit: 10
+                });
 
-            const log = logs.entries.find(
-                entry =>
-                    entry.target?.id === channel.id && Date.now() - entry.createdTimestamp < 2200
-            );
+                const log = logs.entries.find(
+                    entry =>
+                        entry.target?.id === channel.id &&
+                        Date.now() - entry.createdTimestamp < 2200
+                );
 
-            const executorId = log?.executor?.id ?? log?.executorId;
+                const executorId = log?.executor?.id ?? log?.executorId;
 
-            if (executorId && executorId === this.client.user?.id) {
-                return;
-            }
-
-            await this.auditLoggingService.emitLogEvent(
-                channel.guildId,
-                LogEventType.MessageDeleteBulk,
-                {
-                    messages,
-                    channel,
-                    moderator:
-                        log?.executor ??
-                        (executorId
-                            ? ((await fetchUser(this.client, executorId)) ?? undefined)
-                            : undefined),
-                    reason: log?.reason ?? undefined
+                if (executorId && executorId === this.client.user?.id) {
+                    return;
                 }
-            );
+
+                await this.auditLoggingService.emitLogEvent(
+                    channel.guildId,
+                    LogEventType.MessageDeleteBulk,
+                    {
+                        messages,
+                        channel,
+                        moderator:
+                            log?.executor ??
+                            (executorId
+                                ? ((await fetchUser(this.client, executorId)) ?? undefined)
+                                : undefined),
+                        reason: log?.reason ?? undefined
+                    }
+                );
+            } catch (error) {
+                this.application.logger.error(
+                    "An error occurred while processing a message bulk delete event",
+                    error
+                );
+            }
         }, 1500);
     }
 }

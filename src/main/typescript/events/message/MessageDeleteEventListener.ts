@@ -18,33 +18,43 @@ class MessageDeleteEventListener extends EventListener<Events.MessageDelete> {
     }
 
     private async findResponsibleModerator(message: Message) {
-        const auditLogs = await message.guild!.fetchAuditLogs({
-            type: AuditLogEvent.MessageDelete,
-            limit: 10
-        });
+        try {
+            const auditLogs = await message.guild!.fetchAuditLogs({
+                type: AuditLogEvent.MessageDelete,
+                limit: 10
+            });
 
-        const log = auditLogs.entries.find(entry => {
-            if (
-                !(
-                    entry.targetId === message.author.id &&
-                    entry.actionType === "Delete" &&
-                    entry.extra.channel.id === message.channelId &&
-                    entry.createdTimestamp > Date.now() - 5000 &&
-                    entry.executorId
-                )
-            ) {
-                return false;
+            const log = auditLogs.entries.find(entry => {
+                if (
+                    !(
+                        entry.targetId === message.author.id &&
+                        entry.actionType === "Delete" &&
+                        entry.extra.channel.id === message.channelId &&
+                        entry.createdTimestamp > Date.now() - 5000 &&
+                        entry.executorId
+                    )
+                ) {
+                    return false;
+                }
+
+                const prevCount =
+                    this.deleteCountMap.get(`${message.guildId!}_${entry.executorId}`) ?? 0;
+                const result = prevCount + 1 === entry.extra.count;
+                this.deleteCountMap.set(
+                    `${message.guildId!}_${entry.executorId}`,
+                    entry.extra.count
+                );
+                return result;
+            });
+
+            if (log && (log.executorId || log.executor)) {
+                return log.executor ?? (await fetchUser(this.client, log.executorId!)) ?? undefined;
             }
-
-            const prevCount =
-                this.deleteCountMap.get(`${message.guildId!}_${entry.executorId}`) ?? 0;
-            const result = prevCount + 1 === entry.extra.count;
-            this.deleteCountMap.set(`${message.guildId!}_${entry.executorId}`, entry.extra.count);
-            return result;
-        });
-
-        if (log && (log.executorId || log.executor)) {
-            return log.executor ?? (await fetchUser(this.client, log.executorId!)) ?? undefined;
+        } catch (error) {
+            this.application.logger.error(
+                "An error occurred while processing a message delete event",
+                error
+            );
         }
 
         return undefined;

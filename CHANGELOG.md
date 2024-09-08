@@ -1,7 +1,105 @@
 # Changelog
 
+### 07-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore:** merge branch 'dev'    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **build(blazew):** bun install fails on windows    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **fix(events):** fetching audit logs when a guild is not available    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **build(blazew):** bun install fails on windows    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **build(blazew):** bun install fails on windows    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 07-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.7.3 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
+### 07-09-2024 - [[Ar Rakin](mailto:rakinar2@gmail.com)]
+
+  * **build(blazew):** windows build failure (powershell)    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **build:** update blazew.ps1    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@gmail.com>  
+      
+
+### 06-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.7.2 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.7.2-0+20240806121454.sha.f0f069a2 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
+### 06-09-2024 - [[Ryanmello07](mailto:67509637+Ryanmello07@users.noreply.github.com)]
+
+  * **fix(readme):** updated discord link    
+      
+    **Signed-off-by:**  Ryanmello07 <67509637+Ryanmello07@users.noreply.github.com>  
+
 ### 06-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **ci:** update staging.yml    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **ci:** spdate staging.yml    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **ci:** update staging.yml    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **ci:** update staging workflow    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **ci:** update release workflow    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **ci:** update release workflow    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **ci:** update staging workflow    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **ci:** fix release workflow    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **ci:** update staging deployment workflow    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **ci:** update release workflow    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **ci:** fix staging workflow    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **ci:** fix staging workflow    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
   * **chore:** force new release [prerelease]    
       
     **Build-metadata:**  {numdate}.sha.{id}  
@@ -12,6 +110,9 @@
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
   * **ci:** add staging deployment workflow    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **ci:** update labeler.yml    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
   * **chore(extensions):** build extensions [skip ci]    
@@ -80,6 +181,14 @@
   * **docs:** separate sitemaps    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **ci:** update labeler workflow    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **feat(automod):** add AI based auto moderation    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@sudobot.online>  
       
   * **fix:** clear command filter parsing    
       
