@@ -1,20 +1,27 @@
+import { emoji } from "@/utils/emoji";
+import Application from "@framework/app/Application";
 import type BaseClient from "@framework/client/BaseClient";
-import { emoji } from "@framework/utils/emoji";
-import { Collection, GuildEmoji } from "discord.js";
+import { ApplicationEmoji, Collection } from "discord.js";
 import { beforeEach, describe, expect, it } from "vitest";
+import { createApplication } from "../mocks/application.mock";
 import { createClient } from "../mocks/client.mock";
 import { createGuild } from "../mocks/guild.mock";
 
 describe("emoji", () => {
-    let client: BaseClient;
+    let application: Application;
 
     beforeEach(() => {
-        client = {
+        const client = {
             ...createClient(),
-            emojis: {
-                cache: new Collection()
+            application: {
+                emojis: {
+                    cache: new Collection()
+                }
             }
         } as unknown as BaseClient;
+
+        application = createApplication();
+        application.setClient(client);
     });
 
     it("should return the emoji", () => {
@@ -30,9 +37,10 @@ describe("emoji", () => {
             url: "emoji",
             toString() {
                 return "emoji";
-            }
-        } as GuildEmoji;
-        client.emojis.cache.set("emoji", testEmoji);
-        expect(emoji(client, "emoji")).toBe(testEmoji);
+            },
+            application: application.client.application
+        } as unknown as ApplicationEmoji;
+        application.client.application?.emojis.cache.set("emoji", testEmoji);
+        expect(emoji(application, "emoji")).toBe(testEmoji);
     });
 });
