@@ -160,7 +160,8 @@ class CreateReactionRoleCommand extends Command {
 
             if (!isId && !isMention) {
                 await context.reply({
-                    content: `${context.emoji("error")} Invalid role: ${roleUnprocessed}`,
+                    content:
+                        `${context.emoji("error")} Invalid role: ${roleUnprocessed}`.trimStart(),
                     allowedMentions: {
                         roles: []
                     }
@@ -176,7 +177,8 @@ class CreateReactionRoleCommand extends Command {
 
             if (!role) {
                 await context.reply({
-                    content: `${context.emoji("error")} Could not find role: ${roleUnprocessed}`,
+                    content:
+                        `${context.emoji("error")} Could not find role: ${roleUnprocessed}`.trimStart(),
                     allowedMentions: {
                         roles: []
                     }

@@ -20,7 +20,7 @@
 import FileSystem from "@framework/polyfills/FileSystem";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
-import { emoji } from "@framework/utils/emoji";
+import { emoji } from "@main/utils/emoji";
 import { version } from "@root/package.json";
 import archiver from "archiver";
 import axios from "axios";
@@ -140,7 +140,7 @@ class StartupManager extends Service implements HasEventListeners {
                                         undefined
                                 },
                                 color: Colors.Green,
-                                description: `${emoji(this.application.client, "check")} System update successful. (took ${((Date.now() - time) / 1000).toFixed(2)}s)`,
+                                description: `${emoji(this.application, "check")} System update successful. (took ${((Date.now() - time) / 1000).toFixed(2)}s)`,
                                 timestamp: new Date().toISOString()
                             }
                         ]
@@ -150,8 +150,8 @@ class StartupManager extends Service implements HasEventListeners {
                         embeds: [
                             {
                                 color: Colors.Green,
-                                description: `### ${emoji(this.application.client, "restart")} System Restart\n${emoji(
-                                    this.application.getClient(),
+                                description: `### ${emoji(this.application, "restart")} System Restart\n${emoji(
+                                    this.application,
                                     "check"
                                 )} Operation completed. (took ${(
                                     (Date.now() - time) /

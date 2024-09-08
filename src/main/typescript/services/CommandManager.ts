@@ -230,6 +230,26 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         }
     }
 
+    public async reloadCommand(command: Command) {
+        const previousCommand = this.getCommand(command.name);
+
+        if (!previousCommand || !previousCommand.file) {
+            this.application.logger.debug(`Command ${command.name} is not reloadable.`);
+            return;
+        }
+
+        await this.application.classLoader.unloadEventsFromMetadata(previousCommand);
+        this.commands.delete(command.name.toLowerCase());
+
+        for (const alias of command.aliases) {
+            this.commands.delete(alias.toLowerCase());
+        }
+
+        // remove require cache
+        delete require.cache[require.resolve(previousCommand.file)];
+        return this.application.classLoader.loadCommand(previousCommand.file, true);
+    }
+
     public getCanonicalName(name: string) {
         return this.getCommand(name)?.name ?? name;
     }

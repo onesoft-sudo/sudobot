@@ -29,7 +29,7 @@ class AboutCommand extends Command {
     public override async execute(context: ChatContext) {
         const metadata = this.application.metadata as MetadataType;
         const avatar = this.application.getClient().user?.displayAvatarURL();
-        const emoji = context.emoji("sudobot");
+        const emoji = context.emoji("sudobot") || null;
         const codeName = metadata._meta.release_codename;
         const shortCodeName = metadata._meta.release_short_codename;
 

@@ -5,9 +5,9 @@ import type { Buildable } from "@framework/commands/Command";
 import { Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
-import { emoji } from "@framework/utils/emoji";
 import { getUserBadges } from "@framework/utils/user";
 import PermissionManagerService from "@main/services/PermissionManagerService";
+import { emoji } from "@main/utils/emoji";
 import {
     ActivityType,
     APIEmbedField,
@@ -86,13 +86,13 @@ class ProfileCommand extends Command {
         s: "idle" | "online" | "dnd" | "invisible" | null | undefined
     ): string {
         if (s === "idle") {
-            return context.emoji("idle")?.toString() ?? "";
+            return context.emoji("idle")?.toString() || "";
         } else if (s === "dnd") {
-            return context.emoji("dnd")?.toString() ?? "";
+            return context.emoji("dnd")?.toString() || "";
         } else if (s === "online") {
-            return context.emoji("online")?.toString() ?? "";
+            return context.emoji("online")?.toString() || "";
         } else if (s === undefined || s === null || s === "invisible") {
-            return context.emoji("invisible")?.toString() ?? "";
+            return context.emoji("invisible")?.toString() || "";
         }
         return s;
     }
@@ -143,7 +143,7 @@ class ProfileCommand extends Command {
         let badges = "";
 
         if (isSystemAdmin) {
-            badges += `${emoji(this.application.client, "staff1") ?? ""}${emoji(this.application.client, "staff2") ?? ""}`;
+            badges += `${emoji(this.application, "staff1") || ""}${emoji(this.application, "staff2") || ""}`;
         }
 
         return badges.trim();
@@ -156,16 +156,12 @@ class ProfileCommand extends Command {
         const badges = [];
 
         if (isSystemAdmin) {
-            badges.push(
-                `${emoji(this.application.client, "sysadmin") ?? ""} System Staff/Administrator`
-            );
+            badges.push(`${emoji(this.application, "sysadmin") || ""} System Staff/Administrator`);
         }
 
         if (member) {
             if (await this.permissionManagerService.isModerator(member)) {
-                badges.push(
-                    `${emoji(this.application.client, "moderator") ?? ""} Server Moderator`
-                );
+                badges.push(`${emoji(this.application, "moderator") || ""} Server Moderator`);
             }
         }
 

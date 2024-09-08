@@ -248,6 +248,11 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
     private _initialized = false;
 
     /**
+     * The file associated with the command.
+     */
+    private _file?: string;
+
+    /**
      * The logger for the command.
      */
     protected readonly logger: Logger;
@@ -275,12 +280,28 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
     }
 
     /**
+     * A wrapper for the _file private property.
+     */
+    public get file() {
+        return this._file;
+    }
+
+    /**
      * Initializes the command.
      * This method gets called when the command is loaded.
      *
      * @returns - Nothing, or a promise that resolves when the command is initialized.
      */
     public initialize?(): Awaitable<void>;
+
+    /**
+     * Sets the file associated with the command.
+     *
+     * @param file - The path to the file associated with the command.
+     */
+    public setFile(file: string) {
+        this._file = file;
+    }
 
     /**
      * Checks if the command supports legacy context.

@@ -164,7 +164,7 @@ class AFKsCommand extends Command {
                         },
                         description: `${context.emoji(
                             "check"
-                        )} Operation completed successfully. **${count}** user(s) are affected.`,
+                        )} Operation completed successfully. **${count}** user(s) are affected.`.trimStart(),
                         color: Colors.Green
                     }
                 ],

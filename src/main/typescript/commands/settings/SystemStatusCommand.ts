@@ -32,7 +32,7 @@ class SystemStatusCommand extends Command {
             message = await context.reply({
                 embeds: [
                     {
-                        description: `${context.emoji("loading") ?? ""} Checking system status...`,
+                        description: `${context.emoji("loading") || ""} Checking system status...`,
                         color: Colors.Primary
                     }
                 ]
@@ -102,10 +102,10 @@ class SystemStatusCommand extends Command {
         }
 
         const embed = {
-            description: `## ${context.emoji("sudobot") ?? ""} System Status\n${
+            description: `## ${context.emoji("sudobot") || ""} System Status\n${
                 status === "degraded"
                     ? "⚠️"
-                    : context.emoji(status === "operational" ? "check" : "error") ?? ""
+                    : context.emoji(status === "operational" ? "check" : "error") || ""
             } ${
                 status === "operational"
                     ? "All systems are operational"

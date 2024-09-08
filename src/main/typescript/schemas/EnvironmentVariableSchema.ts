@@ -32,6 +32,7 @@ export const EnvironmentVariableSchema = z.object({
     CAT_API_TOKEN: z.string().optional(),
     DOG_API_TOKEN: z.string().optional(),
     SYSTEM_API_URL: z.string().optional(),
+    EMOJI_RESOLVE_STRATEGY: z.enum(["both", "home_guild", "application"]).optional(),
     HTTP_USER_AGENT: z
         .string()
         .optional()

@@ -151,7 +151,7 @@ class ScheduleCommand extends Command {
             .schedule();
 
         if (context.isLegacy()) {
-            await context.commandMessage.react(context.emoji("check") ?? "✅");
+            await context.commandMessage.react(context.emoji("check")?.toString() || "✅");
         } else {
             await context.success("Message scheduled successfully.");
         }

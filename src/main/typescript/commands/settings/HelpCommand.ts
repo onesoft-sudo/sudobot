@@ -8,9 +8,9 @@ import { Inject } from "@framework/container/Inject";
 import Pagination from "@framework/pagination/Pagination";
 import { Permission } from "@framework/permissions/Permission";
 import { permissionBigintToString } from "@framework/permissions/PermissionFlag";
-import { emoji } from "@framework/utils/emoji";
 import { Colors } from "@main/constants/Colors";
 import CommandManager from "@main/services/CommandManager";
+import { emoji } from "@main/utils/emoji";
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -60,7 +60,7 @@ class HelpCommand extends Command {
                 .setStyle(ButtonStyle.Link)
                 .setLabel("GitHub")
                 .setURL("https://github.com/onesoft-sudo/sudobot")
-                .setEmoji(emoji(Application.current().client, "github")?.toString() ?? "🐙")
+                .setEmoji(emoji(Application.current(), "github")?.toString() || "🐙")
         )
     ];
 
@@ -80,7 +80,7 @@ class HelpCommand extends Command {
                 .setStyle(ButtonStyle.Link)
                 .setLabel("GitHub")
                 .setURL("https://github.com/onesoft-sudo/sudobot")
-                .setEmoji(emoji(Application.current().client, "github")?.toString() ?? "🐙")
+                .setEmoji(emoji(Application.current(), "github")?.toString() || "🐙")
         )
     ];
 
@@ -208,11 +208,13 @@ class HelpCommand extends Command {
                     ContextType.Legacy
                 )
             ) {
-                description += `${context.emoji("error")} ${contextTypeToString(ContextType.Legacy)}\n`;
+                description +=
+                    `${context.emoji("error")} ${contextTypeToString(ContextType.Legacy)}\n`.trimStart();
             }
 
             for (const contextType of metadata.supportedContexts ?? rootCommand.supportedContexts) {
-                description += `${context.emoji("check")} ${contextTypeToString(contextType)}\n`;
+                description +=
+                    `${context.emoji("check")} ${contextTypeToString(contextType)}\n`.trimStart();
             }
 
             let otherInformation = "";
@@ -222,7 +224,7 @@ class HelpCommand extends Command {
             }
 
             if (metadata.beta) {
-                otherInformation += `${context.emoji("beta")} **Beta**\n`;
+                otherInformation += `${context.emoji("beta")} **Beta**\n`.trimStart();
             }
 
             if (metadata.deprecated) {
@@ -234,7 +236,8 @@ class HelpCommand extends Command {
             }
 
             if (metadata.systemAdminOnly) {
-                otherInformation += `${context.emoji("sysadmin")} **System Staff Only**\n`;
+                otherInformation +=
+                    `${context.emoji("sysadmin")} **System Staff Only**\n`.trimStart();
             }
 
             if (otherInformation) {
