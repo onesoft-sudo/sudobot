@@ -74,7 +74,7 @@ class InfractionClearCommand extends Command {
             return;
         }
 
-        const count = await this.infractionManager.deleteForUser(user.id, type as InfractionType);
+        const count = await this.infractionManager.deleteForUser(context.guildId, user.id, type as InfractionType);
 
         if (count === 0) {
             await context.error(`No infractions found for ${bold(user.username)}`);
