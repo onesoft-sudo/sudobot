@@ -182,7 +182,7 @@ class ClearCommand extends Command {
         }
 
         if (context.isLegacy()) {
-            await context.deleteOriginalMessage();
+            await context.deleteOriginalMessage().catch(this.application.logger.error);
         }
 
         const filters = [];
