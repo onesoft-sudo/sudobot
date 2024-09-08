@@ -120,7 +120,16 @@ class HelpCommand extends Command {
             }
 
             const resolvedCommand = this.commandManager.getCommand(
-                subcommand ? `${command}::${subcommand}` : command
+                subcommand && rootCommand.isolatedSubcommands
+                    ? `${rootCommand?.name}::${subcommand}`
+                    : command
+            );
+
+            console.log(
+                "expression",
+                subcommand && rootCommand.isolatedSubcommands
+                    ? `${rootCommand?.name}::${subcommand}`
+                    : command
             );
 
             if (!resolvedCommand) {
@@ -129,13 +138,16 @@ class HelpCommand extends Command {
                 ));
             }
 
-            const baseName = resolvedCommand.name.split("::")[0];
+            const baseName = rootCommand.isolatedSubcommands
+                ? resolvedCommand.name.split("::")[0]
+                : `${rootCommand?.name}`;
             const prefix = context.config?.prefix ?? "-";
             const commandHead = `${prefix}${baseName}` + (isSubcommand ? ` ${subcommand}` : "");
             const metadata =
                 rootCommand.isolatedSubcommands && subcommand
-                    ? (rootCommand.subcommandMeta[subcommand] ?? {})
-                    : resolvedCommand;
+                    ? resolvedCommand
+                    : ((subcommand ? rootCommand.subcommandMeta[subcommand] : null) ?? rootCommand);
+
             let description = `## ${commandHead}\n`;
 
             description += `### Group\n${inlineCode(rootCommand.group)}\n`;
@@ -143,8 +155,8 @@ class HelpCommand extends Command {
                 !metadata.aliases?.length
                     ? "*None*\n"
                     : metadata.aliases
-                          .filter(a => !a.includes(" ") && !a.includes("::"))
-                          .map(alias => `${inlineCode(alias)}`)
+                          .filter(a => !a.includes(" "))
+                          .map(alias => `${inlineCode(alias.replace("::", " "))}`)
                           .join(", ")
             }\n`;
             description += `### Description\n${metadata.detailedDescription ?? metadata.description}\n`;
@@ -189,7 +201,7 @@ class HelpCommand extends Command {
                 description = description.slice(0, -commandPermissionSuffix.length) + "\n";
             }
 
-            if (metadata.systemPermissions) {
+            if (metadata.systemPermissions?.length) {
                 description += "### Required System Permissions\n";
 
                 for (const permission of metadata.systemPermissions) {

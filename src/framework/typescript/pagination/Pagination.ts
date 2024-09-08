@@ -286,7 +286,7 @@ class Pagination<T> {
                               id: arrowLeftEmoji.id,
                               name: arrowLeftEmoji.name ?? arrowLeftEmoji.identifier
                           }
-                        : "◁"
+                        : "⏮️"
                 )
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(this._destroyed || this._state.page <= 1),
@@ -324,7 +324,7 @@ class Pagination<T> {
                               id: arrowRightEmoji.id,
                               name: arrowRightEmoji.name ?? arrowRightEmoji.identifier
                           }
-                        : "▷"
+                        : "⏭️"
                 )
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(
