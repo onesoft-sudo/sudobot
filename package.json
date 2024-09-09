@@ -100,7 +100,7 @@
     "devDependencies": {
         "@commitlint/cli": "^19.3.0",
         "@commitlint/config-conventional": "^19.2.2",
-        "@faker-js/faker": "^8.4.1",
+        "@faker-js/faker": "^9.0.0",
         "@onesoftnet/pm2-config": "^0.0.7",
         "@types/archiver": "^6.0.2",
         "@types/bcrypt": "^5.0.2",
