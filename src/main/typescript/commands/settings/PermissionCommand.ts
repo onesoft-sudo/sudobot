@@ -37,6 +37,7 @@ class PermissionCommand extends Command {
     public override readonly aliases = ["perm", "perms", "permissions", "p"];
     public override readonly permissions = [PermissionFlags.ManageGuild];
     public override readonly usage = ["<subcommand> <command_name> [permissions]"];
+    public override readonly since = "10.14.1";
     public override readonly subcommands = ["set", "clear", "view"];
     public override readonly subcommandMeta: Record<string, SubcommandMeta> = {
         set: {
