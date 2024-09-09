@@ -187,7 +187,7 @@ class TranslateCommand extends Command<ContextType> {
                         author: {
                             name: "Translation Failed"
                         },
-                        description: `${context.emoji("error") ?? ""} Couldn't translate that due to an internal error.`,
+                        description: `${context.emoji("error") || ""} Couldn't translate that due to an internal error.`,
                         footer: {
                             text: "Powered by Google Translate"
                         }

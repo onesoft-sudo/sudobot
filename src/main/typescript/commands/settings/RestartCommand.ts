@@ -3,8 +3,8 @@ import { Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import { GatewayEventListener } from "@framework/events/GatewayEventListener";
-import { emoji } from "@framework/utils/emoji";
 import StartupManager from "@main/services/StartupManager";
+import { emoji } from "@main/utils/emoji";
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -82,7 +82,7 @@ class RestartCommand extends Command {
                 embeds: [
                     {
                         color: 0x007bff,
-                        description: `### ${emoji(this.application.client, "restart")} System Restart\n${emoji(this.application.client, "loading")} Restarting${key ? " (with one time 2FA code)" : ""}...`
+                        description: `### ${emoji(this.application, "restart")} System Restart\n${emoji(this.application, "loading")} Restarting${key ? " (with one time 2FA code)" : ""}...`
                     }
                 ],
                 components: [new ActionRowBuilder<ButtonBuilder>().addComponents(...buttons)]
@@ -106,7 +106,7 @@ class RestartCommand extends Command {
                 embeds: [
                     {
                         color: 0xf14a60,
-                        description: `### ${emoji(this.application.client, "restart")} System Restart\nOperation cancelled.`
+                        description: `### ${emoji(this.application, "restart")} System Restart\nOperation cancelled.`
                     }
                 ],
                 components: [new ActionRowBuilder<ButtonBuilder>().addComponents(...buttons)]
@@ -189,13 +189,13 @@ class RestartCommand extends Command {
                 .setLabel("Restart")
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(disable ?? false)
-                .setEmoji(`${emoji(this.application.client, "restart") ?? "🔄"}`),
+                .setEmoji(`${emoji(this.application, "restart") || "🔄"}`),
             new ButtonBuilder()
                 .setCustomId(`restart__no__${guildId}__${channelId}__${userId}__${keyId}`)
                 .setLabel("Cancel")
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(disable ?? false)
-                .setEmoji(`${emoji(this.application.client, "error") ?? "❌"}`)
+                .setEmoji(`${emoji(this.application, "error") || "❌"}`)
         ];
     }
 }

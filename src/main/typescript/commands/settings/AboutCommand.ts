@@ -19,6 +19,8 @@
 
 import type { ChatContext } from "@framework/commands/Command";
 import { Command } from "@framework/commands/Command";
+import { env } from "@main/env/env";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import type { MetadataType } from "../../core/DiscordKernel";
 
 class AboutCommand extends Command {
@@ -29,7 +31,7 @@ class AboutCommand extends Command {
     public override async execute(context: ChatContext) {
         const metadata = this.application.metadata as MetadataType;
         const avatar = this.application.getClient().user?.displayAvatarURL();
-        const emoji = context.emoji("sudobot");
+        const emoji = context.emoji("sudobot") || null;
         const codeName = metadata._meta.release_codename;
         const shortCodeName = metadata._meta.release_short_codename;
 
@@ -41,12 +43,29 @@ class AboutCommand extends Command {
                               url: avatar
                           }
                         : undefined,
-                    description: `
+                    description: (
+                        `
                         ## ${emoji ? emoji.toString() + " " : ""}SudoBot ${shortCodeName}\n
                         ### A free and open source Discord moderation bot.\n
                         This bot is **free software**, and you are welcome to redistribute it under certain conditions.
+                        If you make changes to the bot, you must make the source code of the modified version available to the public, under the same license.
                         See the [GNU Affero General Public License v3](https://www.gnu.org/licenses/agpl-3.0.en.html) for more detailed information.
-                    `.replaceAll(/\n([ \t]+)/gm, "\n"),
+                    ` +
+                        (env.HIDE_MODIFICATIONS_URL_NOTICE !== "1" && !env.MODIFICATIONS_PUBLIC_URL
+                            ? `
+                        **Notice:** If you make changes to the bot, as stated above, please make your changes public, and set the \`MODIFICATIONS_PUBLIC_URL\` environment variable to the URL of the source code of the modified version, which should be publicly accessible.
+                        To hide this notice, set the \`HIDE_MODIFICATIONS_URL_NOTICE\` environment variable to \`"1"\`.    
+                        `
+                            : "") +
+                        (env.MODIFICATIONS_PUBLIC_URL
+                            ? `
+                        ### Modifications\n
+                        This bot has been modified by the developers of this instance.\n
+                        According to **The GNU Affero General Public License v3**, the source code of the modifications must be made available to the public, under the same license.\n
+                        You can view the source code of this modified version [here](${env.MODIFICATIONS_PUBLIC_URL}).
+                        `
+                            : "")
+                    ).replaceAll(/\n([ \t]+)/gm, "\n"),
                     color: 0x007bff,
                     fields: [
                         {
@@ -79,6 +98,14 @@ class AboutCommand extends Command {
                         text: `Copyright © OSN Developers and the contributors 2022-${new Date().getFullYear()}.`
                     }
                 }
+            ],
+            components: [
+                new ActionRowBuilder<ButtonBuilder>().addComponents(
+                    new ButtonBuilder()
+                        .setStyle(ButtonStyle.Link)
+                        .setURL(metadata.funding.url)
+                        .setLabel("Donate")
+                )
             ]
         });
     }

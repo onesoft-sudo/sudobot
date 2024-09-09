@@ -33,7 +33,10 @@ import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { isDevelopmentMode } from "@framework/utils/utils";
 import { env } from "@main/env/env";
-import { CommandPermissionOverwriteAction } from "@main/models/CommandPermissionOverwrite";
+import {
+    CommandPermissionOverwrite,
+    CommandPermissionOverwriteAction
+} from "@main/models/CommandPermissionOverwrite";
 import CommandRateLimiter from "@main/security/CommandRateLimiter";
 import {
     ApplicationCommandDataResolvable,
@@ -69,6 +72,10 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
 
     public async onReady() {
         await this.registerApplicationCommands();
+    }
+
+    public invalidatePermissionOverwrite(overwrite: CommandPermissionOverwrite) {
+        return this.store.invalidate(overwrite);
     }
 
     public getApplicationCommandDataResolvableList(): ApplicationCommandDataResolvable[] {
@@ -228,6 +235,26 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         if (loadMetadata) {
             this.application.classLoader.loadEventsFromMetadata(command);
         }
+    }
+
+    public async reloadCommand(command: Command) {
+        const previousCommand = this.getCommand(command.name);
+
+        if (!previousCommand || !previousCommand.file) {
+            this.application.logger.debug(`Command ${command.name} is not reloadable.`);
+            return;
+        }
+
+        await this.application.classLoader.unloadEventsFromMetadata(previousCommand);
+        this.commands.delete(command.name.toLowerCase());
+
+        for (const alias of command.aliases) {
+            this.commands.delete(alias.toLowerCase());
+        }
+
+        // remove require cache
+        delete require.cache[require.resolve(previousCommand.file)];
+        return this.application.classLoader.loadCommand(previousCommand.file, true);
     }
 
     public getCanonicalName(name: string) {

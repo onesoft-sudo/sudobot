@@ -32,6 +32,7 @@ export const EnvironmentVariableSchema = z.object({
     CAT_API_TOKEN: z.string().optional(),
     DOG_API_TOKEN: z.string().optional(),
     SYSTEM_API_URL: z.string().optional(),
+    EMOJI_RESOLVE_STRATEGY: z.enum(["both", "home_guild", "application"]).optional(),
     HTTP_USER_AGENT: z
         .string()
         .optional()
@@ -50,7 +51,9 @@ export const EnvironmentVariableSchema = z.object({
     SYSTEM_SHELL_EXEC_STREAM_PORT: z.string().regex(/^\d+/).optional(),
     CF_TURNSTILE_SECRET: z.string().optional(),
     PROXYCHECKIO_API_KEY: z.string().optional(),
-    DISCORD_INTENTS: z.string().optional()
+    DISCORD_INTENTS: z.string().optional(),
+    MODIFICATIONS_PUBLIC_URL: z.string().optional(),
+    HIDE_MODIFICATIONS_URL_NOTICE: z.literal("1").optional()
 });
 
 export type EnvironmentVariableRecord = z.infer<typeof EnvironmentVariableSchema>;

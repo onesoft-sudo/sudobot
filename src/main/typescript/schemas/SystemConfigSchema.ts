@@ -25,6 +25,7 @@ type ApplicationActivityType = keyof typeof ActivityType;
 export const SystemConfigSchema = z.object({
     $schema: z.string().optional(),
     sync_emojis: z.boolean().default(false),
+    emoji_resolve_strategy: z.enum(["both", "home_guild","application"]).default("both"),
     system_admins: z.array(z.string()).default([]),
     snippets: z
         .object({

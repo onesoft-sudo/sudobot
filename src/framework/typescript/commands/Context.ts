@@ -37,8 +37,8 @@ import type {
     UserContextMenuCommandInteraction
 } from "discord.js";
 import { Collection, Message } from "discord.js";
+import { emoji } from "../../../main/typescript/utils/emoji";
 import Application from "../app/Application";
-import { emoji } from "../utils/emoji";
 import type { AnyCommand, Command, CommandMessage } from "./Command";
 import { ContextType } from "./ContextType";
 import type InteractionContext from "./InteractionContext";
@@ -169,7 +169,7 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
     }
 
     public emoji(name: string) {
-        return emoji(Application.current().getClient(), name);
+        return emoji(Application.current(), name);
     }
 
     public async error(options: Parameters<this["commandMessage"]["reply"]>[0]) {

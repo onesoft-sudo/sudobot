@@ -67,7 +67,7 @@ class UpdateCommandsCommand extends Command {
             });
 
             await context.success(
-                `Successfully updated **${count}** ${local ? "local " : ""}application commands.`
+                `Successfully ${clear ? "unregistered" : "updated"} **${clear ? "all" : count}** ${local ? "local " : ""}application commands.`
             );
         } catch (error) {
             if (isDiscordAPIError(error)) {

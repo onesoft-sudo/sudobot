@@ -68,7 +68,7 @@ class LockCommand extends Command {
         if (context.isChatInput()) {
             await context.success(`Channel ${channel} has been locked.`);
         } else if (context.isLegacy()) {
-            await context.commandMessage.react(context.emoji("check") ?? "✅");
+            await context.commandMessage.react(context.emoji("check")?.toString() || "✅");
         }
 
         if ("send" in channel) {

@@ -1,6 +1,6 @@
 import Application from "@framework/app/Application";
 import type BaseClient from "@framework/client/BaseClient";
-import { emoji } from "@framework/utils/emoji";
+import { findEmoji } from "@main/utils/emoji";
 import type {
     Awaitable,
     Interaction,
@@ -89,7 +89,12 @@ class Pagination<T> {
         await this.update(interaction);
     }).bind(this);
 
-    public constructor(protected readonly client: BaseClient = Application.current().client) {
+    public constructor(
+        protected readonly client: BaseClient = Application.current().client,
+        protected readonly emojiResolver = (name: string) => {
+            return findEmoji(Application.current(), name);
+        }
+    ) {
         this.setup();
     }
 
@@ -110,7 +115,7 @@ class Pagination<T> {
     private async getCount() {
         const count = this._getCount
             ? await this._getCount?.()
-            : this._count ?? this._cachedData?.length;
+            : (this._count ?? this._cachedData?.length);
 
         if (count === undefined) {
             throw new Error("No count provided");
@@ -267,10 +272,10 @@ class Pagination<T> {
     }
 
     private async getActionRow() {
-        const arrowLeftEmoji = emoji(this.client, "ArrowLeft");
-        const arrowRightEmoji = emoji(this.client, "ArrowRight");
-        const chevronLeftEmoji = emoji(this.client, "ChevronLeft");
-        const chevronRightEmoji = emoji(this.client, "ChevronRight");
+        const arrowLeftEmoji = this.emojiResolver("ArrowLeft");
+        const arrowRightEmoji = this.emojiResolver("ArrowRight");
+        const chevronLeftEmoji = this.emojiResolver("ChevronLeft");
+        const chevronRightEmoji = this.emojiResolver("ChevronRight");
 
         const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
             new ButtonBuilder()
@@ -281,7 +286,7 @@ class Pagination<T> {
                               id: arrowLeftEmoji.id,
                               name: arrowLeftEmoji.name ?? arrowLeftEmoji.identifier
                           }
-                        : "◁"
+                        : "⏮️"
                 )
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(this._destroyed || this._state.page <= 1),
@@ -319,7 +324,7 @@ class Pagination<T> {
                               id: arrowRightEmoji.id,
                               name: arrowRightEmoji.name ?? arrowRightEmoji.identifier
                           }
-                        : "▷"
+                        : "⏭️"
                 )
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(

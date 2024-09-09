@@ -17,8 +17,8 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { emoji } from "@framework/utils/emoji";
-import { client } from "@framework/utils/helpers";
+import { application, client } from "@framework/utils/helpers";
+import { emoji, findEmoji } from "@main/utils/emoji";
 import type { GuildMember, User } from "discord.js";
 import { time, TimestampStyles, UserFlags } from "discord.js";
 
@@ -47,13 +47,15 @@ export const getUserBadges = (user: User) => {
         const flag = UserFlags[flagString as keyof typeof UserFlags];
 
         if (flag && user.flags?.has(flag)) {
-            const guildEmoji = emoji(client(), emojiName);
-            badges.push(`${guildEmoji ?? ""} ${badgeTitle}`);
+            const guildEmoji = findEmoji(application(), emojiName);
+            badges.push(`${guildEmoji ?? ""} ${badgeTitle}`.trim());
         }
     }
 
     if (user.discriminator === "0") {
-        badges.push(`${emoji(client(), "new_username")} Has opted-in to the new username system`);
+        badges.push(
+            `${emoji(application(), "new_username")} Has opted-in to the new username system`.trim()
+        );
     }
 
     return badges;
@@ -68,7 +70,7 @@ export const getMemberBadges = (member: GuildMember) => {
             guild => !!guild.members.cache.get(member.id)?.premiumSinceTimestamp
         )
     ) {
-        badges.push(`${emoji(client(), "nitro")} Nitro Subscriber`);
+        badges.push(`${emoji(application(), "nitro")} Nitro Subscriber`.trim());
     }
 
     let minPremiumSince = member.premiumSince;
@@ -87,7 +89,7 @@ export const getMemberBadges = (member: GuildMember) => {
 
     if (minPremiumSince) {
         badges.push(
-            `${emoji(client(), "boost")} Server boosting since ${time(minPremiumSince, TimestampStyles.LongDate)}`
+            `${emoji(application(), "boost")} Server boosting since ${time(minPremiumSince, TimestampStyles.LongDate)}`.trim()
         );
     }
 

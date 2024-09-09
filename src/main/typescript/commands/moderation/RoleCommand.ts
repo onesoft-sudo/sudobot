@@ -35,7 +35,7 @@ import PermissionManagerService from "../../services/PermissionManagerService";
 type RoleCommandArgs = {
     member: GuildMember;
     roles: Role[];
-    duration?: Duration;
+    duration?: Duration|null;
 };
 
 @ArgumentSchema.Definition({
@@ -49,11 +49,9 @@ type RoleCommandArgs = {
 @ArgumentSchema.Definition({
     names: ["duration", "roles"],
     types: [DurationArgument, RestRoleArgument<true>],
-    optional: false,
+    optional: true,
     errorMessages: [
         {
-            [ErrorType.Required]:
-                "You must specify a duration or the roles to perform this action!",
             [ErrorType.InvalidType]: "You must specify a valid duration to perform this action."
         },
         RestRoleArgument.defaultErrors
@@ -106,7 +104,7 @@ class RoleCommand extends Command {
                         .setRequired(true)
                 )
 
-                .addRoleOption(option =>
+                .addStringOption(option =>
                     option
                         .setName("roles")
                         .setDescription("The roles to assign to the member.")
@@ -163,6 +161,11 @@ class RoleCommand extends Command {
             return;
         }
 
+        if (!roles?.length) {
+            await context.error("You must specify at least one role to perform this action!");
+            return;
+        }
+
         if (context.commandName === "temprole" && !duration) {
             await context.error("You must specify a valid duration to perform this action!");
             return;
@@ -183,7 +186,7 @@ class RoleCommand extends Command {
                   ? "take"
                   : "give",
             roles,
-            duration
+            duration: duration ?? undefined
         });
 
         if (result.status === "failed") {

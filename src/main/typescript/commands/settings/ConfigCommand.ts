@@ -29,6 +29,7 @@ class ConfigCommand extends Command {
     public override readonly defer = true;
     public override readonly systemPermissions = [];
     public override readonly usage = ["<subcommand: String> [...args: Any[]]"];
+    public override readonly subcommands = ["get", "set", "unset", "save", "restore"];
     public override readonly subcommandMeta: Record<string, SubcommandMeta> = {
         get: {
             description: "Get the value of a configuration key",

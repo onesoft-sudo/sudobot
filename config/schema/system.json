@@ -8,6 +8,15 @@
             "type": "boolean",
             "default": false
         },
+        "emoji_resolve_strategy": {
+            "type": "string",
+            "enum": [
+                "both",
+                "home_guild",
+                "application"
+            ],
+            "default": "both"
+        },
         "system_admins": {
             "type": "array",
             "items": {

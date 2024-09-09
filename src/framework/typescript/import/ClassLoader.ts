@@ -350,6 +350,10 @@ class ClassLoader {
             await command.initialize?.();
         }
 
+        if (filepath) {
+            command.setFile(filepath);
+        }
+
         const defaultGroup = filepath ? basename(dirname(filepath)) : undefined;
         await commandManager.addCommand(command, loadMetadata, groups, defaultGroup);
         this.application.logger.info("Loaded Command: ", command.name);

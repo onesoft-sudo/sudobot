@@ -191,6 +191,29 @@
                                 },
                                 "additionalProperties": false
                             },
+                            "channel_archives": {
+                                "type": "object",
+                                "properties": {
+                                    "enabled": {
+                                        "type": "boolean",
+                                        "default": false
+                                    },
+                                    "archive_category": {
+                                        "$ref": "#/additionalProperties/anyOf/0/anyOf/1/properties/commands/properties/channels/properties/list/items"
+                                    },
+                                    "ignored_channels": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/additionalProperties/anyOf/0/anyOf/1/properties/commands/properties/channels/properties/list/items"
+                                        },
+                                        "default": []
+                                    }
+                                },
+                                "required": [
+                                    "archive_category"
+                                ],
+                                "additionalProperties": false
+                            },
                             "infractions": {
                                 "type": "object",
                                 "properties": {
@@ -546,6 +569,149 @@
                                     "timeframe",
                                     "actions"
                                 ],
+                                "additionalProperties": false
+                            },
+                            "ai_automod": {
+                                "type": "object",
+                                "properties": {
+                                    "enabled": {
+                                        "type": "boolean",
+                                        "default": false
+                                    },
+                                    "max_total_score": {
+                                        "type": "integer",
+                                        "default": 10
+                                    },
+                                    "max_single_score": {
+                                        "type": "integer",
+                                        "default": 7
+                                    },
+                                    "max_individual_scores": {
+                                        "type": "object",
+                                        "properties": {
+                                            "toxicity": {
+                                                "type": "integer",
+                                                "default": 7
+                                            },
+                                            "threat": {
+                                                "type": "integer",
+                                                "default": 7
+                                            },
+                                            "severe_toxicity": {
+                                                "type": "integer",
+                                                "default": 7
+                                            },
+                                            "identity_attack": {
+                                                "type": "integer",
+                                                "default": 7
+                                            },
+                                            "insult": {
+                                                "type": "integer",
+                                                "default": 7
+                                            },
+                                            "profanity": {
+                                                "type": "integer",
+                                                "default": 7
+                                            },
+                                            "sexually_explicit": {
+                                                "type": "integer",
+                                                "default": 7
+                                            },
+                                            "flirtation": {
+                                                "type": "integer",
+                                                "default": 7
+                                            },
+                                            "spam": {
+                                                "type": "integer",
+                                                "default": 7
+                                            },
+                                            "obscene": {
+                                                "type": "integer",
+                                                "default": 7
+                                            },
+                                            "incoherent": {
+                                                "type": "integer",
+                                                "default": 7
+                                            },
+                                            "unsubstantial": {
+                                                "type": "integer",
+                                                "default": 7
+                                            }
+                                        },
+                                        "additionalProperties": false
+                                    },
+                                    "exception_regex_patterns": {
+                                        "type": "array",
+                                        "items": {
+                                            "anyOf": [
+                                                {
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "type": "array",
+                                                    "minItems": 2,
+                                                    "maxItems": 2,
+                                                    "items": [
+                                                        {
+                                                            "type": "string"
+                                                        },
+                                                        {
+                                                            "type": "string"
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "default": []
+                                    },
+                                    "evaluate_after_attempts": {
+                                        "type": "integer",
+                                        "default": -1
+                                    },
+                                    "evaluation_cache_expires_in": {
+                                        "type": "integer",
+                                        "default": 3000
+                                    },
+                                    "actions": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/additionalProperties/anyOf/0/anyOf/1/properties/antispam/properties/actions/items"
+                                        },
+                                        "default": []
+                                    },
+                                    "automatic_actions": {
+                                        "type": "object",
+                                        "properties": {
+                                            "enabled": {
+                                                "type": "boolean",
+                                                "default": false
+                                            },
+                                            "stops": {
+                                                "type": "object",
+                                                "additionalProperties": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/additionalProperties/anyOf/0/anyOf/1/properties/antispam/properties/actions/items"
+                                                    }
+                                                },
+                                                "default": {
+                                                    "12": [
+                                                        {
+                                                            "type": "mute",
+                                                            "duration": 7200000
+                                                        }
+                                                    ],
+                                                    "*": [
+                                                        {
+                                                            "type": "delete_message"
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        "additionalProperties": false
+                                    }
+                                },
                                 "additionalProperties": false
                             },
                             "extensions": {

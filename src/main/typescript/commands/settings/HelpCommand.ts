@@ -8,9 +8,9 @@ import { Inject } from "@framework/container/Inject";
 import Pagination from "@framework/pagination/Pagination";
 import { Permission } from "@framework/permissions/Permission";
 import { permissionBigintToString } from "@framework/permissions/PermissionFlag";
-import { emoji } from "@framework/utils/emoji";
 import { Colors } from "@main/constants/Colors";
 import CommandManager from "@main/services/CommandManager";
+import { emoji } from "@main/utils/emoji";
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -60,7 +60,7 @@ class HelpCommand extends Command {
                 .setStyle(ButtonStyle.Link)
                 .setLabel("GitHub")
                 .setURL("https://github.com/onesoft-sudo/sudobot")
-                .setEmoji(emoji(Application.current().client, "github")?.toString() ?? "🐙")
+                .setEmoji(emoji(Application.current(), "github")?.toString() || "🐙")
         )
     ];
 
@@ -80,7 +80,7 @@ class HelpCommand extends Command {
                 .setStyle(ButtonStyle.Link)
                 .setLabel("GitHub")
                 .setURL("https://github.com/onesoft-sudo/sudobot")
-                .setEmoji(emoji(Application.current().client, "github")?.toString() ?? "🐙")
+                .setEmoji(emoji(Application.current(), "github")?.toString() || "🐙")
         )
     ];
 
@@ -120,7 +120,9 @@ class HelpCommand extends Command {
             }
 
             const resolvedCommand = this.commandManager.getCommand(
-                subcommand ? `${command}::${subcommand}` : command
+                subcommand && rootCommand.isolatedSubcommands
+                    ? `${rootCommand?.name}::${subcommand}`
+                    : command
             );
 
             if (!resolvedCommand) {
@@ -129,13 +131,16 @@ class HelpCommand extends Command {
                 ));
             }
 
-            const baseName = resolvedCommand.name.split("::")[0];
+            const baseName = rootCommand.isolatedSubcommands
+                ? resolvedCommand.name.split("::")[0]
+                : `${rootCommand?.name}`;
             const prefix = context.config?.prefix ?? "-";
             const commandHead = `${prefix}${baseName}` + (isSubcommand ? ` ${subcommand}` : "");
             const metadata =
                 rootCommand.isolatedSubcommands && subcommand
-                    ? (rootCommand.subcommandMeta[subcommand] ?? {})
-                    : resolvedCommand;
+                    ? resolvedCommand
+                    : ((subcommand ? rootCommand.subcommandMeta[subcommand] : null) ?? rootCommand);
+
             let description = `## ${commandHead}\n`;
 
             description += `### Group\n${inlineCode(rootCommand.group)}\n`;
@@ -143,8 +148,8 @@ class HelpCommand extends Command {
                 !metadata.aliases?.length
                     ? "*None*\n"
                     : metadata.aliases
-                          .filter(a => !a.includes(" ") && !a.includes("::"))
-                          .map(alias => `${inlineCode(alias)}`)
+                          .filter(a => !a.includes(" "))
+                          .map(alias => `${inlineCode(alias.replace("::", " "))}`)
                           .join(", ")
             }\n`;
             description += `### Description\n${metadata.detailedDescription ?? metadata.description}\n`;
@@ -189,7 +194,7 @@ class HelpCommand extends Command {
                 description = description.slice(0, -commandPermissionSuffix.length) + "\n";
             }
 
-            if (metadata.systemPermissions) {
+            if (metadata.systemPermissions?.length) {
                 description += "### Required System Permissions\n";
 
                 for (const permission of metadata.systemPermissions) {
@@ -208,11 +213,13 @@ class HelpCommand extends Command {
                     ContextType.Legacy
                 )
             ) {
-                description += `${context.emoji("error")} ${contextTypeToString(ContextType.Legacy)}\n`;
+                description +=
+                    `${context.emoji("error")} ${contextTypeToString(ContextType.Legacy)}\n`.trimStart();
             }
 
             for (const contextType of metadata.supportedContexts ?? rootCommand.supportedContexts) {
-                description += `${context.emoji("check")} ${contextTypeToString(contextType)}\n`;
+                description +=
+                    `${context.emoji("check")} ${contextTypeToString(contextType)}\n`.trimStart();
             }
 
             let otherInformation = "";
@@ -222,7 +229,7 @@ class HelpCommand extends Command {
             }
 
             if (metadata.beta) {
-                otherInformation += `${context.emoji("beta")} **Beta**\n`;
+                otherInformation += `${context.emoji("beta")} **Beta**\n`.trimStart();
             }
 
             if (metadata.deprecated) {
@@ -234,7 +241,8 @@ class HelpCommand extends Command {
             }
 
             if (metadata.systemAdminOnly) {
-                otherInformation += `${context.emoji("sysadmin")} **System Staff Only**\n`;
+                otherInformation +=
+                    `${context.emoji("sysadmin")} **System Staff Only**\n`.trimStart();
             }
 
             if (otherInformation) {

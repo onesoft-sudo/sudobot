@@ -23,7 +23,6 @@ import Duration from "@framework/datetime/Duration";
 import APIErrors from "@framework/errors/APIErrors";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
-import { emoji } from "@framework/utils/emoji";
 import { fetchMember, fetchUser } from "@framework/utils/entities";
 import { isDiscordAPIError } from "@framework/utils/errors";
 import { also } from "@framework/utils/utils";
@@ -38,6 +37,7 @@ import { muteRecords } from "@main/models/MuteRecord";
 import MassUnbanQueue from "@main/queues/MassUnbanQueue";
 import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
+import { emoji } from "@main/utils/emoji";
 import { AsciiTable3 } from "ascii-table3";
 import { formatDistanceStrict, formatDistanceToNowStrict } from "date-fns";
 import {
@@ -159,7 +159,7 @@ class InfractionManager extends Service {
 
             if (matches.length > 0) {
                 const abortReason = `${emoji(
-                    this.application.getClient(),
+                    this.application,
                     "error"
                 )} The following placeholders were not defined but used in the reason: \`${matches
                     .map(m => m[0])
@@ -1372,7 +1372,7 @@ class InfractionManager extends Service {
 
         if (
             (mode === "role" && member.roles.cache.has(role!)) ||
-            (mode === "timeout" && member.communicationDisabledUntilTimestamp)
+            (mode === "timeout" && member.isCommunicationDisabled())
         ) {
             return {
                 status: "failed",
@@ -1825,7 +1825,7 @@ class InfractionManager extends Service {
             processReason: false
         });
 
-        if (duration !== undefined) {
+        if (duration) {
             await this.queueService
                 .create(RoleQueue, {
                     data: {
@@ -1990,7 +1990,7 @@ class InfractionManager extends Service {
         if (respond) {
             const message = await channel
                 .send({
-                    content: `${emoji(this.application.getClient(), "check")} Cleared ${bold(
+                    content: `${emoji(this.application, "check")} Cleared ${bold(
                         finalCount.toString()
                     )} messages${user ? ` from user ${bold(user.username)}` : ""}`
                 })

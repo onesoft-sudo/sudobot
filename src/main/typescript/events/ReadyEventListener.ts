@@ -74,7 +74,17 @@ class ReadyEventListener extends EventListener<Events.Ready, Client> {
             } catch (e) {
                 this.logger.error(e);
                 this.logger.warn(
-                    "Failed to fetch some of the emojis. The bot may not show some of the emojis in it's responses."
+                    "Failed to fetch some of the emojis. The bot may not show some of the emojis in it's responses if dependent on guild-specific emojis."
+                );
+            }
+
+            try {
+                await this.application.client.application?.emojis.fetch();
+                this.logger.info("Successfully synced the application emojis.");
+            } catch (e) {
+                this.logger.error(e);
+                this.logger.warn(
+                    "Failed to fetch some of the emojis. The bot may not show some of the emojis in it's responses if dependent on application-specific emojis."
                 );
             }
         }
