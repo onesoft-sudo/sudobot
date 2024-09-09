@@ -1,0 +1,33 @@
+name: Update dev Branch
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Prepare Git
+        run: |
+          echo "${{ secrets.COMMIT_GPG_KEY }}" > private.key
+          gpg --import private.key
+          rm -f private.key
+          git config --global user.signingkey "6AE7B08C68169452"
+          git config --global commit.gpgsign true
+
+      - name: Merge main with dev
+        run: |
+          git switch dev && git merge main -m "merge: with branch main"
+
+      - name: Push
+        run: git push origin dev
+       
