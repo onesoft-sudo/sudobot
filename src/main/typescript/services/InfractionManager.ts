@@ -1372,7 +1372,7 @@ class InfractionManager extends Service {
 
         if (
             (mode === "role" && member.roles.cache.has(role!)) ||
-            (mode === "timeout" && member.communicationDisabledUntilTimestamp)
+            (mode === "timeout" && member.isCommunicationDisabled())
         ) {
             return {
                 status: "failed",
