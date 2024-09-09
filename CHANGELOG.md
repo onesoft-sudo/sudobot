@@ -2,6 +2,9 @@
 
 ### 09-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **fix:** remove unneeded override modifiers    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
   * **fix:** send command server sharing checks    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
@@ -9,6 +12,13 @@
   * **chore(extensions):** build extensions [skip ci]    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 09-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.9.1 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 08-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
