@@ -51,7 +51,8 @@ export const EnvironmentVariableSchema = z.object({
     SYSTEM_SHELL_EXEC_STREAM_PORT: z.string().regex(/^\d+/).optional(),
     CF_TURNSTILE_SECRET: z.string().optional(),
     PROXYCHECKIO_API_KEY: z.string().optional(),
-    DISCORD_INTENTS: z.string().optional()
+    DISCORD_INTENTS: z.string().optional(),
+    MODIFICATIONS_PUBLIC_URL: z.string().optional()
 });
 
 export type EnvironmentVariableRecord = z.infer<typeof EnvironmentVariableSchema>;

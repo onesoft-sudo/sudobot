@@ -19,6 +19,7 @@
 
 import type { ChatContext } from "@framework/commands/Command";
 import { Command } from "@framework/commands/Command";
+import { env } from "@main/env/env";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import type { MetadataType } from "../../core/DiscordKernel";
 
@@ -42,12 +43,23 @@ class AboutCommand extends Command {
                               url: avatar
                           }
                         : undefined,
-                    description: `
+                    description: (
+                        `
                         ## ${emoji ? emoji.toString() + " " : ""}SudoBot ${shortCodeName}\n
                         ### A free and open source Discord moderation bot.\n
                         This bot is **free software**, and you are welcome to redistribute it under certain conditions.
+                        If you make changes to the bot, you must make the source code of the modified version available to the public, under the same license.
                         See the [GNU Affero General Public License v3](https://www.gnu.org/licenses/agpl-3.0.en.html) for more detailed information.
-                    `.replaceAll(/\n([ \t]+)/gm, "\n"),
+                    ` +
+                        (env.MODIFICATIONS_PUBLIC_URL
+                            ? `
+                        ### Modifications\n
+                        This bot has been modified by the developers of this instance.\n
+                        According to **The GNU Affero General Public License v3**, the source code of the modifications must be made available to the public, under the same license.\n
+                        You can view the source code of this modified version [here](${env.MODIFICATIONS_PUBLIC_URL}).
+                    `
+                            : "")
+                    ).replaceAll(/\n([ \t]+)/gm, "\n"),
                     color: 0x007bff,
                     fields: [
                         {
