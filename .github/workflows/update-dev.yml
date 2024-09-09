@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency: 
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -23,6 +27,9 @@ jobs:
           rm -f private.key
           git config --global user.signingkey "6AE7B08C68169452"
           git config --global commit.gpgsign true
+          
+      - name: Git Pull
+        run: git pull --unshallow
 
       - name: Merge main with dev
         run: |
