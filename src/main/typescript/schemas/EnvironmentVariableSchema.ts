@@ -52,7 +52,8 @@ export const EnvironmentVariableSchema = z.object({
     CF_TURNSTILE_SECRET: z.string().optional(),
     PROXYCHECKIO_API_KEY: z.string().optional(),
     DISCORD_INTENTS: z.string().optional(),
-    MODIFICATIONS_PUBLIC_URL: z.string().optional()
+    MODIFICATIONS_PUBLIC_URL: z.string().optional(),
+    HIDE_MODIFICATIONS_URL_NOTICE: z.literal("1").optional()
 });
 
 export type EnvironmentVariableRecord = z.infer<typeof EnvironmentVariableSchema>;
