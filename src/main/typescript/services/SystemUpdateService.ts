@@ -38,10 +38,10 @@ class SystemUpdateService extends Service {
         };
 
         const latestStable = response.data.find(release =>
-            /^v?[1-9]+\.\d+\.\d+$/.test(release.tag_name)
+            /^v?[1-9]\d*\.\d+\.\d+$/.test(release.tag_name)
         );
         const latestUnstable = response.data.find(
-            release => !/^v?[1-9]+\.\d+\.\d+$/.test(release.tag_name)
+            release => !/^v?[1-9]\d*\.\d+\.\d+$/.test(release.tag_name)
         );
 
         const latestStableVersion = latestStable?.tag_name.startsWith("v")
