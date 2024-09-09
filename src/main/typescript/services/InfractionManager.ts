@@ -1825,7 +1825,7 @@ class InfractionManager extends Service {
             processReason: false
         });
 
-        if (duration !== undefined) {
+        if (duration) {
             await this.queueService
                 .create(RoleQueue, {
                     data: {
