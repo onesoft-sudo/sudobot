@@ -174,8 +174,6 @@ class ClearCommand extends Command {
     ): Promise<void> {
         const { user, count } = args;
 
-        console.log(args);
-
         if (!user && !count) {
             await context.error("You must specify a message count or a user to clear messages.");
             return;

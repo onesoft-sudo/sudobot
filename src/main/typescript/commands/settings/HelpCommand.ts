@@ -125,13 +125,6 @@ class HelpCommand extends Command {
                     : command
             );
 
-            console.log(
-                "expression",
-                subcommand && rootCommand.isolatedSubcommands
-                    ? `${rootCommand?.name}::${subcommand}`
-                    : command
-            );
-
             if (!resolvedCommand) {
                 return void (await context.error(
                     `Command \`${escapeInlineCode(commandExpression)}\` not found.`
