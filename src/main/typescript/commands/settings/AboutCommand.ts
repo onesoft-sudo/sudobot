@@ -19,6 +19,7 @@
 
 import type { ChatContext } from "@framework/commands/Command";
 import { Command } from "@framework/commands/Command";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import type { MetadataType } from "../../core/DiscordKernel";
 
 class AboutCommand extends Command {
@@ -79,6 +80,14 @@ class AboutCommand extends Command {
                         text: `Copyright © OSN Developers and the contributors 2022-${new Date().getFullYear()}.`
                     }
                 }
+            ],
+            components: [
+                new ActionRowBuilder<ButtonBuilder>().addComponents(
+                    new ButtonBuilder()
+                        .setStyle(ButtonStyle.Link)
+                        .setURL(metadata.funding.url)
+                        .setLabel("Donate")
+                )
             ]
         });
     }

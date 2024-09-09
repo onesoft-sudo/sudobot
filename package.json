@@ -34,6 +34,10 @@
         "release_codename": "Delicious Donut",
         "release_short_codename": "Donut"
     },
+    "funding": {
+        "type": "paypal",
+        "url": "https://www.sudobot.online/donate?utm_source=package-json&utm_medium=funding&utm_campaign=paypal"
+    },
     "scripts": {
         "start": "node build/out/main/typescript/main.js",
         "start:bun": "bun --tsconfig-override=tsconfig.bun.json src/bun.ts",
