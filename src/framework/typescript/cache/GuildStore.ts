@@ -17,6 +17,10 @@ abstract class GuildStore<I extends string | number | bigint | boolean | null | 
         return this._cache;
     }
 
+    protected get mutableCache(): Collection<`${Snowflake}:${I}`, T> {
+        return this._cache;
+    }
+
     public setInterval() {
         this._timeout = setInterval(() => {
             this.sweep();
@@ -47,6 +51,11 @@ abstract class GuildStore<I extends string | number | bigint | boolean | null | 
         this._cache.set(`${guildId}:${key}`, value);
         this._metadata.set(`${guildId}:${key}`, { timestamp: Date.now() });
         return this;
+    }
+
+    public delete(guildId: Snowflake, key: I): boolean {
+        this._metadata.delete(`${guildId}:${key}`);
+        return this._cache.delete(`${guildId}:${key}`);
     }
 
     public getMetadata(guildId: Snowflake, key: I): Metadata | undefined {

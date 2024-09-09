@@ -271,6 +271,28 @@ class CommandPermissionOverwriteCacheStore extends GuildStore<
 
         return base;
     }
+
+    public invalidate(overwrite: CommandPermissionOverwrite) {
+        const cached = this.get(overwrite.guildId, overwrite.commands[0]);
+
+        if (!cached) {
+            return;
+        }
+
+        for (const command of overwrite.commands) {
+            const actualName = this.commandManager.getCommand(command)?.name;
+
+            if (!actualName) {
+                continue;
+            }
+
+            const existing = this.get(overwrite.guildId, actualName);
+
+            if (existing) {
+                this.delete(overwrite.guildId, actualName);
+            }
+        }
+    }
 }
 
 export default CommandPermissionOverwriteCacheStore;

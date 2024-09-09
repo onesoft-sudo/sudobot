@@ -33,7 +33,10 @@ import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { isDevelopmentMode } from "@framework/utils/utils";
 import { env } from "@main/env/env";
-import { CommandPermissionOverwriteAction } from "@main/models/CommandPermissionOverwrite";
+import {
+    CommandPermissionOverwrite,
+    CommandPermissionOverwriteAction
+} from "@main/models/CommandPermissionOverwrite";
 import CommandRateLimiter from "@main/security/CommandRateLimiter";
 import {
     ApplicationCommandDataResolvable,
@@ -69,6 +72,10 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
 
     public async onReady() {
         await this.registerApplicationCommands();
+    }
+
+    public invalidatePermissionOverwrite(overwrite: CommandPermissionOverwrite) {
+        return this.store.invalidate(overwrite);
     }
 
     public getApplicationCommandDataResolvableList(): ApplicationCommandDataResolvable[] {
