@@ -18,9 +18,9 @@
  */
 
 import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
+import GuildMemberArgument from "@framework/arguments/GuildMemberArgument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
-import UserArgument from "@framework/arguments/UserArgument";
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
@@ -29,25 +29,25 @@ import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import DirectiveParsingService from "@main/services/DirectiveParsingService";
 import type SystemAuditLoggingService from "@main/services/SystemAuditLoggingService";
-import { APIEmbed, User } from "discord.js";
+import { APIEmbed, GuildMember } from "discord.js";
 
 type SendCommandArgs = {
     content: string;
-    user: User;
+    member: GuildMember;
 };
 
 @ArgumentSchema.Definition({
-    names: ["user"],
-    types: [UserArgument<true>],
+    names: ["member"],
+    types: [GuildMemberArgument<true>],
     optional: false,
     errorMessages: [
         {
-            ...UserArgument.defaultErrors,
-            [ErrorType.Required]: "You must specify a user to perform this action!"
+            ...GuildMemberArgument.defaultErrors,
+            [ErrorType.Required]: "You must specify a member to perform this action!"
         }
     ],
-    interactionName: "user",
-    interactionType: UserArgument<true>
+    interactionName: "member",
+    interactionType: GuildMemberArgument<true>
 })
 @ArgumentSchema.Definition({
     names: ["content"],
@@ -70,13 +70,13 @@ type SendCommandArgs = {
 })
 class SendCommand extends Command {
     public override readonly name = "send";
-    public override readonly description = "Sends a message to a user.";
+    public override readonly description = "Sends a message to a member.";
     public override readonly detailedDescription =
-        "Sends a message to a user. This command is used to send a message to a user directly.";
+        "Sends a message to a member. This command is used to send a message to a member directly.";
     public override readonly permissions = [PermissionFlags.ManageMessages];
     public override readonly defer = true;
     public override readonly ephemeral = true;
-    public override readonly usage = ["<user: User> <expression: RestString>"];
+    public override readonly usage = ["<member: GuildMember> <expression: RestString>"];
 
     @Inject("configManager")
     protected readonly configManager!: ConfigurationManager;
@@ -92,8 +92,8 @@ class SendCommand extends Command {
             this.buildChatInput()
                 .addUserOption(option =>
                     option
-                        .setName("user")
-                        .setDescription("The user to send the message to.")
+                        .setName("member")
+                        .setDescription("The member to send the message to.")
                         .setRequired(true)
                 )
                 .addStringOption(option =>
@@ -109,7 +109,7 @@ class SendCommand extends Command {
         context: Context<CommandMessage>,
         args: SendCommandArgs
     ): Promise<void> {
-        const { content, user } = args;
+        const { content, member } = args;
 
         if (!content) {
             return void context.error("You must specify the content of the message to send!");
@@ -134,7 +134,7 @@ class SendCommand extends Command {
             };
 
             try {
-                await user.send(options);
+                await member.send(options);
             } catch (error) {
                 return void context.error(
                     "An error occurred while sending the message to the user. Maybe they have DMs turned off or blocked me?"
