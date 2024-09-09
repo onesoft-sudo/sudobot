@@ -273,12 +273,6 @@ class CommandPermissionOverwriteCacheStore extends GuildStore<
     }
 
     public invalidate(overwrite: CommandPermissionOverwrite) {
-        const cached = this.get(overwrite.guildId, overwrite.commands[0]);
-
-        if (!cached) {
-            return;
-        }
-
         for (const command of overwrite.commands) {
             const actualName = this.commandManager.getCommand(command)?.name;
 
