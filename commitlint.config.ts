@@ -22,7 +22,8 @@ const config: UserConfig = {
                 "release",
                 "deps",
                 "security",
-                "i18n"
+                "i18n",
+                "merge"
             ]
         ],
         "signed-off-by": [RuleConfigSeverity.Error, "always", "Signed-off-by: "],
