@@ -15,7 +15,7 @@ abstract class Callable extends Function {
         return this.invoke(...args);
     }
 
-    public override [Symbol.toStringTag]() {
+    public [Symbol.toStringTag]() {
         return this.toString();
     }
 
