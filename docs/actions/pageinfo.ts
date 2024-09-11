@@ -24,7 +24,7 @@ export async function getPageInfo(pathname: string) {
 
     const urlEncodedPath = `docs/app${
         pathname === "/" ? "" : "/(docs)"
-    }${pathname.trim() + (pathname === "/" ? "/" : "")}page.${pageExtension}`;
+    }${pathname.trim() + (pathname[pathname.length - 1] !== "/" || pathname === "/" ? "/" : "")}page.${pageExtension}`;
 
     const githubURL = pathname
         ? `https://api.github.com/repos/onesoft-sudo/sudobot/commits?path=${encodeURIComponent(urlEncodedPath)}&sha=${encodeURIComponent(branch)}`
