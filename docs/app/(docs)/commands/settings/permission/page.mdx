@@ -1,0 +1,49 @@
+---
+title: "Command: `permission`"
+short_name: permission
+---
+
+import Modes from "@/components/MDX/Modes";
+import ValidPermissionIdentifiers from "@/components/MDX/ValidPermissionIdentifiers";
+
+# `permission`
+
+Manage permissions for a specific command.
+
+### Aliases
+
+-   `permission`
+-   `p`
+
+### Syntax
+
+```
+-permission <subcommand> <command> <permissions...>
+```
+
+### Subcommands
+
+-   `set <command> <permissions...>`: Set the permissions for a command.
+-   `clear <command>`: Clear the permissions for a command.
+-   `view <command>`: List the permissions for a command.
+
+### Permissions Argument
+
+The permission argument must be a space-separated list of valid permission identifiers. The identifiers are case-sensitive.
+Here is a list of valid permission identifiers:
+
+<ValidPermissionIdentifiers />
+
+### Required Permissions
+
+`MANAGE_GUILD`
+
+### Modes
+
+<Modes modes={["legacy", "interaction"]} />
+
+### Examples
+
+```
+-permission set ban Administrator
+```
