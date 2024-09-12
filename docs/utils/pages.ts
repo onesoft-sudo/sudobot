@@ -42,7 +42,7 @@ export const pages = [
     },
     {
         name: "Support",
-        url: SUPPORT_EMAIL_ADDRESS,
+        url: `mailto:${SUPPORT_EMAIL_ADDRESS}`,
     },
     {
         name: "Donate",
