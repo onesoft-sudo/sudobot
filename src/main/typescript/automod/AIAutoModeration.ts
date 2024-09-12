@@ -5,7 +5,7 @@ import { env } from "@main/env/env";
 import type { GuildConfig } from "@main/schemas/GuildConfigSchema";
 import type PermissionManagerService from "@main/services/PermissionManagerService";
 import { safeMemberFetch } from "@main/utils/fetch";
-import { GuildMember, Message } from "discord.js";
+import { GuildMember, Message, TextChannel } from "discord.js";
 import undici from "undici";
 
 @Name("aiAutoModeration")
@@ -294,7 +294,8 @@ class AIAutoModeration extends Service {
                     await this.application
                         .service("moderationActionService")
                         .takeActions(message.guild, message.member, actions, {
-                            message
+                            message,
+                            channel: message.channel as TextChannel
                         });
 
                     return;

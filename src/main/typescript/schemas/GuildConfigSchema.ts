@@ -194,12 +194,11 @@ export const GuildConfigSchema = z.object({
                             12: [
                                 {
                                     type: "mute",
-                                    duration: 1000 * 60 * 60 * 2 // 2 hours
-                                }
-                            ],
-                            "*": [
+                                    duration: 1000 * 60 * 60 * 2, // 2 hours
+                                    reason: "The system has detected that your messages might violate the rules."
+                                },
                                 {
-                                    type: "delete_message"
+                                    type: "clear"
                                 }
                             ]
                         })
