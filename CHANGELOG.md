@@ -1,7 +1,65 @@
 # Changelog
 
+### 12-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **fix:** set default config for AI automod    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 11-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **docs:** fix pageinfo action    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **docs:** add SEO description to new pages    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **docs:** add examples for the permission command    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **docs:** fix typo    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * merge: branch 'main' into dev
+  * **docs:** add new page for permission command    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 10-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 09-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **ci:** update update-dev.yml    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **ci:** update update-dev.yml    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **ci:** create update-dev.yml    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **chore:** update commitlint.config.ts    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
   * **fix(commands:permission):** since attribute is missing    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
@@ -60,6 +118,10 @@
 
 ### 09-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v10.14.2 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v10.14.1 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
