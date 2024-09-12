@@ -147,6 +147,19 @@ Our superset defines the following additional commit types:
         ```git-commit
         deps(dev): update dev dependencies
         ```
+    3. **`merge`**: If you perform a merge, use this commit type. When using the
+        `git merge` command, you can pass the `-m` option and a commit message as
+        an argument. Sometimes git can choose to not perform a merge commit and instead
+        perform a "fast-forward" merge. In that case, there will be no additional commit,
+        and therefore the message will be ignored. In other cases when Git creates a new commit,
+        the commit message will be used.<br />
+        Example:<br />
+
+        ```bash
+        git merge feature/new-permission-system -m "merge: feature/new-permission-system branch to main"
+        ```
+    4. **`i18n`**: This commit type is used when you add translations or make changes
+        that affect the internationalization of the bot.
 
 In addition to the rules described in the original Conventional Commits
 specification, we also have the following rules:
