@@ -1234,7 +1234,7 @@ class AuditLoggingService extends Service {
                 name: "Roles",
                 value:
                     member.roles.cache.size > 1
-                        ? member.roles.cache.map(r => roleMention(r.id)).join(", ")
+                        ? member.roles.cache.filter(r => r.id !== member.guild.id).map(r => roleMention(r.id)).join(", ")
                         : italic("None")
             },
             {
