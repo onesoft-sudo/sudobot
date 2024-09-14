@@ -46,7 +46,7 @@ export default function Search() {
 
                 {!isDesktop && (
                     <Button
-                        className="min-w-0 text-white"
+                        style={{ minWidth: 0, color: "white" }}
                         onClick={() => {
                             setToggled(true);
                         }}
