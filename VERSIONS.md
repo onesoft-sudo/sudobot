@@ -4,7 +4,7 @@ Here is a list of SudoBot's notable versions:
 
 | Version                                                             | Description        | Release Date | Supported Until | Status           | 
 |---------------------------------------------------------------------|--------------------|--------------|-----------------|------------------|
-| 1.x                                                                 | Initial release    | 2022-03-26   | -               | EOL              |
+| [1.x](https://github.com/onesoft-sudo/sudobot/tree/1.x)             | Initial release    | 2022-03-26   | -               | EOL              |
 | [2.x](https://github.com/onesoft-sudo/sudobot/tree/2.x)             | 2.x release        | 2022-04-30   | -               | EOL              |
 | [3.x](https://github.com/onesoft-sudo/sudobot/tree/3.x)             | 3.x release        | 2022-07-16   | -               | EOL              |
 | [4.x](https://github.com/onesoft-sudo/sudobot/tree/4.x)             | 4.x release        | 2022-08-02   | -               | EOL              |
