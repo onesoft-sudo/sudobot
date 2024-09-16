@@ -76,7 +76,7 @@
         "bcrypt": "^5.1.1",
         "chalk": "^4.1.2",
         "cors": "^2.8.5",
-        "date-fns": "^3.6.0",
+        "date-fns": "^4.0.0",
         "deepmerge": "^4.3.1",
         "discord.js": "^14.16.2",
         "dot-object": "^2.1.5",
