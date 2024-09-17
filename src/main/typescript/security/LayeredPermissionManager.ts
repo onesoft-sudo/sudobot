@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -32,11 +32,7 @@ type CachedPermissionOverwrite = Omit<PermissionOverwrite, "grantedSystemPermiss
     grantedSystemPermissions?: FluentSet<SystemPermissionLikeString>;
 };
 
-/**
- * A permission manager that uses layered permissions overwrites to control access to resources.
- *
- * @since 9.0.0
- */
+
 class LayeredPermissionManager extends AbstractPermissionManager {
     protected readonly overwrites = new Collection<
         `${Snowflake}:${Snowflake}`,

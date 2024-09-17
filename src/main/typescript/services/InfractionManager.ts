@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -2506,17 +2506,7 @@ class InfractionManager extends Service {
                     : undefined
             )
 
-            /**
-             * {
-                guildId: guild.id,
-                userId: user.id,
-                deliveryStatus: onlyNotified
-                    ? {
-                          not: InfractionDeliveryStatus.NotDelivered
-                      }
-                    : undefined
-            }
-             */
+            
         });
 
         const table = new AsciiTable3("Infractions");

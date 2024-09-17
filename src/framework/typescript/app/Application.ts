@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -188,9 +188,7 @@ class Application {
         return this.service(name, error);
     }
 
-    /**
-     * An alias of Application#getServiceByName.
-     */
+    
     public service<N extends ServiceName>(name: N, error = true): ServiceRecord[N] {
         const service = this.serviceManager.getServiceByName(name);
 

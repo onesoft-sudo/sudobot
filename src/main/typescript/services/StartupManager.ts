@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -369,38 +369,22 @@ class StartupManager extends Service implements HasEventListeners {
 }
 
 type RestartOptions = {
-    /**
-     * The message to broadcast to the instance before restarting.
-     *
-     * @default "System restart requested. Shutting down..."
-     */
+    
     message?: string;
 
-    /**
-     * The time to wait before restarting the system.
-     *
-     * @default 0
-     */
+    
     waitFor?: number;
 
-    /**
-     * The channel ID to broadcast the message to.
-     */
+    
     channelId?: Snowflake;
 
-    /**
-     * The guild ID to broadcast the message to.
-     */
+    
     guildId?: Snowflake;
 
-    /**
-     * The message ID to edit.
-     */
+    
     messageId?: Snowflake;
 
-    /**
-     * The key to use for the restart. This is a 2FA code.
-     */
+    
     key?: string | null;
 
     /**

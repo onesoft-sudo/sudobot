@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -81,36 +81,23 @@ export type CommandGuardLike = GuardLike | typeof Guard;
 export type CommandPermissionLike = PermissionLike | PermissionsString | typeof Permission;
 export type PlainPermissionResolvable = PermissionsString | bigint;
 
-/**
- * Represents an abstract command.
- * @template T - The type of context the command supports.
- */
+
 abstract class Command<T extends ContextType = ContextType.ChatInput | ContextType.Legacy>
     implements Builder<CommandBuilders>
 {
-    /**
-     * The name of the command.
-     */
+    
     public abstract readonly name: string;
 
-    /**
-     * The group of the command.
-     */
+    
     public group!: string;
 
-    /**
-     * The description of the command.
-     */
+    
     public abstract readonly description: string;
 
-    /**
-     * The detailed description of the command.
-     */
+    
     public readonly detailedDescription?: string;
 
-    /**
-     * The aliases of the command.
-     */
+    
     public readonly aliases: string[] = [];
 
     /**

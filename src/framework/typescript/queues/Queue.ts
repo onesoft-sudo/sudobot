@@ -1,21 +1,21 @@
 /*
-* This file is part of SudoBot.
-*
-* Copyright (C) 2021-2024 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 import { queues } from "@main/models/Queue";
 import type { Snowflake } from "discord.js";
@@ -187,22 +187,14 @@ abstract class Queue<T extends StorableData = StorableData> extends HasApplicati
         (this.repeat ? clearInterval : clearTimeout)(this._timeout);
     }
 
-    /**
-     * Schedules this queue to run at the specified time.
-     *
-     * @returns The ID of the queue
-     */
+    
     public async schedule() {
         const id = await this.save();
         this.setTimeout();
         return id;
     }
 
-    /**
-     * Cancels this queue.
-     *
-     * @returns The ID of the queue
-     */
+    
     public cancel() {
         this.application.logger.debug(`Canceling queue: ${this._id}`);
         this.clearTimeout();

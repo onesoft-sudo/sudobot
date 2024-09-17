@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2023 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -137,14 +137,7 @@ class ClassLoader {
         return null;
     }
 
-    /**
-     * Load a class from a file.
-     *
-     * @param resolvable The file to load the class from.
-     * @returns {Promise<Class<unknown>>} The class object.
-     * @throws {InvalidClassFileError} If the file is not a TypeScript or JavaScript file.
-     * @throws {NoClassDefFoundError} If no class definition is found in the file.
-     */
+    
     public async loadClass(resolvable: File | string): Promise<Class<unknown>> {
         const classPath = typeof resolvable === "string" ? resolvable : resolvable.path;
 
@@ -161,14 +154,7 @@ class ClassLoader {
         return classObject;
     }
 
-    /**
-     * Load all classes from a directory.
-     *
-     * @param directory The directory to load classes from.
-     * @returns {Promise<Array<Class<unknown>>>} An array of class objects.
-     * @throws {InvalidClassFileError} If a file is not a TypeScript or JavaScript file.
-     * @throws {NoClassDefFoundError} If no class definition is found in a file.
-     */
+    
     public async loadClassesFromDirectory(directory: string): Promise<Array<Class<unknown>>> {
         const classFiles = await this.iterateDirectoryRecursively(directory);
         const results = [];

@@ -1,21 +1,21 @@
 /*
-* This file is part of SudoBot.
-*
-* Copyright (C) 2021-2024 OSN Developers.
-*
-* SudoBot is free software; you can redistribute it and/or modify it
-* under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* SudoBot is distributed in the hope that it will be useful, but
-* WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
-*/
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 import type Application from "@framework/app/Application";
 import type { CommandManagerServiceInterface } from "@framework/contracts/CommandManagerServiceInterface";
@@ -44,14 +44,7 @@ class CommandRateLimiter extends HasApplication implements CommandRateLimiterCon
         }, CommandRateLimiter.INTERVAL);
     }
 
-    /**
-     * Check if a command is rate limited for a user, and increment the attempt count if it is.
-     *
-     * @param commandName The command to check. Must be the canonical name of the command.
-     * @param guildId The guild ID to check.
-     * @param userId The user ID to check.
-     * @returns A boolean indicating if the command is rate limited.
-     */
+    
     public async isRateLimitedWithHit(
         commandName: string,
         guildId: Snowflake,

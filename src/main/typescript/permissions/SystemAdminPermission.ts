@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -23,17 +23,7 @@ import { Permission } from "@framework/permissions/Permission";
 import { GuildMember } from "discord.js";
 import type ConfigurationManager from "../services/ConfigurationManager";
 
-/**
- * System Administrator permission. Grants access to
- * every resource and allows every action, ignoring
- * all permission checks.
- *
- * This is the only permission that might be invoked
- * twice or more in a single command execution.
- *
- * Therefore, it is important to not put any heavy
- * operations in this permission.
- */
+
 class SystemAdminPermission extends Permission {
     protected override readonly name = "system.admin";
 

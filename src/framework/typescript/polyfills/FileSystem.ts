@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2023 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -27,16 +27,9 @@ type ReadFileContentOptions<T extends boolean> = {
 
 type ReadFileResult<T extends boolean, J> = T extends true ? J : string;
 
-/**
- * A file system utility class, that works with both Node.js and Bun.
- */
+
 export default class FileSystem {
-    /**
-     * Reads the contents of a file.
-     * @param path - The path of the file to read.
-     * @param options - The options for reading the file.
-     * @returns A promise that resolves to the contents of the file.
-     */
+    
     public static async readFileContents<T extends boolean = false>(
         path: string,
         { json }: ReadFileContentOptions<T> = {}
@@ -57,12 +50,7 @@ export default class FileSystem {
         return contents as ReadFileResult<T, unknown>;
     }
 
-    /**
-     * Checks if a file exists.
-     *
-     * @param filePath - The path of the file to check.
-     * @returns A promise that resolves to a boolean indicating if the file exists.
-     */
+    
     public static async exists(filePath: string) {
         if (process.versions.bun) {
             return Bun.file(filePath).exists();
@@ -71,14 +59,7 @@ export default class FileSystem {
         }
     }
 
-    /**
-     * Writes the contents to a file.
-     *
-     * @param path - The path of the file to write to.
-     * @param contents - The contents to write to the file.
-     * @returns A promise that resolves when the file is written.
-     * @throws An error if the file cannot be written.
-     */
+    
     public static async writeFileContents<J extends boolean = false>(
         path: string,
         contents: J extends true ? object : StringLike,
