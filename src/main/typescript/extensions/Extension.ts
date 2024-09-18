@@ -154,7 +154,7 @@ export abstract class Extension {
         }
 
         for (const event of events) {
-            this.manager.loadEventClass(this.id, event).catch(this.application.logger.error);
+            this.manager.loadEventClass(this.id, event);
         }
 
         for (const service of services) {
