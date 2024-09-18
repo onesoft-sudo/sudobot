@@ -107,7 +107,7 @@ class RestartCommand extends Command {
                 components: [new ActionRowBuilder<ButtonBuilder>().addComponents(...buttons)]
             });
 
-            await this.startupManager.requestRestart({
+            this.startupManager.requestRestart({
                 guildId,
                 channelId,
                 message: `Restart command was executed by ${interaction.user.username} (${interaction.user.id})`,
@@ -154,8 +154,8 @@ class RestartCommand extends Command {
             components: [
                 new ActionRowBuilder<ButtonBuilder>().addComponents(
                     ...this.buildButtons(
-                        context.guildId!,
-                        context.channelId!,
+                        context.guildId,
+                        context.channelId,
                         context.member!.user.id,
                         mfaKey
                     )
@@ -165,25 +165,27 @@ class RestartCommand extends Command {
 
         if (reply) {
             setTimeout(() => {
-                reply.edit({
-                    embeds: [
-                        {
-                            color: 0xf14a60,
-                            description: `### ${context.emoji("restart")} System Restart\nOperation cancelled due to inactivity.`
-                        }
-                    ],
-                    components: [
-                        new ActionRowBuilder<ButtonBuilder>().addComponents(
-                            ...this.buildButtons(
-                                context.guildId!,
-                                context.channelId!,
-                                context.member!.user.id,
-                                mfaKey,
-                                true
+                reply
+                    .edit({
+                        embeds: [
+                            {
+                                color: 0xf14a60,
+                                description: `### ${context.emoji("restart")} System Restart\nOperation cancelled due to inactivity.`
+                            }
+                        ],
+                        components: [
+                            new ActionRowBuilder<ButtonBuilder>().addComponents(
+                                ...this.buildButtons(
+                                    context.guildId,
+                                    context.channelId,
+                                    context.member!.user.id,
+                                    mfaKey,
+                                    true
+                                )
                             )
-                        )
-                    ]
-                });
+                        ]
+                    })
+                    .catch(this.application.logger.error);
             }, 180_000); // 3 minutes
         }
     }

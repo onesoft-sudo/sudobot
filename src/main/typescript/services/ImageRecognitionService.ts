@@ -148,7 +148,7 @@ class ImageRecognitionService extends Service {
         }
 
         const tensor = this.tensorFlow.node.decodeImage(image, 3, undefined, false);
-        const predictions = await this.nsfwJsModel!.classify(tensor as Tensor3D);
+        const predictions = await this.nsfwJsModel!.classify(tensor);
         const result: Record<string, number> = {};
 
         for (const prediction of predictions) {

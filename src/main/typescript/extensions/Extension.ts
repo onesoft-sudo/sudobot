@@ -154,11 +154,11 @@ export abstract class Extension {
         }
 
         for (const event of events) {
-            this.manager.loadEventClass(this.id, event);
+            this.manager.loadEventClass(this.id, event).catch(this.application.logger.error);
         }
 
         for (const service of services) {
-            this.serviceManager.loadServiceClass(service);
+            this.serviceManager.loadServiceClass(service).catch(this.application.logger.error);
         }
     }
 }

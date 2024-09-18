@@ -32,7 +32,10 @@ export function GatewayEventListener(event: keyof ClientEvents | "raw") {
     ) => {
         if (typeof contextOrMethodName === "string") {
             const metadata =
-                Reflect.getMetadata("event_listeners", originalMethodOrTarget as object) ?? [];
+                (Reflect.getMetadata("event_listeners", originalMethodOrTarget as object) as Record<
+                    string,
+                    unknown
+                >[]) ?? [];
 
             metadata.push({
                 event,

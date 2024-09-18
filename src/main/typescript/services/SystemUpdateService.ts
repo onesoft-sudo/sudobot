@@ -244,7 +244,7 @@ class SystemUpdateService extends Service {
         }
 
         if (restart) {
-            await this.application.service("startupManager").requestRestart({ metadata: "update" });
+            this.application.service("startupManager").requestRestart({ metadata: "update" });
         }
 
         return true;

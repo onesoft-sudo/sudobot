@@ -20,6 +20,7 @@
 import FileSystem from "@framework/polyfills/FileSystem";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
+import { noOperation } from "@framework/utils/utils";
 import { emoji } from "@main/utils/emoji";
 import { version } from "@root/package.json";
 import archiver from "archiver";
@@ -182,7 +183,7 @@ class StartupManager extends Service implements HasEventListeners {
         });
     }
 
-    public async requestRestart({
+    public requestRestart({
         channelId,
         guildId,
         message,
@@ -191,30 +192,34 @@ class StartupManager extends Service implements HasEventListeners {
         key,
         metadata
     }: RestartOptions = {}) {
-        setTimeout(waitFor).then(async () => {
-            const restartJsonFile = path.join(systemPrefix("tmp", true), "restart.json");
+        setTimeout(waitFor)
+            .then(async () => {
+                const restartJsonFile = path.join(systemPrefix("tmp", true), "restart.json");
 
-            await FileSystem.writeFileContents(
-                restartJsonFile,
-                JSON.stringify({
-                    guildId,
-                    channelId,
-                    messageId,
-                    message,
-                    time: Date.now(),
-                    key,
-                    metadata
-                })
-            );
+                await FileSystem.writeFileContents(
+                    restartJsonFile,
+                    JSON.stringify({
+                        guildId,
+                        channelId,
+                        messageId,
+                        message,
+                        time: Date.now(),
+                        key,
+                        metadata
+                    })
+                );
 
-            this.application.logger.info("Restart requested. Shutting down...");
+                this.application.logger.info("Restart requested. Shutting down...");
 
-            if (message) {
-                this.application.logger.info(`Broadcasted Message: ${message}`);
-            }
+                if (message) {
+                    this.application.logger.info(`Broadcasted Message: ${message}`);
+                }
 
-            process.exit(this.application.service("configManager").systemConfig.restart_exit_code);
-        });
+                process.exit(
+                    this.application.service("configManager").systemConfig.restart_exit_code
+                );
+            })
+            .catch(this.application.logger.error);
 
         return message;
     }
@@ -270,18 +275,22 @@ class StartupManager extends Service implements HasEventListeners {
                                   ? (reason as string).toString()
                                   : (reason as string)
                           )
-                        : reason
+                        : (reason as string)
                 }`
-            ).finally(() => process.exit(-1));
+            )
+                .catch(noOperation)
+                .finally(() => process.exit(-1));
         });
 
-        process.on("uncaughtException", async (error: Error) => {
+        process.on("uncaughtException", (error: Error) => {
             process.removeAllListeners("uncaughtException");
             this.application.logger.error(error);
             this.sendErrorLog(
                 error.stack ??
                     `Uncaught ${error.name.trim() === "" ? "Error" : error.name}: ${error.message}`
-            ).finally(() => process.exit(-1));
+            )
+                .catch(noOperation)
+                .finally(() => process.exit(-1));
         });
     }
 
@@ -348,7 +357,7 @@ class StartupManager extends Service implements HasEventListeners {
             });
 
             archive.directory(systemPrefix("storage", true), false);
-            archive.finalize();
+            archive.finalize().catch(reject);
         });
     }
 
@@ -364,27 +373,16 @@ class StartupManager extends Service implements HasEventListeners {
             )}`
         );
         this.application.logger.info("Sending initial backup");
-        this.sendConfigBackupCopy();
+        this.sendConfigBackupCopy().catch(this.application.logger.error);
     }
 }
 
 type RestartOptions = {
-    
     message?: string;
-
-    
     waitFor?: number;
-
-    
     channelId?: Snowflake;
-
-    
     guildId?: Snowflake;
-
-    
     messageId?: Snowflake;
-
-    
     key?: string | null;
 
     /**

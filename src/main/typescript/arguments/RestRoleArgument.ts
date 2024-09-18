@@ -116,7 +116,7 @@ class RestRoleArgument<E extends boolean = false> extends Argument<If<E, Role[],
     }
 
     public override toString(): string {
-        return this.transformedValue!.map(role => role?.name).join(", ");
+        return this.transformedValue.map(role => role?.name).join(", ");
     }
 }
 

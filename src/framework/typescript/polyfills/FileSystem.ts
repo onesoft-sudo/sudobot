@@ -27,9 +27,7 @@ type ReadFileContentOptions<T extends boolean> = {
 
 type ReadFileResult<T extends boolean, J> = T extends true ? J : string;
 
-
 export default class FileSystem {
-    
     public static async readFileContents<T extends boolean = false>(
         path: string,
         { json }: ReadFileContentOptions<T> = {}
@@ -50,7 +48,6 @@ export default class FileSystem {
         return contents as ReadFileResult<T, unknown>;
     }
 
-    
     public static async exists(filePath: string) {
         if (process.versions.bun) {
             return Bun.file(filePath).exists();
@@ -59,15 +56,16 @@ export default class FileSystem {
         }
     }
 
-    
     public static async writeFileContents<J extends boolean = false>(
         path: string,
         contents: J extends true ? object : StringLike,
         json: J = false as J
     ): Promise<void> {
         if (process.versions.bun) {
+            // eslint-disable-next-line @typescript-eslint/no-base-to-string
             await Bun.write(path, json ? JSON.stringify(contents) : contents.toString());
         } else {
+            // eslint-disable-next-line @typescript-eslint/no-base-to-string
             await writeFile(path, json ? JSON.stringify(contents) : contents.toString(), {
                 encoding: "utf-8"
             });

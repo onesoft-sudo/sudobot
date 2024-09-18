@@ -47,12 +47,14 @@ class MessageUpdateEventListener extends EventListener<Events.MessageUpdate> {
             return;
         }
 
-        this.auditLoggingService.emitLogEvent(
-            newMessage.guildId!,
-            LogEventType.MessageUpdate,
-            oldMessage as Message<true>,
-            newMessage as Message<true>
-        );
+        this.auditLoggingService
+            .emitLogEvent(
+                newMessage.guildId,
+                LogEventType.MessageUpdate,
+                oldMessage as Message<true>,
+                newMessage
+            )
+            .catch(this.application.logger.error);
 
         if (
             oldMessage.content !== newMessage.content ||

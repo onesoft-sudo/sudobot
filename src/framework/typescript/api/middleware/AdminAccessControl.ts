@@ -23,7 +23,7 @@ import type Request from "../http/Request";
 // FIXME
 const ROOT_USER_ID = 1;
 
-export default async function AdminAccessControl(
+export default function AdminAccessControl(
     request: Request,
     response: Response,
     next: NextFunction

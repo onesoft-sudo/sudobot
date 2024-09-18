@@ -114,9 +114,9 @@ class InfractionDurationCommand extends Command {
         }
 
         const { error, infraction, success } = await this.infractionManager.updateDurationById(
-            context.guildId!,
+            context.guildId,
             id,
-            typeof duration === "string" ? null : (duration as Duration),
+            typeof duration === "string" ? null : (duration),
             !context.isChatInput() || context.options.getBoolean("notify") !== false
         );
 

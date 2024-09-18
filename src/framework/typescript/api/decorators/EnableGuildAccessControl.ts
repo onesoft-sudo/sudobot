@@ -30,7 +30,9 @@ export function EnableGuildAccessControl() {
     ) => {
         if (typeof contextOrMethodName === "string") {
             const metadata =
-                Reflect.getMetadata("gac_middleware", originalMethodOrTarget as object) ?? {};
+                (Reflect.getMetadata("gac_middleware", originalMethodOrTarget as object) as
+                    | Record<string, unknown>
+                    | undefined) ?? {};
             const middleware = (
                 application: Application,
                 req: Request,

@@ -21,7 +21,7 @@ import type Application from "@framework/app/Application";
 import type { CommandManagerServiceInterface } from "@framework/contracts/CommandManagerServiceInterface";
 import type CommandRateLimiterContract from "@framework/contracts/CommandRateLimiterContract";
 import { HasApplication } from "@framework/types/HasApplication";
-import type { Snowflake } from "discord.js";
+import type { Awaitable, Snowflake } from "discord.js";
 import { Collection } from "discord.js";
 
 class CommandRateLimiter extends HasApplication implements CommandRateLimiterContract {
@@ -44,12 +44,11 @@ class CommandRateLimiter extends HasApplication implements CommandRateLimiterCon
         }, CommandRateLimiter.INTERVAL);
     }
 
-    
-    public async isRateLimitedWithHit(
+    public isRateLimitedWithHit(
         commandName: string,
         guildId: Snowflake,
         userId: Snowflake
-    ): Promise<boolean> {
+    ): Awaitable<boolean> {
         const config =
             this.application.service("configManager").config[guildId]?.commands?.ratelimiting;
         const globalKey = `${userId}_${commandName}` as const;

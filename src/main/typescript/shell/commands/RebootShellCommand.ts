@@ -24,7 +24,7 @@ class RebootShellCommand extends ShellCommand {
     public override readonly name: string = "reboot";
     public override readonly aliases: string[] = ["restart"];
 
-    public override async execute(context: ShellCommandContext): Promise<void> {
+    public override execute(context: ShellCommandContext): void {
         if (!context.elevatedPrivileges) {
             context.println("reboot: Operation not permitted", "stderr");
             context.println(

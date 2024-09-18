@@ -77,7 +77,8 @@ class MessageScheduleQueue extends Queue<MessageScheduleQueuePayload> {
                             guildId,
                             runsAt: new Date(Date.now() + deleteAfter)
                         })
-                        .schedule();
+                        .schedule()
+                        .catch(this.application.logger.error);
                 }
             } catch (error) {
                 this.application.logger.error(error);
@@ -87,13 +88,16 @@ class MessageScheduleQueue extends Queue<MessageScheduleQueuePayload> {
             const user = await fetchUser(this.application.client, this.userId);
 
             if (user) {
-                this.application.service("systemAuditLogging").logEchoCommandExecuted({
-                    command: "schedule",
-                    guild,
-                    rawCommandContent: content,
-                    generatedMessageOptions: options,
-                    user
-                });
+                this.application
+                    .service("systemAuditLogging")
+                    .logEchoCommandExecuted({
+                        command: "schedule",
+                        guild,
+                        rawCommandContent: content,
+                        generatedMessageOptions: options,
+                        user
+                    })
+                    .catch(this.application.logger.error);
             }
         } catch (error) {
             this.application.logger.error(error);

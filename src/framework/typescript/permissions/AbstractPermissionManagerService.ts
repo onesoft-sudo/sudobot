@@ -103,7 +103,7 @@ abstract class AbstractPermissionManagerService
         return await systemAdminPermission.has(member);
     }
 
-    public async canBypassGuildRestrictions(member: GuildMember) {
+    public canBypassGuildRestrictions(member: GuildMember) {
         return (
             member.guild.ownerId === member.id ||
             member.permissions.has(PermissionFlagsBits.Administrator, true)

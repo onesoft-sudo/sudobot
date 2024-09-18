@@ -31,8 +31,7 @@ import TranslationService from "@main/services/TranslationService";
 import {
     type ApplicationCommandOptionChoiceData,
     EmbedBuilder,
-    type Interaction,
-    User
+    type Interaction
 } from "discord.js";
 
 type TranslateCommandArgs = {
@@ -104,7 +103,7 @@ class TranslateCommand extends Command<ContextType> {
     }
 
     @GatewayEventListener("interactionCreate")
-    public async onInteractionCreate(interaction: Interaction) {
+    public onInteractionCreate(interaction: Interaction) {
         if (!interaction.isAutocomplete() || interaction.commandName !== this.name) {
             return;
         }
@@ -225,12 +224,10 @@ class TranslateCommand extends Command<ContextType> {
                     color: 0x007bff,
                     author: {
                         name: context.isMessageContextMenu()
-                            ? (context.commandMessage.targetMessage.author as User).username
+                            ? context.commandMessage.targetMessage.author.username
                             : "Translation",
                         iconURL: context.isMessageContextMenu()
-                            ? (
-                                  context.commandMessage.targetMessage.author as User
-                              ).displayAvatarURL()
+                            ? context.commandMessage.targetMessage.author.displayAvatarURL()
                             : undefined
                     },
                     description: translation,

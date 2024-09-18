@@ -69,10 +69,8 @@ class GuildMemberRemoveEventListener extends EventListener<Events.GuildMemberRem
                         })
                         .returning({ id: infractions.id });
 
-                    this.auditLoggingService.emitLogEvent(
-                        member.guild.id,
-                        LogEventType.GuildMemberKick,
-                        {
+                    this.auditLoggingService
+                        .emitLogEvent(member.guild.id, LogEventType.GuildMemberKick, {
                             member,
                             moderator:
                                 log.executor ??
@@ -81,15 +79,13 @@ class GuildMemberRemoveEventListener extends EventListener<Events.GuildMemberRem
                                     : undefined),
                             reason: log.reason ?? undefined,
                             infractionId: infraction.id
-                        }
-                    );
+                        })
+                        .catch(this.application.logger.error);
                 }
 
-                this.auditLoggingService.emitLogEvent(
-                    member.guild.id,
-                    LogEventType.GuildMemberRemove,
-                    member
-                );
+                this.auditLoggingService
+                    .emitLogEvent(member.guild.id, LogEventType.GuildMemberRemove, member)
+                    .catch(this.application.logger.error);
             } catch (error) {
                 this.application.logger.error(
                     "An error occurred while processing the GuildMemberRemove event",

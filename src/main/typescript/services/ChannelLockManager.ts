@@ -27,7 +27,7 @@ import { and, eq, inArray } from "drizzle-orm";
 
 @Name("channelLockManager")
 class ChannelLockManager extends Service {
-    private filter(permission: string) {
+    private filter(this: void, permission: string) {
         return [
             "SendMessages",
             "SendTTSMessages",

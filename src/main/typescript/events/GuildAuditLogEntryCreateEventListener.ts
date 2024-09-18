@@ -38,7 +38,7 @@ class GuildAuditLogEntryCreateEventListener extends EventListener<Events.GuildAu
             auditLogEntry.action === AuditLogEvent.MemberBanRemove
         ) {
             const executor =
-                auditLogEntry.executor ?? auditLogEntry.executorId
+                (auditLogEntry.executor ?? auditLogEntry.executorId)
                     ? await fetchUser(this.client, auditLogEntry.executorId!)
                     : null;
 
@@ -70,19 +70,21 @@ class GuildAuditLogEntryCreateEventListener extends EventListener<Events.GuildAu
                 })
                 .returning({ id: infractions.id });
 
-            this.auditLoggingService.emitLogEvent(
-                guild.id,
-                auditLogEntry.action === AuditLogEvent.MemberBanAdd
-                    ? LogEventType.MemberBanAdd
-                    : LogEventType.MemberBanRemove,
-                {
-                    guild,
-                    moderator: executor ?? undefined,
-                    user,
-                    reason: auditLogEntry.reason ?? undefined,
-                    infractionId: infraction.id
-                }
-            );
+            this.auditLoggingService
+                .emitLogEvent(
+                    guild.id,
+                    auditLogEntry.action === AuditLogEvent.MemberBanAdd
+                        ? LogEventType.MemberBanAdd
+                        : LogEventType.MemberBanRemove,
+                    {
+                        guild,
+                        moderator: executor ?? undefined,
+                        user,
+                        reason: auditLogEntry.reason ?? undefined,
+                        infractionId: infraction.id
+                    }
+                )
+                .catch(this.application.logger.error);
         }
     }
 }

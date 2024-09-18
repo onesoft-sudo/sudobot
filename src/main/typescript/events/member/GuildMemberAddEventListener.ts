@@ -39,9 +39,11 @@ class GuildMemberAddEventListener extends EventListener<Events.GuildMemberAdd> {
     protected readonly antiMemberJoinService!: AntiMemberJoinService;
 
     public override async execute(member: GuildMember): Promise<void> {
-        this.auditLoggingService.emitLogEvent(member.guild.id, LogEventType.GuildMemberAdd, member);
+        this.auditLoggingService
+            .emitLogEvent(member.guild.id, LogEventType.GuildMemberAdd, member)
+            .catch(this.application.logger.error);
         await this.antiMemberJoinService.onGuildMemberAdd(member);
-        this.infractionManager.reapplyMuteIfNeeded(member);
+        this.infractionManager.reapplyMuteIfNeeded(member).catch(this.application.logger.error);
     }
 }
 

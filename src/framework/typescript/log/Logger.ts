@@ -45,21 +45,21 @@ export class Logger {
         private readonly name: string,
         private readonly logTime: boolean = false
     ) {
-        this.log = this.log.bind(this);
+        (this as unknown as Logger).log = (this as unknown as Logger).log.bind(this);
         this.print = this.print.bind(this);
         this.colorize = this.colorize.bind(this);
-        this.debug = this.debug.bind(this);
+        this.debug = this.debug.bind(this as unknown as void);
         this.perfStart = this.perfStart.bind(this);
         this.perfEnd = this.perfEnd.bind(this);
-        this.perf = this.perf.bind(this);
-        this.info = this.info.bind(this);
-        this.warn = this.warn.bind(this);
-        this.error = this.error.bind(this);
-        this.fatal = this.fatal.bind(this);
-        this.critical = this.critical.bind(this);
-        this.success = this.success.bind(this);
-        this.event = this.event.bind(this);
-        this.bug = this.bug.bind(this);
+        this.perf = this.perf.bind(this as unknown as void);
+        this.info = this.info.bind(this as unknown as void);
+        this.warn = this.warn.bind(this as unknown as void);
+        this.error = this.error.bind(this as unknown as void);
+        this.fatal = this.fatal.bind(this as unknown as void);
+        this.critical = this.critical.bind(this as unknown as void);
+        this.success = this.success.bind(this as unknown as void);
+        this.event = this.event.bind(this as unknown as void);
+        this.bug = this.bug.bind(this as unknown as void);
     }
 
     public on(event: "log", listener: (message: string) => void) {
@@ -77,7 +77,9 @@ export class Logger {
                     ? "warn"
                     : "error";
         const beginning = `${
-            this.logTime ? `${chalk.gray(this.formatter.format(new Date()))} ` : ""
+            (this as unknown as Logger).logTime
+                ? `${chalk.gray(this.formatter.format(new Date()))} `
+                : ""
         }${this.colorize(`[${this.name}:${levelName}]`, level)}`;
         this.print(methodName, beginning, ...args);
 
@@ -133,16 +135,16 @@ export class Logger {
         }
     }
 
-    public debug(...args: unknown[]) {
+    public debug(this: void, ...args: unknown[]) {
         if (!isDevelopmentMode()) {
             return;
         }
 
-        this.log(LogLevel.Debug, ...args);
+        (this as unknown as Logger).log(LogLevel.Debug, ...args);
     }
 
-    public bug(...args: unknown[]) {
-        this.log(LogLevel.Bug, chalk.red("BUG:"), ...args);
+    public bug(this: void, ...args: unknown[]) {
+        (this as unknown as Logger).log(LogLevel.Bug, chalk.red("BUG:"), ...args);
     }
 
     public perfStart(id: string, ...args: unknown[]) {
@@ -153,40 +155,40 @@ export class Logger {
         this.perf("timeEnd", id, ...args);
     }
 
-    private perf(method: "time" | "timeEnd", id: string, ...args: unknown[]) {
+    private perf(this: void, method: "time" | "timeEnd", id: string, ...args: unknown[]) {
         if (!isDevelopmentMode()) {
             return;
         }
 
         console[method](id);
-        this.log(LogLevel.Performance, chalk.magenta(id), ...args);
+        (this as unknown as Logger).log(LogLevel.Performance, chalk.magenta(id), ...args);
     }
 
-    public info(...args: unknown[]) {
-        this.log(LogLevel.Info, ...args);
+    public info(this: void, ...args: unknown[]) {
+        (this as unknown as Logger).log(LogLevel.Info, ...args);
     }
 
-    public warn(...args: unknown[]) {
-        this.log(LogLevel.Warn, ...args);
+    public warn(this: void, ...args: unknown[]) {
+        (this as unknown as Logger).log(LogLevel.Warn, ...args);
     }
 
-    public error(...args: unknown[]) {
-        this.log(LogLevel.Error, ...args);
+    public error(this: void, ...args: unknown[]) {
+        (this as unknown as Logger).log(LogLevel.Error, ...args);
     }
 
-    public fatal(...args: unknown[]) {
-        this.log(LogLevel.Fatal, ...args);
+    public fatal(this: void, ...args: unknown[]) {
+        (this as unknown as Logger).log(LogLevel.Fatal, ...args);
     }
 
-    public critical(...args: unknown[]) {
-        this.log(LogLevel.Critical, ...args);
+    public critical(this: void, ...args: unknown[]) {
+        (this as unknown as Logger).log(LogLevel.Critical, ...args);
     }
 
-    public success(...args: unknown[]) {
-        this.log(LogLevel.Success, ...args);
+    public success(this: void, ...args: unknown[]) {
+        (this as unknown as Logger).log(LogLevel.Success, ...args);
     }
 
-    public event(...args: unknown[]) {
-        this.log(LogLevel.Event, ...args);
+    public event(this: void, ...args: unknown[]) {
+        (this as unknown as Logger).log(LogLevel.Event, ...args);
     }
 }

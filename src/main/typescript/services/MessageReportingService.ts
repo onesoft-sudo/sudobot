@@ -187,7 +187,7 @@ class MessageReportingService extends Service {
 
         await message.delete().catch(this.logger.error);
 
-        const channel = await fetchChannel(message.guild, config.logging_channel!);
+        const channel = await fetchChannel(message.guild, config.logging_channel);
 
         if (!channel?.isTextBased()) {
             return null;

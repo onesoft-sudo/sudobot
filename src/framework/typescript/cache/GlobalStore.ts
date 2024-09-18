@@ -48,6 +48,7 @@ type Dependency = string | number | boolean | undefined | null | object;
 
 const store = new Collection<CacheKey, CacheData<CacheKey>>();
 
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 export const get = <K extends CacheKey>(key: K): CacheValue<K> | undefined => {
     const data = store.get(key);
 
@@ -64,6 +65,7 @@ export const get = <K extends CacheKey>(key: K): CacheValue<K> | undefined => {
 
 export const set = async <K extends CacheKey>(
     key: K,
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
     value: CacheValue<K> | (() => Awaitable<CacheValue<K>>),
     options?: CacheOptions
 ): Promise<boolean> => {
@@ -78,14 +80,16 @@ export const set = async <K extends CacheKey>(
                 change = true;
             } else {
                 if (!options?.dependencyCheckDeep) {
-                    for (const index in options.dependencies) {
-                        if (existing.dependencies![index] !== options.dependencies[index]) {
+                    options.dependencies.every((dep, index) => {
+                        if (existing.dependencies?.[index] !== options.dependencies?.[index]) {
                             change = true;
-                            break;
+                            return false;
                         }
-                    }
+
+                        return true;
+                    });
                 } else {
-                    change = !isDeepStrictEqual(existing.dependencies!, options.dependencies!);
+                    change = !isDeepStrictEqual(existing.dependencies, options.dependencies);
                 }
             }
         } else {

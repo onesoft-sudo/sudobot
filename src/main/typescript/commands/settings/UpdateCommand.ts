@@ -210,7 +210,7 @@ class UpdateCommand extends Command {
                     })
                     .catch(this.application.logger.error);
 
-                await this.startupManager.requestRestart({ metadata: "update" });
+                this.startupManager.requestRestart({ metadata: "update" });
             }
         });
 

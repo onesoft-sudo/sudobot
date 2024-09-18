@@ -158,7 +158,7 @@ class Pagination<T> {
     public setMaxTimeout(timeout: number) {
         this._timeout = setTimeout(() => {
             this._timeout = undefined;
-            this.destroy();
+            this.destroy().catch(Application.current().logger.error);
         }, timeout);
 
         return this;

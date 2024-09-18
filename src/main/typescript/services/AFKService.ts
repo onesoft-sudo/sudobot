@@ -28,8 +28,8 @@ import { and, eq, inArray } from "drizzle-orm";
 
 @Name("afkService")
 class AFKService extends Service implements HasEventListeners {
-    public readonly cache = new Collection<`${Snowflake | "global"}::${Snowflake}`, AFKEntry>();
-    protected readonly modified = new Set<`${Snowflake | "global"}::${Snowflake}`>();
+    public readonly cache = new Collection<`${string}::${Snowflake}`, AFKEntry>();
+    protected readonly modified = new Set<`${string}::${Snowflake}`>();
     protected timeout?: ReturnType<typeof setTimeout>;
 
     public override async boot(): Promise<void> {
@@ -63,12 +63,12 @@ class AFKService extends Service implements HasEventListeners {
         return entry;
     }
 
-    public isAFK(userId: Snowflake, guildId: Snowflake | "global") {
+    public isAFK(userId: Snowflake, guildId: Snowflake) {
         const key = `${guildId}::${userId}` as const;
         return this.cache.has(key);
     }
 
-    public getAFK(userId: Snowflake, guildId: Snowflake | "global") {
+    public getAFK(userId: Snowflake, guildId: Snowflake) {
         const key = `${guildId}::${userId}` as const;
         return this.cache.get(key);
     }
@@ -133,7 +133,7 @@ class AFKService extends Service implements HasEventListeners {
     private queueSync() {
         this.timeout ??= setTimeout(async () => {
             for (const key of this.modified) {
-                const [guildId, userId] = key.split("::") as [Snowflake | "global", Snowflake];
+                const [guildId, userId] = key.split("::") as [Snowflake, Snowflake];
                 const entry = this.cache.get(key);
 
                 if (!entry) {
@@ -161,7 +161,7 @@ class AFKService extends Service implements HasEventListeners {
         }, 7_000);
     }
 
-    public async addMention({
+    public addMention({
         guildId,
         mentionId,
         userId,
@@ -191,7 +191,7 @@ class AFKService extends Service implements HasEventListeners {
         return entry;
     }
 
-    public async switchContext(userId: Snowflake, guildId: Snowflake | "global") {
+    public async switchContext(userId: Snowflake, guildId: Snowflake) {
         const globalEntry = this.cache.get(`global::${userId}`);
         const guildEntry = this.cache.get(`${guildId}::${userId}`);
 
@@ -293,7 +293,7 @@ class AFKService extends Service implements HasEventListeners {
             const guildAFK = this.cache.get(`${message.guildId}::${mentionedUser.id}`);
 
             if (globalAFK || guildAFK) {
-                await this.addMention({
+                this.addMention({
                     userId: mentionedUser.id,
                     mentionId: message.author.id,
                     guildId: message.guildId,
@@ -357,7 +357,7 @@ class AFKService extends Service implements HasEventListeners {
 type SetAFKOptions = {
     userId: Snowflake;
     reason: string | undefined;
-    guildId: Snowflake | "global";
+    guildId: string;
 };
 
 type AddMentionOptions = {

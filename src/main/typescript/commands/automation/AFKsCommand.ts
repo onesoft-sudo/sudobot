@@ -172,7 +172,7 @@ class AFKsCommand extends Command {
                 return;
             }
 
-            const count = await this.afkService.removeGuildAFKs(context.guildId!);
+            const count = await this.afkService.removeGuildAFKs(context.guildId);
 
             await reply.edit({
                 embeds: [

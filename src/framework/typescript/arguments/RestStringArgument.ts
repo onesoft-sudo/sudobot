@@ -52,14 +52,14 @@ class RestStringArgument extends Argument<string> {
 
         if (
             this.rules?.["range:min"] &&
-            this.transformedValue!.length < this.rules?.["range:min"]
+            this.transformedValue.length < this.rules?.["range:min"]
         ) {
             return this.error("String is too short", ErrorType.InvalidRange);
         }
 
         if (
             this.rules?.["range:max"] &&
-            this.transformedValue!.length > this.rules?.["range:max"]
+            this.transformedValue.length > this.rules?.["range:max"]
         ) {
             return this.error("String is too long", ErrorType.InvalidRange);
         }

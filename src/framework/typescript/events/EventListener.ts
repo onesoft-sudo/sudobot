@@ -24,7 +24,7 @@ import { ClientEvents } from "../types/ClientEvents";
 
 @CanBind
 export default abstract class EventListener<
-    K extends keyof ClientEvents | string = keyof ClientEvents,
+    K extends keyof ClientEvents = keyof ClientEvents,
     C extends BaseClient = BaseClient
 > {
     public abstract readonly name: K;

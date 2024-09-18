@@ -35,7 +35,7 @@ class ConfigController extends Controller {
 
     @Action("GET", "/guilds/:id/config")
     @RequireAuth(true)
-    public async view(request: Request) {
+    public view(request: Request) {
         const { id } = request.params;
         const guild = this.application.client.guilds.cache.get(id);
 
@@ -57,7 +57,7 @@ class ConfigController extends Controller {
     @Action("PATCH", "/guilds/:id/config")
     @RequireAuth(true)
     @Validate(z.record(z.string(), z.any()))
-    public async update(request: Request) {
+    public update(request: Request) {
         const { id } = request.params;
         const guild = this.application.client.guilds.cache.get(id);
 
@@ -105,8 +105,11 @@ class ConfigController extends Controller {
         }
 
         this._saveQueueTimeout ??= setTimeout(() => {
-            this.configManager.write({ guild: true, system: false });
-            this.configManager.load();
+            this.configManager
+                .write({ guild: true, system: false })
+                .then(() => this.configManager.load())
+                .catch(this.application.logger.error);
+
             this._saveQueueTimeout = undefined;
         }, 10_000);
 

@@ -61,7 +61,7 @@ class PermissionManagerService extends AbstractPermissionManagerService {
 
         for (const mode of modes) {
             const manager = this.createManager(mode);
-            manager.boot?.();
+            void manager.boot?.();
             this.managers[mode] = manager;
         }
     }
@@ -78,7 +78,7 @@ class PermissionManagerService extends AbstractPermissionManagerService {
                 return new LevelBasedPermissionManager(this.application);
 
             default:
-                throw new Error(`Unknown permission mode: ${mode}`);
+                throw new Error(`Unknown permission mode: ${mode as string}`);
         }
     }
 
@@ -115,10 +115,10 @@ class PermissionManagerService extends AbstractPermissionManagerService {
 
         if (!this.managers[mode]) {
             this.managers[mode] = this.createManager(mode);
-            await this.managers[mode]!.boot?.();
+            await this.managers[mode].boot?.();
         }
 
-        return this.managers[mode]!;
+        return this.managers[mode];
     }
 
     public async canAutoModerate(member: GuildMember) {

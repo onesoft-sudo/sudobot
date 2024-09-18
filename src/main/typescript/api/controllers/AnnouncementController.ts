@@ -22,7 +22,7 @@ import Controller from "@framework/api/http/Controller";
 
 class AnnouncementController extends Controller {
     @Action("GET", "/announcements/latest")
-    public async getLatest() {
+    public getLatest() {
         return {
             title: "Announcement",
             content:

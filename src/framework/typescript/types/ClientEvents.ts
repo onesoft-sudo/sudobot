@@ -30,6 +30,7 @@ declare global {
         normalMessageCreate: [message: Message];
         normalMessageUpdate: [oldMessage: Message, newMessage: Message];
         normalMessageDelete: [message: Message];
+        raw: [data: { t: string; d: unknown }];
     }
 }
 

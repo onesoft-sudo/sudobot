@@ -136,7 +136,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
     }
 
     public getValue() {
-        return this.transformedValue!;
+        return this.transformedValue;
     }
 
     protected error(

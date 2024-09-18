@@ -317,9 +317,9 @@ class PermissionCommand extends Command {
                     }
                 )
                     .setLimit(10)
-                    .setCountGetter(async () => overwriteCount)
+                    .setCountGetter(() => overwriteCount)
                     .setMaxTimeout(Pagination.DEFAULT_TIMEOUT)
-                    .setMessageOptionsBuilder(async ({ data, maxPages, page }) => {
+                    .setMessageOptionsBuilder(({ data, maxPages, page }) => {
                         let content = "";
 
                         for (const overwrite of data) {

@@ -137,9 +137,9 @@ class SystemStatusCommand extends Command {
         };
 
         if (context.isLegacy() && message) {
-            message.edit({ embeds: [embed] });
+            message.edit({ embeds: [embed] }).catch(this.application.logger.error);
         } else if (context.isChatInput()) {
-            context.replyEmbed(embed);
+            context.replyEmbed(embed).catch(this.application.logger.error);
         }
     }
 }

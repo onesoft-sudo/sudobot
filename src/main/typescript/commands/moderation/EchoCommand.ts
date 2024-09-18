@@ -164,13 +164,15 @@ class EchoCommand extends Command {
                 await context.success("Message sent successfully.");
             }
 
-            this.systemAuditLogging.logEchoCommandExecuted({
-                command: this.name,
-                guild: context.guild,
-                rawCommandContent: content,
-                user: context.user,
-                generatedMessageOptions: options
-            });
+            this.systemAuditLogging
+                .logEchoCommandExecuted({
+                    command: this.name,
+                    guild: context.guild,
+                    rawCommandContent: content,
+                    user: context.user,
+                    generatedMessageOptions: options
+                })
+                .catch(this.application.logger.error);
         } catch (error) {
             return void context.error(
                 error instanceof DirectiveParseError

@@ -149,7 +149,7 @@ class ModerationActionService extends Service {
                 });
 
             default:
-                throw new Error(`Invalid action type: ${action}`);
+                throw new Error(`Invalid action type: ${action as string}`);
         }
     }
 
@@ -177,7 +177,7 @@ class ModerationActionService extends Service {
             case "verbal_warn":
                 return await channel
                     ?.send({
-                        content: `${target}, you have received a verbal warning for: ${action.reason}`
+                        content: `${target?.toString()}, you have received a verbal warning for: ${action.reason}`
                     })
                     .catch(this.application.logger.error);
 

@@ -29,7 +29,7 @@ export default async function ValidateMiddleware(
     next: NextFunction
 ) {
     try {
-        const parsedBody = await schema.parseAsync(request.body);
+        const parsedBody = (await schema.parseAsync(request.body)) as Record<string, string>;
         request.parsedBody = parsedBody;
         next();
     } catch (e) {

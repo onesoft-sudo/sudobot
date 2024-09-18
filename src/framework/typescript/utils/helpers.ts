@@ -34,7 +34,7 @@ export function service(refOrName: typeof Service | ServiceName): Service {
     if (typeof refOrName === "string") {
         return application().service(refOrName) as Service;
     } else {
-        return application().getService(refOrName as unknown as new () => Service) as Service;
+        return application().getService(refOrName as unknown as new () => Service);
     }
 }
 

@@ -30,7 +30,9 @@ export function EnableAdminAccessControl() {
     ) => {
         if (typeof contextOrMethodName === "string") {
             const metadata =
-                Reflect.getMetadata("aac_middleware", originalMethodOrTarget as object) ?? {};
+                (Reflect.getMetadata("aac_middleware", originalMethodOrTarget as object) as
+                    | Record<string, unknown>
+                    | undefined) ?? {};
             const middleware = (
                 application: Application,
                 req: Request,

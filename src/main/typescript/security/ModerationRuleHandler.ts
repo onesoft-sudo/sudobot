@@ -96,7 +96,7 @@ class ModerationRuleHandler extends HasApplication implements ModerationRuleHand
     @Inject("imageRecognitionService")
     private readonly imageRecognitionService!: ImageRecognitionService;
 
-    public async boot() {
+    public boot() {
         setInterval(
             () => {
                 this.computedRegexCache = new WeakMap();
@@ -563,7 +563,7 @@ class ModerationRuleHandler extends HasApplication implements ModerationRuleHand
                 fields: [
                     {
                         name: token ? "Token" : "Word",
-                        value: `${spoiler(token ?? word!)}`
+                        value: `${spoiler(token ?? word)}`
                     }
                 ]
             };
@@ -722,7 +722,7 @@ class ModerationRuleHandler extends HasApplication implements ModerationRuleHand
                     fields: [
                         {
                             name: token ? "Token" : "Word",
-                            value: `${spoiler(token ?? word!)}`
+                            value: `${spoiler(token ?? word)}`
                         }
                     ]
                 };
@@ -1209,7 +1209,7 @@ class ModerationRuleHandler extends HasApplication implements ModerationRuleHand
     }
 
     @AcceptsModerationRuleContextType("profile")
-    public async profile_filter(context: ProfileContext<"profile_filter">) {
+    public profile_filter(context: ProfileContext<"profile_filter">) {
         const { member } = context;
         const stringsToCheck = [member.user.displayName, member.nickname, member.user.username];
 

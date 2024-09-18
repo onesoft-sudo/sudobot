@@ -94,7 +94,7 @@ export class File implements Disposable, AsyncDisposable {
 
     public async readContents(buffer: boolean = false): Promise<string | Buffer> {
         if (this.cache.handle) {
-            return this.cache.handle!.readFile({
+            return this.cache.handle.readFile({
                 encoding: buffer ? null : "utf8"
             });
         }
@@ -106,7 +106,7 @@ export class File implements Disposable, AsyncDisposable {
     public async readJson<T>(): Promise<T> {
         if (this.cache.handle) {
             return JSON.parse(
-                await this.cache.handle!.readFile({
+                await this.cache.handle.readFile({
                     encoding: "utf8"
                 })
             ) as T;

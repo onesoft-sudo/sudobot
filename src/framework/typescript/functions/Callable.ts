@@ -24,7 +24,7 @@ abstract class Callable extends Function {
 
     public constructor() {
         super("...args", "return this._invoke(...args)");
-        this[CallableSymbol] = this.bind(this);
+        this[CallableSymbol] = this.bind(this) as this;
         return this[CallableSymbol];
     }
 

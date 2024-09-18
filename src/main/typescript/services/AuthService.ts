@@ -26,7 +26,7 @@ import jwt from "jsonwebtoken";
 
 @Name("authService")
 class AuthService extends Service {
-    private async generateToken(user: User) {
+    private generateToken(user: User) {
         return jwt.sign(
             {
                 id: user.id,
@@ -62,7 +62,7 @@ class AuthService extends Service {
         }
 
         if (!user.token || !user.tokenExpiresAt || user.tokenExpiresAt.getTime() <= Date.now()) {
-            const token = await this.generateToken(user);
+            const token = this.generateToken(user);
             const tokenExpiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000);
 
             await this.application.database.drizzle

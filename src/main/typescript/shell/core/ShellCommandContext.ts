@@ -41,7 +41,7 @@ class ShellCommandContext extends EventEmitter {
     }
 
     private _print(arg: StringLike, fd: "stdout" | "stderr" = "stdout"): string {
-        const string = `${arg}`;
+        const string = `${arg?.toString()}`;
 
         if (fd === "stderr") {
             this._stderr += string;

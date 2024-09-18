@@ -362,11 +362,15 @@ export default class ExtensionManager extends Service {
 
             const tsconfigExists = existsSync(tsconfigPath);
 
-            if (!tsconfigExists || await readlink(tsconfigPath).catch(() => "") !== (loadingTypeScript ? bunTsconfigPath : nodeTsconfigPath)) {
+            if (
+                !tsconfigExists ||
+                (await readlink(tsconfigPath).catch(() => "")) !==
+                    (loadingTypeScript ? bunTsconfigPath : nodeTsconfigPath)
+            ) {
                 if (tsconfigExists) {
                     await fs.rm(tsconfigPath);
                 }
-                
+
                 if (process.platform === "win32") {
                     await fs.cp(
                         loadingTypeScript ? bunTsconfigPath : nodeTsconfigPath,
@@ -466,10 +470,10 @@ export default class ExtensionManager extends Service {
             default: Event
         }: { default: new (application: Application) => EventListener<keyof ClientEvents> } =
             await import(filePath);
-        await this.loadEventClass(extensionId, Event);
+        this.loadEventClass(extensionId, Event);
     }
 
-    public async loadEventClass(
+    public loadEventClass(
         extensionId: string,
         Event: new (application: Application) => EventListener<keyof ClientEvents>
     ) {

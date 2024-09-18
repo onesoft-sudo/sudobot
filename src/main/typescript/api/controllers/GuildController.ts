@@ -28,7 +28,7 @@ class GuildController extends Controller {
     @Action("GET", "/guilds/:guild")
     @RequireAuth()
     @EnableGuildAccessControl()
-    public async view(request: Request) {
+    public view(request: Request) {
         const { id } = request.params;
         const guild = this.application.client.guilds.cache.get(id);
 
@@ -48,7 +48,7 @@ class GuildController extends Controller {
 
     @Action("GET", "/guilds")
     @RequireAuth()
-    public async index(request: Request) {
+    public index(request: Request) {
         const guilds = [];
 
         for (const guild of this.application.client.guilds.cache.values()) {
@@ -66,8 +66,8 @@ class GuildController extends Controller {
 
     @Action("GET", "/guilds/:id/roles")
     @RequireAuth()
-    public async getRoles(request: Request) {
-        const {id} = request.params;
+    public getRoles(request: Request) {
+        const { id } = request.params;
         const guild = this.application.client.guilds.cache.get(id);
 
         if (!guild) {
@@ -80,14 +80,14 @@ class GuildController extends Controller {
         return guild.roles.cache.map(role => ({
             id: role.id,
             name: role.name,
-            color: role.color,
+            color: role.color
         }));
     }
 
     @Action("GET", "/guilds/:id/channels")
     @RequireAuth()
-    public async getChannels(request: Request) {
-        const {id} = request.params;
+    public getChannels(request: Request) {
+        const { id } = request.params;
         const guild = this.application.client.guilds.cache.get(id);
 
         if (!guild) {
@@ -100,7 +100,7 @@ class GuildController extends Controller {
         return guild.channels.cache.map(channel => ({
             id: channel.id,
             name: channel.name,
-            type: channel.type,
+            type: channel.type
         }));
     }
 }

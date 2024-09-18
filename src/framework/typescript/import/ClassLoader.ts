@@ -137,7 +137,6 @@ class ClassLoader {
         return null;
     }
 
-    
     public async loadClass(resolvable: File | string): Promise<Class<unknown>> {
         const classPath = typeof resolvable === "string" ? resolvable : resolvable.path;
 
@@ -145,7 +144,7 @@ class ClassLoader {
             throw new InvalidClassFileError("Class file must be a TypeScript or JavaScript file");
         }
 
-        const { default: classObject }: DefaultExport<Class<unknown>> = await import(classPath);
+        const { default: classObject } = (await import(classPath)) as DefaultExport<Class<unknown>>;
 
         if (!classObject) {
             throw new NoClassDefFoundError("No class definition found in file");
@@ -154,7 +153,6 @@ class ClassLoader {
         return classObject;
     }
 
-    
     public async loadClassesFromDirectory(directory: string): Promise<Array<Class<unknown>>> {
         const classFiles = await this.iterateDirectoryRecursively(directory);
         const results = [];
@@ -188,8 +186,9 @@ class ClassLoader {
     }
 
     public async loadController(filepath: string, router: Router) {
-        const { default: ControllerClass }: DefaultExport<Class<Controller, [Application]>> =
-            await import(filepath);
+        const { default: ControllerClass } = (await import(filepath)) as DefaultExport<
+            Class<Controller, [Application]>
+        >;
         const controller = Container.getInstance().resolveByClass(ControllerClass);
         this.loadEventsFromMetadata(controller, true);
         this.application.service("apiServer").loadController(controller, ControllerClass, router);
@@ -209,8 +208,9 @@ class ClassLoader {
     }
 
     public async loadEvent(filepath: string) {
-        const { default: EventListenerClass }: DefaultExport<Class<EventListener, [Application]>> =
-            await import(filepath);
+        const { default: EventListenerClass } = (await import(filepath)) as DefaultExport<
+            Class<EventListener, [Application]>
+        >;
         const listener = this.getContainer().resolveByClass(EventListenerClass);
         await listener.onInitialize?.();
         this.application
@@ -232,9 +232,9 @@ class ClassLoader {
     }
 
     public async loadPermission(filepath: string) {
-        const { default: PermissionClass }: DefaultExport<typeof Permission> = await import(
-            filepath
-        );
+        const { default: PermissionClass } = (await import(filepath)) as DefaultExport<
+            typeof Permission
+        >;
         const permission = await PermissionClass.getInstance<Permission>();
         this.application.serviceManager
             .getServiceByName("permissionManager")
@@ -265,7 +265,7 @@ class ClassLoader {
     }
 
     public flattenCommandGroups() {
-        const groups = this.configManager.systemConfig.commands.groups;
+        const groups = this.configManager.systemConfig.commands.groups as Record<string, string[]>;
         const groupNames = Object.keys(groups);
 
         if (groupNames.length === 0) {
@@ -311,8 +311,9 @@ class ClassLoader {
         groups: Record<string, string> | null = null,
         commandManager: CommandManagerServiceInterface = this.commandManager
     ) {
-        const { default: CommandClass }: DefaultExport<Class<Command, [Application]>> =
-            await import(filepath);
+        const { default: CommandClass } = (await import(filepath)) as DefaultExport<
+            Class<Command, [Application]>
+        >;
         await this.loadCommandClass(CommandClass, filepath, loadMetadata, groups, commandManager);
     }
 
@@ -323,7 +324,7 @@ class ClassLoader {
         groups: Record<string, string> | null = null,
         commandManager: CommandManagerServiceInterface = this.commandManager
     ) {
-        const canBind = Reflect.hasMetadata("di:can-bind", CommandClass.prototype);
+        const canBind = Reflect.hasMetadata("di:can-bind", CommandClass.prototype as object);
         const command = canBind
             ? this.getContainer().resolveByClass(CommandClass)
             : new CommandClass(this.application);
@@ -359,7 +360,7 @@ class ClassLoader {
     }
 
     public async loadQueueClass(filepath: string) {
-        const { default: QueueClass }: DefaultExport<typeof Queue> = await import(filepath);
+        const { default: QueueClass } = (await import(filepath)) as DefaultExport<typeof Queue>;
         this.application.service("queueService").register(QueueClass);
         this.application.logger.info("Loaded Queue: ", QueueClass.uniqueName);
     }
@@ -373,7 +374,7 @@ class ClassLoader {
                       eventListeners: Reflect.getMetadata(
                           "event_listeners",
                           (finalObject as { prototype: object }).prototype
-                      )
+                      ) as EventListenerInfo[]
                   };
 
         const handlerData =
@@ -384,12 +385,10 @@ class ClassLoader {
                 listenerInfo.methodName as unknown as keyof typeof object
             ] as AnyFunction;
             const handler = callback.bind(object);
-            handlerData[listenerInfo.event as keyof typeof handlerData] ??= [] as AnyFunction[];
-            handlerData[listenerInfo.event as keyof typeof handlerData].push(handler);
+            handlerData[listenerInfo.event] ??= [] as AnyFunction[];
+            handlerData[listenerInfo.event].push(handler);
 
-            this.application
-                .getClient()
-                .addEventListener(listenerInfo.event as keyof ClientEvents, handler);
+            this.application.getClient().addEventListener(listenerInfo.event, handler);
         }
 
         this.eventHandlers.set(object, handlerData);
@@ -401,7 +400,7 @@ class ClassLoader {
         }
     }
 
-    public async unloadEventsFromMetadata(object: object) {
+    public unloadEventsFromMetadata(object: object) {
         const handlerData =
             this.eventHandlers.get(object) ?? ({} as Record<keyof ClientEvents, AnyFunction[]>);
         let count = 0;

@@ -76,7 +76,7 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
     }
 
     public get channelId(): Snowflake {
-        return this.commandMessage.channelId!;
+        return this.commandMessage.channelId;
     }
 
     public get channel(): GuildTextBasedChannel {

@@ -65,7 +65,7 @@ class QueueManager extends HasApplication {
                 : (queue as unknown as QueueConstructor<T>);
 
         if (!QueueClass) {
-            throw new Error(`Queue with name ${queue} not found`);
+            throw new Error(`Queue with name ${queue?.toString()} not found`);
         }
 
         return new QueueClass(this.application, this, options);

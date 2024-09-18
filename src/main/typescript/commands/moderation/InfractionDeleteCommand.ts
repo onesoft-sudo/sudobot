@@ -78,7 +78,7 @@ class InfractionDeleteCommand extends Command {
         });
 
         const infraction: Infraction | undefined = await this.infractionManager.deleteById(
-            context.guildId!,
+            context.guildId,
             args.id
         );
 

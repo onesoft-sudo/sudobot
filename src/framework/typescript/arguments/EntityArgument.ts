@@ -28,7 +28,7 @@ abstract class EntityArgument<
     protected readonly mentionStart: string[] = [];
 
     public override toString(): string {
-        return this.stringValue!.toString();
+        return this.stringValue.toString();
     }
 
     public toSnowflake(): Snowflake {
@@ -41,7 +41,7 @@ abstract class EntityArgument<
             }
         }
 
-        return snowflake as Snowflake;
+        return snowflake;
     }
 
     public override validate(): boolean {

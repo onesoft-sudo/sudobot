@@ -167,7 +167,8 @@ class ScheduleCommand extends Command {
                 guildId: context.guild.id,
                 runsAt: time.fromNow()
             })
-            .schedule();
+            .schedule()
+            .catch(this.application.logger.error);
 
         if (context.isLegacy()) {
             await context.commandMessage.react(context.emoji("check")?.toString() || "✅");

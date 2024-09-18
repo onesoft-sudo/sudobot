@@ -40,12 +40,12 @@ export class Singleton {
     }
 
     protected static createInstance(): Awaitable<Singleton> {
-        return new this() as Singleton;
+        return new this();
     }
 }
 
 export class ContainerSingleton extends Singleton {
     protected static override createInstance(): Awaitable<ContainerSingleton> {
-        return Container.getInstance().resolveByClass(this) as ContainerSingleton;
+        return Container.getInstance().resolveByClass(this);
     }
 }

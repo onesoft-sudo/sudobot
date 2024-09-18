@@ -34,27 +34,27 @@ class ServerStatsCommand extends Command {
 
     public override async execute(context: Context): Promise<void> {
         const memberCount =
-            context.guild!.members.cache.size > context.guild!.memberCount
-                ? context.guild!.members.cache.size
-                : context.guild!.memberCount;
+            context.guild.members.cache.size > context.guild.memberCount
+                ? context.guild.members.cache.size
+                : context.guild.memberCount;
         let botCount = 0,
             humanCount = 0;
 
-        for (const member of context.guild!.members.cache.values()) {
+        for (const member of context.guild.members.cache.values()) {
             if (member.user.bot) botCount++;
             else humanCount++;
         }
 
-        const channelCount = context.guild!.channels.cache.size;
-        const roleCount = context.guild!.roles.cache.size;
+        const channelCount = context.guild.channels.cache.size;
+        const roleCount = context.guild.roles.cache.size;
 
         await context.reply({
             embeds: [
                 {
                     color: 0x007bff,
                     author: {
-                        name: `Statistics of ${context.guild!.name}`,
-                        icon_url: context.guild!.iconURL() ?? undefined
+                        name: `Statistics of ${context.guild.name}`,
+                        icon_url: context.guild.iconURL() ?? undefined
                     },
                     fields: [
                         {

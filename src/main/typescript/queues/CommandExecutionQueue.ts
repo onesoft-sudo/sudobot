@@ -89,7 +89,7 @@ class CommandExecutionQueue extends Queue<CommandExecutionQueuePayload> {
 
         copy!.reply = (...args: [MessagePayload | MessageReplyOptions | string]) =>
             message.reply(...(args as [MessageCreateOptions | string]));
-        copy!.delete = () => Promise.resolve(message!);
+        copy!.delete = () => Promise.resolve(message);
         copy!.react = () =>
             Promise.resolve(null as unknown as ReturnType<NonNullable<typeof message>["react"]>);
 

@@ -21,9 +21,9 @@ import type { ParserState } from "@framework/directives/Directive";
 import Directive from "@framework/directives/Directive";
 import DirectiveParseError from "@framework/directives/DirectiveParseError";
 import type DirectiveParser from "@framework/directives/DirectiveParser";
+import { escapeRegex } from "@framework/utils/utils";
 import type { APIEmbed } from "discord.js";
 import { z } from "zod";
-import { escapeRegex } from "@framework/utils/utils";
 
 class EmbedDirective extends Directive<APIEmbed> {
     public override readonly name = "embed";
@@ -75,7 +75,7 @@ class EmbedDirective extends Directive<APIEmbed> {
             .optional()
     });
 
-    public override async apply(parser: DirectiveParser, state: ParserState, arg: APIEmbed) {
+    public override apply(parser: DirectiveParser, state: ParserState, arg: APIEmbed) {
         const embed = EmbedDirective.discordApiEmbedSchema.safeParse(arg);
 
         if (!embed.success) {
@@ -99,7 +99,7 @@ class EmbedDirective extends Directive<APIEmbed> {
         }
 
         state.data.embeds ??= [];
-        (state.data.embeds as Array<APIEmbed>)!.push(embed.data);
+        (state.data.embeds as Array<APIEmbed>).push(embed.data);
     }
 }
 

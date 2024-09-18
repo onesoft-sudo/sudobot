@@ -360,9 +360,9 @@ class EvalCommand extends Command {
             }
         } catch (error) {
             if ("stack" in (error as Error) && "message" in (error as Error)) {
-                uncaughtErrorHandler(error as Error);
+                uncaughtErrorHandler(error as Error).catch(this.application.logger.error);
             } else {
-                rejectionHandler(error);
+                rejectionHandler(error).catch(this.application.logger.error);
             }
         }
 

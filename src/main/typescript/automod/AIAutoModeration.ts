@@ -112,7 +112,7 @@ class AIAutoModeration extends Service {
         if (
             (messageOrMember instanceof Message && messageOrMember.author.bot) ||
             (messageOrMember instanceof GuildMember && messageOrMember.user.bot) ||
-            !this.configFor(messageOrMember.guild!.id!)?.enabled
+            !this.configFor(messageOrMember.guild!.id)?.enabled
         ) {
             return false;
         }
@@ -300,7 +300,7 @@ class AIAutoModeration extends Service {
 
             for (const score in automatic_actions.stops) {
                 const actions =
-                    automatic_actions.stops[score as keyof typeof automatic_actions.stops];
+                    automatic_actions.stops[score];
 
                 if (score !== "*" && Number.isNaN(+score)) {
                     this.application.logger.error(`Invalid stop score in config: ${score}`);

@@ -86,6 +86,8 @@ type WebhookInfo =
           attempts: number;
       };
 
+/* eslint-disable @typescript-eslint/unbound-method */
+
 @Name("auditLoggingService")
 class AuditLoggingService extends Service {
     private readonly webhooks = new Collection<`${Snowflake}::${Snowflake}`, WebhookInfo>();
@@ -331,7 +333,7 @@ class AuditLoggingService extends Service {
     }
 
     private configFor(guildId: Snowflake) {
-        return this.configurationManager.config[guildId!]?.logging;
+        return this.configurationManager.config[guildId]?.logging;
     }
 
     private async send({
@@ -458,7 +460,7 @@ class AuditLoggingService extends Service {
                     this.webhooks.set(`${guildId}::${channelId}`, webhookClient);
 
                     configManager.config[guildId]!.logging!.hooks ??= {};
-                    configManager.config[guildId]!.logging!.hooks![channel.id] = webhook.id;
+                    configManager.config[guildId]!.logging!.hooks[channel.id] = webhook.id;
                     await configManager.write();
                 }
             }
@@ -681,7 +683,7 @@ class AuditLoggingService extends Service {
         const fields = [
             {
                 name: "Channel",
-                value: channelInfo(oldMessage.channel!),
+                value: channelInfo(oldMessage.channel),
                 inline: true
             },
             {
@@ -1253,7 +1255,10 @@ class AuditLoggingService extends Service {
                 name: "Roles",
                 value:
                     member.roles.cache.size > 1
-                        ? member.roles.cache.filter(r => r.id !== member.guild.id).map(r => roleMention(r.id)).join(", ")
+                        ? member.roles.cache
+                              .filter(r => r.id !== member.guild.id)
+                              .map(r => roleMention(r.id))
+                              .join(", ")
                         : italic("None")
             },
             {

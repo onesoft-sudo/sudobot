@@ -57,7 +57,7 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
 
     private readonly listeners: Array<(message: Message) => unknown> = [];
 
-    public override async onInitialize() {
+    public override onInitialize() {
         this.listeners.push(
             this.ruleModerationService.onMessageCreate.bind(this.ruleModerationService),
             this.spamModerationService.onMessageCreate.bind(this.spamModerationService),

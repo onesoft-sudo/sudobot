@@ -20,9 +20,8 @@
 import { Inject } from "@framework/container/Inject";
 import { Logger } from "@framework/log/Logger";
 import { Permission } from "@framework/permissions/Permission";
-import { GuildMember } from "discord.js";
+import { Awaitable, GuildMember } from "discord.js";
 import type ConfigurationManager from "../services/ConfigurationManager";
-
 
 class SystemAdminPermission extends Permission {
     protected override readonly name = "system.admin";
@@ -33,7 +32,7 @@ class SystemAdminPermission extends Permission {
     @Inject()
     private readonly logger!: Logger;
 
-    public override async validate(member: GuildMember): Promise<boolean> {
+    public override validate(member: GuildMember): Awaitable<boolean> {
         const has = this.configManager.systemConfig.system_admins.includes(member.id);
 
         if (has) {

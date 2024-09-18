@@ -17,14 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { Snowflake } from "discord.js";
+import type { Awaitable, Snowflake } from "discord.js";
 
 interface CommandRateLimiterContract {
     isRateLimitedWithHit(
         commandName: string,
         guildId: Snowflake,
         userId: Snowflake
-    ): Promise<boolean>;
+    ): Awaitable<boolean>;
 }
 
 export default CommandRateLimiterContract;

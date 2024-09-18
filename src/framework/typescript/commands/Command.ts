@@ -28,7 +28,12 @@ import type {
     Snowflake,
     User
 } from "discord.js";
-import { ApplicationCommandType, ContextMenuCommandBuilder, SlashCommandBuilder } from "discord.js";
+import {
+    ApplicationCommandType,
+    ContextMenuCommandBuilder,
+    InteractionContextType,
+    SlashCommandBuilder
+} from "discord.js";
 import type Application from "../app/Application";
 import type Argument from "../arguments/Argument";
 import type ArgumentParser from "../arguments/ArgumentParser";
@@ -81,23 +86,17 @@ export type CommandGuardLike = GuardLike | typeof Guard;
 export type CommandPermissionLike = PermissionLike | PermissionsString | typeof Permission;
 export type PlainPermissionResolvable = PermissionsString | bigint;
 
-
 abstract class Command<T extends ContextType = ContextType.ChatInput | ContextType.Legacy>
     implements Builder<CommandBuilders>
 {
-    
     public abstract readonly name: string;
 
-    
     public group!: string;
 
-    
     public abstract readonly description: string;
 
-    
     public readonly detailedDescription?: string;
 
-    
     public readonly aliases: string[] = [];
 
     /**
@@ -351,8 +350,13 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
 
         return (
             this.disabled ||
-            configManager.systemConfig.commands.global_disabled.includes(name) ||
-            !!(guildId && configManager.config[guildId]?.commands.disabled_commands.includes(name))
+            (configManager.systemConfig.commands.global_disabled as string[]).includes(name) ||
+            !!(
+                guildId &&
+                (configManager.config[guildId]?.commands.disabled_commands as string[]).includes(
+                    name
+                )
+            )
         );
     }
 
@@ -365,7 +369,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
         return new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .setDMPermission(false);
+            .setContexts(InteractionContextType.Guild);
     }
 
     /**
@@ -374,7 +378,9 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
      * @returns The context menu command builder.
      */
     protected buildContextMenu() {
-        return new ContextMenuCommandBuilder().setName(this.name).setDMPermission(false);
+        return new ContextMenuCommandBuilder()
+            .setName(this.name)
+            .setContexts(InteractionContextType.Guild);
     }
 
     /**
@@ -389,7 +395,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
             data.push(
                 new ContextMenuCommandBuilder()
                     .setName(this.name)
-                    .setDMPermission(false)
+                    .setContexts(InteractionContextType.Guild)
                     .setType(ApplicationCommandType.Message)
             );
         }
@@ -398,7 +404,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
             data.push(
                 new ContextMenuCommandBuilder()
                     .setName(this.name)
-                    .setDMPermission(false)
+                    .setContexts(InteractionContextType.Guild)
                     .setType(ApplicationCommandType.User)
             );
         }
@@ -420,7 +426,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
         context: Context,
         args?: Record<string, unknown>,
         options?: Record<string, unknown>
-    ): Promise<void>;
+    ): Awaitable<void>;
 
     /**
      * Handles the case when a subcommand is not found.
@@ -607,7 +613,7 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
             }
         } catch (error) {
             if (error instanceof PermissionDeniedError) {
-                context.error(error.message);
+                context.error(error.message).catch(this.application.logger.error);
                 return false;
             }
 
@@ -634,7 +640,9 @@ abstract class Command<T extends ContextType = ContextType.ChatInput | ContextTy
                       : permission;
 
             if (!instance) {
-                this.application.logger.debug(`Invalid permission: ${permission}: Not found`);
+                this.application.logger.debug(
+                    `Invalid permission: ${permission?.toString()}: Not found`
+                );
                 continue;
             }
 

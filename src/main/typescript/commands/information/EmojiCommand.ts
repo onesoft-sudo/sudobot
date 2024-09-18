@@ -71,7 +71,7 @@ class EmojiCommand extends Command {
                 ? emojiString.substring(2, emojiString.length - 1)
                 : emojiString;
 
-        const emoji = await this.application.client.emojis.cache.find(
+        const emoji = this.application.client.emojis.cache.find(
             e =>
                 e.name === emojiSubString ||
                 e.identifier === emojiSubString ||

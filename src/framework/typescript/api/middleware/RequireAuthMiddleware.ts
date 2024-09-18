@@ -53,7 +53,7 @@ export default async function RequireAuthMiddleware(
     }
 
     try {
-        const info = jwt.verify(token, process.env.JWT_SECRET!, {
+        const info = jwt.verify(token, process.env.JWT_SECRET, {
             issuer: process.env.JWT_ISSUER ?? "SudoBot",
             complete: true
         });

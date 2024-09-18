@@ -300,7 +300,7 @@ class SnippetManagerService extends Service {
         return snippet;
     }
 
-    public async getSnippets(guildId: Snowflake): Promise<Snippet[]> {
+    public getSnippets(guildId: Snowflake): Snippet[] {
         const snippets: Snippet[] = [];
 
         for (const snippet of this.cache.values()) {

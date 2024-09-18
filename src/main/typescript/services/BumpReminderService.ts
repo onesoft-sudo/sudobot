@@ -80,7 +80,7 @@ class BumpReminderService extends Service {
 
         if (
             !enabled ||
-            disabled_channels?.includes(message.channelId!) ||
+            disabled_channels?.includes(message.channelId) ||
             !message.interactionMetadata?.user ||
             !isTextBasedChannel(message.channel)
         ) {

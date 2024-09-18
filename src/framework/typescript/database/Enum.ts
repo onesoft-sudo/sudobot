@@ -20,7 +20,7 @@
 import { pgEnum as drizzlePgEnum } from "drizzle-orm/pg-core";
 
 export function enumToPgEnum<T extends Record<string, string>>(target: T) {
-    return Object.values(target).map((value: unknown) => `${value}`) as [
+    return Object.values(target).map((value: unknown) => `${value as string}`) as [
         T[keyof T],
         ...T[keyof T][]
     ];

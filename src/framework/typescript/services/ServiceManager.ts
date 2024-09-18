@@ -59,10 +59,7 @@ class ServiceManager {
             let servicePath = service;
 
             for (const alias in this.kernelClass.aliases) {
-                servicePath = servicePath.replace(
-                    `@${alias}`,
-                    this.kernelClass.aliases[alias as keyof typeof this.kernelClass.aliases]
-                );
+                servicePath = servicePath.replace(`@${alias}`, this.kernelClass.aliases[alias]);
             }
 
             if (
@@ -89,8 +86,8 @@ class ServiceManager {
 
         const instance = new ServiceClass(this.application);
         const key =
-            Reflect.getMetadata("service:name", ServiceClass.prototype) ??
-            Reflect.getMetadata("di:bind_as", ServiceClass.prototype) ??
+            Reflect.getMetadata("service:name", ServiceClass.prototype as object) ??
+            Reflect.getMetadata("di:bind_as", ServiceClass.prototype as object) ??
             ServiceClass.name;
 
         Container.getInstance().bind(ServiceClass, {
@@ -102,7 +99,7 @@ class ServiceManager {
         Container.getInstance().resolveProperties(ServiceClass, instance);
 
         this.services.set(ServiceClass, instance);
-        this.servicesMappedByName.set(key, instance);
+        this.servicesMappedByName.set(key as string, instance);
         await instance.boot();
         this.application.classLoader.loadEventsFromMetadata(instance, true);
         this.application.logger.info(

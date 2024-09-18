@@ -18,9 +18,9 @@
  */
 
 import type Directive from "@framework/directives/Directive";
+import DirectiveParseError from "@framework/directives/DirectiveParseError";
 import type { Class } from "@framework/types/Utils";
 import { isAlpha } from "@framework/utils/string";
-import DirectiveParseError from "@framework/directives/DirectiveParseError";
 import JSON5 from "json5";
 
 class DirectiveParser {
@@ -68,12 +68,15 @@ class DirectiveParser {
             let length = 0;
 
             try {
-                const { json, length: computedLength, str } = this.getNextJSON5Literal(sliced, name);
+                const {
+                    json,
+                    length: computedLength,
+                    str
+                } = this.getNextJSON5Literal(sliced, name);
                 arg = json;
                 length = computedLength;
                 state.currentArgument = str;
-            }
-            catch (error) {
+            } catch (error) {
                 if (!silent) {
                     throw error;
                 }
@@ -99,14 +102,11 @@ class DirectiveParser {
                 depth++;
             } else if (input[end] === "}") {
                 depth--;
-            }
-            else if (input[end] === undefined) {
+            } else if (input[end] === undefined) {
                 throw new DirectiveParseError("Unexpected end of input");
-            }
-            else if (input[end] === "\"") {
-                end = input.indexOf("\"", end + 1);
-            }
-            else if (input[end] === "'") {
+            } else if (input[end] === '"') {
+                end = input.indexOf('"', end + 1);
+            } else if (input[end] === "'") {
                 end = input.indexOf("'", end + 1);
             }
 
@@ -121,15 +121,17 @@ class DirectiveParser {
 
         try {
             return {
-                json: JSON5.parse(str),
+                json: JSON5.parse<Record<string, unknown>>(str),
                 length: str.length,
                 str
             };
-        }
-        catch (error) {
-            throw new DirectiveParseError("Failed to parse JSON5 literal in directive: " + directiveName, {
-                cause: error
-            });
+        } catch (error) {
+            throw new DirectiveParseError(
+                "Failed to parse JSON5 literal in directive: " + directiveName,
+                {
+                    cause: error
+                }
+            );
         }
     }
 }

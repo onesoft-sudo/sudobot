@@ -41,7 +41,7 @@ class SnippetListCommand extends Command {
     private readonly snippetManagerService!: SnippetManagerService;
 
     public override async execute(context: Context): Promise<void> {
-        const snippets = await this.snippetManagerService.getSnippets(context.guildId);
+        const snippets = this.snippetManagerService.getSnippets(context.guildId);
 
         if (snippets.length === 0) {
             await context.error("No snippets found.");

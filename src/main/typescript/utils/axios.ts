@@ -40,7 +40,7 @@ export const createAxiosClient = (application: Application) => {
 
     _axiosClient.interceptors.request.use(config => {
         logger.info(
-            `${config.method?.toUpperCase()} ${config.url} - ${config.headers["User-Agent"] ?? "No User-Agent"}`
+            `${config.method?.toUpperCase()} ${config.url} - ${(config.headers["User-Agent"] as string) ?? "No User-Agent"}`
         );
         return config;
     });

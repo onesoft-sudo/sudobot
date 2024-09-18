@@ -57,7 +57,9 @@ class InfractionChannelDeleteQueue extends Queue<InfractionChannelDeleteQueuePay
 
             try {
                 const thread = await channel.threads.fetch(channelId);
-                thread?.delete("Deleting infraction thread after expiration");
+                thread
+                    ?.delete("Deleting infraction thread after expiration")
+                    .catch(this.application.logger.error);
             } catch {
                 return;
             }

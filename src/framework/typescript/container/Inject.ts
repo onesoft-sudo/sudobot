@@ -21,7 +21,12 @@ import type { AnyConstructor } from "./Container";
 
 export function Inject<R extends AnyConstructor>(ref?: R | string) {
     return (target: object, key: string | symbol, _descriptor?: PropertyDescriptor) => {
-        const injections = Reflect.getMetadata("di:inject", target) || [];
+        const injections =
+            (Reflect.getMetadata("di:inject", target) as {
+                key: string | symbol;
+                name: string | null;
+                ref: R | null | undefined;
+            }[]) || [];
 
         injections.push({
             key,

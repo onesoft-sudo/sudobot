@@ -19,12 +19,17 @@
 
 import type Application from "@framework/app/Application";
 import { env } from "@main/env/env";
+import type { ApplicationEmoji, GuildEmoji } from "discord.js";
 
 export function emoji(application: Application, name: string) {
     return findEmoji(application, name) || "";
 }
 
-export function findEmoji(application: Application, name: string) {
+export function findEmoji(
+    application: Application,
+    name: string
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+): GuildEmoji | ApplicationEmoji | undefined {
     const strategy =
         env.EMOJI_RESOLVE_STRATEGY ??
         application.service("configManager").systemConfig.emoji_resolve_strategy;
@@ -48,7 +53,7 @@ export function findEmoji(application: Application, name: string) {
     if (strategy !== "home_guild") {
         const emoji = application.client.application?.emojis.cache.find(
             emoji => emoji.name === name || emoji.identifier === name
-        );
+        ) as unknown as ApplicationEmoji;
 
         if (emoji) {
             return emoji;

@@ -73,7 +73,7 @@ class SnippetPushFileCommand extends Command {
         const snippet = await this.snippetManagerService.pushAttachment(
             name,
             [...context.attachments.map(a => a.proxyURL).values()],
-            context.guildId!
+            context.guildId
         );
 
         if (!snippet) {

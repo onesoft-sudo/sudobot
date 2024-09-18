@@ -30,8 +30,9 @@ export function Validate(schema: ZodSchema) {
     ) => {
         if (typeof contextOrMethodName === "string") {
             const metadata =
-                Reflect.getMetadata("validation_middleware", originalMethodOrTarget as object) ??
-                {};
+                (Reflect.getMetadata("validation_middleware", originalMethodOrTarget as object) as
+                    | Record<string, unknown>
+                    | undefined) ?? {};
             const middleware = (
                 _application: Application,
                 req: Request,

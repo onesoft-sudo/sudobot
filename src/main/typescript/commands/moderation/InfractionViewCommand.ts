@@ -167,7 +167,7 @@ class InfractionViewCommand extends Command {
         });
 
         const infraction: Infraction | undefined = await this.infractionManager.getById(
-            context.guildId!,
+            context.guildId,
             args.id
         );
 

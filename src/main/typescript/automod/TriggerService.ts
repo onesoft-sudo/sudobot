@@ -100,7 +100,7 @@ class TriggerService extends Service implements HasEventListeners {
 
         const config = this.config(message.guildId!);
 
-        if (!config?.enabled || config?.global_disabled_channels?.includes(message.channelId!)) {
+        if (!config?.enabled || config?.global_disabled_channels?.includes(message.channelId)) {
             return true;
         }
 
@@ -133,7 +133,7 @@ class TriggerService extends Service implements HasEventListeners {
             }
 
             this.processTrigger(trigger, {
-                channelId: message.channelId!,
+                channelId: message.channelId,
                 roles: message.member!.roles.cache.keys(),
                 userId: message.author.id,
                 context: {
@@ -239,12 +239,12 @@ class TriggerService extends Service implements HasEventListeners {
         }
     }
 
-    public async triggerMessageSticky(
+    public triggerMessageSticky(
         trigger: Extract<TriggerType, { type: "sticky_message" }>,
         { message }: TriggerHandlerContext<true>
     ) {
-        if (!this.lastStickyMessageQueues[`${message.guildId!}_${message.channelId!}`]) {
-            this.lastStickyMessageQueues[`${message.guildId!}_${message.channelId!}`] = true;
+        if (!this.lastStickyMessageQueues[`${message.guildId!}_${message.channelId}`]) {
+            this.lastStickyMessageQueues[`${message.guildId!}_${message.channelId}`] = true;
 
             setTimeout(async () => {
                 if (!isTextBasedChannel(message.channel)) {
@@ -252,12 +252,12 @@ class TriggerService extends Service implements HasEventListeners {
                 }
 
                 const lastStickyMessage =
-                    this.lastStickyMessages[`${message.guildId!}_${message.channelId!}`];
+                    this.lastStickyMessages[`${message.guildId!}_${message.channelId}`];
 
                 if (lastStickyMessage) {
                     try {
                         await lastStickyMessage.delete();
-                        this.lastStickyMessages[`${message.guildId!}_${message.channelId!}`] =
+                        this.lastStickyMessages[`${message.guildId!}_${message.channelId}`] =
                             undefined;
                     } catch (error) {
                         this.logger.error(error);
@@ -283,9 +283,9 @@ class TriggerService extends Service implements HasEventListeners {
                                   ]
                     });
 
-                    this.lastStickyMessages[`${message.guildId!}_${message.channelId!}`] =
+                    this.lastStickyMessages[`${message.guildId!}_${message.channelId}`] =
                         sentMessage;
-                    this.lastStickyMessageQueues[`${message.guildId!}_${message.channelId!}`] =
+                    this.lastStickyMessageQueues[`${message.guildId!}_${message.channelId}`] =
                         false;
                 } catch (error) {
                     this.logger.error(error);

@@ -108,7 +108,7 @@ export default class ModStatsCommand extends Command {
                 return { data };
             }
         )
-            .setMessageOptionsBuilder(async ({ data, maxPages, page }) => {
+            .setMessageOptionsBuilder(({ data, maxPages, page }) => {
                 let description = "";
 
                 for (const infraction of data) {

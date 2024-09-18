@@ -47,7 +47,9 @@ abstract class AbstractPermissionManager implements PermissionManagerInterface {
             const instance = await Permission.resolve(permission);
 
             if (!instance) {
-                this.application.logger.warn(`Permission ${permission} does not exist.`);
+                this.application.logger.warn(
+                    `Permission ${permission?.toString()} does not exist.`
+                );
                 return false;
             }
 
@@ -76,7 +78,9 @@ abstract class AbstractPermissionManager implements PermissionManagerInterface {
                       : permission;
 
             if (!instance) {
-                this.application.logger.debug(`Permission ${permission} does not exist`);
+                this.application.logger.debug(
+                    `Permission ${permission?.toString()} does not exist`
+                );
                 continue;
             }
 

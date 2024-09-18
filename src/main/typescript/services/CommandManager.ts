@@ -173,8 +173,9 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         ) {
             if (isDevelopmentMode() && !global) {
                 this.client.guilds.cache
-                    .find(g => g.id === process.env.HOME_GUILD_ID!)
-                    ?.commands.set(commands);
+                    .find(g => g.id === process.env.HOME_GUILD_ID)
+                    ?.commands.set(commands)
+                    .catch(this.application.logger.error);
                 guildId = process.env.HOME_GUILD_ID;
             } else {
                 await this.client.application?.commands.set(commands);
@@ -202,7 +203,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         return this.ratelimiter;
     }
 
-    public async addCommand(
+    public addCommand(
         command: Command,
         loadMetadata = true,
         groups: Record<string, string> | null = null,
@@ -212,7 +213,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         let aliasGroupSet = false;
 
         if (loadMetadata && previousCommand) {
-            await this.application.classLoader.unloadEventsFromMetadata(previousCommand);
+            this.application.classLoader.unloadEventsFromMetadata(previousCommand);
         }
 
         const loweredName = command.name.toLowerCase();
@@ -245,7 +246,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             return;
         }
 
-        await this.application.classLoader.unloadEventsFromMetadata(previousCommand);
+        this.application.classLoader.unloadEventsFromMetadata(previousCommand);
         this.commands.delete(command.name.toLowerCase());
 
         for (const alias of command.aliases) {
@@ -268,7 +269,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             return;
         }
 
-        const config = this.configManager.config[message.guildId!];
+        const config = this.configManager.config[message.guildId];
 
         if (!config) {
             return;
@@ -330,9 +331,9 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
 
         const context = new LegacyContext(commandName, content, message, args, argv);
         const respondOnFail =
-            this.configManager.config[message.guildId!]?.commands.respond_on_precondition_fail;
+            this.configManager.config[message.guildId]?.commands.respond_on_precondition_fail;
 
-        if (command.isDisabled(message.guildId!)) {
+        if (command.isDisabled(message.guildId)) {
             respondOnFail && (await context.error("This command is disabled."));
             return;
         }
@@ -344,7 +345,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
                 : this.getCanonicalName(commandName);
             const subcommand = this.getCommand(key);
 
-            if (subcommand && subcommand.isDisabled(message.guildId!)) {
+            if (subcommand && subcommand.isDisabled(message.guildId)) {
                 respondOnFail && (await context.error("This command is disabled."));
                 return;
             }
@@ -533,7 +534,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             return true;
         }
 
-        const mode = this.configManager.config[context.guildId!]?.permissions.mode;
+        const mode = this.configManager.config[context.guildId]?.permissions.mode;
 
         if (mode !== "levels") {
             this.application.logger.warn(

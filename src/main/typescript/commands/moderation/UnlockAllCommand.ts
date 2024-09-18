@@ -42,17 +42,19 @@ class UnlockAllCommand extends Command {
         const { notLocked, errors, permissionErrors, success, total, skipped } =
             await this.channelLockManager.unlockAll(context.guild);
 
-        message.edit({
-            content: null,
-            embeds: [
-                {
-                    color: 0x007bff,
-                    description:
-                        `## :closed_lock_with_key: Unlocked ${success}/${total} Channels\n**Total**: ${total}\n**Success**: ${success}\n**Skipped:** ${skipped}\n**Not Locked**: ${notLocked}\n**Missing permissions**: ${permissionErrors}` +
-                        (errors.length > 0 ? `\n\n__Errors__:\n${errors.join("\n")}` : "")
-                }
-            ]
-        });
+        message
+            .edit({
+                content: null,
+                embeds: [
+                    {
+                        color: 0x007bff,
+                        description:
+                            `## :closed_lock_with_key: Unlocked ${success}/${total} Channels\n**Total**: ${total}\n**Success**: ${success}\n**Skipped:** ${skipped}\n**Not Locked**: ${notLocked}\n**Missing permissions**: ${permissionErrors}` +
+                            (errors.length > 0 ? `\n\n__Errors__:\n${errors.join("\n")}` : "")
+                    }
+                ]
+            })
+            .catch(this.application.logger.error);
     }
 }
 

@@ -27,14 +27,14 @@ class MainController extends Controller {
     protected readonly configManager!: ConfigurationManager;
 
     @Action("GET", "/")
-    public async index() {
+    public index() {
         return {
             message: "API server is up."
         };
     }
 
     @Action("GET", "/status")
-    public async status() {
+    public status() {
         const { server_status, server_status_description, server_status_started_at } =
             this.configManager.systemConfig.api;
 

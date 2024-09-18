@@ -26,7 +26,7 @@ class VersionShellCommand extends ShellCommand {
     public override readonly name: string = "version";
     public override readonly aliases = ["v"];
 
-    public override async execute(context: ShellCommandContext): Promise<void> {
+    public override execute(context: ShellCommandContext): void {
         context.println(
             `${chalk.white.bold("SudoBot")} ${chalk.green(`Version ${this.application.version}`)} (${chalk.blue(meta.release_codename)})`
         );

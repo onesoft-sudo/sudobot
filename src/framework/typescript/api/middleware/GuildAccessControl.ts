@@ -21,7 +21,7 @@ import { APIErrorCode } from "@main/types/APIErrorCode";
 import type { NextFunction, Response } from "express";
 import type Request from "../http/Request";
 
-export default async function GuildAccessControl(
+export default function GuildAccessControl(
     request: Request,
     response: Response,
     next: NextFunction

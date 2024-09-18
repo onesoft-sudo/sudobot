@@ -165,7 +165,8 @@ class ExpireCommand extends Command {
                         guildId: context.guildId,
                         runsAt: time.fromNow()
                     })
-                    .schedule();
+                    .schedule()
+                    .catch(this.application.logger.error);
             } catch (error) {
                 this.application.logger.error(error);
 
@@ -180,13 +181,15 @@ class ExpireCommand extends Command {
                 await context.success("Message sent successfully.");
             }
 
-            this.systemAuditLogging.logEchoCommandExecuted({
-                command: this.name,
-                guild: context.guild,
-                rawCommandContent: content,
-                user: context.user,
-                generatedMessageOptions: options
-            });
+            this.systemAuditLogging
+                .logEchoCommandExecuted({
+                    command: this.name,
+                    guild: context.guild,
+                    rawCommandContent: content,
+                    user: context.user,
+                    generatedMessageOptions: options
+                })
+                .catch(this.application.logger.error);
         } catch (error) {
             return void context.error(
                 error instanceof DirectiveParseError

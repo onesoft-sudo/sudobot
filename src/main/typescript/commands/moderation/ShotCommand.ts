@@ -124,7 +124,7 @@ class ShotCommand extends Command {
     ): Promise<void> {
         const { member, reason } = args;
 
-        if (await protectSystemAdminsFromCommands(this.application, context, member.id)) {
+        if (protectSystemAdminsFromCommands(this.application, context, member.id)) {
             return;
         }
 

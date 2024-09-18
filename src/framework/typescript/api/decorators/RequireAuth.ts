@@ -30,7 +30,9 @@ export function RequireAuth(fetchUser = true) {
     ) => {
         if (typeof contextOrMethodName === "string") {
             const metadata =
-                Reflect.getMetadata("auth_middleware", originalMethodOrTarget as object) ?? {};
+                (Reflect.getMetadata("auth_middleware", originalMethodOrTarget as object) as
+                    | Record<string, unknown>
+                    | undefined) ?? {};
             const middleware = (
                 application: Application,
                 req: Request,

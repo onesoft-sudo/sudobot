@@ -28,4 +28,4 @@ async function main() {
     await shell.start();
 }
 
-main().then();
+void main().then();

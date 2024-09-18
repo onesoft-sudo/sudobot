@@ -40,8 +40,8 @@ class Environment {
         return process.env;
     }
 
-    
     public static parseVariables<T extends ZodSchema>(schema: T): z.infer<T> {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return schema.parse(this.variables());
     }
 }

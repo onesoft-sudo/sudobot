@@ -99,12 +99,9 @@ class MessageDeleteEventListener extends EventListener<Events.MessageDelete> {
         setTimeout(async () => {
             const moderator = await this.findResponsibleModerator(message);
 
-            this.auditLoggingService.emitLogEvent(
-                message.guildId!,
-                LogEventType.MessageDelete,
-                message,
-                moderator
-            );
+            this.auditLoggingService
+                .emitLogEvent(message.guildId, LogEventType.MessageDelete, message, moderator)
+                .catch(this.application.logger.error);
         }, 100);
     }
 }

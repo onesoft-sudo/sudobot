@@ -27,7 +27,7 @@ class StringArgument extends Argument<string> {
     }
 
     public override validate(): boolean {
-        if (!this.stringValue!.length) {
+        if (!this.stringValue.length) {
             return this.error("String cannot be empty", ErrorType.InvalidType);
         }
 
@@ -41,14 +41,14 @@ class StringArgument extends Argument<string> {
     public override postTransformValidation(): Awaitable<boolean> {
         if (
             this.rules?.["range:min"] &&
-            this.transformedValue!.length < this.rules?.["range:min"]
+            this.transformedValue.length < this.rules?.["range:min"]
         ) {
             return this.error("String is too short", ErrorType.InvalidRange);
         }
 
         if (
             this.rules?.["range:max"] &&
-            this.transformedValue!.length > this.rules?.["range:max"]
+            this.transformedValue.length > this.rules?.["range:max"]
         ) {
             return this.error("String is too long", ErrorType.InvalidRange);
         }

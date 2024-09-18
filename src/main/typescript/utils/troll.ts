@@ -21,14 +21,13 @@ import type Application from "@framework/app/Application";
 import type Context from "@framework/commands/Context";
 import { type Snowflake } from "discord.js";
 
-export async function protectSystemAdminsFromCommands(
+export function protectSystemAdminsFromCommands(
     application: Application,
     context: Context,
     userId: Snowflake
 ) {
     const configManager = application.service("configManager");
-    const immuneUsers =
-        configManager.config[context.guildId!]?.commands?.troll_command_immune_users;
+    const immuneUsers = configManager.config[context.guildId]?.commands?.troll_command_immune_users;
 
     if (
         userId === application.client.user!.id ||

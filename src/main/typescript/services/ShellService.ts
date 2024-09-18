@@ -80,7 +80,7 @@ class ShellService extends Service {
             }
 
             ws.on("message", async message => {
-                const { payload, type, key } = JSON.parse(message.toString());
+                const { payload, type, key } = JSON.parse((message as Buffer).toString());
 
                 if (key !== env.SYSTEM_SHELL_KEY) {
                     ws.send(JSON.stringify({ type: "error", payload: "Invalid key" }));
@@ -93,7 +93,7 @@ class ShellService extends Service {
                         break;
 
                     case "cmd":
-                        this.executeCommand(payload, ws);
+                        await this.executeCommand(payload, ws);
                         break;
 
                     case "stdin":
@@ -209,7 +209,10 @@ class ShellService extends Service {
                     process.chdir(options.args[0]);
                     break;
                 } catch (error) {
-                    context.println("cd: " + ((error as Error).message ?? `${error}`), "stderr");
+                    context.println(
+                        "cd: " + ((error as Error).message ?? `${error?.toString()}`),
+                        "stderr"
+                    );
                     context.exit(1) as void;
                 }
 
@@ -247,7 +250,7 @@ class ShellService extends Service {
                         context.println(output.trimEnd());
                     } catch (error) {
                         context.println(
-                            "ls: " + ((error as Error).message ?? `${error}`),
+                            "ls: " + ((error as Error).message ?? `${error?.toString()}`),
                             "stderr"
                         );
                         context.exit(1);
@@ -312,7 +315,10 @@ class ShellService extends Service {
             }
 
             ws.send(
-                JSON.stringify({ type: "error", payload: (error as Error).message ?? `${error}` })
+                JSON.stringify({
+                    type: "error",
+                    payload: (error as Error).message ?? `${error?.toString()}`
+                })
             );
         }
     }

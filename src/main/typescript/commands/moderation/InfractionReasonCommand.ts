@@ -92,7 +92,7 @@ class InfractionReasonCommand extends Command {
 
         const { id, reason } = args;
         const isSuccess = await this.infractionManager.updateReasonById(
-            context.guildId!,
+            context.guildId,
             id,
             reason,
             !context.isChatInput() || context.options.getBoolean("notify") !== false

@@ -40,7 +40,6 @@ export type ContainerBindOptions<T extends AnyConstructor = AnyConstructor> = {
 
 export type Resolved<T extends AnyConstructor> = InstanceType<T>;
 
-
 class Container {
     public static readonly Inject = Inject;
     private static instance?: Container;
@@ -49,7 +48,6 @@ class Container {
 
     private constructor() {}
 
-    
     public static getInstance() {
         if (!Container.instance) {
             Container.instance = new Container();
@@ -58,12 +56,10 @@ class Container {
         return Container.instance;
     }
 
-    
     public static destroyGlobalContainer() {
         Container.instance = undefined;
     }
 
-    
     public bind<T extends AnyConstructor>(value: T, options?: ContainerBindOptions<T>) {
         const key = options?.key ?? value.name;
         const binding = {
@@ -73,13 +69,12 @@ class Container {
             factory: options?.factory,
             singleton: options?.singleton ?? false
         };
-        this.bindingsByName.set(key as string, binding as Binding<T>);
+        this.bindingsByName.set(key, binding as Binding<T>);
         this.bindingsByConstructor.set(value, binding as Binding<T>);
     }
 
-    
     public resolve<T extends AnyConstructor>(key: string): Resolved<T> {
-        const binding = this.bindingsByName.get(key as string);
+        const binding = this.bindingsByName.get(key);
 
         if (!binding) {
             throw new Error(`No binding found for key: ${key}`);
@@ -88,7 +83,6 @@ class Container {
         return this.resolveBinding(binding) as Resolved<T>;
     }
 
-    
     public resolveByClass<T extends AnyConstructor>(
         value: T,
         args?: ConstructorParameters<T>,
@@ -152,13 +146,13 @@ class Container {
         const constructorParamTypes = Reflect.getMetadata("design:paramtypes", value) as
             | AnyConstructor[]
             | undefined;
-        const bindAs = Reflect.getMetadata("di:bind_as", value);
+        const bindAs = Reflect.getMetadata("di:bind_as", value) as string | undefined;
         let instance: InstanceType<T>;
 
         if (!constructorParamTypes || args) {
             instance = new (value as unknown as new (...args: unknown[]) => InstanceType<T>)(
                 ...(args ?? [])
-            ) as InstanceType<T>;
+            );
         } else {
             const resolvedParams = constructorParamTypes.map(paramType =>
                 this.resolveByClass(paramType)
@@ -166,7 +160,7 @@ class Container {
 
             instance = new (value as unknown as new (...args: unknown[]) => InstanceType<T>)(
                 ...resolvedParams
-            ) as InstanceType<T>;
+            );
         }
 
         if (bindAs) {
@@ -212,7 +206,12 @@ class Container {
         instance?: InstanceType<T>
     ): InstanceType<T> {
         const finalInstance = instance ?? this.resolveByClass(value);
-        const injections = Reflect.getMetadata("di:inject", value.prototype) || [];
+        const injections =
+            (Reflect.getMetadata("di:inject", value.prototype as object) as {
+                key: string;
+                name: string;
+                ref: T;
+            }[]) || [];
 
         for (const injection of injections) {
             if ((finalInstance as Record<string, unknown>)[injection.key]) {
@@ -227,7 +226,7 @@ class Container {
                               injection.ref ??
                                   Reflect.getMetadata(
                                       "design:type",
-                                      value.prototype,
+                                      value.prototype as object,
                                       injection.key
                                   ),
                               "Cannot determine the type of property to inject"

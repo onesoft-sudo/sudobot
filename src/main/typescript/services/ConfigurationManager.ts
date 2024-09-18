@@ -126,7 +126,7 @@ export default class ConfigurationManager
 
         if (!process.env.NO_GENERATE_CONFIG_SCHEMA) {
             this.application.logger.info("Generating configuration schema files");
-            this.generateSchema();
+            this.generateSchema().catch(this.application.logger.error);
         }
     }
 

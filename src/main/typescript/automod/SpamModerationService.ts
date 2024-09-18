@@ -50,7 +50,7 @@ class SpamModerationService
     private readonly permissionManagerService!: PermissionManagerService;
 
     private configFor(guildId: Snowflake) {
-        return this.configurationManager.config[guildId!]?.antispam;
+        return this.configurationManager.config[guildId]?.antispam;
     }
 
     private async shouldModerate(message: Message) {

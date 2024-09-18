@@ -78,9 +78,9 @@ class AvatarCommand extends Command {
         ) {
             try {
                 member = user
-                    ? (context.guild!.members.cache.get(user.id) ??
-                      (await context.guild!.members.fetch(user.id)))
-                    : (context.member! as GuildMember);
+                    ? (context.guild.members.cache.get(user.id) ??
+                      (await context.guild.members.fetch(user.id)))
+                    : (context.member!);
             } catch (e) {
                 return void (await context.error("Failed to fetch member."));
             }
@@ -89,16 +89,16 @@ class AvatarCommand extends Command {
         await context.reply({
             embeds: [
                 new EmbedBuilder()
-                    .setColor(user!.accentColor ?? "#007bff")
+                    .setColor(user.accentColor ?? "#007bff")
                     .setAuthor({
-                        name: member?.user.username ?? user!.username
+                        name: member?.user.username ?? user.username
                     })
                     .setImage(
                         member?.displayAvatarURL({
                             size: 4096,
                             forceStatic: false
                         }) ??
-                            user!.displayAvatarURL({
+                            user.displayAvatarURL({
                                 size: 4096,
                                 forceStatic: false
                             })
@@ -108,13 +108,13 @@ class AvatarCommand extends Command {
                             size: 4096,
                             forceStatic: false
                         }) ??
-                            user!.displayAvatarURL({
+                            user.displayAvatarURL({
                                 size: 4096,
                                 forceStatic: false
                             })
                     )
                     .setFooter({
-                        text: `${user!.username} (${user!.id})`
+                        text: `${user.username} (${user.id})`
                     })
             ],
             components: [
@@ -127,7 +127,7 @@ class AvatarCommand extends Command {
                                 size: 4096,
                                 forceStatic: false
                             }) ??
-                                user!.displayAvatarURL({
+                                user.displayAvatarURL({
                                     size: 4096,
                                     forceStatic: false
                                 })

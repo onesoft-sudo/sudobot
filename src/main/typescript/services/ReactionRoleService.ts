@@ -170,7 +170,7 @@ class ReactionRoleService extends Service implements HasEventListeners {
         }
 
         const entry = this.reactionRoleEntries.get(
-            `${guildId}_${channelId}_${messageId!}_${emoji.id ?? emoji.name}`
+            `${guildId}_${channelId}_${messageId}_${emoji.id ?? emoji.name}`
         );
 
         if (!entry) {
@@ -244,10 +244,10 @@ class ReactionRoleService extends Service implements HasEventListeners {
                     value?.guildId === guildId &&
                     value?.channelId === channelId &&
                     value?.messageId === messageId &&
-                    member.roles.cache.hasAny(...value!.roles)
+                    member.roles.cache.hasAny(...value.roles)
                 ) {
                     await member.roles
-                        .remove(value!.roles, "Taking out the previous roles")
+                        .remove(value.roles, "Taking out the previous roles")
                         .catch(this.application.logger.error);
                     removedPreviousRoles = !removedPreviousRoles ? true : removedPreviousRoles;
 

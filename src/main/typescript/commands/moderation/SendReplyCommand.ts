@@ -148,13 +148,15 @@ class SendReplyCommand
                 }
             }
 
-            this.systemAuditLogging.logEchoCommandExecuted({
-                command: this.name,
-                guild: interaction.guild!,
-                rawCommandContent: content,
-                user: interaction.user,
-                generatedMessageOptions: options
-            });
+            this.systemAuditLogging
+                .logEchoCommandExecuted({
+                    command: this.name,
+                    guild: interaction.guild!,
+                    rawCommandContent: content,
+                    user: interaction.user,
+                    generatedMessageOptions: options
+                })
+                .catch(this.application.logger.error);
         } catch (error) {
             return void interaction.editReply(
                 error instanceof DirectiveParseError

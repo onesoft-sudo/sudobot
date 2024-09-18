@@ -39,17 +39,19 @@ class LockAllCommand extends Command {
         const { alreadyLocked, errors, permissionErrors, success, total, skipped } =
             await this.channelLockManager.lockAll(context.guild);
 
-        message.edit({
-            content: null,
-            embeds: [
-                {
-                    color: 0x007bff,
-                    description:
-                        `## :lock: Locked ${success}/${total} Channels\n**Total**: ${total}\n**Success**: ${success}\n**Skipped:** ${skipped}\n**Already Locked**: ${alreadyLocked}\n**Missing permissions**: ${permissionErrors}` +
-                        (errors.length > 0 ? `\n\n__Errors__:\n${errors.join("\n")}` : "")
-                }
-            ]
-        });
+        message
+            .edit({
+                content: null,
+                embeds: [
+                    {
+                        color: 0x007bff,
+                        description:
+                            `## :lock: Locked ${success}/${total} Channels\n**Total**: ${total}\n**Success**: ${success}\n**Skipped:** ${skipped}\n**Already Locked**: ${alreadyLocked}\n**Missing permissions**: ${permissionErrors}` +
+                            (errors.length > 0 ? `\n\n__Errors__:\n${errors.join("\n")}` : "")
+                    }
+                ]
+            })
+            .catch(this.application.logger.error);
     }
 }
 

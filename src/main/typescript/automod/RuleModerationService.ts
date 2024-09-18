@@ -24,7 +24,7 @@ import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
 import { LogEventType } from "@main/schemas/LoggingSchema";
-import { GuildMember, Message, Snowflake, TextChannel } from "discord.js";
+import { Awaitable, GuildMember, Message, Snowflake, TextChannel } from "discord.js";
 import { MessageAutoModServiceContract } from "../contracts/MessageAutoModServiceContract";
 import {
     MessageRuleScope,
@@ -170,7 +170,7 @@ class RuleModerationService
             throw new Error("Member and message is missing");
         }
 
-        const config = this.configFor(guildId!);
+        const config = this.configFor(guildId);
 
         if (!config?.enabled) {
             return false;
@@ -314,7 +314,7 @@ class RuleModerationService
                         message
                             ? {
                                   message,
-                                  channel: message.channel! as TextChannel
+                                  channel: message.channel as TextChannel
                               }
                             : undefined
                     );
@@ -327,7 +327,7 @@ class RuleModerationService
                     }
 
                     await this.auditLoggingService.emitLogEvent(
-                        guildId!,
+                        guildId,
                         LogEventType.SystemAutoModRuleModeration,
                         message ? "message" : "profile",
                         message ?? member,
@@ -355,14 +355,14 @@ class RuleModerationService
     }
 
     private configFor(guildId: Snowflake) {
-        return this.configurationManager.config[guildId!]?.rule_moderation;
+        return this.configurationManager.config[guildId]?.rule_moderation;
     }
 
     private async shouldModerate(messageOrMember: Message | GuildMember) {
         if (
             (messageOrMember instanceof Message && messageOrMember.author.bot) ||
             (messageOrMember instanceof GuildMember && messageOrMember.user.bot) ||
-            !this.configFor(messageOrMember.guild!.id!)?.enabled
+            !this.configFor(messageOrMember.guild!.id)?.enabled
         ) {
             return false;
         }
@@ -388,18 +388,18 @@ class RuleModerationService
         return this.permissionManagerService.canAutoModerate(finalMember);
     }
 
-    private async createRuleHandler(): Promise<ModerationRuleHandlerContract> {
+    private createRuleHandler(): Awaitable<ModerationRuleHandlerContract> {
         const instance = new ModerationRuleHandler(this.application);
         this.application.container.resolveProperties(ModerationRuleHandler, instance);
-        await instance.boot?.();
+        instance.boot?.();
         return instance;
     }
 
-    private async checkPreconditions(
+    private checkPreconditions(
         member: GuildMember,
         rule: MessageRuleType,
         message?: Message
-    ) {
+    ): Awaitable<boolean> {
         if (rule.for) {
             const { roles, users, channels } = rule.for;
 
