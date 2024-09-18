@@ -23,6 +23,8 @@ export default tseslint.config(
         },
         rules: {
             indent: "off",
+            semi: ["warn", "always"],
+            "no-var": "off",
             "linebreak-style": ["error", "unix"],
             quotes: [
                 "warn",
@@ -31,7 +33,6 @@ export default tseslint.config(
                     avoidEscape: true
                 }
             ],
-            semi: ["warn", "always"],
             "@typescript-eslint/no-var-requires": "off",
             "@typescript-eslint/consistent-type-imports": [
                 "error",
@@ -47,7 +48,13 @@ export default tseslint.config(
                 "error",
                 { accessibility: "explicit" }
             ],
-            "@typescript-eslint/no-unused-vars": "off"
+            "@typescript-eslint/no-unused-vars": "off",
+            "@typescript-eslint/no-unsafe-member-access": "off",
+            "@typescript-eslint/no-unsafe-call": "off",
+            "@typescript-eslint/no-unsafe-assignment": "off",
+            "@typescript-eslint/no-unsafe-return": "off",
+            "@typescript-eslint/no-unsafe-argument": "off",
+            "@typescript-eslint/restrict-template-expressions": "off"
         },
         files: ["src/**/*.ts"],
         ignores: [
