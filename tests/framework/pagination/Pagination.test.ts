@@ -1,4 +1,4 @@
-import Pagination from "@framework/pagination/Pagination";
+import Pagination from "@framework/widgets/Pagination";
 import { describe, expect, it, vi } from "vitest";
 import { createApplication } from "../../mocks/application.mock";
 
@@ -118,7 +118,9 @@ describe("Pagination", () => {
 
     it("should calculate max pages correctly", async () => {
         const getCount = vi.fn().mockResolvedValue(15);
-        const pagination = new Pagination(undefined, emojiResolver).setCountGetter(getCount).setLimit(5);
+        const pagination = new Pagination(undefined, emojiResolver)
+            .setCountGetter(getCount)
+            .setLimit(5);
 
         expect(await pagination["calculateMaxPages"].call(pagination)).toBe(3);
     });

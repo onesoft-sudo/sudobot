@@ -20,8 +20,8 @@
 import { Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
-import Pagination from "@framework/pagination/Pagination";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
+import Pagination from "@framework/widgets/Pagination";
 import SnippetManagerService from "@main/services/SnippetManagerService";
 
 class SnippetListCommand extends Command {

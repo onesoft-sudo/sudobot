@@ -20,10 +20,10 @@
 import { Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
-import Pagination from "@framework/pagination/Pagination";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import Queue from "@framework/queues/Queue";
 import { shortUserInfo } from "@framework/utils/embeds";
+import Pagination from "@framework/widgets/Pagination";
 import { Colors } from "@main/constants/Colors";
 import QueueService from "@main/services/QueueService";
 import { inlineCode, italic, time } from "discord.js";

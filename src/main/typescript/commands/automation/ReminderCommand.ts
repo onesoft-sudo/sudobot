@@ -22,7 +22,7 @@ import { Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
 import type InteractionContext from "@framework/commands/InteractionContext";
 import type LegacyContext from "@framework/commands/LegacyContext";
-import Pagination from "@framework/pagination/Pagination";
+import Pagination from "@framework/widgets/Pagination";
 import { Colors } from "@main/constants/Colors";
 import type ReminderQueue from "@main/queues/ReminderQueue";
 import type { ChatInputCommandInteraction } from "discord.js";
