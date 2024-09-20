@@ -206,6 +206,8 @@ class AuthController extends Controller {
                 });
             }
 
+            const token = await this.authService.provisionToken(user);
+
             const guilds: APIGuild[] = [];
 
             for (const guildId of user.guilds) {
@@ -225,7 +227,7 @@ class AuthController extends Controller {
                     discordId: user.discordId,
                     avatar: avatarURL
                 },
-                token: user.token,
+                token,
                 expires: user.tokenExpiresAt?.getTime(),
                 guilds
             };
