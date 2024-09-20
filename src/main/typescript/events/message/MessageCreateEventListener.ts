@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -57,7 +57,7 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
 
     private readonly listeners: Array<(message: Message) => unknown> = [];
 
-    public override async onInitialize() {
+    public override onInitialize() {
         this.listeners.push(
             this.ruleModerationService.onMessageCreate.bind(this.ruleModerationService),
             this.spamModerationService.onMessageCreate.bind(this.spamModerationService),

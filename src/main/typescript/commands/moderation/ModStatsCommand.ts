@@ -1,7 +1,7 @@
-/**
+/*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -108,7 +108,7 @@ export default class ModStatsCommand extends Command {
                 return { data };
             }
         )
-            .setMessageOptionsBuilder(async ({ data, maxPages, page }) => {
+            .setMessageOptionsBuilder(({ data, maxPages, page }) => {
                 let description = "";
 
                 for (const infraction of data) {

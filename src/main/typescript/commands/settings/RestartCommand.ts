@@ -1,3 +1,22 @@
+/*
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import type { Buildable } from "@framework/commands/Command";
 import { Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
@@ -88,7 +107,7 @@ class RestartCommand extends Command {
                 components: [new ActionRowBuilder<ButtonBuilder>().addComponents(...buttons)]
             });
 
-            await this.startupManager.requestRestart({
+            this.startupManager.requestRestart({
                 guildId,
                 channelId,
                 message: `Restart command was executed by ${interaction.user.username} (${interaction.user.id})`,
@@ -135,8 +154,8 @@ class RestartCommand extends Command {
             components: [
                 new ActionRowBuilder<ButtonBuilder>().addComponents(
                     ...this.buildButtons(
-                        context.guildId!,
-                        context.channelId!,
+                        context.guildId,
+                        context.channelId,
                         context.member!.user.id,
                         mfaKey
                     )
@@ -146,25 +165,27 @@ class RestartCommand extends Command {
 
         if (reply) {
             setTimeout(() => {
-                reply.edit({
-                    embeds: [
-                        {
-                            color: 0xf14a60,
-                            description: `### ${context.emoji("restart")} System Restart\nOperation cancelled due to inactivity.`
-                        }
-                    ],
-                    components: [
-                        new ActionRowBuilder<ButtonBuilder>().addComponents(
-                            ...this.buildButtons(
-                                context.guildId!,
-                                context.channelId!,
-                                context.member!.user.id,
-                                mfaKey,
-                                true
+                reply
+                    .edit({
+                        embeds: [
+                            {
+                                color: 0xf14a60,
+                                description: `### ${context.emoji("restart")} System Restart\nOperation cancelled due to inactivity.`
+                            }
+                        ],
+                        components: [
+                            new ActionRowBuilder<ButtonBuilder>().addComponents(
+                                ...this.buildButtons(
+                                    context.guildId,
+                                    context.channelId,
+                                    context.member!.user.id,
+                                    mfaKey,
+                                    true
+                                )
                             )
-                        )
-                    ]
-                });
+                        ]
+                    })
+                    .catch(this.application.logger.error);
             }, 180_000); // 3 minutes
         }
     }

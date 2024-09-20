@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -103,7 +103,7 @@ abstract class AbstractPermissionManagerService
         return await systemAdminPermission.has(member);
     }
 
-    public async canBypassGuildRestrictions(member: GuildMember) {
+    public canBypassGuildRestrictions(member: GuildMember) {
         return (
             member.guild.ownerId === member.id ||
             member.permissions.has(PermissionFlagsBits.Administrator, true)

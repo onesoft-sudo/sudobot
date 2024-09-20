@@ -1,3 +1,22 @@
+/*
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import { Inject } from "@framework/container/Inject";
 import { GatewayEventListener } from "@framework/events/GatewayEventListener";
 import { Name } from "@framework/services/Name";
@@ -66,6 +85,8 @@ type WebhookInfo =
           status: "error";
           attempts: number;
       };
+
+/* eslint-disable @typescript-eslint/unbound-method */
 
 @Name("auditLoggingService")
 class AuditLoggingService extends Service {
@@ -312,7 +333,7 @@ class AuditLoggingService extends Service {
     }
 
     private configFor(guildId: Snowflake) {
-        return this.configurationManager.config[guildId!]?.logging;
+        return this.configurationManager.config[guildId]?.logging;
     }
 
     private async send({
@@ -439,7 +460,7 @@ class AuditLoggingService extends Service {
                     this.webhooks.set(`${guildId}::${channelId}`, webhookClient);
 
                     configManager.config[guildId]!.logging!.hooks ??= {};
-                    configManager.config[guildId]!.logging!.hooks![channel.id] = webhook.id;
+                    configManager.config[guildId]!.logging!.hooks[channel.id] = webhook.id;
                     await configManager.write();
                 }
             }
@@ -662,7 +683,7 @@ class AuditLoggingService extends Service {
         const fields = [
             {
                 name: "Channel",
-                value: channelInfo(oldMessage.channel!),
+                value: channelInfo(oldMessage.channel),
                 inline: true
             },
             {
@@ -1234,7 +1255,10 @@ class AuditLoggingService extends Service {
                 name: "Roles",
                 value:
                     member.roles.cache.size > 1
-                        ? member.roles.cache.map(r => roleMention(r.id)).join(", ")
+                        ? member.roles.cache
+                              .filter(r => r.id !== member.guild.id)
+                              .map(r => roleMention(r.id))
+                              .join(", ")
                         : italic("None")
             },
             {

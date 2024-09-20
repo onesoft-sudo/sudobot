@@ -147,6 +147,19 @@ Our superset defines the following additional commit types:
         ```git-commit
         deps(dev): update dev dependencies
         ```
+    3. **`merge`**: If you perform a merge, use this commit type. When using the
+        `git merge` command, you can pass the `-m` option and a commit message as
+        an argument. Sometimes git can choose to not perform a merge commit and instead
+        perform a "fast-forward" merge. In that case, there will be no additional commit,
+        and therefore the message will be ignored. In other cases when Git creates a new commit,
+        the commit message will be used.<br />
+        Example:<br />
+
+        ```bash
+        git merge feature/new-permission-system -m "merge: feature/new-permission-system branch to main"
+        ```
+    4. **`i18n`**: This commit type is used when you add translations or make changes
+        that affect the internationalization of the bot.
 
 In addition to the rules described in the original Conventional Commits
 specification, we also have the following rules:
@@ -206,7 +219,7 @@ specification, we also have the following rules:
 
 We follow the an extended version of the
 [GitHub Flow](https://guides.github.com/introduction/flow/) workflow.
-Thee only main branch is `main` &mdash; this is the branch that is always
+The only main branch is `main` &mdash; this is the branch that is always
 deployed to production. Notable development works are done in feature branches,
 which are then merged into the `main` branch via pull requests.
 If the feature or fix you're working on is small, you can commit directly to the
@@ -227,12 +240,12 @@ We also have the following additional branches:
 2. **Bugfix Branches**: We create bugfix branches for working on a notable bug
    fix or security patch. These branches are created from the `main` branch and
    are merged back into the `main` branch via pull requests.
-   These branches are prefixed by `fix/`.
+   These branches are prefixed by `bugfix/`.
 
 3. **Feature Branches**: We create feature branches for working on new features.
    These branches are created from the `main` branch and are merged back into
    the `main` branch via pull requests.
-   These branches are prefixed by `feat/`.
+   These branches are prefixed by `feature/`.
 
 ## Automation of Releases and Changelog Generation
 

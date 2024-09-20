@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -107,7 +107,7 @@ class BeanCommand extends Command {
     ): Promise<void> {
         const { member, reason } = args;
 
-        if (await protectSystemAdminsFromCommands(this.application, context, member.id)) {
+        if (protectSystemAdminsFromCommands(this.application, context, member.id)) {
             return;
         }
 

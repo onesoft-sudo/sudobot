@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2023 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@ import { APIErrorCode } from "@main/types/APIErrorCode";
 import type { NextFunction, Response } from "express";
 import type Request from "../http/Request";
 
-export default async function GuildAccessControl(
+export default function GuildAccessControl(
     request: Request,
     response: Response,
     next: NextFunction

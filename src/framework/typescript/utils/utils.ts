@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -16,6 +16,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
+
+import Application from "@framework/app/Application";
 
 export function escapeRegex(string: string) {
     return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
@@ -50,4 +52,16 @@ export function isDevelopmentMode() {
         process.env.NODE_ENV === "dev" ||
         process.env.SUDO_ENV === "dev"
     );
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function noOperation(..._args: any[]): void {
+    return;
+}
+
+export function suppressErrorNoReturn(value: unknown): void {
+    if (value instanceof Promise) {
+        value.catch(Application.current().logger.error);
+    }
 }

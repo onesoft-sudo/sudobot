@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -27,16 +27,10 @@ import { Singleton } from "../types/Singleton";
 import type { SystemPermissionResolvable } from "./AbstractPermissionManagerService";
 
 abstract class Permission extends Singleton {
-    /**
-     * The name of the permission.
-     */
+    
     protected abstract readonly name: string;
 
-    /**
-     * The stringified representation of the object.
-     *
-     * @returns The name of the permission.
-     */
+    
     public override toString(): string {
         return this.name;
     }

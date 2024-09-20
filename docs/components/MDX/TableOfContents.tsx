@@ -72,7 +72,7 @@ export default function TableOfContents({
             <h4 className="pl-[15px] mb-3 mt-4 uppercase font-bold tracking-wider text-[15px]">
                 On this page
             </h4>
-            <ul className="list-none">
+            <ul className="list-none pr-2.5">
                 {headings.map(heading => (
                     <li key={heading.id}>
                         <a

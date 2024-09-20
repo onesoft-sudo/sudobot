@@ -1,3 +1,22 @@
+/*
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import RestStringArgument from "@framework/arguments/RestStringArgument";
@@ -12,8 +31,7 @@ import TranslationService from "@main/services/TranslationService";
 import {
     type ApplicationCommandOptionChoiceData,
     EmbedBuilder,
-    type Interaction,
-    User
+    type Interaction
 } from "discord.js";
 
 type TranslateCommandArgs = {
@@ -85,7 +103,7 @@ class TranslateCommand extends Command<ContextType> {
     }
 
     @GatewayEventListener("interactionCreate")
-    public async onInteractionCreate(interaction: Interaction) {
+    public onInteractionCreate(interaction: Interaction) {
         if (!interaction.isAutocomplete() || interaction.commandName !== this.name) {
             return;
         }
@@ -206,12 +224,10 @@ class TranslateCommand extends Command<ContextType> {
                     color: 0x007bff,
                     author: {
                         name: context.isMessageContextMenu()
-                            ? (context.commandMessage.targetMessage.author as User).username
+                            ? context.commandMessage.targetMessage.author.username
                             : "Translation",
                         iconURL: context.isMessageContextMenu()
-                            ? (
-                                  context.commandMessage.targetMessage.author as User
-                              ).displayAvatarURL()
+                            ? context.commandMessage.targetMessage.author.displayAvatarURL()
                             : undefined
                     },
                     description: translation,

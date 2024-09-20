@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -31,7 +31,7 @@ class DurationArgument extends Argument<Duration> {
     };
 
     public override toString(): string {
-        return this.stringValue!.toString();
+        return this.stringValue.toString();
     }
 
     public override validate(): boolean {
@@ -40,7 +40,7 @@ class DurationArgument extends Argument<Duration> {
 
     public override transform(): Duration {
         try {
-            return Duration.fromDurationStringExpression(this.stringValue!);
+            return Duration.fromDurationStringExpression(this.stringValue);
         } catch (error) {
             if (error instanceof DurationParseError) {
                 return this.error(error.message, ErrorType.InvalidType);
@@ -53,7 +53,7 @@ class DurationArgument extends Argument<Duration> {
     public override postTransformValidation(): boolean {
         const durationValue =
             typeof this.transformedValue === "number"
-                ? this.transformedValue!
+                ? this.transformedValue
                 : this.transformedValue.toMilliseconds();
 
         if (this.rules?.["range:min"] && durationValue < this.rules?.["range:min"]) {
@@ -76,7 +76,7 @@ class DurationArgument extends Argument<Duration> {
             return this.error(`${this.name} is required!`, ErrorType.Required);
         }
         try {
-            return Duration.fromDurationStringExpression(value!);
+            return Duration.fromDurationStringExpression(value);
         } catch (error) {
             if (error instanceof DurationParseError) {
                 return this.error(error.message, ErrorType.InvalidType);

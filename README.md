@@ -102,6 +102,10 @@ If you prefer communicating over emails or mailing lists, you can send your mess
 For more information about this mailing list, check out the [list info](https://lists.onesoftnet.eu.org/mailman/listinfo/sudobot) page. 
 Mail archives for this mailing list can be found [here](https://lists.onesoftnet.eu.org/pipermail/sudobot).
 
+### Version Information
+
+Please [refer here](VERSIONS.md).
+
 ### License
 
 SudoBot is licensed under the [GNU Affero General Public License v3.0](https://gnu.org/licenses/agpl-3.0.html). You can find the full license text in the [LICENSE](./LICENSE) file distributed in this repository.

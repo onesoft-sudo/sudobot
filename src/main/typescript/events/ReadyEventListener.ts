@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -53,15 +53,14 @@ class ReadyEventListener extends EventListener<Events.Ready, Client> {
         this.logger.info(`Logged in as: ${this.client.user?.username}`);
 
         this.configManager.onReady();
-        this.startupManager.onReady();
-        this.commandManager.onReady();
-        this.queueService.onReady();
-        this.application.service("apiServer").onReady();
+        this.startupManager.onReady().catch(this.application.logger.error);
+        this.commandManager.onReady().catch(this.application.logger.error);
+        this.queueService.onReady().catch(this.application.logger.error);
+        this.application.service("apiServer").onReady().catch(this.application.logger.error);
 
-        const homeGuild = await this.client.getHomeGuild();
-
-        if (this.configManager.systemConfig.sync_emojis) {
+        if (this.configManager.systemConfig.sync_emojis && process.env.HOME_GUILD_ID) {
             try {
+                const homeGuild = await this.client.getHomeGuild();
                 const emojis = await homeGuild.emojis.fetch();
 
                 for (const [id, emoji] of emojis) {
@@ -70,21 +69,23 @@ class ReadyEventListener extends EventListener<Events.Ready, Client> {
                     }
                 }
 
-                this.logger.info("Successfully synced the emojis of home guild.");
+                this.logger.info("Successfully synced the emojis of home guild");
             } catch (e) {
                 this.logger.error(e);
                 this.logger.warn(
-                    "Failed to fetch some of the emojis. The bot may not show some of the emojis in it's responses if dependent on guild-specific emojis."
+                    "Failed to fetch some of the emojis. The bot may not show some of the emojis in it's responses if dependent on guild-specific emojis"
                 );
             }
+        }
 
+        if (this.configManager.systemConfig.sync_emojis) {
             try {
                 await this.application.client.application?.emojis.fetch();
-                this.logger.info("Successfully synced the application emojis.");
+                this.logger.info("Successfully synced the application emojis");
             } catch (e) {
                 this.logger.error(e);
                 this.logger.warn(
-                    "Failed to fetch some of the emojis. The bot may not show some of the emojis in it's responses if dependent on application-specific emojis."
+                    "Failed to fetch some of the emojis. The bot may not show some of the emojis in it's responses if dependent on application-specific emojis"
                 );
             }
         }

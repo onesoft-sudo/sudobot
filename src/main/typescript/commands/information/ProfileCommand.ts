@@ -1,3 +1,22 @@
+/*
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import GuildMemberArgument from "@framework/arguments/GuildMemberArgument";
 import UserArgument from "@framework/arguments/UserArgument";
@@ -139,7 +158,7 @@ class ProfileCommand extends Command {
         return (count / ProfileCommand.MAX_PERMISSION_COUNT) * 100;
     }
 
-    private async getMemberNameBadge(_member: GuildMember | undefined, isSystemAdmin: boolean) {
+    private getMemberNameBadge(_member: GuildMember | undefined, isSystemAdmin: boolean) {
         let badges = "";
 
         if (isSystemAdmin) {
@@ -211,7 +230,7 @@ class ProfileCommand extends Command {
             }
         }
         const orderedRoles = isMember
-            ? [...member!.roles.cache.values()]
+            ? [...member.roles.cache.values()]
                   .filter(role => role.id !== context.guildId)
                   .sort((role1, role2) => {
                       return role2.position - role1.position;
@@ -225,9 +244,9 @@ class ProfileCommand extends Command {
                     : orderedRoles
                 : ([] as Role[])
         )!
-            .reduce((acc, value) => `${acc} ${roleMention(value.id)}`, "")!
-            .trim()!;
-        const statusText = isMember ? this.getStatusText(context, member!) : null;
+            .reduce((acc, value) => `${acc} ${roleMention(value.id)}`, "")
+            .trim();
+        const statusText = isMember ? this.getStatusText(context, member) : null;
         const isSystemAdmin =
             this.application
                 .service("configManager")
@@ -235,12 +254,12 @@ class ProfileCommand extends Command {
             (member &&
                 member instanceof GuildMember &&
                 (await this.permissionManagerService.isSystemAdmin(member)));
-        const nameBadges = user!.displayName
+        const nameBadges = user.displayName
             ? " " +
-              (await this.getMemberNameBadge(
+              this.getMemberNameBadge(
                   member instanceof GuildMember ? member : undefined,
                   isSystemAdmin
-              ))
+              )
             : "";
 
         const fields: APIEmbedField[] = [
@@ -248,13 +267,13 @@ class ProfileCommand extends Command {
                 ? [
                       {
                           name: "Nickname",
-                          value: `${member!.nickname?.replace(/\*<>@_~\|/g, "") ?? "*Nickname is not set*"}`
+                          value: `${member.nickname?.replace(/\*<>@_~\|/g, "") ?? "*Nickname is not set*"}`
                       }
                   ]
                 : []),
             {
                 name: "Display Name",
-                value: `${user!.displayName ? user!.displayName.replace(/\*<>@_~\|/g, "") + nameBadges : "*Display name is not set*"}`
+                value: `${user.displayName ? user.displayName.replace(/\*<>@_~\|/g, "") + nameBadges : "*Display name is not set*"}`
             },
             {
                 name: "Account Created",
@@ -265,8 +284,8 @@ class ProfileCommand extends Command {
                 ? [
                       {
                           name: "Joined at",
-                          value: `${member!.joinedAt!.toLocaleDateString("en-US")} (${time(
-                              member!.joinedAt!,
+                          value: `${member.joinedAt!.toLocaleDateString("en-US")} (${time(
+                              member.joinedAt!,
                               "R"
                           )})`,
                           inline: true
@@ -292,10 +311,7 @@ class ProfileCommand extends Command {
 
         const badges = [
             ...getUserBadges(user),
-            ...(await this.getMemberDescriptiveBadges(
-                isMember ? (member as GuildMember) : undefined,
-                isSystemAdmin
-            ))
+            ...(await this.getMemberDescriptiveBadges(isMember ? member : undefined, isSystemAdmin))
         ];
 
         if (badges.length > 0) {
@@ -309,7 +325,7 @@ class ProfileCommand extends Command {
 
         try {
             await user.fetch(true);
-            banner = user!.bannerURL({ size: 4096, forceStatic: false }) ?? undefined;
+            banner = user.bannerURL({ size: 4096, forceStatic: false }) ?? undefined;
         } catch (e) {
             this.application.logger.debug(e);
         }
@@ -322,9 +338,9 @@ class ProfileCommand extends Command {
                       }
                     : undefined
             })
-                .setColor(user!.hexAccentColor ? user!.hexAccentColor! : "#007bff")
+                .setColor(user.hexAccentColor ? user.hexAccentColor : "#007bff")
                 .setAuthor({
-                    name: user.tag!,
+                    name: user.tag,
                     iconURL: user.displayAvatarURL()
                 })
                 .setThumbnail(
@@ -336,7 +352,7 @@ class ProfileCommand extends Command {
                 .setFields(fields)
                 .setFooter({
                     text:
-                        `${user.bot ? "Bot" : "User"} • ${member!.id}` +
+                        `${user.bot ? "Bot" : "User"} • ${member.id}` +
                         (isMember
                             ? ` • Has ${this.calculatePermissionPercentage(member)}% permissions`
                             : "")

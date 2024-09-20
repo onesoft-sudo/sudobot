@@ -1,7 +1,26 @@
+/*
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import type Directive from "@framework/directives/Directive";
+import DirectiveParseError from "@framework/directives/DirectiveParseError";
 import type { Class } from "@framework/types/Utils";
 import { isAlpha } from "@framework/utils/string";
-import DirectiveParseError from "@framework/directives/DirectiveParseError";
 import JSON5 from "json5";
 
 class DirectiveParser {
@@ -49,12 +68,15 @@ class DirectiveParser {
             let length = 0;
 
             try {
-                const { json, length: computedLength, str } = this.getNextJSON5Literal(sliced, name);
+                const {
+                    json,
+                    length: computedLength,
+                    str
+                } = this.getNextJSON5Literal(sliced, name);
                 arg = json;
                 length = computedLength;
                 state.currentArgument = str;
-            }
-            catch (error) {
+            } catch (error) {
                 if (!silent) {
                     throw error;
                 }
@@ -80,14 +102,11 @@ class DirectiveParser {
                 depth++;
             } else if (input[end] === "}") {
                 depth--;
-            }
-            else if (input[end] === undefined) {
+            } else if (input[end] === undefined) {
                 throw new DirectiveParseError("Unexpected end of input");
-            }
-            else if (input[end] === "\"") {
-                end = input.indexOf("\"", end + 1);
-            }
-            else if (input[end] === "'") {
+            } else if (input[end] === '"') {
+                end = input.indexOf('"', end + 1);
+            } else if (input[end] === "'") {
                 end = input.indexOf("'", end + 1);
             }
 
@@ -102,15 +121,17 @@ class DirectiveParser {
 
         try {
             return {
-                json: JSON5.parse(str),
+                json: JSON5.parse<Record<string, unknown>>(str),
                 length: str.length,
                 str
             };
-        }
-        catch (error) {
-            throw new DirectiveParseError("Failed to parse JSON5 literal in directive: " + directiveName, {
-                cause: error
-            });
+        } catch (error) {
+            throw new DirectiveParseError(
+                "Failed to parse JSON5 literal in directive: " + directiveName,
+                {
+                    cause: error
+                }
+            );
         }
     }
 }

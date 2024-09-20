@@ -1,3 +1,22 @@
+/*
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import Queue from "@framework/queues/Queue";
 import { fetchChannel, fetchUser } from "@framework/utils/entities";
 import MessageDeleteQueue from "@main/queues/MessageDeleteQueue";
@@ -58,7 +77,8 @@ class MessageScheduleQueue extends Queue<MessageScheduleQueuePayload> {
                             guildId,
                             runsAt: new Date(Date.now() + deleteAfter)
                         })
-                        .schedule();
+                        .schedule()
+                        .catch(this.application.logger.error);
                 }
             } catch (error) {
                 this.application.logger.error(error);
@@ -68,13 +88,16 @@ class MessageScheduleQueue extends Queue<MessageScheduleQueuePayload> {
             const user = await fetchUser(this.application.client, this.userId);
 
             if (user) {
-                this.application.service("systemAuditLogging").logEchoCommandExecuted({
-                    command: "schedule",
-                    guild,
-                    rawCommandContent: content,
-                    generatedMessageOptions: options,
-                    user
-                });
+                this.application
+                    .service("systemAuditLogging")
+                    .logEchoCommandExecuted({
+                        command: "schedule",
+                        guild,
+                        rawCommandContent: content,
+                        generatedMessageOptions: options,
+                        user
+                    })
+                    .catch(this.application.logger.error);
             }
         } catch (error) {
             this.application.logger.error(error);

@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -61,7 +61,7 @@ class PermissionManagerService extends AbstractPermissionManagerService {
 
         for (const mode of modes) {
             const manager = this.createManager(mode);
-            manager.boot?.();
+            void manager.boot?.();
             this.managers[mode] = manager;
         }
     }
@@ -78,7 +78,7 @@ class PermissionManagerService extends AbstractPermissionManagerService {
                 return new LevelBasedPermissionManager(this.application);
 
             default:
-                throw new Error(`Unknown permission mode: ${mode}`);
+                throw new Error(`Unknown permission mode: ${mode as string}`);
         }
     }
 
@@ -115,10 +115,10 @@ class PermissionManagerService extends AbstractPermissionManagerService {
 
         if (!this.managers[mode]) {
             this.managers[mode] = this.createManager(mode);
-            await this.managers[mode]!.boot?.();
+            await this.managers[mode].boot?.();
         }
 
-        return this.managers[mode]!;
+        return this.managers[mode];
     }
 
     public async canAutoModerate(member: GuildMember) {

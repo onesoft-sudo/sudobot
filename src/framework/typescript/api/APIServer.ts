@@ -1,7 +1,7 @@
-/**
+/*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2023 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -32,7 +32,7 @@ import path from "path";
 import { Logger } from "../log/Logger";
 import { Name } from "../services/Name";
 import { Service } from "../services/Service";
-import { RouteMetadata, RouteMetadataEntry } from "./RouteMetadata";
+import { RouteMetadata } from "./RouteMetadata";
 import Controller from "./http/Controller";
 import Response from "./http/Response";
 
@@ -70,7 +70,7 @@ export default class APIServer extends Service {
                 .systemConfig.api.enabled
         ) {
             await this.setup();
-            await this.start();
+            this.start();
         }
     }
 
@@ -115,9 +115,11 @@ export default class APIServer extends Service {
         key: string,
         alternativeKey: string
     ): T | null {
-        return Symbol.metadata in controllerClass && controllerClass[Symbol.metadata]
-            ? controllerClass[Symbol.metadata]?.[alternativeKey]
-            : Reflect.getMetadata(key, controllerClass.prototype);
+        return (
+            Symbol.metadata in controllerClass && controllerClass[Symbol.metadata]
+                ? controllerClass[Symbol.metadata]?.[alternativeKey]
+                : Reflect.getMetadata(key, controllerClass.prototype)
+        ) as T | null;
     }
 
     public loadController(
@@ -153,9 +155,8 @@ export default class APIServer extends Service {
 
         for (const callbackName in actions) {
             for (const method in actions[callbackName]) {
-                const data = actions[callbackName][
-                    method as keyof (typeof actions)[keyof typeof actions]
-                ] as RouteMetadataEntry | null;
+                const data =
+                    actions[callbackName][method as keyof (typeof actions)[keyof typeof actions]];
 
                 if (!data) {
                     continue;
@@ -226,7 +227,13 @@ export default class APIServer extends Service {
         };
     }
 
-    private onError(err: unknown, _: ExpressRequest, res: ExpressResponse, next: NextFunction) {
+    private onError(
+        this: void,
+        err: unknown,
+        _: ExpressRequest,
+        res: ExpressResponse,
+        next: NextFunction
+    ) {
         if (err instanceof SyntaxError && "status" in err && err.status === 400 && "body" in err) {
             res.status(400).json({
                 error: "Invalid JSON payload"
@@ -238,7 +245,7 @@ export default class APIServer extends Service {
         next();
     }
 
-    public async start() {
+    public start() {
         this.expressServer = this.expressApp.listen(this.port, () =>
             this.application.logger.info(`API server is listening at port ${this.port}`)
         );

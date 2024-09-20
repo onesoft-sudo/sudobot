@@ -1,7 +1,7 @@
-/**
+/*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -148,7 +148,7 @@ class ImageRecognitionService extends Service {
         }
 
         const tensor = this.tensorFlow.node.decodeImage(image, 3, undefined, false);
-        const predictions = await this.nsfwJsModel!.classify(tensor as Tensor3D);
+        const predictions = await this.nsfwJsModel!.classify(tensor);
         const result: Record<string, number> = {};
 
         for (const prediction of predictions) {

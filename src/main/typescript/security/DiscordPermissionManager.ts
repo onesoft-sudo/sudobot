@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -24,11 +24,7 @@ import type { SystemPermissionResolvable } from "@framework/permissions/Abstract
 import { Permission } from "@framework/permissions/Permission";
 import type { GuildMember, PermissionResolvable } from "discord.js";
 
-/**
- * A permission manager that uses Discord permissions to control access to resources.
- *
- * @since 9.0.0
- */
+
 class DiscordPermissionManager extends AbstractPermissionManager {
     public override async getMemberPermissions(member: GuildMember): Promise<MemberPermissionData> {
         return {

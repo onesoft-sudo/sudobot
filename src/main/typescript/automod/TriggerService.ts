@@ -1,3 +1,22 @@
+/*
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import { Inject } from "@framework/container/Inject";
 import { GatewayEventListener } from "@framework/events/GatewayEventListener";
 import { Name } from "@framework/services/Name";
@@ -81,7 +100,7 @@ class TriggerService extends Service implements HasEventListeners {
 
         const config = this.config(message.guildId!);
 
-        if (!config?.enabled || config?.global_disabled_channels?.includes(message.channelId!)) {
+        if (!config?.enabled || config?.global_disabled_channels?.includes(message.channelId)) {
             return true;
         }
 
@@ -114,7 +133,7 @@ class TriggerService extends Service implements HasEventListeners {
             }
 
             this.processTrigger(trigger, {
-                channelId: message.channelId!,
+                channelId: message.channelId,
                 roles: message.member!.roles.cache.keys(),
                 userId: message.author.id,
                 context: {
@@ -220,12 +239,12 @@ class TriggerService extends Service implements HasEventListeners {
         }
     }
 
-    public async triggerMessageSticky(
+    public triggerMessageSticky(
         trigger: Extract<TriggerType, { type: "sticky_message" }>,
         { message }: TriggerHandlerContext<true>
     ) {
-        if (!this.lastStickyMessageQueues[`${message.guildId!}_${message.channelId!}`]) {
-            this.lastStickyMessageQueues[`${message.guildId!}_${message.channelId!}`] = true;
+        if (!this.lastStickyMessageQueues[`${message.guildId!}_${message.channelId}`]) {
+            this.lastStickyMessageQueues[`${message.guildId!}_${message.channelId}`] = true;
 
             setTimeout(async () => {
                 if (!isTextBasedChannel(message.channel)) {
@@ -233,12 +252,12 @@ class TriggerService extends Service implements HasEventListeners {
                 }
 
                 const lastStickyMessage =
-                    this.lastStickyMessages[`${message.guildId!}_${message.channelId!}`];
+                    this.lastStickyMessages[`${message.guildId!}_${message.channelId}`];
 
                 if (lastStickyMessage) {
                     try {
                         await lastStickyMessage.delete();
-                        this.lastStickyMessages[`${message.guildId!}_${message.channelId!}`] =
+                        this.lastStickyMessages[`${message.guildId!}_${message.channelId}`] =
                             undefined;
                     } catch (error) {
                         this.logger.error(error);
@@ -264,9 +283,9 @@ class TriggerService extends Service implements HasEventListeners {
                                   ]
                     });
 
-                    this.lastStickyMessages[`${message.guildId!}_${message.channelId!}`] =
+                    this.lastStickyMessages[`${message.guildId!}_${message.channelId}`] =
                         sentMessage;
-                    this.lastStickyMessageQueues[`${message.guildId!}_${message.channelId!}`] =
+                    this.lastStickyMessageQueues[`${message.guildId!}_${message.channelId}`] =
                         false;
                 } catch (error) {
                     this.logger.error(error);

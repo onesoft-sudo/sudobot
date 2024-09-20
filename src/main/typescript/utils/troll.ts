@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2023 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -15,23 +15,19 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
- *
- * ------
- * Also remember one thing, we do a little trolling :)
  */
 
 import type Application from "@framework/app/Application";
 import type Context from "@framework/commands/Context";
 import { type Snowflake } from "discord.js";
 
-export async function protectSystemAdminsFromCommands(
+export function protectSystemAdminsFromCommands(
     application: Application,
     context: Context,
     userId: Snowflake
 ) {
     const configManager = application.service("configManager");
-    const immuneUsers =
-        configManager.config[context.guildId!]?.commands?.troll_command_immune_users;
+    const immuneUsers = configManager.config[context.guildId]?.commands?.troll_command_immune_users;
 
     if (
         userId === application.client.user!.id ||

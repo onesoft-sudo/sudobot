@@ -1,3 +1,22 @@
+/*
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import GuildStore from "@framework/cache/GuildStore";
 import type { SystemPermissionLikeString } from "@framework/permissions/AbstractPermissionManagerService";
 import { drizzle } from "@framework/utils/helpers";
@@ -100,13 +119,7 @@ class CommandPermissionOverwriteCacheStore extends GuildStore<
         return this.get(guildId, name) ?? null;
     }
 
-    /**
-     * The requirement logic is structured in an array of arrays, where each
-     * array is a set of requirements that are checked with the AND operator.
-     * And, the elements inside the inner array are checked with the OR operator.
-     *
-     * [[1, 2], [3, 4], [5, 6], 7] => (1 OR 2) AND (3 OR 4) AND (5 OR 6) AND 7
-     */
+    
     protected makeLogicArray<T>(array: Array<T | T[]>): CommandOverwriteLogic<T> {
         const deepAnd = [];
         const and = new Set<T>();

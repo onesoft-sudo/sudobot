@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -39,7 +39,7 @@ export const cache = <F extends AnyFunction, I extends boolean = false>(
     fn: F,
     options?: CacheOptions<I>
 ): ReturnValue<I, F> => {
-    const callback = ((...args: unknown[]) => {
+    const callback = ((...args: unknown[]): unknown => {
         const finalId = [...args, id].join("_");
 
         if (!data.has(finalId)) {
@@ -61,9 +61,11 @@ export const cache = <F extends AnyFunction, I extends boolean = false>(
     }) as unknown as F;
 
     if (options?.invoke) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return callback() as ReturnValue<I, F>;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return callback as ReturnValue<I, F>;
 };
 
@@ -78,9 +80,11 @@ export const memoize = <F extends AnyFunction>(fn: F) => {
     return (...args: Parameters<F>): ReturnType<F> => {
         const key = args.join("_");
         if (cache.has(key)) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             return cache.get(key)!;
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return fn(...(args as unknown[]));
     };
 };

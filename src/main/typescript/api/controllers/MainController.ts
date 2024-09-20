@@ -1,7 +1,7 @@
-/**
+/*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2023 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -27,14 +27,14 @@ class MainController extends Controller {
     protected readonly configManager!: ConfigurationManager;
 
     @Action("GET", "/")
-    public async index() {
+    public index() {
         return {
             message: "API server is up."
         };
     }
 
     @Action("GET", "/status")
-    public async status() {
+    public status() {
         const { server_status, server_status_description, server_status_started_at } =
             this.configManager.systemConfig.api;
 

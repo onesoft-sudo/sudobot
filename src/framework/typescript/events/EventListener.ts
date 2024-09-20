@@ -1,7 +1,7 @@
-/**
+/*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2023 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -24,7 +24,7 @@ import { ClientEvents } from "../types/ClientEvents";
 
 @CanBind
 export default abstract class EventListener<
-    K extends keyof ClientEvents | string = keyof ClientEvents,
+    K extends keyof ClientEvents = keyof ClientEvents,
     C extends BaseClient = BaseClient
 > {
     public abstract readonly name: K;

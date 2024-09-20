@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -33,11 +33,7 @@ TODO.Method = (what: string = "Not implemented") => {
     };
 };
 
-/**
- * This function is used to log an error message due to a
- * possible bug in the code. Similar to the BUG function in
- * the Linux kernel.
- */
+
 export const BUG = (...args: unknown[]) => {
     Application.current().logger.bug(...args);
     console.trace();

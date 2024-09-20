@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -317,9 +317,9 @@ class PermissionCommand extends Command {
                     }
                 )
                     .setLimit(10)
-                    .setCountGetter(async () => overwriteCount)
+                    .setCountGetter(() => overwriteCount)
                     .setMaxTimeout(Pagination.DEFAULT_TIMEOUT)
-                    .setMessageOptionsBuilder(async ({ data, maxPages, page }) => {
+                    .setMessageOptionsBuilder(({ data, maxPages, page }) => {
                         let content = "";
 
                         for (const overwrite of data) {

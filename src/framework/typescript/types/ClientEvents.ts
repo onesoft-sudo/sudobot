@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2023 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -30,6 +30,7 @@ declare global {
         normalMessageCreate: [message: Message];
         normalMessageUpdate: [oldMessage: Message, newMessage: Message];
         normalMessageDelete: [message: Message];
+        raw: [data: { t: string; d: unknown }];
     }
 }
 

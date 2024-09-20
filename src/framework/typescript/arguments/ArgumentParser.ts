@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
+
 import "reflect-metadata";
 
 import Application from "@framework/app/Application";
@@ -267,7 +268,7 @@ class ArgumentParser {
 
         if (context.isLegacy()) {
             while (context.args[state.argIndex]?.startsWith("-")) {
-                const { error, silent, errorType } = await this.parseOption({
+                const { error, silent, errorType } = this.parseOption({
                     context,
                     schema,
                     state
@@ -291,9 +292,12 @@ class ArgumentParser {
             subcommandName = context.args[state.argIndex++];
         }
 
-        const onSubcommandNotFoundHandler =
-            command.onSubcommandNotFound?.bind(command) ??
-            Reflect.getMetadata("command:subcommand_not_found_error", command.constructor);
+        const onSubcommandNotFoundHandler = (command.onSubcommandNotFound?.bind(command) ??
+            Reflect.getMetadata("command:subcommand_not_found_error", command.constructor)) as (
+            context: ArgumentParserContext,
+            subcommandName: string | undefined,
+            type: "not_found" | "not_specified"
+        ) => Promise<void> | void;
 
         if (!subcommandName) {
             if (typeof onSubcommandNotFoundHandler === "function") {
@@ -457,7 +461,7 @@ class ArgumentParser {
         state: ParserGlobalState;
         command: Command;
     }>): Promise<
-        CommonResult<{ name: string; value: null | unknown }> & {
+        CommonResult<{ name: string; value: unknown }> & {
             abortParsingDefinitions?: boolean;
             errorTypeForwarded?: ErrorType;
         }
@@ -471,7 +475,7 @@ class ArgumentParser {
             assert(definition.names.length > 0, "No names provided");
         } else if (context.isLegacy() && context.args[state.argIndex]?.startsWith("-")) {
             while (context.args[state.argIndex]?.startsWith("-")) {
-                const { error, silent } = await this.parseOption({
+                const { error, silent } = this.parseOption({
                     context,
                     schema,
                     state
@@ -555,7 +559,7 @@ class ArgumentParser {
         };
     }
 
-    public async parseOption({
+    public parseOption({
         context,
         schema,
         state
@@ -563,7 +567,7 @@ class ArgumentParser {
         state: ParserGlobalState;
     }> & {
         context: LegacyContext;
-    }): Promise<CommonResult<void> & { silent?: boolean }> {
+    }): CommonResult<void> & { silent?: boolean } {
         if (!schema.options) {
             return {
                 error: "Options are not allowed",
@@ -741,7 +745,7 @@ class ArgumentParser {
             };
         } catch (error) {
             return {
-                error: error instanceof Error ? error.message : `${error}`
+                error: error instanceof Error ? error.message : `${error as string}`
             };
         }
     }

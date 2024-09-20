@@ -1,10 +1,29 @@
+/*
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import type { ParserState } from "@framework/directives/Directive";
 import Directive from "@framework/directives/Directive";
 import DirectiveParseError from "@framework/directives/DirectiveParseError";
 import type DirectiveParser from "@framework/directives/DirectiveParser";
+import { escapeRegex } from "@framework/utils/utils";
 import type { APIEmbed } from "discord.js";
 import { z } from "zod";
-import { escapeRegex } from "@framework/utils/utils";
 
 class EmbedDirective extends Directive<APIEmbed> {
     public override readonly name = "embed";
@@ -56,7 +75,7 @@ class EmbedDirective extends Directive<APIEmbed> {
             .optional()
     });
 
-    public override async apply(parser: DirectiveParser, state: ParserState, arg: APIEmbed) {
+    public override apply(parser: DirectiveParser, state: ParserState, arg: APIEmbed) {
         const embed = EmbedDirective.discordApiEmbedSchema.safeParse(arg);
 
         if (!embed.success) {
@@ -80,7 +99,7 @@ class EmbedDirective extends Directive<APIEmbed> {
         }
 
         state.data.embeds ??= [];
-        (state.data.embeds as Array<APIEmbed>)!.push(embed.data);
+        (state.data.embeds as Array<APIEmbed>).push(embed.data);
     }
 }
 

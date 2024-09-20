@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 declare global {
     interface PromiseConstructor {
+        // @ts-ignore
         withResolvers?<T>(): PromiseWithResolversReturn<T>;
     }
 }

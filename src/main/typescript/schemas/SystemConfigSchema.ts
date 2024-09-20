@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2023 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -24,8 +24,8 @@ type ApplicationActivityType = keyof typeof ActivityType;
 
 export const SystemConfigSchema = z.object({
     $schema: z.string().optional(),
-    sync_emojis: z.boolean().default(false),
-    emoji_resolve_strategy: z.enum(["both", "home_guild","application"]).default("both"),
+    sync_emojis: z.boolean().default(true),
+    emoji_resolve_strategy: z.enum(["both", "home_guild", "application"]).default("both"),
     system_admins: z.array(z.string()).default([]),
     snippets: z
         .object({
