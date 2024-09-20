@@ -34,7 +34,7 @@ class GuildCreateEventListener extends EventListener<Events.GuildCreate, Client>
     @Inject()
     public readonly logger!: Logger;
 
-    public override async execute(guild: Guild) {
+    public override execute(guild: Guild) {
         this.logger.info(`Joined a guild: ${guild.name} (${guild.id})`);
 
         if (!this.configManager.config[guild.id]) {
