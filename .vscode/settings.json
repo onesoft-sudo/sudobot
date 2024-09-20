@@ -42,6 +42,7 @@
         "estree",
         "extbuilds",
         "fargs",
+        "finishable",
         "httpcat",
         "httpdog",
         "kickable",
@@ -98,6 +99,7 @@
         "Unbans",
         "undici",
         "Unmutes",
+        "uuidv",
         "xnor"
     ],
     "material-icon-theme.folders.associations": {

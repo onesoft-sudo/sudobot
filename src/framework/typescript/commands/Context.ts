@@ -57,6 +57,8 @@ export type ContextOf<T extends Command<ContextType>> =
         : never;
 export type AnyContext = ContextOf<AnyCommand>;
 
+export type ContextReplyOptions = Parameters<Context["reply"]>[0];
+
 abstract class Context<T extends CommandMessage = CommandMessage> {
     public readonly commandName: string;
     public readonly commandMessage: T;

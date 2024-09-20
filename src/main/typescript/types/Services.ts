@@ -24,9 +24,11 @@ import type VerificationService from "@main/automod/VerificationService";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
 import type DatabaseService from "@main/services/DatabaseService";
 import type DirectiveParsingService from "@main/services/DirectiveParsingService";
+import type GuildSetupService from "@main/services/GuildSetupService";
 import type InviteTrackingService from "@main/services/InviteTrackingService";
 import type ShellService from "@main/services/ShellService";
 import type SystemAuditLoggingService from "@main/services/SystemAuditLoggingService";
+import type WizardManagerService from "@main/services/WizardManagerService";
 import type ChannelLockManager from "../services/ChannelLockManager";
 import type CommandManager from "../services/CommandManager";
 import type ConfigurationManager from "../services/ConfigurationManager";
@@ -63,6 +65,8 @@ export interface ServiceRecord {
     inviteTrackingService: InviteTrackingService;
     databaseService: DatabaseService;
     shellService: ShellService;
+    wizardManagerService: WizardManagerService;
+    guildSetupService: GuildSetupService;
 }
 
 interface ServiceRecordLocal extends ServiceRecord {}
