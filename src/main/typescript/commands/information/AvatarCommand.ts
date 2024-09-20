@@ -1,3 +1,22 @@
+/*
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import GuildMemberArgument from "@framework/arguments/GuildMemberArgument";
 import UserArgument from "@framework/arguments/UserArgument";
@@ -59,9 +78,9 @@ class AvatarCommand extends Command {
         ) {
             try {
                 member = user
-                    ? (context.guild!.members.cache.get(user.id) ??
-                      (await context.guild!.members.fetch(user.id)))
-                    : (context.member! as GuildMember);
+                    ? (context.guild.members.cache.get(user.id) ??
+                      (await context.guild.members.fetch(user.id)))
+                    : (context.member!);
             } catch (e) {
                 return void (await context.error("Failed to fetch member."));
             }
@@ -70,16 +89,16 @@ class AvatarCommand extends Command {
         await context.reply({
             embeds: [
                 new EmbedBuilder()
-                    .setColor(user!.accentColor ?? "#007bff")
+                    .setColor(user.accentColor ?? "#007bff")
                     .setAuthor({
-                        name: member?.user.username ?? user!.username
+                        name: member?.user.username ?? user.username
                     })
                     .setImage(
                         member?.displayAvatarURL({
                             size: 4096,
                             forceStatic: false
                         }) ??
-                            user!.displayAvatarURL({
+                            user.displayAvatarURL({
                                 size: 4096,
                                 forceStatic: false
                             })
@@ -89,13 +108,13 @@ class AvatarCommand extends Command {
                             size: 4096,
                             forceStatic: false
                         }) ??
-                            user!.displayAvatarURL({
+                            user.displayAvatarURL({
                                 size: 4096,
                                 forceStatic: false
                             })
                     )
                     .setFooter({
-                        text: `${user!.username} (${user!.id})`
+                        text: `${user.username} (${user.id})`
                     })
             ],
             components: [
@@ -108,7 +127,7 @@ class AvatarCommand extends Command {
                                 size: 4096,
                                 forceStatic: false
                             }) ??
-                                user!.displayAvatarURL({
+                                user.displayAvatarURL({
                                     size: 4096,
                                     forceStatic: false
                                 })

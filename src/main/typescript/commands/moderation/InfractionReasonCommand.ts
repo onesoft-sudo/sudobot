@@ -1,3 +1,22 @@
+/*
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import IntegerArgument from "@framework/arguments/IntegerArgument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
@@ -73,7 +92,7 @@ class InfractionReasonCommand extends Command {
 
         const { id, reason } = args;
         const isSuccess = await this.infractionManager.updateReasonById(
-            context.guildId!,
+            context.guildId,
             id,
             reason,
             !context.isChatInput() || context.options.getBoolean("notify") !== false

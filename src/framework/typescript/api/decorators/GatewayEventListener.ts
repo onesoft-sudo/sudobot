@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2023 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -32,7 +32,9 @@ export function GatewayEventListener(event: keyof ClientEvents | "raw") {
     ) => {
         if (typeof contextOrMethodName === "string") {
             const metadata =
-                Reflect.getMetadata("event_listeners", originalMethodOrTarget as object) ?? [];
+                (Reflect.getMetadata("event_listeners", originalMethodOrTarget as object) as
+                    | Record<string, unknown>[]
+                    | undefined) ?? [];
 
             metadata.push({
                 event,

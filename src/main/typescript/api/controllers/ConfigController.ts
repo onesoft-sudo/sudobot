@@ -1,3 +1,22 @@
+/*
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import { Action } from "@framework/api/decorators/Action";
 import { RequireAuth } from "@framework/api/decorators/RequireAuth";
 import { Validate } from "@framework/api/decorators/Validate";
@@ -16,7 +35,7 @@ class ConfigController extends Controller {
 
     @Action("GET", "/guilds/:id/config")
     @RequireAuth(true)
-    public async view(request: Request) {
+    public view(request: Request) {
         const { id } = request.params;
         const guild = this.application.client.guilds.cache.get(id);
 
@@ -38,7 +57,7 @@ class ConfigController extends Controller {
     @Action("PATCH", "/guilds/:id/config")
     @RequireAuth(true)
     @Validate(z.record(z.string(), z.any()))
-    public async update(request: Request) {
+    public update(request: Request) {
         const { id } = request.params;
         const guild = this.application.client.guilds.cache.get(id);
 
@@ -86,8 +105,11 @@ class ConfigController extends Controller {
         }
 
         this._saveQueueTimeout ??= setTimeout(() => {
-            this.configManager.write({ guild: true, system: false });
-            this.configManager.load();
+            this.configManager
+                .write({ guild: true, system: false })
+                .then(() => this.configManager.load())
+                .catch(this.application.logger.error);
+
             this._saveQueueTimeout = undefined;
         }, 10_000);
 

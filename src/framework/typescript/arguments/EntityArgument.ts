@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -28,7 +28,7 @@ abstract class EntityArgument<
     protected readonly mentionStart: string[] = [];
 
     public override toString(): string {
-        return this.stringValue!.toString();
+        return this.stringValue.toString();
     }
 
     public toSnowflake(): Snowflake {
@@ -41,7 +41,7 @@ abstract class EntityArgument<
             }
         }
 
-        return snowflake as Snowflake;
+        return snowflake;
     }
 
     public override validate(): boolean {

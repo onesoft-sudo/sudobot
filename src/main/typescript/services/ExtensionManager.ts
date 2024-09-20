@@ -1,7 +1,7 @@
-/**
+/*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2023 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -362,11 +362,15 @@ export default class ExtensionManager extends Service {
 
             const tsconfigExists = existsSync(tsconfigPath);
 
-            if (!tsconfigExists || await readlink(tsconfigPath).catch(() => "") !== (loadingTypeScript ? bunTsconfigPath : nodeTsconfigPath)) {
+            if (
+                !tsconfigExists ||
+                (await readlink(tsconfigPath).catch(() => "")) !==
+                    (loadingTypeScript ? bunTsconfigPath : nodeTsconfigPath)
+            ) {
                 if (tsconfigExists) {
                     await fs.rm(tsconfigPath);
                 }
-                
+
                 if (process.platform === "win32") {
                     await fs.cp(
                         loadingTypeScript ? bunTsconfigPath : nodeTsconfigPath,
@@ -466,10 +470,10 @@ export default class ExtensionManager extends Service {
             default: Event
         }: { default: new (application: Application) => EventListener<keyof ClientEvents> } =
             await import(filePath);
-        await this.loadEventClass(extensionId, Event);
+        this.loadEventClass(extensionId, Event);
     }
 
-    public async loadEventClass(
+    public loadEventClass(
         extensionId: string,
         Event: new (application: Application) => EventListener<keyof ClientEvents>
     ) {

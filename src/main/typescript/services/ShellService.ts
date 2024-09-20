@@ -1,3 +1,22 @@
+/*
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import Application from "@framework/app/Application";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
@@ -61,7 +80,7 @@ class ShellService extends Service {
             }
 
             ws.on("message", async message => {
-                const { payload, type, key } = JSON.parse(message.toString());
+                const { payload, type, key } = JSON.parse((message as Buffer).toString());
 
                 if (key !== env.SYSTEM_SHELL_KEY) {
                     ws.send(JSON.stringify({ type: "error", payload: "Invalid key" }));
@@ -74,7 +93,7 @@ class ShellService extends Service {
                         break;
 
                     case "cmd":
-                        this.executeCommand(payload, ws);
+                        await this.executeCommand(payload, ws);
                         break;
 
                     case "stdin":
@@ -190,7 +209,10 @@ class ShellService extends Service {
                     process.chdir(options.args[0]);
                     break;
                 } catch (error) {
-                    context.println("cd: " + ((error as Error).message ?? `${error}`), "stderr");
+                    context.println(
+                        "cd: " + ((error as Error).message ?? `${error?.toString()}`),
+                        "stderr"
+                    );
                     context.exit(1) as void;
                 }
 
@@ -228,7 +250,7 @@ class ShellService extends Service {
                         context.println(output.trimEnd());
                     } catch (error) {
                         context.println(
-                            "ls: " + ((error as Error).message ?? `${error}`),
+                            "ls: " + ((error as Error).message ?? `${error?.toString()}`),
                             "stderr"
                         );
                         context.exit(1);
@@ -293,7 +315,10 @@ class ShellService extends Service {
             }
 
             ws.send(
-                JSON.stringify({ type: "error", payload: (error as Error).message ?? `${error}` })
+                JSON.stringify({
+                    type: "error",
+                    payload: (error as Error).message ?? `${error?.toString()}`
+                })
             );
         }
     }

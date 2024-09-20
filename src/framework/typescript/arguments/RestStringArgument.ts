@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -52,14 +52,14 @@ class RestStringArgument extends Argument<string> {
 
         if (
             this.rules?.["range:min"] &&
-            this.transformedValue!.length < this.rules?.["range:min"]
+            this.transformedValue.length < this.rules?.["range:min"]
         ) {
             return this.error("String is too short", ErrorType.InvalidRange);
         }
 
         if (
             this.rules?.["range:max"] &&
-            this.transformedValue!.length > this.rules?.["range:max"]
+            this.transformedValue.length > this.rules?.["range:max"]
         ) {
             return this.error("String is too long", ErrorType.InvalidRange);
         }

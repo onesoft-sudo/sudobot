@@ -1,3 +1,22 @@
+/*
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import FluentSet from "@framework/collections/FluentSet";
 import { Inject } from "@framework/container/Inject";
 import { GatewayEventListener } from "@framework/events/GatewayEventListener";
@@ -5,7 +24,7 @@ import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
 import { LogEventType } from "@main/schemas/LoggingSchema";
-import { GuildMember, Message, Snowflake, TextChannel } from "discord.js";
+import { Awaitable, GuildMember, Message, Snowflake, TextChannel } from "discord.js";
 import { MessageAutoModServiceContract } from "../contracts/MessageAutoModServiceContract";
 import {
     MessageRuleScope,
@@ -151,7 +170,7 @@ class RuleModerationService
             throw new Error("Member and message is missing");
         }
 
-        const config = this.configFor(guildId!);
+        const config = this.configFor(guildId);
 
         if (!config?.enabled) {
             return false;
@@ -295,7 +314,7 @@ class RuleModerationService
                         message
                             ? {
                                   message,
-                                  channel: message.channel! as TextChannel
+                                  channel: message.channel as TextChannel
                               }
                             : undefined
                     );
@@ -308,7 +327,7 @@ class RuleModerationService
                     }
 
                     await this.auditLoggingService.emitLogEvent(
-                        guildId!,
+                        guildId,
                         LogEventType.SystemAutoModRuleModeration,
                         message ? "message" : "profile",
                         message ?? member,
@@ -336,14 +355,14 @@ class RuleModerationService
     }
 
     private configFor(guildId: Snowflake) {
-        return this.configurationManager.config[guildId!]?.rule_moderation;
+        return this.configurationManager.config[guildId]?.rule_moderation;
     }
 
     private async shouldModerate(messageOrMember: Message | GuildMember) {
         if (
             (messageOrMember instanceof Message && messageOrMember.author.bot) ||
             (messageOrMember instanceof GuildMember && messageOrMember.user.bot) ||
-            !this.configFor(messageOrMember.guild!.id!)?.enabled
+            !this.configFor(messageOrMember.guild!.id)?.enabled
         ) {
             return false;
         }
@@ -369,18 +388,18 @@ class RuleModerationService
         return this.permissionManagerService.canAutoModerate(finalMember);
     }
 
-    private async createRuleHandler(): Promise<ModerationRuleHandlerContract> {
+    private createRuleHandler(): Awaitable<ModerationRuleHandlerContract> {
         const instance = new ModerationRuleHandler(this.application);
         this.application.container.resolveProperties(ModerationRuleHandler, instance);
-        await instance.boot?.();
+        instance.boot?.();
         return instance;
     }
 
-    private async checkPreconditions(
+    private checkPreconditions(
         member: GuildMember,
         rule: MessageRuleType,
         message?: Message
-    ) {
+    ): Awaitable<boolean> {
         if (rule.for) {
             const { roles, users, channels } = rule.for;
 

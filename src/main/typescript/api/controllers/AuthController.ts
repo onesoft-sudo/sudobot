@@ -1,7 +1,7 @@
-/**
+/*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2023 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -206,6 +206,8 @@ class AuthController extends Controller {
                 });
             }
 
+            const token = await this.authService.provisionToken(user);
+
             const guilds: APIGuild[] = [];
 
             for (const guildId of user.guilds) {
@@ -225,7 +227,7 @@ class AuthController extends Controller {
                     discordId: user.discordId,
                     avatar: avatarURL
                 },
-                token: user.token,
+                token,
                 expires: user.tokenExpiresAt?.getTime(),
                 guilds
             };

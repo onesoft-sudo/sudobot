@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -69,12 +69,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         return this;
     }
 
-    /**
-     * This method is used to validate the argument string, before transformation.
-     *
-     * @returns {Awaitable<boolean>} Whether the argument is valid.
-     * @throws {InvalidArgumentError} If the argument is invalid.
-     */
+    
     public validate(): Awaitable<boolean> {
         return true;
     }
@@ -131,12 +126,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         return this;
     }
 
-    /**
-     * This method is used to validate the argument after transformation.
-     *
-     * @returns {Awaitable<boolean>} Whether the argument is valid.
-     * @throws {InvalidArgumentError} If the argument is invalid.
-     */
+    
     public postTransformValidation(): Awaitable<boolean> {
         return true;
     }
@@ -146,7 +136,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
     }
 
     public getValue() {
-        return this.transformedValue!;
+        return this.transformedValue;
     }
 
     protected error(

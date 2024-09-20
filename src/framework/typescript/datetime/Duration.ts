@@ -1,3 +1,22 @@
+/*
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import { BehavesLikePrimitive } from "@framework/contracts/BehavesLikePrimitive";
 import { JSONSerializable } from "@framework/contracts/JSONSerializable";
 import DurationParseError from "@framework/datetime/DurationParseError";
@@ -277,11 +296,7 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<number> {
         return Date.now() - this.toMilliseconds();
     }
 
-    /**
-     * Formats the duration into a human-readable string.
-     *
-     * @returns The formatted duration.
-     */
+    
     public format(): string {
         let formatted = formatDuration(this);
 
@@ -292,19 +307,10 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<number> {
         return formatted;
     }
 
-    /**
-     * Formats the duration for Discord.
-     *
-     * @returns The formatted duration.
-     */
+    
     public formatForDiscord(): `<t:${bigint}>`;
 
-    /**
-     * Formats the duration for Discord with a style.
-     *
-     * @param style The style to format the duration with.
-     * @returns The formatted duration.
-     */
+    
     public formatForDiscord<S extends TimestampStylesString>(style: S): `<t:${bigint}:${S}>`;
 
     public formatForDiscord<S extends TimestampStylesString>(style?: S) {
@@ -315,35 +321,19 @@ class Duration implements BehavesLikePrimitive, JSONSerializable<number> {
         return time(this.fromNow(), style);
     }
 
-    /**
-     * Returns a string representation of the duration.
-     *
-     * @returns The formatted duration.
-     */
+    
     @Override
     public toString() {
         return this.format();
     }
 
-    /**
-     * Returns the JSON representation of the duration.
-     *
-     * @returns A number representing the duration in milliseconds.
-     */
+    
     @Override
     public toJSON(): number {
         return this.toMilliseconds();
     }
 
-    /**
-     * Converts the duration to a string or number.
-     * Cannot use @Override annotation here because of a bug
-     * in Bun interpreter.
-     *
-     * @param hint The hint to convert the duration to.
-     * @returns The duration as a string or number.
-     * @override
-     */
+    
     public [Symbol.toPrimitive](hint: "string" | "number" | "default") {
         if (hint === "number") {
             return this.toMilliseconds();

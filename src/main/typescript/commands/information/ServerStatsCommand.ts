@@ -1,3 +1,22 @@
+/*
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import type { Buildable } from "@framework/commands/Command";
 import { Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
@@ -15,27 +34,27 @@ class ServerStatsCommand extends Command {
 
     public override async execute(context: Context): Promise<void> {
         const memberCount =
-            context.guild!.members.cache.size > context.guild!.memberCount
-                ? context.guild!.members.cache.size
-                : context.guild!.memberCount;
+            context.guild.members.cache.size > context.guild.memberCount
+                ? context.guild.members.cache.size
+                : context.guild.memberCount;
         let botCount = 0,
             humanCount = 0;
 
-        for (const member of context.guild!.members.cache.values()) {
+        for (const member of context.guild.members.cache.values()) {
             if (member.user.bot) botCount++;
             else humanCount++;
         }
 
-        const channelCount = context.guild!.channels.cache.size;
-        const roleCount = context.guild!.roles.cache.size;
+        const channelCount = context.guild.channels.cache.size;
+        const roleCount = context.guild.roles.cache.size;
 
         await context.reply({
             embeds: [
                 {
                     color: 0x007bff,
                     author: {
-                        name: `Statistics of ${context.guild!.name}`,
-                        icon_url: context.guild!.iconURL() ?? undefined
+                        name: `Statistics of ${context.guild.name}`,
+                        icon_url: context.guild.iconURL() ?? undefined
                     },
                     fields: [
                         {

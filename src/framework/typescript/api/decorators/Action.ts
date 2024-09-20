@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2023 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -40,10 +40,10 @@ export function Action(
         descriptor?: PropertyDescriptor
     ) => {
         if (typeof contextOrMethodName === "string") {
-            const metadata: Record<string, RouteMetadata> = Reflect.getMetadata(
+            const metadata: Record<string, RouteMetadata> = (Reflect.getMetadata(
                 "action_methods",
                 originalMethodOrTarget as object
-            ) ?? {
+            ) as Record<string, RouteMetadata> | undefined) ?? {
                 [contextOrMethodName]: {
                     GET: null,
                     DELETE: null,
@@ -62,20 +62,20 @@ export function Action(
             } as RouteMetadata;
 
             const data = {
-                handler: descriptor!.value,
+                handler: descriptor!.value as AnyFunction,
                 method,
                 path: uri,
                 middleware: middleware as AnyFunction[]
             };
 
-            metadata[contextOrMethodName]![method] ??= data;
-            metadata[contextOrMethodName]![method]!.handler ??= data.handler;
-            metadata[contextOrMethodName]![method]!.method ??= data.method;
+            metadata[contextOrMethodName][method] ??= data;
+            metadata[contextOrMethodName][method].handler ??= data.handler;
+            metadata[contextOrMethodName][method].method ??= data.method;
 
-            if (metadata[contextOrMethodName]![method]!.middleware?.length) {
-                metadata[contextOrMethodName]![method]!.middleware.push(...data.middleware);
+            if (metadata[contextOrMethodName][method].middleware?.length) {
+                metadata[contextOrMethodName][method].middleware.push(...data.middleware);
             } else {
-                metadata[contextOrMethodName]![method]!.middleware = data.middleware;
+                metadata[contextOrMethodName][method].middleware = data.middleware;
             }
 
             Reflect.defineMetadata("action_methods", metadata, originalMethodOrTarget as object);
@@ -107,14 +107,14 @@ export function Action(
                 middleware: middleware as AnyFunction[]
             };
 
-            metadata[key]![method] ??= data;
-            metadata[key]![method]!.handler ??= data.handler;
-            metadata[key]![method]!.method ??= data.method;
+            metadata[key][method] ??= data;
+            metadata[key][method].handler ??= data.handler;
+            metadata[key][method].method ??= data.method;
 
-            if (metadata[key]![method]!.middleware?.length) {
-                metadata[key]![method]!.middleware.push(...data.middleware);
+            if (metadata[key][method].middleware?.length) {
+                metadata[key][method].middleware.push(...data.middleware);
             } else {
-                metadata[key]![method]!.middleware = data.middleware;
+                metadata[key][method].middleware = data.middleware;
             }
 
             (contextOrMethodName.metadata as unknown) ??= {};

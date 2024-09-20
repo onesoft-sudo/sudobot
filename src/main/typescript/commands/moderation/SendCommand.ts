@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -145,13 +145,15 @@ class SendCommand extends Command {
                 await context.success("Message sent successfully.");
             }
 
-            this.systemAuditLogging.logEchoCommandExecuted({
-                command: this.name,
-                guild: context.guild,
-                rawCommandContent: content,
-                user: context.user,
-                generatedMessageOptions: options
-            });
+            this.systemAuditLogging
+                .logEchoCommandExecuted({
+                    command: this.name,
+                    guild: context.guild,
+                    rawCommandContent: content,
+                    user: context.user,
+                    generatedMessageOptions: options
+                })
+                .catch(this.application.logger.error);
         } catch (error) {
             return void context.error(
                 error instanceof DirectiveParseError

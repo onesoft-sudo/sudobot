@@ -1,3 +1,22 @@
+/*
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import { Inject } from "@framework/container/Inject";
 import { GatewayEventListener } from "@framework/events/GatewayEventListener";
 import { Name } from "@framework/services/Name";
@@ -151,7 +170,7 @@ class ReactionRoleService extends Service implements HasEventListeners {
         }
 
         const entry = this.reactionRoleEntries.get(
-            `${guildId}_${channelId}_${messageId!}_${emoji.id ?? emoji.name}`
+            `${guildId}_${channelId}_${messageId}_${emoji.id ?? emoji.name}`
         );
 
         if (!entry) {
@@ -225,10 +244,10 @@ class ReactionRoleService extends Service implements HasEventListeners {
                     value?.guildId === guildId &&
                     value?.channelId === channelId &&
                     value?.messageId === messageId &&
-                    member.roles.cache.hasAny(...value!.roles)
+                    member.roles.cache.hasAny(...value.roles)
                 ) {
                     await member.roles
-                        .remove(value!.roles, "Taking out the previous roles")
+                        .remove(value.roles, "Taking out the previous roles")
                         .catch(this.application.logger.error);
                     removedPreviousRoles = !removedPreviousRoles ? true : removedPreviousRoles;
 

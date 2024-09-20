@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -34,7 +34,7 @@ export function service(refOrName: typeof Service | ServiceName): Service {
     if (typeof refOrName === "string") {
         return application().service(refOrName) as Service;
     } else {
-        return application().getService(refOrName as unknown as new () => Service) as Service;
+        return application().getService(refOrName as unknown as new () => Service);
     }
 }
 

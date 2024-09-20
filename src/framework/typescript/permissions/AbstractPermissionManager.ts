@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -47,7 +47,9 @@ abstract class AbstractPermissionManager implements PermissionManagerInterface {
             const instance = await Permission.resolve(permission);
 
             if (!instance) {
-                this.application.logger.warn(`Permission ${permission} does not exist.`);
+                this.application.logger.warn(
+                    `Permission ${permission?.toString()} does not exist.`
+                );
                 return false;
             }
 
@@ -76,7 +78,9 @@ abstract class AbstractPermissionManager implements PermissionManagerInterface {
                       : permission;
 
             if (!instance) {
-                this.application.logger.debug(`Permission ${permission} does not exist`);
+                this.application.logger.debug(
+                    `Permission ${permission?.toString()} does not exist`
+                );
                 continue;
             }
 

@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -25,7 +25,7 @@ import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { fetchMember, fetchUser } from "@framework/utils/entities";
 import { isDiscordAPIError } from "@framework/utils/errors";
-import { also } from "@framework/utils/utils";
+import { also, suppressErrorNoReturn } from "@framework/utils/utils";
 import {
     Infraction,
     InfractionCreatePayload,
@@ -442,7 +442,12 @@ class InfractionManager extends Service {
                     }
                 }
 
-                callback?.(newInfraction);
+                const promise = callback?.(newInfraction);
+
+                if (promise instanceof Promise) {
+                    promise.catch(this.application.logger.error);
+                }
+
                 return newInfraction;
             }
         );
@@ -1674,7 +1679,8 @@ class InfractionManager extends Service {
                         records.map(r => r.id)
                     )
                 )
-                .then();
+                .then()
+                .catch(this.application.logger.error);
         }
 
         this.auditLoggingService
@@ -2327,8 +2333,8 @@ class InfractionManager extends Service {
             this.application.logger.error("Bulk ban error", error);
 
             if (error instanceof DiscordAPIError && error.code === 500000) {
-                onError?.("failed_to_ban");
-                onMassBanComplete?.([], allUsers, allUsers, "failed_to_ban");
+                suppressErrorNoReturn(onError?.("failed_to_ban"));
+                suppressErrorNoReturn(onMassBanComplete?.([], allUsers, allUsers, "failed_to_ban"));
 
                 return {
                     status: "failed",
@@ -2336,8 +2342,8 @@ class InfractionManager extends Service {
                 };
             }
 
-            onError?.("bulk_ban_failed");
-            onMassBanComplete?.([], allUsers, allUsers, "bulk_ban_failed");
+            suppressErrorNoReturn(onError?.("bulk_ban_failed"));
+            suppressErrorNoReturn(onMassBanComplete?.([], allUsers, allUsers, "bulk_ban_failed"));
 
             return {
                 status: "failed",
@@ -2365,7 +2371,8 @@ class InfractionManager extends Service {
             this.application.database.drizzle
                 .insert(infractions)
                 .values(infractionCreatePayloads)
-                .then();
+                .then()
+                .catch(this.application.logger.error);
         }
 
         this.auditLoggingService
@@ -2472,7 +2479,8 @@ class InfractionManager extends Service {
             this.application.database.drizzle
                 .insert(infractions)
                 .values(infractionCreatePayloads)
-                .then();
+                .then()
+                .catch(this.application.logger.error);
         }
 
         this.auditLoggingService
@@ -2505,18 +2513,6 @@ class InfractionManager extends Service {
                     ? not(eq(infractions.deliveryStatus, InfractionDeliveryStatus.NotDelivered))
                     : undefined
             )
-
-            /**
-             * {
-                guildId: guild.id,
-                userId: user.id,
-                deliveryStatus: onlyNotified
-                    ? {
-                          not: InfractionDeliveryStatus.NotDelivered
-                      }
-                    : undefined
-            }
-             */
         });
 
         const table = new AsciiTable3("Infractions");
@@ -2831,14 +2827,14 @@ type CreateUserMassBanPayload = {
     users: Array<Snowflake | User>;
     deletionTimeframe?: Duration;
     duration?: Duration;
-    onMassBanComplete?(
+    onMassBanComplete?: (
         bannedUsers: Snowflake[],
         failedUsers: Snowflake[],
         allUsers: Snowflake[],
         errorType?: string
-    ): Awaitable<void>;
-    onMassBanStart?(): Awaitable<void>;
-    onError?(type: string): Awaitable<void>;
+    ) => Awaitable<void>;
+    onMassBanStart?: () => Awaitable<void>;
+    onError?: (type: string) => Awaitable<void>;
 };
 
 type CreateUserMassKickPayload = {
@@ -2846,12 +2842,12 @@ type CreateUserMassKickPayload = {
     reason?: string;
     guildId: Snowflake;
     members: Array<Snowflake | GuildMember>;
-    onKickAttempt?(memberId: Snowflake): Awaitable<void>;
-    onKickSuccess?(member: GuildMember): Awaitable<void>;
-    onKickFail?(member: GuildMember): Awaitable<void>;
-    onInvalidMember?(memberId: Snowflake): Awaitable<void>;
-    onMassKickComplete?(members: GuildMember[]): Awaitable<void>;
-    onMassKickStart?(): Awaitable<void>;
+    onKickAttempt?: (memberId: Snowflake) => Awaitable<void>;
+    onKickSuccess?: (member: GuildMember) => Awaitable<void>;
+    onKickFail?: (member: GuildMember) => Awaitable<void>;
+    onInvalidMember?: (memberId: Snowflake) => Awaitable<void>;
+    onMassKickComplete?: (members: GuildMember[]) => Awaitable<void>;
+    onMassKickStart?: () => Awaitable<void>;
 };
 
 type CreateBanPayload<E extends boolean> = CommonOptions<E> & {

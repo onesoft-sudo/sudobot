@@ -1,3 +1,22 @@
+/*
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { User, users } from "@main/models/User";
@@ -7,7 +26,7 @@ import jwt from "jsonwebtoken";
 
 @Name("authService")
 class AuthService extends Service {
-    private async generateToken(user: User) {
+    private generateToken(user: User) {
         return jwt.sign(
             {
                 id: user.id,
@@ -42,8 +61,18 @@ class AuthService extends Service {
             };
         }
 
+        await this.provisionToken(user);
+
+        return {
+            success: true,
+            user
+        };
+    }
+
+    public async provisionToken(user: User) {
         if (!user.token || !user.tokenExpiresAt || user.tokenExpiresAt.getTime() <= Date.now()) {
-            const token = await this.generateToken(user);
+            this.application.logger.debug(`Provisioning token for user ${user.username}`);
+            const token = this.generateToken(user);
             const tokenExpiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000);
 
             await this.application.database.drizzle
@@ -58,10 +87,7 @@ class AuthService extends Service {
             user.tokenExpiresAt = tokenExpiresAt;
         }
 
-        return {
-            success: true,
-            user
-        };
+        return user.token;
     }
 }
 

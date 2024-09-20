@@ -1,3 +1,22 @@
+/*
+ * This file is part of SudoBot.
+ *
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
+ *
+ * SudoBot is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * SudoBot is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import type { Stats } from "fs";
 import {
     close,
@@ -75,7 +94,7 @@ export class File implements Disposable, AsyncDisposable {
 
     public async readContents(buffer: boolean = false): Promise<string | Buffer> {
         if (this.cache.handle) {
-            return this.cache.handle!.readFile({
+            return this.cache.handle.readFile({
                 encoding: buffer ? null : "utf8"
             });
         }
@@ -87,7 +106,7 @@ export class File implements Disposable, AsyncDisposable {
     public async readJson<T>(): Promise<T> {
         if (this.cache.handle) {
             return JSON.parse(
-                await this.cache.handle!.readFile({
+                await this.cache.handle.readFile({
                     encoding: "utf8"
                 })
             ) as T;

@@ -1,7 +1,7 @@
 /*
  * This file is part of SudoBot.
  *
- * Copyright (C) 2021-2024 OSN Developers.
+ * Copyright (C) 2021, 2022, 2023, 2024 OSN Developers.
  *
  * SudoBot is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Affero General Public License as published by
@@ -40,12 +40,12 @@ export class Singleton {
     }
 
     protected static createInstance(): Awaitable<Singleton> {
-        return new this() as Singleton;
+        return new this();
     }
 }
 
 export class ContainerSingleton extends Singleton {
     protected static override createInstance(): Awaitable<ContainerSingleton> {
-        return Container.getInstance().resolveByClass(this) as ContainerSingleton;
+        return Container.getInstance().resolveByClass(this);
     }
 }
