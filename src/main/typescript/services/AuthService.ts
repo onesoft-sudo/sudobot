@@ -42,6 +42,15 @@ class AuthService extends Service {
             };
         }
 
+        await this.provisionToken(user);
+
+        return {
+            success: true,
+            user
+        };
+    }
+
+    public async provisionToken(user: User) {
         if (!user.token || !user.tokenExpiresAt || user.tokenExpiresAt.getTime() <= Date.now()) {
             const token = await this.generateToken(user);
             const tokenExpiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000);
@@ -58,10 +67,7 @@ class AuthService extends Service {
             user.tokenExpiresAt = tokenExpiresAt;
         }
 
-        return {
-            success: true,
-            user
-        };
+        return user;
     }
 }
 

@@ -206,6 +206,8 @@ class AuthController extends Controller {
                 });
             }
 
+            await this.authService.provisionToken(user);
+
             const guilds: APIGuild[] = [];
 
             for (const guildId of user.guilds) {
