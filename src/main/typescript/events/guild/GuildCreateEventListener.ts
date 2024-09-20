@@ -44,4 +44,4 @@ class GuildCreateEventListener extends EventListener<Events.GuildCreate, Client>
     }
 }
 
-export default ReadyEventListener;
+export default GuildCreateEventListener;
