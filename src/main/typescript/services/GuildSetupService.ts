@@ -141,7 +141,7 @@ class GuildSetupService extends Service implements HasEventListeners {
                 .setCustomId(`setup::${guildId}::back`)
                 .setLabel("Back")
                 .setStyle(ButtonStyle.Secondary)
-                .setDisabled(!back && (!state?.stack.length || state.stack.length <= 1)),
+                .setDisabled(!back || !state?.stack.length),
             new ButtonBuilder()
                 .setCustomId(`setup::${guildId}::finish`)
                 .setLabel("Finish")
@@ -190,8 +190,12 @@ class GuildSetupService extends Service implements HasEventListeners {
     private popState(guildId: string) {
         const state = this.setupState.get(guildId);
 
-        if (!state) {
+        if (!state || !state.stack.length) {
             return;
+        }
+
+        if (state.stack.length <= 1) {
+            state.stack = [state.stack[0]];
         }
 
         state.stack.pop();
@@ -560,7 +564,6 @@ class GuildSetupService extends Service implements HasEventListeners {
         await this.configManager.write({ guild: true, system: false });
         await this.configManager.load();
 
-        this.popState(guildId);
         await this.pushState(guildId, {
             embeds: [
                 this.embed(
