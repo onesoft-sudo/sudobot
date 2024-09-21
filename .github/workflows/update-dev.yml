@@ -25,6 +25,8 @@ jobs:
           echo "${{ secrets.COMMIT_GPG_KEY }}" > private.key
           gpg --import private.key
           rm -f private.key
+          git config --global user.name "Ar Rakin"
+          git config --global user.email "rakinar2@onesoftnet.eu.org"
           git config --global user.signingkey "6AE7B08C68169452"
           git config --global commit.gpgsign true
           
