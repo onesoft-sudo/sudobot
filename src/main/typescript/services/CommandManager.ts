@@ -111,7 +111,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         const guildId = global ? undefined : env.HOME_GUILD_ID;
 
         if (guildId) {
-            await this.client.application?.commands.set(commands, guildId);
+            await this.client.guilds.cache.get(guildId)?.commands.set(commands);
         } else {
             await this.client.application?.commands.set(commands);
         }

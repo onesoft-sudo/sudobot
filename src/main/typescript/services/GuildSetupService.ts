@@ -13,7 +13,9 @@ import {
     APIEmbed,
     ButtonBuilder,
     ButtonStyle,
+    ChatInputCommandInteraction,
     escapeInlineCode,
+    Guild,
     GuildMember,
     type Interaction,
     Message,
@@ -34,7 +36,7 @@ enum SetupOption {
 
 type SetupState = {
     timeout: Timer;
-    message: Message;
+    message: Message | ChatInputCommandInteraction;
     stack: ContextReplyOptions[];
     finishable?: boolean;
 };
@@ -52,7 +54,11 @@ class GuildSetupService extends Service implements HasEventListeners {
     private readonly configManager!: ConfigurationManager;
 
     public async initialize(
-        memberOrChannel: GuildMember | Extract<TextBasedChannel, { send: unknown; guild: unknown }>
+        memberOrChannel:
+            | GuildMember
+            | Extract<TextBasedChannel, { send: unknown; guild: unknown }>
+            | (ChatInputCommandInteraction & { guild: Guild })
+            | Message<true>
     ) {
         try {
             const options = {
@@ -69,12 +75,29 @@ class GuildSetupService extends Service implements HasEventListeners {
                     })
                 ]
             };
-            const message = await memberOrChannel.send(options);
+            const message =
+                memberOrChannel instanceof ChatInputCommandInteraction
+                    ? memberOrChannel
+                    : memberOrChannel instanceof Message
+                      ? await memberOrChannel.reply(options)
+                      : await memberOrChannel.send(options);
+
+            if (memberOrChannel instanceof ChatInputCommandInteraction) {
+                await memberOrChannel.reply({
+                    ...options,
+                    fetchReply: true,
+                    ephemeral: true
+                });
+            }
 
             this.setupState.set(memberOrChannel.guild.id, {
                 timeout: setTimeout(() => {
                     this.setupState.delete(memberOrChannel.guild.id);
-                    message.edit(this.cancelledOptions([])).catch(this.application.logger.error);
+                    const options = this.cancelledOptions([]);
+                    (message instanceof Message
+                        ? message.edit(options as MessageEditOptions)
+                        : message.editReply(options as MessageEditOptions)
+                    ).catch(this.application.logger.error);
                 }, this.inactivityTimeout),
                 message,
                 stack: [options]
@@ -182,9 +205,11 @@ class GuildSetupService extends Service implements HasEventListeners {
             return;
         }
 
-        await state.message
-            .edit(options as MessageEditOptions)
-            .catch(this.application.logger.error);
+        await (
+            state.message instanceof Message
+                ? state.message.edit(options as MessageEditOptions)
+                : state.message.editReply(options as MessageEditOptions)
+        ).catch(this.application.logger.error);
     }
 
     private async pushState(guildId: string, options: ContextReplyOptions) {
@@ -209,7 +234,7 @@ class GuildSetupService extends Service implements HasEventListeners {
             return;
         }
 
-        await interaction.deferUpdate();
+        await interaction.deferUpdate().catch(this.application.logger.error);
 
         const prefix = interaction.fields.getTextInputValue("prefix");
 
@@ -278,13 +303,15 @@ class GuildSetupService extends Service implements HasEventListeners {
         clearTimeout(state.timeout);
         state.timeout = setTimeout(() => {
             this.setupState.delete(guildId);
-            state.message
-                .edit(this.cancelledOptions([], true))
-                .catch(this.application.logger.error);
+            const options = this.cancelledOptions([], true);
+            (state.message instanceof Message
+                ? state.message.edit(options)
+                : state.message.editReply(options)
+            ).catch(this.application.logger.error);
         }, this.inactivityTimeout);
     }
 
-    public async finishSetup(guildId: string) {
+    public finishSetup(guildId: string) {
         const state = this.setupState.get(guildId);
 
         if (!state) {
@@ -294,7 +321,7 @@ class GuildSetupService extends Service implements HasEventListeners {
         clearTimeout(state.timeout);
         this.setupState.delete(guildId);
 
-        await state.message.edit({
+        const options = {
             embeds: [
                 this.embed(
                     [],
@@ -305,7 +332,12 @@ class GuildSetupService extends Service implements HasEventListeners {
                 this.selectMenu("0", true),
                 this.buttonRow("0", { cancel: false, back: false, finish: false })
             ]
-        });
+        };
+
+        (state.message instanceof Message
+            ? state.message.edit(options as MessageEditOptions)
+            : state.message.editReply(options as MessageEditOptions)
+        ).catch(this.application.logger.error);
     }
 
     @GatewayEventListener("interactionCreate")
@@ -335,7 +367,9 @@ class GuildSetupService extends Service implements HasEventListeners {
                     this.setupState.delete(guildId);
                 }
 
-                await interaction.update(this.cancelledOptions([]));
+                await interaction
+                    .update(this.cancelledOptions([]))
+                    .catch(this.application.logger.error);
                 return;
             }
 
@@ -345,7 +379,7 @@ class GuildSetupService extends Service implements HasEventListeners {
                 return;
             }
 
-            await interaction.deferUpdate();
+            await interaction.deferUpdate().catch(this.application.logger.error);
             this.ping(guildId);
 
             switch (id) {
@@ -353,7 +387,7 @@ class GuildSetupService extends Service implements HasEventListeners {
                     await this.goBack(guildId);
                     break;
                 case "finish":
-                    await this.finishSetup(guildId);
+                    this.finishSetup(guildId);
                     break;
             }
 
@@ -409,7 +443,7 @@ class GuildSetupService extends Service implements HasEventListeners {
                 )
             );
 
-        await interaction.showModal(modal);
+        await interaction.showModal(modal).catch(this.application.logger.error);
     }
 
     public handleLoggingSetup(_guildId: string, _interaction: StringSelectMenuInteraction) {
