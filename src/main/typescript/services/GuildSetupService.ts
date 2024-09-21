@@ -4,7 +4,7 @@ import { GatewayEventListener } from "@framework/events/GatewayEventListener";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
-import { TODO } from "@framework/utils/devflow";
+import { fetchChannel, fetchMember } from "@framework/utils/entities";
 import { Colors } from "@main/constants/Colors";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import { emoji } from "@main/utils/emoji";
@@ -12,6 +12,7 @@ import {
     ActionRowBuilder,
     APIEmbed,
     ButtonBuilder,
+    ButtonInteraction,
     ButtonStyle,
     ChatInputCommandInteraction,
     escapeInlineCode,
@@ -182,6 +183,11 @@ class GuildSetupService extends Service implements HasEventListeners {
     }
 
     private async goBack(guildId: string) {
+        this.popState(guildId);
+        await this.updateMessage(guildId);
+    }
+
+    private popState(guildId: string) {
         const state = this.setupState.get(guildId);
 
         if (!state) {
@@ -189,7 +195,6 @@ class GuildSetupService extends Service implements HasEventListeners {
         }
 
         state.stack.pop();
-        await this.updateMessage(guildId);
     }
 
     private async updateMessage(guildId: string) {
@@ -276,7 +281,7 @@ class GuildSetupService extends Service implements HasEventListeners {
             embeds: [
                 this.embed(
                     ["Prefix"],
-                    `${emoji(this.application, "error")} Updated the command prefix successfully. The new prefix is \`${escapeInlineCode(prefix)}\`.\nPress "Back" to return to the previous menu.`,
+                    `${emoji(this.application, "check")} Updated the command prefix successfully. The new prefix is \`${escapeInlineCode(prefix)}\`.\nPress "Back" to return to the previous menu.`,
                     {
                         color: Colors.Success
                     }
@@ -351,13 +356,16 @@ class GuildSetupService extends Service implements HasEventListeners {
                 case "prefix_modal":
                     await this.handlePrefixUpdate(guildId, interaction);
                     break;
+                case "logging_channel_modal":
+                    await this.handleLoggingChannelUpdateModalSubmit(guildId, interaction);
+                    break;
             }
 
             return;
         }
 
         if (interaction.isButton() && interaction.customId.startsWith("setup::")) {
-            const [, guildId, id] = interaction.customId.split("::");
+            const [, guildId, id, subId] = interaction.customId.split("::");
 
             if (id === "cancel") {
                 const { timeout } = this.setupState.get(guildId) ?? {};
@@ -379,16 +387,47 @@ class GuildSetupService extends Service implements HasEventListeners {
                 return;
             }
 
-            await interaction.deferUpdate().catch(this.application.logger.error);
             this.ping(guildId);
 
+            let done = true;
+
             switch (id) {
-                case "back":
-                    await this.goBack(guildId);
+                case "logging":
+                    switch (subId) {
+                        case "channel":
+                            await this.handleLoggingChannelUpdate(guildId, interaction);
+                            break;
+                        default:
+                            done = false;
+                    }
                     break;
-                case "finish":
-                    this.finishSetup(guildId);
-                    break;
+
+                default:
+                    done = false;
+            }
+
+            if (!done) {
+                await interaction.deferUpdate().catch(this.application.logger.error);
+
+                switch (id) {
+                    case "back":
+                        await this.goBack(guildId);
+                        break;
+                    case "finish":
+                        this.finishSetup(guildId);
+                        break;
+                    case "logging":
+                        switch (subId) {
+                            case "enable":
+                                await this.handleLoggingEnable(guildId, interaction);
+                                break;
+                            case "events":
+                                await this.handleLoggingEventsUpdate(guildId, interaction);
+                                break;
+                        }
+
+                        break;
+                }
             }
 
             return;
@@ -446,8 +485,268 @@ class GuildSetupService extends Service implements HasEventListeners {
         await interaction.showModal(modal).catch(this.application.logger.error);
     }
 
-    public handleLoggingSetup(_guildId: string, _interaction: StringSelectMenuInteraction) {
-        TODO();
+    private async defer(
+        interaction: Extract<Interaction, { deferred: boolean; deferUpdate: unknown }>
+    ) {
+        if (interaction.deferred) {
+            return;
+        }
+
+        await interaction.deferUpdate().catch(this.application.logger.error);
+    }
+
+    public async handleLoggingSetup(guildId: string, interaction: StringSelectMenuInteraction) {
+        const options = {
+            embeds: [
+                this.embed(
+                    ["Logging"],
+                    "To configure logging, please set up the following options.\nIf you've had configured logging before, this will overwrite the previous settings."
+                )
+            ],
+            components: [
+                this.selectMenu(guildId, true),
+                this.loggingButtonRow(guildId),
+                this.buttonRow(guildId, { cancel: true, back: true, finish: false })
+            ]
+        };
+
+        await this.defer(interaction);
+        await this.pushState(guildId, options);
+    }
+
+    private loggingButtonRow(
+        guildId: string,
+        { enable = true, channel = true, events = true } = {}
+    ) {
+        return new ActionRowBuilder<ButtonBuilder>().addComponents(
+            new ButtonBuilder()
+                .setCustomId(`setup::${guildId}::logging::enable`)
+                .setLabel("Enable Logging")
+                .setStyle(ButtonStyle.Secondary)
+                .setDisabled(!enable),
+            new ButtonBuilder()
+                .setCustomId(`setup::${guildId}::logging::channel`)
+                .setLabel("Set Logging Channel")
+                .setStyle(ButtonStyle.Secondary)
+                .setDisabled(!channel),
+            new ButtonBuilder()
+                .setCustomId(`setup::${guildId}::logging::events`)
+                .setLabel("Choose Events")
+                .setStyle(ButtonStyle.Secondary)
+                .setDisabled(!events)
+        );
+    }
+
+    private async handleLoggingEnable(guildId: string, interaction: ButtonInteraction) {
+        if (!this.configManager.config[guildId]) {
+            this.configManager.autoConfigure(guildId);
+        }
+
+        const config = this.configManager.config[guildId];
+
+        if (!config) {
+            return;
+        }
+
+        await interaction.deferUpdate().catch(this.application.logger.error);
+        const state = this.setupState.get(guildId);
+
+        if (state) {
+            state.finishable = true;
+        }
+
+        config.logging = this.defaultLoggingConfig();
+
+        await this.configManager.write({ guild: true, system: false });
+        await this.configManager.load();
+
+        this.popState(guildId);
+        await this.pushState(guildId, {
+            embeds: [
+                this.embed(
+                    ["Logging"],
+                    `${emoji(this.application, "check")} Enabled logging successfully. Please select a channel to log events to.`,
+                    {
+                        color: Colors.Success
+                    }
+                )
+            ],
+            components: [
+                this.selectMenu(guildId, true),
+                this.loggingButtonRow(guildId, { enable: false }),
+                this.buttonRow(guildId, {
+                    back: true,
+                    cancel: true,
+                    finish: true
+                })
+            ]
+        });
+    }
+
+    private defaultLoggingConfig() {
+        return {
+            enabled: true,
+            bulk_delete_send_json: true,
+            default_enabled: true,
+            exclusions: [],
+            global_ignored_channels: [],
+            hooks: {},
+            overrides: [],
+            unsubscribed_events: [],
+            primary_channel: undefined
+        };
+    }
+
+    private async handleLoggingChannelUpdateModalSubmit(
+        guildId: string,
+        interaction: ModalSubmitInteraction
+    ) {
+        if (!this.configManager.config[guildId]) {
+            this.configManager.autoConfigure(guildId);
+        }
+
+        const config = this.configManager.config[guildId];
+
+        if (!config) {
+            return;
+        }
+
+        await interaction.deferUpdate().catch(this.application.logger.error);
+
+        const channelId = interaction.fields.getTextInputValue("channel_id");
+        const validationFailed = !channelId || !/^\d{17,21}$/.test(channelId);
+        const channel = validationFailed ? undefined : await fetchChannel(guildId, channelId);
+
+        if (!channel?.isTextBased()) {
+            await this.pushState(guildId, {
+                embeds: [
+                    this.embed(
+                        ["Logging"],
+                        `${emoji(this.application, "error")} Invalid channel ID. Please provide a channel ID and make sure it's a text channel.`,
+                        {
+                            color: Colors.Danger
+                        }
+                    )
+                ],
+
+                components: [
+                    this.selectMenu(guildId, true),
+                    this.loggingButtonRow(guildId, { enable: false }),
+                    this.buttonRow(guildId, {
+                        back: true,
+                        cancel: true
+                    })
+                ]
+            });
+
+            return;
+        }
+
+        const me =
+            channel.guild.members.me || (await fetchMember(channel.guild, channel.client.user.id));
+
+        if (
+            me &&
+            !channel
+                .permissionsFor(me)
+                .has(
+                    [
+                        "SendMessages",
+                        "EmbedLinks",
+                        "AttachFiles",
+                        "AddReactions",
+                        "UseExternalEmojis"
+                    ],
+                    true
+                )
+        ) {
+            await this.pushState(guildId, {
+                embeds: [
+                    this.embed(
+                        ["Logging"],
+                        `${emoji(this.application, "error")} The system does not have the required permissions to send messages in the selected channel. Please make sure the system has the following permissions: \`Send Messages\`, \`Embed Links\`, \`Attach Files\`, \`Add Reactions\`, \`Use External Emojis\`.`,
+                        {
+                            color: Colors.Danger
+                        }
+                    )
+                ],
+
+                components: [
+                    this.selectMenu(guildId, true),
+                    this.loggingButtonRow(guildId, { enable: false }),
+                    this.buttonRow(guildId, {
+                        back: true,
+                        cancel: true
+                    })
+                ]
+            });
+
+            return;
+        }
+
+        const state = this.setupState.get(guildId);
+
+        if (state) {
+            state.finishable = true;
+        }
+
+        config.logging ??= this.defaultLoggingConfig();
+        config.logging.primary_channel = channel.id;
+
+        await this.configManager.write({ guild: true, system: false });
+        await this.configManager.load();
+
+        await this.pushState(guildId, {
+            embeds: [
+                this.embed(
+                    ["Logging"],
+                    `${emoji(this.application, "check")} Updated the logging channel successfully. The new logging channel is <#${channel.id}>.\nChoose what events to log or press "Back" to return to the previous menu.`,
+                    {
+                        color: Colors.Success
+                    }
+                )
+            ],
+            components: [
+                this.selectMenu(guildId, true),
+                this.loggingButtonRow(guildId, { enable: false }),
+                this.buttonRow(guildId, {
+                    back: true,
+                    cancel: true,
+                    finish: true
+                })
+            ]
+        });
+    }
+
+    private async handleLoggingChannelUpdate(guildId: string, interaction: ButtonInteraction) {
+        const state = this.setupState.get(guildId);
+
+        if (!state) {
+            return;
+        }
+
+        const modal = new ModalBuilder()
+            .setCustomId(`setup::${guildId}::logging_channel_modal`)
+            .setTitle("Change Logging Channel")
+            .setComponents(
+                new ActionRowBuilder<TextInputBuilder>().addComponents(
+                    new TextInputBuilder()
+                        .setLabel("Channel ID")
+                        .setCustomId("channel_id")
+                        .setPlaceholder("Enter a text channel ID")
+                        .setMinLength(1)
+                        .setMaxLength(128)
+                        .setStyle(TextInputStyle.Short)
+                )
+            );
+
+        await interaction.showModal(modal).catch(this.application.logger.error);
+    }
+
+    private async handleLoggingEventsUpdate(guildId: string, interaction: ButtonInteraction) {
+        await interaction
+            .followUp({ content: "[build-dev]: Not implemented yet.", ephemeral: true })
+            .catch(this.application.logger.error);
     }
 }
 
