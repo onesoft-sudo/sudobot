@@ -35,7 +35,7 @@ export const ModerationActionSchema = z.union([
             .min(0)
             .max(7 * 24 * 60 * 60 * 1000)
             .optional(), // 7 days,
-        duration: z.number().int().min(0)
+        duration: z.number().int().min(0).optional()
     }),
     z.object({
         ...CommonOptions,
