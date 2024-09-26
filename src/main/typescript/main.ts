@@ -22,11 +22,16 @@ import "module-alias/register";
 import "reflect-metadata";
 
 import Application from "@framework/app/Application";
+import { isDevelopmentMode } from "@framework/utils/utils";
 import { version } from "@root/package.json";
 import path from "path";
 import DiscordKernel from "./core/DiscordKernel";
 
 async function main() {
+    if (isDevelopmentMode()) {
+        Error.stackTraceLimit = Infinity;
+    }
+
     Application.setupGlobals();
 
     const rootDirectoryPath = path.resolve(__dirname);
