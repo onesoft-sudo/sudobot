@@ -23,7 +23,8 @@
         "experimentalDecorators": true,
         "noImplicitOverride": true,
         "importsNotUsedAsValues": "remove",
-        /* These paths are only used in Blaze build scripts, when ran with bun. */
+        "sourceMap": true,
+        /* These paths are only used in BlazeBuild scripts, when ran with bun. */
         "paths": {
             "@buildSrc/*": ["./build_src/src/main/typescript/*"],
             "@blazebuild/*": ["./blazebuild/src/main/typescript/*"],
