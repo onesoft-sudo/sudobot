@@ -7,25 +7,28 @@ import { spawnSync } from "child_process";
 })
 class RunTask extends AbstractTask {
     @TaskAction
-    protected override run() {
+    protected override async run() {
         IO.newline();
+        const isNode = process.argv.includes("--node");
+
+        if (isNode) {
+            await this.blaze.taskManager.executeTask("build");
+        }
 
         setTimeout(async () => {
             let code: number;
             const argv = this.blaze.cliArgs;
 
-            if (process.argv.includes("--node")) {
-                await this.blaze.taskManager.executeTask("build");
-
+            if (isNode) {
                 IO.newline();
                 IO.println(
-                    `[exec] node ${process.cwd()}/build/out/main/typescript/index.js ${argv.join(" ")}`
+                    `[exec] node ${process.cwd()}/build/out/main/typescript/main.js ${argv.join(" ")}`
                 );
 
                 code =
                     spawnSync(
                         "node",
-                        [`${process.cwd()}/build/out/main/typescript/index.js`, ...argv],
+                        [`${process.cwd()}/build/out/main/typescript/main.js`, ...argv],
                         {
                             stdio: "inherit"
                         }
