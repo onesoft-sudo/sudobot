@@ -56,7 +56,12 @@ export default class LogStreamingService extends Service {
     }
 
     public close() {
-        this.io?.close();
+        const promise = this.io?.close();
+
+        if (promise && (promise as unknown as Promise<void>) instanceof Promise) {
+            promise.catch(this.application.logger.error);
+        }
+
         this._io = undefined;
     }
 
