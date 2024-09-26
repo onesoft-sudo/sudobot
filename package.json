@@ -94,7 +94,7 @@
         "reflect-metadata": "^0.2.2",
         "semver": "^7.6.2",
         "sharp": "^0.33.4",
-        "socket.io": "^4.7.5",
+        "socket.io": "^4.8.0",
         "tar": "^7.4.0",
         "tslib": "^2.6.3",
         "undici": "^6.19.2",
