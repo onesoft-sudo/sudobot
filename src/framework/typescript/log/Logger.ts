@@ -97,6 +97,14 @@ export class Logger {
             return;
         }
 
+        if (args.length === 1 && args[0] instanceof Error) {
+            console[methodName].call(console, "\n");
+            console[methodName].call(console, args[0]);
+            const message = args[0].message + "\n" + (args[0].stack ?? "");
+            this.eventEmitter.emit("log", message);
+            return;
+        }
+
         console[methodName].call(console, ...args);
         const message = args
             .map(arg => (typeof arg === "string" ? arg : JSON.stringify(arg, null, 2)))
