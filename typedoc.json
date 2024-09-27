@@ -1,8 +1,9 @@
 {
-   "entryPointStrategy": "expand",
-   "entryPoints": ["src/main/typescript", "src/framework/typescript"],
-   "out": "api_docs",
-   "plugin": ["typedoc-plugin-rename-defaults", "typedoc-material-theme"],
-   "themeColor": "#cb9820",
-   "customCss": "./typedoc/typedoc.css"
+    "$schema": "https://typedoc.org/schema.json",
+    "entryPointStrategy": "expand",
+    "entryPoints": ["src/main/typescript", "src/framework/typescript"],
+    "out": "api_docs",
+    "plugin": ["typedoc-plugin-rename-defaults", "typedoc-material-theme"],
+    "themeColor": "#4a4a4a",
+    "customCss": "./typedoc/typedoc.css"
 }
