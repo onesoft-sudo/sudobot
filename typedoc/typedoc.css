@@ -1,0 +1,7 @@
+* {
+    font-family: Inter, -apple-system, system-ui, Roboto, Arial, sans-serif;
+}
+
+pre, code {
+    font-family: "JetbrainsMono NFM", "JetbrainsMono", Menlo, "SF Mono", Consolas, monospace;
+}
