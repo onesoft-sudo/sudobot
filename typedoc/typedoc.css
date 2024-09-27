@@ -2,6 +2,31 @@
     font-family: Inter, -apple-system, system-ui, Roboto, Arial, sans-serif;
 }
 
-pre, code {
-    font-family: "JetbrainsMono NFM", "JetbrainsMono", Menlo, "SF Mono", Consolas, monospace;
+pre, 
+code, 
+.tsd-signature,
+.tsd-signature *,
+.tsd-type-parameter-list,
+.tsd-type-parameter-list *:not(.tsd-typography),
+.tsd-parameter-list,
+.tsd-parameter-list *,
+.tsd-signature-symbol,
+.tsd-signature-type,
+.tsd-signature-symbol *,
+.tsd-signature-type *
+{
+    font-family: "JetbrainsMono NFM", "JetbrainsMono", Menlo, "SF Mono", Consolas, monospace ;
+}
+
+.tsd-typography, .tsd-typography * {
+    font-family: Inter, -apple-system, system-ui, Roboto, Arial, sans-serif;
+}
+
+.site-menu > .tsd-navigation {
+    margin-right: 20px;
+}
+
+.page-menu > .tsd-page-navigation > .tsd-accordion-summary {
+    margin-bottom: 15px;
+    margin-top: 20px;
 }

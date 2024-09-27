@@ -45,3 +45,6 @@ fly.toml
 # Data
 /data
 /installed_extensions
+
+# API docs
+/api_docs
