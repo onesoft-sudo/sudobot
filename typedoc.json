@@ -1,0 +1,6 @@
+{
+   "entryPointStrategy": "expand",
+   "entryPoints": ["src/main/typescript", "src/framework/typescript"],
+   "out": "api_docs",
+   "plugin": ["typedoc-plugin-rename-defaults"]
+}
