@@ -1,5 +1,94 @@
 # Changelog
 
+### 26-09-2024 - [[Ar Rakin](mailto:rakinar2@gmail.com)]
+
+  * **feat:** errors now show full stack trace on debug mode    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@gmail.com>  
+      
+  * **deps:** update packages    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@gmail.com>  
+      
+  * **chore:** update tsconfig.json    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@gmail.com>  
+      
+  * **build:** update run task    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@gmail.com>  
+      
+  * **feat(logger):** better error logging    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **fix:** type errors in LogStreamingService    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **fix:** type errors    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 26-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 25-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 24-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **deps:** bump date-fns from 3.6.0 to 4.1.0 (#232)    
+      
+      
+  * **deps:** bump date-fns from 3.6.0 to 4.1.0 in /blazebuild (#233)    
+      
+      
+  * **deps(dev):** bump esbuild from 0.23.1 to 0.24.0 in /blazebuild (#234)    
+      
+      
+  * **deps:** bump date-fns from 3.6.0 to 4.1.0 in /docs (#235)    
+      
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 24-09-2024 - [[dependabot[bot]](mailto:49699333+dependabot[bot]@users.noreply.github.com)]
+
+  * **deps:** bump date-fns from 3.6.0 to 4.1.0    
+      
+    **Bumps [date-fns](https:** //github.com/date-fns/date-fns) from 3.6.0 to 4.1.0.  
+    **- [Release notes](https:** //github.com/date-fns/date-fns/releases)  
+    **- [Changelog](https:** //github.com/date-fns/date-fns/blob/main/CHANGELOG.md)  
+    **- [Commits](https:** //github.com/date-fns/date-fns/compare/v3.6.0...v4.1.0)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  date-fns  
+    **  dependency-type:**  direct:production  
+    **  update-type:**  version-update:semver-major  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+
+### 23-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.15.5 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 23-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
   * **fix(schemas):** ban action schema always requires a duration    
@@ -10,6 +99,54 @@
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
       
+
+### 23-09-2024 - [[dependabot[bot]](mailto:49699333+dependabot[bot]@users.noreply.github.com)]
+
+  * **deps:** bump date-fns from 3.6.0 to 4.1.0 in /docs    
+      
+    **Bumps [date-fns](https:** //github.com/date-fns/date-fns) from 3.6.0 to 4.1.0.  
+    **- [Release notes](https:** //github.com/date-fns/date-fns/releases)  
+    **- [Changelog](https:** //github.com/date-fns/date-fns/blob/main/CHANGELOG.md)  
+    **- [Commits](https:** //github.com/date-fns/date-fns/compare/v3.6.0...v4.1.0)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  date-fns  
+    **  dependency-type:**  direct:production  
+    **  update-type:**  version-update:semver-major  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+  * **deps(dev):** bump esbuild from 0.23.1 to 0.24.0 in /blazebuild    
+      
+    **Bumps [esbuild](https:** //github.com/evanw/esbuild) from 0.23.1 to 0.24.0.  
+    **- [Release notes](https:** //github.com/evanw/esbuild/releases)  
+    **- [Changelog](https:** //github.com/evanw/esbuild/blob/main/CHANGELOG.md)  
+    **- [Commits](https:** //github.com/evanw/esbuild/compare/v0.23.1...v0.24.0)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  esbuild  
+    **  dependency-type:**  direct:development  
+    **  update-type:**  version-update:semver-minor  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+  * **deps:** bump date-fns from 3.6.0 to 4.1.0 in /blazebuild    
+      
+    **Bumps [date-fns](https:** //github.com/date-fns/date-fns) from 3.6.0 to 4.1.0.  
+    **- [Release notes](https:** //github.com/date-fns/date-fns/releases)  
+    **- [Changelog](https:** //github.com/date-fns/date-fns/blob/main/CHANGELOG.md)  
+    **- [Commits](https:** //github.com/date-fns/date-fns/compare/v3.6.0...v4.1.0)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  date-fns  
+    **  dependency-type:**  direct:production  
+    **  update-type:**  version-update:semver-major  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
 
 ### 22-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
