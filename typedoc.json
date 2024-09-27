@@ -2,5 +2,7 @@
    "entryPointStrategy": "expand",
    "entryPoints": ["src/main/typescript", "src/framework/typescript"],
    "out": "api_docs",
-   "plugin": ["typedoc-plugin-rename-defaults"]
+   "plugin": ["typedoc-plugin-rename-defaults", "typedoc-material-theme"],
+   "themeColor": "#cb9820",
+   "customCss": "./typedoc/typedoc.css"
 }
