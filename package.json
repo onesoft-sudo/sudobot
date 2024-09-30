@@ -111,7 +111,7 @@
     "@types/bun": "latest",
     "@types/cors": "^2.8.17",
     "@types/dot-object": "^2.1.6",
-    "@types/express": "^4.17.21",
+    "@types/express": "^5.0.0",
     "@types/figlet": "^1.5.8",
     "@types/glob": "^8.1.0",
     "@types/jsonwebtoken": "^9.0.6",
