@@ -1,5 +1,78 @@
 # Changelog
 
+### 03-10-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **fix:** echo command argument validation not working in interaction mode    
+      
+    * This issue is mainly due to the way the echo command handled incoming arguments,  
+      and not allowing optional types when using unions, which caused this.  
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **fix:** type errors after upgrading to discord.js v14.16.3    
+      
+    * It seems like in discord.js v14.16.3 a bug was introduced that doesn't  
+      let correct ApplicationCommandType enum values to be passed to  
+    **  CommandBuilder:** :setType() method. This commit adds a workaround to this  
+      bug, by not using enums and instead using a plain-old JavaScript object  
+      (POJO) with TypeScript's `as const` to mimic an enum.  
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 29-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **docs:** update    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **docs:** update    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 28-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **docs:** update licensing page    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **chore(extensions:waifu.pics):** update docs    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 27-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore:** customize typedoc theme    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **chore:** add typedoc theme and custom css    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore:** add typedoc    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 26-09-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.17.2 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 26-09-2024 - [[Ar Rakin](mailto:rakinar2@gmail.com)]
 
   * **feat:** errors now show full stack trace on debug mode    
