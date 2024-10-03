@@ -273,7 +273,7 @@ export default class ExtensionManager extends Service {
     protected readonly guildIdResolvers = getGuildIdResolversMap();
 
     private readonly downloadProgressStreamEOF = "%";
-    private readonly extensions: Extension[] = [];
+    private readonly extensions = new Map<string, Extension>();
 
     public override async boot() {
         if (!this.extensionsPath || !existsSync(this.extensionsPath)) {
@@ -288,12 +288,16 @@ export default class ExtensionManager extends Service {
     public async onInitializationComplete() {
         await this.application
             .getService(ConfigurationManager)
-            .registerExtensionConfig(this.extensions);
+            .registerExtensionConfig(Array.from(this.extensions.values()));
         return this.initializeConfigService();
     }
 
     public initializeConfigService() {
         return this.application.getService(ConfigurationManager).manualBoot();
+    }
+
+    public getInstalledExtensionById<E extends Extension = Extension>(id: string): E | undefined {
+        return this.extensions.get(id) as E | undefined;
     }
 
     public async loadExtensions() {
@@ -391,7 +395,8 @@ export default class ExtensionManager extends Service {
                 meta: parseResult.data
             });
 
-            this.extensions.push(initializer);
+            await initializer.initialize();
+            this.extensions.set(initializer.id, initializer);
             this.logger.info(`Loaded extension: ${id} (${extensionName})`);
         }
 
@@ -427,7 +432,7 @@ export default class ExtensionManager extends Service {
             ) => Extension;
         } = await import(extensionPath);
 
-        return new ExtensionClass(
+        const extension = new ExtensionClass(
             this,
             extensionId,
             extensionName,
@@ -435,10 +440,12 @@ export default class ExtensionManager extends Service {
             meta,
             this.application
         );
+        this.application.container.resolveProperties(ExtensionClass, extension);
+        return extension;
     }
 
     public async postConstruct() {
-        for (const extension of this.extensions) {
+        for (const extension of this.extensions.values()) {
             this.logger.debug(`Setting up extension: ${extension.id} (${extension.name})`);
             extension.postConstruct();
             await extension.register();
@@ -478,6 +485,7 @@ export default class ExtensionManager extends Service {
         Event: new (application: Application) => EventListener<keyof ClientEvents>
     ) {
         const event = new Event(this.application);
+        this.application.container.resolveProperties(Event, event);
         this.application
             .getClient()
             .addEventListener(

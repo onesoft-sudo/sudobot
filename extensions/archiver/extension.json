@@ -1,0 +1,14 @@
+{
+    "name": "Archiver",
+    "id": "org.onesoftnet.sudobot.extension.archiver",
+    "main": "index.js",
+    "src_main": "index.ts",
+    "commands": "commands",
+    "events": "events",
+    "services": "services",
+    "language": "typescript",
+    "main_directory": "build",
+    "src_directory": "src",
+    "build_command": "npm run build",
+    "resources": "./resources"
+}

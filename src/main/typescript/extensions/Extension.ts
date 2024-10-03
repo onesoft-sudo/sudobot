@@ -126,6 +126,9 @@ export abstract class Extension {
         return [];
     }
 
+    public initialize(): Awaitable<void> {}
+    public cleanup(): Awaitable<void> {}
+
     public guildConfig(): Awaitable<
         | {
               [K in PropertyKey]: ZodSchema<unknown>;
