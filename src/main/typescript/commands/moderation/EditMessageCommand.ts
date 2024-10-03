@@ -21,6 +21,7 @@ import { type Buildable, Command } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import DirectiveParseError from "@framework/directives/DirectiveParseError";
+import { ApplicationCommandType } from "@framework/discord/ApplicationCommandType";
 import { GatewayEventListener } from "@framework/events/GatewayEventListener";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
@@ -30,7 +31,6 @@ import type SystemAuditLoggingService from "@main/services/SystemAuditLoggingSer
 import {
     ActionRowBuilder,
     type APIEmbed,
-    ApplicationCommandType,
     type CacheType,
     type Interaction,
     MessageContextMenuCommandInteraction,

@@ -32,14 +32,14 @@ import type SystemAuditLoggingService from "@main/services/SystemAuditLoggingSer
 import { APIEmbed, GuildBasedChannel } from "discord.js";
 
 type EchoCommandArgs = {
-    content: string;
+    content?: string;
     channel?: GuildBasedChannel;
 };
 
 @ArgumentSchema.Definition({
     names: ["channel", "content"],
     types: [ChannelArgument<true>, RestStringArgument],
-    optional: false,
+    optional: true,
     errorMessages: [
         {
             ...ChannelArgument.defaultErrors,
@@ -122,10 +122,15 @@ class EchoCommand extends Command {
         context: Context<CommandMessage>,
         args: EchoCommandArgs
     ): Promise<void> {
-        const { content, channel } = args;
+        let { content } = args;
+        const { channel } = args;
 
         if (channel && !channel.isTextBased()) {
             return void context.error("You can only send messages to text channels.");
+        }
+
+        if (context.isChatInput()) {
+            content = context.options.getString("content", true);
         }
 
         if (!content) {
@@ -133,7 +138,6 @@ class EchoCommand extends Command {
         }
 
         const finalChannel = channel ?? context.channel;
-
         try {
             const { data, output } = await this.directiveParsingService.parse(content);
             const options = {
