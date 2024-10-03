@@ -1,13 +1,4 @@
----
-title: "Command: `anime`"
-short_name: anime
----
-
-**MUST HAVE ANIME PLUGIN**
-
-import Modes from "@/components/MDX/Modes";
-
-# `anime`
+# Command: `anime`
 
 Sends a anime picture from the desired category into the current channel.
 
@@ -24,7 +15,8 @@ Sends a anime picture from the desired category into the current channel.
 
 ### Modes
 
-<Modes modes={["legacy", "interaction"]} />
+-   Legacy
+-   Interactions
 
 ### Examples
 
