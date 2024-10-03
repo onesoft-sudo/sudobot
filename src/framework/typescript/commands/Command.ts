@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { ApplicationCommandType } from "@framework/discord/ApplicationCommandType";
 import type { Logger } from "@framework/log/Logger";
 import type {
     Awaitable,
@@ -28,12 +29,7 @@ import type {
     Snowflake,
     User
 } from "discord.js";
-import {
-    ApplicationCommandType,
-    ContextMenuCommandBuilder,
-    InteractionContextType,
-    SlashCommandBuilder
-} from "discord.js";
+import { ContextMenuCommandBuilder, InteractionContextType, SlashCommandBuilder } from "discord.js";
 import type Application from "../app/Application";
 import type Argument from "../arguments/Argument";
 import type ArgumentParser from "../arguments/ArgumentParser";

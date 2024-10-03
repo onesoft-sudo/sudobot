@@ -22,6 +22,7 @@ import { Command } from "@framework/commands/Command";
 import { ContextType } from "@framework/commands/ContextType";
 import type InteractionContext from "@framework/commands/InteractionContext";
 import { Inject } from "@framework/container/Inject";
+import { ApplicationCommandType } from "@framework/discord/ApplicationCommandType";
 import { GatewayEventListener } from "@framework/events/GatewayEventListener";
 import { fetchMessage } from "@framework/utils/entities";
 import MessageReportingService from "@main/services/MessageReportingService";
@@ -31,13 +32,7 @@ import type {
     Interaction,
     MessageContextMenuCommandInteraction
 } from "discord.js";
-import {
-    ActionRowBuilder,
-    ApplicationCommandType,
-    ModalBuilder,
-    TextInputBuilder,
-    TextInputStyle
-} from "discord.js";
+import { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
 
 class ReportMessageCommand extends Command<ContextType.MessageContextMenu> {
     public override readonly name = "Report Message";

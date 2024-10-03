@@ -22,6 +22,7 @@ import Context from "@framework/commands/Context";
 import { ContextType } from "@framework/commands/ContextType";
 import { Inject } from "@framework/container/Inject";
 import DirectiveParseError from "@framework/directives/DirectiveParseError";
+import { ApplicationCommandType } from "@framework/discord/ApplicationCommandType";
 import { GatewayEventListener } from "@framework/events/GatewayEventListener";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
@@ -32,7 +33,6 @@ import { isTextBasedChannel } from "@main/utils/utils";
 import {
     ActionRowBuilder,
     type APIEmbed,
-    ApplicationCommandType,
     type Interaction,
     type MessageContextMenuCommandInteraction,
     type MessageCreateOptions,

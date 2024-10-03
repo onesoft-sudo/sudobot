@@ -21,10 +21,11 @@ import { Buildable, Command } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { ContextType } from "@framework/commands/ContextType";
 import { Inject } from "@framework/container/Inject";
+import { ApplicationCommandType } from "@framework/discord/ApplicationCommandType";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
-import { ApplicationCommandType, type MessageContextMenuCommandInteraction } from "discord.js";
+import { type MessageContextMenuCommandInteraction } from "discord.js";
 
 class SaveMessageCommand extends Command<ContextType.MessageContextMenu> {
     public override readonly name: string = "Save Message";
