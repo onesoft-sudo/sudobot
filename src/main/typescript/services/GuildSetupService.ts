@@ -6,6 +6,7 @@ import { Service } from "@framework/services/Service";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
 import { fetchChannel, fetchMember } from "@framework/utils/entities";
 import { Colors } from "@main/constants/Colors";
+import { LogEventType } from "@main/schemas/LoggingSchema";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import { emoji } from "@main/utils/emoji";
 import {
@@ -351,6 +352,20 @@ class GuildSetupService extends Service implements HasEventListeners {
 
     @GatewayEventListener("interactionCreate")
     public async onInteractionCreate(interaction: Interaction) {
+        if (
+            (interaction.isButton() ||
+                interaction.isAnySelectMenu() ||
+                interaction.isModalSubmit()) &&
+            !interaction.memberPermissions?.has("ManageGuild")
+        ) {
+            await interaction.reply({
+                content: `${emoji(this.application, "error")} You don't have the required permissions to configure settings.`,
+                ephemeral: true
+            });
+
+            return;
+        }
+
         if (interaction.isModalSubmit() && interaction.customId.startsWith("setup::")) {
             const [, guildId, id] = interaction.customId.split("::");
 
@@ -366,6 +381,17 @@ class GuildSetupService extends Service implements HasEventListeners {
             }
 
             return;
+        }
+
+        if (interaction.isStringSelectMenu() && interaction.customId.startsWith("setup::")) {
+            const [, guildId, id, subId] = interaction.customId.split("::");
+
+            this.ping(guildId);
+
+            if (id === "logging" && subId === "events_select") {
+                await this.handleLoggingEventsUpdate(guildId, interaction);
+                return;
+            }
         }
 
         if (interaction.isButton() && interaction.customId.startsWith("setup::")) {
@@ -426,7 +452,7 @@ class GuildSetupService extends Service implements HasEventListeners {
                                 await this.handleLoggingEnable(guildId, interaction);
                                 break;
                             case "events":
-                                await this.handleLoggingEventsUpdate(guildId, interaction);
+                                await this.handleLoggingEventsUpdateStart(guildId, interaction);
                                 break;
                         }
 
@@ -746,10 +772,132 @@ class GuildSetupService extends Service implements HasEventListeners {
         await interaction.showModal(modal).catch(this.application.logger.error);
     }
 
-    private async handleLoggingEventsUpdate(guildId: string, interaction: ButtonInteraction) {
-        await interaction
-            .followUp({ content: "[build-dev]: Not implemented yet.", ephemeral: true })
-            .catch(this.application.logger.error);
+    private getLoggingEvents() {
+        return Object.keys(LogEventType).filter(key => /[A-Z]/.test(key));
+    }
+
+    private loggingEventsSelectRow(guildId: string) {
+        return new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+            new StringSelectMenuBuilder()
+                .setCustomId(`setup::${guildId}::logging::events_select`)
+                .setPlaceholder("Select events to log")
+                .setMinValues(1)
+                .setMaxValues(this.getLoggingEvents().length)
+                .addOptions(
+                    this.getLoggingEvents().map(event => ({
+                        label: event.replace(/[A-Z]/g, " $&"),
+                        value: event
+                    }))
+                )
+        );
+    }
+
+    private async handleLoggingEventsUpdateStart(guildId: string, _interaction: ButtonInteraction) {
+        if (!this.configManager.config[guildId]?.logging?.enabled) {
+            await this.pushState(guildId, {
+                embeds: [
+                    this.embed(
+                        ["Logging", "Events"],
+                        "Please enable logging first before configuring events.",
+                        {
+                            color: Colors.Danger
+                        }
+                    )
+                ],
+                components: [
+                    this.selectMenu(guildId, true),
+                    this.loggingButtonRow(guildId),
+                    this.buttonRow(guildId, {
+                        back: true,
+                        cancel: true,
+                        finish: false
+                    })
+                ]
+            });
+
+            return;
+        }
+
+        await this.pushState(guildId, {
+            embeds: [
+                this.embed(["Logging", "Events"], "Please select the events you want to log.", {
+                    color: Colors.Primary
+                })
+            ],
+            components: [
+                this.selectMenu(guildId, true),
+                this.loggingButtonRow(guildId, { enable: false, channel: false, events: false }),
+                this.loggingEventsSelectRow(guildId),
+                this.buttonRow(guildId, {
+                    back: true,
+                    cancel: true,
+                    finish: true
+                })
+            ]
+        });
+    }
+
+    private async handleLoggingEventsUpdate(
+        guildId: string,
+        interaction: StringSelectMenuInteraction
+    ) {
+        if (!interaction.deferred) {
+            await interaction.deferUpdate();
+        }
+
+        if (!this.configManager.config[guildId]?.logging?.enabled) {
+            await this.pushState(guildId, {
+                embeds: [
+                    this.embed(
+                        ["Logging", "Events", "Update"],
+                        "Please enable logging first before configuring events.",
+                        {
+                            color: Colors.Danger
+                        }
+                    )
+                ],
+                components: [
+                    this.selectMenu(guildId, true),
+                    this.loggingButtonRow(guildId),
+                    this.buttonRow(guildId, {
+                        back: true,
+                        cancel: true,
+                        finish: false
+                    })
+                ]
+            });
+
+            return;
+        }
+
+        this.configManager.config[guildId].logging.unsubscribed_events = this.getLoggingEvents()
+            .filter(
+                (event): event is keyof typeof LogEventType =>
+                    !interaction.values.includes(event) && event in LogEventType
+            )
+            .map(event => LogEventType[event]);
+        await this.configManager.write({ guild: true, system: false });
+
+        await this.pushState(guildId, {
+            embeds: [
+                this.embed(
+                    ["Logging", "Events", "Update"],
+                    `${emoji(this.application, "check")} Successfully updated the log events.`,
+                    {
+                        color: Colors.Success
+                    }
+                )
+            ],
+            components: [
+                this.selectMenu(guildId, true),
+                this.loggingButtonRow(guildId, { enable: false, channel: true, events: true }),
+                this.buttonRow(guildId, {
+                    back: true,
+                    cancel: true,
+                    finish: true
+                })
+            ]
+        });
     }
 }
 
