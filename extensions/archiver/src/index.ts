@@ -67,6 +67,8 @@ export default class ArchiverExtension extends Extension {
             }
         });
 
+        process.on("beforeExit", () => child.kill("SIGKILL"));
+
         setTimeout(() => {
             child.send({
                 type: MessageType.Ping

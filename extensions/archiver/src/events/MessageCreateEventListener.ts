@@ -16,6 +16,10 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
     private extension: ArchiverExtension | null = null;
 
     public async execute(message: Message): Promise<void> {
+        if (!message.inGuild()) {
+            return;
+        }
+
         console.log(`[${message.author.username}]: ${message.content}`);
 
         if (!this.extension) {
@@ -31,7 +35,9 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
 
         this.extension.send({
             type: MessageType.Archive,
-            payload: message.content
+            message: message.toJSON(),
+            author: message.author.toJSON(),
+            guild: message.guild?.toJSON()
         });
     }
 }
