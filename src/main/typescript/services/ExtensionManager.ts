@@ -517,7 +517,7 @@ export default class ExtensionManager extends Service {
                 return;
             }
 
-            this.application.logger.info("Running: " + eventName + " [" + extensionId + "]");
+            this.application.logger.debug("Running: " + eventName + " [" + extensionId + "]");
 
             try {
                 return await handler(...args);
