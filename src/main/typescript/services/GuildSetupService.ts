@@ -6,6 +6,7 @@ import { Service } from "@framework/services/Service";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
 import { fetchChannel, fetchMember } from "@framework/utils/entities";
 import { Colors } from "@main/constants/Colors";
+import { AIAutoModSchema } from "@main/schemas/AIAutoModSchema";
 import { LogEventType } from "@main/schemas/LoggingSchema";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import { emoji } from "@main/utils/emoji";
@@ -33,7 +34,8 @@ import {
 
 enum SetupOption {
     Prefix = "prefix",
-    Logging = "logging"
+    Logging = "logging",
+    AIBasedAutoMod = "ai_automod"
 }
 
 type SetupState = {
@@ -47,7 +49,8 @@ type SetupState = {
 class GuildSetupService extends Service implements HasEventListeners {
     private static readonly handlers: Record<SetupOption, keyof GuildSetupService> = {
         [SetupOption.Prefix]: "handlePrefixSetup",
-        [SetupOption.Logging]: "handleLoggingSetup"
+        [SetupOption.Logging]: "handleLoggingSetup",
+        [SetupOption.AIBasedAutoMod]: "handleAIAutoModSetup"
     };
     private readonly inactivityTimeout: number = 120_000;
     private readonly setupState: Map<string, SetupState> = new Map();
@@ -126,6 +129,12 @@ class GuildSetupService extends Service implements HasEventListeners {
                         value: SetupOption.Logging,
                         emoji: "📜",
                         description: "Configure audit logging for this server."
+                    },
+                    {
+                        label: "AI AutoMod",
+                        value: "ai_automod",
+                        emoji: "🛡️",
+                        description: "Configure AI-powered automatic moderation for this server."
                     }
                 ])
                 .setMinValues(1)
@@ -891,6 +900,56 @@ class GuildSetupService extends Service implements HasEventListeners {
             components: [
                 this.selectMenu(guildId, true),
                 this.loggingButtonRow(guildId, { enable: false, channel: true, events: true }),
+                this.buttonRow(guildId, {
+                    back: true,
+                    cancel: true,
+                    finish: true
+                })
+            ]
+        });
+    }
+
+    public async handleAIAutoModSetup(guildId: string, interaction: StringSelectMenuInteraction) {
+        await this.defer(interaction);
+
+        if (this.configManager.config[guildId]?.ai_automod?.enabled) {
+            await this.pushState(guildId, {
+                embeds: [
+                    this.embed(["AI AutoMod"], "AI AutoMod is already enabled!", {
+                        color: Colors.Danger
+                    })
+                ],
+                components: [
+                    this.selectMenu(guildId, true),
+                    this.buttonRow(guildId, {
+                        back: true,
+                        cancel: true,
+                        finish: false
+                    })
+                ]
+            });
+
+            return;
+        }
+
+        this.configManager.config[guildId] = {} as (typeof this.configManager.config)[string];
+        this.configManager.config[guildId]!.ai_automod ??= AIAutoModSchema.parse({
+            enabled: true,
+            automatic_actions: {
+                enabled: true
+            }
+        });
+        this.configManager.config[guildId]!.ai_automod.enabled = true;
+        await this.configManager.write({ guild: true, system: false });
+
+        await this.pushState(guildId, {
+            embeds: [
+                this.embed(["AI AutoMod"], "AI AutoMod has been enabled.", {
+                    color: Colors.Success
+                })
+            ],
+            components: [
+                this.selectMenu(guildId, true),
                 this.buttonRow(guildId, {
                     back: true,
                     cancel: true,
