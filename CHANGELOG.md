@@ -1,7 +1,65 @@
 # Changelog
 
+### 05-10-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **feat:** `/setup` command (#241)    
+      
+      
+  * **fix:** state corruption in guild setup service    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * merge: with branch main
+  * **chore:** update VERSIONS.md    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **chore:** update VERSIONS.md    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * merge: with branch main
+  * **chore:** update VERSIONS.md    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **feat:** guild setup service method for ai automod [3/3]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 04-10-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore:** remove unneeded files    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore:** remove unneeded files    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **feat:** improved extension API    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore:** remove unneeded files    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **feat:** guild setup service logging component [2/2]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 03-10-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * merge: branch 'main' into dev
+  * merge: with branch main
   * **fix:** echo command argument validation not working in interaction mode    
       
     * This issue is mainly due to the way the echo command handled incoming arguments,  
@@ -19,12 +77,26 @@
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
       
+  * merge: branch 'main' into dev
+  * extensions: add archiver extension (partial)    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 03-10-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.17.4 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
 
 ### 29-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * merge: with branch main
   * **docs:** update    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * merge: with branch main
   * **docs:** update    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
@@ -35,6 +107,7 @@
 
 ### 28-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * merge: with branch main
   * **docs:** update licensing page    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
@@ -49,14 +122,17 @@
 
 ### 27-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * merge: with branch main
   * **chore:** customize typedoc theme    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
       
+  * merge: with branch main
   * **chore:** add typedoc theme and custom css    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
       
+  * merge: with branch main
   * **chore:** add typedoc    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
@@ -71,6 +147,14 @@
   * **release:** v10.17.2 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
+### 26-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * merge: with branch main
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
       
 
 ### 26-09-2024 - [[Ar Rakin](mailto:rakinar2@gmail.com)]
@@ -104,13 +188,6 @@
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
       
 
-### 26-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
-
-  * **chore(extensions):** build extensions [skip ci]    
-      
-    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
-      
-
 ### 25-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
   * **chore(extensions):** build extensions [skip ci]    
@@ -120,6 +197,7 @@
 
 ### 24-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * merge: with branch main
   * **deps:** bump date-fns from 3.6.0 to 4.1.0 (#232)    
       
       
@@ -129,6 +207,7 @@
   * **deps(dev):** bump esbuild from 0.23.1 to 0.24.0 in /blazebuild (#234)    
       
       
+  * merge: with branch main
   * **deps:** bump date-fns from 3.6.0 to 4.1.0 in /docs (#235)    
       
       
@@ -164,6 +243,7 @@
 
 ### 23-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * merge: with branch main
   * **fix(schemas):** ban action schema always requires a duration    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
@@ -230,6 +310,19 @@
 
 ### 21-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **fix(guildsetup):** back button not working as expected    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **feat(guildsetup):** logging setup implemented [1/2]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **feat(commands):** add `setup` command    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * merge: with branch main
   * **ci:** update update-dev.yml    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
@@ -253,6 +346,22 @@
 
 ### 20-09-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * merge: branch 'main' into dev    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **feat:** automatically message the user who added the application on join    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * merge: branch 'dev' of github.com:onesoft-sudo/sudobot into dev    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **feat:** automatic setup service    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
   * **refactor:** rename `@framework/pagination` to `@framework/widgets`    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
