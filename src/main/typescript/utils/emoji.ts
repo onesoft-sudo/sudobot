@@ -34,11 +34,11 @@ export function findEmoji(
         env.EMOJI_RESOLVE_STRATEGY ??
         application.service("configManager").systemConfig.emoji_resolve_strategy;
 
-    if (strategy !== "application") {
+    ifGuild: if (strategy !== "application") {
         const homeGuild = application.client.guilds.cache.get(env.HOME_GUILD_ID);
 
         if (!homeGuild) {
-            return;
+            break ifGuild;
         }
 
         const emoji = homeGuild.emojis.cache.find(

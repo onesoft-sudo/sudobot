@@ -65,3 +65,11 @@ export function suppressErrorNoReturn(value: unknown): void {
         value.catch(Application.current().logger.error);
     }
 }
+
+export function sourceFile(moduleName: string): string {
+    if (process.isBun) {
+        return `${moduleName}.ts`;
+    }
+
+    return `${moduleName}.js`;
+}

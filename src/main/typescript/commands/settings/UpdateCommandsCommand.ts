@@ -70,6 +70,8 @@ class UpdateCommandsCommand extends Command {
                 `Successfully ${clear ? "unregistered" : "updated"} **${clear ? "all" : count}** ${local ? "local " : ""}application commands.`
             );
         } catch (error) {
+            this.application.logger.error(error);
+
             if (isDiscordAPIError(error)) {
                 await context.error(`Failed to update the application commands: ${error.message}`);
                 return;

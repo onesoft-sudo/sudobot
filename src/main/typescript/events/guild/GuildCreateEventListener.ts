@@ -21,26 +21,60 @@ import { Inject } from "@framework/container/Inject";
 import EventListener from "@framework/events/EventListener";
 import { Logger } from "@framework/log/Logger";
 import { Events } from "@framework/types/ClientEvents";
+import { fetchMember } from "@framework/utils/entities";
+import GuildSetupService from "@main/services/GuildSetupService";
+import type { Guild } from "discord.js";
 import type Client from "../../core/Client";
 import ConfigurationManager from "../../services/ConfigurationManager";
-import type { Guild } from "discord.js";
 
 class GuildCreateEventListener extends EventListener<Events.GuildCreate, Client> {
     public override readonly name = Events.GuildCreate;
 
     @Inject()
-    public readonly configManager!: ConfigurationManager;
+    private readonly configManager!: ConfigurationManager;
 
     @Inject()
-    public readonly logger!: Logger;
+    private readonly logger!: Logger;
 
-    public override execute(guild: Guild) {
+    @Inject()
+    private readonly guildSetupService!: GuildSetupService;
+
+    public override async execute(guild: Guild) {
         this.logger.info(`Joined a guild: ${guild.name} (${guild.id})`);
 
         if (!this.configManager.config[guild.id]) {
             this.logger.info(`Auto-configuring guild: ${guild.id}`);
             this.configManager.autoConfigure(guild.id);
+
+            await this.configManager.write({
+                system: false,
+                guild: true
+            });
+            await this.configManager.load();
         }
+
+        const integration = await guild.fetchIntegrations();
+        const id = this.client.application?.id;
+
+        if (!id) {
+            return;
+        }
+
+        const systemIntegration = integration.find(
+            integration => integration.application?.id === id
+        );
+
+        if (!systemIntegration?.user) {
+            return;
+        }
+
+        const member = await fetchMember(guild, systemIntegration.user.id);
+
+        if (!member) {
+            return;
+        }
+
+        await this.guildSetupService.initialize(member, member.id).catch(this.logger.error);
     }
 }
 
