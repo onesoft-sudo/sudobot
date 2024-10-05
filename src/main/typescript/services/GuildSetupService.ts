@@ -53,7 +53,7 @@ class GuildSetupService extends Service implements HasEventListeners {
         [SetupOption.AIBasedAutoMod]: "handleAIAutoModSetup"
     };
     private readonly inactivityTimeout: number = 120_000;
-    private readonly setupState: Map<string, SetupState> = new Map();
+    private readonly setupState: Map<`${string}::${string}::${string}`, SetupState> = new Map();
 
     @Inject("configManager")
     private readonly configManager!: ConfigurationManager;
@@ -63,7 +63,8 @@ class GuildSetupService extends Service implements HasEventListeners {
             | GuildMember
             | Extract<TextBasedChannel, { send: unknown; guild: unknown }>
             | (ChatInputCommandInteraction & { guild: Guild })
-            | Message<true>
+            | Message<true>,
+        targetId: string
     ) {
         try {
             const options = {
@@ -75,7 +76,7 @@ class GuildSetupService extends Service implements HasEventListeners {
                 ],
                 components: [
                     this.selectMenu(memberOrChannel.guild.id),
-                    this.buttonRow(memberOrChannel.guild.id, {
+                    this.buttonRow(memberOrChannel.guild.id, targetId, "0", {
                         cancel: true
                     })
                 ]
@@ -86,18 +87,25 @@ class GuildSetupService extends Service implements HasEventListeners {
                     : memberOrChannel instanceof Message
                       ? await memberOrChannel.reply(options)
                       : await memberOrChannel.send(options);
+            let messageId: string;
 
             if (memberOrChannel instanceof ChatInputCommandInteraction) {
-                await memberOrChannel.reply({
+                const { id } = await memberOrChannel.reply({
                     ...options,
                     fetchReply: true,
                     ephemeral: true
                 });
+
+                messageId = id;
+            } else {
+                messageId = message.id;
             }
 
-            this.setupState.set(memberOrChannel.guild.id, {
+            const key = `${memberOrChannel.guild.id}::${targetId}::${messageId}` as const;
+
+            this.setupState.set(key, {
                 timeout: setTimeout(() => {
-                    this.setupState.delete(memberOrChannel.guild.id);
+                    this.setupState.delete(key);
                     const options = this.cancelledOptions([]);
                     (message instanceof Message
                         ? message.edit(options as MessageEditOptions)
@@ -132,7 +140,7 @@ class GuildSetupService extends Service implements HasEventListeners {
                     },
                     {
                         label: "AI AutoMod",
-                        value: "ai_automod",
+                        value: SetupOption.AIBasedAutoMod,
                         emoji: "🛡️",
                         description: "Configure AI-powered automatic moderation for this server."
                     }
@@ -143,8 +151,13 @@ class GuildSetupService extends Service implements HasEventListeners {
         );
     }
 
-    private buttonRow(guildId: string, { back = false, finish = false, cancel = false } = {}) {
-        const state = this.setupState.get(guildId);
+    private buttonRow(
+        guildId: string,
+        id: string,
+        messageId: string,
+        { back = false, finish = false, cancel = false } = {}
+    ) {
+        const state = this.setupState.get(`${guildId}::${id}::${messageId}`);
 
         return new ActionRowBuilder<ButtonBuilder>().addComponents(
             new ButtonBuilder()
@@ -188,17 +201,17 @@ class GuildSetupService extends Service implements HasEventListeners {
                     }
                 )
             ],
-            components: [this.selectMenu("0", true), this.buttonRow("0")]
+            components: [this.selectMenu("0", true), this.buttonRow("0", "0", "0")]
         };
     }
 
-    private async goBack(guildId: string) {
-        this.popState(guildId);
-        await this.updateMessage(guildId);
+    private async goBack(guildId: string, id: string, messageId: string) {
+        this.popState(guildId, id, messageId);
+        await this.updateMessage(guildId, id, messageId);
     }
 
-    private popState(guildId: string) {
-        const state = this.setupState.get(guildId);
+    private popState(guildId: string, id: string, messageId: string) {
+        const state = this.setupState.get(`${guildId}::${id}::${messageId}`);
 
         if (!state || !state.stack.length) {
             return;
@@ -211,8 +224,18 @@ class GuildSetupService extends Service implements HasEventListeners {
         state.stack.pop();
     }
 
-    private async updateMessage(guildId: string) {
-        const state = this.setupState.get(guildId);
+    private resetState(guildId: string, id: string, messageId: string, keep = 1) {
+        const state = this.setupState.get(`${guildId}::${id}::${messageId}`);
+
+        if (!state) {
+            return;
+        }
+
+        state.stack = state.stack.slice(0, keep);
+    }
+
+    private async updateMessage(guildId: string, id: string, messageId: string) {
+        const state = this.setupState.get(`${guildId}::${id}::${messageId}`);
 
         if (!state) {
             return;
@@ -231,18 +254,28 @@ class GuildSetupService extends Service implements HasEventListeners {
         ).catch(this.application.logger.error);
     }
 
-    private async pushState(guildId: string, options: ContextReplyOptions) {
-        const state = this.setupState.get(guildId);
+    private async pushState(
+        guildId: string,
+        id: string,
+        messageId: string,
+        options: ContextReplyOptions
+    ) {
+        const state = this.setupState.get(`${guildId}::${id}::${messageId}`);
 
         if (!state) {
             return;
         }
 
         state.stack.push(options);
-        await this.updateMessage(guildId);
+        await this.updateMessage(guildId, id, messageId);
     }
 
-    private async handlePrefixUpdate(guildId: string, interaction: ModalSubmitInteraction) {
+    private async handlePrefixUpdate(
+        guildId: string,
+        id: string,
+        messageId: string,
+        interaction: ModalSubmitInteraction
+    ) {
         if (!this.configManager.config[guildId]) {
             this.configManager.autoConfigure(guildId);
         }
@@ -257,8 +290,10 @@ class GuildSetupService extends Service implements HasEventListeners {
 
         const prefix = interaction.fields.getTextInputValue("prefix");
 
+        this.resetState(guildId, id, messageId);
+
         if (!prefix || prefix.includes(" ")) {
-            await this.pushState(guildId, {
+            await this.pushState(guildId, id, messageId, {
                 embeds: [
                     this.embed(
                         ["Prefix"],
@@ -271,7 +306,7 @@ class GuildSetupService extends Service implements HasEventListeners {
 
                 components: [
                     this.selectMenu(guildId, true),
-                    this.buttonRow(guildId, {
+                    this.buttonRow(guildId, id, messageId, {
                         back: true,
                         cancel: true
                     })
@@ -281,7 +316,7 @@ class GuildSetupService extends Service implements HasEventListeners {
             return;
         }
 
-        const state = this.setupState.get(guildId);
+        const state = this.setupState.get(`${guildId}::${id}::${messageId}`);
 
         if (state) {
             state.finishable = true;
@@ -291,7 +326,7 @@ class GuildSetupService extends Service implements HasEventListeners {
         await this.configManager.write({ guild: true, system: false });
         await this.configManager.load();
 
-        await this.pushState(guildId, {
+        await this.pushState(guildId, id, messageId, {
             embeds: [
                 this.embed(
                     ["Prefix"],
@@ -303,7 +338,7 @@ class GuildSetupService extends Service implements HasEventListeners {
             ],
             components: [
                 this.selectMenu(guildId, true),
-                this.buttonRow(guildId, {
+                this.buttonRow(guildId, id, messageId, {
                     back: true,
                     cancel: true,
                     finish: true
@@ -312,8 +347,8 @@ class GuildSetupService extends Service implements HasEventListeners {
         });
     }
 
-    private ping(guildId: string) {
-        const state = this.setupState.get(guildId);
+    private ping(guildId: string, id: string, messageId: string) {
+        const state = this.setupState.get(`${guildId}::${id}::${messageId}`);
 
         if (!state) {
             return;
@@ -321,7 +356,7 @@ class GuildSetupService extends Service implements HasEventListeners {
 
         clearTimeout(state.timeout);
         state.timeout = setTimeout(() => {
-            this.setupState.delete(guildId);
+            this.setupState.delete(`${guildId}::${id}::${messageId}`);
             const options = this.cancelledOptions([], true);
             (state.message instanceof Message
                 ? state.message.edit(options)
@@ -330,15 +365,15 @@ class GuildSetupService extends Service implements HasEventListeners {
         }, this.inactivityTimeout);
     }
 
-    public finishSetup(guildId: string) {
-        const state = this.setupState.get(guildId);
+    public finishSetup(guildId: string, id: string, messageId: string) {
+        const state = this.setupState.get(`${guildId}::${id}::${messageId}`);
 
         if (!state) {
             return;
         }
 
         clearTimeout(state.timeout);
-        this.setupState.delete(guildId);
+        this.setupState.delete(`${guildId}::${id}::${messageId}`);
 
         const options = {
             embeds: [
@@ -349,7 +384,7 @@ class GuildSetupService extends Service implements HasEventListeners {
             ],
             components: [
                 this.selectMenu("0", true),
-                this.buttonRow("0", { cancel: false, back: false, finish: false })
+                this.buttonRow("0", "0", messageId, { cancel: false, back: false, finish: false })
             ]
         };
 
@@ -376,16 +411,37 @@ class GuildSetupService extends Service implements HasEventListeners {
         }
 
         if (interaction.isModalSubmit() && interaction.customId.startsWith("setup::")) {
+            const { message } = interaction;
+
+            if (!message) {
+                await interaction.reply({
+                    content: `${emoji(this.application, "error")} The session has expired. Please run the command again.`,
+                    ephemeral: true
+                });
+
+                return;
+            }
+
             const [, guildId, id] = interaction.customId.split("::");
 
-            this.ping(guildId);
+            this.ping(guildId, interaction.user.id, message.id);
 
             switch (id) {
                 case "prefix_modal":
-                    await this.handlePrefixUpdate(guildId, interaction);
+                    await this.handlePrefixUpdate(
+                        guildId,
+                        interaction.user.id,
+                        message.id,
+                        interaction
+                    );
                     break;
                 case "logging_channel_modal":
-                    await this.handleLoggingChannelUpdateModalSubmit(guildId, interaction);
+                    await this.handleLoggingChannelUpdateModalSubmit(
+                        guildId,
+                        interaction.user.id,
+                        message.id,
+                        interaction
+                    );
                     break;
             }
 
@@ -393,25 +449,53 @@ class GuildSetupService extends Service implements HasEventListeners {
         }
 
         if (interaction.isStringSelectMenu() && interaction.customId.startsWith("setup::")) {
+            const { message } = interaction;
+
+            if (!message) {
+                await interaction.reply({
+                    content: `${emoji(this.application, "error")} The session has expired. Please run the command again.`,
+                    ephemeral: true
+                });
+
+                return;
+            }
+
             const [, guildId, id, subId] = interaction.customId.split("::");
 
-            this.ping(guildId);
+            this.ping(guildId, interaction.user.id, message.id);
 
             if (id === "logging" && subId === "events_select") {
-                await this.handleLoggingEventsUpdate(guildId, interaction);
+                await this.handleLoggingEventsUpdate(
+                    guildId,
+                    interaction.user.id,
+                    message.id,
+                    interaction
+                );
                 return;
             }
         }
 
         if (interaction.isButton() && interaction.customId.startsWith("setup::")) {
+            const { message } = interaction;
+
+            if (!message) {
+                await interaction.reply({
+                    content: `${emoji(this.application, "error")} The session has expired. Please run the command again.`,
+                    ephemeral: true
+                });
+
+                return;
+            }
+
             const [, guildId, id, subId] = interaction.customId.split("::");
 
             if (id === "cancel") {
-                const { timeout } = this.setupState.get(guildId) ?? {};
+                const { timeout } =
+                    this.setupState.get(`${guildId}::${interaction.user.id}::${message.id}`) ?? {};
 
                 if (timeout) {
                     clearTimeout(timeout);
-                    this.setupState.delete(guildId);
+                    this.setupState.delete(`${guildId}::${interaction.user.id}::${message.id}`);
                 }
 
                 await interaction
@@ -420,13 +504,13 @@ class GuildSetupService extends Service implements HasEventListeners {
                 return;
             }
 
-            const state = this.setupState.get(guildId);
+            const state = this.setupState.get(`${guildId}::${interaction.user.id}::${message.id}`);
 
             if (!state) {
                 return;
             }
 
-            this.ping(guildId);
+            this.ping(guildId, interaction.user.id, message.id);
 
             let done = true;
 
@@ -434,7 +518,12 @@ class GuildSetupService extends Service implements HasEventListeners {
                 case "logging":
                     switch (subId) {
                         case "channel":
-                            await this.handleLoggingChannelUpdate(guildId, interaction);
+                            await this.handleLoggingChannelUpdate(
+                                guildId,
+                                interaction.user.id,
+                                message.id,
+                                interaction
+                            );
                             break;
                         default:
                             done = false;
@@ -450,18 +539,28 @@ class GuildSetupService extends Service implements HasEventListeners {
 
                 switch (id) {
                     case "back":
-                        await this.goBack(guildId);
+                        await this.goBack(guildId, interaction.user.id, message.id);
                         break;
                     case "finish":
-                        this.finishSetup(guildId);
+                        this.finishSetup(guildId, interaction.user.id, message.id);
                         break;
                     case "logging":
                         switch (subId) {
                             case "enable":
-                                await this.handleLoggingEnable(guildId, interaction);
+                                await this.handleLoggingEnable(
+                                    guildId,
+                                    interaction.user.id,
+                                    message.id,
+                                    interaction
+                                );
                                 break;
                             case "events":
-                                await this.handleLoggingEventsUpdateStart(guildId, interaction);
+                                await this.handleLoggingEventsUpdateStart(
+                                    guildId,
+                                    interaction.user.id,
+                                    message.id,
+                                    interaction
+                                );
                                 break;
                         }
 
@@ -473,6 +572,17 @@ class GuildSetupService extends Service implements HasEventListeners {
         }
 
         if (!interaction.isStringSelectMenu() || !interaction.customId.startsWith("setup::")) {
+            return;
+        }
+
+        const { message } = interaction;
+
+        if (!message) {
+            await interaction.reply({
+                content: `${emoji(this.application, "error")} The session has expired. Please run the command again.`,
+                ephemeral: true
+            });
+
             return;
         }
 
@@ -489,18 +599,25 @@ class GuildSetupService extends Service implements HasEventListeners {
         }
 
         const [, guildId] = interaction.customId.split("::");
-        this.ping(guildId);
+        this.ping(guildId, interaction.user.id, message.id);
 
         await (
             this[handler] as (
                 guildId: string,
+                id: string,
+                messageId: string,
                 interaction: StringSelectMenuInteraction
             ) => Promise<void>
-        ).call(this, guildId, interaction);
+        ).call(this, guildId, interaction.user.id, message.id, interaction);
     }
 
-    public async handlePrefixSetup(guildId: string, interaction: StringSelectMenuInteraction) {
-        const state = this.setupState.get(guildId);
+    public async handlePrefixSetup(
+        guildId: string,
+        id: string,
+        messageId: string,
+        interaction: StringSelectMenuInteraction
+    ) {
+        const state = this.setupState.get(`${guildId}::${id}::${messageId}`);
 
         if (!state) {
             return;
@@ -534,7 +651,14 @@ class GuildSetupService extends Service implements HasEventListeners {
         await interaction.deferUpdate().catch(this.application.logger.error);
     }
 
-    public async handleLoggingSetup(guildId: string, interaction: StringSelectMenuInteraction) {
+    public async handleLoggingSetup(
+        guildId: string,
+        id: string,
+        messageId: string,
+        interaction: StringSelectMenuInteraction
+    ) {
+        this.resetState(guildId, id, messageId);
+
         const options = {
             embeds: [
                 this.embed(
@@ -545,12 +669,12 @@ class GuildSetupService extends Service implements HasEventListeners {
             components: [
                 this.selectMenu(guildId, true),
                 this.loggingButtonRow(guildId),
-                this.buttonRow(guildId, { cancel: true, back: true, finish: false })
+                this.buttonRow(guildId, id, messageId, { cancel: true, back: true, finish: false })
             ]
         };
 
         await this.defer(interaction);
-        await this.pushState(guildId, options);
+        await this.pushState(guildId, id, messageId, options);
     }
 
     private loggingButtonRow(
@@ -576,7 +700,12 @@ class GuildSetupService extends Service implements HasEventListeners {
         );
     }
 
-    private async handleLoggingEnable(guildId: string, interaction: ButtonInteraction) {
+    private async handleLoggingEnable(
+        guildId: string,
+        id: string,
+        messageId: string,
+        interaction: ButtonInteraction
+    ) {
         if (!this.configManager.config[guildId]) {
             this.configManager.autoConfigure(guildId);
         }
@@ -588,7 +717,7 @@ class GuildSetupService extends Service implements HasEventListeners {
         }
 
         await interaction.deferUpdate().catch(this.application.logger.error);
-        const state = this.setupState.get(guildId);
+        const state = this.setupState.get(`${guildId}::${interaction.user.id}::${messageId}`);
 
         if (state) {
             state.finishable = true;
@@ -599,7 +728,9 @@ class GuildSetupService extends Service implements HasEventListeners {
         await this.configManager.write({ guild: true, system: false });
         await this.configManager.load();
 
-        await this.pushState(guildId, {
+        this.resetState(guildId, id, messageId, 2);
+
+        await this.pushState(guildId, id, messageId, {
             embeds: [
                 this.embed(
                     ["Logging"],
@@ -612,7 +743,7 @@ class GuildSetupService extends Service implements HasEventListeners {
             components: [
                 this.selectMenu(guildId, true),
                 this.loggingButtonRow(guildId, { enable: false }),
-                this.buttonRow(guildId, {
+                this.buttonRow(guildId, id, messageId, {
                     back: true,
                     cancel: true,
                     finish: true
@@ -637,6 +768,8 @@ class GuildSetupService extends Service implements HasEventListeners {
 
     private async handleLoggingChannelUpdateModalSubmit(
         guildId: string,
+        id: string,
+        messageId: string,
         interaction: ModalSubmitInteraction
     ) {
         if (!this.configManager.config[guildId]) {
@@ -655,8 +788,10 @@ class GuildSetupService extends Service implements HasEventListeners {
         const validationFailed = !channelId || !/^\d{17,21}$/.test(channelId);
         const channel = validationFailed ? undefined : await fetchChannel(guildId, channelId);
 
+        this.resetState(guildId, id, messageId, 2);
+
         if (!channel?.isTextBased()) {
-            await this.pushState(guildId, {
+            await this.pushState(guildId, id, messageId, {
                 embeds: [
                     this.embed(
                         ["Logging"],
@@ -670,7 +805,7 @@ class GuildSetupService extends Service implements HasEventListeners {
                 components: [
                     this.selectMenu(guildId, true),
                     this.loggingButtonRow(guildId, { enable: false }),
-                    this.buttonRow(guildId, {
+                    this.buttonRow(guildId, id, messageId, {
                         back: true,
                         cancel: true
                     })
@@ -698,7 +833,7 @@ class GuildSetupService extends Service implements HasEventListeners {
                     true
                 )
         ) {
-            await this.pushState(guildId, {
+            await this.pushState(guildId, id, messageId, {
                 embeds: [
                     this.embed(
                         ["Logging"],
@@ -712,7 +847,7 @@ class GuildSetupService extends Service implements HasEventListeners {
                 components: [
                     this.selectMenu(guildId, true),
                     this.loggingButtonRow(guildId, { enable: false }),
-                    this.buttonRow(guildId, {
+                    this.buttonRow(guildId, id, messageId, {
                         back: true,
                         cancel: true
                     })
@@ -722,7 +857,7 @@ class GuildSetupService extends Service implements HasEventListeners {
             return;
         }
 
-        const state = this.setupState.get(guildId);
+        const state = this.setupState.get(`${guildId}::${id}::${messageId}`);
 
         if (state) {
             state.finishable = true;
@@ -734,7 +869,7 @@ class GuildSetupService extends Service implements HasEventListeners {
         await this.configManager.write({ guild: true, system: false });
         await this.configManager.load();
 
-        await this.pushState(guildId, {
+        await this.pushState(guildId, id, messageId, {
             embeds: [
                 this.embed(
                     ["Logging"],
@@ -747,7 +882,7 @@ class GuildSetupService extends Service implements HasEventListeners {
             components: [
                 this.selectMenu(guildId, true),
                 this.loggingButtonRow(guildId, { enable: false }),
-                this.buttonRow(guildId, {
+                this.buttonRow(guildId, id, messageId, {
                     back: true,
                     cancel: true,
                     finish: true
@@ -756,8 +891,13 @@ class GuildSetupService extends Service implements HasEventListeners {
         });
     }
 
-    private async handleLoggingChannelUpdate(guildId: string, interaction: ButtonInteraction) {
-        const state = this.setupState.get(guildId);
+    private async handleLoggingChannelUpdate(
+        guildId: string,
+        id: string,
+        messageId: string,
+        interaction: ButtonInteraction
+    ) {
+        const state = this.setupState.get(`${guildId}::${id}::${messageId}`);
 
         if (!state) {
             return;
@@ -801,9 +941,16 @@ class GuildSetupService extends Service implements HasEventListeners {
         );
     }
 
-    private async handleLoggingEventsUpdateStart(guildId: string, _interaction: ButtonInteraction) {
+    private async handleLoggingEventsUpdateStart(
+        guildId: string,
+        id: string,
+        messageId: string,
+        _interaction: ButtonInteraction
+    ) {
+        this.resetState(guildId, id, messageId, 2);
+
         if (!this.configManager.config[guildId]?.logging?.enabled) {
-            await this.pushState(guildId, {
+            await this.pushState(guildId, id, messageId, {
                 embeds: [
                     this.embed(
                         ["Logging", "Events"],
@@ -816,7 +963,7 @@ class GuildSetupService extends Service implements HasEventListeners {
                 components: [
                     this.selectMenu(guildId, true),
                     this.loggingButtonRow(guildId),
-                    this.buttonRow(guildId, {
+                    this.buttonRow(guildId, id, messageId, {
                         back: true,
                         cancel: true,
                         finish: false
@@ -827,7 +974,7 @@ class GuildSetupService extends Service implements HasEventListeners {
             return;
         }
 
-        await this.pushState(guildId, {
+        await this.pushState(guildId, id, messageId, {
             embeds: [
                 this.embed(["Logging", "Events"], "Please select the events you want to log.", {
                     color: Colors.Primary
@@ -837,7 +984,7 @@ class GuildSetupService extends Service implements HasEventListeners {
                 this.selectMenu(guildId, true),
                 this.loggingButtonRow(guildId, { enable: false, channel: false, events: false }),
                 this.loggingEventsSelectRow(guildId),
-                this.buttonRow(guildId, {
+                this.buttonRow(guildId, id, messageId, {
                     back: true,
                     cancel: true,
                     finish: true
@@ -848,14 +995,18 @@ class GuildSetupService extends Service implements HasEventListeners {
 
     private async handleLoggingEventsUpdate(
         guildId: string,
+        id: string,
+        messageId: string,
         interaction: StringSelectMenuInteraction
     ) {
         if (!interaction.deferred) {
             await interaction.deferUpdate();
         }
 
+        this.resetState(guildId, id, messageId, 2);
+
         if (!this.configManager.config[guildId]?.logging?.enabled) {
-            await this.pushState(guildId, {
+            await this.pushState(guildId, id, messageId, {
                 embeds: [
                     this.embed(
                         ["Logging", "Events", "Update"],
@@ -868,7 +1019,7 @@ class GuildSetupService extends Service implements HasEventListeners {
                 components: [
                     this.selectMenu(guildId, true),
                     this.loggingButtonRow(guildId),
-                    this.buttonRow(guildId, {
+                    this.buttonRow(guildId, id, messageId, {
                         back: true,
                         cancel: true,
                         finish: false
@@ -887,7 +1038,7 @@ class GuildSetupService extends Service implements HasEventListeners {
             .map(event => LogEventType[event]);
         await this.configManager.write({ guild: true, system: false });
 
-        await this.pushState(guildId, {
+        await this.pushState(guildId, id, messageId, {
             embeds: [
                 this.embed(
                     ["Logging", "Events", "Update"],
@@ -900,7 +1051,7 @@ class GuildSetupService extends Service implements HasEventListeners {
             components: [
                 this.selectMenu(guildId, true),
                 this.loggingButtonRow(guildId, { enable: false, channel: true, events: true }),
-                this.buttonRow(guildId, {
+                this.buttonRow(guildId, id, messageId, {
                     back: true,
                     cancel: true,
                     finish: true
@@ -909,11 +1060,17 @@ class GuildSetupService extends Service implements HasEventListeners {
         });
     }
 
-    public async handleAIAutoModSetup(guildId: string, interaction: StringSelectMenuInteraction) {
+    public async handleAIAutoModSetup(
+        guildId: string,
+        id: string,
+        messageId: string,
+        interaction: StringSelectMenuInteraction
+    ) {
         await this.defer(interaction);
+        this.resetState(guildId, id, messageId);
 
         if (this.configManager.config[guildId]?.ai_automod?.enabled) {
-            await this.pushState(guildId, {
+            await this.pushState(guildId, id, messageId, {
                 embeds: [
                     this.embed(["AI AutoMod"], "AI AutoMod is already enabled!", {
                         color: Colors.Danger
@@ -921,7 +1078,7 @@ class GuildSetupService extends Service implements HasEventListeners {
                 ],
                 components: [
                     this.selectMenu(guildId, true),
-                    this.buttonRow(guildId, {
+                    this.buttonRow(guildId, id, messageId, {
                         back: true,
                         cancel: true,
                         finish: false
@@ -942,7 +1099,7 @@ class GuildSetupService extends Service implements HasEventListeners {
         this.configManager.config[guildId]!.ai_automod.enabled = true;
         await this.configManager.write({ guild: true, system: false });
 
-        await this.pushState(guildId, {
+        await this.pushState(guildId, id, messageId, {
             embeds: [
                 this.embed(["AI AutoMod"], "AI AutoMod has been enabled.", {
                     color: Colors.Success
@@ -950,7 +1107,7 @@ class GuildSetupService extends Service implements HasEventListeners {
             ],
             components: [
                 this.selectMenu(guildId, true),
-                this.buttonRow(guildId, {
+                this.buttonRow(guildId, id, messageId, {
                     back: true,
                     cancel: true,
                     finish: true

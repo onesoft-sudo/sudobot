@@ -41,7 +41,8 @@ class SetupCommand extends Command<ContextType> {
         await this.application.service("guildSetupService").initialize(
             commandMessage as ChatInputCommandInteraction & {
                 guild: Guild;
-            }
+            },
+            context.user.id
         );
     }
 }

@@ -74,7 +74,7 @@ class GuildCreateEventListener extends EventListener<Events.GuildCreate, Client>
             return;
         }
 
-        await this.guildSetupService.initialize(member).catch(this.logger.error);
+        await this.guildSetupService.initialize(member, member.id).catch(this.logger.error);
     }
 }
 
