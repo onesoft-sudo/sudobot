@@ -8,6 +8,7 @@ import { fetchChannel, fetchMember } from "@framework/utils/entities";
 import { Colors } from "@main/constants/Colors";
 import { AIAutoModSchema } from "@main/schemas/AIAutoModSchema";
 import { LogEventType } from "@main/schemas/LoggingSchema";
+import { ModerationActionType } from "@main/schemas/ModerationActionSchema";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import { emoji } from "@main/utils/emoji";
 import {
@@ -35,7 +36,8 @@ import {
 enum SetupOption {
     Prefix = "prefix",
     Logging = "logging",
-    AIBasedAutoMod = "ai_automod"
+    AIBasedAutoMod = "ai_automod",
+    SpamProtection = "spam_protection"
 }
 
 type SetupState = {
@@ -50,7 +52,8 @@ class GuildSetupService extends Service implements HasEventListeners {
     private static readonly handlers: Record<SetupOption, keyof GuildSetupService> = {
         [SetupOption.Prefix]: "handlePrefixSetup",
         [SetupOption.Logging]: "handleLoggingSetup",
-        [SetupOption.AIBasedAutoMod]: "handleAIAutoModSetup"
+        [SetupOption.AIBasedAutoMod]: "handleAIAutoModSetup",
+        [SetupOption.SpamProtection]: "handleSpamProtectionSetup"
     };
     private readonly inactivityTimeout: number = 120_000;
     private readonly setupState: Map<`${string}::${string}::${string}`, SetupState> = new Map();
@@ -141,6 +144,12 @@ class GuildSetupService extends Service implements HasEventListeners {
                     {
                         label: "AI AutoMod",
                         value: SetupOption.AIBasedAutoMod,
+                        emoji: "🛡️",
+                        description: "Configure AI-powered automatic moderation for this server."
+                    },
+                    {
+                        label: "Spam Protection",
+                        value: SetupOption.SpamProtection,
                         emoji: "🛡️",
                         description: "Configure AI-powered automatic moderation for this server."
                     }
@@ -443,6 +452,14 @@ class GuildSetupService extends Service implements HasEventListeners {
                         interaction
                     );
                     break;
+                case "spam_protection_modal":
+                    await this.handleSpamProtectionThresholdsUpdate(
+                        guildId,
+                        interaction.user.id,
+                        message.id,
+                        interaction
+                    );
+                    break;
             }
 
             return;
@@ -471,6 +488,18 @@ class GuildSetupService extends Service implements HasEventListeners {
                     message.id,
                     interaction
                 );
+
+                return;
+            }
+
+            if (id === "spam_protection" && subId === "actions_select") {
+                await this.handleSpamProtectionActionsUpdate(
+                    guildId,
+                    interaction.user.id,
+                    message.id,
+                    interaction
+                );
+
                 return;
             }
         }
@@ -519,6 +548,29 @@ class GuildSetupService extends Service implements HasEventListeners {
                     switch (subId) {
                         case "channel":
                             await this.handleLoggingChannelUpdate(
+                                guildId,
+                                interaction.user.id,
+                                message.id,
+                                interaction
+                            );
+                            break;
+                        default:
+                            done = false;
+                    }
+                    break;
+
+                case "spam_protection":
+                    switch (subId) {
+                        case "actions":
+                            await this.handleSpamProtectionActionsUpdateRequest(
+                                guildId,
+                                interaction.user.id,
+                                message.id,
+                                interaction
+                            );
+                            break;
+                        case "limits":
+                            await this.handleSpamProtectionThresholdsUpdateRequest(
                                 guildId,
                                 interaction.user.id,
                                 message.id,
@@ -1106,6 +1158,336 @@ class GuildSetupService extends Service implements HasEventListeners {
                 })
             ],
             components: [
+                this.selectMenu(guildId, true),
+                this.buttonRow(guildId, id, messageId, {
+                    back: true,
+                    cancel: true,
+                    finish: true
+                })
+            ]
+        });
+    }
+
+    private spamProtectionButtons(guildId: string, enable = true) {
+        return new ActionRowBuilder<ButtonBuilder>().addComponents(
+            new ButtonBuilder()
+                .setCustomId(`setup::${guildId}::spam_protection::actions`)
+                .setLabel("Actions")
+                .setStyle(ButtonStyle.Secondary)
+                .setDisabled(!enable),
+            new ButtonBuilder()
+                .setCustomId(`setup::${guildId}::spam_protection::limits`)
+                .setLabel("Thresholds")
+                .setStyle(ButtonStyle.Secondary)
+                .setDisabled(!enable)
+        );
+    }
+
+    public async handleSpamProtectionSetup(
+        guildId: string,
+        id: string,
+        messageId: string,
+        interaction: StringSelectMenuInteraction
+    ) {
+        await this.defer(interaction);
+        this.resetState(guildId, id, messageId);
+
+        if (this.configManager.config[guildId]?.antispam?.enabled) {
+            await this.pushState(guildId, id, messageId, {
+                embeds: [
+                    this.embed(["Spam Protection"], "Spam protection is already enabled!", {
+                        color: Colors.Danger
+                    })
+                ],
+                components: [
+                    this.selectMenu(guildId, true),
+                    this.buttonRow(guildId, id, messageId, {
+                        back: true,
+                        cancel: true,
+                        finish: false
+                    })
+                ]
+            });
+
+            return;
+        }
+
+        await this.pushState(guildId, id, messageId, {
+            embeds: [
+                this.embed(["Spam Protection"], "Please configure the following options.", {
+                    color: Colors.Primary
+                })
+            ],
+            components: [
+                this.spamProtectionButtons(guildId),
+                this.selectMenu(guildId, true),
+                this.buttonRow(guildId, id, messageId, {
+                    back: true,
+                    cancel: true,
+                    finish: false
+                })
+            ]
+        });
+    }
+
+    private async handleSpamProtectionActionsUpdate(
+        guildId: string,
+        id: string,
+        messageId: string,
+        interaction: StringSelectMenuInteraction
+    ) {
+        await this.defer(interaction);
+        this.resetState(guildId, id, messageId);
+
+        const actions = interaction.values as Array<"mute" | "kick" | "ban" | "clear">;
+
+        if (!actions.length) {
+            await this.pushState(guildId, id, messageId, {
+                embeds: [
+                    this.embed(
+                        ["Spam Protection", "Actions"],
+                        `${emoji(this.application, "error")} Please select at least one action.`,
+                        {
+                            color: Colors.Danger
+                        }
+                    )
+                ],
+                components: [
+                    this.spamProtectionButtons(guildId, false),
+                    this.selectMenu(guildId, true),
+                    this.buttonRow(guildId, id, messageId, {
+                        back: true,
+                        cancel: true,
+                        finish: false
+                    })
+                ]
+            });
+
+            return;
+        }
+
+        const state = this.setupState.get(`${guildId}::${id}::${messageId}`);
+
+        if (state) {
+            state.finishable = true;
+        }
+
+        this.configManager.config[guildId]!.antispam ??= {
+            enabled: true,
+            actions: [
+                {
+                    type: "mute",
+                    duration: 2 * 60 * 60 * 1000,
+                    notify: true,
+                    reason: "AutoMod: Spam Detected"
+                }
+            ],
+            limit: 5,
+            timeframe: 10000,
+            channels: { list: [], mode: "exclude" }
+        };
+
+        this.configManager.config[guildId]!.antispam.actions = actions.map(action => ({
+            type: action,
+            duration: action === "mute" ? 2 * 60 * 60 * 1000 : undefined,
+            notify: true,
+            reason: "AutoMod: Spam Detected"
+        })) as ModerationActionType[];
+
+        await this.configManager.write({ guild: true, system: false });
+
+        await this.pushState(guildId, id, messageId, {
+            embeds: [
+                this.embed(
+                    ["Spam Protection", "Actions"],
+                    `${emoji(this.application, "check")} Successfully updated the spam protection actions.`,
+                    {
+                        color: Colors.Success
+                    }
+                )
+            ],
+            components: [
+                this.spamProtectionButtons(guildId, true),
+                this.selectMenu(guildId, true),
+                this.buttonRow(guildId, id, messageId, {
+                    back: true,
+                    cancel: true,
+                    finish: true
+                })
+            ]
+        });
+    }
+
+    private async handleSpamProtectionActionsUpdateRequest(
+        guildId: string,
+        id: string,
+        messageId: string,
+        interaction: ButtonInteraction
+    ) {
+        await this.defer(interaction);
+        this.resetState(guildId, id, messageId);
+
+        await this.pushState(guildId, id, messageId, {
+            embeds: [
+                this.embed(["Spam Protection", "Actions"], "Please select the actions.", {
+                    color: Colors.Primary
+                })
+            ],
+            components: [
+                new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+                    new StringSelectMenuBuilder()
+                        .setCustomId(`setup::${guildId}::spam_protection::actions_select`)
+                        .setPlaceholder("Select actions")
+                        .setMinValues(1)
+                        .setMaxValues(4)
+                        .addOptions([
+                            {
+                                label: "Mute for 2 hours",
+                                value: "mute"
+                            },
+                            {
+                                label: "Kick",
+                                value: "kick"
+                            },
+                            {
+                                label: "Ban",
+                                value: "ban"
+                            },
+                            {
+                                label: "Clear Messages",
+                                value: "clear"
+                            }
+                        ])
+                ),
+                this.spamProtectionButtons(guildId, false),
+                this.selectMenu(guildId, true),
+                this.buttonRow(guildId, id, messageId, {
+                    back: true,
+                    cancel: true,
+                    finish: false
+                })
+            ]
+        });
+    }
+
+    private async handleSpamProtectionThresholdsUpdateRequest(
+        guildId: string,
+        id: string,
+        messageId: string,
+        interaction: ButtonInteraction
+    ) {
+        const state = this.setupState.get(`${guildId}::${id}::${messageId}`);
+
+        if (!state) {
+            return;
+        }
+
+        const modal = new ModalBuilder()
+            .setTitle("Spam Protection Thresholds")
+            .setCustomId(`setup::${guildId}::spam_protection_modal`)
+            .setComponents(
+                new ActionRowBuilder<TextInputBuilder>().addComponents(
+                    new TextInputBuilder()
+                        .setLabel("Threshold")
+                        .setCustomId("threshold")
+                        .setPlaceholder("Enter a threshold")
+                        .setRequired(true)
+                        .setStyle(TextInputStyle.Short)
+                ),
+                new ActionRowBuilder<TextInputBuilder>().addComponents(
+                    new TextInputBuilder()
+                        .setLabel("Timeframe")
+                        .setCustomId("timeframe")
+                        .setPlaceholder("Timeframe in milliseconds")
+                        .setRequired(true)
+                        .setStyle(TextInputStyle.Short)
+                )
+            );
+
+        await interaction.showModal(modal).catch(this.application.logger.error);
+    }
+
+    private async handleSpamProtectionThresholdsUpdate(
+        guildId: string,
+        id: string,
+        messageId: string,
+        interaction: ModalSubmitInteraction
+    ) {
+        await this.defer(interaction);
+        this.resetState(guildId, id, messageId);
+
+        const threshold = interaction.fields.getTextInputValue("threshold");
+        const timeframe = interaction.fields.getTextInputValue("timeframe");
+
+        if (
+            !threshold ||
+            !timeframe ||
+            isNaN(+threshold) ||
+            isNaN(+timeframe) ||
+            -(-threshold) <= 0 ||
+            -(-timeframe) <= 0
+        ) {
+            await this.pushState(guildId, id, messageId, {
+                embeds: [
+                    this.embed(
+                        ["Spam Protection", "Thresholds"],
+                        `${emoji(this.application, "error")} Please provide a valid threshold and timeframe.`,
+                        {
+                            color: Colors.Danger
+                        }
+                    )
+                ],
+                components: [
+                    this.spamProtectionButtons(guildId, false),
+                    this.selectMenu(guildId, true),
+                    this.buttonRow(guildId, id, messageId, {
+                        back: true,
+                        cancel: true,
+                        finish: false
+                    })
+                ]
+            });
+
+            return;
+        }
+
+        const state = this.setupState.get(`${guildId}::${id}::${messageId}`);
+
+        if (state) {
+            state.finishable = true;
+        }
+
+        this.configManager.config[guildId]!.antispam ??= {
+            enabled: true,
+            actions: [
+                {
+                    type: "mute",
+                    duration: 2 * 60 * 60 * 1000,
+                    notify: true,
+                    reason: "AutoMod: Spam Detected"
+                }
+            ],
+            limit: +threshold,
+            timeframe: +timeframe,
+            channels: { list: [], mode: "exclude" }
+        };
+
+        this.configManager.config[guildId]!.antispam.limit = +threshold;
+        this.configManager.config[guildId]!.antispam.timeframe = +timeframe;
+        await this.configManager.write({ guild: true, system: false });
+
+        await this.pushState(guildId, id, messageId, {
+            embeds: [
+                this.embed(
+                    ["Spam Protection", "Thresholds"],
+                    `${emoji(this.application, "check")} Successfully updated the spam protection thresholds.`,
+                    {
+                        color: Colors.Success
+                    }
+                )
+            ],
+            components: [
+                this.spamProtectionButtons(guildId, true),
                 this.selectMenu(guildId, true),
                 this.buttonRow(guildId, id, messageId, {
                     back: true,
