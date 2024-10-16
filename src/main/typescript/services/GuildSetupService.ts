@@ -1192,26 +1192,6 @@ class GuildSetupService extends Service implements HasEventListeners {
         await this.defer(interaction);
         this.resetState(guildId, id, messageId);
 
-        if (this.configManager.config[guildId]?.antispam?.enabled) {
-            await this.pushState(guildId, id, messageId, {
-                embeds: [
-                    this.embed(["Spam Protection"], "Spam protection is already enabled!", {
-                        color: Colors.Danger
-                    })
-                ],
-                components: [
-                    this.selectMenu(guildId, true),
-                    this.buttonRow(guildId, id, messageId, {
-                        back: true,
-                        cancel: true,
-                        finish: false
-                    })
-                ]
-            });
-
-            return;
-        }
-
         await this.pushState(guildId, id, messageId, {
             embeds: [
                 this.embed(["Spam Protection"], "Please configure the following options.", {
