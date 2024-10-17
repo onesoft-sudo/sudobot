@@ -123,5 +123,25 @@
     "typescript.inlayHints.variableTypes.enabled": true,
     "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
     "typescript.inlayHints.variableTypes.suppressWhenTypeMatchesName": true,
-    "todo-tree.tree.showBadges": true
+    "todo-tree.tree.showBadges": true,
+    "files.exclude": {
+        "**/tmp/**": true,
+        "**/node_modules/**": true,
+        "**/.git/objects/**": true
+    },
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/**": true,
+        "**/tmp/**": true,
+        "**/dist/**": true
+    },
+    "search.exclude": {
+        "**/node_modules/**": true,
+        "**/dist/**": true,
+        "**/tmp/**": true,
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true
+    },
+    "search.followSymlinks": false
 }
