@@ -8,7 +8,6 @@ import {
     files,
     type Awaitable
 } from "blazebuild";
-import { $ } from "bun";
 import path from "path";
 
 @Task({
@@ -24,10 +23,6 @@ class CompileTask extends AbstractTask {
         if (!buildOutputDirectory) {
             throw new Error("buildOutputDirectory is not defined in project properties");
         }
-
-        await $`mv ${buildOutputDirectory}/out/src ${buildOutputDirectory}/out.tmp`;
-        await $`rm -rf ${buildOutputDirectory}/out`;
-        await $`mv ${buildOutputDirectory}/out.tmp ${buildOutputDirectory}/out`;
     }
 
     @TaskDependencyGenerator

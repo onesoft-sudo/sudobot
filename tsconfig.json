@@ -33,12 +33,7 @@
             "@root/*": ["./*"]
         }
     },
-    "include": [
-        "src/main/typescript/types/global/globals.d.ts",
-        "src/**/*.ts",
-        "drizzle.config.ts",
-        "commitlint.config.ts"
-    ],
+    "include": ["src/main/typescript/types/global/globals.d.ts", "src/**/*.ts"],
     "exclude": [
         "./backup",
         "./tmp",
@@ -58,6 +53,8 @@
         "./build_src/**",
         "./node_modules",
         "./storage",
-        "build.blaze.ts"
+        "build.blaze.ts",
+        "drizzle.config.ts",
+        "commitlint.config.ts"
     ]
 }
