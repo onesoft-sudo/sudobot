@@ -37,7 +37,8 @@ enum SetupOption {
     Prefix = "prefix",
     Logging = "logging",
     AIBasedAutoMod = "ai_automod",
-    SpamProtection = "spam_protection"
+    SpamProtection = "spam_protection",
+    ModerationRules = "moderation_rules"
 }
 
 type SetupState = {
@@ -53,7 +54,8 @@ class GuildSetupService extends Service implements HasEventListeners {
         [SetupOption.Prefix]: "handlePrefixSetup",
         [SetupOption.Logging]: "handleLoggingSetup",
         [SetupOption.AIBasedAutoMod]: "handleAIAutoModSetup",
-        [SetupOption.SpamProtection]: "handleSpamProtectionSetup"
+        [SetupOption.SpamProtection]: "handleSpamProtectionSetup",
+        [SetupOption.ModerationRules]: "handleModerationRulesSetup"
     };
     private readonly inactivityTimeout: number = 120_000;
     private readonly setupState: Map<`${string}::${string}::${string}`, SetupState> = new Map();
@@ -152,6 +154,12 @@ class GuildSetupService extends Service implements HasEventListeners {
                         value: SetupOption.SpamProtection,
                         emoji: "🛡️",
                         description: "Configure AI-powered automatic moderation for this server."
+                    },
+                    {
+                        label: "Moderation Rules",
+                        value: SetupOption.ModerationRules,
+                        emoji: "🛠️",
+                        description: "Configure message moderation rules for this server."
                     }
                 ])
                 .setMinValues(1)
@@ -1182,6 +1190,38 @@ class GuildSetupService extends Service implements HasEventListeners {
                 .setStyle(ButtonStyle.Secondary)
                 .setDisabled(!enable)
         );
+    }
+
+    public async handleModerationRulesSetup(
+        guildId: string,
+        id: string,
+        messageId: string,
+        interaction: StringSelectMenuInteraction
+    ) {
+        await this.defer(interaction);
+        this.resetState(guildId, id, messageId);
+
+        // TODO
+
+        await this.pushState(guildId, id, messageId, {
+            embeds: [
+                this.embed(
+                    ["Message Moderation Rules"],
+                    "Please configure the following options.",
+                    {
+                        color: Colors.Primary
+                    }
+                )
+            ],
+            components: [
+                this.selectMenu(guildId, true),
+                this.buttonRow(guildId, id, messageId, {
+                    back: true,
+                    cancel: true,
+                    finish: false
+                })
+            ]
+        });
     }
 
     public async handleSpamProtectionSetup(
