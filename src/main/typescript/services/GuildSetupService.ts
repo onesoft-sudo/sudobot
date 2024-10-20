@@ -400,6 +400,7 @@ class GuildSetupService extends Service implements HasEventListeners {
             (interaction.isButton() ||
                 interaction.isAnySelectMenu() ||
                 interaction.isModalSubmit()) &&
+            interaction.customId.startsWith("setup::") &&
             !interaction.memberPermissions?.has("ManageGuild")
         ) {
             await interaction.reply({
