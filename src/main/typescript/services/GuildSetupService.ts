@@ -469,6 +469,14 @@ class GuildSetupService extends Service implements HasEventListeners {
                         interaction
                     );
                     break;
+                case "rule_moderation_word_modal":
+                    await this.handleModerationRuleAddWordModal(
+                        guildId,
+                        interaction.user.id,
+                        message.id,
+                        interaction
+                    );
+                    break;
             }
 
             return;
@@ -503,6 +511,17 @@ class GuildSetupService extends Service implements HasEventListeners {
 
             if (id === "spam_protection" && subId === "actions_select") {
                 await this.handleSpamProtectionActionsUpdate(
+                    guildId,
+                    interaction.user.id,
+                    message.id,
+                    interaction
+                );
+
+                return;
+            }
+
+            if (id === "rule_moderation" && subId === "actions_select") {
+                await this.handleModerationRuleActionsUpdate(
                     guildId,
                     interaction.user.id,
                     message.id,
@@ -589,6 +608,31 @@ class GuildSetupService extends Service implements HasEventListeners {
                         default:
                             done = false;
                     }
+                    break;
+
+                case "rule_moderation":
+                    switch (subId) {
+                        case "words":
+                            await this.handleModerationRuleWordAdd(
+                                guildId,
+                                interaction.user.id,
+                                message.id,
+                                interaction
+                            );
+                            break;
+
+                        case "create":
+                            await this.handleModerationRuleCreate(
+                                guildId,
+                                interaction.user.id,
+                                message.id,
+                                interaction
+                            );
+                            break;
+                        default:
+                            done = false;
+                    }
+
                     break;
 
                 default:
@@ -1201,19 +1245,336 @@ class GuildSetupService extends Service implements HasEventListeners {
         await this.defer(interaction);
         this.resetState(guildId, id, messageId);
 
-        // TODO
-
         await this.pushState(guildId, id, messageId, {
             embeds: [
                 this.embed(
                     ["Message Moderation Rules"],
-                    "Please configure the following options.",
+                    "Configure moderation rules for this server.",
                     {
                         color: Colors.Primary
                     }
                 )
             ],
             components: [
+                new ActionRowBuilder<ButtonBuilder>().addComponents(
+                    new ButtonBuilder()
+                        .setCustomId(`setup::${guildId}::rule_moderation::create`)
+                        .setLabel("Create keyword rule")
+                        .setStyle(ButtonStyle.Secondary)
+                ),
+                this.selectMenu(guildId, true),
+                this.buttonRow(guildId, id, messageId, {
+                    back: true,
+                    cancel: true,
+                    finish: false
+                })
+            ]
+        });
+    }
+
+    public async handleModerationRuleAddWordModal(
+        guildId: string,
+        id: string,
+        messageId: string,
+        interaction: ModalSubmitInteraction
+    ) {
+        await this.defer(interaction);
+        this.resetState(guildId, id, messageId);
+
+        const keywords =
+            interaction.fields.getTextInputValue("keywords")?.split(/\s+/)?.filter(Boolean) || [];
+
+        if (keywords.length === 0) {
+            await this.pushState(guildId, id, messageId, {
+                embeds: [
+                    this.embed(
+                        ["Message Moderation Rules", "Create Rule", "Add Keywords"],
+                        `${emoji(this.application, "error")} Please provide at least one keyword.`,
+                        {
+                            color: Colors.Danger
+                        }
+                    )
+                ],
+                components: [
+                    ...this.moderationRuleCreateActionRow(guildId, true),
+                    this.selectMenu(guildId, true),
+                    this.buttonRow(guildId, id, messageId, {
+                        back: true,
+                        cancel: true
+                    })
+                ]
+            });
+
+            return;
+        }
+
+        const state = this.setupState.get(`${guildId}::${id}::${messageId}`);
+
+        if (state) {
+            state.finishable = true;
+
+            this.configManager.config[guildId]!.rule_moderation ??= {
+                enabled: true,
+                rules: [],
+                global_disabled_channels: []
+            };
+
+            const firstWordFilterIndex = this.configManager.config[
+                guildId
+            ]!.rule_moderation.rules.findIndex(rule => rule.type === "word_filter");
+
+            if (firstWordFilterIndex !== -1) {
+                (
+                    this.configManager.config[guildId]!.rule_moderation.rules[
+                        firstWordFilterIndex
+                    ] as { words: string[] }
+                ).words = keywords;
+            } else {
+                this.configManager.config[guildId]!.rule_moderation.rules.push({
+                    type: "word_filter",
+                    words: keywords,
+                    actions: [],
+                    bail: false,
+                    bypasses: [],
+                    enabled: true,
+                    is_bypasser: false,
+                    name: "Word Filter",
+                    mode: "normal",
+                    normalize: true,
+                    tokens: [],
+                    exceptions: {},
+                    for: {}
+                });
+            }
+
+            await this.configManager.write({ guild: true, system: false });
+            await this.configManager.load();
+
+            await this.pushState(guildId, id, messageId, {
+                embeds: [
+                    this.embed(
+                        ["Message Moderation Rules", "Create Rule", "Add Keywords"],
+                        `${emoji(this.application, "check")} Successfully added keywords for this rule.`,
+                        {
+                            color: Colors.Success
+                        }
+                    )
+                ],
+                components: [
+                    ...this.moderationRuleCreateActionRow(guildId),
+                    this.selectMenu(guildId, true),
+                    this.buttonRow(guildId, id, messageId, {
+                        back: true,
+                        cancel: true,
+                        finish: true
+                    })
+                ]
+            });
+        }
+    }
+
+    public async handleModerationRuleActionsUpdate(
+        guildId: string,
+        id: string,
+        messageId: string,
+        interaction: StringSelectMenuInteraction
+    ) {
+        await this.defer(interaction);
+        this.resetState(guildId, id, messageId);
+
+        const actions = interaction.values as Array<
+            "delete_message" | "mute" | "kick" | "ban" | "clear"
+        >;
+
+        if (!actions.length) {
+            await this.pushState(guildId, id, messageId, {
+                embeds: [
+                    this.embed(
+                        ["Message Moderation Rules", "Create Rule", "Actions"],
+                        `${emoji(this.application, "error")} Please select at least one action.`,
+                        {
+                            color: Colors.Danger
+                        }
+                    )
+                ],
+                components: [
+                    ...this.moderationRuleCreateActionRow(guildId, true),
+                    this.selectMenu(guildId, true),
+                    this.buttonRow(guildId, id, messageId, {
+                        back: true,
+                        cancel: true
+                    })
+                ]
+            });
+
+            return;
+        }
+
+        const state = this.setupState.get(`${guildId}::${id}::${messageId}`);
+
+        if (state) {
+            state.finishable = true;
+
+            this.configManager.config[guildId]!.rule_moderation ??= {
+                enabled: true,
+                rules: [],
+                global_disabled_channels: []
+            };
+
+            const finalActions = actions.map(action => ({
+                type: action,
+                duration: action === "mute" ? 2 * 60 * 60 * 1000 : undefined,
+                notify: true,
+                reason: "AutoMod: Posted a blocked word"
+            })) as ModerationActionType[];
+
+            const firstWordFilterIndex = this.configManager.config[
+                guildId
+            ]!.rule_moderation.rules.findIndex(rule => rule.type === "word_filter");
+
+            if (firstWordFilterIndex !== -1) {
+                this.configManager.config[guildId]!.rule_moderation.rules[
+                    firstWordFilterIndex
+                ].actions = finalActions;
+            } else {
+                this.configManager.config[guildId]!.rule_moderation.rules.push({
+                    type: "word_filter",
+                    words: [],
+                    actions: finalActions,
+                    bail: false,
+                    bypasses: [],
+                    enabled: true,
+                    is_bypasser: false,
+                    name: "Word Filter",
+                    mode: "normal",
+                    normalize: true,
+                    tokens: [],
+                    exceptions: {},
+                    for: {}
+                });
+            }
+
+            await this.configManager.write({ guild: true, system: false });
+            await this.configManager.load();
+
+            await this.pushState(guildId, id, messageId, {
+                embeds: [
+                    this.embed(
+                        ["Message Moderation Rules", "Create Rule", "Actions"],
+                        `${emoji(this.application, "check")} Successfully added actions for this rule.`,
+                        {
+                            color: Colors.Success
+                        }
+                    )
+                ],
+                components: [
+                    ...this.moderationRuleCreateActionRow(guildId),
+                    this.selectMenu(guildId, true),
+                    this.buttonRow(guildId, id, messageId, {
+                        back: true,
+                        cancel: true,
+                        finish: true
+                    })
+                ]
+            });
+        }
+    }
+
+    public async handleModerationRuleWordAdd(
+        guildId: string,
+        id: string,
+        messageId: string,
+        interaction: ButtonInteraction
+    ) {
+        const state = this.setupState.get(`${guildId}::${id}::${messageId}`);
+
+        if (!state) {
+            return;
+        }
+
+        this.ping(guildId, id, messageId);
+
+        const modal = new ModalBuilder()
+            .setTitle("Add Keywords")
+            .setCustomId(`setup::${guildId}::rule_moderation_word_modal`)
+            .setComponents(
+                new ActionRowBuilder<TextInputBuilder>().addComponents(
+                    new TextInputBuilder()
+                        .setLabel("Keywords")
+                        .setCustomId("keywords")
+                        .setPlaceholder("Enter keywords to add (separate with spaces)")
+                        .setMinLength(1)
+                        .setRequired(true)
+                        .setStyle(TextInputStyle.Paragraph)
+                )
+            );
+
+        await interaction.showModal(modal).catch(this.application.logger.error);
+    }
+
+    private moderationRuleCreateActionRow(guildId: string, disabled = false) {
+        return [
+            new ActionRowBuilder<ButtonBuilder>().addComponents(
+                new ButtonBuilder()
+                    .setCustomId(`setup::${guildId}::rule_moderation::words`)
+                    .setLabel("Add keywords")
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(disabled)
+            ),
+            new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+                new StringSelectMenuBuilder()
+                    .setCustomId(`setup::${guildId}::rule_moderation::actions_select`)
+                    .setPlaceholder("Select actions")
+                    .setMinValues(1)
+                    .setMaxValues(4)
+                    .addOptions([
+                        {
+                            label: "Delete Flagged Message",
+                            value: "delete_message"
+                        },
+                        {
+                            label: "Mute for 2 hours",
+                            value: "mute"
+                        },
+                        {
+                            label: "Kick",
+                            value: "kick"
+                        },
+                        {
+                            label: "Ban",
+                            value: "ban"
+                        },
+                        {
+                            label: "Clear Messages",
+                            value: "clear"
+                        }
+                    ])
+                    .setDisabled(disabled)
+            )
+        ];
+    }
+
+    public async handleModerationRuleCreate(
+        guildId: string,
+        id: string,
+        messageId: string,
+        interaction: ButtonInteraction
+    ) {
+        await this.defer(interaction);
+        this.resetState(guildId, id, messageId);
+
+        await this.pushState(guildId, id, messageId, {
+            embeds: [
+                this.embed(
+                    ["Message Moderation Rules", "Create Rule"],
+                    "Configure moderation rules for this server.",
+                    {
+                        color: Colors.Primary
+                    }
+                )
+            ],
+            components: [
+                ...this.moderationRuleCreateActionRow(guildId),
                 this.selectMenu(guildId, true),
                 this.buttonRow(guildId, id, messageId, {
                     back: true,
@@ -1316,6 +1677,7 @@ class GuildSetupService extends Service implements HasEventListeners {
         })) as ModerationActionType[];
 
         await this.configManager.write({ guild: true, system: false });
+        await this.configManager.load();
 
         await this.pushState(guildId, id, messageId, {
             embeds: [
