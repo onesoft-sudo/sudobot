@@ -21,6 +21,17 @@ class CompileTypeScriptTask extends AbstractTask {
     protected override async run(): Promise<void> {
         IO.newline();
         await $`bun x tsc`;
+
+        const buildOutputDirectory =
+            this.blaze.projectManager.properties.structure?.buildOutputDirectory;
+
+        if (!buildOutputDirectory) {
+            throw new Error("buildOutputDirectory is not defined in project properties");
+        }
+
+        await $`mv ${buildOutputDirectory}/out/src ${buildOutputDirectory}/out.tmp`;
+        await $`rm -rf ${buildOutputDirectory}/out`;
+        await $`mv ${buildOutputDirectory}/out.tmp ${buildOutputDirectory}/out`;
     }
 
     @TaskInputGenerator
