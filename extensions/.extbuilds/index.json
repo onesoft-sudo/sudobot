@@ -16,7 +16,7 @@
         },
         "license": "AGPL-3.0-or-later",
         "licenseURL": "https://spdx.org/licenses/AGPL-3.0-or-later.html",
-        "lastUpdated": "2024-10-24T01:05:51.402Z",
+        "lastUpdated": "2024-10-25T01:06:10.907Z",
         "readmeFileName": "README.md",
         "readmeFileURL": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/neko/README.md",
         "tarballs": [
@@ -26,7 +26,7 @@
                 "version": "1.0.0-55",
                 "checksum": "413de1e458c7b89a9ae0be6557f1ee21e82fd436200fcaf894a5c3c2f77c06ad77f649f5f535d092f9721e4e4f0730c72d35c28e04df7cc3d0a65be7158ba532",
                 "size": 1276,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-54.tar.gz",
@@ -34,7 +34,7 @@
                 "version": "1.0.0-54",
                 "checksum": "52dc5f138ba8404253bb4f81de1e39f54c36175a6f287ef16596b1aaf6fd1f4833f27cee3f442b8d5a0fab42bfedb8337f36587edf802912dd7d5a9c72ace552",
                 "size": 1271,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-53.tar.gz",
@@ -42,7 +42,7 @@
                 "version": "1.0.0-53",
                 "checksum": "adbb022e52fa19655bbd18b4e3bbe2ec265e7ad3324888dda32dedad568341cff081e900f92f87c699073085b6b4633a035c4158bb87d3fb0dbfba0045a45212",
                 "size": 1287,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-52.tar.gz",
@@ -50,7 +50,7 @@
                 "version": "1.0.0-52",
                 "checksum": "dda37dbd89e91f3bfa1499144547c32d9fb080bc6f9330890481c9e2a2f69b7cd5cf4a9dcb2adfc1dee6ef25f008ff7e5b2feb031b625000587b28d9164d7a11",
                 "size": 1471,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-51.tar.gz",
@@ -58,7 +58,7 @@
                 "version": "1.0.0-51",
                 "checksum": "335b49ebda018af883fcaed4ee53c3871f6b324d9146cbce0e86df41a04d020d68dbfc4d12b130f17a08341f65018102d2ebcdeba3c23e643fdbfb31c6883b25",
                 "size": 651,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-50.tar.gz",
@@ -66,7 +66,7 @@
                 "version": "1.0.0-50",
                 "checksum": "7d441add5e58c05058e29bc221a0accdefe0adcdda0da881683f51a0a835253d4981d2f10216e0e9432f5ab032dd76f61a2d52f26cb5642eb9d181cca62c940f",
                 "size": 1469,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-49.tar.gz",
@@ -74,7 +74,7 @@
                 "version": "1.0.0-49",
                 "checksum": "531a614b2df6508086929c987d0b6331d2eabe86584f45bf7ab8c9261b66bf85bda1f34b131bf0f1f0b335199d6154433b5679d9119e97d1180d3e6dc10ea2fd",
                 "size": 1404,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-48.tar.gz",
@@ -82,7 +82,7 @@
                 "version": "1.0.0-48",
                 "checksum": "ad944f96176dd2c93d9e689f9e24e18a980d4e5a0cb912ca6949785aab91fe592318fdf315c38d21b238547f9c7531d1adce08e565c2adde974b44c50fd1cbdd",
                 "size": 1403,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-47.tar.gz",
@@ -90,7 +90,7 @@
                 "version": "1.0.0-47",
                 "checksum": "9befe8fd42ef3921a3b6cda788e15d2d260fe716d30324801cf7c5f4cc2c674678246791c79cd76f6c74cd8a44d54185028a75657cd58981f8bee2e0bb95a78f",
                 "size": 1404,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-46.tar.gz",
@@ -98,7 +98,7 @@
                 "version": "1.0.0-46",
                 "checksum": "f9e15b2e58338a684586f636e02317a898820c29349edb09990103b9cb58b18ed0d76f07c3209a5ce6f50467aa9565525b4d0b4a9605c10aea8b66afda3017a6",
                 "size": 1406,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-45.tar.gz",
@@ -106,7 +106,7 @@
                 "version": "1.0.0-45",
                 "checksum": "da4d2d48b5011e696ca34051f41d832b1c64044a2e234006c344067203ce0186b22679f06e35701f41a9eaf8f9780b82e02397d079f83cfc73d726a3c21317e0",
                 "size": 1407,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-44.tar.gz",
@@ -114,7 +114,7 @@
                 "version": "1.0.0-44",
                 "checksum": "98b571887df1001eb1b40c0ef8c4ae1c82ce5dbbfe4af221d7a9debc9062187f5074f38e27d77ce9e128dc7e294b8dd11f07d19669ebf7e4c1dd12309eaa771f",
                 "size": 1406,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-43.tar.gz",
@@ -122,7 +122,7 @@
                 "version": "1.0.0-43",
                 "checksum": "6f48437d6601469744878a535486c730b5b81e985287ee9e73a82d5e399e0e2404320cb964124c6d9c13807731cbc2799f378aefc0d5ac650a8c6149e68cd003",
                 "size": 1404,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-42.tar.gz",
@@ -130,7 +130,7 @@
                 "version": "1.0.0-42",
                 "checksum": "717f3ce3b64cb30fc28005ed0d59caf903c9134a903ec24a33154be151ee80ead55550661e23a08ba2cf4f90773c11d05aae78c2bbda6751a15ebd89bfad2439",
                 "size": 1405,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-41.tar.gz",
@@ -138,7 +138,7 @@
                 "version": "1.0.0-41",
                 "checksum": "7bc7de9409a348c9a7b9f84feebd5e960b8ef85dd8c672bcfd72059c0da2e70b4fb3aa8da311cdc07edcb4d3a585fe49c7612138f12b2f403480b9b387225ac1",
                 "size": 1406,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-40.tar.gz",
@@ -146,7 +146,7 @@
                 "version": "1.0.0-40",
                 "checksum": "4bdddd3358886bbe40208fcaef8f2c2a04f3f27e9be1c5ed743b0d854792a8438842cb6278258563338e854f28326ebdf276d07abb3b63f23e9da28ea9d553aa",
                 "size": 1404,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-39.tar.gz",
@@ -154,7 +154,7 @@
                 "version": "1.0.0-39",
                 "checksum": "f98d525dc149630fcba7bfa37e7247a95d35e124567d472a57ae05a5ff9f265e3df85d0c774c3f36cb6935c75b7ef9ecf408e5fcc202a08b024e11d8bd2f48c7",
                 "size": 1406,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-38.tar.gz",
@@ -162,7 +162,7 @@
                 "version": "1.0.0-38",
                 "checksum": "a42724f262e24c65fd508fc773c01df3d62222e176cd7e32d1797c0c7731c858b1b45ce88ed7aa501565200cb5a867fb1960bdc4dfe4f1e19e9a4a9cc35af0b2",
                 "size": 1404,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-37.tar.gz",
@@ -170,7 +170,7 @@
                 "version": "1.0.0-37",
                 "checksum": "1b1d408e56dabba6edd2b72c955ed67db55d66608830de856cf46959c2502ee0db7e6b5026c78ed92d312520dc5cd4cefbe983a183dee92aaebb393800b5a46f",
                 "size": 1407,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-36.tar.gz",
@@ -178,7 +178,7 @@
                 "version": "1.0.0-36",
                 "checksum": "0766e971fb3c7064c90f32eafcee8203204993a5cc2b723e4282da3d9c718585e3d5b28ecfef03991b837cae2dbdbbaf5d9459058a71ed4f9ae0f92eca299443",
                 "size": 1404,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-35.tar.gz",
@@ -186,7 +186,7 @@
                 "version": "1.0.0-35",
                 "checksum": "cbbf5941a71dca9c0fb190770f29a0779fe6b3eaa7a1a7c49671f3e03d2a300af8fcc747e3271c2aef7750a152d45ca0a3faf63ae88c8416ae35a7874445455d",
                 "size": 1411,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-34.tar.gz",
@@ -194,7 +194,7 @@
                 "version": "1.0.0-34",
                 "checksum": "ceb43e1156e5d2151252c46ad4b7563eaf7051974503a2181bfc3e1194f3a40ecceae25a8cb8037537fa8e30269228f2a388bc39280e529c945c04fb2e32e95c",
                 "size": 1406,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-33.tar.gz",
@@ -202,7 +202,7 @@
                 "version": "1.0.0-33",
                 "checksum": "93863269efc53ed8ce93a2a9063f7a8925474322a51b20fb32a3b38529633f0ddb47ccd1a2f182b913bb6295dc83d2a3b361aa59df54ee1cc3e117bd294b9e93",
                 "size": 1410,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-32.tar.gz",
@@ -210,7 +210,7 @@
                 "version": "1.0.0-32",
                 "checksum": "8a70322884e0255991502c482e4bf22caa0e6ddd0f331c3569ac4336343c522f437921052198d44477f77748028d8a2c5c3a4bb2e066a04df81822aec118f268",
                 "size": 1403,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-31.tar.gz",
@@ -218,7 +218,7 @@
                 "version": "1.0.0-31",
                 "checksum": "b2326c5e6d5222605ce8450cd0a68db3d51002212f9c75a4793efab8afcae96d3abcfc80f22a62a56057daa535587113be0fd508a70ebf6b561af90148b398b4",
                 "size": 1410,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-30.tar.gz",
@@ -226,7 +226,7 @@
                 "version": "1.0.0-30",
                 "checksum": "6cf983a286178dd213578260806ceb7ec668bace1f494b5bf8a5f007da6fbb5be15360c2e0e02274b5ec1db5e137b0c845fa3afb76502f29e059a6be9be549cd",
                 "size": 1404,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-29.tar.gz",
@@ -234,7 +234,7 @@
                 "version": "1.0.0-29",
                 "checksum": "bb38dc8e93cec2a24478a97853611d246d4fd24fc3068e4f01abf917b7cd41f7ebc2286a67468d8e0a94773b5741d02210ddc41b4b74e668a9f17cb0554df963",
                 "size": 1412,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-28.tar.gz",
@@ -242,7 +242,7 @@
                 "version": "1.0.0-28",
                 "checksum": "d40e847ab0e11b5d9213e32ff9ac41b1067858b3c7c18b22c331230897f0cc20c4656d61d1a12745fbb01474f3c57402ace4b87136a403b5e3b994fff66fd2ed",
                 "size": 1403,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-27.tar.gz",
@@ -250,7 +250,7 @@
                 "version": "1.0.0-27",
                 "checksum": "048ed20b92d2179dae148e4a4e0dbf93230da0bb0ea112e490fc4f69dbdcb5e98eadfa0924a2f3b6f0909cbf989bc71098b6ca9cb08a94affa2fae36f1a4ae8b",
                 "size": 1411,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-26.tar.gz",
@@ -258,7 +258,7 @@
                 "version": "1.0.0-26",
                 "checksum": "203f98019b1c82ae33783cb2dd512bdaeeb39a7f58b8e3d3e49d97768d60b00531bbb03999d1e38fee6f59c25de490d223e94b78a9801d5323cf4d1b32d35356",
                 "size": 1406,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-25.tar.gz",
@@ -266,7 +266,7 @@
                 "version": "1.0.0-25",
                 "checksum": "6d17ad18f306107579c1259b0097ec14813b8bfa92f95e75ea1b1f3e9f217d9a16a8837a701d31d72db394efcb604cae64bcee4a73d859384d2f25d003a0c014",
                 "size": 1412,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-24.tar.gz",
@@ -274,7 +274,7 @@
                 "version": "1.0.0-24",
                 "checksum": "dc46ee3d3622a85e62ccb9e5e49c945d024f8032aeab08f53bfa847b675bb2bad56248425fa5b0e2521b306883d4b4fe2910e1a35cac87761835ec318b03f6fc",
                 "size": 1405,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-23.tar.gz",
@@ -282,7 +282,7 @@
                 "version": "1.0.0-23",
                 "checksum": "2b2bc83f710966a9ec0f47ee055327cd0594720e92026a60eb418acf79bdb3fc9a2ebc9450210e1954ad1ec848507250d568180abd3b11899ddfcbe19e791ed4",
                 "size": 1411,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-22.tar.gz",
@@ -290,7 +290,7 @@
                 "version": "1.0.0-22",
                 "checksum": "ea66b61650d5f4756b04040d28b82c73d3fcacc6107205e197b8104da578d482a1f8437204e3463c5568a51528db3d70de426c2d5d5735d4b403fd9fbbbeee92",
                 "size": 1385,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-21.tar.gz",
@@ -298,7 +298,7 @@
                 "version": "1.0.0-21",
                 "checksum": "cccc00894faaa52a81c62ddf1694cfb59c5a701c40923785ca242680668c0a90766470a58d0492cf62c036174f2f4e3f482ea9dcf0b7949d0bde4a0ed608ab19",
                 "size": 1379,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-20.tar.gz",
@@ -306,7 +306,7 @@
                 "version": "1.0.0-20",
                 "checksum": "e2f8c66e71e8683c61effd47688198dab46bf634fc2929e87a4629f83498c526a52a2591a1d9ad930f87e29e0554b85de6bee8ed0c23c3b77bfbd5077a0b28b1",
                 "size": 1387,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-19.tar.gz",
@@ -314,7 +314,7 @@
                 "version": "1.0.0-19",
                 "checksum": "b44dc15448803b053adc43ef220b6516293523f2b42337c586c158a3d6cc05895b6c4e465b2ed0a6d9c5f80873511ab6162a38caf2a1e3155ee65980acbefde3",
                 "size": 1379,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-18.tar.gz",
@@ -322,7 +322,7 @@
                 "version": "1.0.0-18",
                 "checksum": "63a5393681a8f5327839943bebbf3c0840484d5c0b01f08276033e8210e8871ef78c4908c12cc26ecc5c9dee2b026500d2e34656584ad298600bf4f9a3df0024",
                 "size": 1388,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-17.tar.gz",
@@ -330,7 +330,7 @@
                 "version": "1.0.0-17",
                 "checksum": "c5dcf4c954e37e5a7b2809400bd9eafdc4517c5118289c7906e0d6b59160bebd5093ef77abbe95395a1b696b3585d209c7e660517b96f36e034e72067cb1d58c",
                 "size": 1377,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-16.tar.gz",
@@ -338,7 +338,7 @@
                 "version": "1.0.0-16",
                 "checksum": "569c791a769e950ae13c9c6ac07e7bad6fa4834e2e6d80c025e8a6868610547558b5f76172d71d07b17a65cc0af145199574ad2e47704404f08c9b3c660e9aeb",
                 "size": 1385,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-15.tar.gz",
@@ -346,7 +346,7 @@
                 "version": "1.0.0-15",
                 "checksum": "c72ea5f5d6911541972cd0c461cdd64a9f1ee22e85bcd307f3169ba24ff7fca364a1cbf90caf68a12459b85556ddfb8bfa9ee0728efdbb6bedd18c3c335a5db4",
                 "size": 1379,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-14.tar.gz",
@@ -354,7 +354,7 @@
                 "version": "1.0.0-14",
                 "checksum": "164ab6b3a81209a4e6d38746f1b141fb0b4feb9f77905781a97416058fdc4e9135af8a60aa6c53fbb30fb0e7c6061c4152fc1664c912adadcdd230d2ba17cc2f",
                 "size": 1389,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-13.tar.gz",
@@ -362,7 +362,7 @@
                 "version": "1.0.0-13",
                 "checksum": "bb4945e18f36aab1dc4aaab4639834d573728e1feb7761d8c25b299062924c8f6da66d86d564ed9d47c736189aa30d05e249dcd4426f99d92f646dc4c0a98a28",
                 "size": 1376,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-12.tar.gz",
@@ -370,7 +370,7 @@
                 "version": "1.0.0-12",
                 "checksum": "9441ffc84ee0e3cf4528dded4cf6f93ed70d4c34d46461f6c2acdac3902158df9a51286d277f18df6edcc288ee24fc6b7e510ee2a09ab94e9aedeb8fa815e09f",
                 "size": 1387,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-11.tar.gz",
@@ -378,7 +378,7 @@
                 "version": "1.0.0-11",
                 "checksum": "e074e4a43b7afcab54a2eb454e257f05093ccc7c80bd9610962b2bd7a4560bbb371f8761db03fa3605c5b2f6b3a6efa9f0b97e5e68c2f6c9c6b071f62dd22316",
                 "size": 1377,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-10.tar.gz",
@@ -386,7 +386,7 @@
                 "version": "1.0.0-10",
                 "checksum": "9efb5adef9c283f2c6a1fa8dc062df7ca35684993edce3ba9d53d9a5937024d47372b0c140b79727d8f71677b474ece8bef027b9e63041b32e9875a95650eff2",
                 "size": 1386,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-9.tar.gz",
@@ -394,7 +394,7 @@
                 "version": "1.0.0-9",
                 "checksum": "d9059a241376ea1bbb718e8785cd3db1d3d87d07787cf555168b3da7387d2fc3302139dfb32db28454084f731f47502e8ef31614043462db2161b72532c71157",
                 "size": 1378,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-8.tar.gz",
@@ -402,7 +402,7 @@
                 "version": "1.0.0-8",
                 "checksum": "4fc544252e082caca3e94920d659116df61cfe73ce9e79f69b3cb936161772d4059aff6310cbde6060137a55095b274f9131c802dae4a060c6412d07018926d4",
                 "size": 1386,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-7.tar.gz",
@@ -410,7 +410,7 @@
                 "version": "1.0.0-7",
                 "checksum": "2d2c33293d74e8857e28e92de96780480cfaac9ace7ea7744f1e9739370495934b45cbb9888db381814b35fb054506a7a973141cd16d86595cbfd3a1ed8516ae",
                 "size": 1379,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-6.tar.gz",
@@ -418,7 +418,7 @@
                 "version": "1.0.0-6",
                 "checksum": "db8c10ecf735916141ec0b7986773318a77514cbcce37137d3311b8f282a2500a4657c78b805991cb4f5b0e372629ba73257a09cdbf9fe9e7b7769af3cc6607b",
                 "size": 1387,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-5.tar.gz",
@@ -426,7 +426,7 @@
                 "version": "1.0.0-5",
                 "checksum": "bf4c9a405048dcfa0a79f7a0c460407e613e333b2726fb1794f26b2ef6ddfab014fe73192fd15aa6b89e5d83315cbcf11bc444d00f292489b6caa73666de96ff",
                 "size": 1379,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-4.tar.gz",
@@ -434,7 +434,7 @@
                 "version": "1.0.0-4",
                 "checksum": "0a621fb60adab6bf34a7f0480b3dbbf51055df487fe0d63647bf6f0bfb45d158e6bdc4601448b95036ad7625f5b26949e1a73d81fb135c813da453f911f08180",
                 "size": 1385,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-3.tar.gz",
@@ -442,7 +442,7 @@
                 "version": "1.0.0-3",
                 "checksum": "bf2a586bc68ece5e17dd3233f1f3a4d55bfe177cb6db905f6ca361f5726cc70168b667a52c4597dae0c5e1e7270c3f386ede57378ae4bdbcb99f9b8c9b00fba5",
                 "size": 1378,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-2.tar.gz",
@@ -450,7 +450,7 @@
                 "version": "1.0.0-2",
                 "checksum": "e021d99669b163b006e1fda4d18a751853204985e0f0e69321cebc0e2e8e6affd833cfa5201889f403f1940eeb4a6dd091fcb3b55e1191dce11fdac27f9d3963",
                 "size": 1387,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0-1.tar.gz",
@@ -458,7 +458,7 @@
                 "version": "1.0.0-1",
                 "checksum": "eb8e2ec09ab2746bb4681cc2b421388e88365bdf53b349f768a68185eb52901b75b58c4e49ec75c4dcddf09490f05d26fc081bc26de98df6830dc483e3edba7c",
                 "size": 1405,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/neko/neko-1.0.0.tar.gz",
@@ -466,7 +466,7 @@
                 "version": "1.0.0",
                 "checksum": "92b1ed74950a16d24d57b010c6b4574f4a742f501fed0b01393526a65b414840978045d6a3fdaee153c3b4759d173919640013e2205a2c2a40c61604b4cd70a3",
                 "size": 1406,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             }
         ]
     },
@@ -487,7 +487,7 @@
         },
         "license": "AGPL-3.0-or-later",
         "licenseURL": "https://spdx.org/licenses/AGPL-3.0-or-later.html",
-        "lastUpdated": "2024-10-24T01:05:51.411Z",
+        "lastUpdated": "2024-10-25T01:06:10.915Z",
         "readmeFileName": "README.md",
         "readmeFileURL": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/waifu.pics/README.md",
         "tarballs": [
@@ -497,7 +497,7 @@
                 "version": "1.0.0-2",
                 "checksum": "c2b1e88c6c6bc46cddbfc8517e471ca7823a04500dc56be015213cf428d554dc2baf4a29388eb32d83d77ae1fc0c3ceb042b9cce450c495be5d1065b6a710155",
                 "size": 2038,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/waifu.pics/waifu.pics-1.0.0-1.tar.gz",
@@ -505,7 +505,7 @@
                 "version": "1.0.0-1",
                 "checksum": "3863a51c34dfabd7ff7f9ff6708783b4262dcb80d81f6fd4730ca9160d2904cf182ec892b802bab6585cb84a9b70cc29099405ed0b667c35d0cb047df32148c5",
                 "size": 2038,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             },
             {
                 "url": "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/waifu.pics/waifu.pics-1.0.0.tar.gz",
@@ -513,7 +513,7 @@
                 "version": "1.0.0",
                 "checksum": "55efd9e6137a08ec6117b50c9f91fec489a834c491206b3361ae127569273d3b7f2180228b9df1da9d3330b42c5dc1e75f5c5c47cb45e084b9368bc7ad8004e6",
                 "size": 2050,
-                "createdAt": "2024-10-24T01:04:21.392Z"
+                "createdAt": "2024-10-25T01:05:00.364Z"
             }
         ]
     }
