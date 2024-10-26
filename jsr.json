@@ -3,6 +3,6 @@
   "version": "10.31.0",
   "exports": "./src/main/typescript/exports.ts",
   "publish": {
-    "exclude": ["tests"]
+    "exclude": ["tests", "docs", "blazebuild", "lib"]
   }
 }
