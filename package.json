@@ -1,5 +1,5 @@
 {
-    "name": "sudobot",
+    "name": "@osn/sudobot",
     "version": "10.31.0",
     "description": "A Discord bot for moderation purposes.",
     "author": {
