@@ -40,7 +40,7 @@
     },
     "scripts": {
         "start": "node build/out/main/typescript/main.js",
-        "start:bun": "bun --tsconfig-override=tsconfig.bun.json src/bun.ts",
+        "start:bun": "bun --tsconfig-override=tsconfig.bun.json src/main/typescript/bun.ts",
         "prepare": "husky && node -e \"const { symlinkSync, rmSync, existsSync } = require('fs'); const path = require('path'); const link = path.join(process.cwd(), 'node_modules/blazebuild'); if (existsSync(link)) { rmSync(link, { recursive: true }); } symlinkSync(path.join(process.cwd(), 'blazebuild'), link, 'dir');\"",
         "dev": "bun run src/main/typescript/bun.ts",
         "start:blazew": "node build/out/main/typescript/main.js",
@@ -52,7 +52,8 @@
         "gen:schema": "node scripts/generate-config-schema.js",
         "clean": "rm -frv build tsconfig.tsbuildinfo; make clean",
         "test": "vitest",
-        "shell": "bun run src/main/typescript/shell.ts"
+        "shell": "bun run src/main/typescript/shell.ts",
+        "start:docker": "if [ ! -f /app/.migration_status ] || [ -z \"$(cat /app/.migration_status)\" ]; then node scripts/migrate.js; fi; npm start"
     },
     "_moduleAliases": {
         "@sudobot": "build/out",

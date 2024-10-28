@@ -1,31 +1,32 @@
 services:
-    postgres:
-        image: "postgres:15-alpine"
-        restart: always
-        environment:
-            POSTGRES_USER: postgres
-            POSTGRES_PASSWORD: root
-            POSTGRES_DB: sudobot
-        volumes:
-            - pgdata:/var/lib/postgresql/data
+  postgres:
+    image: "postgres:15-alpine"
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: sudobot
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
-    bot:
-        build: .
-        ports:
-            - 4000:4000
-        volumes:
-            - ./config:/app/config
-            - ./logs:/app/logs
-            - ./storage:/app/storage
-            - ./tmp:/app/tmp
-        depends_on:
-            - postgres
-    
-    adminer:
-        image: adminer
-        restart: always
-        ports:
-            - 8080:8080
-    
+  bot:
+    build: .
+    ports:
+      - 4000:4000
+    volumes:
+      - ./config:/app/config
+      - ./logs:/app/logs
+      - ./storage:/app/storage
+      - ./tmp:/app/tmp
+      - ./.migration_status:/app/.migration_status
+    depends_on:
+      - postgres
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
 volumes:
-    pgdata:
+  pgdata:

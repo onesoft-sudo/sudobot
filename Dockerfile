@@ -16,6 +16,7 @@ COPY build_src ./build_src
 COPY eslint.config.mjs ./eslint.config.mjs
 COPY vitest.config.mjs ./vitest.config.mjs
 COPY tests ./tests
+COPY scripts ./scripts
 
 RUN ./blazew build
 
@@ -26,9 +27,11 @@ WORKDIR /app
 COPY --from=0 /app/node_modules ./node_modules
 COPY --from=0 /app/build ./build
 COPY --from=0 /app/package.json ./package.json
+COPY --from=0 /app/scripts ./scripts
+COPY drizzle ./drizzle
 COPY ecosystem.config.js ./ecosystem.config.js
 COPY .env.docke[r] ./.env
 COPY config ./config
 
 EXPOSE 4000
-CMD ["npm", "run", "start:prod", "--", "--no-daemon"]
+CMD ["npm", "run", "start:docker"]

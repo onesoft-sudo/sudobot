@@ -385,8 +385,7 @@
                                                         }
                                                     },
                                                     "required": [
-                                                        "type",
-                                                        "duration"
+                                                        "type"
                                                     ],
                                                     "additionalProperties": false
                                                 },
@@ -698,12 +697,11 @@
                                                     "12": [
                                                         {
                                                             "type": "mute",
-                                                            "duration": 7200000
-                                                        }
-                                                    ],
-                                                    "*": [
+                                                            "duration": 7200000,
+                                                            "reason": "The system has detected that your messages might violate the rules."
+                                                        },
                                                         {
-                                                            "type": "delete_message"
+                                                            "type": "clear"
                                                         }
                                                     ]
                                                 }
