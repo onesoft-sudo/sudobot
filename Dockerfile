@@ -31,7 +31,6 @@ COPY --from=0 /app/scripts ./scripts
 COPY drizzle ./drizzle
 COPY ecosystem.config.js ./ecosystem.config.js
 COPY .env.docke[r] ./.env
-COPY config ./config
 
 EXPOSE 4000
 CMD ["npm", "run", "start:docker"]
