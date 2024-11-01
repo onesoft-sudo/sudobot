@@ -84,6 +84,7 @@ You can also download release tarballs at [OSN's download server](https://downlo
 Thanks to all the active and indirect contributors!
 
 -   [Ar Rakin](https://github.com/virtual-designer) (Maintainer)
+-   [cookieauth](https://github.com/cookieauth)
 -   [dicoderin](https://github.com/dicoderin)
 -   [GuynnR](https://github.com/GuynnR)
 -   Hana (A Discord User)
