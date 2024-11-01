@@ -27,8 +27,10 @@ WORKDIR /app
 COPY --from=0 /app/node_modules ./node_modules
 COPY --from=0 /app/build ./build
 COPY --from=0 /app/package.json ./package.json
+COPY --from=0 /app/tsconfig.json ./tsconfig.json
 COPY --from=0 /app/scripts ./scripts
 COPY drizzle ./drizzle
+COPY docker ./docker
 COPY ecosystem.config.js ./ecosystem.config.js
 
 EXPOSE 4000

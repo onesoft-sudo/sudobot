@@ -48,3 +48,5 @@ fly.toml
 
 # API docs
 /api_docs
+
+/.migration_status

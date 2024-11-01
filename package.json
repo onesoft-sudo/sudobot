@@ -53,7 +53,7 @@
         "clean": "rm -frv build tsconfig.tsbuildinfo; make clean",
         "test": "vitest",
         "shell": "bun run src/main/typescript/shell.ts",
-        "start:docker": "if [ ! -f /app/.migration_status ] || [ -z \"$(cat /app/.migration_status)\" ]; then node scripts/migrate.js; fi; npm start"
+        "start:docker": "sh ./docker/test-container.sh; if [ $? -ne 0 ]; then exit 1; fi; if [ ! -f /app/.migration_status ] || [ -z \"$(cat /app/.migration_status)\" ]; then node scripts/migrate.js; fi; npm start"
     },
     "_moduleAliases": {
         "@sudobot": "build/out",
