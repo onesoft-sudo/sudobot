@@ -1,7 +1,62 @@
 # Changelog
 
+### 01-11-2024 - [[Ryanmello07](mailto:67509637+Ryanmello07@users.noreply.github.com)]
+
+  * **fix:** contributor, pull request and config document changes    
+      
+    Configuration Page - Documentation Update  
+
+### 01-11-2024 - [[cookieauth](mailto:github@mail.cookieauth.com)]
+
+  * Create CONTRIBUTING.md    
+      
+    **Signed-off-by:**  cookieauth <github@mail.cookieauth.com>  
+  * Update PULL_REQUEST_TEMPLATE.md    
+      
+    **Signed-off-by:**  cookieauth <github@mail.cookieauth.com>  
+  * Updated GitHub links to reflect new location of GuildConfigSchema.ts and SystemConfigSchema.ts    
+      
+    **Signed-off-by:**  cookieauth <github@mail.cookieauth.com>  
+
+### 01-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 31-10-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 30-10-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **build(docker):** update Dockerfile    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 29-10-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 28-10-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **chore:** update jsr.json    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **ci:** update release.yml    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
   * **fix:** docker image malfunctioning    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
@@ -9,6 +64,13 @@
   * **chore(extensions):** build extensions [skip ci]    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 28-10-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.31.2 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 27-10-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]

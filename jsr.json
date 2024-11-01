@@ -1,8 +1,13 @@
 {
-  "name": "@osn/sudobot",
-  "version": "10.31.2",
-  "exports": "./src/main/typescript/exports.ts",
-  "publish": {
-    "exclude": ["tests", "docs", "blazebuild", "lib"]
-  }
+    "name": "@osn/sudobot",
+    "version": "10.31.3",
+    "exports": "./src/main/typescript/exports.ts",
+    "publish": {
+        "exclude": [
+            "tests",
+            "docs",
+            "blazebuild",
+            "lib"
+        ]
+    }
 }
