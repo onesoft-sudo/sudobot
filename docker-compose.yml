@@ -19,6 +19,7 @@ services:
       - ./storage:/app/storage
       - ./tmp:/app/tmp
       - ./.migration_status:/app/.migration_status
+      - ./.env.docker:/app/.env
     depends_on:
       - postgres
 
