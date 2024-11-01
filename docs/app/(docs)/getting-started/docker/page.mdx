@@ -1,0 +1,57 @@
+---
+title: Getting Started with Docker
+short_name: Using Docker
+---
+
+import Callout from "@/components/Alerts/Callout";
+
+# Getting Started with Docker
+
+Docker is a tool that allows you to package an application and its dependencies in a virtual container that can run on any Linux server. This makes it easy to deploy applications in a consistent and reproducible way.
+In this guide, you'll learn how to set up SudoBot using Docker.
+
+Using docker also allows you to run SudoBot on any platform that supports Docker, including Windows, macOS, and Linux.
+The GitHub repository contains a `Dockerfile` that you can use to build a Docker image for SudoBot. 
+It also contains a `docker-compose.yml` file that you can use to run SudoBot in a few simple steps.
+
+## Prerequisites
+
+Before you begin, make sure you have the following installed on your system:
+
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+- [Git](https://git-scm.com/)
+
+## Cloning the Repository
+
+First, clone the SudoBot repository to your local machine:
+
+```bash
+git clone https://github.com/onesoft-sudo/sudobot
+```
+
+## Set Up Configuration and Environment Variables
+
+Create a `.env.docker` file in the root of the project and add the following environment variables:
+
+```bash
+DB_URL=postgresql://postgres:root@postgres:5432/sudobot
+SUDO_PREFIX=/app/storage
+
+# Add other variables here...
+```
+
+Take a look at the [environment variables](/getting-started#environment-variables) section for more information.
+
+After this, create a new directory named `storage` in the project root and copy the `config` directory from the project root to `storage`.
+
+## Building and Starting the Docker Image
+
+To build and start SudoBot, you can use `docker-compose`. It will automatically pull the required images and start the containers.
+
+```bash
+docker-compose up -d
+```
+
+This command will build the Docker image and start the SudoBot container in the background. Remove the `-d` flag if you want to see the logs in the terminal.
+As always, you can tweak the `Dockerfile` and `docker-compose.yml` to suit your needs.
