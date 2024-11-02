@@ -1,0 +1,285 @@
+---
+title: Getting Started with Scripts Installations
+short_name: Script Installations
+---
+
+import Callout from "@/components/Alerts/Callout";
+
+# SudoBot Setup Scripts Documentation
+
+This documentation provides step-by-step instructions for setting up **SudoBot** using automated scripts on different platforms:
+
+- [Linux Script with Docker](#linux-script-with-docker)
+- [Linux Script with PM2 (Without Docker)](#linux-script-with-pm2-without-docker)
+- [Windows PowerShell Script](#windows-powershell-script)
+
+
+---
+
+## Linux Script with Docker
+
+This script automates the setup of SudoBot on a Linux system using Docker and Docker Compose.
+
+### Prerequisites
+
+- **Linux System**
+- **Docker** and **Docker Compose** (the script can install these if they are missing)
+- **Git**
+- **OpenSSL** (for generating a secure JWT secret)
+- **Discord Developer Credentials**:
+  - **Bot Token**
+  - **Client ID**
+  - **Client Secret**
+  - **Home Guild ID** (Discord Server ID)
+
+### Usage Instructions
+
+1. **Download the Script:**
+
+   Save the [`setup_sudobot_docker.sh`](https://github.com/onesoft-sudo/sudobot/tree/main/scripts/setup-sudobot-docker.sh) script from the provided external link.
+
+2. **Make the Script Executable:**
+
+   ```bash
+   chmod +x setup_sudobot_docker.sh
+   ```
+
+3. **Run the Script:**
+
+   ```bash
+   ./setup_sudobot_docker.sh
+   ```
+
+4. **Follow the Prompts:**
+
+   The script will guide you through the setup process, prompting you for necessary information.
+
+### Post-Installation Commands
+
+- **View Logs:**
+
+  ```bash
+  docker-compose logs -f
+  ```
+
+- **Stop SudoBot:**
+
+  ```bash
+  docker-compose down
+  ```
+
+- **Start SudoBot:**
+
+  ```bash
+  docker-compose up -d
+  ```
+
+---
+
+## Linux Script with PM2 (Without Docker)
+
+This script sets up SudoBot on a Linux system without using Docker, utilizing **PM2** for process management.
+
+### Prerequisites
+
+- **Linux System**
+- **Node.js (v22.x)**
+- **Git**
+- **PostgreSQL**
+- **PM2**
+- **OpenSSL** (for generating a secure JWT secret)
+- **Discord Developer Credentials**:
+  - **Bot Token**
+  - **Client ID**
+  - **Client Secret**
+  - **Home Guild ID** (Discord Server ID)
+
+### Usage Instructions
+
+1. **Download the Script:**
+
+   Save the [`setup_sudobot_pm2.sh`](https://github.com/onesoft-sudo/sudobot/tree/main/scripts/setup-sudobot-pm2.sh) script from the provided external link.
+
+2. **Make the Script Executable:**
+
+   ```bash
+   chmod +x setup_sudobot_pm2.sh
+   ```
+
+3. **Run the Script:**
+
+   ```bash
+   ./setup_sudobot_pm2.sh
+   ```
+
+4. **Follow the Prompts:**
+
+   The script will guide you through the setup process, prompting you for necessary information.
+
+### Post-Installation Commands
+
+- **View Logs:**
+
+  ```bash
+  pm2 logs sudobot
+  ```
+
+- **Check Status:**
+
+  ```bash
+  pm2 status
+  ```
+
+- **Restart SudoBot:**
+
+  ```bash
+  pm2 restart sudobot
+  ```
+
+- **Stop SudoBot:**
+
+  ```bash
+  pm2 stop sudobot
+  ```
+
+---
+
+## Windows PowerShell Script
+
+This script automates the setup of SudoBot on Windows using PowerShell.
+
+### Prerequisites
+
+- **Windows 10 or later**
+- **Docker Desktop for Windows**
+- **Git for Windows**
+- **OpenSSL** (optional, for generating a JWT secret)
+- **Discord Developer Credentials**:
+  - **Bot Token**
+  - **Client ID**
+  - **Client Secret**
+  - **Home Guild ID** (Discord Server ID)
+
+### Usage Instructions
+
+1. **Download the Script:**
+
+   Save the [`setup_sudobot.ps1`](https://github.com/onesoft-sudo/sudobot/tree/main/scripts/setup-sudobot-docker-windows.sh) script from the provided external link.
+
+2. **Run PowerShell as Administrator:**
+
+   - Right-click on PowerShell and select **"Run as Administrator"**.
+
+3. **Set Execution Policy (if necessary):**
+
+   If you haven't allowed script execution before, you may need to set the execution policy:
+
+   ```powershell
+   Set-ExecutionPolicy RemoteSigned
+   ```
+
+4. **Navigate to the Directory Containing the Script:**
+
+   Use `cd` to navigate to the folder where you saved the script.
+
+5. **Run the Script:**
+
+   ```powershell
+   .\setup_sudobot.ps1
+   ```
+
+6. **Follow the Prompts:**
+
+   The script will guide you through the setup process, prompting you for necessary information.
+
+### Post-Installation Commands
+
+- **View Logs:**
+
+  ```powershell
+  docker-compose logs -f
+  ```
+
+- **Stop SudoBot:**
+
+  ```powershell
+  docker-compose down
+  ```
+
+- **Start SudoBot:**
+
+  ```powershell
+  docker-compose up -d
+  ```
+
+## Common Steps After Installation
+
+### Setting Up Discord Application
+
+Ensure you have set up a Discord application and obtained the following:
+
+- **Bot Token**
+- **Client ID**
+- **Client Secret**
+- **Home Guild ID**
+
+### Configuring the Bot
+
+The scripts will create a `.env` file with your provided credentials and configurations. You may need to edit this file to adjust any settings.
+
+### Updating SudoBot
+
+To update SudoBot to the latest version:
+
+#### For Docker Installations:
+
+```bash
+cd sudobot
+git pull
+docker-compose build
+docker-compose up -d
+```
+
+#### For PM2 Installation:
+
+```bash
+cd sudobot
+git pull
+./blazew build
+pm2 restart sudobot
+```
+
+---
+
+## Troubleshooting
+
+- **Permissions Issues:**
+
+  Ensure that you have the necessary permissions to execute scripts and install software. You may need to run scripts with `sudo` or as an administrator.
+
+- **Missing Dependencies:**
+
+  The scripts attempt to install missing dependencies. If automatic installation fails, you may need to install them manually.
+
+- **Firewall and Network Settings:**
+
+  Ensure that your system allows outgoing connections to Discord servers and any APIs you intend to use.
+
+- **Database Configuration:**
+
+  Verify that your PostgreSQL database is set up correctly and that the connection details in your `.env` file are accurate.
+
+---
+
+## Support
+
+If you encounter any issues or need assistance, feel free to join our [Discord Server](#) and ask for help.
+
+---
+
+```
+
+**Note:** Replace `#` in `[Discord Server](#)` with the actual link to your Discord server, and update the script filenames and external links with the actual URLs where the scripts are hosted.
+
+This documentation provides users with the necessary information to use the provided scripts to set up SudoBot on their systems, without including the actual script code.
+
