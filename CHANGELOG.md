@@ -1,5 +1,393 @@
 # Changelog
 
+### 20-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **fix:** incorrect path detection on Node.js    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **ci:** update extensions workflow    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 19-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 18-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 17-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 16-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 15-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 14-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 13-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 12-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **docs:** update about page    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 11-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 10-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 09-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 08-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 07-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 06-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 05-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 04-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 03-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 02-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 01-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 30-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 29-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 28-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 27-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 26-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 25-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 24-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 23-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 22-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 21-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 20-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 19-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 18-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 17-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 16-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 15-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 14-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 13-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 12-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 11-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 10-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 09-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 08-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 07-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 06-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 05-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 04-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 03-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 02-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 01-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **docs:** add docker usage guide
+  * **build(docker):** test image before execution    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **chore:** remove extranous contributing guidelines    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **build:** update Dockerfile    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **build(docker):** update docker-compose.yml    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **chore:** create .env.docker.example    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **chore(readme):** update contributors list    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 01-11-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.31.3 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 01-11-2024 - [[Ryanmello07](mailto:67509637+Ryanmello07@users.noreply.github.com)]
 
   * **fix:** contributor, pull request and config document changes    
@@ -17,13 +405,6 @@
   * Updated GitHub links to reflect new location of GuildConfigSchema.ts and SystemConfigSchema.ts    
       
     **Signed-off-by:**  cookieauth <github@mail.cookieauth.com>  
-
-### 01-11-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
-
-  * **chore(extensions):** build extensions [skip ci]    
-      
-    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
-      
 
 ### 31-10-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
