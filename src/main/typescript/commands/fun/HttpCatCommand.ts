@@ -72,7 +72,7 @@ class HttpCatCommand extends Command {
 
         try {
             await axios.get(url);
-        } catch (error) {
+        } catch {
             await context.error("No cat found for that status code.");
             return;
         }

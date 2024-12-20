@@ -18,11 +18,11 @@
  */
 
 import { Command } from "@framework/commands/Command";
-import { PermissionFlags } from "@framework/permissions/PermissionFlag";
-import type LegacyContext from "@framework/commands/LegacyContext";
 import type InteractionContext from "@framework/commands/InteractionContext";
-import type { ChatInputCommandInteraction, GuildBasedChannel } from "discord.js";
+import type LegacyContext from "@framework/commands/LegacyContext";
+import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import { generateEmbed } from "@main/utils/embed";
+import type { ChatInputCommandInteraction, GuildBasedChannel } from "discord.js";
 
 class EmbedSendCommand extends Command {
     public override readonly name: string = "embed::send";
@@ -67,7 +67,7 @@ class EmbedSendCommand extends Command {
             });
 
             await context.reply({ content: "Message sent." });
-        } catch (e) {
+        } catch {
             await context.error({ content: "Invalid options given." });
         }
     }

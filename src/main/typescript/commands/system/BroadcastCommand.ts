@@ -147,7 +147,7 @@ class BroadcastCommand extends Command {
                 }
 
                 success++;
-            } catch (error) {
+            } catch {
                 failed++;
             }
         }

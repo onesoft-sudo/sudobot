@@ -46,7 +46,7 @@ class EncourageCommand extends Command {
 
             const [quote] = response.data;
             await context.reply(`> ${quote.q.replace(/\n/gi, "\n> ")}\n\n — *${quote.a}*`);
-        } catch (e) {
+        } catch {
             await context.error(
                 "The API did not return a valid status code. This is a possible error in the API or you got rate limited."
             );

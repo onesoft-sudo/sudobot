@@ -342,7 +342,7 @@ class MessageReportingService extends Service {
                 parsedDuration = duration
                     ? Duration.fromDurationStringExpression(duration)
                     : undefined;
-            } catch (error) {
+            } catch {
                 await interaction.editReply({ content: "Invalid duration provided." });
                 return;
             }

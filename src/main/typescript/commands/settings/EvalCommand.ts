@@ -89,7 +89,7 @@ class EvalCommand extends Command {
             try {
                 this._prettier = await import("prettier".toString());
                 this._prettierEstree = await import("prettier/plugins/estree".toString());
-            } catch (error) {
+            } catch {
                 this._prettier = false;
                 this._prettierEstree = undefined;
             }

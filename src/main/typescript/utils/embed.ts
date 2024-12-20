@@ -17,7 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { Channel, ChatInputCommandInteraction, ColorResolvable, Guild, Message, User } from "discord.js";
+import type {
+    Channel,
+    ChatInputCommandInteraction,
+    ColorResolvable,
+    Guild,
+    Message,
+    User
+} from "discord.js";
 import { ChannelType, EmbedBuilder, resolveColor } from "discord.js";
 
 export function generateEmbed(options: ChatInputCommandInteraction["options"]) {
@@ -43,7 +50,7 @@ export function generateEmbed(options: ChatInputCommandInteraction["options"]) {
         ) {
             throw new Error();
         }
-    } catch (e) {
+    } catch {
         return { error: "Invalid color given." };
     }
 

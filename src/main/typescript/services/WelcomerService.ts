@@ -161,7 +161,7 @@ class WelcomerService extends Service implements HasEventListeners {
                 ).components[0].components[0].customId!;
 
                 this.logger.debug("Refetched custom ID: ", interaction.customId);
-            } catch (e) {
+            } catch {
                 semaphore.release();
                 return;
             }

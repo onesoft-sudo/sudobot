@@ -2138,7 +2138,7 @@ class InfractionManager extends Service {
                     ? this.createOverviewEmbed(infraction, member.user, moderator)
                     : undefined) as E extends true ? APIEmbed : undefined
             };
-        } catch (error) {
+        } catch {
             return {
                 status: "failed",
                 infraction: null,

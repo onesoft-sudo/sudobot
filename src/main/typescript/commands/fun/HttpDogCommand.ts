@@ -72,7 +72,7 @@ class HttpDogCommand extends Command {
 
         try {
             await axios.get(url);
-        } catch (error) {
+        } catch {
             await context.error("No dog found for that status code.");
             return;
         }

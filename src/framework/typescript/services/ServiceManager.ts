@@ -33,6 +33,7 @@ export type DiscordKernelClass = {
 };
 
 declare global {
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface ServiceRecord extends Record<string, object> {}
 }
 

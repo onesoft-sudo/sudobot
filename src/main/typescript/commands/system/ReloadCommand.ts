@@ -77,7 +77,7 @@ class ReloadCommand extends Command {
 
         try {
             await this.commandManager.reloadCommand(command);
-        } catch (error) {
+        } catch {
             await context.error(`Failed to reload command \`${name}\`.`);
             return;
         }

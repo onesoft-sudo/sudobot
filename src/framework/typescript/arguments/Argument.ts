@@ -69,7 +69,6 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         return this;
     }
 
-    
     public validate(): Awaitable<boolean> {
         return true;
     }
@@ -126,7 +125,6 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
         return this;
     }
 
-    
     public postTransformValidation(): Awaitable<boolean> {
         return true;
     }
@@ -142,7 +140,7 @@ export default abstract class Argument<T = unknown> implements ArgumentInterface
     protected error(
         message: string,
         type: ErrorType,
-        ruleLike?: string | { message?: string } | undefined
+        ruleLike?: string | { message?: string }
     ): never {
         throw new InvalidArgumentError(
             (typeof ruleLike === "string" ? ruleLike : ruleLike?.message) ?? message,

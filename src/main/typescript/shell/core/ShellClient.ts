@@ -101,7 +101,9 @@ class ShellClient {
             }
 
             this.ws.addEventListener("open", () => resolve());
-            this.ws.addEventListener("error", () => reject());
+            this.ws.addEventListener("error", error =>
+                reject(new Error("Failed to connect to shell service", { cause: error }))
+            );
         });
     }
 
