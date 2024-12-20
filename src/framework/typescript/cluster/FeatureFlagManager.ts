@@ -23,14 +23,16 @@ import axios from "axios";
 import { Collection } from "discord.js";
 
 class FeatureFlagManager extends HasApplication implements Bootable {
-    protected static readonly CentralAPI = "https://proxy.sudobot.onesoftnet.eu.org/api/v1/flags/global";
+    protected static readonly CentralAPI =
+        "https://proxy.sudobot.onesoftnet.eu.org/api/v1/flags/global";
     protected readonly flags = new Collection<string, string>();
 
     public async boot() {
-        const flagCentralApiUrl =
-            process.env.FEATURE_FLAG_PROVIDER_URL?.toString() === "none"
-                ? undefined
-                : process.env.FEATURE_FLAG_PROVIDER_URL || FeatureFlagManager.CentralAPI;
+        // const flagCentralApiUrl =
+        //     process.env.FEATURE_FLAG_PROVIDER_URL?.toString() === "none"
+        //         ? undefined
+        //         : process.env.FEATURE_FLAG_PROVIDER_URL || FeatureFlagManager.CentralAPI;
+        const flagCentralApiUrl: string | undefined = undefined;
 
         if (flagCentralApiUrl) {
             try {
