@@ -85,11 +85,12 @@ export function systemPrefix(pathLike: string, createDirIfNotExists = false) {
     const directoryOrFile = path.resolve(
         process.env.SUDO_PREFIX ?? __dirname,
         process.env.SUDO_PREFIX ? "" : "../../../..",
-        __filename.endsWith(".ts") ? "" : "..",
         pathLike
     );
 
-    if (createDirIfNotExists) mkdirSync(directoryOrFile, { recursive: true });
+    if (createDirIfNotExists) {
+        mkdirSync(directoryOrFile, { recursive: true });
+    }
 
     return directoryOrFile;
 }
