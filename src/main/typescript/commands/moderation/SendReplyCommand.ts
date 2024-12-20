@@ -143,7 +143,7 @@ class SendReplyCommand
                         }
                     });
                     await interaction.editReply("The reply has been sent.");
-                } catch (error) {
+                } catch {
                     await interaction.editReply("An error has occurred while sending the reply.");
                 }
             }

@@ -25,6 +25,7 @@ import { Service } from "../services/Service";
 import { Permission } from "./Permission";
 
 declare global {
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface SystemPermissionStrings {}
 }
 

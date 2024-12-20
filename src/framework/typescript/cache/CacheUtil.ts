@@ -61,11 +61,9 @@ export const cache = <F extends AnyFunction, I extends boolean = false>(
     }) as unknown as F;
 
     if (options?.invoke) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return callback() as ReturnValue<I, F>;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return callback as ReturnValue<I, F>;
 };
 
@@ -80,11 +78,9 @@ export const memoize = <F extends AnyFunction>(fn: F) => {
     return (...args: Parameters<F>): ReturnType<F> => {
         const key = args.join("_");
         if (cache.has(key)) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             return cache.get(key)!;
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return fn(...(args as unknown[]));
     };
 };

@@ -158,7 +158,7 @@ class EchoCommand extends Command {
 
             try {
                 await finalChannel.send(options);
-            } catch (error) {
+            } catch {
                 return void context.error(
                     "An error occurred while sending the message. Make sure I have the necessary permissions."
                 );

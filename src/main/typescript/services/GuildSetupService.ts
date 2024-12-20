@@ -1807,8 +1807,8 @@ class GuildSetupService extends Service implements HasEventListeners {
             !timeframe ||
             isNaN(+threshold) ||
             isNaN(+timeframe) ||
-            -(-threshold) <= 0 ||
-            -(-timeframe) <= 0
+            -(-threshold) <= 0 || // eslint-disable-line @typescript-eslint/no-unsafe-unary-minus
+            -(-timeframe) <= 0 // eslint-disable-line @typescript-eslint/no-unsafe-unary-minus
         ) {
             await this.pushState(guildId, id, messageId, {
                 embeds: [

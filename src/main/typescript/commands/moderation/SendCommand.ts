@@ -135,7 +135,7 @@ class SendCommand extends Command {
 
             try {
                 await member.send(options);
-            } catch (error) {
+            } catch {
                 return void context.error(
                     "An error occurred while sending the message to the user. Maybe they have DMs turned off or blocked me?"
                 );

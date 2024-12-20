@@ -69,8 +69,10 @@ export interface ServiceRecord {
     guildSetupService: GuildSetupService;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface ServiceRecordLocal extends ServiceRecord {}
 
 declare global {
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface ServiceRecord extends ServiceRecordLocal {}
 }

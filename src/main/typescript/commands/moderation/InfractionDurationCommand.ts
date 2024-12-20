@@ -108,7 +108,7 @@ class InfractionDurationCommand extends Command {
             if (typeof duration === "string" && duration.toLowerCase() !== "none") {
                 throw new Error();
             }
-        } catch (error) {
+        } catch {
             await context.error("Invalid duration provided.");
             return;
         }
@@ -116,7 +116,7 @@ class InfractionDurationCommand extends Command {
         const { error, infraction, success } = await this.infractionManager.updateDurationById(
             context.guildId,
             id,
-            typeof duration === "string" ? null : (duration),
+            typeof duration === "string" ? null : duration,
             !context.isChatInput() || context.options.getBoolean("notify") !== false
         );
 

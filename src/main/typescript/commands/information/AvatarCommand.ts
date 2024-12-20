@@ -80,8 +80,8 @@ class AvatarCommand extends Command {
                 member = user
                     ? (context.guild.members.cache.get(user.id) ??
                       (await context.guild.members.fetch(user.id)))
-                    : (context.member!);
-            } catch (e) {
+                    : context.member!;
+            } catch {
                 return void (await context.error("Failed to fetch member."));
             }
         }

@@ -108,7 +108,7 @@ export default class EditMessageCommand extends Command implements HasEventListe
 
             try {
                 await message.edit(options);
-            } catch (error) {
+            } catch {
                 await interaction.editReply({
                     content: "An error has occurred while trying to update the message."
                 });

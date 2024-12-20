@@ -178,7 +178,6 @@ export function safeMessageContent(
               );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function assertUnreachable(_value: never): never {
     throw new Error("This statement should be unreachable");
 }

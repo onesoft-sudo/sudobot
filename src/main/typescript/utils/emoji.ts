@@ -28,7 +28,6 @@ export function emoji(application: Application, name: string) {
 export function findEmoji(
     application: Application,
     name: string
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 ): GuildEmoji | ApplicationEmoji | undefined {
     const strategy =
         env.EMOJI_RESOLVE_STRATEGY ??

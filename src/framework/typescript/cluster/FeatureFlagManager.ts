@@ -59,7 +59,7 @@ class FeatureFlagManager extends HasApplication implements Bootable {
                 for (const key in flags) {
                     this.flags.set(key, flags[key].treatment);
                 }
-            } catch (error) {
+            } catch {
                 this.application.logger.error("Failed to fetch feature flags from the central API");
                 return;
             }

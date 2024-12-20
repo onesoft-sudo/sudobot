@@ -334,7 +334,10 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             this.configManager.config[message.guildId]?.commands.respond_on_precondition_fail;
 
         if (command.isDisabled(message.guildId)) {
-            respondOnFail && (await context.error("This command is disabled."));
+            if (respondOnFail) {
+                await context.error("This command is disabled.");
+            }
+
             return;
         }
 
@@ -346,7 +349,10 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             const subcommand = this.getCommand(key);
 
             if (subcommand && subcommand.isDisabled(message.guildId)) {
-                respondOnFail && (await context.error("This command is disabled."));
+                if (respondOnFail) {
+                    await context.error("This command is disabled.");
+                }
+
                 return;
             }
 
@@ -449,8 +455,13 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
         );
 
         if (command.isDisabled(interaction.guildId!)) {
-            this.configManager.config[interaction.guildId!]?.commands
-                .respond_on_precondition_fail && (await context.error("This command is disabled."));
+            if (
+                this.configManager.config[interaction.guildId!]?.commands
+                    .respond_on_precondition_fail
+            ) {
+                await context.error("This command is disabled.");
+            }
+
             return;
         }
 
