@@ -2,6 +2,15 @@
 
 ### 20-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot
+  * **chore:** remove unneeded files    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **fix:** supress feature flag manager errors    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
   * **fix:** incorrect path detection on Node.js    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
@@ -12,6 +21,13 @@
   * **chore(extensions):** build extensions [skip ci]    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 20-12-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.31.4 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 19-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
