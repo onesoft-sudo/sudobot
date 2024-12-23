@@ -75,7 +75,7 @@
         "ascii-table3": "^0.9.0",
         "axios": "^1.7.9",
         "bcrypt": "^5.1.1",
-        "chalk": "^4.1.2",
+        "chalk": "^5.4.1",
         "cors": "^2.8.5",
         "date-fns": "^4.1.0",
         "deepmerge": "^4.3.1",
