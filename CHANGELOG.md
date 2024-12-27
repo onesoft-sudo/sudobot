@@ -2,6 +2,27 @@
 
 ### 20-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * merge: branch 'dev'
+  * **docs:** update to include node 23 support clarification    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **ci:** update build workflow for node 23    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **deps:** fix incompatible deps    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **fix:** lint errors    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **deps:** update packages    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
   * merge: branch 'main' of github.com:onesoft-sudo/sudobot
   * **chore:** remove unneeded files    
       
@@ -25,6 +46,10 @@
 
 ### 20-12-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v10.31.5 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v10.31.4 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
