@@ -57,7 +57,8 @@ class DiscordKernel extends Kernel {
         GatewayIntentBits.GuildEmojisAndStickers,
         GatewayIntentBits.GuildPresences,
         GatewayIntentBits.GuildInvites,
-        GatewayIntentBits.GuildVoiceStates
+        GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.DirectMessages
     ];
     protected readonly partials = [Partials.Channel];
     public static readonly aliases = {

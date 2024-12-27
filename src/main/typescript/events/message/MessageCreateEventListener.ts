@@ -23,8 +23,9 @@ import type { Logger } from "@framework/log/Logger";
 import { Events } from "@framework/types/ClientEvents";
 import type AIAutoModeration from "@main/automod/AIAutoModeration";
 import type TriggerService from "@main/automod/TriggerService";
+import { env } from "@main/env/env";
 import type AFKService from "@main/services/AFKService";
-import { Message, MessageType } from "discord.js";
+import { ChannelType, Message, MessageType, WebhookClient } from "discord.js";
 import type RuleModerationService from "../../automod/RuleModerationService";
 import type SpamModerationService from "../../automod/SpamModerationService";
 import type CommandManager from "../../services/CommandManager";
@@ -57,6 +58,8 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
 
     private readonly listeners: Array<(message: Message) => unknown> = [];
 
+    private dmLogWebhook: WebhookClient | null = null;
+
     public override onInitialize() {
         this.listeners.push(
             this.ruleModerationService.onMessageCreate.bind(this.ruleModerationService),
@@ -67,12 +70,35 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
     }
 
     public override async execute(message: Message<boolean>) {
-        if (
-            message.author.bot ||
-            message.webhookId ||
-            !message.inGuild() ||
-            !this.types.includes(message.type)
-        ) {
+        if (message.author.bot || message.webhookId || !this.types.includes(message.type)) {
+            return;
+        }
+
+        if (!message.inGuild()) {
+            if (
+                message.channel.type !== ChannelType.DM ||
+                !env.DM_LOGS_WEBHOOK_URL ||
+                message.author.bot
+            ) {
+                return;
+            }
+
+            if (!this.dmLogWebhook) {
+                this.dmLogWebhook = new WebhookClient({
+                    url: env.DM_LOGS_WEBHOOK_URL
+                });
+            }
+
+            this.dmLogWebhook
+                .send({
+                    content: message.content,
+                    username: message.author.username,
+                    avatarURL: message.author.displayAvatarURL(),
+                    embeds: message.embeds,
+                    files: message.attachments.map(a => a.proxyURL)
+                })
+                .catch(this.application.logger.error);
+
             return;
         }
 
