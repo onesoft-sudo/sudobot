@@ -62,6 +62,7 @@ import {
     Message,
     MessageCreateOptions,
     MessagePayload,
+    MessageReferenceType,
     PartialMessage,
     Snowflake,
     TextChannel,
@@ -618,10 +619,20 @@ class AuditLoggingService extends Service {
             });
         }
 
+        let infoText = "";
+
+        if (message.reference?.type === MessageReferenceType.Forward) {
+            infoText += `${bold("Type:")} Forward\n`;
+        }
+
         if (message.embeds.length > 0) {
+            infoText += `${bold("Embeds:")} ${message.embeds.length.toString()}\n`;
+        }
+
+        if (infoText) {
             fields.push({
                 name: "Additional Information",
-                value: `+ ${bold(message.embeds.length.toString())} embed${message.embeds.length === 1 ? "" : "s"}`
+                value: infoText
             });
         }
 
@@ -642,7 +653,11 @@ class AuditLoggingService extends Service {
                         .setURL(
                             `https://discord.com/channels/${message.guild.id}/${message.reference.channelId}/${message.reference.messageId}`
                         )
-                        .setLabel("Referenced Message")
+                        .setLabel(
+                            message.reference.type === MessageReferenceType.Forward
+                                ? "Forwarded Message"
+                                : "Referenced Message"
+                        )
                 )
             );
         }
@@ -699,6 +714,19 @@ class AuditLoggingService extends Service {
                 value: oldMessage.author.id
             }
         ];
+
+        let infoText = "";
+
+        if (newMessage.reference?.type === MessageReferenceType.Forward) {
+            infoText += `${bold("Type:")} Forward\n`;
+        }
+
+        if (infoText) {
+            fields.push({
+                name: "Additional Information",
+                value: infoText
+            });
+        }
 
         const embeds: APIEmbed[] = [
             {
@@ -760,7 +788,11 @@ class AuditLoggingService extends Service {
                         .setURL(
                             `https://discord.com/channels/${newMessage.guild.id}/${newMessage.reference.channelId}/${newMessage.reference.messageId}`
                         )
-                        .setLabel("Referenced Message")
+                        .setLabel(
+                            newMessage.reference.type === MessageReferenceType.Forward
+                                ? "Forwarded Message"
+                                : "Referenced Message"
+                        )
                 )
             );
         }
