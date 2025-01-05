@@ -1,7 +1,51 @@
 # Changelog
 
+### 05-01-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **fix:** discord.js v14.17 update broken types    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **feat(logging):** message audit logs now show message types    
+      
+    Currently, the logs will identify if a message is of type `forward`, and if it is, logs will show that information.  
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **fix(setup):** not working in DM    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+
+### 01-01-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 31-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 29-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **docs:** clarification of file filter hash algorithm    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 27-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **chore:** update dependabot.yml    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
   * merge: branch 'main' of github.com:onesoft-sudo/sudobot
   * **feat(admin):** direct message logs    
       
@@ -10,6 +54,13 @@
   * **chore(extensions):** build extensions [skip ci]    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 27-12-2024 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.32.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 25-12-2024 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
