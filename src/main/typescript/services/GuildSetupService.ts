@@ -293,6 +293,8 @@ class GuildSetupService extends Service implements HasEventListeners {
         messageId: string,
         interaction: ModalSubmitInteraction
     ) {
+        console.log(2);
+
         if (!this.configManager.config[guildId]) {
             this.configManager.autoConfigure(guildId);
         }
@@ -417,16 +419,35 @@ class GuildSetupService extends Service implements HasEventListeners {
             (interaction.isButton() ||
                 interaction.isAnySelectMenu() ||
                 interaction.isModalSubmit()) &&
-            interaction.customId.startsWith("setup::") &&
-            !interaction.memberPermissions?.has("ManageGuild")
+            interaction.customId.startsWith("setup::")
         ) {
-            await interaction.reply({
-                content: `${emoji(this.application, "error")} You don't have the required permissions to configure settings.`,
-                ephemeral: true
-            });
+            if (interaction.inGuild() && !interaction.memberPermissions?.has("ManageGuild")) {
+                await interaction.reply({
+                    content: `${emoji(this.application, "error")} You don't have the required permissions to configure settings.`,
+                    ephemeral: true
+                });
 
-            return;
+                return;
+            } else if (!interaction.inGuild()) {
+                const [, guildId] = interaction.customId.split("::");
+                const guild = this.application.client.guilds.cache.get(guildId);
+
+                if (!guild) {
+                    return;
+                }
+
+                if (guild.ownerId !== interaction.user.id) {
+                    await interaction.reply({
+                        content: `${emoji(this.application, "error")} You don't have the required permissions to configure settings.`,
+                        ephemeral: true
+                    });
+
+                    return;
+                }
+            }
         }
+
+        console.log(1);
 
         if (interaction.isModalSubmit() && interaction.customId.startsWith("setup::")) {
             const { message } = interaction;
