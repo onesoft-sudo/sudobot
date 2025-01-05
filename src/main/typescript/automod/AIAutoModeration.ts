@@ -24,7 +24,7 @@ import { env } from "@main/env/env";
 import type { GuildConfig } from "@main/schemas/GuildConfigSchema";
 import type PermissionManagerService from "@main/services/PermissionManagerService";
 import { safeMemberFetch } from "@main/utils/fetch";
-import { GuildMember, Message, TextChannel } from "discord.js";
+import { GuildMember, Message, PartialMessage, TextChannel } from "discord.js";
 import undici from "undici";
 
 @Name("aiAutoModeration")
@@ -91,7 +91,7 @@ class AIAutoModeration extends Service {
         await this.moderate(message);
     }
 
-    public async onMessageUpdate(oldMessage: Message, newMessage: Message) {
+    public async onMessageUpdate(oldMessage: Message | PartialMessage, newMessage: Message) {
         if (
             newMessage.author.bot ||
             newMessage.webhookId ||
@@ -299,8 +299,7 @@ class AIAutoModeration extends Service {
             this.application.logger.debug("Stops:", automatic_actions.stops);
 
             for (const score in automatic_actions.stops) {
-                const actions =
-                    automatic_actions.stops[score];
+                const actions = automatic_actions.stops[score];
 
                 if (score !== "*" && Number.isNaN(+score)) {
                     this.application.logger.error(`Invalid stop score in config: ${score}`);

@@ -23,7 +23,7 @@ import type AIAutoModeration from "@main/automod/AIAutoModeration";
 import type RuleModerationService from "@main/automod/RuleModerationService";
 import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
-import { Events, Message } from "discord.js";
+import { Events, Message, OmitPartialGroupDMChannel, PartialMessage } from "discord.js";
 
 class MessageUpdateEventListener extends EventListener<Events.MessageUpdate> {
     public override readonly name = Events.MessageUpdate;
@@ -37,7 +37,10 @@ class MessageUpdateEventListener extends EventListener<Events.MessageUpdate> {
     @Inject("aiAutoModeration")
     private readonly aiAutoModeration!: AIAutoModeration;
 
-    public override async execute(oldMessage: Message, newMessage: Message) {
+    public override async execute(
+        oldMessage: OmitPartialGroupDMChannel<Message | PartialMessage>,
+        newMessage: OmitPartialGroupDMChannel<Message>
+    ) {
         if (
             newMessage.author.bot ||
             newMessage.webhookId ||
