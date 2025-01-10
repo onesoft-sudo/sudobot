@@ -159,7 +159,8 @@ class MuteCommand extends Command {
             duration,
             notify: !context.isChatInput() || context.options.getBoolean("notify") !== false,
             roleTakeout:
-                context.isChatInput() && context.options.getBoolean("role_takeout") === true
+                context.isChatInput() && context.options.getBoolean("role_takeout") === true,
+            attachments: context.isLegacy() ? [...context.attachments.values()] : []
         });
         const { overviewEmbed, status } = result;
 

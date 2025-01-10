@@ -210,7 +210,8 @@ class ClearCommand extends Command {
                 ? (context.options.getString("reason") ?? undefined)
                 : undefined,
             respond: true,
-            filters
+            filters,
+            attachments: context.isLegacy() ? [...context.attachments.values()] : []
         });
 
         if (result.status === "failed") {

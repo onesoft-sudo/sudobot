@@ -225,7 +225,8 @@ class BanCommand extends Command {
             duration: args.duration,
             deletionTimeframe,
             notify: !context.isChatInput() || context.options.getBoolean("notify") !== false,
-            immediateUnban: context.commandName === "softban"
+            immediateUnban: context.commandName === "softban",
+            attachments: context.isLegacy() ? [...context.attachments.values()] : []
         });
 
         if (result.status === "failed") {

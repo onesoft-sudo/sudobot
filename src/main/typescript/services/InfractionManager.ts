@@ -37,11 +37,14 @@ import { muteRecords } from "@main/models/MuteRecord";
 import MassUnbanQueue from "@main/queues/MassUnbanQueue";
 import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
+import { downloadFile } from "@main/utils/download";
 import { emoji } from "@main/utils/emoji";
+import { systemPrefix } from "@main/utils/utils";
 import { AsciiTable3 } from "ascii-table3";
 import { formatDistanceStrict, formatDistanceToNowStrict } from "date-fns";
 import {
     APIEmbed,
+    Attachment,
     Awaitable,
     CategoryChannel,
     ChannelType,
@@ -67,6 +70,9 @@ import {
     userMention
 } from "discord.js";
 import { and, eq, inArray, not } from "drizzle-orm";
+import { existsSync } from "fs";
+import { unlink } from "fs/promises";
+import path, { basename } from "path";
 import InfractionChannelDeleteQueue from "../queues/InfractionChannelDeleteQueue";
 import RoleQueue from "../queues/RoleQueue";
 import UnbanQueue from "../queues/UnbanQueue";
@@ -202,7 +208,8 @@ class InfractionManager extends Service {
     private notify(
         user: User,
         infraction: Infraction,
-        transformNotificationEmbed?: (embed: APIEmbed) => APIEmbed
+        transformNotificationEmbed?: (embed: APIEmbed) => APIEmbed,
+        _troll = false
     ) {
         const guild = this.application.getClient().guilds.cache.get(infraction.guildId);
 
@@ -247,10 +254,20 @@ class InfractionManager extends Service {
         }
 
         const transformed = transformNotificationEmbed ? transformNotificationEmbed(embed) : embed;
+        const attachmentStoragePath = systemPrefix("storage/attachments", true);
+
         return this.sendDirectMessage(
             user,
             infraction.guildId,
-            { embeds: [transformed] },
+            {
+                embeds: [transformed],
+                files:
+                    infraction.type === InfractionType.Bean || _troll
+                        ? infraction.attachments
+                        : infraction.attachments
+                              .map(file => path.join(attachmentStoragePath, file))
+                              .filter(existsSync)
+            },
             infraction
         );
     }
@@ -393,6 +410,7 @@ class InfractionManager extends Service {
             transformNotificationEmbed,
             payload,
             type,
+            attachments = [],
             notify = true,
             processReason = true,
             failIfNotNotified = false
@@ -401,6 +419,26 @@ class InfractionManager extends Service {
             "member" in options && options.member
                 ? options.member.user
                 : (options as { user: User }).user;
+
+        if (attachments.length > 10) {
+            throw new Error("Cannot create an infraction with more than 10 attachments");
+        }
+
+        const attachmentFileLocalNames: string[] = [];
+
+        for (const attachment of attachments) {
+            const url = typeof attachment === "string" ? attachment : attachment.proxyURL;
+            const name = `${Date.now()}-${Math.random().toString(36).substring(7)}-${basename(url.substring(0, url.indexOf("?")))}`;
+
+            await downloadFile({
+                url,
+                name,
+                path: systemPrefix("storage/attachments", true)
+            });
+
+            attachmentFileLocalNames.push(name);
+        }
+
         const infraction: Infraction = await this.application.database.drizzle.transaction(
             async (tx): Promise<Infraction> => {
                 let [newInfraction] = await tx
@@ -415,6 +453,7 @@ class InfractionManager extends Service {
                             type === InfractionType.Unban || !notify
                                 ? InfractionDeliveryStatus.NotDelivered
                                 : InfractionDeliveryStatus.Success,
+                        attachments: attachmentFileLocalNames,
                         ...payload
                     })
                     .returning();
@@ -733,12 +772,34 @@ class InfractionManager extends Service {
     }
 
     public async deleteById(guildId: Snowflake, id: number): Promise<Infraction | undefined> {
-        return (
+        const infraction = (
             await this.application.database.drizzle
                 .delete(infractions)
                 .where(and(eq(infractions.id, id), eq(infractions.guildId, guildId)))
                 .returning()
         )[0];
+
+        if (!infraction) {
+            return undefined;
+        }
+
+        if (
+            [InfractionType.Ban, InfractionType.Mute, InfractionType.Role].includes(infraction.type)
+        ) {
+            await this.updateInfractionQueues(infraction, null);
+        }
+
+        const attachmentStoragePath = systemPrefix("storage/attachments", true);
+
+        for (const file of infraction.attachments) {
+            const filePath = path.join(attachmentStoragePath, file);
+
+            if (existsSync(filePath)) {
+                await unlink(filePath).catch(this.application.logger.error);
+            }
+        }
+
+        return infraction;
     }
 
     public async deleteForUser(
@@ -746,18 +807,42 @@ class InfractionManager extends Service {
         userId: string,
         type?: InfractionType
     ): Promise<number> {
-        return (
-            await this.application.database.drizzle
-                .delete(infractions)
-                .where(
-                    and(
-                        eq(infractions.userId, userId),
-                        eq(infractions.guildId, guildId),
-                        type ? eq(infractions.type, type) : undefined
-                    )
+        const returnedInfractions = await this.application.database.drizzle
+            .delete(infractions)
+            .where(
+                and(
+                    eq(infractions.userId, userId),
+                    eq(infractions.guildId, guildId),
+                    type ? eq(infractions.type, type) : undefined
                 )
-                .returning({ id: infractions.id })
-        ).length;
+            )
+            .returning();
+
+        if (!returnedInfractions.length) {
+            return 0;
+        }
+
+        const attachmentStoragePath = systemPrefix("storage/attachments", true);
+
+        for (const infraction of returnedInfractions) {
+            if (
+                [InfractionType.Ban, InfractionType.Mute, InfractionType.Role].includes(
+                    infraction.type
+                )
+            ) {
+                this.updateInfractionQueues(infraction, null).catch(this.application.logger.error);
+            }
+
+            for (const file of infraction.attachments) {
+                const filePath = path.join(attachmentStoragePath, file);
+
+                if (existsSync(filePath)) {
+                    unlink(filePath).catch(this.application.logger.error);
+                }
+            }
+        }
+
+        return returnedInfractions.length;
     }
 
     public async getUserInfractions(guildId: Snowflake, id: Snowflake): Promise<Infraction[]> {
@@ -815,6 +900,7 @@ class InfractionManager extends Service {
             guildId,
             generateOverviewEmbed,
             transformNotificationEmbed,
+            attachments,
             notify = true
         } = payload;
         const infraction: Infraction = await this.createInfraction({
@@ -824,7 +910,8 @@ class InfractionManager extends Service {
             transformNotificationEmbed,
             type: InfractionType.Bean,
             user,
-            notify
+            notify,
+            attachments
         });
 
         return {
@@ -846,6 +933,7 @@ class InfractionManager extends Service {
             guildId,
             generateOverviewEmbed,
             transformNotificationEmbed,
+            attachments,
             notify = true
         } = payload;
 
@@ -861,11 +949,15 @@ class InfractionManager extends Service {
             queueId: null,
             updatedAt: new Date(),
             expiresAt: null,
-            metadata: null
+            metadata: null,
+            attachments:
+                attachments?.map(attachment =>
+                    typeof attachment === "string" ? attachment : attachment.proxyURL
+                ) ?? []
         };
 
         if (notify) {
-            const status = await this.notify(user, infraction, transformNotificationEmbed);
+            const status = await this.notify(user, infraction, transformNotificationEmbed, true); // *trollface*
             infraction.deliveryStatus =
                 status === "notified"
                     ? InfractionDeliveryStatus.Success
@@ -906,7 +998,8 @@ class InfractionManager extends Service {
             transformNotificationEmbed,
             notify = true,
             duration,
-            deletionTimeframe
+            deletionTimeframe,
+            attachments
         } = payload;
 
         const infraction: Infraction = {
@@ -924,11 +1017,15 @@ class InfractionManager extends Service {
                 duration: duration?.fromNowMilliseconds()
             },
             queueId: 0,
-            updatedAt: new Date()
+            updatedAt: new Date(),
+            attachments:
+                attachments?.map(attachment =>
+                    typeof attachment === "string" ? attachment : attachment.proxyURL
+                ) ?? []
         };
 
         if (notify) {
-            const status = await this.notify(user, infraction, transformNotificationEmbed);
+            const status = await this.notify(user, infraction, transformNotificationEmbed, true); // *trollface*
             infraction.deliveryStatus =
                 status === "notified"
                     ? InfractionDeliveryStatus.Success
@@ -970,7 +1067,8 @@ class InfractionManager extends Service {
             generateOverviewEmbed,
             transformNotificationEmbed,
             notify = true,
-            immediateUnban = false
+            immediateUnban = false,
+            attachments
         } = payload;
         const infraction: Infraction = await this.createInfraction({
             guildId,
@@ -980,6 +1078,7 @@ class InfractionManager extends Service {
             type: InfractionType.Ban,
             user,
             notify,
+            attachments,
             payload: {
                 expiresAt: payload.duration?.fromNow(),
                 metadata: {
@@ -1114,7 +1213,8 @@ class InfractionManager extends Service {
             reason: rawReason,
             guildId,
             generateOverviewEmbed,
-            transformNotificationEmbed
+            transformNotificationEmbed,
+            attachments
         } = payload;
         const reason = this.processReason(guildId, rawReason) ?? rawReason;
 
@@ -1153,7 +1253,8 @@ class InfractionManager extends Service {
             type: InfractionType.Unban,
             user,
             notify: false,
-            processReason: false
+            processReason: false,
+            attachments
         });
 
         try {
@@ -1205,7 +1306,8 @@ class InfractionManager extends Service {
             guildId,
             generateOverviewEmbed,
             transformNotificationEmbed,
-            notify = true
+            notify = true,
+            attachments
         } = payload;
 
         const guild = this.getGuild(payload.guildId);
@@ -1226,7 +1328,8 @@ class InfractionManager extends Service {
             transformNotificationEmbed,
             type: InfractionType.Kick,
             user: member.user,
-            notify
+            notify,
+            attachments
         });
 
         try {
@@ -1286,7 +1389,8 @@ class InfractionManager extends Service {
             generateOverviewEmbed,
             transformNotificationEmbed,
             notify = true,
-            roleTakeout = false
+            roleTakeout = false,
+            attachments
         } = payload;
         let { mode } = payload;
         const guild = this.getGuild(payload.guildId);
@@ -1453,6 +1557,7 @@ class InfractionManager extends Service {
             type: InfractionType.Mute,
             user: member.user,
             notify,
+            attachments,
             payload: {
                 metadata: {
                     type: role ? "role" : "timeout",
@@ -1544,7 +1649,8 @@ class InfractionManager extends Service {
             guildId,
             generateOverviewEmbed,
             transformNotificationEmbed,
-            notify = true
+            notify = true,
+            attachments
         } = payload;
         const { mode = "auto" } = payload;
         const config = this.configManager.config[guildId]?.muting;
@@ -1649,6 +1755,7 @@ class InfractionManager extends Service {
             type: InfractionType.Unmute,
             user: member.user,
             notify,
+            attachments,
             payload: {
                 metadata: {
                     finalMode
@@ -1769,7 +1876,8 @@ class InfractionManager extends Service {
             notify = true,
             mode,
             roles,
-            duration
+            duration,
+            attachments
         } = payload;
 
         if (!member.manageable) {
@@ -1820,6 +1928,7 @@ class InfractionManager extends Service {
             type: InfractionType.Role,
             user: member.user,
             notify,
+            attachments,
             payload: {
                 metadata: {
                     mode,
@@ -1903,7 +2012,8 @@ class InfractionManager extends Service {
             channel,
             count,
             respond = true,
-            filters = []
+            filters = [],
+            attachments
         } = payload;
 
         if (!user && !count) {
@@ -1934,7 +2044,8 @@ class InfractionManager extends Service {
                 transformNotificationEmbed,
                 type: InfractionType.BulkDeleteMessage,
                 user,
-                notify: false
+                notify: false,
+                attachments
             });
         }
 
@@ -2039,6 +2150,7 @@ class InfractionManager extends Service {
             guildId,
             generateOverviewEmbed,
             transformNotificationEmbed,
+            attachments,
             notify = true
         } = payload;
 
@@ -2060,7 +2172,8 @@ class InfractionManager extends Service {
             transformNotificationEmbed,
             type: InfractionType.Warning,
             user: member.user,
-            notify
+            notify,
+            attachments
         });
 
         this.auditLoggingService
@@ -2091,7 +2204,8 @@ class InfractionManager extends Service {
             guildId,
             generateOverviewEmbed,
             transformNotificationEmbed,
-            notify = true
+            notify = true,
+            attachments
         } = payload;
 
         const guild = this.getGuild(payload.guildId);
@@ -2119,6 +2233,7 @@ class InfractionManager extends Service {
                 type: InfractionType.ModMessage,
                 user: member.user,
                 notify,
+                attachments,
                 failIfNotNotified: true
             });
 
@@ -2157,7 +2272,8 @@ class InfractionManager extends Service {
             reason,
             guildId,
             generateOverviewEmbed,
-            transformNotificationEmbed
+            transformNotificationEmbed,
+            attachments
         } = payload;
 
         const guild = this.getGuild(payload.guildId);
@@ -2178,7 +2294,8 @@ class InfractionManager extends Service {
             transformNotificationEmbed,
             type: InfractionType.Note,
             user,
-            notify: false
+            notify: false,
+            attachments
         });
 
         this.auditLoggingService
@@ -2247,6 +2364,13 @@ class InfractionManager extends Service {
                         : infraction.deliveryStatus === InfractionDeliveryStatus.Fallback
                           ? "Sent to fallback channel."
                           : "Not delivered."
+            });
+        }
+
+        if (infraction.attachments.length) {
+            fields.push({
+                name: "Attachments",
+                value: `**${infraction.attachments.length}** file${infraction.attachments.length === 1 ? "" : "s"}`
             });
         }
 
@@ -2766,6 +2890,7 @@ type CommonOptions<E extends boolean> = {
     generateOverviewEmbed?: E;
     transformNotificationEmbed?: (embed: APIEmbed) => APIEmbed;
     notify?: boolean;
+    attachments?: Array<Attachment | string>;
 };
 
 type CreateBeanPayload<E extends boolean> = CommonOptions<E> & {
@@ -2895,6 +3020,7 @@ type InfractionCreateOptions<E extends boolean> = CommonOptions<E> & {
     sendLog?: boolean;
     processReason?: boolean;
     failIfNotNotified?: boolean;
+    attachments?: Array<Attachment | string>;
 } & ({ user: User } | { member: GuildMember });
 
 type DurationUpdateResult = {

@@ -114,7 +114,8 @@ class ModMessageCommand extends Command {
             reason: message,
             member,
             generateOverviewEmbed: true,
-            notify: true
+            notify: true,
+            attachments: context.isLegacy() ? [...context.attachments.values()] : []
         });
 
         if (status === "failed") {

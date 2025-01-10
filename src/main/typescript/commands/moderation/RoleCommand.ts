@@ -35,7 +35,7 @@ import PermissionManagerService from "../../services/PermissionManagerService";
 type RoleCommandArgs = {
     member: GuildMember;
     roles: Role[];
-    duration?: Duration|null;
+    duration?: Duration | null;
 };
 
 @ArgumentSchema.Definition({
@@ -186,7 +186,8 @@ class RoleCommand extends Command {
                   ? "take"
                   : "give",
             roles,
-            duration: duration ?? undefined
+            duration: duration ?? undefined,
+            attachments: context.isLegacy() ? [...context.attachments.values()] : []
         });
 
         if (result.status === "failed") {

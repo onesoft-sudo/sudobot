@@ -124,7 +124,8 @@ class UnmuteCommand extends Command {
             reason,
             member,
             generateOverviewEmbed: true,
-            notify: !context.isChatInput() || context.options.getBoolean("notify") !== false
+            notify: !context.isChatInput() || context.options.getBoolean("notify") !== false,
+            attachments: context.isLegacy() ? [...context.attachments.values()] : []
         });
         const { overviewEmbed, status } = result;
 

@@ -117,7 +117,8 @@ class FakeBanCommand extends Command {
             user: member.user,
             generateOverviewEmbed: true,
             notify: !context.isChatInput() || context.options.getBoolean("notify") !== false,
-            transformNotificationEmbed: embed => also(embed, e => void (e.color = Colors.Success))
+            transformNotificationEmbed: embed => also(embed, e => void (e.color = Colors.Success)),
+            attachments: context.isLegacy() ? [...context.attachments.values()] : []
         });
 
         if (status === "failed") {

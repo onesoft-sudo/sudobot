@@ -18,7 +18,8 @@
  */
 
 import { pgEnum } from "@framework/database/Enum";
-import { integer, json, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { integer, json, pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
 
 export enum InfractionType {
     Ban = "Ban",
@@ -64,6 +65,11 @@ export const infractions = pgTable("infractions", {
     deliveryStatus: infractionDeliveryStatusEnum("delivery_status")
         .notNull()
         .default(InfractionDeliveryStatus.Success),
+    attachments: text("attachments")
+        .notNull()
+        .array()
+        .notNull()
+        .default(sql`'{}'`),
     queueId: integer("queue_id"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true })

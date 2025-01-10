@@ -101,6 +101,11 @@ export const SystemConfigSchema = z.object({
             enabled: z.boolean().default(false),
             sync_delay: z.number().int().default(60_000)
         })
+        .optional(),
+    infractions: z
+        .object({
+            store_attachments: z.boolean().default(true)
+        })
         .optional()
 });
 

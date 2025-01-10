@@ -95,7 +95,8 @@ class NoteCommand extends Command {
             moderator: context.user,
             reason,
             user,
-            generateOverviewEmbed: true
+            generateOverviewEmbed: true,
+            attachments: context.isLegacy() ? [...context.attachments.values()] : []
         });
 
         if (status === "failed") {
