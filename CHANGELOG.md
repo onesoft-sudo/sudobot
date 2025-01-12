@@ -2,10 +2,28 @@
 
 ### 12-01-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **feat(infractions):** bulk clearing reactions    
+      
+    * a new infraction type has been added for this  
+    * a new command `-cr` has been added to perform this action  
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
   * merge: branch 'main' of github.com:onesoft-sudo/sudobot
   * **feat(infractions):** support attachments in massban/masskick infractions    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+
+### 12-01-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.35.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 11-01-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
