@@ -134,7 +134,8 @@ export const GuildConfigSchema = z.object({
                     role: z.number().int().default(0),
                     mod_message: z.number().int().default(2),
                     massban: z.number().int().default(10),
-                    masskick: z.number().int().default(5)
+                    masskick: z.number().int().default(5),
+                    reaction_clear: z.number().int().default(0)
                 })
                 .default({})
         })

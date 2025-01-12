@@ -41,6 +41,7 @@ import {
     LogMemberRoleModificationPayload,
     LogMemberWarningAddPayload,
     LogMessageBulkDeletePayload,
+    LogMessageReactionClearPayload,
     LogRaidAlertPayload,
     LogUserNoteAddPayload,
     LoggingExclusionType
@@ -101,6 +102,7 @@ class AuditLoggingService extends Service {
         [LogEventType.MessageDelete]: this.logMessageDelete,
         [LogEventType.MessageUpdate]: this.logMessageUpdate,
         [LogEventType.MessageDeleteBulk]: this.logMessageDeleteBulk,
+        [LogEventType.MessageReactionClear]: this.logMessageReactionClear,
         [LogEventType.MemberBanAdd]: this.logMemberBanAdd,
         [LogEventType.MemberMassBan]: this.logMemberMassBan,
         [LogEventType.MemberMassUnban]: this.logMemberMassUnban,
@@ -881,6 +883,67 @@ class AuditLoggingService extends Service {
                 ]
             },
             eventType: LogEventType.MessageDeleteBulk
+        });
+    }
+    
+    private async logMessageReactionClear({
+        channel,
+        reactions,
+        moderator,
+        reason,
+        infractionId,
+        user
+    }: LogMessageReactionClearPayload) {
+        const fields: APIEmbedField[] = [
+            {
+                name: "Channel",
+                value: channelInfo(channel),
+                inline: true
+            },
+            {
+                name: "Reason",
+                value: reason ?? italic("No reason provided")
+            }
+        ];
+
+        if (moderator) {
+            fields.push({
+                name: "Responsible Moderator",
+                value: userInfo(moderator)
+            });
+        }
+
+        if (user) {
+            fields.push({
+                name: "User",
+                value: userInfo(user)
+            });
+        }
+
+        if (typeof infractionId === "number") {
+            fields.push({
+                name: "Infraction ID",
+                value: infractionId.toString()
+            });
+        }
+
+        return this.send({
+            guildId: channel.guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        title: "Bulk Reaction Deletion",
+                        description: `Deleted **${reactions.length}** message reactions in ${channel}.`,
+                        color: Colors.DarkRed,
+                        timestamp: new Date().toISOString(),
+                        fields,
+                        footer: {
+                            text: "Deleted"
+                        }
+                    }
+                ],
+            },
+            eventType: LogEventType.MessageReactionClear
         });
     }
 

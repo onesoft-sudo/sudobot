@@ -24,20 +24,13 @@ import UserArgument from "@framework/arguments/UserArgument";
 import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
-import { GatewayEventListener } from "@framework/events/GatewayEventListener";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
-import {
-    Message,
-    User,
-    type Awaitable,
-    type GuildTextBasedChannel,
-    type Interaction
-} from "discord.js";
+import { User, type GuildTextBasedChannel } from "discord.js";
 import { Limits } from "../../constants/Limits";
 import InfractionManager from "../../services/InfractionManager";
 import PermissionManagerService from "../../services/PermissionManagerService";
 
-type ClearCommandArgs = {
+type ClearReactionsCommandArgs = {
     user?: User;
     count?: number;
 };
@@ -49,7 +42,8 @@ type ClearCommandArgs = {
     errorMessages: [
         {
             ...UserArgument.defaultErrors,
-            [ErrorType.Required]: "You must specify a message count or a user to clear messages.",
+            [ErrorType.Required]:
+                "You must specify a message count or a user to clear message reactions.",
             [ErrorType.InvalidRange]: "Message count must be between 1 and 100."
         }
     ],
@@ -84,23 +78,16 @@ type ClearCommandArgs = {
     interactionType: IntegerArgument,
     interactionRuleIndex: 0
 })
-class ClearCommand extends Command {
-    public override readonly name = "clear";
-    public override readonly description = "Clears messages from a channel.";
+class ClearReactionsCommand extends Command {
+    public override readonly name = "clearreactions";
+    public override readonly description = "Clears message reactions from a channel.";
     public override readonly detailedDescription =
-        "Clear messages from a channel. You can specify a user to clear messages from, or a message count.";
+        "Clear message reactions from a channel. You can specify a user to clear message reactions from, or a message count.";
     public override readonly permissions = [PermissionFlags.ManageMessages];
     public override readonly defer = true;
     public override readonly usage = ["<count: Integer>", "<user: User> [count: Integer]"];
-
-    public static readonly filters: Record<string, (message: Message) => Awaitable<boolean>> = {
-        bot: message => message.author.bot,
-        user: message => !message.author.bot,
-        not_pinned: message => !message.pinned,
-        embed: message => message.embeds.length > 0,
-        attachment: message => message.attachments.size > 0,
-        link: message => /https?:\/\/\S+/.test(message.content)
-    };
+    public override aliases: string[] = ["clearrc", "cr"];
+    public override readonly since: string = "10.35.0";
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;
@@ -115,7 +102,7 @@ class ClearCommand extends Command {
                 .addIntegerOption(option =>
                     option
                         .setName("count")
-                        .setDescription("The number of messages to clear.")
+                        .setDescription("The number of messages to check for reactions.")
                         .setMinValue(1)
                         .setMaxValue(100)
                 )
@@ -129,53 +116,20 @@ class ClearCommand extends Command {
                     option
                         .setName("channel")
                         .setDescription(
-                            "The channel to clear messages from. Defaults to the current channel."
+                            "The channel to clear reactions from. Defaults to the current channel."
                         )
-                )
-                .addStringOption(option =>
-                    option
-                        .setName("filters")
-                        .setDescription(
-                            "The filters to apply to the messages. Separate multiple filters with a comma."
-                        )
-                        .setAutocomplete(true)
                 )
         ];
     }
 
-    @GatewayEventListener("interactionCreate")
-    public async onInteractionCreate(interaction: Interaction): Promise<void> {
-        if (!interaction.isAutocomplete() || interaction.commandName !== "clear") {
-            return;
-        }
-
-        const value = interaction.options.getFocused();
-        const relevantFilters: Array<{ name: string; value: string }> = [];
-
-        for (const key in ClearCommand.filters) {
-            if (key.includes(value)) {
-                relevantFilters.push({
-                    name: key,
-                    value: key
-                });
-            }
-        }
-
-        if (interaction.responded) {
-            return;
-        }
-
-        await interaction.respond(relevantFilters).catch(this.application.logger.error);
-    }
-
     public override async execute(
         context: Context<CommandMessage>,
-        args: ClearCommandArgs
+        args: ClearReactionsCommandArgs
     ): Promise<void> {
         const { user, count } = args;
 
         if (!user && !count) {
-            await context.error("You must specify a message count or a user to clear messages.");
+            await context.error("You must specify a message count or a user to clear reactions.");
             return;
         }
 
@@ -183,23 +137,7 @@ class ClearCommand extends Command {
             await context.deleteOriginalMessage().catch(this.application.logger.error);
         }
 
-        const filters = [];
-
-        if (context.isChatInput()) {
-            const filterString = context.options.getString("filters") ?? "";
-            const filterArray = filterString.split(",").filter(Boolean);
-
-            for (const filter of filterArray) {
-                if (ClearCommand.filters[filter]) {
-                    filters.push(ClearCommand.filters[filter]);
-                } else {
-                    await context.error(`Invalid filter: ${filter}`);
-                    return;
-                }
-            }
-        }
-
-        const result = await this.infractionManager.createClearMessages({
+        const result = await this.infractionManager.createClearMessageReactions({
             guildId: context.guildId,
             moderator: context.user,
             user,
@@ -210,7 +148,6 @@ class ClearCommand extends Command {
                 ? (context.options.getString("reason") ?? undefined)
                 : undefined,
             respond: true,
-            filters,
             attachments: context.isLegacy() ? [...context.attachments.values()] : []
         });
 
@@ -221,4 +158,4 @@ class ClearCommand extends Command {
     }
 }
 
-export default ClearCommand;
+export default ClearReactionsCommand;

@@ -100,7 +100,8 @@ class InfractionManager extends Service {
         [InfractionType.TimeoutRemove]: "removed timeout",
         [InfractionType.Role]: "modified roles",
         [InfractionType.ModMessage]: "sent a moderator message",
-        [InfractionType.Shot]: "given a shot"
+        [InfractionType.Shot]: "given a shot",
+        [InfractionType.ReactionClear]: "cleared reactions"
     };
 
     private readonly typeToPointKeyMap = {
@@ -115,7 +116,8 @@ class InfractionManager extends Service {
         [InfractionType.Kick]: "kick",
         [InfractionType.ModMessage]: "mod_message",
         [InfractionType.Note]: "note",
-        [InfractionType.Unban]: "unban"
+        [InfractionType.Unban]: "unban",
+        [InfractionType.ReactionClear]: "reaction_clear"
     } satisfies {
         [K in InfractionType]?: keyof NonNullable<GuildConfig["infractions"]>["points"];
     };
@@ -223,7 +225,11 @@ class InfractionManager extends Service {
                 name:
                     infraction.type === InfractionType.Role
                         ? `Your role(s) have been changed in ${guild.name}`
-                        : `You have been ${actionDoneName} in ${guild.name}`,
+                        : infraction.type === InfractionType.BulkDeleteMessage
+                          ? `Your messages were cleared in ${guild.name}`
+                          : infraction.type === InfractionType.ReactionClear
+                            ? `Your reactions were cleared in ${guild.name}`
+                            : `You have been ${actionDoneName} in ${guild.name}`,
                 icon_url: guild.iconURL() ?? undefined
             },
             fields: [
@@ -2146,6 +2152,136 @@ class InfractionManager extends Service {
         };
     }
 
+    public async createClearMessageReactions(
+        payload: CreateClearMessageReactionsPayload<false>
+    ): Promise<MessageBulkDeleteResult> {
+        const {
+            moderator,
+            user,
+            reason,
+            guildId,
+            transformNotificationEmbed,
+            channel,
+            count,
+            respond = true,
+            attachments
+        } = payload;
+
+        if (!user && !count) {
+            throw new Error("Must provide either user or count");
+        }
+
+        if (count && count > 100) {
+            throw new Error("Cannot bulk delete more than 100 messages at once");
+        }
+
+        const guild = this.getGuild(payload.guildId);
+
+        if (!guild) {
+            return {
+                status: "failed",
+                overviewEmbed: null,
+                code: 0
+            };
+        }
+
+        let infraction: Infraction | undefined;
+
+        if (user) {
+            infraction = await this.createInfraction({
+                guildId,
+                moderator,
+                reason,
+                transformNotificationEmbed,
+                type: InfractionType.ReactionClear,
+                user,
+                notify: false,
+                attachments
+            });
+        }
+
+        const deletedReactions = [];
+
+        try {
+            const messages = await channel.messages.fetch({ limit: count ?? 100 });
+
+            for (const message of messages.values()) {
+                if (message.reactions.cache.size === 0) {
+                    continue;
+                }
+
+                for (const reaction of message.reactions.cache.values()) {
+                    if (user && !reaction.users.cache.has(user.id)) {
+                        continue;
+                    }
+
+                    if (user) {
+                        reaction.users.remove(user.id).catch(this.application.logger.error);
+                    } else {
+                        reaction.remove().catch(this.application.logger.error);
+                    }
+
+                    deletedReactions.push(reaction);
+                }
+            }
+        } catch (error) {
+            this.application.logger.error(error);
+
+            if (isDiscordAPIError(error)) {
+                const code = +error.code;
+
+                return {
+                    status: "failed",
+                    overviewEmbed: null,
+                    errorType: "api_error",
+                    code,
+                    errorDescription: APIErrors.translateToMessage(code)
+                };
+            }
+
+            return {
+                status: "failed",
+                overviewEmbed: null,
+                code: 0
+            };
+        }
+
+        if (respond) {
+            const message = await channel
+                .send({
+                    content: `${emoji(this.application, "check")} Cleared ${bold(
+                        deletedReactions.length.toString()
+                    )} message reactions${user ? ` from user ${bold(user.username)}` : ""}`
+                })
+                .catch(this.application.logger.error);
+
+            if (message?.deletable) {
+                setTimeout(() => {
+                    if (message?.deletable) {
+                        message.delete().catch(this.application.logger.error);
+                    }
+                }, 6000);
+            }
+        }
+
+        this.auditLoggingService
+            .emitLogEvent(guildId, LogEventType.MessageReactionClear, {
+                user,
+                moderator,
+                reason,
+                infractionId: infraction?.id,
+                channel,
+                reactions: deletedReactions
+            })
+            .catch(this.application.logger.error);
+
+        return {
+            status: "success",
+            count: deletedReactions.length,
+            infraction
+        };
+    }
+
     public async createWarning<E extends boolean>(
         payload: CreateWarningPayload<E>
     ): Promise<InfractionCreateResult<E>> {
@@ -2767,7 +2903,8 @@ class InfractionManager extends Service {
             softban: 0,
             timeout: 0,
             unban: 0,
-            warning: 0
+            warning: 0,
+            reaction_clear: 0
         };
         const groupedInfractions = {} as Record<Key, Infraction[] | undefined>;
 
@@ -2952,6 +3089,13 @@ type CreateClearMessagesPayload<E extends boolean> = Omit<CommonOptions<E>, "not
     channel: GuildTextBasedChannel;
     count?: number;
     filters?: Array<MessageFilter>;
+    respond?: boolean;
+};
+
+type CreateClearMessageReactionsPayload<E extends boolean> = Omit<CommonOptions<E>, "notify"> & {
+    user?: User;
+    channel: GuildTextBasedChannel;
+    count?: number;
     respond?: boolean;
 };
 

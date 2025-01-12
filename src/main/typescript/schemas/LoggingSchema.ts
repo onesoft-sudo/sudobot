@@ -27,6 +27,7 @@ import type {
     GuildMember,
     GuildTextBasedChannel,
     Message,
+    MessageReaction,
     PartialMessage,
     ReadonlyCollection,
     Snowflake,
@@ -38,6 +39,7 @@ export enum LogEventType {
     MessageDelete = "message_delete",
     MessageUpdate = "message_update",
     MessageDeleteBulk = "message_delete_bulk",
+    MessageReactionClear = "message_reaction_clear",
     MemberBanAdd = "member_ban_add",
     MemberMassBan = "member_mass_ban",
     MemberMassUnban = "member_mass_unban",
@@ -67,6 +69,7 @@ export type LogEventArgs = {
     [LogEventType.MessageDelete]: [message: Message<true>, moderator?: User];
     [LogEventType.MessageUpdate]: [oldMessage: Message<true>, newMessage: Message<true>];
     [LogEventType.MessageDeleteBulk]: [payload: LogMessageBulkDeletePayload];
+    [LogEventType.MessageReactionClear]: [payload: LogMessageReactionClearPayload];
     [LogEventType.SystemAutoModRuleModeration]: [
         type: "profile" | "message",
         messageOrMember: Message | GuildMember,
@@ -149,6 +152,17 @@ export type LogMessageBulkDeletePayload = Omit<
     "moderator" | "guild"
 > & {
     messages: ReadonlyCollection<string, Message<boolean> | PartialMessage | undefined>;
+    channel: GuildTextBasedChannel;
+    moderator?: User;
+    infractionId?: number;
+    user?: User;
+};
+
+export type LogMessageReactionClearPayload = Omit<
+    LogModerationActionCommonPayload,
+    "moderator" | "guild"
+> & {
+    reactions: MessageReaction[];
     channel: GuildTextBasedChannel;
     moderator?: User;
     infractionId?: number;

@@ -37,7 +37,8 @@ export enum InfractionType {
     Note = "Note",
     Role = "Role",
     ModMessage = "ModMessage",
-    Shot = "Shot"
+    Shot = "Shot",
+    ReactionClear = "ReactionClear"
 }
 
 export enum InfractionDeliveryStatus {
