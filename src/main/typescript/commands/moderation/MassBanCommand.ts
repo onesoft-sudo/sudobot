@@ -221,6 +221,7 @@ class MassBanCommand extends Command {
             reason,
             deletionTimeframe,
             duration,
+            attachments: context.isLegacy() ? [...context.attachments.values()] : [],
             onMassBanStart: async () => {
                 message = await context.reply({
                     embeds: [

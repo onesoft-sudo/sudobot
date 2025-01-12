@@ -372,6 +372,25 @@ class InfractionManager extends Service {
         });
     }
 
+    private async saveAttachments(attachments: Array<string | Attachment>) {
+        const attachmentFileLocalNames: string[] = [];
+
+        for (const attachment of attachments) {
+            const url = typeof attachment === "string" ? attachment : attachment.proxyURL;
+            const name = `${Date.now()}-${Math.random().toString(36).substring(7)}-${basename(url.substring(0, url.indexOf("?")))}`;
+
+            await downloadFile({
+                url,
+                name,
+                path: systemPrefix("storage/attachments", true)
+            });
+
+            attachmentFileLocalNames.push(name);
+        }
+
+        return attachmentFileLocalNames;
+    }
+
     private async createFallbackThread(infraction: Infraction, config: InfractionConfig) {
         const guild = this.client.guilds.cache.get(infraction.guildId);
 
@@ -424,20 +443,7 @@ class InfractionManager extends Service {
             throw new Error("Cannot create an infraction with more than 10 attachments");
         }
 
-        const attachmentFileLocalNames: string[] = [];
-
-        for (const attachment of attachments) {
-            const url = typeof attachment === "string" ? attachment : attachment.proxyURL;
-            const name = `${Date.now()}-${Math.random().toString(36).substring(7)}-${basename(url.substring(0, url.indexOf("?")))}`;
-
-            await downloadFile({
-                url,
-                name,
-                path: systemPrefix("storage/attachments", true)
-            });
-
-            attachmentFileLocalNames.push(name);
-        }
+        const attachmentFileLocalNames: string[] = await this.saveAttachments(attachments);
 
         const infraction: Infraction = await this.application.database.drizzle.transaction(
             async (tx): Promise<Infraction> => {
@@ -2406,7 +2412,8 @@ class InfractionManager extends Service {
             duration,
             onMassBanComplete,
             onMassBanStart,
-            onError
+            onError,
+            attachments
         } = payload;
         let { reason } = payload;
 
@@ -2426,6 +2433,8 @@ class InfractionManager extends Service {
                 errorType: "too_many_users"
             };
         }
+
+        const attachmentFileLocalNames = attachments ? await this.saveAttachments(attachments) : [];
 
         await onMassBanStart?.();
 
@@ -2483,6 +2492,7 @@ class InfractionManager extends Service {
                 userId,
                 reason,
                 expiresAt: duration?.fromNow(),
+                attachments: attachmentFileLocalNames,
                 metadata: {
                     deletionTimeframe: deletionTimeframe?.fromNowMilliseconds(),
                     duration: duration?.fromNowMilliseconds()
@@ -2537,7 +2547,8 @@ class InfractionManager extends Service {
             onKickFail,
             onKickSuccess,
             onMassKickComplete,
-            onMassKickStart
+            onMassKickStart,
+            attachments
         } = payload;
         let { reason } = payload;
 
@@ -2551,6 +2562,7 @@ class InfractionManager extends Service {
             };
         }
 
+        const attachmentFileLocalNames = attachments ? await this.saveAttachments(attachments) : [];
         await onMassKickStart?.();
 
         const members: GuildMember[] = [];
@@ -2590,6 +2602,7 @@ class InfractionManager extends Service {
                         type: InfractionType.MassKick,
                         userId: member.id,
                         reason,
+                        attachments: attachmentFileLocalNames,
                         deliveryStatus: InfractionDeliveryStatus.NotDelivered
                     });
                 } catch (error) {
@@ -2666,6 +2679,8 @@ class InfractionManager extends Service {
                         return "Updated At";
                     case "moderatorId":
                         return "Moderator ID";
+                    case "attachments":
+                        return "Attachments";
                     default:
                         throw new Error("Invalid column");
                 }
@@ -2699,6 +2714,11 @@ class InfractionManager extends Service {
                             : "None";
                     case "deliveryStatus":
                         return infraction.deliveryStatus;
+                    case "attachments":
+                        return infraction.attachments.length > 0
+                            ? `${infraction.attachments.length} total\n` +
+                                  infraction.attachments.map(a => path.basename(a)).join("\n")
+                            : "None";
                     default:
                         throw new Error("Invalid column");
                 }
@@ -2856,7 +2876,8 @@ export type GeneratePlainTextExportColumn =
     | "expiresAt"
     | "metadata"
     | "updatedAt"
-    | "deliveryStatus";
+    | "deliveryStatus"
+    | "attachments";
 
 export type InfractionStatistics = {
     total: number;
@@ -2952,6 +2973,7 @@ type CreateUserMassBanPayload = {
     users: Array<Snowflake | User>;
     deletionTimeframe?: Duration;
     duration?: Duration;
+    attachments?: Array<Attachment | string>;
     onMassBanComplete?: (
         bannedUsers: Snowflake[],
         failedUsers: Snowflake[],
@@ -2967,6 +2989,7 @@ type CreateUserMassKickPayload = {
     reason?: string;
     guildId: Snowflake;
     members: Array<Snowflake | GuildMember>;
+    attachments?: Array<Attachment | string>;
     onKickAttempt?: (memberId: Snowflake) => Awaitable<void>;
     onKickSuccess?: (member: GuildMember) => Awaitable<void>;
     onKickFail?: (member: GuildMember) => Awaitable<void>;

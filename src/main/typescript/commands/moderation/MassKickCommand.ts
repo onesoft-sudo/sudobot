@@ -93,7 +93,7 @@ class MassKickCommand extends Command {
 
         const errors: string[] = [];
         let reason = context.isChatInput()
-            ? context.options.getString("reason") ?? undefined
+            ? (context.options.getString("reason") ?? undefined)
             : context.isLegacy() && hasReasonOption
               ? context.commandContent.slice(context.commandName.length).trimStart()
               : undefined;
@@ -166,6 +166,7 @@ class MassKickCommand extends Command {
             guildId: context.guildId,
             moderator: context.user,
             members: memberIds,
+            attachments: context.isLegacy() ? [...context.attachments.values()] : [],
             onKickAttempt: async () => {
                 if (count % 20 === 0) {
                     await setTimeout(3000);
