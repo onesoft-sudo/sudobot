@@ -1,5 +1,27 @@
 # Changelog
 
+### 12-01-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot
+  * **feat(infractions):** support attachments in massban/masskick infractions    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+
+### 11-01-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 10-01-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.34.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 10-01-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
   * merge: branch 'main' of github.com:onesoft-sudo/sudobot
