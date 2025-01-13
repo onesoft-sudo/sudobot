@@ -141,7 +141,9 @@ class InfractionCreateCommand extends Command {
         });
 
         await context.reply({
-            embeds: [InfractionViewCommand.buildEmbed(infraction, user, context.user, "Created")]
+            embeds: [
+                InfractionViewCommand.buildEmbed(infraction, user, context.user, "Created", context)
+            ]
         });
     }
 }
