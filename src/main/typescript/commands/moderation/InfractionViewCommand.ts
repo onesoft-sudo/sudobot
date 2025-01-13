@@ -77,7 +77,8 @@ class InfractionViewCommand extends Command {
         infraction: Infraction,
         user: User | string,
         moderator: User | string,
-        footerText: string
+        footerText: string | undefined,
+        context: Context<CommandMessage>
     ) {
         const fields = [
             {
@@ -123,6 +124,17 @@ class InfractionViewCommand extends Command {
                 name: "Expires At",
                 value: time(infraction.expiresAt, "R"),
                 inline: true
+            });
+        }
+
+        if (infraction.attachments.length) {
+            fields.push({
+                name: "Attachments",
+                value:
+                    infraction.attachments
+                        .map((attachment, index) => `**${infraction.id}!${index}**: ${attachment}`)
+                        .join("\n") +
+                    `\nUse \`${context.config?.prefix ?? "-"}infraction file <id>\` to view an attachment file.`
             });
         }
 
@@ -186,7 +198,8 @@ class InfractionViewCommand extends Command {
             infraction,
             user ?? infraction.userId,
             moderator ?? infraction.moderatorId,
-            infraction.id.toString()
+            undefined,
+            context
         );
 
         await context.reply({ embeds: [embed] });

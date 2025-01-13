@@ -783,6 +783,11 @@ class InfractionManager extends Service {
         };
     }
 
+    public getLocalAttachmentPath(attachment: string) {
+        const storagePath = systemPrefix("storage/attachments", true);
+        return path.join(storagePath, attachment);
+    }
+
     public async deleteById(guildId: Snowflake, id: number): Promise<Infraction | undefined> {
         const infraction = (
             await this.application.database.drizzle
@@ -2853,7 +2858,7 @@ class InfractionManager extends Service {
                     case "attachments":
                         return infraction.attachments.length > 0
                             ? `${infraction.attachments.length} total\n` +
-                                  infraction.attachments.map(a => path.basename(a)).join("\n")
+                                  infraction.attachments.join("\n")
                             : "None";
                     default:
                         throw new Error("Invalid column");

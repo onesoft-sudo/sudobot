@@ -44,7 +44,10 @@ class InfractionCommand extends Command {
         "s",
         "clear",
         "d",
-        "duration"
+        "duration",
+        "attachment",
+        "viewfile",
+        "file"
     ];
     public override readonly isolatedSubcommands = true;
     public override readonly subcommandMeta: Record<string, SubcommandMeta> = {
@@ -59,6 +62,18 @@ class InfractionCommand extends Command {
         },
         reason: {
             description: "Change the reason for an infraction."
+        },
+        list: {
+            description: "List infractions for a user."
+        },
+        clear: {
+            description: "Clear all infractions of a user."
+        },
+        duration: {
+            description: "Change the duration of an infraction."
+        },
+        attachment: {
+            description: "View an attachment associated with an infraction."
         }
     };
 
@@ -127,6 +142,18 @@ class InfractionCommand extends Command {
                         .setDescription("View an infraction.")
                         .addIntegerOption(option =>
                             option.setName("id").setDescription("The ID of the infraction to view.")
+                        )
+                )
+                .addSubcommand(subcommand =>
+                    subcommand
+                        .setName("attachment")
+                        .setDescription("View an attachment associated with an infraction.")
+                        .addIntegerOption(option =>
+                            option
+                                .setName("id")
+                                .setDescription(
+                                    "The ID of the infraction attachment to view. Format: `<infraction_id>!<attachment_index>`."
+                                )
                         )
                 )
                 .addSubcommand(subcommand =>
