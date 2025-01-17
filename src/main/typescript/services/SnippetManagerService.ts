@@ -173,7 +173,16 @@ class SnippetManagerService extends Service {
             return null;
         }
 
+        const mentions = [];
+
+        for (const mention of message.mentions.users.keys()) {
+            if (mention !== message.mentions.repliedUser?.id) {
+                mentions.push(`<@${mention}>`);
+            }
+        }
+
         const content =
+            (mentions.length ? mentions.join(" ") + "\n" : "") +
             snippet.content[
                 snippet.randomize ? Math.floor(Math.random() * snippet.content.length) : 0
             ];
@@ -189,8 +198,9 @@ class SnippetManagerService extends Service {
         }
 
         if (snippet.randomize) {
-            const name = snippet.attachments[Math.floor(Math.random() * snippet.attachments.length)];
-            
+            const name =
+                snippet.attachments[Math.floor(Math.random() * snippet.attachments.length)];
+
             this.application.logger.debug(
                 `Attachment: ${systemPrefix(join("storage/snippets", message.guildId, name))}`
             );
@@ -204,7 +214,7 @@ class SnippetManagerService extends Service {
                 this.application.logger.debug(
                     `Attachment: ${systemPrefix(join("storage/snippets", message.guildId, name))}`
                 );
-    
+
                 files.push({
                     attachment: systemPrefix(join("storage/snippets", message.guildId, name)),
                     name
@@ -212,11 +222,11 @@ class SnippetManagerService extends Service {
             }
         }
 
-        const { data, output } = await this.directiveParsingService.parse(content);
+        const result = content ? await this.directiveParsingService.parse(content) : undefined;
         const options = {
             files,
-            content: output.trim() === "" ? undefined : output,
-            embeds: (data.embeds as APIEmbed[]) ?? []
+            content: !result?.output.trim() ? undefined : result?.output,
+            embeds: (result?.data.embeds as APIEmbed[]) ?? []
         };
 
         return {
