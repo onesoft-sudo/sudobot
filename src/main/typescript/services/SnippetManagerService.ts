@@ -188,7 +188,9 @@ class SnippetManagerService extends Service {
             });
         }
 
-        for (const name of snippet.attachments) {
+        if (snippet.randomize) {
+            const name = snippet.attachments[Math.floor(Math.random() * snippet.attachments.length)];
+            
             this.application.logger.debug(
                 `Attachment: ${systemPrefix(join("storage/snippets", message.guildId, name))}`
             );
@@ -197,6 +199,17 @@ class SnippetManagerService extends Service {
                 attachment: systemPrefix(join("storage/snippets", message.guildId, name)),
                 name
             });
+        } else {
+            for (const name of snippet.attachments) {
+                this.application.logger.debug(
+                    `Attachment: ${systemPrefix(join("storage/snippets", message.guildId, name))}`
+                );
+    
+                files.push({
+                    attachment: systemPrefix(join("storage/snippets", message.guildId, name)),
+                    name
+                });
+            }
         }
 
         const { data, output } = await this.directiveParsingService.parse(content);
