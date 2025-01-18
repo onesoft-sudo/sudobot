@@ -1,5 +1,24 @@
 # Changelog
 
+### 18-01-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot
+  * **fix(setup):** only server owners should get setup DM    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+
+### 17-01-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.38.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.37.1 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 17-01-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
   * **feat(snippets):** mention forwarding    
@@ -12,13 +31,6 @@
   * **chore(extensions):** build extensions [skip ci]    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
-      
-
-### 17-01-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
-
-  * **release:** v10.37.1 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 15-01-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
