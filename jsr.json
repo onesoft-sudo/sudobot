@@ -1,6 +1,6 @@
 {
     "name": "@osn/sudobot",
-    "version": "10.38.1",
+    "version": "10.38.2",
     "exports": "./src/main/typescript/exports.ts",
     "publish": {
         "exclude": [

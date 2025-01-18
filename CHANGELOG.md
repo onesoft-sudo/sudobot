@@ -2,10 +2,21 @@
 
 ### 18-01-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **fix(services:infraction):** uncleaned infraction attachments if database transaction fails    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
   * merge: branch 'main' of github.com:onesoft-sudo/sudobot
   * **fix(setup):** only server owners should get setup DM    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+
+### 18-01-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.38.1 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 17-01-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
