@@ -64,7 +64,7 @@ class GuildCreateEventListener extends EventListener<Events.GuildCreate, Client>
             integration => integration.application?.id === id
         );
 
-        if (!systemIntegration?.user) {
+        if (!systemIntegration?.user || systemIntegration.user.id !== guild.ownerId) {
             return;
         }
 
