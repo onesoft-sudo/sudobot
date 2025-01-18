@@ -2,12 +2,23 @@
 
 ### 17-01-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **feat(snippets):** mention forwarding    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
   * **fix(snippets):** randomization of attachments    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
   * **chore(extensions):** build extensions [skip ci]    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 17-01-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.37.1 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 15-01-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
