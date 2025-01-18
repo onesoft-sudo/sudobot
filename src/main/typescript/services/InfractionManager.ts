@@ -382,16 +382,17 @@ class InfractionManager extends Service {
         const attachmentFileLocalNames: string[] = [];
 
         for (const attachment of attachments) {
-            const url = typeof attachment === "string" ? attachment : attachment.proxyURL;
-            const name = `${Date.now()}-${Math.random().toString(36).substring(7)}-${basename(url.substring(0, url.indexOf("?")))}`;
+            const attachmentFileURL =
+                typeof attachment === "string" ? attachment : attachment.proxyURL;
+            const attachmentFileName = `${Date.now()}-${Math.random().toString(36).substring(7)}-${basename(attachmentFileURL.substring(0, attachmentFileURL.indexOf("?")))}`;
 
             await downloadFile({
-                url,
-                name,
+                url: attachmentFileURL,
+                name: attachmentFileName,
                 path: systemPrefix("storage/attachments", true)
             });
 
-            attachmentFileLocalNames.push(name);
+            attachmentFileLocalNames.push(attachmentFileName);
         }
 
         return attachmentFileLocalNames;
@@ -451,64 +452,72 @@ class InfractionManager extends Service {
 
         const attachmentFileLocalNames: string[] = await this.saveAttachments(attachments);
 
-        const infraction: Infraction = await this.application.database.drizzle.transaction(
-            async (tx): Promise<Infraction> => {
-                let [newInfraction] = await tx
-                    .insert(infractions)
-                    .values({
-                        userId: user.id,
-                        guildId,
-                        moderatorId: moderator.id,
-                        reason: processReason ? this.processReason(guildId, reason) : reason,
-                        type,
-                        deliveryStatus:
-                            type === InfractionType.Unban || !notify
-                                ? InfractionDeliveryStatus.NotDelivered
-                                : InfractionDeliveryStatus.Success,
-                        attachments: attachmentFileLocalNames,
-                        ...payload
-                    })
-                    .returning();
+        try {
+            const infraction: Infraction = await this.application.database.drizzle.transaction(
+                async (tx): Promise<Infraction> => {
+                    let [newInfraction] = await tx
+                        .insert(infractions)
+                        .values({
+                            userId: user.id,
+                            guildId,
+                            moderatorId: moderator.id,
+                            reason: processReason ? this.processReason(guildId, reason) : reason,
+                            type,
+                            deliveryStatus:
+                                type === InfractionType.Unban || !notify
+                                    ? InfractionDeliveryStatus.NotDelivered
+                                    : InfractionDeliveryStatus.Success,
+                            attachments: attachmentFileLocalNames,
+                            ...payload
+                        })
+                        .returning();
 
-                if (type !== InfractionType.Unban && notify) {
-                    const status = await this.notify(
-                        user,
-                        newInfraction,
-                        transformNotificationEmbed
-                    );
+                    if (type !== InfractionType.Unban && notify) {
+                        const status = await this.notify(
+                            user,
+                            newInfraction,
+                            transformNotificationEmbed
+                        );
 
-                    if (status !== "notified") {
-                        const [updatedInfraction] = await tx
-                            .update(infractions)
-                            .set({
-                                deliveryStatus:
-                                    status === "failed"
-                                        ? InfractionDeliveryStatus.Failed
-                                        : InfractionDeliveryStatus.Fallback
-                            })
-                            .where(eq(infractions.id, newInfraction.id))
-                            .returning();
+                        if (status !== "notified") {
+                            const [updatedInfraction] = await tx
+                                .update(infractions)
+                                .set({
+                                    deliveryStatus:
+                                        status === "failed"
+                                            ? InfractionDeliveryStatus.Failed
+                                            : InfractionDeliveryStatus.Fallback
+                                })
+                                .where(eq(infractions.id, newInfraction.id))
+                                .returning();
 
-                        newInfraction = updatedInfraction;
+                            newInfraction = updatedInfraction;
+                        }
                     }
+
+                    const promise = callback?.(newInfraction);
+
+                    if (promise instanceof Promise) {
+                        promise.catch(this.application.logger.error);
+                    }
+
+                    return newInfraction;
                 }
+            );
 
-                const promise = callback?.(newInfraction);
-
-                if (promise instanceof Promise) {
-                    promise.catch(this.application.logger.error);
-                }
-
-                return newInfraction;
+            if (
+                failIfNotNotified &&
+                infraction.deliveryStatus === InfractionDeliveryStatus.Failed
+            ) {
+                throw new Error("Failed to notify user");
             }
-        );
 
-        if (failIfNotNotified && infraction.deliveryStatus === InfractionDeliveryStatus.Failed) {
-            throw new Error("Failed to notify user");
+            this.application.getClient().emit("infractionCreate", infraction, user, moderator);
+            return infraction;
+        } catch (error) {
+            await this.deleteAttachments(attachmentFileLocalNames);
+            throw error;
         }
-
-        this.application.getClient().emit("infractionCreate", infraction, user, moderator);
-        return infraction;
     }
 
     public async getById(guildId: Snowflake, id: number): Promise<Infraction | undefined> {
@@ -806,17 +815,20 @@ class InfractionManager extends Service {
             await this.updateInfractionQueues(infraction, null);
         }
 
+        await this.deleteAttachments(infraction.attachments);
+        return infraction;
+    }
+
+    private async deleteAttachments(attachments: string[]) {
         const attachmentStoragePath = systemPrefix("storage/attachments", true);
 
-        for (const file of infraction.attachments) {
+        for (const file of attachments) {
             const filePath = path.join(attachmentStoragePath, file);
 
             if (existsSync(filePath)) {
                 await unlink(filePath).catch(this.application.logger.error);
             }
         }
-
-        return infraction;
     }
 
     public async deleteForUser(
