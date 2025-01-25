@@ -53,7 +53,9 @@ type ProfileCommandArgs = {
     errorMessages: [GuildMemberArgument.defaultErrors, UserArgument.defaultErrors]
 })
 class ProfileCommand extends Command {
-    private static readonly MAX_PERMISSION_COUNT = PermissionsBitField.All.toString(2).length;
+    private static readonly MAX_PERMISSION_COUNT = PermissionsBitField.All.toString(2)
+        .split("")
+        .filter(bit => bit !== "0").length;
     public override readonly name = "profile";
     public override readonly description: string = "Shows information about your profile.";
     public override readonly defer = true;
@@ -154,7 +156,10 @@ class ProfileCommand extends Command {
             return 100;
         }
 
-        const count = member.permissions.bitfield.toString(2).length;
+        const count = member.permissions.bitfield
+            .toString(2)
+            .split("")
+            .filter(bit => bit !== "0").length;
         return (count / ProfileCommand.MAX_PERMISSION_COUNT) * 100;
     }
 
@@ -354,7 +359,7 @@ class ProfileCommand extends Command {
                     text:
                         `${user.bot ? "Bot" : "User"} • ${member.id}` +
                         (isMember
-                            ? ` • Has ${this.calculatePermissionPercentage(member)}% permissions`
+                            ? ` • Has ${Math.round(this.calculatePermissionPercentage(member))}% permissions`
                             : "")
                 })
         );
