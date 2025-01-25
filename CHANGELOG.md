@@ -1,5 +1,55 @@
 # Changelog
 
+### 25-01-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **fix(permissions):** error in checking moderation permissions    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **fix:** miscalculation in permission bitfield    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 23-01-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore:** update VERSIONS.md    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 21-01-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 19-01-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 18-01-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.38.2 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.38.1 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 18-01-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
   * **fix(services:infraction):** uncleaned infraction attachments if database transaction fails    
@@ -10,13 +60,6 @@
   * **fix(setup):** only server owners should get setup DM    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
-      
-
-### 18-01-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
-
-  * **release:** v10.38.1 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 17-01-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
