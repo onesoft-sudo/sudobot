@@ -49,7 +49,6 @@ abstract class AbstractPermissionManagerService
         "BanMembers",
         "KickMembers",
         "ManageGuild",
-        "ChangeNickname",
         "ModerateMembers",
         "ManageMessages",
         "ManageNicknames",
