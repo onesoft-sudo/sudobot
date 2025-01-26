@@ -2,9 +2,20 @@
 
 ### 26-01-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **feat(commands:profile):** add special badge for server admins    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
   * **feat(commands:profile):** show server owner badge    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+
+### 26-01-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.39.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 25-01-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
