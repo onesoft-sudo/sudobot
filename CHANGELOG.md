@@ -1,5 +1,19 @@
 # Changelog
 
+### 26-01-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **feat(commands:profile):** show server owner badge    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+
+### 25-01-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.38.4 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 25-01-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
   * **fix(permissions):** error in checking moderation permissions    
