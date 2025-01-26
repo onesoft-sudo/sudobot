@@ -184,7 +184,9 @@ class ProfileCommand extends Command {
         }
 
         if (member) {
-            if (await this.permissionManagerService.isModerator(member)) {
+            if (member.guild.ownerId === member.id) {
+                badges.push(`${emoji(this.application, "owner") || ""} Server Owner`);
+            } else if (await this.permissionManagerService.isModerator(member)) {
                 badges.push(`${emoji(this.application, "moderator") || ""} Server Moderator`);
             }
         }
