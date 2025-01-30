@@ -29,6 +29,7 @@ import undici from "undici";
 
 @Name("aiAutoModeration")
 class AIAutoModeration extends Service {
+    private static readonly RATE_LIMIT_QUEUE_SIZE = 10;
     private readonly cache = new Map<
         `${string}::${string}`,
         {
@@ -41,6 +42,9 @@ class AIAutoModeration extends Service {
 
     @Inject("permissionManager")
     private readonly permissionManagerService!: PermissionManagerService;
+    private readonly queuedMessages = new Map<`${string}_${string}`, Message<true>>();
+    private queueTimeout: Timer | null = null;
+    private counter = 0;
 
     private async analyzeComment(comment: string) {
         if (!env.PERSPECTIVE_API_TOKEN) {
@@ -88,7 +92,7 @@ class AIAutoModeration extends Service {
             return;
         }
 
-        await this.moderate(message);
+        await this.moderate(message, "create");
     }
 
     public async onMessageUpdate(oldMessage: Message | PartialMessage, newMessage: Message) {
@@ -101,7 +105,7 @@ class AIAutoModeration extends Service {
             return;
         }
 
-        await this.moderate(newMessage);
+        await this.moderate(newMessage, "update");
     }
 
     private configFor(guildId: string) {
@@ -138,7 +142,7 @@ class AIAutoModeration extends Service {
         return this.permissionManagerService.canAutoModerate(finalMember);
     }
 
-    public async moderate(message: Message<true>) {
+    private async moderate(message: Message<true>, event: "create" | "update") {
         if (!env.PERSPECTIVE_API_TOKEN) {
             return null;
         }
@@ -171,6 +175,78 @@ class AIAutoModeration extends Service {
 
                 return;
             }
+        }
+
+        if (this.queuedMessages.size > AIAutoModeration.RATE_LIMIT_QUEUE_SIZE) {
+            this.application.logger.debug("Rate limit exceeded, queuing");
+            this.queueModeration(message, event);
+            return;
+        }
+
+        await this.processModerationQueue(message);
+    }
+
+    private queueModeration(message: Message<true>, event: "create" | "update") {
+        this.queuedMessages.set(`${message.id}_${event}`, message);
+        this.application.logger.debug(
+            "Queued message for moderation: ",
+            message.id,
+            message.author.username
+        );
+
+        if (this.queuedMessages.size > AIAutoModeration.RATE_LIMIT_QUEUE_SIZE) {
+            this.setQueueTimeout();
+        }
+    }
+
+    private setQueueTimeout() {
+        if (this.counter >= 10) {
+            this.application.logger.debug("Max recursion depth reached, stopping");
+
+            if (this.queueTimeout) {
+                clearTimeout(this.queueTimeout);
+            }
+
+            return;
+        }
+
+        this.queueTimeout ??= setTimeout(() => {
+            this.application.logger.debug("Processing next 10 messages in queue");
+            const limit = Math.min(
+                this.queuedMessages.size,
+                AIAutoModeration.RATE_LIMIT_QUEUE_SIZE
+            );
+            let i = 0;
+
+            for (const [key, message] of this.queuedMessages) {
+                if (i >= limit) {
+                    break;
+                }
+
+                this.processModerationQueue(message).catch(this.application.logger.error);
+                this.queuedMessages.delete(key);
+                i++;
+            }
+
+            if (this.queuedMessages.size) {
+                this.application.logger.debug(
+                    "Queue still has messages, setting another timeout recursively"
+                );
+
+                this.counter++;
+                this.setQueueTimeout();
+            } else {
+                this.counter = 0;
+            }
+        }, 3500);
+    }
+
+    private async processModerationQueue(message: Message<true>) {
+        const config =
+            this.application.service("configManager").config[message.guildId]?.ai_automod;
+
+        if (!config?.enabled) {
+            return;
         }
 
         const key = `${message.guildId}::${message.author.id}` as const;
