@@ -275,7 +275,11 @@ class AIAutoModeration extends Service {
 
         const response = await this.analyzeComment(message.content);
 
-        if (!response) {
+        if (
+            !response ||
+            !response.attributeScores ||
+            typeof response.attributeScores !== "object"
+        ) {
             return;
         }
 
