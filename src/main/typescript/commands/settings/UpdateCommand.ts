@@ -210,7 +210,13 @@ class UpdateCommand extends Command {
                     })
                     .catch(this.application.logger.error);
 
-                this.startupManager.requestRestart({ metadata: "update" });
+                this.startupManager.requestRestart({
+                    metadata: "update",
+                    channelId: context.channelId,
+                    messageId: reply.id,
+                    guildId: context.guildId,
+                    message: `System has been updated to version **${release.tag_name}**. Restarting..`
+                });
             }
         });
 

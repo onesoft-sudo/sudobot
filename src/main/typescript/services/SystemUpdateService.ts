@@ -74,7 +74,8 @@ class SystemUpdateService extends Service {
         if (!latestStableVersion || semver.valid(latestStableVersion) === null) {
             throw new Error("Invalid stable version string");
         }
-        if (!latestUnstableVersion || semver.valid(latestUnstableVersion) === null) {
+
+        if (latestUnstableVersion && semver.valid(latestUnstableVersion) === null) {
             throw new Error("Invalid unstable version string");
         }
 
@@ -82,7 +83,7 @@ class SystemUpdateService extends Service {
             updateInfo.latestStable = latestStable ?? null;
         }
 
-        if (semver.gt(latestUnstableVersion, this.application.version)) {
+        if (latestUnstableVersion && semver.gt(latestUnstableVersion, this.application.version)) {
             updateInfo.latestUnstable = latestUnstable ?? null;
         }
 
