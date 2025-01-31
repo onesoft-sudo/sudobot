@@ -6,6 +6,14 @@
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
       
+  * **fix(system):** auto update not working    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
   * **fix(automod:ai):** crash during automod message inspection    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
@@ -13,6 +21,13 @@
   * **chore(extensions):** build extensions [skip ci]    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 31-01-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.40.2 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 30-01-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
