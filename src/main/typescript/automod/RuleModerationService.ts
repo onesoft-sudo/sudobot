@@ -81,7 +81,7 @@ class RuleModerationService
                 tokens: [],
                 words: [],
                 enabled: true,
-                mode: "invert",
+                mode: "normal",
                 normalize: true,
                 actions: [
                     {
