@@ -82,7 +82,7 @@
         "discord.js": "^14.17.2",
         "dot-object": "^2.1.5",
         "dotenv": "^16.4.7",
-        "drizzle-orm": "^0.38.2",
+        "drizzle-orm": "^0.39.1",
         "express": "^4.21.2",
         "express-rate-limit": "^7.5.0",
         "figlet": "^1.8.0",
