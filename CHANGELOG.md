@@ -1,5 +1,27 @@
 # Changelog
 
+### 02-02-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **feat(verification):** add static verification method [NAE]    
+      
+    This update cannot be automatically installed as it contains  
+    changes to the database schema. Please run the migration file  
+    0004_verification_method_static.sql manually.  
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+
+### 01-02-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.40.4 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 01-02-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
   * **fix:** automod rule creation creates inverted rules    
