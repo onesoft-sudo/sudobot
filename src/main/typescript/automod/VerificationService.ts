@@ -30,6 +30,7 @@ import { verificationEntries } from "@main/models/VerificationEntry";
 import { VerificationMethod, verificationRecords } from "@main/models/VerificationRecord";
 import VerificationExpiredQueue from "@main/queues/VerificationExpiredQueue";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
+import type DirectiveParsingService from "@main/services/DirectiveParsingService";
 import type ModerationActionService from "@main/services/ModerationActionService";
 import { getAxiosClient } from "@main/utils/axios";
 import { formatDistanceToNowStrict } from "date-fns";
@@ -53,6 +54,9 @@ class VerificationService extends Service {
     @Inject("moderationActionService")
     private readonly moderationActionService!: ModerationActionService;
 
+    @Inject("directiveParsingService")
+    private readonly directiveParsingService!: DirectiveParsingService;
+
     private configFor(guildId: Snowflake) {
         return this.configManager.config[guildId]?.member_verification;
     }
@@ -68,7 +72,7 @@ class VerificationService extends Service {
 
         const memberId = interaction.customId.split("_")[1];
 
-        if (interaction.user.id !== memberId) {
+        if (memberId !== "static" && interaction.user.id !== memberId) {
             return void (await interaction.reply({
                 content: "This button is not under your control.",
                 ephemeral: true
@@ -84,11 +88,11 @@ class VerificationService extends Service {
             }));
         }
 
-        if (config.method !== "channel_interaction") {
-            return void (await interaction.reply({
-                content: "This server does not have this verification method enabled.",
-                ephemeral: true
-            }));
+        if (
+            (memberId !== "static" && config.method !== "channel_interaction") ||
+            (memberId === "static" && config.method !== "channel_static_interaction")
+        ) {
+            return;
         }
 
         await interaction.deferReply({ ephemeral: true });
@@ -102,6 +106,36 @@ class VerificationService extends Service {
             }
         });
 
+        if (memberId === "static") {
+            const url = entry
+                ? this.getVerificationURL(interaction.guildId, interaction.user.id, entry.token)
+                : await this.startVerification(
+                      interaction.member as GuildMember,
+                      "Verification requested by user.",
+                      true
+                  );
+
+            if (!url) {
+                return void (await interaction.editReply({
+                    content: "Failed to start verification."
+                }));
+            }
+
+            await interaction.editReply({
+                content: `Hi **${interaction.user.username}**! Please click the button below. Alternatively, you can verify yourself by copy-pasting the following link in your browser.\n${url}`,
+                components: [
+                    new ActionRowBuilder<ButtonBuilder>().addComponents(
+                        new ButtonBuilder()
+                            .setStyle(ButtonStyle.Link)
+                            .setLabel("Verify")
+                            .setURL(url)
+                    )
+                ]
+            });
+
+            return;
+        }
+
         if (!entry) {
             return void (await interaction.editReply({
                 content: "This verification session has expired."
@@ -111,7 +145,7 @@ class VerificationService extends Service {
         const url = this.getVerificationURL(interaction.guildId, interaction.user.id, entry.token);
 
         await interaction.editReply({
-            content: `Please click the button below. Alternatively, you can verify yourself by copy-pasting the following link in your browser.\n${url}`,
+            content: `Hi **${interaction.user.username}**! Please click the button below. Alternatively, you can verify yourself by copy-pasting the following link in your browser.\n${url}`,
             components: [
                 new ActionRowBuilder<ButtonBuilder>().addComponents(
                     new ButtonBuilder().setStyle(ButtonStyle.Link).setLabel("Verify").setURL(url)
@@ -166,7 +200,7 @@ class VerificationService extends Service {
         return `${domain}${domain === env.FRONTEND_URL ? "/verify" : ""}/guilds/${encodeURIComponent(guildId)}/challenge/onboarding?t=${encodeURIComponent(token)}&u=${encodeURIComponent(memberId)}`;
     }
 
-    public async startVerification(member: GuildMember, reason: string) {
+    public async startVerification(member: GuildMember, reason: string, silent = false) {
         const config = this.configFor(member.guild.id);
 
         if (!config || !member.manageable) {
@@ -206,7 +240,60 @@ class VerificationService extends Service {
 
         const url = this.getVerificationURL(member.guild.id, member.id, token);
 
+        if (silent) {
+            return url;
+        }
+
         switch (config.method) {
+            case "channel_static_interaction":
+                if (!config.channel) {
+                    break;
+                }
+
+                if (!config.message_id_internal) {
+                    try {
+                        const channel = await fetchChannel(member.guild, config.channel);
+
+                        if (!channel?.isTextBased()) {
+                            break;
+                        }
+
+                        const { data, output } = await this.directiveParsingService.parse(
+                            config.verification_message ??
+                                "Welcome to the server! Please verify yourself by clicking the button below."
+                        );
+                        const options = {
+                            content: output.trim() === "" ? undefined : output,
+                            embeds: (data.embeds as APIEmbed[]) ?? [],
+                            allowedMentions: { parse: [], roles: [], users: [] },
+                            components: [
+                                new ActionRowBuilder<ButtonBuilder>().addComponents(
+                                    new ButtonBuilder()
+                                        .setStyle(ButtonStyle.Secondary)
+                                        .setLabel("Start Verification")
+                                        .setCustomId("verify_static")
+                                )
+                            ]
+                        };
+
+                        const { id } = await channel.send(options);
+
+                        if (this.configManager.config[member.guild.id]?.member_verification) {
+                            this.configManager.config[
+                                member.guild.id
+                            ]!.member_verification!.message_id_internal = id;
+                            await this.configManager.write();
+                        }
+                    } catch (error) {
+                        this.logger.error(
+                            "Failed to send verification message to channel: ",
+                            error
+                        );
+                    }
+                }
+
+                break;
+
             case "channel_interaction":
                 if (!config.channel) {
                     break;
@@ -284,6 +371,8 @@ class VerificationService extends Service {
                 })
                 .schedule();
         }
+
+        return url;
     }
 
     public async onVerificationExpire(guildId: Snowflake, memberId: Snowflake) {

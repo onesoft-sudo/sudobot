@@ -231,8 +231,11 @@ export const GuildConfigSchema = z.object({
                 .describe("Max verification duration (in seconds)")
                 .int()
                 .optional(),
-            method: z.enum(["channel_interaction", "dm_interaction"]).default("dm_interaction"),
-            channel: zSnowflake.optional()
+            method: z
+                .enum(["channel_interaction", "dm_interaction", "channel_static_interaction"])
+                .default("dm_interaction"),
+            channel: zSnowflake.optional(),
+            message_id_internal: zSnowflake.optional()
         })
         .optional(),
     quick_mute: z

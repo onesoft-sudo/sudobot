@@ -22,7 +22,8 @@ import { pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
 
 export enum VerificationMethod {
     ChannelInteraction = "channel_interaction",
-    DMInteraction = "dm_interaction"
+    DMInteraction = "dm_interaction",
+    ChannelStaticInteraction = "channel_static_interaction"
 }
 
 export const verificationMethodEnum = pgEnum("verification_method", VerificationMethod);
