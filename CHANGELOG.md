@@ -2,6 +2,10 @@
 
 ### 03-02-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **feat(api):** status check    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
   * merge: branch 'main' of github.com:onesoft-sudo/sudobot    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
@@ -25,6 +29,10 @@
 
 ### 03-02-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v10.43.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v10.42.0 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
