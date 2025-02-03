@@ -19,7 +19,7 @@
 
 import { Action } from "@framework/api/decorators/Action";
 import Controller from "@framework/api/http/Controller";
-import Request from "@framework/api/http/Request";
+import type Request from "@framework/api/http/Request";
 import { Inject } from "@framework/container/Inject";
 import ConfigurationManager from "../../services/ConfigurationManager";
 
