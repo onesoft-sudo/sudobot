@@ -6,6 +6,14 @@
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
       
+  * **feat:** verification system improvement [NAE]    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
   * **feat:** hack to make role logging and nickname logging work    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
@@ -13,6 +21,13 @@
   * **chore(extensions):** build extensions [skip ci]    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 03-02-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.42.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 02-02-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
