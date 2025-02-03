@@ -58,31 +58,75 @@ class VerificationController extends Controller {
     @Action("GET", "/guilds/:guildId/members/:userId/verify")
     public async getMemberVerificationDetails(request: Request) {
         const { guildId, userId } = request.params;
+        const { token } = request.query;
+
+        if (!token || typeof token !== "string") {
+            return this.response(400, { error: "Missing token." });
+        }
 
         const guild = this.application.client.guilds.cache.get(guildId);
 
         if (!guild) {
-            return this.error(404, { error: "Guild not found." });
+            return this.response(404, { error: "Guild not found." });
         }
 
         const entry = await this.application.database.query.verificationEntries.findFirst({
             where: and(
                 eq(verificationEntries.guildId, guildId),
+                eq(verificationEntries.token, token),
                 eq(verificationEntries.userId, userId)
             )
         });
 
         if (!entry) {
-            return this.error(404, { error: "Verification entry not found." });
+            return this.response(404, { error: "Verification entry not found." });
         }
 
         return {
             guild: {
                 id: guild.id,
                 name: guild.name,
-                icon: guild.icon
+                icon: guild.iconURL()
             }
         };
+    }
+
+    @Action("POST", "/guilds/:guildId/members/:userId/discord")
+    @Validate(
+        z.object({
+            discordCode: z.string(),
+            token: z.string()
+        })
+    )
+    public async verifyMemberConnectDiscord(request: Request) {
+        const { guildId, userId } = request.params;
+        const { discordCode, token } = request.parsedBody ?? {};
+        const ip = request.ip;
+
+        if (!ip) {
+            return this.response(400, { error: "Missing IP address." });
+        }
+
+        if (await this.verificationService.isProxy(ip)) {
+            return this.response(400, {
+                error: "You seem to be using a VPN or proxy. Please disable it, reload this page and try again."
+            });
+        }
+
+        const result = await this.verificationService.connectDiscord(
+            guildId,
+            userId,
+            token,
+            discordCode
+        );
+
+        if (result.error) {
+            return this.response(400, { error: result.error });
+        }
+
+        return this.response(204, {
+            success: true
+        });
     }
 
     @Action("POST", "/guilds/:guildId/members/:userId/verify")
@@ -98,13 +142,13 @@ class VerificationController extends Controller {
         const ip = request.ip;
 
         if (!ip) {
-            return this.error(400, { error: "Missing IP address." });
+            return this.response(400, { error: "Missing IP address." });
         }
 
         const captchaResult = await this.verifyCaptcha(captchaToken, ip);
 
         if (!captchaResult) {
-            return this.error(400, {
+            return this.response(400, {
                 error: "We're unable to verify whether you're human or not: Captcha verification failed."
             });
         }
@@ -117,7 +161,7 @@ class VerificationController extends Controller {
         );
 
         if (result.error) {
-            return this.error(400, { error: result.error });
+            return this.response(400, { error: result.error });
         }
 
         return { success: true };

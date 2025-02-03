@@ -1,0 +1,2 @@
+CREATE TYPE "public"."verification_status" AS ENUM('pending', 'discord_authorized');--> statement-breakpoint
+ALTER TABLE "verification_entries" ADD COLUMN "status" "verification_status" DEFAULT 'pending' NOT NULL;

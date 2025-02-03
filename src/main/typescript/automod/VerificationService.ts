@@ -26,7 +26,7 @@ import { BUG } from "@framework/utils/devflow";
 import { fetchChannel, fetchMember, fetchUser } from "@framework/utils/entities";
 import { Colors } from "@main/constants/Colors";
 import { env } from "@main/env/env";
-import { verificationEntries } from "@main/models/VerificationEntry";
+import { verificationEntries, VerificationStatus } from "@main/models/VerificationEntry";
 import { VerificationMethod, verificationRecords } from "@main/models/VerificationRecord";
 import VerificationExpiredQueue from "@main/queues/VerificationExpiredQueue";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
@@ -45,6 +45,7 @@ import {
 } from "discord.js";
 import { and, eq, sql } from "drizzle-orm";
 import jwt from "jsonwebtoken";
+import undici from "undici";
 
 @Name("verificationService")
 class VerificationService extends Service {
@@ -407,7 +408,7 @@ class VerificationService extends Service {
             });
     }
 
-    private async checkProxy(ip: string) {
+    public async isProxy(ip: string) {
         const response = await getAxiosClient().get(
             `https://proxycheck.io/v2/${encodeURIComponent(ip)}?vpn=1&asn=1` +
                 (env.PROXYCHECKIO_API_KEY
@@ -430,8 +431,100 @@ class VerificationService extends Service {
         );
     }
 
+    public async connectDiscord(
+        guildId: string,
+        memberId: string,
+        token: string,
+        discordCode: string
+    ) {
+        try {
+            const body = new URLSearchParams({
+                client_id: env.CLIENT_ID,
+                client_secret: env.CLIENT_SECRET,
+                code: discordCode,
+                grant_type: "authorization_code",
+                redirect_uri: `${env.FRONTEND_GUILD_MEMBER_VERIFICATION_URL}/next/discord`,
+                scope: "identify guilds",
+                state: `${guildId}|${memberId}|${token}`
+            }).toString();
+
+            const tokenResponse = await undici.request("https://discord.com/api/oauth2/token", {
+                method: "POST",
+                body,
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
+            });
+
+            if (tokenResponse.statusCode > 299 || tokenResponse.statusCode < 200) {
+                throw new Error(`Failed to communicate with Discord: ${tokenResponse.statusCode}`);
+            }
+
+            const oauthData = await tokenResponse.body.json();
+
+            if (typeof oauthData !== "object" || !oauthData) {
+                throw new Error("Invalid response from Discord");
+            }
+
+            const { access_token, token_type } = oauthData as Record<string, string>;
+            const userResponse = await undici.request("https://discord.com/api/users/@me", {
+                method: "GET",
+                headers: {
+                    Authorization: `${token_type} ${access_token}`
+                }
+            });
+
+            if (userResponse.statusCode > 299 || userResponse.statusCode < 200) {
+                throw new Error(`Failed to get user info: ${userResponse.statusCode}`);
+            }
+
+            const userData = (await userResponse.body.json()) as Record<string, string>;
+
+            if (typeof userData !== "object" || !userData) {
+                throw new Error("Invalid user response");
+            }
+
+            if (userData.error) {
+                throw new Error(userData.error);
+            }
+
+            const discordId = userData.id;
+
+            if (discordId !== memberId) {
+                throw new Error("Discord ID mismatch");
+            }
+
+            const result = await this.application.database.drizzle
+                .update(verificationEntries)
+                .set({ status: VerificationStatus.DiscordAuthorized })
+                .where(
+                    and(
+                        eq(verificationEntries.userId, memberId),
+                        eq(verificationEntries.guildId, guildId),
+                        eq(verificationEntries.token, token)
+                    )
+                )
+                .execute();
+
+            if (result.rowCount === 0) {
+                throw new Error("Invalid verification payload/session.");
+            }
+
+            return {
+                success: true
+            };
+        } catch (error) {
+            this.logger.error("Failed to connect Discord account: ", error);
+
+            return {
+                error:
+                    error instanceof Error ? error?.message : "Failed to connect Discord account."
+            };
+        }
+    }
+
     public async attemptVerification(guildId: string, memberId: string, ip: string, token: string) {
-        const proxyCheck = await this.checkProxy(ip);
+        const proxyCheck = await this.isProxy(ip);
         let error: string | undefined;
         const config = this.configFor(guildId);
 
@@ -451,7 +544,8 @@ class VerificationService extends Service {
                     return operators.and(
                         operators.eq(fields.userId, memberId),
                         operators.eq(fields.guildId, guildId),
-                        operators.eq(fields.token, token)
+                        operators.eq(fields.token, token),
+                        operators.eq(fields.status, VerificationStatus.DiscordAuthorized)
                     );
                 }
             });

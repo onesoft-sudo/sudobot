@@ -17,8 +17,16 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { pgEnum } from "@framework/database/Enum";
 import { integer, json, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
 import { verificationMethodEnum } from "./VerificationRecord";
+
+export enum VerificationStatus {
+    Pending = "pending",
+    DiscordAuthorized = "discord_authorized"
+}
+
+export const verificationStatusEnum = pgEnum("verification_status", VerificationStatus);
 
 export const verificationEntries = pgTable("verification_entries", {
     id: serial("id").primaryKey(),
@@ -28,6 +36,7 @@ export const verificationEntries = pgTable("verification_entries", {
     attempts: integer("attempts").notNull().default(0),
     metadata: json("metadata").notNull().default({}),
     method: verificationMethodEnum("method").notNull(),
+    status: verificationStatusEnum("status").notNull().default(VerificationStatus.Pending),
     expiresAt: timestamp("expires_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true })

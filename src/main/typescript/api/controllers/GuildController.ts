@@ -33,7 +33,7 @@ class GuildController extends Controller {
         const guild = this.application.client.guilds.cache.get(id);
 
         if (!guild) {
-            return this.error(404, {
+            return this.response(404, {
                 message: "Guild not found.",
                 code: APIErrorCode.None
             });
@@ -71,7 +71,7 @@ class GuildController extends Controller {
         const guild = this.application.client.guilds.cache.get(id);
 
         if (!guild) {
-            return this.error(404, {
+            return this.response(404, {
                 message: "Guild not found.",
                 code: APIErrorCode.GuildNotFound
             });
@@ -91,7 +91,7 @@ class GuildController extends Controller {
         const guild = this.application.client.guilds.cache.get(id);
 
         if (!guild) {
-            return this.error(404, {
+            return this.response(404, {
                 message: "Guild not found.",
                 code: APIErrorCode.GuildNotFound
             });

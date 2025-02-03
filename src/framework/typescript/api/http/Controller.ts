@@ -25,7 +25,7 @@ export default abstract class Controller {
         @((..._: unknown[]) => undefined) protected readonly application: Application
     ) {}
 
-    protected error(status: number, body?: unknown, headers?: Record<string, string>) {
+    protected response(status: number, body?: unknown, headers?: Record<string, string>) {
         return new Response({
             status,
             body,

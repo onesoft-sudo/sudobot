@@ -40,13 +40,13 @@ class ConfigController extends Controller {
         const guild = this.application.client.guilds.cache.get(id);
 
         if (!guild) {
-            return this.error(404, {
+            return this.response(404, {
                 message: "Guild not found."
             });
         }
 
         if (!request.user?.guilds.includes(guild.id)) {
-            return this.error(403, {
+            return this.response(403, {
                 message: "You do not have permission to view this guild's configuration."
             });
         }
@@ -62,14 +62,14 @@ class ConfigController extends Controller {
         const guild = this.application.client.guilds.cache.get(id);
 
         if (!guild) {
-            return this.error(404, {
+            return this.response(404, {
                 success: false,
                 message: "Guild not found."
             });
         }
 
         if (!request.user?.guilds.includes(guild.id)) {
-            return this.error(403, {
+            return this.response(403, {
                 success: false,
                 message: "You do not have permission to update this guild's configuration."
             });
@@ -78,14 +78,14 @@ class ConfigController extends Controller {
         const config = request.parsedBody;
 
         if (!config) {
-            return this.error(400, {
+            return this.response(400, {
                 success: false,
                 message: "No configuration provided."
             });
         }
 
         if (typeof config !== "object" || !config) {
-            return this.error(400, {
+            return this.response(400, {
                 success: false,
                 message: "Invalid configuration provided."
             });
@@ -97,7 +97,7 @@ class ConfigController extends Controller {
                 ...config
             });
         } catch (error) {
-            return this.error(400, {
+            return this.response(400, {
                 success: false,
                 message: "Invalid configuration provided.",
                 errors: error instanceof ZodError ? error.errors : undefined
