@@ -19,6 +19,7 @@
 
 import { Action } from "@framework/api/decorators/Action";
 import Controller from "@framework/api/http/Controller";
+import Request from "@framework/api/http/Request";
 import { Inject } from "@framework/container/Inject";
 import ConfigurationManager from "../../services/ConfigurationManager";
 
@@ -34,14 +35,15 @@ class MainController extends Controller {
     }
 
     @Action("GET", "/status")
-    public status() {
+    public status(request: Request) {
         const { server_status, server_status_description, server_status_started_at } =
             this.configManager.systemConfig.api;
 
         return {
             status: server_status,
             description: server_status_description,
-            started: server_status_started_at ?? new Date(Date.now() + process.uptime() / 1000)
+            started: server_status_started_at ?? new Date(Date.now() + process.uptime() / 1000),
+            ip: request.ip
         };
     }
 }
