@@ -20,7 +20,7 @@
 import { Inject } from "@framework/container/Inject";
 import EventListener from "@framework/events/EventListener";
 import { Events } from "@framework/types/ClientEvents";
-import { fetchUser } from "@framework/utils/entities";
+import { fetchMember, fetchUser } from "@framework/utils/entities";
 import { InfractionDeliveryStatus, infractions, InfractionType } from "@main/models/Infraction";
 import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
@@ -33,6 +33,54 @@ class GuildAuditLogEntryCreateEventListener extends EventListener<Events.GuildAu
     protected readonly auditLoggingService!: AuditLoggingService;
 
     public override async execute(auditLogEntry: GuildAuditLogsEntry, guild: Guild): Promise<void> {
+        if (auditLogEntry.action === AuditLogEvent.MemberRoleUpdate) {
+            const executor =
+                (auditLogEntry.executor ?? auditLogEntry.executorId)
+                    ? await fetchUser(this.client, auditLogEntry.executorId!)
+                    : null;
+
+            if (executor && executor.id === this.client.user?.id) {
+                return;
+            }
+
+            if (!auditLogEntry.targetId) {
+                return;
+            }
+
+            const member =
+                auditLogEntry.target instanceof GuildMember
+                    ? auditLogEntry.target
+                    : await fetchMember(guild, auditLogEntry.targetId);
+
+            if (!member) {
+                return;
+            }
+
+            const removed = auditLogEntry.changes
+                .find(change => change.key === "$remove")
+                ?.new?.map(r => r.id);
+            const added = auditLogEntry.changes
+                .find(change => change.key === "$add")
+                ?.new?.map(r => r.id);
+
+            if (!removed?.length && !added?.length) {
+                return;
+            }
+
+            this.auditLoggingService
+                .emitLogEvent(guild.id, LogEventType.MemberRoleModification, {
+                    guild,
+                    moderator: executor ?? undefined,
+                    member,
+                    reason: auditLogEntry.reason ?? undefined,
+                    added,
+                    removed
+                })
+                .catch(this.application.logger.error);
+
+            return;
+        }
+
         if (
             auditLogEntry.action === AuditLogEvent.MemberBanAdd ||
             auditLogEntry.action === AuditLogEvent.MemberBanRemove

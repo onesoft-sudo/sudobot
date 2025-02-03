@@ -56,7 +56,8 @@ export enum LogEventType {
     MemberRoleModification = "member_role_modification",
     SystemAutoModRuleModeration = "system_automod_rule_moderation",
     SystemUserMessageSave = "system_user_message_save",
-    RaidAlert = "raid_alert"
+    RaidAlert = "raid_alert",
+    MemberNicknameModification = "member_nickname_modification"
 }
 
 const LogEventSchema = z.enum(
@@ -92,6 +93,15 @@ export type LogEventArgs = {
     [LogEventType.MemberRoleModification]: [payload: LogMemberRoleModificationPayload];
     [LogEventType.SystemUserMessageSave]: [message: Message, moderator: User];
     [LogEventType.RaidAlert]: [payload: LogRaidAlertPayload];
+    [LogEventType.MemberNicknameModification]: [payload: LogMemberNicknameModificationPayload];
+};
+
+export type LogMemberNicknameModificationPayload = {
+    member: GuildMember;
+    oldNickname: string | null;
+    newNickname: string | null;
+    guild: Guild;
+    moderator?: User;
 };
 
 export type LogRaidAlertPayload = {

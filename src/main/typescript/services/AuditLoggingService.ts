@@ -38,6 +38,7 @@ import {
     LogMemberModMessageAddPayload,
     LogMemberMuteAddPayload,
     LogMemberMuteRemovePayload,
+    LogMemberNicknameModificationPayload,
     LogMemberRoleModificationPayload,
     LogMemberWarningAddPayload,
     LogMessageBulkDeletePayload,
@@ -119,7 +120,8 @@ class AuditLoggingService extends Service {
         [LogEventType.MemberRoleModification]: this.logMemberRoleModification,
         [LogEventType.SystemAutoModRuleModeration]: this.logMessageRuleModeration,
         [LogEventType.SystemUserMessageSave]: this.logSystemUserMessageSave,
-        [LogEventType.RaidAlert]: this.logRaidAlert
+        [LogEventType.RaidAlert]: this.logRaidAlert,
+        [LogEventType.MemberNicknameModification]: this.logMemberNicknameModification
     };
 
     @Inject("configManager")
@@ -885,7 +887,7 @@ class AuditLoggingService extends Service {
             eventType: LogEventType.MessageDeleteBulk
         });
     }
-    
+
     private async logMessageReactionClear({
         channel,
         reactions,
@@ -941,7 +943,7 @@ class AuditLoggingService extends Service {
                             text: "Deleted"
                         }
                     }
-                ],
+                ]
             },
             eventType: LogEventType.MessageReactionClear
         });
@@ -1329,6 +1331,64 @@ class AuditLoggingService extends Service {
                 ]
             },
             eventType: LogEventType.GuildMemberAdd
+        });
+    }
+
+    private async logMemberNicknameModification({
+        guild,
+        member,
+        newNickname,
+        oldNickname,
+        moderator
+    }: LogMemberNicknameModificationPayload) {
+        const fields = [
+            {
+                name: "User",
+                value: userInfo(member.user),
+                inline: true
+            },
+            {
+                name: "User ID",
+                value: member.id
+            },
+            {
+                name: "Old Nickname",
+                value: oldNickname ?? italic("None"),
+                inline: true
+            },
+            {
+                name: "New Nickname",
+                value: newNickname ?? italic("None"),
+                inline: true
+            }
+        ];
+
+        if (moderator) {
+            fields.push({
+                name: "Responsible Moderator",
+                value: userInfo(moderator)
+            });
+        }
+
+        return this.send({
+            guildId: guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        author: {
+                            name: member.user.username,
+                            icon_url: member.user.displayAvatarURL() ?? undefined
+                        },
+                        title: "Member Nickname Modified",
+                        color: Colors.Blue,
+                        timestamp: new Date().toISOString(),
+                        fields,
+                        footer: {
+                            text: "Modified"
+                        }
+                    }
+                ]
+            }
         });
     }
 
