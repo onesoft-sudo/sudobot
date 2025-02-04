@@ -23,7 +23,7 @@ import type { Logger } from "@framework/log/Logger";
 import { Events } from "@framework/types/ClientEvents";
 import type AIAutoModeration from "@main/automod/AIAutoModeration";
 import type TriggerService from "@main/automod/TriggerService";
-import { env } from "@main/env/env";
+import { getEnvData } from "@main/env/env";
 import type AFKService from "@main/services/AFKService";
 import { ChannelType, Message, MessageType, WebhookClient } from "discord.js";
 import type RuleModerationService from "../../automod/RuleModerationService";
@@ -73,6 +73,8 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
         if (message.author.bot || message.webhookId || !this.types.includes(message.type)) {
             return;
         }
+
+        const env = getEnvData();
 
         if (!message.inGuild()) {
             if (

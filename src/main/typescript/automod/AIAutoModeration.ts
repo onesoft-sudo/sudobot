@@ -20,7 +20,7 @@
 import { Inject } from "@framework/container/Inject";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
-import { env } from "@main/env/env";
+import { getEnvData } from "@main/env/env";
 import type { GuildConfig } from "@main/schemas/GuildConfigSchema";
 import type PermissionManagerService from "@main/services/PermissionManagerService";
 import { safeMemberFetch } from "@main/utils/fetch";
@@ -47,6 +47,8 @@ class AIAutoModeration extends Service {
     private counter = 0;
 
     private async analyzeComment(comment: string) {
+        const env = getEnvData();
+
         if (!env.PERSPECTIVE_API_TOKEN) {
             return null;
         }
@@ -143,7 +145,7 @@ class AIAutoModeration extends Service {
     }
 
     private async moderate(message: Message<true>, event: "create" | "update") {
-        if (!env.PERSPECTIVE_API_TOKEN) {
+        if (!getEnvData().PERSPECTIVE_API_TOKEN) {
             return null;
         }
 

@@ -23,7 +23,7 @@ import Controller from "@framework/api/http/Controller";
 import type Request from "@framework/api/http/Request";
 import { Inject } from "@framework/container/Inject";
 import type VerificationService from "@main/automod/VerificationService";
-import { env } from "@main/env/env";
+import { getEnvData } from "@main/env/env";
 import { verificationEntries } from "@main/models/VerificationEntry";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import { getAxiosClient } from "@main/utils/axios";
@@ -42,7 +42,7 @@ class VerificationController extends Controller {
             const response = await getAxiosClient().post(
                 "https://challenges.cloudflare.com/turnstile/v0/siteverify",
                 {
-                    secret: env.CF_TURNSTILE_SECRET,
+                    secret: getEnvData().CF_TURNSTILE_SECRET,
                     response: token,
                     remoteip: ip
                 }

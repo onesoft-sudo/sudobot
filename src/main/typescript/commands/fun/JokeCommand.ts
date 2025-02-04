@@ -20,7 +20,7 @@
 import type { Buildable } from "@framework/commands/Command";
 import { Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
-import { env } from "@main/env/env";
+import { getEnvData } from "@main/env/env";
 import { getAxiosClient } from "@main/utils/axios";
 import { EmbedBuilder } from "discord.js";
 
@@ -52,6 +52,7 @@ class JokeCommand extends Command {
     }
 
     public override async execute(context: Context): Promise<void> {
+        const env = getEnvData();
         const isDadJoke =
             context.commandName === "dadjoke" ||
             (context.isChatInput() && context.options.getString("type") === "dad_joke");

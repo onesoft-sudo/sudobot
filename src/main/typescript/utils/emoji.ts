@@ -18,7 +18,7 @@
  */
 
 import type Application from "@framework/app/Application";
-import { env } from "@main/env/env";
+import { getEnvData } from "@main/env/env";
 import type { ApplicationEmoji, GuildEmoji } from "discord.js";
 
 export function emoji(application: Application, name: string) {
@@ -30,11 +30,11 @@ export function findEmoji(
     name: string
 ): GuildEmoji | ApplicationEmoji | undefined {
     const strategy =
-        env.EMOJI_RESOLVE_STRATEGY ??
+        getEnvData().EMOJI_RESOLVE_STRATEGY ??
         application.service("configManager").systemConfig.emoji_resolve_strategy;
 
     ifGuild: if (strategy !== "application") {
-        const homeGuild = application.client.guilds.cache.get(env.HOME_GUILD_ID);
+        const homeGuild = application.client.guilds.cache.get(getEnvData().HOME_GUILD_ID);
 
         if (!homeGuild) {
             break ifGuild;

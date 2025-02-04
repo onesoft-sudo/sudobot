@@ -25,7 +25,7 @@ import { Events } from "@framework/types/ClientEvents";
 import { BUG } from "@framework/utils/devflow";
 import { fetchChannel, fetchMember, fetchUser } from "@framework/utils/entities";
 import { Colors } from "@main/constants/Colors";
-import { env } from "@main/env/env";
+import { getEnvData } from "@main/env/env";
 import { verificationEntries, VerificationStatus } from "@main/models/VerificationEntry";
 import { VerificationMethod, verificationRecords } from "@main/models/VerificationRecord";
 import VerificationExpiredQueue from "@main/queues/VerificationExpiredQueue";
@@ -193,12 +193,12 @@ class VerificationService extends Service {
     }
 
     private getVerificationDomain() {
-        return env.FRONTEND_GUILD_MEMBER_VERIFICATION_URL ?? env.FRONTEND_URL;
+        return getEnvData().FRONTEND_GUILD_MEMBER_VERIFICATION_URL ?? getEnvData().FRONTEND_URL;
     }
 
     private getVerificationURL(guildId: string, memberId: string, token: string) {
         const domain = this.getVerificationDomain();
-        return `${domain}${domain === env.FRONTEND_URL ? "/verify" : ""}/guilds/${encodeURIComponent(guildId)}/challenge/onboarding?t=${encodeURIComponent(token)}&u=${encodeURIComponent(memberId)}`;
+        return `${domain}${domain === getEnvData().FRONTEND_URL ? "/verify" : ""}/guilds/${encodeURIComponent(guildId)}/challenge/onboarding?t=${encodeURIComponent(token)}&u=${encodeURIComponent(memberId)}`;
     }
 
     public async startVerification(member: GuildMember, reason: string, silent = false) {
@@ -207,6 +207,8 @@ class VerificationService extends Service {
         if (!config || !member.manageable) {
             return;
         }
+
+        const env = getEnvData();
 
         await member.roles.add(config.unverified_roles, reason).catch(this.logger.error);
         await member.roles.remove(config.verified_roles, reason).catch(this.logger.error);
@@ -409,6 +411,7 @@ class VerificationService extends Service {
     }
 
     public async isProxy(ip: string) {
+        const env = getEnvData();
         const response = await getAxiosClient().get(
             `https://proxycheck.io/v2/${encodeURIComponent(ip)}?vpn=1&asn=1` +
                 (env.PROXYCHECKIO_API_KEY
@@ -439,11 +442,11 @@ class VerificationService extends Service {
     ) {
         try {
             const body = new URLSearchParams({
-                client_id: env.CLIENT_ID,
-                client_secret: env.CLIENT_SECRET,
+                client_id: getEnvData().CLIENT_ID,
+                client_secret: getEnvData().CLIENT_SECRET,
                 code: discordCode,
                 grant_type: "authorization_code",
-                redirect_uri: `${env.FRONTEND_GUILD_MEMBER_VERIFICATION_URL}/next/discord`,
+                redirect_uri: `${getEnvData().FRONTEND_GUILD_MEMBER_VERIFICATION_URL}/next/discord`,
                 scope: "identify guilds",
                 state: `${guildId}|${memberId}|${token}`
             }).toString();

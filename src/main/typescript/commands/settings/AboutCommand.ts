@@ -19,7 +19,7 @@
 
 import type { ChatContext } from "@framework/commands/Command";
 import { Command } from "@framework/commands/Command";
-import { env } from "@main/env/env";
+import { getEnvData } from "@main/env/env";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import type { MetadataType } from "../../core/DiscordKernel";
 
@@ -29,6 +29,7 @@ class AboutCommand extends Command {
     public override readonly aliases = ["botinfo"];
 
     public override async execute(context: ChatContext) {
+        const env = getEnvData();
         const metadata = this.application.metadata as MetadataType;
         const avatar = this.application.getClient().user?.displayAvatarURL();
         const emoji = context.emoji("sudobot") || null;

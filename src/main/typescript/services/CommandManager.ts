@@ -32,7 +32,7 @@ import { PermissionDeniedError } from "@framework/permissions/PermissionDeniedEr
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { isDevelopmentMode } from "@framework/utils/utils";
-import { env } from "@main/env/env";
+import { getEnvData } from "@main/env/env";
 import {
     CommandPermissionOverwrite,
     CommandPermissionOverwriteAction
@@ -108,7 +108,7 @@ class CommandManager extends Service implements CommandManagerServiceInterface {
             return 0;
         }
 
-        const guildId = global ? undefined : env.HOME_GUILD_ID;
+        const guildId = global ? undefined : getEnvData().HOME_GUILD_ID;
 
         if (guildId) {
             await this.client.guilds.cache.get(guildId)?.commands.set(commands);

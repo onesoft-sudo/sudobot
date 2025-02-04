@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { env } from "@main/env/env";
+import { getEnvData } from "@main/env/env";
 import { AxiosError } from "axios";
 import chalk from "chalk";
 import readline from "readline/promises";
@@ -52,13 +52,13 @@ class ShellClient {
             this.ws.send(
                 JSON.stringify({
                     type: "terminate",
-                    key: env.SYSTEM_SHELL_KEY
+                    key: getEnvData().SYSTEM_SHELL_KEY
                 })
             );
         });
 
         this.ws = new WebSocket(
-            `ws://${process.env.SYSTEM_SHELL_EXEC_STREAM_HOST ?? "localhost"}:${process.env.SYSTEM_SHELL_EXEC_STREAM_PORT ?? "4001"}?key=${env.SYSTEM_SHELL_KEY}`
+            `ws://${process.env.SYSTEM_SHELL_EXEC_STREAM_HOST ?? "localhost"}:${process.env.SYSTEM_SHELL_EXEC_STREAM_PORT ?? "4001"}?key=${getEnvData().SYSTEM_SHELL_KEY}`
         );
 
         this.ws.addEventListener("open", () => {
@@ -169,7 +169,7 @@ class ShellClient {
                     this.ws.send(
                         JSON.stringify({
                             type: "terminate",
-                            key: env.SYSTEM_SHELL_KEY
+                            key: getEnvData().SYSTEM_SHELL_KEY
                         })
                     );
 
@@ -195,7 +195,7 @@ class ShellClient {
         this.ws.send(
             JSON.stringify({
                 type: "raw_cmd",
-                key: env.SYSTEM_SHELL_KEY,
+                key: getEnvData().SYSTEM_SHELL_KEY,
                 payload: command
             })
         );
@@ -205,7 +205,7 @@ class ShellClient {
         this.ws.send(
             JSON.stringify({
                 type: "cmd",
-                key: env.SYSTEM_SHELL_KEY,
+                key: getEnvData().SYSTEM_SHELL_KEY,
                 payload: command
             })
         );

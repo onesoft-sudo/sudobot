@@ -20,7 +20,7 @@
 import Application from "@framework/app/Application";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
-import { env } from "@main/env/env";
+import { getEnvData } from "@main/env/env";
 import ExitError from "@main/shell/core/ExitError";
 import ShellCommand from "@main/shell/core/ShellCommand";
 import { ShellCommandContext } from "@main/shell/core/ShellCommandContext";
@@ -61,6 +61,8 @@ class ShellService extends Service {
                 this.commands.set(alias, command);
             }
         }
+
+        const env = getEnvData();
 
         this.wss.on("connection", ws => {
             this.application.logger.debug("Connection established");
@@ -134,7 +136,7 @@ class ShellService extends Service {
         const onMessage = (message: Buffer) => {
             const { payload, type, key } = JSON.parse(message.toString());
 
-            if (key !== env.SYSTEM_SHELL_KEY) {
+            if (key !== getEnvData().SYSTEM_SHELL_KEY) {
                 ws.send(JSON.stringify({ type: "error", payload: "Invalid key" }));
                 return;
             }

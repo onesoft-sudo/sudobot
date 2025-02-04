@@ -21,4 +21,16 @@ import Environment from "@framework/env/Environment";
 import type { EnvironmentVariableRecord } from "@main/schemas/EnvironmentVariableSchema";
 import { EnvironmentVariableSchema } from "@main/schemas/EnvironmentVariableSchema";
 
-export const env: EnvironmentVariableRecord = Environment.parseVariables(EnvironmentVariableSchema);
+let envData: EnvironmentVariableRecord | undefined;
+
+export function getEnvData(): EnvironmentVariableRecord {
+    if (envData === undefined) {
+        envData = Environment.parseVariables(EnvironmentVariableSchema);
+    }
+
+    return envData;
+}
+
+export function setEnvData(data: Record<string,string|undefined>): void {
+    envData = EnvironmentVariableSchema.parse(data);
+}

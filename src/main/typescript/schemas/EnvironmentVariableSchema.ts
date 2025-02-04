@@ -40,7 +40,7 @@ export const EnvironmentVariableSchema = z.object({
     ERROR_WEBHOOK_URL: z.string().optional(),
     BACKUP_CHANNEL_ID: z.string().optional(),
     FRONTEND_AUTH_KEY: z.string().optional(),
-    CREDENTIAL_SERVER: z.string().optional(),
+    TWO_FACTOR_AUTH_URL: z.string().optional(),
     PRIVATE_BOT_MODE: z.literal("true").optional(),
     EXTENSIONS_DIRECTORY: z.string().optional(),
     NO_GENERATE_CONFIG_SCHEMA: z.string().optional(),

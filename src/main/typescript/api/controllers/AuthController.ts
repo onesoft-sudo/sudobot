@@ -24,7 +24,7 @@ import type Request from "@framework/api/http/Request";
 import Response from "@framework/api/http/Response";
 import { Inject } from "@framework/container/Inject";
 import { fetchUser } from "@framework/utils/entities";
-import { env } from "@main/env/env";
+import { getEnvData } from "@main/env/env";
 import { users } from "@main/models/User";
 import AuthService from "@main/services/AuthService";
 import { APIErrorCode } from "@main/types/APIErrorCode";
@@ -137,11 +137,11 @@ class AuthController extends Controller {
 
         try {
             const body = new URLSearchParams({
-                client_id: env.CLIENT_ID,
-                client_secret: env.CLIENT_SECRET,
+                client_id: getEnvData().CLIENT_ID,
+                client_secret: getEnvData().CLIENT_SECRET,
                 code,
                 grant_type: "authorization_code",
-                redirect_uri: `${env.FRONTEND_URL}/challenge/auth/discord`,
+                redirect_uri: `${getEnvData().FRONTEND_URL}/challenge/auth/discord`,
                 scope: "identify guilds"
             }).toString();
 

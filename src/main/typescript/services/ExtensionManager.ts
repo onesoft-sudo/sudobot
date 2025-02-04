@@ -22,7 +22,7 @@ import EventListener from "@framework/events/EventListener";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import type { ClientEvents } from "@framework/types/ClientEvents";
-import { env } from "@main/env/env";
+import { getEnvData } from "@main/env/env";
 import {
     Extension,
     ExtensionMetadataSchema,
@@ -269,7 +269,7 @@ function getGuildIdResolversMap() {
 export default class ExtensionManager extends Service {
     private readonly extensionIndexURL =
         "https://raw.githubusercontent.com/onesoft-sudo/sudobot/main/extensions/.extbuilds/index.json";
-    protected readonly extensionsPath = env.EXTENSIONS_DIRECTORY;
+    protected readonly extensionsPath = getEnvData().EXTENSIONS_DIRECTORY;
     protected readonly guildIdResolvers = getGuildIdResolversMap();
 
     private readonly downloadProgressStreamEOF = "%";

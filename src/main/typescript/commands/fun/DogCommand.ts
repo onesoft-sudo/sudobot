@@ -19,7 +19,7 @@
 
 import { Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
-import { env } from "@main/env/env";
+import { getEnvData } from "@main/env/env";
 import { getAxiosClient } from "@main/utils/axios";
 import type { AxiosError } from "axios";
 
@@ -30,6 +30,7 @@ class DogCommand extends Command {
     public override readonly systemPermissions = [];
 
     public override async execute(context: Context): Promise<void> {
+        const env = getEnvData();
         const token = env.DOG_API_TOKEN;
 
         if (!token) {

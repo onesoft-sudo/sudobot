@@ -24,7 +24,7 @@ import StringArgument from "@framework/arguments/StringArgument";
 import type { Buildable } from "@framework/commands/Command";
 import { Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
-import { env } from "@main/env/env";
+import { getEnvData } from "@main/env/env";
 import { getAxiosClient } from "@main/utils/axios";
 import { AxiosError } from "axios";
 
@@ -115,6 +115,7 @@ class PixabayCommand extends Command {
         context: Context,
         { query, type }: PixabayCommandArgs
     ): Promise<void> {
+        const env = getEnvData();
         type = context.isChatInput() ? (context.options.getSubcommand(true) as typeof type) : type;
 
         if (!["image", "photo", "vector", "illustration"].includes(type)) {

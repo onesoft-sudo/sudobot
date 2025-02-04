@@ -22,6 +22,7 @@ import { Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import { GatewayEventListener } from "@framework/events/GatewayEventListener";
+import { getEnvData } from "@main/env/env";
 import StartupManager from "@main/services/StartupManager";
 import { emoji } from "@main/utils/emoji";
 import {
@@ -135,10 +136,14 @@ class RestartCommand extends Command {
 
     public override async execute(context: Context): Promise<void> {
         if (
-            process.env.CREDENTIAL_SERVER &&
+            getEnvData().TWO_FACTOR_AUTH_URL &&
             (!context.isChatInput() || context.options.getString("credential_key"))
         ) {
-            await context.error("Please enter the credential server 2FA code to restart the bot!");
+            await context.error(
+                "Please enter the credential server 2FA code to restart the bot" +
+                    (context.isLegacy() ? " using the slash command" : "") +
+                    "!"
+            );
             return;
         }
 

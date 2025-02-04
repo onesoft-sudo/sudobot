@@ -21,13 +21,17 @@ import type { AnyConstructor } from "@framework/container/Container";
 import Container from "@framework/container/Container";
 import Kernel from "@framework/core/Kernel";
 import { Logger } from "@framework/log/Logger";
+import { setEnvData } from "@main/env/env";
 import { createAxiosClient } from "@main/utils/axios";
 import metadata from "@root/package.json";
 import axios from "axios";
 import { spawn } from "child_process";
+import crypto from "crypto";
 import { GatewayIntentBits, Partials } from "discord.js";
+import { parse } from "dotenv";
 import { existsSync } from "fs";
 import { readFile } from "fs/promises";
+import { MlKem768 } from "mlkem";
 import path from "path";
 import { createInterface } from "readline/promises";
 import { systemPrefix } from "../utils/utils";
@@ -54,7 +58,7 @@ class DiscordKernel extends Kernel {
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessageReactions,
         GatewayIntentBits.GuildModeration,
-        GatewayIntentBits.GuildEmojisAndStickers,
+        GatewayIntentBits.GuildExpressions,
         GatewayIntentBits.GuildPresences,
         GatewayIntentBits.GuildInvites,
         GatewayIntentBits.GuildVoiceStates,
@@ -108,6 +112,12 @@ class DiscordKernel extends Kernel {
         "@services/SystemUpdateService",
         "@root/framework/typescript/api/APIServer"
     ];
+
+    private readonly encryptedEnvFilePath = path.join(
+        __dirname,
+        __filename.endsWith(".js") ? ".." : "",
+        "../../../../.env.encrypted"
+    );
 
     public constructor() {
         super();
@@ -203,6 +213,10 @@ class DiscordKernel extends Kernel {
             if (!result) {
                 this.abort();
             }
+        } else if (existsSync(this.encryptedEnvFilePath)) {
+            this.logger.warn(
+                "Encrypted environment file found, but no 2FA URL provided. Ignoring..."
+            );
         }
 
         this.spawnNativeProcess();
@@ -274,31 +288,104 @@ class DiscordKernel extends Kernel {
     }
 
     protected async fetchCredentials(url: string, key: string) {
-        this.logger.info("Authenticating with the server...");
+        if (!url.startsWith("https://") && !url.startsWith("http://localhost:")) {
+            this.logger.error("Two-factor authentication URL must be secure HTTPS");
+            return false;
+        }
+
+        if (!existsSync(this.encryptedEnvFilePath)) {
+            this.logger.error("No encrypted environment secret file found");
+            return;
+        }
+
+        this.logger.info("Authenticating with the 2FA server...");
 
         const is2FACode = key.length === 6 && !isNaN(Number(key));
 
         try {
-            const response = await axios.get(url, {
-                headers: {
-                    Authorization: is2FACode ? undefined : `Bearer ${key}`,
-                    "X-2FA-code": is2FACode ? key : undefined
+            const response = await axios.post(
+                url,
+                {
+                    code: is2FACode ? key : undefined
+                },
+                {
+                    headers: {
+                        Authorization: is2FACode ? undefined : `Bearer ${key}`
+                    }
                 }
-            });
+            );
 
-            if (
-                response.data?.success &&
-                response.data?.config &&
-                typeof response.data?.config === "object"
-            ) {
+            if (response.data?.privateKey && typeof response.data?.privateKey === "string") {
                 this.logger.success(
                     "Successfully authenticated with the credentials server (Method: " +
                         (is2FACode ? "2FA" : "Key") +
                         ")"
                 );
 
-                for (const key in response.data.config) {
-                    process.env[key] = response.data.config[key];
+                /* The response contains all data in hex format.
+                   Therefore first decode it to a buffer. */
+                const privateKey = new Uint8Array(Buffer.from(response.data.privateKey, "hex"));
+
+                /* The encrypted data is in the following format:
+                   - First 4 bytes: The size of the IV (ivSize)
+                   - Next 4 bytes: The size of the auth tag (authTagSize)
+                   - Next 4 bytes: The size of the cipher text (cipherTextSize)
+                   - Next (ivSize) bytes: The IV used for encryption
+                   - Next (authTagSize) bytes: The auth tag
+                   - Next (cipherTextSize) bytes: The encrypted data
+                   - Remaining bytes: Encrypted data */
+                const encryptedData = Buffer.from(
+                    await readFile(this.encryptedEnvFilePath, "binary"),
+                    "binary"
+                );
+
+                if (encryptedData.length < 16 || encryptedData.readUInt32BE(0) !== 0x7c83) {
+                    throw new Error("Invalid encrypted data received");
+                }
+
+                const ivSize = encryptedData.readUInt32BE(4);
+                const authTagSize = encryptedData.readUInt32BE(8);
+                const cipherTextSize = encryptedData.readUInt32BE(12);
+                const iv = Uint8Array.prototype.slice.call(encryptedData, 16, 16 + ivSize);
+                const authTag = Uint8Array.prototype.slice.call(
+                    encryptedData,
+                    16 + ivSize,
+                    16 + ivSize + authTagSize
+                );
+                const cipherText = Uint8Array.prototype.slice.call(
+                    encryptedData,
+                    16 + ivSize + authTagSize,
+                    16 + ivSize + authTagSize + cipherTextSize
+                );
+                const encryptedEnv = Uint8Array.prototype.slice.call(
+                    encryptedData,
+                    16 + ivSize + authTagSize + cipherTextSize
+                );
+
+                const mlkem = new MlKem768();
+                const decryptedSharedSecret = await mlkem.decap(cipherText, privateKey);
+                const decipher = crypto.createDecipheriv("aes-256-gcm", decryptedSharedSecret, iv);
+                decipher.setAuthTag(authTag);
+                const decryptedTextData =
+                    decipher.update(encryptedEnv, undefined, "utf8") + decipher.final("utf8");
+
+                this.logger.success("Successfully decrypted the environment data");
+
+                try {
+                    const data = parse(decryptedTextData);
+
+                    for (const key in data) {
+                        process.env[key] = data[key];
+                    }
+
+                    setEnvData(data);
+                    this.logger.success("Successfully loaded environment data");
+                } catch (error) {
+                    this.logger.error(
+                        "Failed to parse decrypted data: " +
+                            (error instanceof Error ? error.message : `${error}`)
+                    );
+                    return false;
                 }
             } else {
                 throw new Error("Invalid response received");

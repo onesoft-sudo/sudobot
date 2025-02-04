@@ -21,7 +21,7 @@ import Application from "@framework/app/Application";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import QueryLogger from "@main/drizzle/QueryLogger";
-import { env } from "@main/env/env";
+import { getEnvData } from "@main/env/env";
 import * as AFKEntrySchemas from "@main/models/AFKEntry";
 import * as ChannelLockSchemas from "@main/models/ChannelLock";
 import * as CommandPermissionOverwriteSchemas from "@main/models/CommandPermissionOverwrite";
@@ -48,7 +48,7 @@ class DatabaseService extends Service {
         super(application);
 
         const pool = new Pool({
-            connectionString: env.DB_URL
+            connectionString: getEnvData().DB_URL
         });
 
         this.drizzle = drizzle(pool, {
