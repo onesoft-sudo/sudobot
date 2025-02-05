@@ -145,7 +145,7 @@ class RestartCommand extends Command {
         ) {
             await context.error(
                 "Please enter the credential server 2FA code to restart the bot" +
-                    (context.isLegacy() ? " using the slash command" : "") +
+                    (context.isLegacy() ? ", by using the slash command" : "") +
                     "!"
             );
             
