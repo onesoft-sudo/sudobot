@@ -1,5 +1,16 @@
 # Changelog
 
+### 05-02-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.45.2 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.45.1 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 05-02-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
   * **fix:** wording in the restart command error messages    
@@ -14,13 +25,6 @@
   * **chore(extensions):** build extensions [skip ci]    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
-      
-
-### 05-02-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
-
-  * **release:** v10.45.1 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 04-02-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
