@@ -569,12 +569,12 @@ class VerificationService extends Service {
         let incomplete = false;
 
         verify: {
-            // if (proxyCheck) {
-            //     error =
-            //         "You seem to be using a VPN or proxy. Please disable it, reload this page and try again.";
-            //     reason = "VPN or Proxy detected.";
-            //     break verify;
-            // }
+            if (proxyCheck) {
+                error =
+                    "You seem to be using a VPN or proxy. Please disable it, reload this page and try again.";
+                reason = "VPN or Proxy detected.";
+                break verify;
+            }
 
             const entry = await this.application.database.query.verificationEntries.findFirst({
                 where(fields, operators) {
