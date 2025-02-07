@@ -29,6 +29,9 @@ import { RuleExecResult } from "@main/contracts/ModerationRuleHandlerContract";
 import {
     LogEventArgs,
     LogEventType,
+    LogGuildVerificationAttemptPayload,
+    LogGuildVerificationNotEnoughInfoPayload,
+    LogGuildVerificationSuccessPayload,
     LogMemberBanAddPayload,
     LogMemberBanRemovePayload,
     LogMemberKickPayload,
@@ -121,7 +124,10 @@ class AuditLoggingService extends Service {
         [LogEventType.SystemAutoModRuleModeration]: this.logMessageRuleModeration,
         [LogEventType.SystemUserMessageSave]: this.logSystemUserMessageSave,
         [LogEventType.RaidAlert]: this.logRaidAlert,
-        [LogEventType.MemberNicknameModification]: this.logMemberNicknameModification
+        [LogEventType.MemberNicknameModification]: this.logMemberNicknameModification,
+        [LogEventType.GuildVerificationAttempt]: this.logGuildVerificationAttempt,
+        [LogEventType.GuildVerificationSuccess]: this.logGuildVerificationSuccess,
+        [LogEventType.GuildVerificationNotEnoughInfo]: this.logGuildVerificationNotEnoughInfo
     };
 
     @Inject("configManager")
@@ -518,14 +524,14 @@ class AuditLoggingService extends Service {
         }
 
         if (mode === "invert") {
-            attributes += `${bold("Inverted")}: Rule will only match if the condition is not met\n`;
+            attributes += `${bold("Inverted")}: This rule will only match if the condition is not met\n`;
         }
 
-        if (exceptions) {
+        if (exceptions && Object.keys(exceptions).length) {
             attributes += `${bold("Exceptions")}: There are exceptions set for this rule.\n`;
         }
 
-        if (ruleFor) {
+        if (ruleFor && Object.keys(ruleFor).length) {
             attributes += `${bold("Conditional")}: This rule only applies when certain conditions are met.\n`;
         }
 
@@ -1509,6 +1515,173 @@ class AuditLoggingService extends Service {
                 ]
             },
             eventType: LogEventType.GuildMemberKick
+        });
+    }
+
+    private async logGuildVerificationNotEnoughInfo({
+        member,
+        ip
+    }: LogGuildVerificationNotEnoughInfoPayload) {
+        const fields = [
+            {
+                name: "Member",
+                value: userInfo(member.user)
+            }
+        ];
+
+        if (ip) {
+            fields.push({
+                name: "IP Address",
+                value: ip
+            });
+        }
+
+        return this.send({
+            guildId: member.guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        title: "Not enough information",
+                        description:
+                            "The system could not collect enough information to check for alt accounts.",
+                        color: Colors.Blue,
+                        timestamp: new Date().toISOString(),
+                        fields,
+                        footer: {
+                            text: "Aborted"
+                        }
+                    }
+                ]
+            },
+            eventType: LogEventType.GuildVerificationNotEnoughInfo
+        });
+    }
+
+    private async logGuildVerificationAttempt({
+        member,
+        reason,
+        actionsTaken,
+        altAccountIds,
+        ip,
+        incomplete
+    }: LogGuildVerificationAttemptPayload) {
+        const fields = [
+            {
+                name: "Member",
+                value: userInfo(member.user)
+            }
+        ];
+
+        if (reason) {
+            fields.push({
+                name: "Reason of Denial",
+                value: reason
+            });
+        }
+
+        if (altAccountIds?.length) {
+            fields.push({
+                name: "Possible Alt Account(s)",
+                value: altAccountIds
+                    .map(altAccountId => `<@${altAccountId}> [${altAccountId}]`)
+                    .join("\n")
+            });
+        }
+
+        if (ip) {
+            fields.push({
+                name: "IP Address",
+                value: ip
+            });
+        }
+
+        if (actionsTaken?.length) {
+            fields.push({
+                name: "Actions Taken",
+                value: this.application
+                    .service("moderationActionService")
+                    .summarizeActions(actionsTaken)
+            });
+        }
+
+        if (incomplete) {
+            fields.push({
+                name: "Incomplete Alt Detection",
+                value: "The system could not collect enough data to check for alt accounts."
+            });
+        }
+
+        return this.send({
+            guildId: member.guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        title: "Verification Attempt",
+                        color: Colors.Blue,
+                        timestamp: new Date().toISOString(),
+                        fields,
+                        footer: {
+                            text: "Attempted"
+                        }
+                    }
+                ]
+            },
+            eventType: LogEventType.GuildVerificationAttempt
+        });
+    }
+
+    private async logGuildVerificationSuccess({
+        member,
+        altAccountIds,
+        ip,
+        incomplete
+    }: LogGuildVerificationSuccessPayload) {
+        const fields = [
+            {
+                name: "Member",
+                value: userInfo(member.user)
+            }
+        ];
+
+        if (altAccountIds?.length) {
+            fields.push({
+                name: "Possible Alt Account(s)",
+                value: altAccountIds
+                    .map(altAccountId => `<@${altAccountId}> [${altAccountId}]`)
+                    .join("\n")
+            });
+        }
+
+        if (ip) {
+            fields.push({
+                name: "IP Address",
+                value: ip
+            });
+        }
+
+        if (incomplete) {
+            fields.push({
+                name: "Incomplete Alt Detection",
+                value: "The system could not collect enough data to check for alt accounts."
+            });
+        }
+
+        return this.send({
+            guildId: member.guild.id,
+            messageCreateOptions: {
+                embeds: [
+                    {
+                        title: "Verification Success",
+                        color: Colors.Success,
+                        timestamp: new Date().toISOString(),
+                        fields,
+                        footer: {
+                            text: "Success"
+                        }
+                    }
+                ]
+            },
+            eventType: LogEventType.GuildVerificationSuccess
         });
     }
 

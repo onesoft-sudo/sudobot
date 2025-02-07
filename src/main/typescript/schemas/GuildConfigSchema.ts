@@ -235,7 +235,18 @@ export const GuildConfigSchema = z.object({
                 .enum(["channel_interaction", "dm_interaction", "channel_static_interaction"])
                 .default("dm_interaction"),
             channel: zSnowflake.optional(),
-            message_id_internal: zSnowflake.optional()
+            message_id_internal: zSnowflake.optional(),
+            alt_detection: z
+                .object({
+                    enabled: z.boolean().optional().default(false),
+                    actions: z
+                        .object({
+                            moderationActions: z.array(ModerationActionSchema).default([]),
+                            failVerification: z.boolean().optional().default(false)
+                        })
+                        .optional()
+                })
+                .optional()
         })
         .optional(),
     quick_mute: z

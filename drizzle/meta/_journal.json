@@ -43,6 +43,13 @@
             "when": 1738579077170,
             "tag": "0005_verification_status",
             "breakpoints": true
+        },
+        {
+            "idx": 6,
+            "version": "7",
+            "when": 1738930081141,
+            "tag": "0006_alt_fingerprints",
+            "breakpoints": true
         }
     ]
 }

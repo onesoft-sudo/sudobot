@@ -263,7 +263,9 @@ class RuleModerationService
                 continue;
             }
 
-            if (contextTypes?.[rule.type] && !contextTypes?.[rule.type]?.includes(contextType)) {
+            const ruleContextType = contextTypes?.[rule.type] ?? ["message"];
+
+            if (ruleContextType && !ruleContextType.includes(contextType)) {
                 this.application.logger.debug(
                     `Rule type ${rule.type} does not expect a ${contextType} context`
                 );

@@ -26,9 +26,16 @@ import { BUG } from "@framework/utils/devflow";
 import { fetchChannel, fetchMember, fetchUser } from "@framework/utils/entities";
 import { Colors } from "@main/constants/Colors";
 import { getEnvData } from "@main/env/env";
+import {
+    AltFingerprintCreatePayload,
+    altFingerprints,
+    AltFingerprintType
+} from "@main/models/AltFingerprint";
 import { verificationEntries, VerificationStatus } from "@main/models/VerificationEntry";
 import { VerificationMethod, verificationRecords } from "@main/models/VerificationRecord";
 import VerificationExpiredQueue from "@main/queues/VerificationExpiredQueue";
+import { LogEventType } from "@main/schemas/LoggingSchema";
+import AuditLoggingService from "@main/services/AuditLoggingService";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import type DirectiveParsingService from "@main/services/DirectiveParsingService";
 import type ModerationActionService from "@main/services/ModerationActionService";
@@ -43,7 +50,7 @@ import {
     Interaction,
     Snowflake
 } from "discord.js";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, gt, sql } from "drizzle-orm";
 import jwt from "jsonwebtoken";
 import undici from "undici";
 
@@ -57,6 +64,9 @@ class VerificationService extends Service {
 
     @Inject("directiveParsingService")
     private readonly directiveParsingService!: DirectiveParsingService;
+
+    @Inject("auditLoggingService")
+    private readonly auditLoggingService!: AuditLoggingService;
 
     private configFor(guildId: Snowflake) {
         return this.configManager.config[guildId]?.member_verification;
@@ -504,7 +514,8 @@ class VerificationService extends Service {
                     and(
                         eq(verificationEntries.userId, memberId),
                         eq(verificationEntries.guildId, guildId),
-                        eq(verificationEntries.token, token)
+                        eq(verificationEntries.token, token),
+                        gt(verificationEntries.expiresAt, new Date())
                     )
                 )
                 .execute();
@@ -526,21 +537,44 @@ class VerificationService extends Service {
         }
     }
 
-    public async attemptVerification(guildId: string, memberId: string, ip: string, token: string) {
+    public async attemptVerification(
+        guildId: string,
+        memberId: string,
+        ip: string,
+        token: string,
+        fingerprints: Record<AltFingerprintType, string>
+    ) {
         const proxyCheck = await this.isProxy(ip);
-        let error: string | undefined;
         const config = this.configFor(guildId);
+        let error: string | undefined;
+        let reason: string | undefined;
 
         if (!config?.enabled) {
             return { error: "This server does not have verification enabled." };
         }
 
+        const guild = this.application.client.guilds.cache.get(guildId);
+
+        if (!guild) {
+            return { error: "This server cannot use the verification system." };
+        }
+
+        const member = await fetchMember(guild, memberId);
+
+        if (!member) {
+            return { error: "Could not find the member." };
+        }
+
+        let altUserIds: string[] | undefined;
+        let incomplete = false;
+
         verify: {
-            if (proxyCheck) {
-                error =
-                    "You seem to be using a VPN or proxy. Please disable it, reload this page and try again.";
-                break verify;
-            }
+            // if (proxyCheck) {
+            //     error =
+            //         "You seem to be using a VPN or proxy. Please disable it, reload this page and try again.";
+            //     reason = "VPN or Proxy detected.";
+            //     break verify;
+            // }
 
             const entry = await this.application.database.query.verificationEntries.findFirst({
                 where(fields, operators) {
@@ -557,33 +591,121 @@ class VerificationService extends Service {
                 return { error: "We're unable to verify you." };
             }
 
+            if (entry.expiresAt && entry.expiresAt.getTime() < Date.now()) {
+                error = "Verification session has expired.";
+                reason = "Verification session expired.";
+                break verify;
+            }
+
+            fpCheck: if (config?.alt_detection?.enabled) {
+                const fingerprintsArray = Object.entries(fingerprints).map(
+                    ([type, fingerprint]) => ({
+                        type: +type,
+                        fingerprint
+                    })
+                );
+
+                if (fingerprintsArray.length <= 4) {
+                    incomplete = true;
+                    break fpCheck;
+                }
+
+                const { rows } = await this.application.database.pool.query<{
+                    user_id: string;
+                    match_count: number;
+                }>(
+                    `
+                        WITH given_fingerprints AS (
+                            SELECT unnest($1::integer[]) AS type,
+                                unnest($2::text[]) AS fingerprint
+                        ),
+                        matching_users AS (
+                            SELECT af.user_id, COUNT(*) AS match_count
+                            FROM alt_fingerprints af
+                            JOIN given_fingerprints gf 
+                            ON af.type = gf.type AND af.fingerprint = gf.fingerprint
+                            WHERE af.user_id != $3::text
+                            GROUP BY af.user_id
+                        ),
+                        max_count AS (
+                            SELECT MAX(match_count) AS max_match
+                            FROM matching_users
+                        )
+                        SELECT mu.user_id, mu.match_count::integer
+                        FROM matching_users mu
+                        JOIN max_count mc
+                        ON mu.match_count = mc.max_match;
+                    `,
+                    [
+                        fingerprintsArray.map(({ type }) => type),
+                        fingerprintsArray.map(({ fingerprint }) => fingerprint),
+                        memberId
+                    ]
+                );
+                const altFingerprintEntries = rows
+                    .filter(row => row.match_count >= 7)
+                    .sort((a, b) => b.match_count - a.match_count);
+
+                this.logger.debug("Result: ", rows, altFingerprintEntries);
+                this.logger.debug("FP: ", fingerprints);
+
+                if (altFingerprintEntries && altFingerprintEntries.length > 0) {
+                    altUserIds = altFingerprintEntries.map(entry => entry.user_id);
+
+                    if (config?.alt_detection?.actions?.moderationActions) {
+                        this.moderationActionService
+                            .takeActions(
+                                guild,
+                                member,
+                                config?.alt_detection?.actions?.moderationActions
+                            )
+                            .catch(this.logger.error);
+                    }
+
+                    if (
+                        config?.alt_detection?.actions?.failVerification ||
+                        config?.alt_detection?.actions?.moderationActions
+                    ) {
+                        error = "We couldn't verify you.";
+                        reason = "Alt account detected.";
+                        break verify;
+                    }
+                }
+            }
+
             await this.application.database.drizzle
                 .delete(verificationEntries)
                 .where(eq(verificationEntries.id, entry.id))
                 .execute();
 
-            await this.application.database.drizzle
+            this.application.database.drizzle
                 .insert(verificationRecords)
                 .values({
                     userId: memberId,
                     method: entry.method,
                     guildId
                 })
-                .execute();
+                .execute()
+                .catch(this.logger.error);
+
+            const fingerprintRecords: AltFingerprintCreatePayload[] = [];
+
+            for (const [type, fingerprint] of Object.entries(fingerprints)) {
+                fingerprintRecords.push({
+                    userId: memberId,
+                    fingerprint,
+                    type: +type
+                });
+            }
+
+            this.application.database.drizzle
+                .insert(altFingerprints)
+                .values(fingerprintRecords)
+                .onConflictDoNothing()
+                .execute()
+                .catch(this.logger.error);
 
             await this.clearVerificationQueues(guildId, memberId);
-
-            const guild = this.application.client.guilds.cache.get(guildId);
-
-            if (!guild) {
-                return { success: true };
-            }
-
-            const member = await fetchMember(guild, memberId);
-
-            if (!member) {
-                return { success: true };
-            }
 
             await member.roles
                 .add(config.verified_roles, "User has been verified.")
@@ -591,8 +713,28 @@ class VerificationService extends Service {
             await member.roles
                 .remove(config.unverified_roles, "User has been verified.")
                 .catch(this.logger.error);
+
+            this.auditLoggingService
+                .emitLogEvent(guildId, LogEventType.GuildVerificationSuccess, {
+                    member,
+                    altAccountIds: altUserIds,
+                    ip,
+                    incomplete
+                })
+                .catch(this.logger.error);
+
             return { success: true };
         }
+
+        this.auditLoggingService
+            .emitLogEvent(guildId, LogEventType.GuildVerificationAttempt, {
+                member,
+                reason,
+                altAccountIds: altUserIds,
+                ip,
+                incomplete
+            })
+            .catch(this.logger.error);
 
         await this.application.database.drizzle
             .update(verificationEntries)

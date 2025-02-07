@@ -24,6 +24,7 @@ import type Request from "@framework/api/http/Request";
 import { Inject } from "@framework/container/Inject";
 import type VerificationService from "@main/automod/VerificationService";
 import { getEnvData } from "@main/env/env";
+import { AltFingerprintType } from "@main/models/AltFingerprint";
 import { verificationEntries } from "@main/models/VerificationEntry";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import { getAxiosClient } from "@main/utils/axios";
@@ -107,11 +108,11 @@ class VerificationController extends Controller {
             return this.response(400, { error: "Missing IP address." });
         }
 
-        if (await this.verificationService.isProxy(ip)) {
-            return this.response(400, {
-                error: "You seem to be using a VPN or proxy. Please disable it, reload this page and try again."
-            });
-        }
+        // if (await this.verificationService.isProxy(ip)) {
+        //     return this.response(400, {
+        //         error: "You seem to be using a VPN or proxy. Please disable it, reload this page and try again."
+        //     });
+        // }
 
         const result = await this.verificationService.connectDiscord(
             guildId,
@@ -133,23 +134,34 @@ class VerificationController extends Controller {
     @Validate(
         z.object({
             captchaToken: z.string(),
-            token: z.string()
+            token: z.string(),
+            fingerprints: z.array(
+                z.tuple([z.number().min(0).max(AltFingerprintType._COUNT), z.string()])
+            )
         })
     )
     public async verifyMember(request: Request) {
         const { guildId, userId } = request.params;
         const { captchaToken, token } = request.parsedBody ?? {};
+        const fingerprints =
+            request.parsedBody?.fingerprints && Array.isArray(request.parsedBody?.fingerprints)
+                ? Object.fromEntries(request.parsedBody?.fingerprints)
+                : undefined;
         const ip = request.ip;
 
         if (!ip) {
             return this.response(400, { error: "Missing IP address." });
         }
 
+        if (!fingerprints || Object.keys(fingerprints).length === 0) {
+            return this.response(400, { error: "Missing fingerprints." });
+        }
+
         const captchaResult = await this.verifyCaptcha(captchaToken, ip);
 
         if (!captchaResult) {
             return this.response(400, {
-                error: "We're unable to verify whether you're human or not: Captcha verification failed."
+                error: "Captcha verification failed."
             });
         }
 
@@ -157,7 +169,8 @@ class VerificationController extends Controller {
             guildId,
             userId,
             ip,
-            token
+            token,
+            fingerprints as Record<AltFingerprintType, string>
         );
 
         if (result.error) {

@@ -43,15 +43,16 @@ import { Pool } from "pg";
 @Name("databaseService")
 class DatabaseService extends Service {
     public readonly drizzle: NodePgDatabase<ReturnType<typeof this.buildSchema>>;
+    public readonly pool: Pool;
 
     public constructor(application: Application) {
         super(application);
 
-        const pool = new Pool({
+        this.pool = new Pool({
             connectionString: getEnvData().DB_URL
         });
 
-        this.drizzle = drizzle(pool, {
+        this.drizzle = drizzle(this.pool, {
             schema: this.buildSchema(),
             logger: new QueryLogger()
         });
