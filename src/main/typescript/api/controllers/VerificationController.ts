@@ -108,11 +108,11 @@ class VerificationController extends Controller {
             return this.response(400, { error: "Missing IP address." });
         }
 
-        // if (await this.verificationService.isProxy(ip)) {
-        //     return this.response(400, {
-        //         error: "You seem to be using a VPN or proxy. Please disable it, reload this page and try again."
-        //     });
-        // }
+        if (await this.verificationService.isProxy(ip)) {
+            return this.response(400, {
+                error: "You seem to be using a VPN or proxy. Please disable it, reload this page and try again."
+            });
+        }
 
         const result = await this.verificationService.connectDiscord(
             guildId,
