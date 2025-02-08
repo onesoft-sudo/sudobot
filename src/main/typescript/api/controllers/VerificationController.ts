@@ -137,17 +137,26 @@ class VerificationController extends Controller {
             token: z.string(),
             fingerprints: z.array(
                 z.tuple([z.number().min(0).max(AltFingerprintType._COUNT), z.string()])
-            )
+            ),
+            frontend_token: z.string(),
+            ip: z.string()
         })
     )
     public async verifyMember(request: Request) {
         const { guildId, userId } = request.params;
-        const { captchaToken, token } = request.parsedBody ?? {};
+        const { captchaToken, token, frontend_token, ip } = request.parsedBody ?? {};
         const fingerprints =
             request.parsedBody?.fingerprints && Array.isArray(request.parsedBody?.fingerprints)
                 ? Object.fromEntries(request.parsedBody?.fingerprints)
                 : undefined;
-        const ip = request.ip;
+
+        if (
+            !frontend_token ||
+            typeof frontend_token !== "string" ||
+            frontend_token !== getEnvData().FRONTEND_KEY
+        ) {
+            return this.response(403, { error: "Invalid request." });
+        }
 
         if (!ip) {
             return this.response(400, { error: "Missing IP address." });
