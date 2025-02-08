@@ -135,19 +135,22 @@ class RestartCommand extends Command {
     }
 
     public override async execute(context: Context): Promise<void> {
+        const mfaKey = context.isChatInput() ? context.options.getString("credential_key") : "";
+
+        this.application.logger.debug("Conditions: ", !!getEnvData().TWO_FACTOR_AUTH_URL, !mfaKey);
+        
         if (
             getEnvData().TWO_FACTOR_AUTH_URL &&
-            (!context.isChatInput() || context.options.getString("credential_key"))
+            !mfaKey
         ) {
             await context.error(
                 "Please enter the credential server 2FA code to restart the bot" +
-                    (context.isLegacy() ? " using the slash command" : "") +
+                    (context.isLegacy() ? ", by using the slash command" : "") +
                     "!"
             );
+            
             return;
         }
-
-        const mfaKey = context.isChatInput() ? context.options.getString("credential_key") : "";
 
         const reply = await context.reply({
             embeds: [

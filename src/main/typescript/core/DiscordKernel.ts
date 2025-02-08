@@ -374,11 +374,15 @@ class DiscordKernel extends Kernel {
                 try {
                     const data = parse(decryptedTextData);
 
+                    setEnvData({
+                        ...process.env,
+                        ...data
+                    } as unknown as Record<string, string | undefined>);
+
                     for (const key in data) {
                         process.env[key] = data[key];
                     }
 
-                    setEnvData(data);
                     this.logger.success("Successfully loaded environment data");
                 } catch (error) {
                     this.logger.error(
