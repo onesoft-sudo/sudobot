@@ -112,7 +112,8 @@ class VerificationService extends Service {
             where(fields, operators) {
                 return operators.and(
                     operators.eq(fields.userId, interaction.user.id),
-                    operators.eq(fields.guildId, interaction.guildId)
+                    operators.eq(fields.guildId, interaction.guildId),
+                    operators.gt(fields.expiresAt, new Date())
                 );
             }
         });
