@@ -2,12 +2,27 @@
 
 ### 10-02-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **feat:** bring back snipe command    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
   * **feat(verification):** alt detection [NAE] (#316)    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
   * **fix:** final chaanges    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+
+### 10-02-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.48.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 09-02-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
