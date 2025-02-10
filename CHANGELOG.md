@@ -1,7 +1,63 @@
 # Changelog
 
+### 10-02-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **feat(verification):** alt detection [NAE] (#316)    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **fix:** final chaanges    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+
+### 09-02-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **docs:** update permission command examples     
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 08-02-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * merge: branch 'feature/verification-fp' of github.com:onesoft-sudo/sudobot into feature/verification-fp    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * merge: github.com:onesoft-sudo/sudobot into feature/verification-fp    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **feat:** rely on frontend as a proxy    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+
+### 07-02-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **fix:** re-enable proxy checking [2/2]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **fix:** re-enable proxy checking [1/2]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **feat(verification):** alt detection [NAE]    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **chore(extensions):** build extensions [skip ci]    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 05-02-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v10.45.3 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v10.45.2 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
