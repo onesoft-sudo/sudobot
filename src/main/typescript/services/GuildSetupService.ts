@@ -293,8 +293,6 @@ class GuildSetupService extends Service implements HasEventListeners {
         messageId: string,
         interaction: ModalSubmitInteraction
     ) {
-        console.log(2);
-
         if (!this.configManager.config[guildId]) {
             this.configManager.autoConfigure(guildId);
         }
@@ -446,8 +444,6 @@ class GuildSetupService extends Service implements HasEventListeners {
                 }
             }
         }
-
-        console.log(1);
 
         if (interaction.isModalSubmit() && interaction.customId.startsWith("setup::")) {
             const { message } = interaction;

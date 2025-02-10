@@ -39,7 +39,6 @@ export const EnvironmentVariableSchema = z.object({
     SUDO_PREFIX: z.string().optional(),
     ERROR_WEBHOOK_URL: z.string().optional(),
     BACKUP_CHANNEL_ID: z.string().optional(),
-    FRONTEND_AUTH_KEY: z.string().optional(),
     TWO_FACTOR_AUTH_URL: z.string().optional(),
     PRIVATE_BOT_MODE: z.literal("true").optional(),
     EXTENSIONS_DIRECTORY: z.string().optional(),

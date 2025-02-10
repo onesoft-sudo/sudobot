@@ -57,7 +57,10 @@ export enum LogEventType {
     SystemAutoModRuleModeration = "system_automod_rule_moderation",
     SystemUserMessageSave = "system_user_message_save",
     RaidAlert = "raid_alert",
-    MemberNicknameModification = "member_nickname_modification"
+    MemberNicknameModification = "member_nickname_modification",
+    GuildVerificationAttempt = "guild_verification_attempt",
+    GuildVerificationSuccess = "guild_verification_success",
+    GuildVerificationNotEnoughInfo = "guild_verification_not_enough_info"
 }
 
 const LogEventSchema = z.enum(
@@ -94,6 +97,32 @@ export type LogEventArgs = {
     [LogEventType.SystemUserMessageSave]: [message: Message, moderator: User];
     [LogEventType.RaidAlert]: [payload: LogRaidAlertPayload];
     [LogEventType.MemberNicknameModification]: [payload: LogMemberNicknameModificationPayload];
+    [LogEventType.GuildVerificationAttempt]: [payload: LogGuildVerificationAttemptPayload];
+    [LogEventType.GuildVerificationSuccess]: [payload: LogGuildVerificationSuccessPayload];
+    [LogEventType.GuildVerificationNotEnoughInfo]: [
+        payload: LogGuildVerificationNotEnoughInfoPayload
+    ];
+};
+
+export type LogGuildVerificationNotEnoughInfoPayload = {
+    member: GuildMember;
+    ip?: string;
+};
+
+export type LogGuildVerificationAttemptPayload = {
+    member: GuildMember;
+    reason: string;
+    altAccountIds?: string[];
+    actionsTaken?: ModerationActionType[];
+    ip?: string;
+    incomplete?: boolean;
+};
+
+export type LogGuildVerificationSuccessPayload = {
+    member: GuildMember;
+    altAccountIds?: string[];
+    ip?: string;
+    incomplete?: boolean;
 };
 
 export type LogMemberNicknameModificationPayload = {
