@@ -18,7 +18,8 @@
  */
 
 import { pgEnum } from "@framework/database/Enum";
-import { integer, json, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { integer, json, pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
 import { verificationMethodEnum } from "./VerificationRecord";
 
 export enum VerificationStatus {
@@ -37,6 +38,11 @@ export const verificationEntries = pgTable("verification_entries", {
     metadata: json("metadata").notNull().default({}),
     method: verificationMethodEnum("method").notNull(),
     status: verificationStatusEnum("status").notNull().default(VerificationStatus.Pending),
+    guildIds: text("guild_ids")
+        .notNull()
+        .array()
+        .notNull()
+        .default(sql`'{}'`),
     expiresAt: timestamp("expires_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true })

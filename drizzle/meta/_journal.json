@@ -1,55 +1,62 @@
 {
-    "version": "7",
-    "dialect": "postgresql",
-    "entries": [
-        {
-            "idx": 0,
-            "version": "7",
-            "when": 1722191553959,
-            "tag": "0000_init",
-            "breakpoints": true
-        },
-        {
-            "idx": 1,
-            "version": "7",
-            "when": 1724739546407,
-            "tag": "0001_verification_entries",
-            "breakpoints": true
-        },
-        {
-            "idx": 2,
-            "version": "7",
-            "when": 1736528127478,
-            "tag": "0002_infraction_attachments",
-            "breakpoints": true
-        },
-        {
-            "idx": 3,
-            "version": "7",
-            "when": 1736697049685,
-            "tag": "0003_infraction_type_reaction_clear",
-            "breakpoints": true
-        },
-        {
-            "idx": 4,
-            "version": "7",
-            "when": 1738490931635,
-            "tag": "0004_verification_method_static",
-            "breakpoints": true
-        },
-        {
-            "idx": 5,
-            "version": "7",
-            "when": 1738579077170,
-            "tag": "0005_verification_status",
-            "breakpoints": true
-        },
-        {
-            "idx": 6,
-            "version": "7",
-            "when": 1738930081141,
-            "tag": "0006_alt_fingerprints",
-            "breakpoints": true
-        }
-    ]
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1722191553959,
+      "tag": "0000_init",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1724739546407,
+      "tag": "0001_verification_entries",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1736528127478,
+      "tag": "0002_infraction_attachments",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1736697049685,
+      "tag": "0003_infraction_type_reaction_clear",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1738490931635,
+      "tag": "0004_verification_method_static",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1738579077170,
+      "tag": "0005_verification_status",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1738930081141,
+      "tag": "0006_alt_fingerprints",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1739195617025,
+      "tag": "0007_verification_guilds",
+      "breakpoints": true
+    }
+  ]
 }

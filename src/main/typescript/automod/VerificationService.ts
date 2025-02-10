@@ -389,6 +389,15 @@ class VerificationService extends Service {
     }
 
     public async onVerificationExpire(guildId: Snowflake, memberId: Snowflake) {
+        await this.application.database.drizzle
+            .delete(verificationEntries)
+            .where(
+                and(
+                    eq(verificationEntries.userId, memberId),
+                    eq(verificationEntries.guildId, guildId)
+                )
+            );
+
         const guild = this.application.client.guilds.cache.get(guildId);
 
         if (!guild) {
@@ -507,15 +516,42 @@ class VerificationService extends Service {
                 throw new Error("Discord ID mismatch");
             }
 
+            const guildsResponse = await undici.request(
+                "https://discord.com/api/users/@me/guilds",
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `${token_type} ${access_token}`
+                    }
+                }
+            );
+
+            if (guildsResponse.statusCode > 299 || guildsResponse.statusCode < 200) {
+                throw new Error(`Failed to get user guild list: ${guildsResponse.statusCode}`);
+            }
+
+            const guildsData = (await guildsResponse.body.json()) as Record<string, string>;
+
+            if (!Array.isArray(guildsData) || !guildsData) {
+                throw new Error("Invalid guilds response");
+            }
+
+            if (guildsData.error) {
+                throw new Error(guildsData.error);
+            }
+
+            const guildIds = guildsData.map((guild: { id: string }) => guild.id);
+
             const result = await this.application.database.drizzle
                 .update(verificationEntries)
-                .set({ status: VerificationStatus.DiscordAuthorized })
+                .set({ status: VerificationStatus.DiscordAuthorized, guildIds })
                 .where(
                     and(
                         eq(verificationEntries.userId, memberId),
                         eq(verificationEntries.guildId, guildId),
                         eq(verificationEntries.token, token),
-                        gt(verificationEntries.expiresAt, new Date())
+                        gt(verificationEntries.expiresAt, new Date()),
+                        eq(verificationEntries.status, VerificationStatus.Pending)
                     )
                 )
                 .execute();
@@ -650,7 +686,24 @@ class VerificationService extends Service {
                 this.logger.debug("FP: ", fingerprints);
 
                 if (altFingerprintEntries && altFingerprintEntries.length > 0) {
-                    altUserIds = altFingerprintEntries.map(entry => entry.user_id);
+                    altUserIds = [];
+
+                    for (const entry of altFingerprintEntries) {
+                        const member =
+                            altFingerprintEntries.length >= 10
+                                ? guild.members.cache.has(entry.user_id)
+                                : await fetchMember(guild, entry.user_id);
+
+                        if (!member) {
+                            continue;
+                        }
+
+                        altUserIds.push(entry.user_id);
+                    }
+
+                    if (altUserIds.length === 0) {
+                        break fpCheck;
+                    }
 
                     if (config?.alt_detection?.actions?.moderationActions) {
                         this.moderationActionService

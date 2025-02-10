@@ -1574,7 +1574,7 @@ class AuditLoggingService extends Service {
 
         if (reason) {
             fields.push({
-                name: "Reason of Denial",
+                name: "Reason of Log",
                 value: reason
             });
         }
