@@ -18,7 +18,7 @@
  */
 
 export enum APIErrorCode {
-    None,
+    Success,
     InvalidCredentials,
     AccountDisabled,
     GuildNotFound,

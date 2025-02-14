@@ -35,7 +35,7 @@ class GuildController extends Controller {
         if (!guild) {
             return this.response(404, {
                 message: "Guild not found.",
-                code: APIErrorCode.None
+                code: APIErrorCode.Success
             });
         }
 

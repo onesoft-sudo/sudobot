@@ -105,6 +105,7 @@ class AuthController extends Controller {
         }
 
         return {
+            code: APIErrorCode.Success,
             success: true,
             user: {
                 id: user.id,
@@ -131,7 +132,7 @@ class AuthController extends Controller {
         if (!code) {
             return new Response({
                 status: 400,
-                body: { error: "Invalid request" }
+                body: { error: "Invalid request", code: APIErrorCode.InvalidCredentials }
             });
         }
 
@@ -220,6 +221,7 @@ class AuthController extends Controller {
 
             return {
                 success: true,
+                code: APIErrorCode.Success,
                 user: {
                     id: user.id,
                     name: user.name ?? undefined,
