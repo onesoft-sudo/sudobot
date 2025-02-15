@@ -1562,7 +1562,6 @@ class AuditLoggingService extends Service {
         reason,
         actionsTaken,
         altAccountIds,
-        ip,
         incomplete
     }: LogGuildVerificationAttemptPayload) {
         const fields = [
@@ -1585,13 +1584,6 @@ class AuditLoggingService extends Service {
                 value: altAccountIds
                     .map(altAccountId => `<@${altAccountId}> [${altAccountId}]`)
                     .join("\n")
-            });
-        }
-
-        if (ip) {
-            fields.push({
-                name: "IP Address",
-                value: ip
             });
         }
 
@@ -1633,7 +1625,6 @@ class AuditLoggingService extends Service {
     private async logGuildVerificationSuccess({
         member,
         altAccountIds,
-        ip,
         incomplete
     }: LogGuildVerificationSuccessPayload) {
         const fields = [
@@ -1649,13 +1640,6 @@ class AuditLoggingService extends Service {
                 value: altAccountIds
                     .map(altAccountId => `<@${altAccountId}> [${altAccountId}]`)
                     .join("\n")
-            });
-        }
-
-        if (ip) {
-            fields.push({
-                name: "IP Address",
-                value: ip
             });
         }
 
