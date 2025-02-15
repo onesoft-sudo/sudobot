@@ -79,7 +79,7 @@
         "cors": "^2.8.5",
         "date-fns": "^4.1.0",
         "deepmerge": "^4.3.1",
-        "discord.js": "^14.17.2",
+        "discord.js": "^14.18.0",
         "dot-object": "^2.1.5",
         "dotenv": "^16.4.7",
         "drizzle-orm": "^0.38.2",
@@ -132,7 +132,7 @@
         "typedoc": "^0.27.5",
         "typedoc-plugin-rename-defaults": "^0.7.2",
         "typedoc-theme-hierarchy": "^5.0.4",
-        "typescript": "^5.7.2",
+        "typescript": "^5.7.3",
         "typescript-eslint": "^8.19.1",
         "vitest": "^2.1.8",
         "zod-to-json-schema": "^3.24.1"
