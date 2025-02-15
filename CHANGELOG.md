@@ -2,6 +2,9 @@
 
 ### 15-02-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **fix(audit:logs):** remove unnecessary log information    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
   * **fix:** type errors in discord.js v14.18.x    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
@@ -9,6 +12,13 @@
   * **fix:** type errors in discord.js v14.18.x    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+
+### 15-02-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.50.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 14-02-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
