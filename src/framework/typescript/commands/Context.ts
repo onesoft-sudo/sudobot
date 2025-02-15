@@ -29,6 +29,7 @@ import type {
     GuildMember,
     GuildTextBasedChannel,
     InteractionDeferReplyOptions,
+    InteractionEditReplyOptions,
     InteractionReplyOptions,
     MessageContextMenuCommandInteraction,
     MessageCreateOptions,
@@ -142,7 +143,7 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
         }
 
         if (this.commandMessage.deferred) {
-            return this.commandMessage.editReply(optionsToPass);
+            return this.commandMessage.editReply(optionsToPass as InteractionEditReplyOptions);
         }
 
         return this.commandMessage.reply(
