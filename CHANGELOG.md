@@ -1,5 +1,42 @@
 # Changelog
 
+### 15-02-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **fix:** type errors in discord.js v14.18.x    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **fix:** type errors in discord.js v14.18.x    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+
+### 14-02-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **feat(api):** fix api error codes    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+
+### 10-02-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.49.1 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.49.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.48.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 10-02-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
   * merge: branch 'main' of github.com:onesoft-sudo/sudobot    
@@ -24,17 +61,6 @@
   * **fix:** final chaanges    
       
     **Signed-off-by:**  GitHub <noreply@github.com>  
-      
-
-### 10-02-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
-
-  * **release:** v10.49.0 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-  * **release:** v10.48.0 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 09-02-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
