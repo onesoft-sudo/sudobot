@@ -1,0 +1,72 @@
+name: Bug Report
+description: File a bug report.
+title: "bug: "
+labels: ["type:bug"]
+projects: ["onesoft-sudo/8"]
+assignees:
+  - virtual-designer
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the bug. Please provide as much information as possible.
+      placeholder: Tell us what you see!
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Clearly list the steps that we can follow to reproduce the exact same issue you're facing.
+      placeholder: How to reproduce the issue?
+    validations:
+      required: true
+  - type: dropdown
+    id: version
+    attributes:
+      label: Version
+      description: What version of SudoBot are you running?
+      options:
+        - 10.x (LTS)
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Which operating systems are you seeing the problem on?
+      multiple: true
+      options:
+        - Linux
+        - macOS
+        - BSD
+        - Windows
+        - Others (please specify in the issue description)
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com). 
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
+
