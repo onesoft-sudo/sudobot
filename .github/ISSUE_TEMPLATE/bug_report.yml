@@ -57,6 +57,20 @@ body:
         - Others (please specify in the issue description)
     validations:
       required: true
+  - type: dropdown
+    id: runtime
+    attributes:
+      label: Which JavaScript runtimes are you experiencing the problem on?
+      multiple: true
+      options:
+        - Node.js
+        - Node.js (Native Compiled Executable)
+        - Node.js (JavaScript Bundle)
+        - Bun
+        - Bun (Native Compiled Executable)
+        - Bun (JavaScript Bundle)
+    validations:
+      required: true
   - type: textarea
     id: logs
     attributes:
