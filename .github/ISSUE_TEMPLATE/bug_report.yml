@@ -55,6 +55,8 @@ body:
         - BSD
         - Windows
         - Others (please specify in the issue description)
+    validations:
+      required: true
   - type: textarea
     id: logs
     attributes:
