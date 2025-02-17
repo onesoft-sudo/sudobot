@@ -63,9 +63,9 @@ body:
       label: Which JavaScript runtimes are you experiencing the problem on?
       multiple: true
       options:
-        - Node.js
-        - Node.js (Native Compiled Executable)
-        - Node.js (JavaScript Bundle)
+        - Node
+        - Node (Native Compiled Executable)
+        - Node (JavaScript Bundle)
         - Bun
         - Bun (Native Compiled Executable)
         - Bun (JavaScript Bundle)
