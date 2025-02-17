@@ -5,8 +5,7 @@
 | Version          | Supported           |
 | ---------------- | ------------------- |
 | 10.x             | :white_check_mark:  |
-| 9.x [>= 9.26.7]  | :white_check_mark:  |
-| 9.x [< 9.26.7]   | :x:                 |
+| 9.x              | :x:                 |
 | 8.x              | :x:                 |
 | 7.x              | :x:                 |
 | 6.x              | :x:                 |
