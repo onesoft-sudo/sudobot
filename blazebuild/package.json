@@ -18,7 +18,7 @@
     "@types/bun": "latest",
     "@types/decompress": "^4.2.7",
     "@types/glob": "^8.1.0",
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.25.0",
     "typescript": "^5.5.3",
     "@types/semver": "^7.5.8"
   },
