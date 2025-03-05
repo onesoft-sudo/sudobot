@@ -91,7 +91,7 @@ Thanks to all the active and indirect contributors!
 -   [Kars](https://github.com/kars1996)
 -   [killerclaws12](https://github.com/killerclaws12)
 -   [MonzterDev](https://github.com/MonzterDev)
--   [ninsaccplayzyt](https://github.com/ninsaccplayzyt)
+-   [blxddy](https://github.com/blxddy)
 -   [Ryanmello07](https://github.com/Ryanmello07) (Contributed by helping us improve, also by giving away a hosting server and domain name to us)
 
 ### Todo List
