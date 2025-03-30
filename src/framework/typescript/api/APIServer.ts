@@ -117,7 +117,7 @@ export default class APIServer extends Service {
     ): T | null {
         return (
             Symbol.metadata in controllerClass && controllerClass[Symbol.metadata]
-                ? controllerClass[Symbol.metadata]?.[alternativeKey]
+                ? (controllerClass[Symbol.metadata] as Record<string, T>)?.[alternativeKey]
                 : Reflect.getMetadata(key, controllerClass.prototype)
         ) as T | null;
     }

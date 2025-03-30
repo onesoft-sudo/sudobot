@@ -5,7 +5,7 @@
         "module": "CommonJS",
         "baseUrl": ".",
         "types": ["node", "bun"],
-        "lib": ["ES2022", "DOM"],
+        "lib": ["ES2022", "Decorators", "DOM"],
         "resolveJsonModule": true,
         "declaration": true,
         "outDir": "./build/out",
