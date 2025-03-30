@@ -143,5 +143,6 @@
         "**/.git/objects/**": true,
         "**/.git/subtree-cache/**": true
     },
-    "search.followSymlinks": false
+    "search.followSymlinks": false,
+    "makefile.configureOnOpen": false
 }

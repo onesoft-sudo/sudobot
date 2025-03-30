@@ -1,5 +1,4 @@
-import type { FileSink } from 'bun';
-import type File from './File';
+import type { FileSink } from "bun";
 
 class FileWriter implements Disposable, AsyncDisposable {
     private readonly sink: FileSink;
@@ -10,7 +9,7 @@ class FileWriter implements Disposable, AsyncDisposable {
         this.sink = sink;
     }
 
-    public write(data: string | ArrayBuffer | ArrayBufferView | SharedArrayBuffer) {
+    public write(data: string | ArrayBuffer | SharedArrayBuffer) {
         return this.sink.write(data);
     }
 
@@ -20,11 +19,11 @@ class FileWriter implements Disposable, AsyncDisposable {
     }
 
     public [Symbol.dispose]() {
-        this.dispose()
+        this.dispose();
     }
 
     public async [Symbol.asyncDispose]() {
-        await this.dispose()
+        await this.dispose();
     }
 }
 
