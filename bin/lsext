@@ -1,0 +1,174 @@
+#!/bin/sh
+#
+# lsext - list all extensions
+# Copyright (C) 2021, 2022, 2023, 2024, 2025  OSN Developers Team.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+# shellcheck disable=SC3043
+
+dir="$(dirname "$0")"
+env_file="$(dirname "$dir")/.env"
+me="$(basename "$0")"
+
+socket_file="/run/sudobot.sock"
+
+if ! command -v nc >/dev/null 2>&1; then
+    echo "$me: netcat is not installed" >&2
+    exit 1
+fi
+
+if ! command -v jq >/dev/null 2>&1; then
+    echo "$me: jq is not installed" >&2
+    exit 1
+fi
+
+if ! command -v bc >/dev/null 2>&1; then
+    echo "$me: bc is not installed" >&2
+    exit 1
+fi
+
+if ! command -v date >/dev/null 2>&1; then
+    echo "$me: date is not installed" >&2
+    exit 1
+fi
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        -h|--help)
+            echo "Usage: $me [options]"
+            echo ""
+            echo "List all extensions loaded in SudoBot. This requires you to set the"
+            echo "environment variable SOCKET_FILE to the path of the socket file."
+            echo ""
+            echo "Options:"
+            echo "  -h, --help      Show this help message"
+            exit 0
+            ;;
+        *)
+            echo "$me: invalid option: $1" >&2
+            exit 1
+            ;;
+    esac
+done
+
+load_env_socket_file_name() {
+    if [ -f "$env_file" ]; then
+        local contents=""
+
+        contents="$(cat "$env_file")"
+
+        if [ $? -ne 0 ]; then
+            echo "$me: unable to read $env_file" >&2
+            return 1
+        fi
+
+        local socket_file_value="$(echo "$contents" | grep "SOCKET_FILE" | cut -d'=' -f2- | tr -d '\r\n')"
+        local prefix_value="$(echo "$contents" | grep "SUDO_PREFIX" | cut -d'=' -f2- | tr -d '\r\n')"
+
+        if [ -z "$socket_file_value" ]; then
+            echo "$prefix_value/sudobot.sock"
+            return 0
+        fi
+
+        echo "$socket_file_value"
+    fi
+
+    return 0
+}
+
+list_extensions() {
+    socket_file_env="$(load_env_socket_file_name)"
+
+    if [ $? -ne 0 ]; then
+        echo "$me: unable to load environment variables" >&2
+        exit 1
+    fi
+
+    if [ -n "$socket_file_env" ]; then
+        socket_file="$socket_file_env"
+    fi
+
+    if [ ! -r "$socket_file" ]; then
+        echo "$me: unable to read socket: $socket_file" >&2
+        exit 1
+    fi
+
+    if [ ! -S "$socket_file" ]; then
+        echo "$me: socket file is not a socket: $socket_file" >&2
+        exit 1
+    fi
+    
+    magic="$(head -c 16 /dev/urandom | base64 | tr -d '\n' | cut -c 1-8)"
+
+    response="$(echo $magic'{"type":"ListExtensions"}'$magic | nc -U "$socket_file")"
+
+    if [ $? -ne 0 ]; then
+        echo "$me: unable to connect to socket: $socket_file" >&2
+        exit 1
+    fi
+
+    if [ -z "$response" ]; then
+        echo "$me: empty response from socket: $socket_file" >&2
+        exit 1
+    fi
+
+    if ! echo "$response" | jq -e . >/dev/null 2>&1; then
+        echo "$me: invalid response from socket: $socket_file" >&2
+        exit 1
+    fi
+
+    if [ "$(echo "$response" | jq -r .type)" != "ListExtensions" ]; then
+        echo "$me: invalid type in response from socket: $socket_file" >&2
+        exit 1
+    fi
+
+    printf "\033[1m%-20s %-10s %-10s %-20s %s\033[0m\n" "Name" "Version" "Author" "Loaded At" "Description"
+
+    for extension in $(echo "$response" | jq -r '.extensions[] | @base64'); do
+        _jq() {
+            echo "${extension}" | base64 --decode | jq -r "${1}"
+        }
+
+        name="$(_jq '.name')"
+        version="$(_jq '.version')"
+        author="$(_jq '.author')"
+        loaded_at="$(_jq '.loadedAt')"
+        description="$(_jq '.description')"
+
+        if [ "$name" = "null" ]; then
+            name="N/A"
+        fi
+
+        if [ "$version" = "null" ]; then
+            version="N/A"
+        fi
+
+        if [ "$author" = "null" ]; then
+            author="N/A"
+        fi
+
+        if [ "$loaded_at" = "null" ] || [ -z "$loaded_at" ]; then
+            loaded_at="N/A"
+        else
+            loaded_at="$(echo "scale=0; $loaded_at/1000" | bc)"
+            loaded_at="$(date --date=@"$loaded_at" +'%Y-%m-%d %H:%M:%S')"
+        fi
+
+        if [ "$description" = "null" ]; then
+            description="N/A"
+        fi
+
+        printf "%-20s %-10s %-10s %-20s %s\n" "$name" "$version" "$author" "$loaded_at" "$description"
+    done
+}
