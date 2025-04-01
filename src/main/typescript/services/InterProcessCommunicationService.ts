@@ -34,7 +34,7 @@ class InterProcessCommunicationService extends Service {
     @Inject("extensionManager")
     private readonly extensionManager!: ExtensionManager;
 
-    public async initializeSocket() {
+    public initializeSocket() {
         const socketPath =
             process.env.SOCKET_FILE ??
             (process.getuid
@@ -83,7 +83,7 @@ class InterProcessCommunicationService extends Service {
         });
     }
 
-    private async handleRequest(request: IPCRequest): Promise<IPCResponse> {
+    private handleRequest(request: IPCRequest): Awaitable<IPCResponse> {
         switch (request.type) {
             case IPCRequestType.ListExtensions:
                 return this.listExtensions(request);
@@ -96,7 +96,7 @@ class InterProcessCommunicationService extends Service {
         }
     }
 
-    private async listExtensions(request: IPCRequest): Promise<IPCResponse> {
+    private listExtensions(request: IPCRequest): IPCResponse {
         const extensions = this.extensionManager.getInstalledExtensions();
 
         return {
@@ -181,7 +181,7 @@ class InterProcessCommunicationService extends Service {
         });
     }
 
-    private async readSocketDataAsJSON(socket: Socket, limit = 1024): Promise<any> {
+    private async readSocketDataAsJSON(socket: Socket, limit = 1024): Promise<unknown> {
         const data = await this.readSocketData(socket, limit);
         return JSON.parse(data);
     }
