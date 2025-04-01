@@ -16,7 +16,7 @@ COPY build_src ./build_src
 COPY eslint.config.mjs ./eslint.config.mjs
 COPY vitest.config.mjs ./vitest.config.mjs
 COPY tests ./tests
-COPY scripts ./scripts
+COPY bin ./bin
 
 RUN ./blazew build
 
@@ -28,7 +28,7 @@ COPY --from=0 /app/node_modules ./node_modules
 COPY --from=0 /app/build ./build
 COPY --from=0 /app/package.json ./package.json
 COPY --from=0 /app/tsconfig.json ./tsconfig.json
-COPY --from=0 /app/scripts ./scripts
+COPY --from=0 /app/bin ./bin
 COPY drizzle ./drizzle
 COPY docker ./docker
 COPY ecosystem.config.js ./ecosystem.config.js
