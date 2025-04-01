@@ -1,0 +1,443 @@
+#!/bin/sh
+#
+# addlicense -- a script to insert license comments automatically
+#
+# This script is part of OSN Commons. Copyright (C) 2024 OSN Developers.
+#
+# OSN Commons is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# OSN Commons is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with OSN Commons. If not, see <https://www.gnu.org/licenses/>.
+#
+
+me=$0
+canonical_name=$(echo "$me" | rev | cut -d'/' -f1 | rev)
+
+if [ "$(echo "$me" | cut -c1)" = "/" ]; then
+    me=$canonical_name
+fi
+
+version="1.0.0"
+
+usage() {
+    echo "Usage: $me [options...] [[directory...] | [-]]"
+    echo "Automatically insert license comments to the project's "
+    echo "source files."
+    echo ""
+    echo "Options:"
+    echo "  -e, --exclude       Add an exclusion pattern"
+    echo "  -i, --include       Add an inclusion pattern"
+    echo "  -E, --exclude-file  Exclude a file path"
+    echo "  -I, --include-file  Include a file path"
+    echo "  -h, --help          Show this help and exit"
+    echo "  -v, --version       Show version info and exit"
+    echo "  -f, --file          Specify a file containing the license"
+    echo "                      notice to insert"
+    echo ""
+    echo "Bug reports and general questions should be sent to "
+    echo "<commons@onesoftnet.eu.org>."
+    exit 0
+}
+
+show_version() {
+    echo "$canonical_name (OSN Commons) v$version"
+    echo ""
+    echo "Copyright (C) 2024 OSN Developers."
+    echo "License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>."
+    echo "This is free software: you are free to change and redistribute it."
+    echo "There is NO WARRANTY, to the extent permitted by law."
+    echo ""
+    echo "Written by Ar Rakin."
+    exit 0
+}
+
+trim_string() {
+    echo "$1" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
+}
+
+targets=""
+exclpats=""
+inclpats=""
+exclfiles=""
+inclfiles=""
+license_notice_file=""
+license_notice="/*
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */"
+stdin_read=""
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+    -h | --help)
+        usage
+        ;;
+
+    -v | --version)
+        show_version
+        ;;
+
+    -e | --exclude)
+        if [ -z "$2" ]; then
+            echo "$me: option requires an argument -- '$1'" >&2
+            echo "Try '$me --help' for more detailed information." >&2
+            exit 2
+        fi
+
+        if [ "$2" != "$(echo "$2" | tr -d ':')" ]; then
+            echo "$me: exclusion patterns must not contain colons (':')" >&2
+            exit 2
+        fi
+
+        if [ -z "$exclpats" ]; then
+            exclpats="$2"
+        else
+            exclpats="$exclpats:$2"
+        fi
+
+        shift
+        ;;
+
+    -i | --include)
+        if [ -z "$2" ]; then
+            echo "$me: option requires an argument -- '$1'" >&2
+            echo "Try '$me --help' for more detailed information." >&2
+            exit 2
+        fi
+
+        if [ "$2" != "$(echo "$2" | tr -d ':')" ]; then
+            echo "$me: inclusion patterns must not contain colons (':')" >&2
+            exit 2
+        fi
+
+        if [ -z "$inclpats" ]; then
+            inclpats="$2"
+        else
+            inclpats="$inclpats:$2"
+        fi
+
+        shift
+        ;;
+
+    -E | --exclude-file)
+        if [ -z "$2" ]; then
+            echo "$me: option requires an argument -- '$1'" >&2
+            echo "Try '$me --help' for more detailed information." >&2
+            exit 2
+        fi
+
+        if [ "$2" != "$(echo "$2" | tr -d ':')" ]; then
+            echo "$me: file paths must not contain colons (':')" >&2
+            exit 2
+        fi
+
+        if [ ! -e "$2" ]; then
+            echo "$me: $2: No such file or directory" >&2
+            exit 2
+        fi
+
+        file=$(readlink -f "$2")
+
+        if [ $? -ne 0 ]; then
+            echo "$me: $2: Ignoring" >&2
+        else
+            if [ -z "$exclfiles" ]; then
+                exclfiles="$file"
+            else
+                exclfiles="$exclfiles:$file"
+            fi
+        fi
+
+        shift
+        ;;
+
+    -I | --include-file)
+        if [ -z "$2" ]; then
+            echo "$me: option requires an argument -- '$1'" >&2
+            echo "Try '$me --help' for more detailed information." >&2
+            exit 2
+        fi
+
+        if [ "$2" != "$(echo "$2" | tr -d ':')" ]; then
+            echo "$me: file paths must not contain colons (':')" >&2
+            exit 2
+        fi
+
+        if [ ! -e "$2" ]; then
+            echo "$me: $2: No such file or directory" >&2
+            exit 2
+        fi
+
+        file=$(readlink -f "$2")
+
+        if [ $? -ne 0 ]; then
+            echo "$me: $2: Ignoring" >&2
+        else
+            if [ -z "$inclfiles" ]; then
+                inclfiles="$file"
+            else
+                inclfiles="$inclfiles:$file"
+            fi
+        fi
+
+        shift
+        ;;
+
+    -f | --file)
+        if [ -z "$2" ]; then
+            echo "$me: option requires an argument -- '$1'" >&2
+            echo "Try '$me --help' for more detailed information." >&2
+            exit 2
+        fi
+
+        if [ "$2" = "-" ]; then
+            if [ -t 0 ]; then
+                echo "$me: nothing to read from standard input" >&2
+                exit 2
+            fi
+
+            if [ ! -z "$stdin_read" ] && [ "$stdin_read" != "notice" ]; then
+                echo "$me: multiple options are being directed to standard input" >&2
+                exit 2
+            fi
+
+            license_notice="$(
+                cat
+                echo E
+            )"
+            stdin_read="notice"
+        else
+            if [ ! -f "$2" ]; then
+                echo "$me: $2: No such file or directory" >&2
+                exit 2
+            fi
+
+            license_notice_file="$2"
+            license_notice="$(
+                cat "$2"
+                echo E
+            )"
+        fi
+
+        license_notice=${license_notice%E}
+        shift
+        ;;
+
+    -)
+        if [ -t 0 ]; then
+            echo "$me: nothing to read from standard input" >&2
+            exit 2
+        fi
+
+        if [ ! -z "$stdin_read" ] && [ "$stdin_read" != "targets" ]; then
+            echo "$me: multiple options are being directed to standard input" >&2
+            exit 2
+        fi
+
+        while IFS='' read -r line; do
+            if [ "$line" != "$(echo "$line" | tr -d ':')" ] || [ -z "$line" ]; then
+                echo "$me: target paths must not contain colons (':')" >&2
+                exit 2
+            fi
+
+            if [ -z "$targets" ]; then
+                targets="$line"
+            else
+                targets="$targets:$line"
+            fi
+        done
+
+        stdin_read="targets"
+        ;;
+
+    -*)
+        echo "$me: Invalid option -- '$1'" >&2
+        echo "Try '$me --help' for more detailed information." >&2
+        exit 2
+        ;;
+
+    *)
+        if [ "$1" != "$(echo "$1" | tr -d ':')" ] || [ -z "$1" ]; then
+            echo "$me: target paths must not contain colons (':')" >&2
+            exit 2
+        fi
+
+        if [ -z "$targets" ]; then
+            targets="$1"
+        else
+            targets="$targets:$1"
+        fi
+        ;;
+    esac
+
+    shift
+done
+
+if [ -z "$targets" ]; then
+    echo "$me: No target operands specified" >&2
+    echo "Try '$me --help' for more detailed information" >&2
+    exit 2
+fi
+
+success=0
+
+insert_license() {
+    set -e
+    local file="$1"
+    local tmpfile="$(mktemp)"
+
+    echo "$license_notice" >"$tmpfile"
+    cat "$file" >>"$tmpfile"
+    mv "$tmpfile" "$file"
+    set +e
+}
+
+process_files() {
+    echo "$targets" | while IFS=':' read -r target; do
+        local stat_out
+        stat_out="$(stat "$target" 2>&1)"
+
+        if [ $? -ne 0 ]; then
+            echo "$me: $(echo "$stat_out" | cut -c 7-)" >&2
+            continue
+        fi
+
+        echo "$me: scanning: $target"
+        local find_cmd="find '$target' -type f ! -path \"*/*~\" \
+        ! -path \"*/.git/*\" ! -path \"*/.svn/*\" \
+        ! -path \"*/.hg/*\" ! -path \"*/CVS/*\" \
+        ! -path \"*/.bzr/*\" ! -path \"$me\""
+
+        if [ ! -z "$exclpats" ]; then
+            local ifs="$IFS"
+
+            IFS=":"
+
+            set -f
+
+            for exclpat in $exclpats; do
+                find_cmd="$find_cmd ! -path \"$exclpat\""
+            done
+
+            set +f
+
+            IFS="$ifs"
+        fi
+
+        if [ ! -z "$inclpats" ]; then
+            local ifs="$IFS"
+
+            IFS=":"
+
+            set -f
+
+            for inclpat in $inclpats; do
+                find_cmd="$find_cmd -path \"$inclpat\""
+            done
+
+            set +f
+
+            IFS="$ifs"
+        fi
+
+        echo "$find_cmd"
+
+        local files="$(eval "$find_cmd")"
+
+        if [ -z "$files" ]; then
+            echo "$me: no files found" >&2
+            continue
+        fi
+
+        local r_license_notice_file
+
+        if [ ! -z "$license_notice_file" ]; then
+            r_license_notice_file=$(readlink -f "$license_notice_file")
+        fi
+
+        set -f
+
+        for file in $files; do
+            local rpath=$(readlink -f "$file")
+
+            if [ ! -z "$license_notice_file" ] && [ "$rpath" = "$r_license_notice_file" ]; then
+                continue
+            fi
+
+            if [ ! -z "$exclfiles" ]; then
+                local ifs="$IFS"
+
+                IFS=":"
+
+                for exclfile in $exclfiles; do
+                    if [ "$rpath" = "$exclfile" ]; then
+                        continue 2
+                    fi
+                done
+
+                IFS="$ifs"
+            fi
+
+            if [ ! -z "$inclfiles" ]; then
+                local ifs="$IFS"
+
+                IFS=":"
+
+                for inclfile in $inclfiles; do
+                    if [ "$rpath" = "$inclfile" ]; then
+                        break
+                    fi
+                done
+
+                if [ "$rpath" != "$inclfile" ]; then
+                    continue
+                fi
+
+                IFS="$ifs"
+            fi
+
+            if file "$file" -b | grep -Eq 'binary|ELF|executable|data'; then
+                echo "$me: skipping binary/data file: $file"
+                continue
+            fi
+            
+            local license_notice_start="$(cat "$file" | head -n 1 | tr -d '\n' | tr -d '[:space:]' | cut -c -3)"
+
+            if [ "$license_notice_start" = "/*" ] || [ "$license_notice_start" = "/**" ] || [ "$license_notice_start" = "#" ]; then
+                echo "$me: license notice already present in: $file"
+                success=1
+                continue
+            fi
+
+            echo "$me: inserting license comment to: $file"
+            insert_license "$file"
+        done
+
+        set +f
+        success=1
+    done
+}
+
+process_files
+
+if [ $success -ne 1 ]; then
+    exit 1
+fi
