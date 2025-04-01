@@ -322,7 +322,8 @@ export default class ExtensionManager extends Service {
                 this.application.logger.error(
                     `Extension ${extensionName} does not have a "extension.json" file!`
                 );
-                process.exit(-1);
+
+                continue;
             }
 
             const parseResult = ExtensionMetadataSchema.safeParse(
