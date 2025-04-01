@@ -1,7 +1,54 @@
 # Changelog
 
+### 01-04-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **fix:** dockerfile    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **fix:** eslint errors    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **feat(bin):** add lsext script to list currently loaded extensions    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **feat:** inter-process communication via UNIX-domain sockets    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **style:** add missing license comments    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore:** move scripts to bin    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **fix(extensions):** process terminates due to extensions not being valid    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(blazebuild):** update .gitignore    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore:** update blazebuild/.gitignore    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot
+  * **chore:** update .gitignore    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 30-03-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **ci:** update extensions.yml    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
   * **fix:** incompatible typescript type updates    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
@@ -21,6 +68,13 @@
   * **chore:** update lockfile    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 30-03-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.51.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 27-03-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
