@@ -109,6 +109,7 @@ class DiscordKernel extends Kernel {
         "@services/GuildSetupService",
         "@services/SnippetManagerService",
         "@services/TranslationService",
+        "@services/InterProcessCommunicationService",
         "@services/SystemUpdateService",
         "@root/framework/typescript/api/APIServer"
     ];

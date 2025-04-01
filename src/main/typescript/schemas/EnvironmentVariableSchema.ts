@@ -72,7 +72,8 @@ export const EnvironmentVariableSchema = z.object({
     DISCORD_INTENTS: z.string().optional(),
     MODIFICATIONS_PUBLIC_URL: z.string().optional(),
     HIDE_MODIFICATIONS_URL_NOTICE: z.literal("1").optional(),
-    DM_LOGS_WEBHOOK_URL: z.string().url().optional()
+    DM_LOGS_WEBHOOK_URL: z.string().url().optional(),
+    SOCKET_FILE: z.string().optional()
 });
 
 export type EnvironmentVariableRecord = z.infer<typeof EnvironmentVariableSchema>;

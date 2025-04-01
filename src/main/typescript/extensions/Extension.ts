@@ -42,7 +42,14 @@ export const ExtensionMetadataSchema = z.object({
     description: z.string().optional(),
     id: z.string({ required_error: "Extension ID is required" }),
     icon: z.string().optional(),
-    readmeFileName: z.string().default("README.md")
+    readmeFileName: z.string().default("README.md"),
+    package_data: z.object({
+        version: z.string(),
+        author: z
+            .string()
+            .or(z.object({ name: z.string(), email: z.string() }))
+            .optional()
+    })
 });
 
 export type ExtensionMetadataType = z.infer<typeof ExtensionMetadataSchema>;
@@ -56,21 +63,25 @@ export abstract class Extension {
 
     public readonly id: string;
     public readonly name: string;
+    public readonly version: string;
     public readonly path: string;
     public readonly mainFilePath: string;
+    public readonly loadedAt: number = Date.now();
 
-    protected readonly meta: ExtensionMetadataType;
+    public readonly meta: Readonly<ExtensionMetadataType>;
 
     public constructor(
         manager: ExtensionManager,
         id: string,
         name: string,
+        version: string,
         mainFilePath: string,
         meta: ExtensionMetadataType,
         application: Application
     ) {
         this.id = id;
         this.name = name;
+        this.version = version;
         this.mainFilePath = mainFilePath;
         this.path = path.dirname(mainFilePath);
         this.application = application;

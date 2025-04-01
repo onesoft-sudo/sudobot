@@ -300,6 +300,10 @@ export default class ExtensionManager extends Service {
         return this.extensions.get(id) as E | undefined;
     }
 
+    public getInstalledExtensions() {
+        return Array.from(this.extensions.values());
+    }
+
     public async loadExtensions() {
         if (!this.extensionsPath) {
             return;
@@ -316,6 +320,17 @@ export default class ExtensionManager extends Service {
             }
 
             this.application.logger.debug("Loading extension from directory: ", extensionDirectory);
+
+            const packageFile = path.join(extensionDirectory, "package.json");
+
+            if (!existsSync(packageFile)) {
+                this.application.logger.error(
+                    `Extension ${extensionName} does not have a "package.json" file!`
+                );
+
+                continue;
+            }
+
             const metadataFile = path.join(extensionDirectory, "extension.json");
 
             if (!existsSync(metadataFile)) {
@@ -326,79 +341,94 @@ export default class ExtensionManager extends Service {
                 continue;
             }
 
-            const parseResult = ExtensionMetadataSchema.safeParse(
-                JSON.parse(await fs.readFile(metadataFile, { encoding: "utf-8" }))
-            );
-
-            if (!parseResult.success) {
-                this.application.logger.error(
-                    `Error parsing extension metadata for extension ${extensionName}`
+            try {
+                const packageData = JSON.parse(
+                    await fs.readFile(packageFile, { encoding: "utf-8" })
                 );
-                this.application.logger.error(parseResult.error);
-                continue;
-            }
+                const { version } = packageData;
 
-            const {
-                main = "index.js",
-                src_main = "index.ts",
-                id,
-                src_directory = "",
-                build_directory = ""
-            } = parseResult.data;
+                const parseResult = ExtensionMetadataSchema.safeParse({
+                    ...JSON.parse(await fs.readFile(metadataFile, { encoding: "utf-8" })),
+                    package_data: packageData
+                });
 
-            const loadingTypeScript = process.isBun && __filename.endsWith(".ts");
-            const mainModule = path.join(
-                extensionDirectory,
-                loadingTypeScript ? src_directory : build_directory,
-                loadingTypeScript ? src_main : main
-            );
-
-            const tsconfigPath = path.join(extensionDirectory, "tsconfig.json");
-            const bunTsconfigPath = path.join(extensionDirectory, "tsconfig.bun.json");
-            const nodeTsconfigPath = path.join(extensionDirectory, "tsconfig.node.json");
-
-            if (loadingTypeScript && !existsSync(bunTsconfigPath)) {
-                this.application.logger.error(
-                    `Extension ${extensionName} is being loaded in Bun-TypeScript mode but does not have a "tsconfig.bun.json" file!`
-                );
-                this.application.logger.error("Ignoring extension");
-                continue;
-            }
-
-            const tsconfigExists = existsSync(tsconfigPath);
-
-            if (
-                !tsconfigExists ||
-                (await readlink(tsconfigPath).catch(() => "")) !==
-                    (loadingTypeScript ? bunTsconfigPath : nodeTsconfigPath)
-            ) {
-                if (tsconfigExists) {
-                    await fs.rm(tsconfigPath);
+                if (!parseResult.success) {
+                    this.application.logger.error(
+                        `Error parsing extension metadata for extension ${extensionName}`
+                    );
+                    this.application.logger.error(parseResult.error);
+                    continue;
                 }
 
-                if (process.platform === "win32") {
-                    await fs.cp(
-                        loadingTypeScript ? bunTsconfigPath : nodeTsconfigPath,
-                        tsconfigPath
+                const {
+                    main = "index.js",
+                    src_main = "index.ts",
+                    id,
+                    src_directory = "",
+                    build_directory = ""
+                } = parseResult.data;
+
+                const loadingTypeScript = process.isBun && __filename.endsWith(".ts");
+                const mainModule = path.join(
+                    extensionDirectory,
+                    loadingTypeScript ? src_directory : build_directory,
+                    loadingTypeScript ? src_main : main
+                );
+
+                const tsconfigPath = path.join(extensionDirectory, "tsconfig.json");
+                const bunTsconfigPath = path.join(extensionDirectory, "tsconfig.bun.json");
+                const nodeTsconfigPath = path.join(extensionDirectory, "tsconfig.node.json");
+
+                if (loadingTypeScript && !existsSync(bunTsconfigPath)) {
+                    this.application.logger.error(
+                        `Extension ${extensionName} is being loaded in Bun-TypeScript mode but does not have a "tsconfig.bun.json" file!`
                     );
-                } else {
-                    await fs.symlink(
-                        loadingTypeScript ? bunTsconfigPath : nodeTsconfigPath,
-                        tsconfigPath
-                    );
+                    this.application.logger.error("Ignoring extension");
+                    continue;
                 }
+
+                const tsconfigExists = existsSync(tsconfigPath);
+
+                if (
+                    !tsconfigExists ||
+                    (await readlink(tsconfigPath).catch(() => "")) !==
+                        (loadingTypeScript ? bunTsconfigPath : nodeTsconfigPath)
+                ) {
+                    if (tsconfigExists) {
+                        await fs.rm(tsconfigPath);
+                    }
+
+                    if (process.platform === "win32") {
+                        await fs.cp(
+                            loadingTypeScript ? bunTsconfigPath : nodeTsconfigPath,
+                            tsconfigPath
+                        );
+                    } else {
+                        await fs.symlink(
+                            loadingTypeScript ? bunTsconfigPath : nodeTsconfigPath,
+                            tsconfigPath
+                        );
+                    }
+                }
+
+                const initializer = await this.loadExtensionInitializer({
+                    extensionPath: mainModule,
+                    extensionName,
+                    extensionId: id,
+                    meta: parseResult.data,
+                    version
+                });
+
+                await initializer.initialize();
+                this.extensions.set(initializer.id, initializer);
+                this.logger.info(`Loaded extension: ${id} (${extensionName})`);
+            } catch (error) {
+                this.application.logger.error(
+                    "Error occurred while trying to load extension",
+                    extensionName,
+                    error
+                );
             }
-
-            const initializer = await this.loadExtensionInitializer({
-                extensionPath: mainModule,
-                extensionName,
-                extensionId: id,
-                meta: parseResult.data
-            });
-
-            await initializer.initialize();
-            this.extensions.set(initializer.id, initializer);
-            this.logger.info(`Loaded extension: ${id} (${extensionName})`);
         }
 
         await this.onInitializationComplete();
@@ -408,12 +438,14 @@ export default class ExtensionManager extends Service {
         extensionName,
         extensionId,
         extensionPath,
-        meta
+        meta,
+        version
     }: {
         extensionPath: string;
         extensionName: string;
         extensionId: string;
         meta: ExtensionMetadataType;
+        version: string;
     }) {
         this.application.logger.debug(
             "Attempting to load extension initializer: ",
@@ -427,6 +459,7 @@ export default class ExtensionManager extends Service {
                 manager: ExtensionManager,
                 id: string,
                 name: string,
+                version: string,
                 path: string,
                 meta: ExtensionMetadataType,
                 application: Application
@@ -437,6 +470,7 @@ export default class ExtensionManager extends Service {
             this,
             extensionId,
             extensionName,
+            version,
             extensionPath,
             meta,
             this.application
