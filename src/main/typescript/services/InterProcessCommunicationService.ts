@@ -96,7 +96,7 @@ class InterProcessCommunicationService extends Service {
         }
     }
 
-    private listExtensions(request: IPCRequest): IPCResponse {
+    private listExtensions(_request: IPCRequest): IPCResponse {
         const extensions = this.extensionManager.getInstalledExtensions();
 
         return {
