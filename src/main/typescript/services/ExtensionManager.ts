@@ -265,6 +265,16 @@ function getGuildIdResolversMap() {
     return map;
 }
 
+export type ExtensionConstructor = new (
+    manager: ExtensionManager,
+    id: string,
+    name: string,
+    version: string,
+    path: string,
+    meta: ExtensionMetadataType,
+    application: Application
+) => Extension;
+
 @Name("extensionManager")
 export default class ExtensionManager extends Service {
     private readonly extensionIndexURL =
@@ -434,6 +444,59 @@ export default class ExtensionManager extends Service {
         await this.onInitializationComplete();
     }
 
+    public async loadCompiledExtension(filePath: string) {
+        try {
+            const extensionModule = (await import(filePath)) as {
+                default: ExtensionConstructor;
+                metadata: ExtensionMetadataType;
+            };
+
+            if (!extensionModule.default) {
+                throw new Error("Extension module does not have a default export");
+            }
+
+            const metadata = ExtensionMetadataSchema.parse(extensionModule.metadata);
+
+            const extension = new extensionModule.default(
+                this,
+                metadata.id,
+                metadata.name,
+                metadata.package_data.version,
+                filePath,
+                metadata,
+                this.application
+            );
+
+            this.application.container.resolveProperties(extensionModule.default, extension);
+
+            this.application.logger.debug(
+                "Prepared compiled extension: ",
+                extension.id,
+                extension.name,
+                extension.version
+            );
+
+            await extension.initialize();
+            extension.postConstruct();
+            await extension.register();
+            this.extensions.set(extension.id, extension);
+
+            this.logger.info(
+                `Loaded extension: ${extension.id} (${extension.name} ${extension.version})`
+            );
+
+            return { extension };
+        } catch (error) {
+            this.application.logger.error(
+                "Error occurred while trying to load extension",
+                filePath,
+                error
+            );
+
+            return { error };
+        }
+    }
+
     public async loadExtensionInitializer({
         extensionName,
         extensionId,
@@ -455,15 +518,7 @@ export default class ExtensionManager extends Service {
         const {
             default: ExtensionClass
         }: {
-            default: new (
-                manager: ExtensionManager,
-                id: string,
-                name: string,
-                version: string,
-                path: string,
-                meta: ExtensionMetadataType,
-                application: Application
-            ) => Extension;
+            default: ExtensionConstructor;
         } = await import(extensionPath);
 
         const extension = new ExtensionClass(

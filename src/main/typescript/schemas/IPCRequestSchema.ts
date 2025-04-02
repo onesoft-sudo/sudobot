@@ -1,13 +1,18 @@
 import { z } from "zod";
 
 export enum IPCRequestType {
-    ListExtensions = "ListExtensions"
+    ListExtensions = "ListExtensions",
+    LoadExtension = "LoadExtension"
 }
 
-export const IPCRequestSchema = z.object({
-    type: z.enum(
-        Object.values({ ...IPCRequestType }) as unknown as [IPCRequestType, ...IPCRequestType[]]
-    )
-});
+export const IPCRequestSchema = z.union([
+    z.object({
+        type: z.literal(IPCRequestType.ListExtensions)
+    }),
+    z.object({
+        type: z.literal(IPCRequestType.LoadExtension),
+        file: z.string()
+    })
+]);
 
 export type IPCRequest = z.infer<typeof IPCRequestSchema>;

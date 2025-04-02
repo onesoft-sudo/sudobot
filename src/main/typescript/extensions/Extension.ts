@@ -38,7 +38,7 @@ export const ExtensionMetadataSchema = z.object({
     language: z.enum(["typescript", "javascript"]).optional(),
     build_command: z.string().optional(),
     resources: z.string().optional(),
-    name: z.string().optional(),
+    name: z.string(),
     description: z.string().optional(),
     id: z.string({ required_error: "Extension ID is required" }),
     icon: z.string().optional(),
@@ -137,13 +137,13 @@ export abstract class Extension {
         return [];
     }
 
-    public initialize(): Awaitable<void> {}
-    public cleanup(): Awaitable<void> {}
+    public initialize(): Awaitable<void> { }
+    public cleanup(): Awaitable<void> { }
 
     public guildConfig(): Awaitable<
         | {
-              [K in PropertyKey]: ZodSchema<unknown>;
-          }
+            [K in PropertyKey]: ZodSchema<unknown>;
+        }
         | null
     > {
         return null;
@@ -151,8 +151,8 @@ export abstract class Extension {
 
     public systemConfig(): Awaitable<
         | {
-              [K in PropertyKey]: ZodSchema<unknown>;
-          }
+            [K in PropertyKey]: ZodSchema<unknown>;
+        }
         | null
     > {
         return null;
