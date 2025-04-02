@@ -120,10 +120,13 @@ class InterProcessCommunicationService extends Service {
     private async loadExtension(
         request: Extract<IPCRequest, { type: IPCRequestType.LoadExtension }>
     ): Promise<IPCResponse> {
-        if (!access(request.file)) {
+        try {
+            await access(request.file);
+        } catch (error) {
             return {
                 type: IPCResponseType.IPCError,
-                message: "Cannot access file."
+                message: "Cannot access file.",
+                data: error
             };
         }
 
