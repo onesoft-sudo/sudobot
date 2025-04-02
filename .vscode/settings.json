@@ -125,8 +125,6 @@
     "typescript.inlayHints.variableTypes.suppressWhenTypeMatchesName": true,
     "todo-tree.tree.showBadges": true,
     "files.exclude": {
-        "**/tmp/**": true,
-        "**/node_modules/**": true,
         "**/.git/objects/**": true
     },
     "files.watcherExclude": {
