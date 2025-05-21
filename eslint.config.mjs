@@ -1,19 +1,14 @@
 // @ts-check
 
 import eslint from "@eslint/js";
-import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
     {
-        extends: [eslint.configs.recommended, ...tseslint.configs.recommendedTypeChecked],
+        extends: [eslint.configs.recommended, ...tseslint.configs.recommended, ...tseslint.configs.recommendedTypeChecked],
         languageOptions: {
             ecmaVersion: "latest",
             sourceType: "module",
-            globals: {
-                ...globals.node,
-                ...globals.es2021
-            },
             parserOptions: {
                 project: true,
                 tsconfigRootDir: import.meta.dirname,

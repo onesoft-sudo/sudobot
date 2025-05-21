@@ -1,0 +1,4 @@
+onlyBuiltDependencies:
+  - bcrypt
+  - esbuild
+  - sharp

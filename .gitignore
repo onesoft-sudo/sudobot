@@ -52,3 +52,4 @@ fly.toml
 /api_docs
 
 /.migration_status
+.blazebuild
