@@ -175,3 +175,4 @@ dist
 
 # Finder (MacOS) folder config
 .DS_Store
+.blazebuild/
