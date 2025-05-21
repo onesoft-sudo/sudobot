@@ -1,42 +1,38 @@
 {
-  "name": "blazebuild",
-  "main": "src/main/typescript/index.ts",
-  "module": "src/main/typescript/index.ts",
-  "version": "1.0.0-beta.1",
-  "type": "module",
-  "dependencies": {
-    "axios": "^1.7.2",
-    "chalk": "^5.3.0",
-    "date-fns": "^4.1.0",
-    "decompress": "^4.2.1",
-    "glob": "^11.0.0",
-    "reflect-metadata": "^0.2.2",
-    "tar": "^7.4.0",
-    "semver": "^7.6.3"
-  },
-  "devDependencies": {
-    "@types/bun": "latest",
-    "@types/decompress": "^4.2.7",
-    "@types/glob": "^8.1.0",
-    "esbuild": "^0.24.0",
-    "typescript": "^5.5.3",
-    "@types/semver": "^7.5.8"
-  },
-  "exports": {
-    ".": "./src/main/typescript/index.ts",
-    "./types": "./src/main/typescript/types/build.ts"
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "./src/main/typescript/index.ts"
-      ],
-      "types": [
-        "./src/main/typescript/types/build.ts"
-      ]
+    "name": "@onesoftnet/blazebuild",
+    "main": "src/main/typescript/index.ts",
+    "module": "src/main/typescript/index.ts",
+    "private": false,
+    "version": "2.0.5",
+    "type": "module",
+    "dependencies": {
+        "chalk": "^5.3.0",
+        "glob": "^11.0.2",
+        "reflect-metadata": "^0.2.2"
+    },
+    "devDependencies": {
+        "@types/bun": "latest",
+        "@types/glob": "^8.1.0",
+        "typescript": "^5.8.3",
+        "prettier": "^3.5.3"
+    },
+    "exports": {
+        ".": "./src/main/typescript/index.ts"
+    },
+    "typesVersions": {
+        "*": {
+            "*": [
+                "./src/main/typescript/index.ts"
+            ]
+        }
+    },
+    "files": [
+        "src",
+        "package.json",
+        "tsconfig.json",
+        "templates"
+    ],
+    "bin": {
+        "blazebuild": "./src/main/typescript/main.ts"
     }
-  },
-  "scripts": {
-    "build:wrapper": "bun scripts/build-wrapper.mjs"
-  }
 }

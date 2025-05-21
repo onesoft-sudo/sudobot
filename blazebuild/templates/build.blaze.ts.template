@@ -1,0 +1,6 @@
+import { tasks } from "blazebuild";
+
+tasks
+    .define("hello")
+    .description("Prints a hello world message")
+    .handler(() => console.log("Hello world!"));

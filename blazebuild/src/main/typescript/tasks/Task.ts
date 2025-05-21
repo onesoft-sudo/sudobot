@@ -1,22 +1,58 @@
-import type AbstractTask from "./AbstractTask";
-import type { TaskRegisterOptions } from "./TaskManager";
+import type { Awaitable } from "../types/Awaitable";
 
-export type TaskBaseDetails<R> = Pick<
-    TaskRegisterOptions<R>,
-    "name" | "description" | "hidden" | "group"
->;
+export const TaskOptionSymbol = "__taskoptions";
 
-export function Task<R>(target: typeof AbstractTask<R>): void;
-export function Task<R>(details: TaskBaseDetails<R>): ClassDecorator;
+class Task {
+    public [TaskOptionSymbol]: TaskOptions;
 
-export function Task<R>(targetOrDetails: typeof AbstractTask<R> | TaskBaseDetails<R>) {
-    if (typeof targetOrDetails === "function") {
-        Reflect.defineMetadata("task:details", {}, targetOrDetails);
-        return;
+    public constructor(options: TaskOptions) {
+        this[TaskOptionSymbol] = options;
     }
 
-    return (target: typeof AbstractTask) => {
-        const details = targetOrDetails as TaskBaseDetails<R>;
-        Reflect.defineMetadata("task:details", details, target);
-    };
+    public get name(): string {
+        return this[TaskOptionSymbol].name;
+    }
+
+    public get description(): string | undefined {
+        return this[TaskOptionSymbol].description;
+    }
+
+    public get handler(): TaskFunction {
+        return this[TaskOptionSymbol].handler || (() => {});
+    }
+
+    public async run(): Promise<void> {
+        await this.handler();
+    }
+
+    public toString(): string {
+        return `Task(${this.name})`;
+    }
+
+    public get dependencies(): string[] {
+        return this[TaskOptionSymbol].dependencies || [];
+    }
+
+    public get inputFiles(): () => Promise<string[]> {
+        return this[TaskOptionSymbol].inputFiles || (() => Promise.resolve([]));
+    }
+
+    public get outputFiles(): () => Promise<string[]> {
+        return (
+            this[TaskOptionSymbol].outputFiles || (() => Promise.resolve([]))
+        );
+    }
 }
+
+export type TaskFunction = () => Awaitable<unknown>;
+
+export type TaskOptions = {
+    name: string;
+    description?: string;
+    dependencies?: string[];
+    handler?: TaskFunction;
+    inputFiles?: () => Promise<string[]>;
+    outputFiles?: () => Promise<string[]>;
+};
+
+export default Task;

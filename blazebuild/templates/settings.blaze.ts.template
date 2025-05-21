@@ -1,0 +1,9 @@
+import { project, settings } from "blazebuild";
+
+project.name = "@hello/world";
+project.version = "0.0.0";
+project.description = "A hello world project.";
+project.license = "MIT";
+
+settings.build.metadataDirectory = ".blazebuild";
+settings.build.metadataDirectoryUseNamespacing = true;

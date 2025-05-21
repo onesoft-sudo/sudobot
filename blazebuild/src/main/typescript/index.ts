@@ -1,40 +1,47 @@
-import "./types/build";
-import "reflect-metadata";
+import BlazeBuild from "./core/BlazeBuild";
+import ProjectTasks from "./delegates/ProjectTasks";
+import Settings from "./delegates/Settings";
+import type { Project } from "./services/ProjectManager";
 
-import AbstractTask from "./tasks/AbstractTask";
-import BlazePlugin from './plugins/BlazePlugin';
-import { Task } from "./tasks/Task";
-import { TaskAction } from "./tasks/TaskAction";
-import { TaskDependencyGenerator } from "./tasks/TaskDependencyGenerator";
-import { TaskInputGenerator } from "./tasks/TaskInputGenerator";
-import { TaskOutputGenerator } from "./tasks/TaskOutputGenerator";
-import IO from "./io/IO";
-import { files, glob } from "./utils/glob";
-import File from './io/File';
-import FileAlreadyExistsError from './io/FileAlreadyExistsError';
-import FileIOError from './io/FileIOError';
-import FileNotFoundError from './io/FileNotFoundError';
-import FileWriter from './io/FileWriter';
+const blaze = (
+    globalThis as {
+        __blazebuild?: BlazeBuild;
+    }
+).__blazebuild;
 
-export {
-    AbstractTask,
-    BlazePlugin,
-    Task,
-    TaskAction,
-    TaskDependencyGenerator,
-    TaskInputGenerator,
-    TaskOutputGenerator,
-    files,
-    glob,
-    IO,
-    File,
-    FileIOError,
-    FileAlreadyExistsError,
-    FileNotFoundError,
-    FileWriter
+if (!blaze) {
+    throw new Error(
+        "BlazeBuild is not initialized. Please initialize it before using it. If you are running the build script directly, please run blazebuild instead."
+    );
+}
+
+const project: Project = new Proxy(blaze.projectManager.project, {
+    get: (target, prop) => {
+        if (prop in target) {
+            return target[prop as keyof typeof target];
+        } else {
+            throw new Error(`Property ${String(prop)} does not exist.`);
+        }
+    },
+    set: (target, prop, value) => {
+        if (prop in target) {
+            target[prop as keyof typeof target] = value as never;
+            return true;
+        } else {
+            throw new Error(`Property ${String(prop)} does not exist.`);
+        }
+    }
+});
+
+const tasks = new ProjectTasks(blaze.taskManager);
+const settings = new Settings(blaze.settings);
+
+const getPackages = () => {
+    return {
+        count: 50
+    };
 };
 
-export * from "./types/file";
-export * from "./types/project";
-export * from "./types/task";
-export * from "./types/utils";
+const logger = blaze.logger;
+
+export { getPackages, logger, project, settings, tasks };

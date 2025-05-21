@@ -5,7 +5,7 @@
         "target": "ESNext",
         "module": "ESNext",
         "moduleDetection": "force",
-        "moduleResolution": "Node",
+        "moduleResolution": "bundler",
         "resolveJsonModule": true,
 
         // Bundler mode
