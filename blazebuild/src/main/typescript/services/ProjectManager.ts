@@ -11,10 +11,18 @@ export type Project = {
     repository: string | null;
     keywords: string[] | null;
     private: boolean | null;
+    structure: ProjectStructure;
+};
+
+export type ProjectStructure = {
+    sourcesRootDirectory: string;
+    testsDirectory: string;
+    buildOutputDirectory: string;
+    sourceModules: string[];
 };
 
 class ProjectManager extends Service {
-    public readonly project: Project = {
+    public readonly properties: Project = {
         name: "unnamed",
         description: null,
         version: null,
@@ -23,7 +31,13 @@ class ProjectManager extends Service {
         keywords: null,
         license: null,
         private: null,
-        repository: null
+        repository: null,
+        structure: {
+            sourcesRootDirectory: "src",
+            testsDirectory: "tests",
+            buildOutputDirectory: "build",
+            sourceModules: ["main"]
+        }
     };
 }
 

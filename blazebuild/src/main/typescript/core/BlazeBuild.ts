@@ -69,7 +69,7 @@ class BlazeBuild {
 
         for (const taskName of taskNames) {
             try {
-                const graph = this.taskManager.buildGraph(taskName);
+                const graph = await this.taskManager.buildGraph(taskName);
 
                 if (this.options.graph) {
                     console.log("Task graph:");

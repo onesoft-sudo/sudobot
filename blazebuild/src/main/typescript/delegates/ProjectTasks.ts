@@ -1,4 +1,6 @@
+import type BlazeBuild from "../core/BlazeBuild";
 import type TaskManager from "../services/TaskManager";
+import type AbstractTask from "../tasks/AbstractTask";
 import TaskBuilder from "../tasks/TaskBuilder";
 
 export class UnregisteredTaskError extends Error {
@@ -23,10 +25,12 @@ export class UnregisteredTaskError extends Error {
 }
 
 class ProjectTasks {
+    private readonly blaze: BlazeBuild;
     private readonly taskManager: TaskManager;
 
-    public constructor(taskManager: TaskManager) {
-        this.taskManager = taskManager;
+    public constructor(blaze: BlazeBuild) {
+        this.blaze = blaze;
+        this.taskManager = blaze.taskManager;
     }
 
     public define(name: string): TaskBuilder {
@@ -35,10 +39,15 @@ class ProjectTasks {
 
     public new(): TaskBuilder {
         const builder = new TaskBuilder(this.taskManager);
-
-        this.taskManager.unregisteredTasks.set(builder, new UnregisteredTaskError(builder));
-
+        this.taskManager.unregisteredTasks.set(
+            builder,
+            new UnregisteredTaskError(builder)
+        );
         return builder;
+    }
+
+    public register(task: new (blaze: BlazeBuild) => AbstractTask): void {
+        this.taskManager.registerClass(task);
     }
 }
 

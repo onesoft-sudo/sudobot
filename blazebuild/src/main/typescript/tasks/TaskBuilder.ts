@@ -1,5 +1,8 @@
 import type TaskManager from "../services/TaskManager";
-import Task, { type TaskFunction, type TaskOptions } from "./Task";
+import TaskControl, {
+    type TaskFunction,
+    type TaskOptions
+} from "./TaskControl";
 
 class TaskBuilder {
     private readonly taskManager: TaskManager;
@@ -38,18 +41,24 @@ class TaskBuilder {
         }
 
         this.registered = true;
-        this.taskManager.register(new Task(this.taskOptions as TaskOptions));
+        this.taskManager.register(
+            new TaskControl(this.taskOptions as TaskOptions, {})
+        );
         this.taskManager.unregisteredTasks.delete(this);
     }
 
-    public inputFiles(inputFiles: string[] | (() => Promise<string[]>)): TaskBuilder {
+    public inputFiles(
+        inputFiles: string[] | (() => Promise<string[]>)
+    ): TaskBuilder {
         this.taskOptions.inputFiles = Array.isArray(inputFiles)
             ? () => Promise.resolve(inputFiles)
             : inputFiles;
         return this;
     }
 
-    public outputFiles(outputFiles: string[] | (() => Promise<string[]>)): TaskBuilder {
+    public outputFiles(
+        outputFiles: string[] | (() => Promise<string[]>)
+    ): TaskBuilder {
         this.taskOptions.outputFiles = Array.isArray(outputFiles)
             ? () => Promise.resolve(outputFiles)
             : outputFiles;

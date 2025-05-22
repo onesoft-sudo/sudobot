@@ -4,10 +4,12 @@ import type BlazeBuild from "../core/BlazeBuild";
 import BuiltInTasks from "../core/BuiltInTasks";
 import Service from "../core/Service";
 import type { UnregisteredTaskError } from "../delegates/ProjectTasks";
-import Task, { TaskOptionSymbol } from "../tasks/Task";
+import type AbstractTask from "../tasks/AbstractTask";
 import type TaskBuilder from "../tasks/TaskBuilder";
+import TaskContext from "../tasks/TaskContext";
+import TaskControl from "../tasks/TaskControl";
 
-export type TaskGraph = Map<string, Task[]>;
+export type TaskGraph = Map<string, TaskControl[]>;
 export type TaskExecutionReport = {
     totalCount: number;
     executedCount: number;
@@ -19,7 +21,7 @@ class TaskManager extends Service {
         TaskBuilder,
         UnregisteredTaskError
     >();
-    private readonly tasks = new Map<string, Task>();
+    private readonly tasks = new Map<string, TaskControl>();
 
     public constructor(blaze: BlazeBuild) {
         super(blaze);
@@ -29,12 +31,15 @@ class TaskManager extends Service {
     private initializeBuiltinTasks(): void {
         BuiltInTasks.initialize(this.blaze);
 
-        const tasks: Task[] = [
-            new Task({
-                name: "tasks",
-                description: "List all available tasks",
-                handler: BuiltInTasks.listTasks
-            })
+        const tasks: TaskControl[] = [
+            new TaskControl(
+                {
+                    name: "tasks",
+                    description: "List all available tasks",
+                    handler: BuiltInTasks.listTasks
+                },
+                {}
+            )
         ];
 
         for (const task of tasks) {
@@ -42,15 +47,15 @@ class TaskManager extends Service {
         }
     }
 
-    public register(task: Task): void {
+    public register(task: TaskControl): void {
         this.tasks.set(task.name, task);
     }
 
-    public get(name: string): Task | undefined {
+    public get(name: string): TaskControl | undefined {
         return this.tasks.get(name);
     }
 
-    public getAll(): Task[] {
+    public getAll(): TaskControl[] {
         return Array.from(this.tasks.values());
     }
 
@@ -62,7 +67,7 @@ class TaskManager extends Service {
         this.tasks.delete(name);
     }
 
-    public getOrFail(name: string): Task {
+    public getOrFail(name: string): TaskControl {
         const task = this.get(name);
 
         if (!task) {
@@ -121,7 +126,7 @@ class TaskManager extends Service {
         entry: string,
         graph?: TaskGraph
     ): Promise<TaskExecutionReport> {
-        graph ??= this.buildGraph(entry);
+        graph ??= await this.buildGraph(entry);
         const visited = new Set<string>();
         let totalCount = 0,
             executedCount = 0,
@@ -140,7 +145,7 @@ class TaskManager extends Service {
 
             if (await this.isUpToDate(name)) {
                 console.info(
-                    `${chalk.whiteBright.bold(">")} ${chalk.white.dim("Task")} ${chalk.cyan(":" + this.blaze.projectManager.project.name + ":" + task.name)} ${chalk.green("UP-TO-DATE")}`
+                    `${chalk.whiteBright.bold(">")} ${chalk.white.dim("Task")} ${chalk.cyan(":" + this.blaze.projectManager.properties.name + ":" + task.name)} ${chalk.green("UP-TO-DATE")}`
                 );
 
                 upToDateCount++;
@@ -154,10 +159,11 @@ class TaskManager extends Service {
             }
 
             console.info(
-                `${chalk.whiteBright.bold(">")} ${chalk.white.dim("Task")} ${chalk.cyan(":" + this.blaze.projectManager.project.name + ":" + task.name)}`
+                `${chalk.whiteBright.bold(">")} ${chalk.white.dim("Task")} ${chalk.cyan(":" + this.blaze.projectManager.properties.name + ":" + task.name)}`
             );
 
-            await task.run();
+            const taskContext = new TaskContext(this.blaze, task);
+            await task.run(taskContext);
 
             const inputFiles: Record<string, number | null> = {};
             const outputFiles: Record<string, number | null> = {};
@@ -199,11 +205,11 @@ class TaskManager extends Service {
         };
     }
 
-    public buildGraph(entry: string): TaskGraph {
-        const graph = new Map<string, Task[]>();
+    public async buildGraph(entry: string): Promise<TaskGraph> {
+        const graph = new Map<string, TaskControl[]>();
         const visited = new Set<string>();
 
-        const visit = (name: string): void => {
+        const visit = async (name: string): Promise<void> => {
             if (visited.has(name)) {
                 return;
             }
@@ -211,7 +217,7 @@ class TaskManager extends Service {
             visited.add(name);
 
             const task = this.getOrFail(name);
-            const dependencies = task[TaskOptionSymbol].dependencies || [];
+            const dependencies = await task.getDependencies();
 
             for (const dependency of dependencies) {
                 visit(dependency);
@@ -223,7 +229,7 @@ class TaskManager extends Service {
             );
         };
 
-        visit(entry);
+        await visit(entry);
         return graph;
     }
 
@@ -245,6 +251,122 @@ class TaskManager extends Service {
                 this.printGraph(dependency.name, graph, depth + 1, visited);
             }
         }
+    }
+
+    public modifyTask(name: string, modify: (task: TaskControl) => void): void {
+        const existingTask = this.get(name);
+
+        if (!existingTask) {
+            throw new Error(`Task "${name}" not found`);
+        }
+
+        modify(existingTask);
+    }
+
+    public registerClass(task: new (blaze: BlazeBuild) => AbstractTask) {
+        const actionMethod: string =
+            Reflect.getMetadata("task:action", task.prototype) || "run";
+        const taskOptions = Reflect.getMetadata("task:options", task.prototype);
+
+        const taskDependencyGenerator: string | null = Reflect.getMetadata(
+            "task:dependencies:generator",
+            task.prototype
+        );
+        const inputGenerator: string | null = Reflect.getMetadata(
+            "task:input:generator",
+            task.prototype
+        );
+        const outputGenerator: string | null = Reflect.getMetadata(
+            "task:output:generator",
+            task.prototype
+        );
+        const taskInstance = new task(this.blaze);
+
+        if (
+            !(actionMethod in taskInstance) &&
+            typeof taskInstance[actionMethod as keyof typeof taskInstance] !==
+                "function"
+        ) {
+            throw new Error(
+                `Task ${task.name} does not have a valid action method.`
+            );
+        }
+
+        const name =
+            taskOptions?.name ??
+            task.name[0].toLowerCase() +
+                task.name.slice(1).replace(/Task$/, "");
+
+        if (taskDependencyGenerator && taskOptions?.dependencies) {
+            throw new Error(
+                `Task ${task.name} has both a dependency generator and a list of dependencies. Please use one or the other.`
+            );
+        }
+
+        const handler = (
+            taskInstance[actionMethod as keyof typeof taskInstance] as Function
+        ).bind(taskInstance);
+
+        const getDependencies = () =>
+            taskOptions?.dependencies ??
+            (taskDependencyGenerator
+                ? (
+                      taskInstance[
+                          taskDependencyGenerator as keyof typeof taskInstance
+                      ] as Function
+                  ).call(taskInstance)
+                : []);
+
+        if (inputGenerator && taskOptions?.inputFiles) {
+            throw new Error(
+                `Task ${task.name} has both an input generator and a list of input files. Please use one or the other.`
+            );
+        }
+
+        const inputFiles =
+            taskOptions?.inputFiles || inputGenerator
+                ? () =>
+                      taskOptions?.inputFiles ??
+                      (inputGenerator
+                          ? (
+                                taskInstance[
+                                    inputGenerator as keyof typeof taskInstance
+                                ] as Function
+                            ).call(taskInstance)
+                          : [])
+                : null;
+
+        if (outputGenerator && taskOptions?.outputFiles) {
+            throw new Error(
+                `Task ${task.name} has both an output generator and a list of output files. Please use one or the other.`
+            );
+        }
+
+        const outputFiles =
+            taskOptions?.outputFiles || outputGenerator
+                ? () =>
+                      taskOptions?.outputFiles ??
+                      (outputGenerator
+                          ? (
+                                taskInstance[
+                                    outputGenerator as keyof typeof taskInstance
+                                ] as Function
+                            ).call(taskInstance)
+                          : [])
+                : null;
+
+        this.register(
+            new TaskControl(
+                {
+                    ...(taskOptions ?? {}),
+                    name,
+                    handler,
+                    inputFiles,
+                    outputFiles
+                },
+                { getDependencies }
+            )
+        );
     }
 }
 

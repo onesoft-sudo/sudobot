@@ -38,7 +38,7 @@ class CacheManager extends Service {
         const taskCacheFilePath = path.join(
             this.blaze.settings.build.metadataDirectory,
             this.blaze.settings.build.metadataDirectoryUseNamespacing
-                ? `${this.blaze.projectManager.project.name.replaceAll("/", "_")}_${this.taskCacheFileName}`
+                ? `${this.blaze.projectManager.properties.name.replaceAll("/", "_")}_${this.taskCacheFileName}`
                 : this.taskCacheFileName
         );
 
@@ -66,7 +66,7 @@ class CacheManager extends Service {
         const taskCacheFilePath = path.join(
             this.blaze.settings.build.metadataDirectory,
             this.blaze.settings.build.metadataDirectoryUseNamespacing
-                ? `${this.blaze.projectManager.project.name.replaceAll("/", "_")}_${this.taskCacheFileName}`
+                ? `${this.blaze.projectManager.properties.name.replaceAll("/", "_")}_${this.taskCacheFileName}`
                 : this.taskCacheFileName
         );
 
