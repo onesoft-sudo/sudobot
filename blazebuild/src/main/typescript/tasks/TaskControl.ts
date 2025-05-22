@@ -72,6 +72,25 @@ class TaskControl {
             ...outputFiles
         ];
     }
+
+    public addInput(...inputFiles: string[]): void {
+        this[PrivateTaskOptionsSymbol].inputFilesAdd = [
+            ...(this[PrivateTaskOptionsSymbol].inputFilesAdd || []),
+            ...inputFiles
+        ];
+    }
+
+    public setHandler(handler: TaskFunction): void {
+        this[TaskOptionSymbol].handler = handler;
+    }
+
+    public setName(name: string): void {
+        this[TaskOptionSymbol].name = name;
+    }
+
+    public setDescription(description: string): void {
+        this[TaskOptionSymbol].description = description;
+    }
 }
 
 export type TaskFunction = (context: TaskContext) => Awaitable<unknown>;

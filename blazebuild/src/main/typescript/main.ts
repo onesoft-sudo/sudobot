@@ -120,13 +120,13 @@ async function loadBuildSrc(blaze: BlazeBuild) {
         );
     }
 
-    await buildPlugin.boot();
-
     for (const task of await buildPlugin.tasks()) {
         blaze.taskManager.registerClass(
             task as new (blaze: BlazeBuild) => AbstractTask
         );
     }
+
+    await buildPlugin.boot();
 }
 
 function showHelp() {
@@ -331,10 +331,10 @@ async function main() {
         enumerable: false
     });
 
+    blaze.setBuildSrcLoader(loadBuildSrc);
+
     await loadSettingsScript();
     await loadBuildScript();
-
-    await loadBuildSrc(blaze);
 
     await blaze.initialize(
         settingsScriptLastModifiedTime,

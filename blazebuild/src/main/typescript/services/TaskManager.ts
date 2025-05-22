@@ -143,6 +143,12 @@ class TaskManager extends Service {
 
             totalCount++;
 
+            const dependencies = graph.get(name) || [];
+
+            for (const dependency of dependencies) {
+                await executeTask(dependency.name);
+            }
+
             if (await this.isUpToDate(name)) {
                 console.info(
                     `${chalk.whiteBright.bold(">")} ${chalk.white.dim("Task")} ${chalk.cyan(":" + this.blaze.projectManager.properties.name + ":" + task.name)} ${chalk.green("UP-TO-DATE")}`
@@ -150,12 +156,6 @@ class TaskManager extends Service {
 
                 upToDateCount++;
                 return;
-            }
-
-            const dependencies = graph.get(name) || [];
-
-            for (const dependency of dependencies) {
-                await executeTask(dependency.name);
             }
 
             console.info(
@@ -261,6 +261,29 @@ class TaskManager extends Service {
         }
 
         modify(existingTask);
+    }
+
+    public modifyOrCreateTask(
+        name: string,
+        modify: (task: TaskControl) => void
+    ): void {
+        const existingTask = this.get(name);
+
+        if (existingTask) {
+            modify(existingTask);
+        } else {
+            const task = new TaskControl(
+                {
+                    name,
+                    description: "",
+                    handler: () => {}
+                },
+                {}
+            );
+
+            modify(task);
+            this.register(task);
+        }
     }
 
     public registerClass(task: new (blaze: BlazeBuild) => AbstractTask) {

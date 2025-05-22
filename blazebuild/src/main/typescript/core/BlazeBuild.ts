@@ -4,6 +4,7 @@ import Logger from "../log/Logger";
 import CacheManager from "../services/CacheManager";
 import ProjectManager from "../services/ProjectManager";
 import TaskManager from "../services/TaskManager";
+import type { Awaitable } from "../types/Awaitable";
 
 export type BlazeOptions = {
     help?: boolean;
@@ -31,6 +32,8 @@ class BlazeBuild {
     public settingsScriptLastModifiedTime: number = 0;
     public buildScriptLastModifiedTime: number = 0;
 
+    private buildSrcLoader?: (blaze: BlazeBuild) => Awaitable<void>;
+
     public readonly settings: Readonly<SettingData> = {
         build: {
             metadataDirectory: ".blazebuild",
@@ -48,6 +51,20 @@ class BlazeBuild {
                 );
             }
         });
+    }
+
+    public setBuildSrcLoader(
+        loader: (blaze: BlazeBuild) => Awaitable<void>
+    ): void {
+        this.buildSrcLoader = loader;
+    }
+
+    public async loadBuildSrc(): Promise<void> {
+        if (this.buildSrcLoader) {
+            await this.buildSrcLoader(this);
+        } else {
+            throw new Error("Build source loader is not set.");
+        }
     }
 
     public async initialize(

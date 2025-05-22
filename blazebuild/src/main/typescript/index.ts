@@ -49,9 +49,11 @@ const tasks = new ProjectTasks(blaze);
 const settings = new Settings(blaze.settings);
 
 const logger = blaze.logger;
+const finalBlaze = blaze;
 
 export {
     AbstractTask,
+    finalBlaze as blaze,
     BlazePlugin,
     files,
     isInPath,
