@@ -28,8 +28,10 @@ import { fetchChannel, fetchMessage } from "@framework/utils/entities";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import type DirectiveParsingService from "@main/services/DirectiveParsingService";
 import {
+    ActionRow,
     ActionRowBuilder,
     ButtonBuilder,
+    ButtonComponent,
     ButtonStyle,
     GuildMember,
     type APIEmbed,
@@ -49,9 +51,9 @@ class WelcomerService extends Service implements HasEventListeners {
     private _welcomeMessages: Array<string> = [];
 
     public override async boot() {
-        const resource = await ClassLoader.getInstance(this.application).getResource(
-            "welcome_messages.json"
-        );
+        const resource = await ClassLoader.getInstance(
+            this.application
+        ).getResource("welcome_messages.json");
 
         this._welcomeMessages = (await resource?.readJson()) ?? [];
     }
@@ -77,13 +79,23 @@ class WelcomerService extends Service implements HasEventListeners {
         let options: Parameters<typeof channel.send>[0];
 
         if (!config.custom_message || config.randomize) {
-            const index = Math.floor(Math.random() * this._welcomeMessages.length);
-            const content = this.preprocess(this._welcomeMessages[index], member);
+            const index = Math.floor(
+                Math.random() * this._welcomeMessages.length
+            );
+            const content = this.preprocess(
+                this._welcomeMessages[index],
+                member
+            );
 
             options = {
                 content: config.force_embeds ? undefined : content,
                 embeds: config.force_embeds
-                    ? [{ description: content, color: config.forced_embed_color ?? 0x007bff }]
+                    ? [
+                          {
+                              description: content,
+                              color: config.forced_embed_color ?? 0x007bff
+                          }
+                      ]
                     : []
             };
         } else {
@@ -95,7 +107,8 @@ class WelcomerService extends Service implements HasEventListeners {
                 content: output.trim() === "" ? undefined : output,
                 embeds: (data.embeds as APIEmbed[]) ?? [],
                 allowedMentions:
-                    this.configManager.config[member.guild.id]?.echoing?.allow_mentions !== false ||
+                    this.configManager.config[member.guild.id]?.echoing
+                        ?.allow_mentions !== false ||
                     member.permissions?.has("MentionEveryone", true)
                         ? undefined
                         : { parse: [], roles: [], users: [] }
@@ -138,7 +151,8 @@ class WelcomerService extends Service implements HasEventListeners {
             return;
         }
 
-        const config = this.configManager.config[interaction.guild!.id]?.welcomer;
+        const config =
+            this.configManager.config[interaction.guild!.id]?.welcomer;
 
         if (!config?.enabled || !config?.say_hi_button?.enabled) {
             return;
@@ -157,10 +171,14 @@ class WelcomerService extends Service implements HasEventListeners {
         if (wasLocked) {
             try {
                 interaction.customId = (
-                    await interaction.message.fetch(true)
-                ).components[0].components[0].customId!;
+                    (await interaction.message.fetch(true))
+                        .components[0] as unknown as ActionRow<ButtonComponent>
+                ).components[0].customId!;
 
-                this.logger.debug("Refetched custom ID: ", interaction.customId);
+                this.logger.debug(
+                    "Refetched custom ID: ",
+                    interaction.customId
+                );
             } catch {
                 semaphore.release();
                 return;
@@ -168,9 +186,13 @@ class WelcomerService extends Service implements HasEventListeners {
         }
 
         const [, memberId, messageId] = interaction.customId.split("_");
-        let replyMessage: string | undefined = config.say_hi_button.reply.replace(/<@!?(d+)>/g, "");
+        let replyMessage: string | undefined =
+            config.say_hi_button.reply.replace(/<@!?(d+)>/g, "");
 
-        if (typeof replyMessage === "string" && !replyMessage?.includes(":acc:")) {
+        if (
+            typeof replyMessage === "string" &&
+            !replyMessage?.includes(":acc:")
+        ) {
             this.logger.warn(
                 "config.welcomer.say_hi_button.reply does not include :acc: placeholder, defaulting to the built in message"
             );
@@ -181,10 +203,15 @@ class WelcomerService extends Service implements HasEventListeners {
         welcome: try {
             if (!messageId) {
                 const reply = await interaction[
-                    interaction.replied || interaction.deferred ? "followUp" : "reply"
+                    interaction.replied || interaction.deferred
+                        ? "followUp"
+                        : "reply"
                 ]({
                     content:
-                        replyMessage?.replace(/:acc:/gi, `<@${interaction.user.id}>`) ??
+                        replyMessage?.replace(
+                            /:acc:/gi,
+                            `<@${interaction.user.id}>`
+                        ) ??
                         `${
                             interaction.user.id === memberId
                                 ? "__You__"
@@ -202,13 +229,14 @@ class WelcomerService extends Service implements HasEventListeners {
                     }
                 });
                 const newCustomId = `wsh_${memberId}_${reply.id}`;
-                const newActionRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
-                    new ButtonBuilder()
-                        .setCustomId(newCustomId)
-                        .setLabel(config.say_hi_button.label ?? "Say Hi!")
-                        .setStyle(ButtonStyle.Secondary)
-                        .setEmoji(config.say_hi_button.emoji)
-                );
+                const newActionRow =
+                    new ActionRowBuilder<ButtonBuilder>().addComponents(
+                        new ButtonBuilder()
+                            .setCustomId(newCustomId)
+                            .setLabel(config.say_hi_button.label ?? "Say Hi!")
+                            .setStyle(ButtonStyle.Secondary)
+                            .setEmoji(config.say_hi_button.emoji)
+                    );
 
                 await interaction.message.edit({
                     components: [newActionRow]
@@ -216,7 +244,9 @@ class WelcomerService extends Service implements HasEventListeners {
 
                 if (config.delete_after) {
                     const time =
-                        interaction.message.createdAt.getTime() + config.delete_after - Date.now();
+                        interaction.message.createdAt.getTime() +
+                        config.delete_after -
+                        Date.now();
 
                     if (time > 1000) {
                         setTimeout(() => {
@@ -229,7 +259,10 @@ class WelcomerService extends Service implements HasEventListeners {
                     await interaction.deferUpdate();
                 }
 
-                const message = await fetchMessage(interaction.channel!, messageId);
+                const message = await fetchMessage(
+                    interaction.channel!,
+                    messageId
+                );
 
                 if (!message) {
                     break welcome;
@@ -250,7 +283,10 @@ class WelcomerService extends Service implements HasEventListeners {
 
                     const users = content
                         .split(/\s*,\s*/)
-                        .filter((part, index, array) => array.lastIndexOf(part) === index);
+                        .filter(
+                            (part, index, array) =>
+                                array.lastIndexOf(part) === index
+                        );
 
                     contentOrUsers = [...users];
 
@@ -263,11 +299,14 @@ class WelcomerService extends Service implements HasEventListeners {
 
                 if (
                     contentOrUsers.includes(`${interaction.user.toString()}`) ||
-                    (interaction.user.id === memberId && contentOrUsers.includes("__You__"))
+                    (interaction.user.id === memberId &&
+                        contentOrUsers.includes("__You__"))
                 ) {
                     await interaction.followUp({
                         content: `You've already said hi to ${
-                            interaction.user.id === memberId ? "yourself!" : "the user!"
+                            interaction.user.id === memberId
+                                ? "yourself!"
+                                : "the user!"
                         }`,
                         ephemeral: true
                     });
@@ -291,7 +330,10 @@ class WelcomerService extends Service implements HasEventListeners {
                                       ? "__You__"
                                       : interaction.user.toString()
                               } says hi to you!`
-                            : replyMessage.replace(/:acc:/gi, usersArray!.join(", "))
+                            : replyMessage.replace(
+                                  /:acc:/gi,
+                                  usersArray!.join(", ")
+                              )
                 });
             }
         } catch (error) {

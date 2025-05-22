@@ -17,14 +17,19 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ActionRowBuilder, ButtonBuilder, HeadingLevel } from "@discordjs/builders";
 import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import StringArgument from "@framework/arguments/StringArgument";
 import type { Buildable } from "@framework/commands/Command";
 import { Command } from "@framework/commands/Command";
 import type Context from "@framework/commands/Context";
-import { ButtonStyle, heading } from "discord.js";
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    heading,
+    HeadingLevel
+} from "discord.js";
 
 type SurveyCommandArgs = {
     name: string;
@@ -42,7 +47,8 @@ type SurveyCommandArgs = {
 })
 class SurveyCommand extends Command {
     public override readonly name = "survey";
-    public override readonly description: string = "Shows a survey form to fill out.";
+    public override readonly description: string =
+        "Shows a survey form to fill out.";
     public override readonly defer = true;
     public override readonly usage = ["<name: String>"];
 
@@ -57,7 +63,10 @@ class SurveyCommand extends Command {
         ];
     }
 
-    public override async execute(context: Context, args: SurveyCommandArgs): Promise<void> {
+    public override async execute(
+        context: Context,
+        args: SurveyCommandArgs
+    ): Promise<void> {
         const { name } = args;
 
         const survey = context.config?.survey_system?.surveys[name];
@@ -70,7 +79,8 @@ class SurveyCommand extends Command {
         await context.reply({
             ephemeral: true,
             content: `${heading(survey.name, HeadingLevel.Two)}\n\n${
-                survey.description ?? "Please fill out the form by clicking the button below."
+                survey.description ??
+                "Please fill out the form by clicking the button below."
             }`,
             components: [
                 new ActionRowBuilder<ButtonBuilder>().addComponents(

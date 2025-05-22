@@ -23,10 +23,10 @@ import express, {
     Application,
     Request as ExpressRequest,
     Response as ExpressResponse,
-    NextFunction
+    NextFunction,
+    Router
 } from "express";
 import ratelimiter from "express-rate-limit";
-import { Router } from "express-serve-static-core";
 import { Server as HttpServer } from "http";
 import path from "path";
 import { Logger } from "../log/Logger";
@@ -38,7 +38,7 @@ import Response from "./http/Response";
 
 @Name("apiServer")
 export default class APIServer extends Service {
-    protected readonly expressApp = express();
+    protected readonly expressApp: Application = express();
     protected readonly rateLimiter = ratelimiter({
         windowMs: 30 * 1000,
         max: 28,
@@ -66,8 +66,11 @@ export default class APIServer extends Service {
 
     public async onReady() {
         if (
-            (this.application.service("configManager") as ConfigurationManagerServiceInterface)
-                .systemConfig.api.enabled
+            (
+                this.application.service(
+                    "configManager"
+                ) as ConfigurationManagerServiceInterface
+            ).systemConfig.api.enabled
         ) {
             await this.setup();
             this.start();
@@ -88,13 +91,18 @@ export default class APIServer extends Service {
                 configManager.systemConfig.trust_proxies
             );
 
-            this.expressApp.set("trust proxy", configManager.systemConfig.trust_proxies);
+            this.expressApp.set(
+                "trust proxy",
+                configManager.systemConfig.trust_proxies
+            );
         }
 
         this.expressApp.use(this.rateLimiter);
 
-        this.expressApp.use("*", (req, res, next) => {
-            this.logger.info(`${req.method.toUpperCase()} ${req.path} -- from ${req.ip}`);
+        this.expressApp.use((req, res, next) => {
+            this.logger.info(
+                `${req.method.toUpperCase()} ${req.path} -- from ${req.ip}`
+            );
             next();
         });
 
@@ -106,7 +114,10 @@ export default class APIServer extends Service {
 
     private async createRouter() {
         const router = express.Router();
-        await this.application.classLoader.loadControllers(router, this._controllerDirectory);
+        await this.application.classLoader.loadControllers(
+            router,
+            this._controllerDirectory
+        );
         return router;
     }
 
@@ -116,8 +127,11 @@ export default class APIServer extends Service {
         alternativeKey: string
     ): T | null {
         return (
-            Symbol.metadata in controllerClass && controllerClass[Symbol.metadata]
-                ? (controllerClass[Symbol.metadata] as Record<string, T>)?.[alternativeKey]
+            Symbol.metadata in controllerClass &&
+            controllerClass[Symbol.metadata]
+                ? (controllerClass[Symbol.metadata] as Record<string, T>)?.[
+                      alternativeKey
+                  ]
                 : Reflect.getMetadata(key, controllerClass.prototype)
         ) as T | null;
     }
@@ -132,16 +146,12 @@ export default class APIServer extends Service {
             "action_methods",
             "actionMethods"
         );
-        const aacMiddlewareList = this.getMetadata<Record<string, (...args: unknown[]) => unknown>>(
-            controllerClass,
-            "aac_middleware",
-            "adminAccessControlMiddleware"
-        );
-        const gacMiddlewareList = this.getMetadata<Record<string, (...args: unknown[]) => unknown>>(
-            controllerClass,
-            "gac_middleware",
-            "guildAccessControlMiddleware"
-        );
+        const aacMiddlewareList = this.getMetadata<
+            Record<string, (...args: unknown[]) => unknown>
+        >(controllerClass, "aac_middleware", "adminAccessControlMiddleware");
+        const gacMiddlewareList = this.getMetadata<
+            Record<string, (...args: unknown[]) => unknown>
+        >(controllerClass, "gac_middleware", "guildAccessControlMiddleware");
         const requireAuthMiddlewareList = this.getMetadata<
             Record<string, (...args: unknown[]) => unknown>
         >(controllerClass, "auth_middleware", "authMiddleware");
@@ -156,7 +166,9 @@ export default class APIServer extends Service {
         for (const callbackName in actions) {
             for (const method in actions[callbackName]) {
                 const data =
-                    actions[callbackName][method as keyof (typeof actions)[keyof typeof actions]];
+                    actions[callbackName][
+                        method as keyof (typeof actions)[keyof typeof actions]
+                    ];
 
                 if (!data) {
                     continue;
@@ -183,15 +195,22 @@ export default class APIServer extends Service {
                 middleware.push(...(data.middleware ?? []));
 
                 const wrappedMiddleware = middleware.map(
-                    m => (request: ExpressRequest, response: ExpressResponse, next: NextFunction) =>
-                        m(this.application, request, response, next)
+                    m =>
+                        (
+                            request: ExpressRequest,
+                            response: ExpressResponse,
+                            next: NextFunction
+                        ) =>
+                            m(this.application, request, response, next)
                 );
 
                 router[data.method.toLowerCase() as "head"].call(
                     router,
                     data.path,
                     ...(wrappedMiddleware as []),
-                    <Application>this.wrapControllerAction(controller, callbackName)
+                    <Application>(
+                        this.wrapControllerAction(controller, callbackName)
+                    )
                 );
 
                 this.application.logger.debug(
@@ -203,16 +222,25 @@ export default class APIServer extends Service {
 
     private wrapControllerAction(controller: Controller, callbackName: string) {
         return async (request: ExpressRequest, response: ExpressResponse) => {
-            const callback = controller[callbackName as keyof typeof controller] as (
+            const callback = controller[
+                callbackName as keyof typeof controller
+            ] as (
                 request: ExpressRequest,
                 response: ExpressResponse
             ) => unknown;
-            const controllerResponse = await callback.call(controller, request, response);
+            const controllerResponse = await callback.call(
+                controller,
+                request,
+                response
+            );
 
             if (!response.headersSent) {
                 if (controllerResponse instanceof Response) {
                     controllerResponse.send(response);
-                } else if (controllerResponse && typeof controllerResponse === "object") {
+                } else if (
+                    controllerResponse &&
+                    typeof controllerResponse === "object"
+                ) {
                     response.json(controllerResponse);
                 } else if (typeof controllerResponse === "string") {
                     response.send(controllerResponse);
@@ -234,7 +262,12 @@ export default class APIServer extends Service {
         res: ExpressResponse,
         next: NextFunction
     ) {
-        if (err instanceof SyntaxError && "status" in err && err.status === 400 && "body" in err) {
+        if (
+            err instanceof SyntaxError &&
+            "status" in err &&
+            err.status === 400 &&
+            "body" in err
+        ) {
             res.status(400).json({
                 error: "Invalid JSON payload"
             });
@@ -247,7 +280,9 @@ export default class APIServer extends Service {
 
     public start() {
         this.expressServer = this.expressApp.listen(this.port, () =>
-            this.application.logger.info(`API server is listening at port ${this.port}`)
+            this.application.logger.info(
+                `API server is listening at port ${this.port}`
+            )
         );
     }
 }

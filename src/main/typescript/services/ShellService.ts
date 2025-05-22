@@ -49,12 +49,15 @@ class ShellService extends Service {
     }
 
     public override async boot(): Promise<void> {
-        const classes = await this.application.classLoader.loadClassesFromDirectory(
-            path.resolve(__dirname, "../shell/commands")
-        );
+        const classes =
+            await this.application.classLoader.loadClassesFromDirectory(
+                path.resolve(__dirname, "../shell/commands")
+            );
 
         for (const ShellCommandClass of classes) {
-            const command = new ShellCommandClass(this.application) as ShellCommand;
+            const command = new ShellCommandClass(
+                this.application
+            ) as ShellCommand;
             this.commands.set(command.name, command);
 
             for (const alias of command.aliases) {
@@ -68,7 +71,9 @@ class ShellService extends Service {
             this.application.logger.debug("Connection established");
 
             if (!ws.url.startsWith("/?")) {
-                ws.send(JSON.stringify({ type: "error", payload: "Invalid URL" }));
+                ws.send(
+                    JSON.stringify({ type: "error", payload: "Invalid URL" })
+                );
                 ws.close();
                 return;
             }
@@ -76,16 +81,25 @@ class ShellService extends Service {
             const searchParams = new URLSearchParams(ws.url.slice(2));
 
             if (searchParams.get("key") !== env.SYSTEM_SHELL_KEY) {
-                ws.send(JSON.stringify({ type: "error", payload: "Invalid key" }));
+                ws.send(
+                    JSON.stringify({ type: "error", payload: "Invalid key" })
+                );
                 ws.close();
                 return;
             }
 
             ws.on("message", async message => {
-                const { payload, type, key } = JSON.parse((message as Buffer).toString());
+                const { payload, type, key } = JSON.parse(
+                    (message as Buffer).toString()
+                );
 
                 if (key !== env.SYSTEM_SHELL_KEY) {
-                    ws.send(JSON.stringify({ type: "error", payload: "Invalid key" }));
+                    ws.send(
+                        JSON.stringify({
+                            type: "error",
+                            payload: "Invalid key"
+                        })
+                    );
                     return;
                 }
 
@@ -102,7 +116,12 @@ class ShellService extends Service {
                         break;
 
                     default:
-                        ws.send(JSON.stringify({ type: "error", payload: "Invalid message type" }));
+                        ws.send(
+                            JSON.stringify({
+                                type: "error",
+                                payload: "Invalid message type"
+                            })
+                        );
                         return;
                 }
             });
@@ -120,11 +139,14 @@ class ShellService extends Service {
             this.application.logger.debug("Server error", error);
         });
 
-        this.server.listen(parseInt(env.SYSTEM_SHELL_EXEC_STREAM_PORT ?? "4001"), () => {
-            this.application.logger.info(
-                `Shell service listening on port ${env.SYSTEM_SHELL_EXEC_STREAM_PORT ?? "4001"}`
-            );
-        });
+        this.server.listen(
+            parseInt(env.SYSTEM_SHELL_EXEC_STREAM_PORT ?? "4001"),
+            () => {
+                this.application.logger.info(
+                    `Shell service listening on port ${env.SYSTEM_SHELL_EXEC_STREAM_PORT ?? "4001"}`
+                );
+            }
+        );
     }
 
     public executeShellCommand(command: string, ws: WebSocket) {
@@ -137,7 +159,9 @@ class ShellService extends Service {
             const { payload, type, key } = JSON.parse(message.toString());
 
             if (key !== getEnvData().SYSTEM_SHELL_KEY) {
-                ws.send(JSON.stringify({ type: "error", payload: "Invalid key" }));
+                ws.send(
+                    JSON.stringify({ type: "error", payload: "Invalid key" })
+                );
                 return;
             }
 
@@ -153,11 +177,15 @@ class ShellService extends Service {
         };
 
         child.stdout.on("data", data => {
-            ws.send(JSON.stringify({ type: "stdout", payload: data.toString() }));
+            ws.send(
+                JSON.stringify({ type: "stdout", payload: data.toString() })
+            );
         });
 
         child.stderr.on("data", data => {
-            ws.send(JSON.stringify({ type: "stderr", payload: data.toString() }));
+            ws.send(
+                JSON.stringify({ type: "stderr", payload: data.toString() })
+            );
         });
 
         child.on("error", error => {
@@ -191,7 +219,11 @@ class ShellService extends Service {
         context: ShellCommandContext,
         options?: ShellExecuteOptions
     ) {
-        this.application.logger.event("Executing shell command: ", command, options);
+        this.application.logger.event(
+            "Executing shell command: ",
+            command,
+            options
+        );
 
         switch (command) {
             case "version":
@@ -212,7 +244,9 @@ class ShellService extends Service {
                     break;
                 } catch (error) {
                     context.println(
-                        "cd: " + ((error as Error).message ?? `${error?.toString()}`),
+                        "cd: " +
+                            ((error as Error).message ??
+                                `${error?.toString()}`),
                         "stderr"
                     );
                     context.exit(1) as void;
@@ -252,7 +286,9 @@ class ShellService extends Service {
                         context.println(output.trimEnd());
                     } catch (error) {
                         context.println(
-                            "ls: " + ((error as Error).message ?? `${error?.toString()}`),
+                            "ls: " +
+                                ((error as Error).message ??
+                                    `${error?.toString()}`),
                             "stderr"
                         );
                         context.exit(1);
@@ -276,7 +312,12 @@ class ShellService extends Service {
         const [command, ...args] = commandString.split(/\s+/);
 
         if (!command) {
-            ws.send(JSON.stringify({ type: "sh_error", payload: "No command provided" }));
+            ws.send(
+                JSON.stringify({
+                    type: "sh_error",
+                    payload: "No command provided"
+                })
+            );
             return;
         }
 
@@ -293,7 +334,8 @@ class ShellService extends Service {
             return;
         }
 
-        const context = defaultContext ?? new ShellCommandContext(ws, args, false);
+        const context =
+            defaultContext ?? new ShellCommandContext(ws, args, false);
 
         context.on("stdout", (data: string) => {
             ws.send(JSON.stringify({ type: "stdout", payload: data }));
@@ -312,7 +354,9 @@ class ShellService extends Service {
             ws.send(JSON.stringify({ type: "exit", payload: 0 }));
         } catch (error) {
             if (error instanceof ExitError) {
-                ws.send(JSON.stringify({ type: "exit", payload: error.getCode() }));
+                ws.send(
+                    JSON.stringify({ type: "exit", payload: error.getCode() })
+                );
                 return;
             }
 

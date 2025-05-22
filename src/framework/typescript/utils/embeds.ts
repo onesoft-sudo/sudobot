@@ -17,11 +17,17 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { Client, Snowflake } from "discord.js";
-import { type GuildBasedChannel, type Message, MessageType, type User } from "discord.js";
+import type { Client, PartialUser, Snowflake } from "discord.js";
+import {
+    type GuildBasedChannel,
+    italic,
+    type Message,
+    MessageType,
+    type User
+} from "discord.js";
 
-export function userInfo(user: User) {
-    return `ID: ${user.id}\nUsername: ${user.username}\nMention: <@${user.id}>`;
+export function userInfo(user: User | PartialUser) {
+    return `ID: ${user.id}\nUsername: ${user.username || italic("Unavailable")}\nMention: <@${user.id}>`;
 }
 
 export function channelInfo(channel: GuildBasedChannel) {
