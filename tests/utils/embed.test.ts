@@ -128,10 +128,12 @@ describe("generateEmbed", () => {
         const embed = generateEmbed(options);
         const endTime = Date.now();
 
-        expect(new Date(embed.embed?.toJSON().timestamp ?? "").getTime()).greaterThanOrEqual(
-            startTime
-        );
-        expect(new Date(embed.embed?.toJSON().timestamp ?? "").getTime()).lessThanOrEqual(endTime);
+        expect(
+            new Date(embed.embed?.toJSON().timestamp ?? "").getTime()
+        ).greaterThanOrEqual(startTime);
+        expect(
+            new Date(embed.embed?.toJSON().timestamp ?? "").getTime()
+        ).lessThanOrEqual(endTime);
     });
 });
 
@@ -140,7 +142,7 @@ describe("userInfo", () => {
         const id = randomSnowflake();
         const user = {
             id,
-            username: faker.internet.userName(),
+            username: faker.internet.username(),
             client: createClient(),
             toString() {
                 return `<@${id}>`;
@@ -175,7 +177,9 @@ describe("guildInfo", () => {
 
         const info = guildInfo(guild);
 
-        expect(info).toBe(`ID: 123456789\nName: Test Guild\nInvite: ${invite.url}`);
+        expect(info).toBe(
+            `ID: 123456789\nName: Test Guild\nInvite: ${invite.url}`
+        );
     });
 
     it("should return 'Unavailable' if the guild invite is not available", () => {
@@ -186,6 +190,8 @@ describe("guildInfo", () => {
 
         const info = guildInfo(guild);
 
-        expect(info).toBe("ID: 987654321\nName: Another Guild\nInvite: *Unavailable*");
+        expect(info).toBe(
+            "ID: 987654321\nName: Another Guild\nInvite: *Unavailable*"
+        );
     });
 });
