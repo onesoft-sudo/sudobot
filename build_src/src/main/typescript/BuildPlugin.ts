@@ -12,7 +12,8 @@ import TestTask from "./tasks/TestTask";
 
 class BuildPlugin extends BlazePlugin {
     public override boot(): Awaitable<void> {
-        this.blaze.taskManager.modifyTask("build", task => {
+        this.blaze.taskManager.modifyOrCreateTask("build", task => {
+            task.setDescription("Build the project");
             task.addDependencies("compile", "copyResources", "lint", "test");
             task.addOutput(
                 this.blaze.projectManager.properties.structure
