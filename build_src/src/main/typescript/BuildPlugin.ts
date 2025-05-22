@@ -12,9 +12,12 @@ import TestTask from "./tasks/TestTask";
 
 class BuildPlugin extends BlazePlugin {
     public override boot(): Awaitable<void> {
-        this.blaze.taskManager.named("build", {
-            dependsOn: ["compile", "copyResources", "lint", "test"],
-            outputs: [this.blaze.projectManager.properties.structure?.buildOutputDirectory ?? ""]
+        this.blaze.taskManager.modifyTask("build", task => {
+            task.addDependencies("compile", "copyResources", "lint", "test");
+            task.addOutput(
+                this.blaze.projectManager.properties.structure
+                    ?.buildOutputDirectory ?? ""
+            );
         });
     }
 
@@ -29,7 +32,7 @@ class BuildPlugin extends BlazePlugin {
             RunTask,
             TestTask,
             CopyResourcesTask,
-            MigrateTask,
+            MigrateTask
         ];
     }
 }

@@ -1,6 +1,5 @@
 import {
     AbstractTask,
-    IO,
     Task,
     TaskAction,
     TaskDependencyGenerator,
@@ -19,14 +18,16 @@ import path from "path";
 class CompileTypeScriptTask extends AbstractTask {
     @TaskAction
     protected override async run(): Promise<void> {
-        IO.newline();
         await $`bun x tsc`;
 
         const buildOutputDirectory =
-            this.blaze.projectManager.properties.structure?.buildOutputDirectory;
+            this.blaze.projectManager.properties.structure
+                ?.buildOutputDirectory;
 
         if (!buildOutputDirectory) {
-            throw new Error("buildOutputDirectory is not defined in project properties");
+            throw new Error(
+                "buildOutputDirectory is not defined in project properties"
+            );
         }
 
         await $`mv ${buildOutputDirectory}/out/src ${buildOutputDirectory}/out.tmp`;

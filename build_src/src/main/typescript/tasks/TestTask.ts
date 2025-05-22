@@ -1,6 +1,5 @@
 import {
     AbstractTask,
-    IO,
     Task,
     TaskAction,
     TaskDependencyGenerator,
@@ -22,7 +21,6 @@ class TestTask extends AbstractTask {
 
     @TaskAction
     protected override async run(): Promise<void> {
-        IO.newline();
         await $`bun x vitest --run`;
     }
 

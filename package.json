@@ -41,7 +41,7 @@
     "scripts": {
         "start": "node build/out/main/typescript/main.js",
         "start:bun": "bun --tsconfig-override=tsconfig.bun.json src/main/typescript/bun.ts",
-        "prepare": "husky && node -e \"const { symlinkSync, rmSync, existsSync } = require('fs'); const path = require('path'); const link = path.join(process.cwd(), 'node_modules/blazebuild'); if (existsSync(link)) { rmSync(link, { recursive: true }); } symlinkSync(path.join(process.cwd(), 'blazebuild'), link, 'dir');\"",
+        "prepare": "husky",
         "dev": "bun run src/main/typescript/bun.ts",
         "start:blazew": "node build/out/main/typescript/main.js",
         "lint": "eslint src",

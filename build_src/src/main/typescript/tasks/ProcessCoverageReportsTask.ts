@@ -1,4 +1,11 @@
-import { AbstractTask, Task, TaskAction, TaskInputGenerator, type Awaitable } from "blazebuild";
+import {
+    AbstractTask,
+    Task,
+    TaskAction,
+    TaskContext,
+    TaskInputGenerator,
+    type Awaitable
+} from "blazebuild";
 import { existsSync } from "fs";
 import { rename, rm } from "fs/promises";
 
@@ -13,7 +20,7 @@ class ProcessCoverageReportsTask extends AbstractTask {
     }
 
     @TaskAction
-    protected override async run(): Promise<void> {
+    protected override async run(context: TaskContext): Promise<void> {
         const input = `${process.cwd()}/coverage`;
         const output = `${process.cwd()}/build/coverage`;
 
@@ -21,10 +28,11 @@ class ProcessCoverageReportsTask extends AbstractTask {
             if (existsSync(output)) {
                 await rm(output, { recursive: true });
             }
+
             await rename(input, output);
         }
 
-        this.addOutput(output);
+        context.addOutput(output);
     }
 }
 

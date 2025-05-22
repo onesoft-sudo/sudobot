@@ -1,4 +1,10 @@
-import { AbstractTask, IO, Task, TaskAction, TaskOutputGenerator } from "blazebuild";
+import {
+    AbstractTask,
+    Task,
+    TaskAction,
+    TaskOutputGenerator,
+    isInPath
+} from "blazebuild";
 import { $ } from "bun";
 
 @Task({
@@ -8,7 +14,11 @@ import { $ } from "bun";
 class DependenciesTask extends AbstractTask {
     @TaskAction
     protected override async run(): Promise<void> {
-        IO.newline();
+        if (isInPath("pnpm")) {
+            await $`pnpm install --prefer-offline --no-color`;
+            return;
+        }
+
         await $`bun install --trust`;
     }
 

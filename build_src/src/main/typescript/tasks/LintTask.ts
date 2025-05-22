@@ -1,6 +1,5 @@
 import {
     AbstractTask,
-    IO,
     Task,
     TaskAction,
     TaskDependencyGenerator,
@@ -18,7 +17,6 @@ import path from "path";
 class LintTask extends AbstractTask {
     @TaskAction
     protected override async run() {
-        IO.newline();
         await $`bun x eslint "${process.cwd()}/src"`;
     }
 

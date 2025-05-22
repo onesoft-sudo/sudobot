@@ -1,4 +1,4 @@
-import { AbstractTask, IO, Task, TaskAction } from "blazebuild";
+import { AbstractTask, Task, TaskAction } from "blazebuild";
 import { spawnSync } from "child_process";
 
 @Task({
@@ -8,45 +8,52 @@ import { spawnSync } from "child_process";
 class RunTask extends AbstractTask {
     @TaskAction
     protected override async run() {
-        IO.newline();
         const isNode = process.argv.includes("--node");
 
         if (isNode) {
-            await this.blaze.taskManager.executeTask("build");
+            await this.blaze.taskManager.execute("build");
         }
 
         setTimeout(async () => {
             let code: number;
-            const argv = this.blaze.cliArgs;
+            const argv = [] as string[];
 
             if (isNode) {
-                IO.newline();
-                IO.println(
+                console.log(
                     `[exec] node ${process.cwd()}/build/out/main/typescript/main.js ${argv.join(" ")}`
                 );
 
                 code =
                     spawnSync(
                         "node",
-                        [`${process.cwd()}/build/out/main/typescript/main.js`, ...argv],
+                        [
+                            `${process.cwd()}/build/out/main/typescript/main.js`,
+                            ...argv
+                        ],
                         {
                             stdio: "inherit"
                         }
                     ).status ?? -1;
             } else {
-                IO.newline();
-                IO.println(
+                console.log(
                     `[exec] bun ${process.cwd()}/src/main/typescript/bun.ts ${argv.join(" ")}`
                 );
                 code =
-                    spawnSync("bun", [`${process.cwd()}/src/main/typescript/bun.ts`, ...argv], {
-                        stdio: "inherit"
-                    }).status ?? -1;
+                    spawnSync(
+                        "bun",
+                        [
+                            `${process.cwd()}/src/main/typescript/bun.ts`,
+                            ...argv
+                        ],
+                        {
+                            stdio: "inherit"
+                        }
+                    ).status ?? -1;
             }
 
             if (code !== 0) {
-                IO.error("Failed to run the project");
-                IO.exit(1);
+                console.error("Failed to run the project");
+                process.exit(1);
             }
         }, 600);
     }
