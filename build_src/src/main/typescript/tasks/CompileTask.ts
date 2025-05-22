@@ -7,7 +7,7 @@ import {
     TaskOutputGenerator,
     files,
     type Awaitable
-} from "blazebuild";
+} from "@onesoftnet/blazebuild";
 import path from "path";
 
 @Task({
@@ -18,10 +18,13 @@ class CompileTask extends AbstractTask {
     @TaskAction
     protected override async run(): Promise<void> {
         const buildOutputDirectory =
-            this.blaze.projectManager.properties.structure?.buildOutputDirectory;
+            this.blaze.projectManager.properties.structure
+                ?.buildOutputDirectory;
 
         if (!buildOutputDirectory) {
-            throw new Error("buildOutputDirectory is not defined in project properties");
+            throw new Error(
+                "buildOutputDirectory is not defined in project properties"
+            );
         }
     }
 

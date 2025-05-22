@@ -1,4 +1,4 @@
-import { project, settings } from "blazebuild";
+import { project, settings } from "@onesoftnet/blazebuild";
 
 project.name = "@onesoftnet/sudobot";
 project.version = "10.54.2";

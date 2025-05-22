@@ -3,7 +3,7 @@ import {
     Task,
     TaskAction,
     TaskOutputGenerator
-} from "blazebuild";
+} from "@onesoftnet/blazebuild";
 import { rm } from "fs/promises";
 
 @Task({

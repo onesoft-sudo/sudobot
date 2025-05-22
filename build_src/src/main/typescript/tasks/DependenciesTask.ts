@@ -4,7 +4,7 @@ import {
     TaskAction,
     TaskOutputGenerator,
     isInPath
-} from "blazebuild";
+} from "@onesoftnet/blazebuild";
 import { $ } from "bun";
 
 @Task({

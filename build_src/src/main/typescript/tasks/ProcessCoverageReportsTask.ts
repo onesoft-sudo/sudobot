@@ -5,7 +5,7 @@ import {
     TaskContext,
     TaskInputGenerator,
     type Awaitable
-} from "blazebuild";
+} from "@onesoftnet/blazebuild";
 import { existsSync } from "fs";
 import { rename, rm } from "fs/promises";
 

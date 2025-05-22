@@ -13,6 +13,7 @@ import type { Project } from "./services/ProjectManager";
 import AbstractTask from "./tasks/AbstractTask";
 import TaskContext from "./tasks/TaskContext";
 import type { Awaitable } from "./types/Awaitable";
+import type { TaskConstructor } from "./types/TaskConstructor";
 import { files, isInPath, x } from "./utils/helpers";
 
 const blaze = (
@@ -68,5 +69,6 @@ export {
     TaskOutputGenerator,
     tasks,
     x,
-    type Awaitable
+    type Awaitable,
+    type TaskConstructor
 };

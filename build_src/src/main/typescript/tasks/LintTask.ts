@@ -6,7 +6,7 @@ import {
     TaskInputGenerator,
     files,
     type Awaitable
-} from "blazebuild";
+} from "@onesoftnet/blazebuild";
 import { $ } from "bun";
 import path from "path";
 

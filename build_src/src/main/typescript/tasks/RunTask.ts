@@ -1,4 +1,4 @@
-import { AbstractTask, Task, TaskAction } from "blazebuild";
+import { AbstractTask, Task, TaskAction } from "@onesoftnet/blazebuild";
 import { spawnSync } from "child_process";
 
 @Task({

@@ -1,3 +1,3 @@
-import { blaze } from "blazebuild";
+import { blaze } from "@onesoftnet/blazebuild";
 
 await blaze.loadBuildSrc();

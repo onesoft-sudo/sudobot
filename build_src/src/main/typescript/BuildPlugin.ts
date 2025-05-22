@@ -1,4 +1,8 @@
-import { Awaitable, BlazePlugin } from "blazebuild";
+import {
+    Awaitable,
+    BlazePlugin,
+    TaskConstructor
+} from "@onesoftnet/blazebuild";
 import CleanTask from "./tasks/CleanTask";
 import CompileTask from "./tasks/CompileTask";
 import CompileTypeScriptTask from "./tasks/CompileTypeScriptTask";
@@ -22,7 +26,7 @@ class BuildPlugin extends BlazePlugin {
         });
     }
 
-    public override tasks() {
+    public override tasks(): TaskConstructor[] {
         return [
             CleanTask,
             CompileTask,
