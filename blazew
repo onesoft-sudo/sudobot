@@ -40,6 +40,11 @@ if ! command -v curl >/dev/null 2>&1 && ! command -v wget >/dev/null 2>&1; then
     exit 1
 fi
 
+if ! command -v bash >/dev/null 2>&1; then
+    echo """$argv0"": bash not found, please install it" >&2
+    exit 1
+fi
+
 get_property() {
     grep "$1" "$topdir/blaze/wrapper/blaze_wrapper.properties" | cut -d'=' -f2
 }
@@ -212,7 +217,7 @@ install_bun() {
     fi
 
     # shellcheck disable=SC1091
-    BUN_INSTALL="$blazedir/bun" sh "$blazedir/bun.sh" "bun-v$version" > "$blazedir/bun_install.log" 2>&1
+    BUN_INSTALL="$blazedir/bun" bash "$blazedir/bun.sh" "bun-v$version" > "$blazedir/bun_install.log" 2>&1
 
     if [ $? -ne 0 ]; then
         print_error "failed to install bun version $version"
