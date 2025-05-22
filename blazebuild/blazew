@@ -1,9 +1,0 @@
-#!/bin/sh
-
-entry="node_modules/@onesoftnet/blazebuild/src/main/typescript/main.ts"
-interpreter="bun"
-
-BLAZEW_INTERNAL_ARGV0="$0"
-export BLAZEW_INTERNAL_ARGV0
-
-exec "$interpreter" "$entry" -- "$@"
