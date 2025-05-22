@@ -239,4 +239,33 @@ install_bun() {
 install_node
 install_bun
 
+if [ ! -d "$topdir/node_modules/@onesoftnet/blazebuild" ]; then
+    print_debug "installing project dependencies"
+
+    pm=""
+
+    if command -v pnpm >/dev/null; then
+        pm="pnpm"
+    elif command -v bun >/dev/null; then
+        pm="bun"
+    elif command -v yarn >/dev/null; then
+        pm="yarn"
+    elif command -v npm >/dev/null; then
+        pm="npm"
+    else
+        print_error "no package manager found (pnpm, bun, yarn, npm)"
+        exit 1
+    fi
+
+    print_debug "using package manager: $pm"
+    print_info "installing project dependencies with '$pm install'"
+
+    if ! $pm install; then
+        print_error "failed to install project dependencies"
+        exit 1
+    fi
+
+    print_debug "installed project dependencies"
+fi
+
 exec "$bun_interpreter" "$entry" -- "$@"
