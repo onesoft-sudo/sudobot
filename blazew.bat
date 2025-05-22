@@ -1,2 +1,2 @@
 @echo off
-"bun.exe" "node_modules\@onesoftnet\blazebuild\src\main\typescript\main.ts" %*
+REM "bun.exe" "node_modules\@onesoftnet\blazebuild\src\main\typescript\main.ts" %*

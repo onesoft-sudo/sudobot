@@ -160,6 +160,7 @@ install_node() {
         node_interpreter="$nodejs_dir/bin/node"
         version="$("$node_interpreter" --version | cut -d'v' -f2)"
         print_debug "version: $version"
+        export PATH="$nodejs_dir/bin:$PATH"
     else
         print_error "failed to find node interpreter in $nodejs_dir"
         return 1
@@ -229,6 +230,7 @@ install_bun() {
     rm "$blazedir/bun.sh"
     print_debug "installed bun version $version to $bun_dir"
     print_debug "found bun interpreter: $bun_dir/bin/bun"
+    export PATH="$bun_dir/bin:$PATH"
     
     bun_interpreter="$bun_dir/bin/bun"
     version="$("$bun_interpreter" --version)"
