@@ -1,9 +1,235 @@
 #!/bin/sh
 
-entry="node_modules/@onesoftnet/blazebuild/src/main/typescript/main.ts"
-interpreter="bun"
+topdir="$(pwd)"
+
+entry="$topdir/node_modules/@onesoftnet/blazebuild/src/main/typescript/main.ts"
+blazedir="$topdir/.blazebuild"
+
+nodejs_dir="$blazedir/node"
+bun_dir="$blazedir/bun"
+
+node_interpreter="node"
+bun_interpreter="bun"
+
+if [ ! -d "$blazedir" ]; then
+    mkdir -p "$blazedir"
+fi
+
+argv0="$0"
 
 BLAZEW_INTERNAL_ARGV0="$0"
 export BLAZEW_INTERNAL_ARGV0
 
-exec "$interpreter" "$entry" -- "$@"
+if ! command -v grep >/dev/null 2>&1; then
+    echo "$argv0: grep not found, please install it" >&2
+    exit 1
+fi
+
+if ! command -v cut >/dev/null 2>&1; then
+    echo """$argv0"": cut not found, please install it" >&2
+    exit 1
+fi
+
+if ! command -v tar >/dev/null 2>&1; then
+    echo """$argv0"": tar not found, please install it" >&2
+    exit 1
+fi
+
+if ! command -v curl >/dev/null 2>&1 && ! command -v wget >/dev/null 2>&1; then
+    echo """$argv0"": curl or wget not found, please install one of them" >&2
+    exit 1
+fi
+
+get_property() {
+    grep "$1" "$topdir/blaze/wrapper/blaze_wrapper.properties" | cut -d'=' -f2
+}
+
+print_debug() {
+    if [ "$BLAZEW_DEBUG" ]; then
+        echo "$argv0: $*"
+    fi
+}
+
+print_error() {
+    echo "$argv0: $*" >&2
+}
+
+print_info() {
+    echo "$argv0: $*"
+}
+
+os="$(uname -s | tr '[:upper:]' '[:lower:]')"
+arch="$(uname -m | tr '[:upper:]' '[:lower:]')"
+
+if [ "$arch" = "x86_64" ]; then
+    arch="x64"
+fi
+
+download_file() {
+    url="$1"
+    dest="$2"
+
+    if command -v wget >/dev/null 2>&1; then
+        wget "$url" -O "$dest" > /dev/null 2>&1
+    elif command -v curl >/dev/null 2>&1; then
+        curl -L "$url" -o "$dest" > /dev/null 2>&1
+    else
+        print_error "no download tool found (curl or wget)"
+        return 1
+    fi
+
+    # shellcheck disable=SC2181
+    if [ $? -ne 0 ]; then
+        print_error "failed to download $url"
+        return 1
+    fi
+
+    return 0
+}
+
+install_node() {
+    version="$(get_property "node.version")"
+    major="$(echo "$version" | cut -d'.' -f1)"
+    installed_version=""
+    installed_version_major=""
+
+    if command -v node >/dev/null; then
+        installed_version="$(node --version | cut -d'v' -f2)"
+        installed_version_major="$(echo "$installed_version" | cut -d'.' -f1)"
+        print_debug "found node version: $installed_version"
+    fi
+
+    if [ -n "$installed_version" ] && [ -n "$installed_version_major" ] && [ "$installed_version_major" -ge "$major" ]; then
+        print_debug "node version $major ($version) or higher is already installed"
+        return 0
+    fi
+
+    if [ -d "$nodejs_dir" ]; then
+        installed_version="$("$nodejs_dir/bin/node" --version | cut -d'v' -f2)"
+        installed_version_major="$(echo "$installed_version" | cut -d'.' -f1)"
+        node_interpreter="$nodejs_dir/bin/node"
+        export PATH="$nodejs_dir/bin:$PATH"
+        print_debug "found project local node version: $installed_version"
+    fi
+
+    if [ -n "$installed_version" ] && [ -n "$installed_version_major" ] && [ "$installed_version_major" -ge "$major" ]; then
+        print_debug "node version $major ($version) or higher is already installed"
+        return 0
+    fi
+
+    if [ -n "$installed_version" ]; then
+        print_error "node version $major ($version) or higher is required, but found $installed_version"
+    else
+        print_error "node version $major ($version) or higher is required, but no installed version found"
+    fi
+    
+    print_info "installing node version $version"
+
+    url="https://nodejs.org/dist/v$version/node-v$version-$os-$arch.tar.gz"
+    dest="$blazedir/node-v$version-$os-$arch.tar.gz"
+
+    if ! download_file "$url" "$dest"; then
+        print_error "failed to download node version $version"
+        return 1
+    fi
+    
+    print_debug "downloaded node version $version to $dest"
+    print_debug "extracting node version $version"
+
+    if [ -d "$nodejs_dir" ]; then
+        rm -rf "$nodejs_dir"
+    fi
+
+    mkdir -p "$nodejs_dir"
+
+    if ! tar -xzf "$dest" -C "$nodejs_dir" --strip-components=1; then
+        print_error "failed to extract node version $version"
+        return 1
+    fi
+
+    rm "$dest"
+    print_debug "extracted node version $version to $nodejs_dir"
+
+    if [ -f "$nodejs_dir/bin/node" ]; then
+        print_debug "found node interpreter: $nodejs_dir/bin/node"
+        node_interpreter="$nodejs_dir/bin/node"
+        version="$("$node_interpreter" --version | cut -d'v' -f2)"
+        print_debug "version: $version"
+    else
+        print_error "failed to find node interpreter in $nodejs_dir"
+        return 1
+    fi
+}
+
+install_bun() {
+    version="$(get_property "bun.version")"
+    major="$(echo "$version" | cut -d'.' -f1)"
+    minor="$(echo "$version" | cut -d'.' -f2)"
+    installed_version=""
+    installed_version_major=""
+    installed_version_minor=""
+
+    if command -v bun >/dev/null; then
+        installed_version="$(bun --version)"
+        installed_version_major="$(echo "$installed_version" | cut -d'.' -f1)"
+        installed_version_minor="$(echo "$installed_version" | cut -d'.' -f2)"
+        print_debug "found bun version: $installed_version"
+    fi
+
+    if [ -n "$installed_version" ] && [ -n "$installed_version_major" ] && [ -n "$installed_version_minor" ] && \
+       [ "$installed_version_major" -ge "$major" ] && [ "$installed_version_minor" -ge "$minor" ]; then
+        print_debug "bun version $major.$minor ($version) or higher is already installed"
+        return 0
+    fi
+
+    if [ -d "$bun_dir" ]; then
+        installed_version="$("$bun_dir/bin/bun" --version)"
+        installed_version_major="$(echo "$installed_version" | cut -d'.' -f1)"
+        installed_version_minor="$(echo "$installed_version" | cut -d'.' -f2)"
+        node_interpreter="$bun_dir/bin/bun"
+        export PATH="$bun_dir/bin:$PATH"
+        print_debug "found project local bun version: $installed_version"
+    fi
+
+    if [ -n "$installed_version" ] && [ -n "$installed_version_major" ] && [ -n "$installed_version_minor" ] && \
+       [ "$installed_version_major" -ge "$major" ] && [ "$installed_version_minor" -ge "$minor" ]; then
+        print_debug "bun version $major.$minor ($version) or higher is already installed"
+        return 0
+    fi
+
+    if [ -n "$installed_version" ]; then
+        print_error "bun version $major.$minor ($version) or higher is required, but found $installed_version"
+    else
+        print_error "bun version $major.$minor ($version) or higher is required, but no installed version found"
+    fi
+
+    print_info "installing bun version $version"
+    download_file "https://bun.sh/install" "$blazedir/bun.sh"
+
+    if [ $? -ne 0 ]; then
+        print_error "failed to download bun installer script version $version"
+        return 1
+    fi
+
+    # shellcheck disable=SC1091
+    BUN_INSTALL="$blazedir/bun" sh "$blazedir/bun.sh" "bun-v$version" > "$blazedir/bun_install.log" 2>&1
+
+    if [ $? -ne 0 ]; then
+        print_error "failed to install bun version $version"
+        return 1
+    fi
+
+    rm "$blazedir/bun.sh"
+    print_debug "installed bun version $version to $bun_dir"
+    print_debug "found bun interpreter: $bun_dir/bin/bun"
+    
+    bun_interpreter="$bun_dir/bin/bun"
+    version="$("$bun_interpreter" --version)"
+
+    print_debug "version: $version"
+}
+
+install_node
+install_bun
+
+exec "$bun_interpreter" "$entry" -- "$@"

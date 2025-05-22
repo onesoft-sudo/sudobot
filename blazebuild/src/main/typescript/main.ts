@@ -282,6 +282,20 @@ async function createNewProject() {
     await writeFile("blazew", blazewScriptTemplate, "utf8");
     await chmod("blazew", 0o755);
 
+    await mkdir("blaze/wrapper", { recursive: true });
+    await writeFile(
+        "blaze/wrapper/blaze_wrapper.properties",
+        `node.version=${process.versions.node}\nbun.version=${process.versions.bun}\n`,
+        "utf8"
+    );
+
+    await mkdir("src/main/typescript", { recursive: true });
+    await writeFile(
+        "src/main/typescript/index.ts",
+        `console.log("Hello world!");\n`,
+        "utf8"
+    );
+
     console.log(`${chalk.blue("==>")} Installing initial dependencies...`);
 
     const pm = detectPackageManager();
@@ -297,7 +311,7 @@ async function createNewProject() {
         process.exit(1);
     }
 
-    const result = await $`${pm} install --save-dev`;
+    const result = await $`${pm} install`;
 
     if (result.exitCode !== 0) {
         console.error(`Failed to install dependencies.`);
