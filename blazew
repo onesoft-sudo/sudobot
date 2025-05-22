@@ -216,6 +216,8 @@ install_bun() {
 
     if [ $? -ne 0 ]; then
         print_error "failed to install bun version $version"
+        print_debug "bun install log:"
+        cat "$blazedir/bun_install.log"
         return 1
     fi
 
