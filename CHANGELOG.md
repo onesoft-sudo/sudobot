@@ -1,5 +1,107 @@
 # Changelog
 
+### 22-05-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **build:** fix blazebuild wrapper    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(blazebuild):** install dependencies before invoking blazebuild    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(blazebuild):** use bash to run bun install script    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(blazebuild):** blaze wrapper show debug logs    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(blazebuild):** remove unneeded files    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(blazebuild):** wrapper script for macOS/Linux    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **build:** fix blazebuild package name imports    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **deps:** update packages    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * tests: remove usage of deprecated functions    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **build:** update blazebuild scripts    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **fix:** type errors    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **build:** improved task dependency handling    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **build:** ensure build plugin is up to date    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(blazebuild):** build plugins 2.0    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 21-05-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **build:** switch to blazebuild 2    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **feat(blazebuild):** version 2.0.5    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **feat(blazebuild):** version 2.0.5    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **feat(blazebuild):** version 2.0.5    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 16-05-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **docs:** update terms change date    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **docs:** update terms    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+
+### 02-04-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.54.2 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.54.1 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 02-04-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
   * merge: branch 'main' of github.com:onesoft-sudo/sudobot    
@@ -28,13 +130,6 @@
   * **chore:** update vscode settings    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
-      
-
-### 02-04-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
-
-  * **release:** v10.54.1 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 01-04-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
