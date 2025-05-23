@@ -133,7 +133,7 @@ function Install-Bun {
     $BunPath = Get-Command bun -ErrorAction SilentlyContinue
 
     if ($BunPath) {
-        $GlobalInstalledVersion = (& $BunPath --version).Substring(1)
+        $GlobalInstalledVersion = & $BunPath --version
         $SplittedGlobalInstalledVersion = $GlobalInstalledVersion -split '\.'
         $MajorInstalled = $SplittedGlobalInstalledVersion[0]
         $MinorInstalled = $SplittedGlobalInstalledVersion[1]
@@ -160,7 +160,7 @@ function Install-Bun {
         if (Test-Path $LocalBunPath) {
             Write-Host "Found project local Bun at $LocalBunPath"
 
-            $LocalInstalledVersion = (& $LocalBunPath --version).Substring(1)
+            $LocalInstalledVersion = & $LocalBunPath --version
             $SplittedLocalInstalledVersion = $LocalInstalledVersion -split '\.'
             $MajorLocalInstalled = $SplittedLocalInstalledVersion[0]
             $MinorLocalInstalled = $SplittedLocalInstalledVersion[1]
@@ -211,7 +211,7 @@ function Install-Bun {
         Remove-Item -Path $ZipPath
 
         $BunPath = Join-Path $BunDir "bun.exe"
-        $InstalledVersion = (& $BunPath --version).Substring(1)
+        $InstalledVersion = & $BunPath --version
 
         Write-Host "Bun version $InstalledVersion installed at $BunPath"
     }
@@ -221,6 +221,8 @@ function Install-Bun {
 
 Install-Node
 $BUN_EXE = Install-Bun
+
+$env:PATH = "$($BlazeDir)\node;$($BlazeDir)\bun;$env:PATH"
 
 if (-not (Test-Path $BlazeEntry)) {
     $PackageManager = ""
@@ -253,8 +255,6 @@ if (-not (Test-Path $BlazeEntry)) {
 
     Write-Host "Project dependencies installed successfully."
 }
-
-$env:PATH = "$($BlazeDir)\node;$($BlazeDir)\bun;$env:PATH"
 
 $Process = Start-Process -FilePath $BUN_EXE -ArgumentList "$BlazeEntry $args" -NoNewWindow -PassThru
 $Process.WaitForExit()
