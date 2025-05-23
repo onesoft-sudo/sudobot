@@ -26,12 +26,12 @@
 me=$(basename "$0")
 
 fail() {
-    echo "$me: test failed: $1" 2>&1
+    echo "$me: test failed: $1" >&2
     exit 1
 }
 
 cd /app || {
-    echo "$me: failed to change directory to /app" 2>&1
+    echo "$me: failed to change directory to /app" >&2
     exit 1
 }
 
