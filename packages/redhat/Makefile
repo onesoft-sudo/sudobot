@@ -13,7 +13,12 @@ all: $(PACKAGE) $(SRC_PACKAGE)
 
 $(PACKAGE):
 	mkdir -p "$(BUILD_DIR)"
-	mkdir -p $(RPM_DIR)/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+
+	for d in BUILD RPMS SOURCES SPECS SRPMS; do \
+		mkdir -p "$(RPM_DIR)/$$d"; \
+	done
+
+	ls $(RPM_DIR)
 
 	cp $(REDHAT_DIR)/sudobot.spec.in $(RPM_DIR)/SPECS/sudobot.spec
 	sed -i "s/@VERSION@/$(VERSION)/g" $(RPM_DIR)/SPECS/sudobot.spec
