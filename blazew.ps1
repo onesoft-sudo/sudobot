@@ -18,6 +18,16 @@ if (-not (Test-Path $BlazeDir)) {
     New-Item -ItemType Directory -Path $BlazeDir -Force | Out-Null
 }
 
+function Debug-Log {
+    param (
+        [string]$Message
+    )
+    
+    if ($env:DEBUG -eq "1") {
+        Write-Host "$Message"
+    }
+}
+
 function Get-BlazeProperty {
     param (
         [string]$PropertyName
@@ -53,14 +63,14 @@ function Install-Node {
         $SplittedGlobalInstalledVersion = $GlobalInstalledVersion -split '\.'
         $MajorInstalled = $SplittedGlobalInstalledVersion[0]
 
-        Write-Host "Found Node.js at $($NodePath.Source)"
+        Debug-Log "Found Node.js at $($NodePath.Source)"
 
         if ($MajorInstalled -ge $Major) {
-            Write-Host "Node.js version $GlobalInstalledVersion is already installed globally and meets the required version $Version."
+            Debug-Log "Node.js version $GlobalInstalledVersion is already installed globally and meets the required version $Version."
             return $NodePath
         }
 
-        Write-Host "Node.js version $GlobalInstalledVersion is installed globally, but it does not meet the required version $Version."
+        Debug-Log "Node.js version $GlobalInstalledVersion is installed globally, but it does not meet the required version $Version."
         $NodePath = $null
     }
 
@@ -68,18 +78,18 @@ function Install-Node {
         $NodePath = Join-Path $BlazeDir "node/node.exe"
 
         if (Test-Path $NodePath) {
-            Write-Host "Found project local Node.js at $NodePath"
+            Debug-Log "Found project local Node.js at $NodePath"
 
             $LocalInstalledVersion = (& $NodePath --version).Substring(1)
             $SplittedLocalInstalledVersion = $LocalInstalledVersion -split '\.'
             $MajorLocalInstalled = $SplittedLocalInstalledVersion[0]
 
             if ($MajorLocalInstalled -ge $Major) {
-                Write-Host "Node.js version $LocalInstalledVersion is already installed locally and meets the required version $Version."
+                Debug-Log "Node.js version $LocalInstalledVersion is already installed locally and meets the required version $Version."
                 return $NodePath
             }
 
-            Write-Host "Node.js version $LocalInstalledVersion is installed locally, but it does not meet the required version $Version."
+            Debug-Log "Node.js version $LocalInstalledVersion is installed locally, but it does not meet the required version $Version."
         }
 
         $NodePath = $null
@@ -138,19 +148,19 @@ function Install-Bun {
         $MajorInstalled = $SplittedGlobalInstalledVersion[0]
         $MinorInstalled = $SplittedGlobalInstalledVersion[1]
 
-        Write-Host "Found Bun at $($BunPath.Source)"
+        Debug-Log "Found Bun at $($BunPath.Source)"
 
         if ($MajorInstalled -gt $Major) {
-            Write-Host "Bun version $GlobalInstalledVersion is already installed globally and meets the required version $Version."
+            Debug-Log "Bun version $GlobalInstalledVersion is already installed globally and meets the required version $Version."
             return $BunPath
         }
 
         if ($MajorInstalled -eq $Major -and $MinorInstalled -ge $Minor) {
-            Write-Host "Bun version $GlobalInstalledVersion is already installed globally and meets the required version $Version."
+            Debug-Log "Bun version $GlobalInstalledVersion is already installed globally and meets the required version $Version."
             return $BunPath
         }
 
-        Write-Host "Bun version $GlobalInstalledVersion is installed globally, but it does not meet the required version $Version."
+        Debug-Log "Bun version $GlobalInstalledVersion is installed globally, but it does not meet the required version $Version."
         $BunPath = $null
     }
 
@@ -158,7 +168,7 @@ function Install-Bun {
         $LocalBunPath = Join-Path $BlazeDir "bun/bun.exe"
 
         if (Test-Path $LocalBunPath) {
-            Write-Host "Found project local Bun at $LocalBunPath"
+            Debug-Log "Found project local Bun at $LocalBunPath"
 
             $LocalInstalledVersion = & $LocalBunPath --version
             $SplittedLocalInstalledVersion = $LocalInstalledVersion -split '\.'
@@ -166,16 +176,16 @@ function Install-Bun {
             $MinorLocalInstalled = $SplittedLocalInstalledVersion[1]
 
             if ($MajorLocalInstalled -gt $Major) {
-                Write-Host "Bun version $LocalInstalledVersion is already installed locally and meets the required version $Version."
+                Debug-Log "Bun version $LocalInstalledVersion is already installed locally and meets the required version $Version."
                 return $LocalBunPath
             }
 
             if ($MajorLocalInstalled -eq $Major -and $MinorLocalInstalled -ge $Minor) {
-                Write-Host "Bun version $LocalInstalledVersion is already installed locally and meets the required version $Version."
+                Debug-Log "Bun version $LocalInstalledVersion is already installed locally and meets the required version $Version."
                 return $LocalBunPath
             }
 
-            Write-Host "Bun version $LocalInstalledVersion is installed locally, but it does not meet the required version $Version."
+            Debug-Log "Bun version $LocalInstalledVersion is installed locally, but it does not meet the required version $Version."
         }
 
         $BunPath = $null
@@ -253,7 +263,7 @@ if (-not (Test-Path $BlazeEntry)) {
         exit 1
     }
 
-    Write-Host "Project dependencies installed successfully."
+    Debug-Log "Project dependencies installed successfully."
 }
 
 $Process = Start-Process -FilePath $BUN_EXE -ArgumentList "$BlazeEntry $args" -NoNewWindow -PassThru
