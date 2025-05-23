@@ -1,5 +1,79 @@
 # Changelog
 
+### 23-05-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **fix:** force rebuild    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **ci:** update release workflow to build and attach linux packages    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore:** update package.json    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **build:** system to build packages for linux distros    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **build:** update scripts and blazebuild    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **build(blazebuild):** supress debug logs by default    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **build(blazebuild):** fix powershell script    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **build(blazebuild):** fix powershell script    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **build(blazebuild):** fix powershell script    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **build(blazebuild):** support windows using powershell    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore:** update .node-version    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(docker):** fix docker test script    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **deps:** upgrade packages to latest    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **build(docker):** update Dockerfile for BlazeBuild v2    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **ci:** update nodejs version used in workflows    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 22-05-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.57.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 22-05-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
   * **build:** fix blazebuild wrapper    
