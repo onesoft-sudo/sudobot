@@ -18,8 +18,6 @@ $(PACKAGE):
 		mkdir -p "$(RPM_DIR)/$$d"; \
 	done
 
-	ls $(RPM_DIR)
-
 	cp $(REDHAT_DIR)/sudobot.spec.in $(RPM_DIR)/SPECS/sudobot.spec
 	sed -i "s/@VERSION@/$(VERSION)/g" $(RPM_DIR)/SPECS/sudobot.spec
 	sed -i "s|@PROJECT_DIR@|$(PROJECT_DIR)|g" $(RPM_DIR)/SPECS/sudobot.spec
