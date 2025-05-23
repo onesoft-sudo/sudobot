@@ -127,6 +127,19 @@ jobs:
           tar -cvzf sudobot-release-linux.tar.gz sudobot-release-linux;
           tar -cvzf sudobot-release-darwin.tar.gz sudobot-release-darwin;
 
+      - name: Create Linux Distro Packages
+        id: linux_package
+        run: |
+          sudo apt update && sudo apt install -y rpm dpkg-dev;
+          sudo hostnamectl set-hostname "github-actions-runner.sudobot.online";
+          cd packages;
+          make || exit 1;
+          cp *.deb *.rpm ../;
+          cd ..;
+          echo "deb_package=$(ls *.deb)" >> $GITHUB_ENV;
+          echo "rpm_package=$(ls *.noarch.rpm)" >> $GITHUB_ENV;
+          echo "rpm_src_package=$(ls *.src.rpm)" >> $GITHUB_ENV;
+
       - name: Create Release
         id: create_release
         uses: ncipollo/release-action@v1
@@ -138,7 +151,12 @@ jobs:
           name: ${{ steps.auto_release.outputs.tag }}
           body: ${{ steps.auto_release.outputs.release_notes }}
           artifactContentType: application/x-gzip
-          artifacts: ./sudobot-release-linux.tar.gz,./sudobot-release-darwin.tar.gz
+          artifacts: |
+            ./sudobot-release-linux.tar.gz,
+            ./sudobot-release-darwin.tar.gz,
+            ./${{ steps.linux_package.outputs.deb_package }},
+            ./${{ steps.linux_package.outputs.rpm_package }},
+            ./${{ steps.linux_package.outputs.rpm_src_package }}
 
   deploy-staging:
     needs: [build, release]
