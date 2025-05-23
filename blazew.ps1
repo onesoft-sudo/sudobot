@@ -243,9 +243,8 @@ if (-not (Test-Path $BlazeEntry)) {
     }
 
     Write-Host "Installing project dependencies using $PackageManager..."
-    $InstallCommand = "$PackageManager install"
 
-    & $InstallCommand
+    & $PackageManager install
 
     if (!$?) {
         Write-Error "Failed to install project dependencies using $PackageManager."
