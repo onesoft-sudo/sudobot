@@ -80,8 +80,9 @@ function Install-Node {
             }
 
             Write-Host "Node.js version $LocalInstalledVersion is installed locally, but it does not meet the required version $Version."
-            $NodePath = $null
         }
+
+        $NodePath = $null
     }
 
     if (-not $NodePath) {
@@ -98,10 +99,17 @@ function Install-Node {
             exit 1
         }
 
-        Expand-Archive -Path $ZipPath -DestinationPath $NodeDir -Force
+        Expand-Archive -Path $ZipPath -DestinationPath $BlazeDir -Force
 
         if (!$?) {
             Write-Error "Failed to extract Node.js from $ZipPath"
+            exit 1
+        }
+
+        Move-Item -Path (Join-Path $BlazeDir "node-v$Version-win-$Arch") -Destination $NodeDir -Force
+
+        if (!$?) {
+            Write-Error "Failed to move Node.js to $NodeDir"
             exit 1
         }
 
@@ -168,13 +176,14 @@ function Install-Bun {
             }
 
             Write-Host "Bun version $LocalInstalledVersion is installed locally, but it does not meet the required version $Version."
-            $BunPath = $null
         }
+
+        $BunPath = $null
     }
 
     if (-not $BunPath) {
         Write-Host "Bun version $Version is not installed. Installing..."
-        $Url = "https://github.com/oven-sh/bun/releases/latest/download/bun-windows-x64.zip"
+        $Url = "https://github.com/oven-sh/bun/releases/latest/download/bun-windows-$Arch.zip"
         $ZipPath = Join-Path $BlazeDir "bun.zip"
         $BunDir = Join-Path $BlazeDir "bun"
 
@@ -185,10 +194,17 @@ function Install-Bun {
             exit 1
         }
 
-        Expand-Archive -Path $ZipPath -DestinationPath $BunDir -Force
+        Expand-Archive -Path $ZipPath -DestinationPath $BlazeDir -Force
 
         if (!$?) {
             Write-Error "Failed to extract Bun from $ZipPath"
+            exit 1
+        }
+
+        Move-Item -Path (Join-Path $BlazeDir "bun-windows-$Arch") -Destination $BunDir -Force
+
+        if (!$?) {
+            Write-Error "Failed to move Bun to $BunDir"
             exit 1
         }
 
