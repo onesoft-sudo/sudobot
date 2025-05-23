@@ -1,6 +1,6 @@
 #!/bin/sh
 
-topdir="$(pwd)"
+topdir="$(dirname "$0")"
 
 entry="$topdir/node_modules/@onesoftnet/blazebuild/src/main/typescript/main.ts"
 blazedir="$topdir/.blazebuild"
@@ -197,10 +197,16 @@ install_bun() {
         print_debug "found project local bun version: $installed_version"
     fi
 
-    if [ -n "$installed_version" ] && [ -n "$installed_version_major" ] && [ -n "$installed_version_minor" ] && \
-       [ "$installed_version_major" -ge "$major" ] && [ "$installed_version_minor" -ge "$minor" ]; then
-        print_debug "bun version $major.$minor ($version) or higher is already installed"
-        return 0
+    if [ -n "$installed_version" ] && [ -n "$installed_version_major" ] && [ -n "$installed_version_minor" ]; then
+        if [ "$installed_version_major" -gt "$major" ]; then
+            print_debug "bun version $major.$minor ($version) or higher is already installed"
+            return 0
+        fi
+
+        if [ "$installed_version_major" -eq "$major" ] && [ "$installed_version_minor" -ge "$minor" ]; then
+            print_debug "bun version $major.$minor ($version) or higher is already installed"
+            return 0
+        fi
     fi
 
     if [ -n "$installed_version" ]; then

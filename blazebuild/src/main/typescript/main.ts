@@ -12,6 +12,7 @@ import BlazeBuild from "./core/BlazeBuild";
 import { $ } from "bun";
 import { chmod, mkdir, readFile } from "fs/promises";
 import { chdir } from "process";
+import blazewPs1Template from "../../../templates/blazew.ps1.template" with { type: "text" };
 import blazewScriptTemplate from "../../../templates/blazew.template" with { type: "text" };
 import buildBlazeScriptTemplate from "../../../templates/build.blaze.ts.template" with { type: "text" };
 import packageJsonTemplate from "../../../templates/package.json.template" with { type: "text" };
@@ -280,7 +281,10 @@ async function createNewProject() {
     await writeFile("build.blaze.ts", buildBlazeScriptTemplate, "utf8");
     await writeFile("settings.blaze.ts", settingsBlazeScriptTemplate, "utf8");
     await writeFile("blazew", blazewScriptTemplate, "utf8");
+    await writeFile("blazew.ps1", blazewPs1Template, "utf8");
+
     await chmod("blazew", 0o755);
+    await chmod("blazew.ps1", 0o755);
 
     await mkdir("blaze/wrapper", { recursive: true });
     await writeFile(
