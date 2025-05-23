@@ -1,0 +1,18 @@
+[Unit]
+Description=SudoBot Service
+After=network.target
+
+[Service]
+Type=simple
+User=sudobot
+Group=sudobot
+WorkingDirectory=/usr/share/sudobot
+ExecStart=/usr/bin/sudobot
+Restart=on-failure
+RestartSec=5
+StartLimitIntervalSec=60
+StartLimitBurst=5
+EnvironmentFile=/etc/sudobot/env
+
+[Install]
+WantedBy=multi-user.target

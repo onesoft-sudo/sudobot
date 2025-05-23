@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# Create user and group
+if ! id -u sudobot >/dev/null 2>&1; then
+    useradd --system --home /var/sudobot --shell /bin/false sudobot
+fi
+
+if ! getent group sudobot >/dev/null 2>&1; then
+    groupadd --system sudobot
+fi
+
+# Create directories
+if [ ! -d /var/sudobot ]; then
+    mkdir -p /var/sudobot
+    chown -R sudobot:sudobot /var/sudobot
+fi
+
+chown -R sudobot:sudobot /usr/share/sudobot
+chown -R sudobot:sudobot /etc/sudobot
+chmod 600 /etc/sudobot/env
+
+# Install dependencies
+cd /usr/share/sudobot || exit 1
+
+pm=""
+
+if command -v pnpm >/dev/null 2>&1; then
+    pm="pnpm"
+elif command -v bun >/dev/null 2>&1; then
+    pm="bun"
+elif command -v npm >/dev/null 2>&1; then
+    pm="npm"
+elif command -v yarn >/dev/null 2>&1; then
+    pm="yarn"
+else
+    echo "No package manager found. Please install pnpm, bun, npm, or yarn." >&2
+    exit 1
+fi
+
+su sudobot -c "$pm install" || exit 1
+
+# Enable systemd service
+if [ -f /lib/systemd/system/sudobot.service ]; then
+    systemctl enable sudobot
+fi

@@ -1,0 +1,22 @@
+#!/bin/sh
+
+systemctl stop sudobot
+systemctl disable sudobot
+
+if [ -d /var/sudobot ] && [ -n "$(ls -A /var/sudobot)" ]; then
+    echo "Note: /var/sudobot is not empty. It will not be removed."
+fi
+
+chown -R root:root /var/sudobot
+chown -R root:root /etc/sudobot
+
+rm -rf /usr/share/sudobot/node_modules
+
+if getent group sudobot >/dev/null 2>&1; then
+    groupdel sudobot
+fi
+
+if id -u sudobot >/dev/null 2>&1; then
+    userdel sudobot
+fi
+

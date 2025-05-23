@@ -1,0 +1,44 @@
+Name:        sudobot
+Version:     @VERSION@
+Release:     1%{?dist}
+Summary:     A Discord Bot for moderation purposes
+License:     AGPLv3
+URL:         https://www.sudobot.online
+Vendor:      OSN Developers
+Packager:    Ar Rakin <rakinar2@onesoftnet.eu.org>
+
+BuildArch:     noarch
+
+%description
+A free and open source Discord bot for moderation purposes.
+
+%prep
+
+%build
+cp -ar @PROJECT_DIR@/src src
+cp -ar @PROJECT_DIR@/config config
+cp -ar @PROJECT_DIR@/drizzle drizzle
+cp -a  @PROJECT_DIR@/tsconfig.json tsconfig.json
+cp -a  @PROJECT_DIR@/package.json package.json
+cp -a  @PROJECT_DIR@/LICENSE LICENSE
+cp -a  @PROJECT_DIR@/README.md README.md
+cp -ar @TOPDIR@/common/bin bin
+cp -ar @TOPDIR@/common/etc etc
+cp -a @TOPDIR@/common/systemd-sudobot.service systemd-sudobot.service
+
+%install
+mkdir -p %{buildroot}/usr/share/sudobot
+mkdir -p %{buildroot}/usr/lib/systemd/system
+mkdir -p %{buildroot}/usr/bin
+mkdir -p %{buildroot}/etc
+cp -ar src %{buildroot}/usr/share/sudobot
+cp -ar config %{buildroot}/usr/share/sudobot
+cp -ar drizzle %{buildroot}/usr/share/sudobot
+cp -a  package.json %{buildroot}/usr/share/sudobot
+cp -a  tsconfig.json %{buildroot}/usr/share/sudobot
+cp -a  LICENSE %{buildroot}/usr/share/sudobot
+cp -a  README.md %{buildroot}/usr/share/sudobot
+cp -ar bin/* %{buildroot}/usr/bin
+chmod 755 %{buildroot}/usr/bin/*
+cp -ar etc/* %{buildroot}/etc
+cp -a systemd-sudobot.service %{buildroot}/usr/lib/systemd/system/sudobot.service
