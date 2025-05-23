@@ -10,15 +10,13 @@ import { parseArgs } from "util";
 import BlazeBuild from "./core/BlazeBuild";
 
 import { $ } from "bun";
-import { chmod, mkdir, readFile } from "fs/promises";
+import { chmod, mkdir } from "fs/promises";
 import { chdir } from "process";
 import blazewPs1Template from "../../../templates/blazew.ps1.template" with { type: "text" };
 import blazewScriptTemplate from "../../../templates/blazew.template" with { type: "text" };
 import buildBlazeScriptTemplate from "../../../templates/build.blaze.ts.template" with { type: "text" };
 import packageJsonTemplate from "../../../templates/package.json.template" with { type: "text" };
 import settingsBlazeScriptTemplate from "../../../templates/settings.blaze.ts.template" with { type: "text" };
-import BlazePlugin from "./plugins/BlazePlugin";
-import type AbstractTask from "./tasks/AbstractTask";
 
 let buildScriptLastModifiedTime = 0;
 let settingsScriptLastModifiedTime = 0;
@@ -84,50 +82,6 @@ async function loadSettingsScript() {
     );
 
     settingsScriptLastModifiedTime = settingsScriptStats.mtimeMs;
-}
-
-async function loadBuildSrc(blaze: BlazeBuild) {
-    const buildSrcPath = path.resolve(process.cwd(), "build_src");
-
-    if (!existsSync(buildSrcPath)) {
-        return;
-    }
-
-    const packageJson = path.resolve(buildSrcPath, "package.json");
-    const entry = JSON.parse(await readFile(packageJson, "utf8")).main;
-
-    if (!entry) {
-        throw new Error("No entry point found in buildSrc package.json.");
-    }
-
-    const entryPath = path.resolve(buildSrcPath, entry);
-    const { default: buildPluginClass } = (await import(entryPath, {
-        with: { type: "module" }
-    })) as {
-        default: new (blaze: BlazeBuild) => BlazePlugin;
-    };
-
-    if (typeof buildPluginClass !== "function") {
-        throw new Error(
-            "Invalid build plugin. The entry point must export a BlazePlugin class."
-        );
-    }
-
-    const buildPlugin = new buildPluginClass(blaze);
-
-    if (!(buildPlugin instanceof BlazePlugin)) {
-        throw new Error(
-            "Invalid build plugin. The entry point must export a BlazePlugin class."
-        );
-    }
-
-    for (const task of await buildPlugin.tasks()) {
-        blaze.taskManager.registerClass(
-            task as new (blaze: BlazeBuild) => AbstractTask
-        );
-    }
-
-    await buildPlugin.boot();
 }
 
 function showHelp() {
@@ -348,8 +302,6 @@ async function main() {
         configurable: false,
         enumerable: false
     });
-
-    blaze.setBuildSrcLoader(loadBuildSrc);
 
     await loadSettingsScript();
     await loadBuildScript();

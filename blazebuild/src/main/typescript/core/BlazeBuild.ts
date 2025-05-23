@@ -1,10 +1,14 @@
 import chalk from "chalk";
+import { existsSync } from "fs";
+import { readFile } from "fs/promises";
+import path from "path";
 import packageJson from "../../../../package.json";
 import Logger from "../log/Logger";
+import BlazePlugin from "../plugins/BlazePlugin";
 import CacheManager from "../services/CacheManager";
 import ProjectManager from "../services/ProjectManager";
 import TaskManager from "../services/TaskManager";
-import type { Awaitable } from "../types/Awaitable";
+import type AbstractTask from "../tasks/AbstractTask";
 
 export type BlazeOptions = {
     help?: boolean;
@@ -32,8 +36,6 @@ class BlazeBuild {
     public settingsScriptLastModifiedTime: number = 0;
     public buildScriptLastModifiedTime: number = 0;
 
-    private buildSrcLoader?: (blaze: BlazeBuild) => Awaitable<void>;
-
     public readonly settings: Readonly<SettingData> = {
         build: {
             metadataDirectory: ".blazebuild",
@@ -53,18 +55,54 @@ class BlazeBuild {
         });
     }
 
-    public setBuildSrcLoader(
-        loader: (blaze: BlazeBuild) => Awaitable<void>
-    ): void {
-        this.buildSrcLoader = loader;
+    public async loadBuildSrc(): Promise<void> {
+        const buildSrcPath = path.resolve(process.cwd(), "build_src");
+
+        if (!existsSync(buildSrcPath)) {
+            return;
+        }
+
+        const packageJson = path.resolve(buildSrcPath, "package.json");
+        const entry = JSON.parse(await readFile(packageJson, "utf8")).main;
+
+        if (!entry) {
+            throw new Error("No entry point found in buildSrc package.json.");
+        }
+
+        const entryPath = path.resolve(buildSrcPath, entry);
+        const { default: buildPluginClass } = (await import(entryPath, {
+            with: { type: "module" }
+        })) as {
+            default: new (blaze: BlazeBuild) => BlazePlugin;
+        };
+
+        if (typeof buildPluginClass !== "function") {
+            throw new Error(
+                "Invalid build plugin. The entry point must export a BlazePlugin class."
+            );
+        }
+
+        await this.addPlugin(buildPluginClass);
     }
 
-    public async loadBuildSrc(): Promise<void> {
-        if (this.buildSrcLoader) {
-            await this.buildSrcLoader(this);
-        } else {
-            throw new Error("Build source loader is not set.");
+    public async addPlugin(
+        plugin: new (blaze: BlazeBuild) => BlazePlugin
+    ): Promise<void> {
+        const buildPlugin = new plugin(this);
+
+        if (!(buildPlugin instanceof BlazePlugin)) {
+            throw new Error(
+                "Invalid build plugin. The entry point must export a BlazePlugin class."
+            );
         }
+
+        for (const task of await buildPlugin.tasks()) {
+            this.taskManager.registerClass(
+                task as new (blaze: BlazeBuild) => AbstractTask
+            );
+        }
+
+        await buildPlugin.boot();
     }
 
     public async initialize(
@@ -120,7 +158,9 @@ class BlazeBuild {
             `\n${chalk.green.bold("BUILD SUCCESSFUL")} in ${this.formatDuration(Date.now() - this.startTime)}`
         );
 
-        let summary = `${chalk.whiteBright.bold(totalCount)} tasks total: `;
+        let summary = `${chalk.whiteBright.bold(totalCount)} task${
+            totalCount > 1 ? "s" : ""
+        } total: `;
 
         if (executedCount > 0) {
             summary += `${chalk.green(executedCount)} executed`;
