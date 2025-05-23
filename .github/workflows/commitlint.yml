@@ -15,8 +15,11 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y git curl
-          curl -sL https://deb.nodesource.com/setup_22.x | sudo -E bash -
-          sudo DEBIAN_FRONTEND=noninteractive apt install -y nodejs
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
 
       - name: Print versions
         run: |
