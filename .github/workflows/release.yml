@@ -136,9 +136,9 @@ jobs:
           make || exit 1;
           cp *.deb *.rpm ../;
           cd ..;
-          echo "deb_package=$(ls *.deb)" >> $GITHUB_ENV;
-          echo "rpm_package=$(ls *.noarch.rpm)" >> $GITHUB_ENV;
-          echo "rpm_src_package=$(ls *.src.rpm)" >> $GITHUB_ENV;
+          echo "deb_package=$(ls *.deb)" >> $GITHUB_OUTPUT;
+          echo "rpm_package=$(ls *.noarch.rpm)" >> $GITHUB_OUTPUT;
+          echo "rpm_src_package=$(ls *.src.rpm)" >> $GITHUB_OUTPUT;
 
       - name: Create Release
         id: create_release
