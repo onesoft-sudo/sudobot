@@ -104,6 +104,11 @@ start() {
 
     if [ ! -f "$PID_FILE" ]; then
         touch "$PID_FILE"
+
+        if [ $? -ne 0 ]; then
+            return 1
+        fi
+
         chown sudobot:sudobot "$PID_FILE"
         chmod 644 "$PID_FILE"
     fi
@@ -136,6 +141,11 @@ case "$1" in
     start)
         echo " * Starting sudobot"
         start
+
+        if [ $? -ne 0 ]; then
+            echo -e " $COLOR_RED*$COLOR_RESET sudobot could not be started."
+            exit $?
+        fi
         ;;
     stop)
         echo " * Stopping sudobot"
@@ -150,6 +160,11 @@ case "$1" in
         echo " * Restarting sudobot"
         stop
         start
+
+        if [ $? -ne 0 ]; then
+            echo -e " $COLOR_RED*$COLOR_RESET sudobot could not be restarted."
+            exit $?
+        fi
         ;;
     status)
         if [ -f "$PID_FILE" ]; then
