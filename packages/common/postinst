@@ -146,7 +146,7 @@ case "$1" in
     status)
         if [ -f "$PID_FILE" ]; then
             PID="$(cat "$PID_FILE" 2>/dev/null)"
-            
+
             if [ -n "$PID" ] && kill -0 "$PID" >/dev/null 2>&1; then
                 echo "sudobot is running with PID $PID."
             else
@@ -163,6 +163,6 @@ case "$1" in
 esac
 exit 0
 EOF
-
+    chmod 755 /etc/init.d/sudobot
     update-rc.d sudobot defaults || true
 fi
