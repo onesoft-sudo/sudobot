@@ -21,6 +21,8 @@ chown -R root:root /var/sudobot
 chown -R root:root /etc/sudobot
 
 rm -rf /usr/share/sudobot/node_modules
+rm -f /usr/share/sudobot/package-lock.json
+
 rm -f "/run/user/$(id -u sudobot)/sudobot.sock"
 
 if id -u sudobot >/dev/null 2>&1; then
