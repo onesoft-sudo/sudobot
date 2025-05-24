@@ -52,7 +52,7 @@ else
     exit 1
 fi
 
-su sudobot -c "$pm install" -s /bin/sh || {   
+su sudobot -c "PATH=\"$PATH\" $pm install" -s /bin/sh || {   
     echo "Failed to install dependencies with $pm." >&2
 }
 

@@ -7,6 +7,7 @@ fi
 
 if [ -d /var/sudobot ] && [ -n "$(ls -A /var/sudobot)" ]; then
     echo "Note: /var/sudobot is not empty. It will not be removed."
+    echo "If you want to remove it, please do so manually."
 fi
 
 chown -R root:root /var/sudobot
