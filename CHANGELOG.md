@@ -2,6 +2,12 @@
 
 ### 24-05-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **fix:** rebuild
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot
+  * **build:** include nodeps packages    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
   * **fix(ipc):** missing cleanup    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
@@ -90,6 +96,13 @@
   * **build:** debian package build fix    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 24-05-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.57.4 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 23-05-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
