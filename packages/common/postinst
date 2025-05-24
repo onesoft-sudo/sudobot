@@ -67,6 +67,10 @@ su sudobot -c "PATH=\"$PATH\" BUN_INSTALL=/var/sudobot $pm install" -s /bin/sh |
     echo "Failed to install dependencies with $pm." >&2
 }
 
+su sudobot -c "cd /usr/share/sudobot; PATH=\"$PATH\" BUN_INSTALL=/var/sudobot ./blazew tasks >/dev/null" -s /bin/sh || {
+    echo "Failed to setup sudobot." >&2
+}
+
 # Enable systemd service
 if [ -f /lib/systemd/system/sudobot.service ] && command -v systemctl >/dev/null 2>&1; then
     if command -v deb-systemd-helper >/dev/null 2>&1; then

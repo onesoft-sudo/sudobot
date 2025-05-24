@@ -8,4 +8,4 @@ if [ ! -f "$bun" ]; then
     bun=bun
 fi
 
-exec "$bun" -- start
+exec "$bun" -- start:bun
