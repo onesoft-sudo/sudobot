@@ -100,7 +100,8 @@
         "undici": "^7.10.0",
         "uuid": "^11.1.0",
         "ws": "^8.18.2",
-        "zod": "^3.25.23"
+        "zod": "^3.25.23",
+        "zod-to-json-schema": "^3.24.5"
     },
     "devDependencies": {
         "@commitlint/cli": "19.8.1",
@@ -136,7 +137,6 @@
         "typedoc-theme-hierarchy": "^6.0.0",
         "typescript": "^5.8.3",
         "typescript-eslint": "^8.32.1",
-        "vitest": "^3.1.4",
-        "zod-to-json-schema": "^3.24.5"
+        "vitest": "^3.1.4"
     }
 }
