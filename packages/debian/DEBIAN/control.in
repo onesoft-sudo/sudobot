@@ -1,4 +1,4 @@
-Package: sudobot
+Package: @NAME@
 Version: @VERSION@
 Architecture: all
 Maintainer: Ar Rakin <rakinar2@onesoftnet.eu.org>
@@ -6,6 +6,8 @@ Installed-Size: @SIZE@
 Size: @SIZE@
 Section: misc
 License: AGPLv3
-Priority: optional
+Provides: sudobot
+Conflicts: @CONFLICTS@
+Priority: optional@DEPENDENCIES@
 Homepage: https://www.sudobot.online
 Description: SudoBot is a Discord Bot for moderation purposes.

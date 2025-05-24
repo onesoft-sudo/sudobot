@@ -1,4 +1,4 @@
-Name:        sudobot
+Name:        %{_name}
 Version:     @VERSION@
 Release:     1%{?dist}
 Summary:     A Discord Bot for moderation purposes
@@ -6,6 +6,10 @@ License:     AGPLv3
 URL:         https://www.sudobot.online
 Vendor:      OSN Developers
 Packager:    Ar Rakin <rakinar2@onesoftnet.eu.org>
+
+Provides:    sudobot = @VERSION@
+Conflicts:   @CONFLICTS@
+@DEPENDENCIES@
 
 BuildArch:     noarch
 

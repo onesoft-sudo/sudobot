@@ -136,8 +136,10 @@ jobs:
           make || exit 1;
           cp *.deb *.rpm ../;
           cd ..;
-          echo "deb_package=$(ls *.deb)" >> $GITHUB_OUTPUT;
-          echo "rpm_package=$(ls *.noarch.rpm)" >> $GITHUB_OUTPUT;
+          echo "deb_package=$(ls sudobot_*.deb)" >> $GITHUB_OUTPUT;
+          echo "deb_nodeps_package=$(ls sudobot-nodeps_*.deb)" >> $GITHUB_OUTPUT;
+          echo "rpm_package=$(ls sudobot-*.noarch.rpm)" >> $GITHUB_OUTPUT;
+          echo "rpm_nodeps_package=$(ls sudobot-nodeps-*.noarch.rpm)" >> $GITHUB_OUTPUT;
           echo "rpm_src_package=$(ls *.src.rpm)" >> $GITHUB_OUTPUT;
 
       - name: Create Release
@@ -155,7 +157,9 @@ jobs:
             ./sudobot-release-linux.tar.gz,
             ./sudobot-release-darwin.tar.gz,
             ./${{ steps.linux_package.outputs.deb_package }},
+            ./${{ steps.linux_package.outputs.deb_nodeps_package }},
             ./${{ steps.linux_package.outputs.rpm_package }},
+            ./${{ steps.linux_package.outputs.rpm_nodeps_package }},
             ./${{ steps.linux_package.outputs.rpm_src_package }}
 
   deploy-staging:
