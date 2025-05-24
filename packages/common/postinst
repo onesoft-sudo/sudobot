@@ -45,7 +45,11 @@ cd /usr/share/sudobot || {
     echo "Failed to change directory to /usr/share/sudobot." >&2
 }
 
-su sudobot -c "cd /usr/share/sudobot; PATH=\"$PATH\" HOME=/var/sudobot npm install --production" -s /bin/sh || {
+if [ ! -d /usr/share/sudobot/node_modules ]; then
+    echo "Installing dependencies in /usr/share/sudobot..."
+fi
+
+su sudobot -c "cd /usr/share/sudobot; PATH=\"$PATH\" HOME=/var/sudobot npm install --omit=dev" -s /bin/sh || {
     echo "Failed to setup sudobot." >&2
 }
 
