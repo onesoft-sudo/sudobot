@@ -6,6 +6,11 @@ if command -v deb-systemd-helper >/dev/null 2>&1; then
     deb-systemd-helper purge sudobot.service || true
 fi
 
+if command -v update-rc.d >/dev/null 2>&1; then
+    rm -f /etc/init.d/sudobot
+    update-rc.d -f sudobot remove || true
+fi
+
 if [ -d /var/sudobot ] && [ -n "$(ls -A /var/sudobot)" ]; then
     echo "Note: /var/sudobot is not empty. It will not be removed."
     echo "If you want to remove it, please do so manually."
