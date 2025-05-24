@@ -59,6 +59,7 @@ su sudobot -c "PATH=\"$PATH\" BUN_INSTALL=/var/sudobot $pm install" -s /bin/sh |
 # Enable systemd service
 if [ -f /lib/systemd/system/sudobot.service ]; then
     if command -v deb-systemd-helper >/dev/null 2>&1; then
-        deb-systemd-helper enable sudobot
+        deb-systemd-helper enable sudobot.service
     fi
 fi
+
