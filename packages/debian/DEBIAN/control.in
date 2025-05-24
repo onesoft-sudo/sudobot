@@ -3,6 +3,7 @@ Version: @VERSION@
 Architecture: all
 Maintainer: Ar Rakin <rakinar2@onesoftnet.eu.org>
 Installed-Size: @SIZE@
+Size: @SIZE@
 Section: misc
 License: AGPLv3
 Priority: optional
