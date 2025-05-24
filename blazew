@@ -17,8 +17,6 @@ fi
 
 argv0="$0"
 
-BLAZEW_INTERNAL_ARGV0="$0"
-
 if ! command -v grep >/dev/null 2>&1; then
     echo "$argv0: grep not found, please install it" >&2
     exit 1
@@ -223,7 +221,7 @@ install_bun() {
     fi
 
     # shellcheck disable=SC1091
-    BUN_INSTALL="$blazedir/bun" bash "$blazedir/bun.sh" "bun-v$version" > "$blazedir/bun_install.log" 2>&1
+    BUN_INSTALL="$blazedir/bun" HOME="$blazedir" bash "$blazedir/bun.sh" "bun-v$version" > "$blazedir/bun_install.log" 2>&1
 
     if [ $? -ne 0 ]; then
         print_error "failed to install bun version $version"
@@ -275,4 +273,4 @@ if [ ! -d "$topdir/node_modules/@onesoftnet/blazebuild" ]; then
     print_debug "installed project dependencies"
 fi
 
-exec "$bun_interpreter" "$entry" -- "$@"
+BLAZEW_INTERNAL_ARGV0="$0" exec "$bun_interpreter" "$entry" -- "$@"
