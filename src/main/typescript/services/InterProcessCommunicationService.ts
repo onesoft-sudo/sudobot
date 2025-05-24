@@ -1,7 +1,11 @@
 import { Inject } from "@framework/container/Inject";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
-import { IPCRequest, IPCRequestSchema, IPCRequestType } from "@main/schemas/IPCRequestSchema";
+import {
+    IPCRequest,
+    IPCRequestSchema,
+    IPCRequestType
+} from "@main/schemas/IPCRequestSchema";
 import ExtensionManager from "@main/services/ExtensionManager";
 import { systemPrefix } from "@main/utils/utils";
 import { Awaitable } from "discord.js";
@@ -58,6 +62,13 @@ class InterProcessCommunicationService extends Service {
             (process.getuid
                 ? `/run/user/${process.getuid()}/sudobot.sock`
                 : systemPrefix("sudobot.sock"));
+
+        process.on("exit", () => {
+            rm(socketPath, { force: true }).catch(
+                this.application.logger.error
+            );
+        });
+
         const server = createServer();
 
         server.on("connection", async socket => {
@@ -70,7 +81,10 @@ class InterProcessCommunicationService extends Service {
                 const result = IPCRequestSchema.safeParse(rawData);
 
                 if (!result.success) {
-                    this.application.logger.error("Invalid IPC data received:", result.error);
+                    this.application.logger.error(
+                        "Invalid IPC data received:",
+                        result.error
+                    );
 
                     response = {
                         type: IPCResponseType.IPCError,
@@ -81,7 +95,10 @@ class InterProcessCommunicationService extends Service {
                     try {
                         response = await this.handleRequest(result.data);
                     } catch (error) {
-                        this.application.logger.error("Error handling IPC request:", error);
+                        this.application.logger.error(
+                            "Error handling IPC request:",
+                            error
+                        );
 
                         response = {
                             type: IPCResponseType.IPCError,
@@ -97,7 +114,9 @@ class InterProcessCommunicationService extends Service {
         });
 
         server.listen(socketPath, () => {
-            this.application.logger.info(`IPC socket listening at ${socketPath}`);
+            this.application.logger.info(
+                `IPC socket listening at ${socketPath}`
+            );
         });
     }
 
@@ -133,7 +152,9 @@ class InterProcessCommunicationService extends Service {
         const extensionsDirectory = systemPrefix("tmp/extensions");
 
         if (!existsSync(extensionsDirectory)) {
-            await mkdir(path.join(extensionsDirectory, "node_modules"), { recursive: true });
+            await mkdir(path.join(extensionsDirectory, "node_modules"), {
+                recursive: true
+            });
             await symlink(
                 this.application.projectRootPath,
                 path.join(extensionsDirectory, "node_modules", "sudobot")
@@ -147,11 +168,13 @@ class InterProcessCommunicationService extends Service {
 
         const filePath = path.join(
             extensionsDirectory,
-            new Date().getTime() + (request.file.endsWith(".js") ? ".js" : ".ts")
+            new Date().getTime() +
+                (request.file.endsWith(".js") ? ".js" : ".ts")
         );
 
         await cp(request.file, filePath);
-        const { extension, error } = await this.extensionManager.loadCompiledExtension(filePath);
+        const { extension, error } =
+            await this.extensionManager.loadCompiledExtension(filePath);
         await rm(filePath, { force: true });
 
         if (error) {
@@ -210,7 +233,10 @@ class InterProcessCommunicationService extends Service {
         return this.initializeSocket();
     }
 
-    private async readSocketData(socket: Socket, limit = 1024): Promise<string> {
+    private async readSocketData(
+        socket: Socket,
+        limit = 1024
+    ): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             let fullData = "",
                 magic = "";
@@ -229,7 +255,10 @@ class InterProcessCommunicationService extends Service {
                     magic += data.subarray(0, 8).toString("utf-8");
 
                     if (magic.length >= 8) {
-                        this.application.logger.info("Magic number received:", magic);
+                        this.application.logger.info(
+                            "Magic number received:",
+                            magic
+                        );
                     }
 
                     data = data.subarray(8);
@@ -238,7 +267,10 @@ class InterProcessCommunicationService extends Service {
                 const message = data.toString("utf-8");
                 const magicIndex = message.indexOf(magic);
 
-                fullData += message.slice(0, magicIndex === -1 ? undefined : magicIndex);
+                fullData += message.slice(
+                    0,
+                    magicIndex === -1 ? undefined : magicIndex
+                );
 
                 if (fullData.length >= limit || magicIndex !== -1) {
                     socket.off("data", onData);
@@ -272,7 +304,10 @@ class InterProcessCommunicationService extends Service {
         });
     }
 
-    private async readSocketDataAsJSON(socket: Socket, limit = 1024): Promise<unknown> {
+    private async readSocketDataAsJSON(
+        socket: Socket,
+        limit = 1024
+    ): Promise<unknown> {
         const data = await this.readSocketData(socket, limit);
         return JSON.parse(data);
     }
