@@ -38,7 +38,7 @@ $(PACKAGE):
 	chmod 755 "$(BUILD_DIR)/usr/share/sudobot"
 
 	cp "$(COMMON_DIR)/systemd-sudobot.service" "$(SYSTEMD_SERVICE)"
-	chmod 640 "$(SYSTEMD_SERVICE)"
+	chmod 644 "$(SYSTEMD_SERVICE)"
 
 	mv "$(BUILD_DIR)/DEBIAN/control.in" "$(BUILD_DIR)/DEBIAN/control"
 	sed -i "s/@VERSION@/$(VERSION)/g" "$(BUILD_DIR)/DEBIAN/control"
