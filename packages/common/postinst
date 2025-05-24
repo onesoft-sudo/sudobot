@@ -15,15 +15,17 @@ fi
 # Create directories
 if [ ! -d /var/sudobot ]; then
     mkdir -p /var/sudobot
-    chown -R sudobot:sudobot /var/sudobot
 fi
 
+chown -R sudobot:sudobot /var/sudobot
 chown -R sudobot:sudobot /usr/share/sudobot
 chown -R sudobot:sudobot /etc/sudobot
 chmod 600 /etc/sudobot/env
 
 # Install dependencies
-cd /usr/share/sudobot || exit 1
+cd /usr/share/sudobot || {
+    echo "Failed to change directory to /usr/share/sudobot." >&2
+}
 
 pm=""
 
@@ -42,7 +44,6 @@ fi
 
 su sudobot -c "$pm install" -s /bin/sh || {   
     echo "Failed to install dependencies with $pm." >&2
-    exit 1
 }
 
 # Enable systemd service

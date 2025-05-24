@@ -35,6 +35,8 @@ $(PACKAGE):
 	cp -r "$(PROJECT_DIR)/README.md" "$(BUILD_DIR)/usr/share/sudobot"
 	cp -r "$(PROJECT_DIR)/LICENSE" "$(SYSTEMD_SERVICE)"
 
+	chmod 755 "$(BUILD_DIR)/usr/share/sudobot"
+
 	cp "$(COMMON_DIR)/systemd-sudobot.service" "$(SYSTEMD_SERVICE)"
 	chmod 640 "$(SYSTEMD_SERVICE)"
 
