@@ -129,7 +129,7 @@ start() {
 
                 echo "Not restarting sudobot due to non-zero exit code." >> "$LOG_FILE"
                 echo "If you want to restart it, please run 'service sudobot restart'." >> "$LOG_FILE"
-                restarts="$(echo "$restarts + 1" | bc)"
+                restarts=$(echo "$restarts + 1" | bc)
             else
                 echo "Restarting sudobot..." >> "$LOG_FILE"
                 sleep 1
