@@ -32,10 +32,10 @@ pm=""
 if [ -n "$SUDO_USER" ] && [ -d "/home/$SUDO_USER" ]; then
     if [ -d "/home/$SUDO_USER/.bun" ]; then
         if [ -z "$BUN_INSTALL" ]; then
-            export BUN_INSTALL="/home/$SUDO_USER/.bun"
+            BUN_INSTALL="/home/$SUDO_USER/.bun"
         fi
         
-        export PATH="$BUN_INSTALL/bin:$PATH"
+        PATH="$BUN_INSTALL/bin:$PATH"
     fi
 fi
 
@@ -52,7 +52,7 @@ else
     exit 1
 fi
 
-su sudobot -c "PATH=\"$PATH\" $pm install" -s /bin/sh || {   
+su sudobot -c "PATH=\"$PATH\" BUN_INSTALL=/var/sudobot $pm install" -s /bin/sh || {   
     echo "Failed to install dependencies with $pm." >&2
 }
 
