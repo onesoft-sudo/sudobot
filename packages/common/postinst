@@ -29,6 +29,16 @@ cd /usr/share/sudobot || {
 
 pm=""
 
+if [ -n "$SUDO_USER" ] && [ -d "/home/$SUDO_USER" ]; then
+    if [ -d "/home/$SUDO_USER/.bun" ]; then
+        if [ -z "$BUN_INSTALL" ]; then
+            export BUN_INSTALL="/home/$SUDO_USER/.bun"
+        fi
+        
+        export PATH="$BUN_INSTALL/bin:$PATH"
+    fi
+fi
+
 if command -v pnpm >/dev/null 2>&1; then
     pm="pnpm"
 elif command -v bun >/dev/null 2>&1; then

@@ -18,7 +18,6 @@ fi
 argv0="$0"
 
 BLAZEW_INTERNAL_ARGV0="$0"
-export BLAZEW_INTERNAL_ARGV0
 
 if ! command -v grep >/dev/null 2>&1; then
     echo "$argv0: grep not found, please install it" >&2
@@ -113,7 +112,7 @@ install_node() {
         installed_version="$("$nodejs_dir/bin/node" --version | cut -d'v' -f2)"
         installed_version_major="$(echo "$installed_version" | cut -d'.' -f1)"
         node_interpreter="$nodejs_dir/bin/node"
-        export PATH="$nodejs_dir/bin:$PATH"
+        PATH="$nodejs_dir/bin:$PATH"
         print_debug "found project local node version: $installed_version"
     fi
 
@@ -160,7 +159,7 @@ install_node() {
         node_interpreter="$nodejs_dir/bin/node"
         version="$("$node_interpreter" --version | cut -d'v' -f2)"
         print_debug "version: $version"
-        export PATH="$nodejs_dir/bin:$PATH"
+        PATH="$nodejs_dir/bin:$PATH"
     else
         print_error "failed to find node interpreter in $nodejs_dir"
         return 1
@@ -193,7 +192,7 @@ install_bun() {
         installed_version_major="$(echo "$installed_version" | cut -d'.' -f1)"
         installed_version_minor="$(echo "$installed_version" | cut -d'.' -f2)"
         node_interpreter="$bun_dir/bin/bun"
-        export PATH="$bun_dir/bin:$PATH"
+        PATH="$bun_dir/bin:$PATH"
         print_debug "found project local bun version: $installed_version"
     fi
 
@@ -236,7 +235,7 @@ install_bun() {
     rm "$blazedir/bun.sh"
     print_debug "installed bun version $version to $bun_dir"
     print_debug "found bun interpreter: $bun_dir/bin/bun"
-    export PATH="$bun_dir/bin:$PATH"
+    PATH="$bun_dir/bin:$PATH"
     
     bun_interpreter="$bun_dir/bin/bun"
     version="$("$bun_interpreter" --version)"
