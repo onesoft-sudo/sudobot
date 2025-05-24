@@ -1,22 +1,16 @@
 # Changelog
 
-### 24-05-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
-
-  * **release:** v10.57.6 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-  * **release:** v10.57.5 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-  * **release:** v10.57.4 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-
 ### 24-05-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **build:** fix postinst script for linux packages    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot
+  * **fix:** postinst script for linux packages    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
   * **fix:** postinst script for linux packages    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
@@ -133,6 +127,25 @@
   * **build:** debian package build fix    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 24-05-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v10.57.7 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.57.6 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.57.5 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v10.57.4 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 23-05-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
