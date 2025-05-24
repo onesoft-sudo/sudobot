@@ -36,6 +36,7 @@ $(PACKAGE):
 	cp -r "$(PROJECT_DIR)/LICENSE" "$(SYSTEMD_SERVICE)"
 
 	cp "$(COMMON_DIR)/systemd-sudobot.service" "$(SYSTEMD_SERVICE)"
+	chmod 640 "$(SYSTEMD_SERVICE)"
 
 	mv "$(BUILD_DIR)/DEBIAN/control.in" "$(BUILD_DIR)/DEBIAN/control"
 	sed -i "s/@VERSION@/$(VERSION)/g" "$(BUILD_DIR)/DEBIAN/control"
