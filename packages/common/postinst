@@ -86,8 +86,6 @@ if [ -t 1 ]; then
 fi
 
 start() {
-    nohup su -s /bin/sh -c "/usr/bin/sudobot" >> "$LOG_FILE" 2>&1 &
-
     if [ ! -f "$PID_FILE" ]; then
         touch "$PID_FILE"
 
@@ -97,9 +95,25 @@ start() {
 
         chown sudobot:sudobot "$PID_FILE"
         chmod 644 "$PID_FILE"
+    else
+        PID="$(cat "$PID_FILE" 2>/dev/null)"
+
+	if [ -z "$PID" ]; then
+            return 1
+        fi
+
+        if kill -0 "$PID" >/dev/null 2>&1; then
+            return 1
+        fi
     fi
 
-    echo $! > "$PID_FILE"
+    export _PID_FILE="$PID_FILE"
+
+    nohup su sudobot -s /bin/sh -c '
+        /usr/bin/sudobot &
+        echo $! > $_PID_FILE
+        wait
+    ' >> "$LOG_FILE" 2>&1 &
 }
 
 stop() {
@@ -114,8 +128,10 @@ stop() {
         return 1
     fi
 
+    rm -f /run/user/$(id -u sudobot)/sudobot.sock
+
     if kill -0 "$PID" >/dev/null 2>&1; then
-        kill "$PID"
+        kill -TERM "$PID"
         rm -f "$PID_FILE"
     else
         rm -f "$PID_FILE"
@@ -129,7 +145,7 @@ case "$1" in
         start
 
         if [ $? -ne 0 ]; then
-            echo -e " $COLOR_RED*$COLOR_RESET sudobot could not be started."
+            printf " $COLOR_RED*$COLOR_RESET sudobot is already running or could not be started.\n"
             exit $?
         fi
         ;;
@@ -138,7 +154,7 @@ case "$1" in
         stop
 
         if [ $? -ne 0 ]; then
-            echo -e " $COLOR_RED*$COLOR_RESET sudobot is not running or could not be stopped."
+            printf " $COLOR_RED*$COLOR_RESET sudobot is not running or could not be stopped.\n"
             exit $?
         fi
         ;;
@@ -148,7 +164,7 @@ case "$1" in
         start
 
         if [ $? -ne 0 ]; then
-            echo -e " $COLOR_RED*$COLOR_RESET sudobot could not be restarted."
+            printf " $COLOR_RED*$COLOR_RESET sudobot could not be restarted.\n"
             exit $?
         fi
         ;;
@@ -159,11 +175,11 @@ case "$1" in
             if [ -n "$PID" ] && kill -0 "$PID" >/dev/null 2>&1; then
                 echo " * sudobot is running with PID $PID."
             else
-                echo " $COLOR_RED*$COLOR_RESET sudobot is not running."
+                printf " $COLOR_RED*$COLOR_RESET sudobot is not running.\n"
                 exit 1
             fi
         else
-            echo " $COLOR_RED*$COLOR_RESET sudobot is not running."
+            printf " $COLOR_RED*$COLOR_RESET sudobot is not running.\n"
             exit 1
         fi
         ;;
