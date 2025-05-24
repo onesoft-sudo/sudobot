@@ -110,9 +110,23 @@ start() {
     export _PID_FILE="$PID_FILE"
 
     nohup su sudobot -s /bin/sh -c '
-        /usr/bin/sudobot &
-        echo $! > $_PID_FILE
-        wait
+        while :; do
+            /usr/bin/sudobot &
+            echo $! > $_PID_FILE
+            wait
+            code=$?
+            echo "/usr/bin/sudobot exited with code $?" >> "$LOG_FILE"
+
+            if [ $code -ne 0 ]; then
+                echo "Not restarting sudobot due to non-zero exit code." >> "$LOG_FILE"
+                echo "If you want to restart it, please run 'service sudobot restart'." >> "$LOG_FILE"
+                rm -f "$_PID_FILE"
+                rm -f /run/user/$(id -u sudobot)/sudobot.sock
+            else
+                echo "Restarting sudobot..." >> "$LOG_FILE"
+                sleep 1
+            fi
+        done
     ' >> "$LOG_FILE" 2>&1 &
 }
 
