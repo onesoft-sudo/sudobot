@@ -17,6 +17,9 @@ $(PACKAGE):
 	cp -r "$(DEB_DIR)/DEBIAN" "$(BUILD_DIR)"
 	cp "$(COMMON_DIR)/postinst" "$(BUILD_DIR)/DEBIAN"
 	cp "$(COMMON_DIR)/prerm" "$(BUILD_DIR)/DEBIAN"
+
+	chmod 755 "$(BUILD_DIR)/DEBIAN/postinst"
+	chmod 755 "$(BUILD_DIR)/DEBIAN/prerm"
 	
 	cp -r "$(COMMON_DIR)/bin" "$(BUILD_DIR)/usr"
 	chmod 755 "$(BUILD_DIR)/usr/bin/sudobot"
