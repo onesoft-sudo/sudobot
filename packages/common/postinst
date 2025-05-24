@@ -15,6 +15,13 @@ fi
 # Create directories
 if [ ! -d /var/sudobot ]; then
     mkdir -p /var/sudobot
+    mkdir -p /var/sudobot/config
+    mkdir -p /var/sudobot/tmp
+    
+    echo "{}" > /var/sudobot/config/config.json
+    echo "{}" > /var/sudobot/config/system.json
+    chmod 644 /var/sudobot/config/config.json
+    chmod 644 /var/sudobot/config/system.json
 fi
 
 # Create directories

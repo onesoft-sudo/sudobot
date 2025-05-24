@@ -28,7 +28,7 @@ $(PACKAGE):
 	cp -r "$(COMMON_DIR)/etc" "$(BUILD_DIR)"
 	chmod 600 "$(BUILD_DIR)/etc/sudobot/env"
 
-	cp -r "$(PROJECT_DIR)/build/out" "$(BUILD_DIR)/usr/share/sudobot/js"
+	cp -r "$(PROJECT_DIR)/build" "$(BUILD_DIR)/usr/share/sudobot"
 	cp -r "$(PROJECT_DIR)/config" "$(BUILD_DIR)/usr/share/sudobot"
 	cp -r "$(PROJECT_DIR)/drizzle" "$(BUILD_DIR)/usr/share/sudobot"
 	cp -r "$(PROJECT_DIR)/tsconfig.json" "$(BUILD_DIR)/usr/share/sudobot"

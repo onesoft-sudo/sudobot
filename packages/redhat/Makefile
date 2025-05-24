@@ -39,7 +39,7 @@ $(PACKAGE):
 	echo "%doc /usr/share/sudobot/README.md" >> $(RPM_DIR)/SPECS/sudobot.spec
 	echo "%license /usr/share/sudobot/LICENSE" >> $(RPM_DIR)/SPECS/sudobot.spec
 
-	find "$(PROJECT_DIR)/src" -type f | sed "s|$(PROJECT_DIR)|/usr/share/sudobot|g" >> $(RPM_DIR)/SPECS/sudobot.spec
+	find "$(PROJECT_DIR)/build" -type f | sed "s|$(PROJECT_DIR)|/usr/share/sudobot|g" >> $(RPM_DIR)/SPECS/sudobot.spec
 	find "$(PROJECT_DIR)/config" -type f | sed "s|$(PROJECT_DIR)|/usr/share/sudobot|g" >> $(RPM_DIR)/SPECS/sudobot.spec
 	find "$(PROJECT_DIR)/drizzle" -type f | sed "s|$(PROJECT_DIR)|/usr/share/sudobot|g" >> $(RPM_DIR)/SPECS/sudobot.spec
 	echo "/usr/share/sudobot/tsconfig.json" >> $(RPM_DIR)/SPECS/sudobot.spec
