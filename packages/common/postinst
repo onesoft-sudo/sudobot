@@ -17,7 +17,7 @@ if [ ! -d /var/sudobot ]; then
     mkdir -p /var/sudobot
     mkdir -p /var/sudobot/config
     mkdir -p /var/sudobot/tmp
-    
+
     echo "{}" > /var/sudobot/config/config.json
     echo "{}" > /var/sudobot/config/system.json
     chmod 644 /var/sudobot/config/config.json
@@ -45,7 +45,7 @@ cd /usr/share/sudobot || {
     echo "Failed to change directory to /usr/share/sudobot." >&2
 }
 
-su sudobot -c "cd /usr/share/sudobot; PATH=\"$PATH\" BUN_INSTALL=/var/sudobot ./blazew tasks >/dev/null" -s /bin/sh || {
+su sudobot -c "cd /usr/share/sudobot; PATH=\"$PATH\" HOME=/var/sudobot npm install --production" -s /bin/sh || {
     echo "Failed to setup sudobot." >&2
 }
 
