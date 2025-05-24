@@ -1,8 +1,9 @@
 #!/bin/sh
 
 if command -v deb-systemd-helper >/dev/null 2>&1; then
-    deb-systemd-helper stop sudobot.service
-    deb-systemd-helper disable sudobot.service
+    deb-systemd-invoke stop sudobot.service || true
+    deb-systemd-helper disable sudobot.service || true
+    deb-systemd-helper purge sudobot.service || true
 fi
 
 if [ -d /var/sudobot ] && [ -n "$(ls -A /var/sudobot)" ]; then
