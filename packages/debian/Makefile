@@ -33,6 +33,7 @@ $(PACKAGE):
 	cp -r "$(PROJECT_DIR)/tsconfig.json" "$(BUILD_DIR)/usr/share/sudobot"
 	cp -r "$(PROJECT_DIR)/package.json" "$(BUILD_DIR)/usr/share/sudobot"
 	cp -r "$(PROJECT_DIR)/README.md" "$(BUILD_DIR)/usr/share/sudobot"
+	cp -r "$(PROJECT_DIR)/blazew" "$(BUILD_DIR)/usr/share/sudobot"
 	cp -r "$(PROJECT_DIR)/LICENSE" "$(SYSTEMD_SERVICE)"
 
 	chmod 755 "$(BUILD_DIR)/usr/share/sudobot"

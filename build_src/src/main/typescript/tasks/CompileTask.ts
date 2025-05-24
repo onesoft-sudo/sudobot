@@ -30,7 +30,7 @@ class CompileTask extends AbstractTask {
 
     @TaskDependencyGenerator
     protected override async dependencies() {
-        return ["compileTypeScript"];
+        return ["dependencies", "compileTypeScript"];
     }
 
     @TaskInputGenerator

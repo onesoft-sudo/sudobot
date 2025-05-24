@@ -38,35 +38,6 @@ cd /usr/share/sudobot || {
     echo "Failed to change directory to /usr/share/sudobot." >&2
 }
 
-pm=""
-
-if [ -n "$SUDO_USER" ] && [ -d "/home/$SUDO_USER" ]; then
-    if [ -d "/home/$SUDO_USER/.bun" ]; then
-        if [ -z "$BUN_INSTALL" ]; then
-            BUN_INSTALL="/home/$SUDO_USER/.bun"
-        fi
-        
-        PATH="$BUN_INSTALL/bin:$PATH"
-    fi
-fi
-
-if command -v pnpm >/dev/null 2>&1; then
-    pm="pnpm"
-elif command -v bun >/dev/null 2>&1; then
-    pm="bun"
-elif command -v npm >/dev/null 2>&1; then
-    pm="npm"
-elif command -v yarn >/dev/null 2>&1; then
-    pm="yarn"
-else
-    echo "No package manager found. Please install pnpm, bun, npm, or yarn." >&2
-    exit 1
-fi
-
-su sudobot -c "PATH=\"$PATH\" BUN_INSTALL=/var/sudobot $pm install" -s /bin/sh || {   
-    echo "Failed to install dependencies with $pm." >&2
-}
-
 su sudobot -c "cd /usr/share/sudobot; PATH=\"$PATH\" BUN_INSTALL=/var/sudobot ./blazew tasks >/dev/null" -s /bin/sh || {
     echo "Failed to setup sudobot." >&2
 }
