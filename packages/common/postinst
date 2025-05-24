@@ -17,6 +17,17 @@ if [ ! -d /var/sudobot ]; then
     mkdir -p /var/sudobot
 fi
 
+# Create directories
+if [ ! -d /var/log/sudobot ]; then
+    mkdir -p /var/log/sudobot
+fi
+
+touch /var/run/sudobot.pid
+
+chown sudobot:sudobot /var/run/sudobot.pid
+chmod 644 /var/run/sudobot.pid
+
+chown -R sudobot:sudobot /var/log/sudobot
 chown -R sudobot:sudobot /var/sudobot
 chown -R sudobot:sudobot /usr/share/sudobot
 chown -R sudobot:sudobot /etc/sudobot
@@ -57,9 +68,101 @@ su sudobot -c "PATH=\"$PATH\" BUN_INSTALL=/var/sudobot $pm install" -s /bin/sh |
 }
 
 # Enable systemd service
-if [ -f /lib/systemd/system/sudobot.service ]; then
+if [ -f /lib/systemd/system/sudobot.service ] && command -v systemctl >/dev/null 2>&1; then
     if command -v deb-systemd-helper >/dev/null 2>&1; then
         deb-systemd-helper enable sudobot.service || true
     fi
 fi
 
+# Create SystemV init script
+if command -v update-rc.d >/dev/null 2>&1; then
+    cat << 'EOF' > /etc/init.d/sudobot
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          sudobot
+# Required-Start:    $local_fs $network
+# Required-Stop:     $local_fs $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start sudobot daemon
+# Description:       Start the sudobot daemon
+### END INIT INFO
+
+LOG_FILE="/var/log/sudobot/sudobot.log"
+PID_FILE="/var/run/sudobot.pid"
+
+start() {
+    nohup su -s /bin/sh -c "/usr/bin/sudobot" >> "$LOG_FILE" 2>&1 &
+
+    if [ ! -f "$PID_FILE" ]; then
+        touch "$PID_FILE"
+        chown sudobot:sudobot "$PID_FILE"
+        chmod 644 "$PID_FILE"
+    fi
+
+    echo $! > "$PID_FILE"
+}
+
+stop() {
+    if [ ! -f "$PID_FILE" ]; then
+        return 1
+    fi
+
+    PID="$(cat "$PID_FILE" 2>/dev/null)"
+
+    if [ -z "$PID" ]; then
+        rm -f "$PID_FILE"
+        return 1
+    fi
+
+    if kill -0 "$PID" >/dev/null 2>&1; then
+        kill "$PID"
+        rm -f "$PID_FILE"
+    else
+        rm -f "$PID_FILE"
+        return 1
+    fi
+}
+
+case "$1" in
+    start)
+        echo "Starting sudobot..."
+        start
+        ;;
+    stop)
+        echo "Stopping sudobot..."
+        stop
+
+        if [ $? -ne 0 ]; then
+            echo "sudobot is not running or could not be stopped."
+            exit $?
+        fi
+        ;;
+    restart)
+        echo "Restarting sudobot..."
+        stop
+        start
+        ;;
+    status)
+        if [ -f "$PID_FILE" ]; then
+            PID="$(cat "$PID_FILE" 2>/dev/null)"
+            
+            if [ -n "$PID" ] && kill -0 "$PID" >/dev/null 2>&1; then
+                echo "sudobot is running with PID $PID."
+            else
+                echo "sudobot is not running."
+            fi
+        else
+            echo "sudobot is not running."
+        fi
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|status}"
+        exit 1
+        ;;
+esac
+exit 0
+EOF
+
+    update-rc.d sudobot defaults || true
+fi

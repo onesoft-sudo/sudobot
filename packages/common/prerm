@@ -23,3 +23,5 @@ fi
 if getent group sudobot >/dev/null 2>&1; then
     groupdel sudobot
 fi
+
+rm /var/run/sudobot.pid
