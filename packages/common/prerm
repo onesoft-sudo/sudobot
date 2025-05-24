@@ -1,7 +1,9 @@
 #!/bin/sh
 
-systemctl stop sudobot
-systemctl disable sudobot
+if command -v deb-systemd-helper >/dev/null 2>&1; then
+    deb-systemd-helper stop sudobot.service
+    deb-systemd-helper disable sudobot.service
+fi
 
 if [ -d /var/sudobot ] && [ -n "$(ls -A /var/sudobot)" ]; then
     echo "Note: /var/sudobot is not empty. It will not be removed."
