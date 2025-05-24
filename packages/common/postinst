@@ -91,6 +91,14 @@ if command -v update-rc.d >/dev/null 2>&1; then
 LOG_FILE="/var/log/sudobot/sudobot.log"
 PID_FILE="/var/run/sudobot.pid"
 
+COLOR_RED=""
+COLOR_RESET=""
+
+if [ -t 1 ]; then
+    COLOR_RED="\033[0;31m"
+    COLOR_RESET="\033[0m"
+fi
+
 start() {
     nohup su -s /bin/sh -c "/usr/bin/sudobot" >> "$LOG_FILE" 2>&1 &
 
@@ -126,20 +134,20 @@ stop() {
 
 case "$1" in
     start)
-        echo "Starting sudobot..."
+        echo " * Starting sudobot"
         start
         ;;
     stop)
-        echo "Stopping sudobot..."
+        echo " * Stopping sudobot"
         stop
 
         if [ $? -ne 0 ]; then
-            echo "sudobot is not running or could not be stopped."
+            echo -e " $COLOR_RED*$COLOR_RESET sudobot is not running or could not be stopped."
             exit $?
         fi
         ;;
     restart)
-        echo "Restarting sudobot..."
+        echo " * Restarting sudobot"
         stop
         start
         ;;
@@ -148,12 +156,14 @@ case "$1" in
             PID="$(cat "$PID_FILE" 2>/dev/null)"
 
             if [ -n "$PID" ] && kill -0 "$PID" >/dev/null 2>&1; then
-                echo "sudobot is running with PID $PID."
+                echo " * sudobot is running with PID $PID."
             else
-                echo "sudobot is not running."
+                echo " $COLOR_RED*$COLOR_RESET sudobot is not running."
+                exit 1
             fi
         else
-            echo "sudobot is not running."
+            echo " $COLOR_RED*$COLOR_RESET sudobot is not running."
+            exit 1
         fi
         ;;
     *)
