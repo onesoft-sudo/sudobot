@@ -127,9 +127,14 @@ jobs:
           tar -cvzf sudobot-release-linux.tar.gz sudobot-release-linux;
           tar -cvzf sudobot-release-darwin.tar.gz sudobot-release-darwin;
 
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
       - name: Create Linux Distro Packages
         id: linux_package
         run: |
+          ./blazew build;
           sudo apt update && sudo apt install -y rpm dpkg-dev;
           sudo hostnamectl set-hostname "github-actions-runner.sudobot.online";
           cd packages;
