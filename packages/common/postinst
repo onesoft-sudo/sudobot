@@ -29,11 +29,6 @@ if [ ! -d /var/log/sudobot ]; then
     mkdir -p /var/log/sudobot
 fi
 
-touch /var/run/sudobot.pid
-
-chown sudobot:sudobot /var/run/sudobot.pid
-chmod 644 /var/run/sudobot.pid
-
 chown -R sudobot:sudobot /var/log/sudobot
 chown -R sudobot:sudobot /var/sudobot
 chown -R sudobot:sudobot /usr/share/sudobot
