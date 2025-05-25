@@ -72,8 +72,6 @@ while [ "$#" -gt 0 ]; do
                     echo "$me: no such file: $1" >&2
                     exit 1
                 fi
-
-                extension="$1"
             else
                 echo "$me: invalid argument: $1" >&2
                 exit 1
@@ -114,7 +112,7 @@ load_env_socket_file_name() {
     return 0
 }
 
-load_extensions() {
+load_extension() {
     local socket_file_env="$(load_env_socket_file_name)"
 
     if [ $? -ne 0 ]; then
@@ -140,7 +138,20 @@ load_extensions() {
     local json="$(jq -n --arg file "$extension" '{type: "LoadExtension", file: $file}')"
     local response
 
-    response="$(echo "$magic""$json""$magic" | nc -U "$socket_file")"
+    nc=nc
+
+    if command -v netcat >/dev/null 2>&1; then
+        nc=netcat
+    fi
+
+    test_out="$($nc 2>&1 | head -n1 | cut -c -9)"
+
+    if [ "$test_out" != "usage: nc" ]; then
+        echo "$me: please install netcat to use this utility" >&2
+        exit 1
+    fi
+
+    response="$(echo "$magic""$json""$magic" | $nc -U "$socket_file")"
 
     if [ $? -ne 0 ]; then
         echo "$me: unable to connect to socket: $socket_file" >&2
@@ -193,4 +204,4 @@ load_extensions() {
     echo "$me: loaded extension: $id [$name] version $version by $author"
 }
 
-load_extensions
+load_extension
