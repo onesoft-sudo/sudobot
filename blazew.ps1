@@ -102,7 +102,7 @@ function Install-Node {
         $ZipPath = Join-Path $BlazeDir "node.zip"
         $NodeDir = Join-Path $BlazeDir "node"
 
-        Start-BitsTransfer -Source $Url -Destination $ZipPath
+        Invoke-WebRequest -Uri $Url -OutFile $ZipPath
 
         if (!$?) {
             Write-Error "Failed to download Node.js from $Url"
