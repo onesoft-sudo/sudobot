@@ -149,11 +149,11 @@ jobs:
           make || exit 1;
           cp *.deb *.rpm ../;
           cd ..;
-          echo "deb_package=$(ls sudobot_*_all.deb)" >> $GITHUB_OUTPUT;
-          echo "deb_nodeps_package=$(ls sudobot-nodeps_*_all.deb)" >> $GITHUB_OUTPUT;
-          echo "rpm_package=$(ls -l sudobot-*.noarch.rpm | awk '{print $9}' | head -n2 | tail -n1)" >> $GITHUB_OUTPUT;
-          echo "rpm_nodeps_package=$(ls sudobot-nodeps-*.noarch.rpm)" >> $GITHUB_OUTPUT;
-          echo "rpm_src_package=$(ls sudobot-*.src.rpm)" >> $GITHUB_OUTPUT;
+          files="";
+          for f in *.deb *.rpm; do
+            files="$files,./$f"
+          done;
+          echo "files=$files" >> $GITHUB_OUTPUT;
 
       - name: Create Release
         id: create_release
@@ -168,12 +168,8 @@ jobs:
           artifactContentType: application/x-gzip
           artifacts: |
             ./sudobot-release-linux.tar.gz,
-            ./sudobot-release-darwin.tar.gz,
-            ./${{ steps.linux_package.outputs.deb_package }},
-            ./${{ steps.linux_package.outputs.deb_nodeps_package }},
-            ./${{ steps.linux_package.outputs.rpm_package }},
-            ./${{ steps.linux_package.outputs.rpm_nodeps_package }},
-            ./${{ steps.linux_package.outputs.rpm_src_package }}
+            ./sudobot-release-darwin.tar.gz
+            ${{ steps.linux_package.outputs.files }}
 
   deploy-staging:
     needs: [build, release]
