@@ -197,7 +197,7 @@ function Install-Bun {
         $ZipPath = Join-Path $BlazeDir "bun.zip"
         $BunDir = Join-Path $BlazeDir "bun"
 
-        Start-BitsTransfer -Source $Url -Destination $ZipPath
+        Invoke-WebRequest -Uri $Url -OutFile $ZipPath
 
         if (!$?) {
             Write-Error "Failed to download Bun from $Url"
