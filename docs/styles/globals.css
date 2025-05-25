@@ -55,6 +55,7 @@ body {
 #article code:not(.no-auto-font) {
     font-family: "JetBrainsMono NFM", "JetBrains Mono", "Ubuntu Mono", "SF Mono", "Consolas", "Droid Mono",
         "Roboto Mono", "Courier New", Courier, monospace;
+    font-variant-ligatures: none;
 }
 
 #article :is(h1, h2, h3, h4, h5, h6):hover .autolink {

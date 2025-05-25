@@ -1,0 +1,113 @@
+---
+title: Installing Linux Packages
+short_name: Linux Packages
+---
+
+import Callout from "@/components/Alerts/Callout";
+
+# Installing Linux Packages
+
+SudoBot is designed to run on Linux servers, and therefore provides packages for various Linux distributions. The following instructions will guide you through the installation process for different package managers.
+
+In most cases, we provide two types of packages: **generic** and **nodeps**. Head over to the [GitHub releases page](https://github.com/onesoft-sudo/sudobot/releases/latest) to find the latest versions of these packages.
+The generic package includes all dependencies required to run SudoBot, while the nodeps package is a minimal version that requires you to install dependencies (e.g Node.js and NPM) manually. The nodeps package is useful for advanced users who want to customize their installation.
+
+<Callout type="info">
+    <p>
+        If you are new to SudoBot, we recommend starting with the generic
+        package, as it includes all necessary dependencies.
+    </p>
+</Callout>
+
+## Debian/Ubuntu
+
+The releases page should include two `.deb` packages: one with dependencies and one without (`nodeps`). Before installing the package, we recommend adding the NodeSource repository to your system, as it provides the latest version of Node.js and NPM. You can do this by running the following commands:
+
+```bash
+curl -fsSL https://deb.nodesource.com/setup_24.x | sudo bash -
+```
+
+Then to install SudoBot, download the `.deb` package from our GitHub releases page and run the following command:
+
+```bash
+sudo apt install ./sudobot_<version>_all.deb
+
+# Or if using the nodeps package
+sudo apt install ./sudobot-nodeps_<version>_all.deb
+```
+
+## Fedora/RHEL/CentOS
+
+The releases page should also include two `.rpm` packages: one with dependencies and one without (`nodeps`). To install the package, download it and run the following command:
+
+```bash
+sudo dnf install ./sudobot-<version>.noarch.rpm
+
+# Or if using the nodeps package
+sudo dnf install ./sudobot-nodeps-<version>.noarch.rpm
+```
+
+## After Installation
+
+### If using systemd
+
+After installing the package, you can start SudoBot by running the following command:
+
+```bash
+sudo systemctl start sudobot
+```
+
+By default, SudoBot will start automatically on system boot. You can check the status of SudoBot with:
+
+```bash
+sudo systemctl status sudobot
+```
+
+You can also enable or disable the service to start on boot with:
+
+```bash
+sudo systemctl enable sudobot
+sudo systemctl disable sudobot
+```
+
+### If using SysV-init style scripts
+
+If you are using SysV-init style scripts, you can start SudoBot with the following command:
+
+```bash
+sudo service sudobot start
+
+# Or
+sudo /etc/init.d/sudobot start
+```
+
+You can check the status of SudoBot with:
+
+```bash
+sudo service sudobot status
+
+# Or
+sudo /etc/init.d/sudobot status
+```
+
+You can also enable or disable the service to start on boot with:
+
+```bash
+sudo update-rc.d sudobot defaults # Enable on boot
+sudo update-rc.d sudobot remove   # Disable on boot
+```
+
+## Manual Management
+
+Run the following to start SudoBot in foreground mode:
+
+```bash
+sudo su sudobot -s /bin/sh -c /usr/bin/sudobot
+```
+
+Press Ctrl+C to stop it.
+
+## Other Distributions
+
+We also distribute `.tar.gz` archives with compiled JavaScript files. These archives can be used on any Linux distribution, but you will need to install Node.js and NPM manually.
+These packages are also available on the releases page.

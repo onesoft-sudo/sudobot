@@ -1,4 +1,7 @@
+packages:
+  - docs
 onlyBuiltDependencies:
   - bcrypt
   - esbuild
   - sharp
+  - unrs-resolver
