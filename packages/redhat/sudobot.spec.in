@@ -35,6 +35,7 @@ mkdir -p %{buildroot}/usr/share/sudobot
 mkdir -p %{buildroot}/usr/lib/systemd/system
 mkdir -p %{buildroot}/usr/bin
 mkdir -p %{buildroot}/etc
+
 cp -ar build %{buildroot}/usr/share/sudobot
 cp -ar config %{buildroot}/usr/share/sudobot
 cp -ar drizzle %{buildroot}/usr/share/sudobot
@@ -42,7 +43,11 @@ cp -a  package.json %{buildroot}/usr/share/sudobot
 cp -a  tsconfig.json %{buildroot}/usr/share/sudobot
 cp -a  LICENSE %{buildroot}/usr/share/sudobot
 cp -a  README.md %{buildroot}/usr/share/sudobot
-cp -ar bin/* %{buildroot}/usr/bin
-chmod 755 %{buildroot}/usr/bin/*
-cp -ar etc/* %{buildroot}/etc
+
+cp -a bin/sudobot %{buildroot}/usr/bin/sudobot
+chmod 755 %{buildroot}/usr/bin/sudobot
+
+cp -ar etc/sudobot %{buildroot}/etc
+chmod 600 %{buildroot}/etc/sudobot/env
+
 cp -a systemd-sudobot.service %{buildroot}/usr/lib/systemd/system/sudobot.service
