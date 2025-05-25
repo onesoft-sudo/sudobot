@@ -56,7 +56,7 @@ $(PACKAGE_NODEP): $(PACKAGE)
 	sed -i "s/@NAME@/sudobot-nodeps/g" "$(BUILD_DIR)/DEBIAN/control"
 	sed -i "s/@CONFLICTS@/sudobot/g" "$(BUILD_DIR)/DEBIAN/control"
 	sed -i "s/@VERSION@/$(VERSION)/g" "$(BUILD_DIR)/DEBIAN/control"
-	sed -i "s/@DEPENDENCIES@/Depends: util-linux/g" "$(BUILD_DIR)/DEBIAN/control"
+	sed -i "s/@DEPENDENCIES@/\nDepends: util-linux/g" "$(BUILD_DIR)/DEBIAN/control"
 	size="$$(du -s "$(BUILD_DIR)" | awk '{print $$1}')" ; sed -i "s/@SIZE@/$$size/g" "$(BUILD_DIR)/DEBIAN/control"
 
 	dpkg-deb --build --root-owner-group "$(BUILD_DIR)" "$(PACKAGE_NODEP)"
