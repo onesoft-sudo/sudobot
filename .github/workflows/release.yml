@@ -37,16 +37,16 @@ jobs:
 #        run: brew install curl pkg-config cairo pango libpng jpeg giflib librsvg
 #        if: matrix.os == 'macos-latest'
 
-      - name: "Install Native Libraries"
-        run: |
-          git clone https://github.com/Cogmasters/concord;
-          cd concord;
-          make;
-          sudo make install;
-          cd ..;
+#      - name: "Install Native Libraries"
+#        run: |
+#          git clone https://github.com/Cogmasters/concord;
+#          cd concord;
+#          make;
+#          sudo make install;
+#          cd ..;
 
-      - name: "Build Native Libraries with GNU Make"
-        run: make
+#      - name: "Build Native Libraries with GNU Make"
+#        run: make
 
       - name: "Build with BlazeBuild"
         run: ./blazew build
@@ -57,8 +57,8 @@ jobs:
           mkdir sudobot-release-${OS};
           mv build sudobot-release-${OS};
           mv src sudobot-release-${OS};
-          mkdir sudobot-release-${OS}/lib;
-          mv lib/build sudobot-release-${OS}/lib/build;
+          # mkdir sudobot-release-${OS}/lib;
+          # mv lib/build sudobot-release-${OS}/lib/build;
           tar -cvzf sudobot-release-${OS}-incomplete.tar.gz sudobot-release-${OS};
 
       - name: Upload Release Artifacts
