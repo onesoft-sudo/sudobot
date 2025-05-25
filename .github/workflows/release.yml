@@ -27,15 +27,15 @@ jobs:
         with:
           node-version: 24.x
 
-      - name: Install Programs, Libraries and Tools (Linux)
-        run: |
-          sudo apt update;
-          sudo apt install build-essential libcurl4 libcurl4-gnutls-dev -y;
-        if: matrix.os == 'ubuntu-latest'
+#      - name: Install Programs, Libraries and Tools (Linux)
+#        run: |
+#          sudo apt update;
+#          sudo apt install build-essential libcurl4 libcurl4-gnutls-dev -y;
+#        if: matrix.os == 'ubuntu-latest'
 
-      - name: Install Programs, Libraries and Tools (macOS)
-        run: brew install curl pkg-config cairo pango libpng jpeg giflib librsvg
-        if: matrix.os == 'macos-latest'
+#      - name: Install Programs, Libraries and Tools (macOS)
+#        run: brew install curl pkg-config cairo pango libpng jpeg giflib librsvg
+#        if: matrix.os == 'macos-latest'
 
       - name: "Install Native Libraries"
         run: |
@@ -142,7 +142,7 @@ jobs:
         id: linux_package
         if: ${{ steps.auto_release.outputs.tag != '' }}
         run: |
-          ./blazew build;
+          cp -r sudobot-release-linux/build .;
           sudo apt update && sudo apt install -y rpm dpkg-dev;
           sudo hostnamectl set-hostname "github-actions-runner.sudobot.online";
           cd packages;
