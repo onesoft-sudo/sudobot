@@ -151,7 +151,7 @@ jobs:
           cd ..;
           echo "deb_package=$(ls sudobot_*_all.deb)" >> $GITHUB_OUTPUT;
           echo "deb_nodeps_package=$(ls sudobot-nodeps_*_all.deb)" >> $GITHUB_OUTPUT;
-          echo "rpm_package=$(ls -l | awk '{print $9}' | head -n2 | tail -n1)" >> $GITHUB_OUTPUT;
+          echo "rpm_package=$(ls -l sudobot-*.noarch.rpm | awk '{print $9}' | head -n2 | tail -n1)" >> $GITHUB_OUTPUT;
           echo "rpm_nodeps_package=$(ls sudobot-nodeps-*.noarch.rpm)" >> $GITHUB_OUTPUT;
           echo "rpm_src_package=$(ls sudobot-*.src.rpm)" >> $GITHUB_OUTPUT;
 
