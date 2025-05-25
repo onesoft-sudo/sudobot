@@ -99,40 +99,48 @@ jobs:
 
       - name: Download Linux Release Artifact
         uses: actions/download-artifact@v4
+        if: ${{ steps.auto_release.outputs.tag != '' }}
         with:
           name: sudobot-release-ubuntu-latest-incomplete
 
       - name: Download macOS Release Artifact
         uses: actions/download-artifact@v4
+        if: ${{ steps.auto_release.outputs.tag != '' }}
         with:
           name: sudobot-release-macos-latest-incomplete
 
       - name: Extract Artifacts
+        if: ${{ steps.auto_release.outputs.tag != '' }}
         run: |
           tar -xvzf sudobot-release-ubuntu-latest-incomplete.tar.gz;
           tar -xvzf sudobot-release-macos-latest-incomplete.tar.gz;
 
       - name: Rename Artifacts
+        if: ${{ steps.auto_release.outputs.tag != '' }}
         run: |
           mv sudobot-release-ubuntu-latest sudobot-release-linux;
           mv sudobot-release-macos-latest sudobot-release-darwin;
 
       - name: Add package.json to Incomplete Artifacts
+        if: ${{ steps.auto_release.outputs.tag != '' }}
         run: |
           cp package.json sudobot-release-linux/package.json;
           cp package.json sudobot-release-darwin/package.json;
 
       - name: Re-package Artifacts
+        if: ${{ steps.auto_release.outputs.tag != '' }}
         run: |
           tar -cvzf sudobot-release-linux.tar.gz sudobot-release-linux;
           tar -cvzf sudobot-release-darwin.tar.gz sudobot-release-darwin;
 
       - uses: oven-sh/setup-bun@v2
+        if: ${{ steps.auto_release.outputs.tag != '' }}
         with:
           bun-version: latest
 
       - name: Create Linux Distro Packages
         id: linux_package
+        if: ${{ steps.auto_release.outputs.tag != '' }}
         run: |
           ./blazew build;
           sudo apt update && sudo apt install -y rpm dpkg-dev;
