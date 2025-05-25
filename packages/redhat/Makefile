@@ -51,8 +51,8 @@ $(PACKAGE):
 
 	cp "$(RPM_DIR)/SPECS/sudobot.spec" "$(RPM_DIR)/SPECS/sudobot-nodeps.spec"
 
-	sed -i "s|@DEPENDENCIES@|Requires:    nodejs >= 22.0.0, nodejs-npm >= 8.0.0|g" $(RPM_DIR)/SPECS/sudobot.spec
-	sed -i "s|@DEPENDENCIES@||g" $(RPM_DIR)/SPECS/sudobot-nodeps.spec
+	sed -i "s|@DEPENDENCIES@|Requires:    nodejs >= 22.0.0, nodejs-npm >= 8.0.0, util-linux|g" $(RPM_DIR)/SPECS/sudobot.spec
+	sed -i "s|@DEPENDENCIES@|Requires:    util-linux|g" $(RPM_DIR)/SPECS/sudobot-nodeps.spec
 
 	sed -i "s|@CONFLICTS@|sudobot-nodeps|g" $(RPM_DIR)/SPECS/sudobot.spec
 	sed -i "s|@CONFLICTS@|sudobot|g" $(RPM_DIR)/SPECS/sudobot-nodeps.spec
