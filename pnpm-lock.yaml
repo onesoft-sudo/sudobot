@@ -101,6 +101,9 @@ importers:
       zod:
         specifier: ^3.25.23
         version: 3.25.23
+      zod-to-json-schema:
+        specifier: ^3.24.5
+        version: 3.24.5(zod@3.25.23)
     devDependencies:
       '@commitlint/cli':
         specifier: 19.8.1
@@ -204,9 +207,6 @@ importers:
       vitest:
         specifier: ^3.1.4
         version: 3.1.4(@types/node@22.15.21)(jiti@2.4.2)(yaml@2.8.0)
-      zod-to-json-schema:
-        specifier: ^3.24.5
-        version: 3.24.5(zod@3.25.23)
 
 packages:
 
