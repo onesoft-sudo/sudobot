@@ -3,15 +3,15 @@
 import { RouterContextProvider } from "@/contexts/RouterContext";
 import { theme } from "@/utils/theme";
 import { ThemeProvider } from "@emotion/react";
-import { NextUIProvider } from "@nextui-org/react";
+import { HeroUIProvider } from "@heroui/react";
 import { PropsWithChildren } from "react";
 
 export default function Providers({ children }: PropsWithChildren) {
     return (
         <ThemeProvider theme={theme}>
-            <NextUIProvider>
+            <HeroUIProvider>
                 <RouterContextProvider>{children}</RouterContextProvider>
-            </NextUIProvider>
+            </HeroUIProvider>
         </ThemeProvider>
     );
 }

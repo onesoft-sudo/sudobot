@@ -3,8 +3,8 @@
 import { getPageInfo } from "@/actions/pageinfo";
 import useActualPathname from "@/hooks/useActualPathname";
 import { branch, GITHUB_REPO_URL } from "@/utils/links";
+import { Tooltip } from "@heroui/react";
 import { Button } from "@mui/material";
-import { Tooltip } from "@nextui-org/react";
 import { formatDistanceToNowStrict } from "date-fns";
 import { useEffect, useState } from "react";
 import { MdEdit } from "react-icons/md";

@@ -1,4 +1,4 @@
-import { CircularProgress } from "@nextui-org/react";
+import { CircularProgress } from "@heroui/react";
 import { useEffect, useState, type FC } from "react";
 import Link from "../Navigation/Link";
 
