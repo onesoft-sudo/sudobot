@@ -24,7 +24,13 @@ $(PACKAGE):
 	
 	mkdir -p "$(BUILD_DIR)/usr/bin"
 	cp -a "$(PROJECT_DIR)/bin/sudobot" "$(BUILD_DIR)/usr/bin/sudobot"
+	cp -a "$(PROJECT_DIR)/bin/sudobotctl" "$(BUILD_DIR)/usr/bin/sudobotctl"
+	cp -a "$(PROJECT_DIR)/bin/ldext" "$(BUILD_DIR)/usr/bin/ldext"
+	cp -a "$(PROJECT_DIR)/bin/lsext" "$(BUILD_DIR)/usr/bin/lsext"
 	chmod 755 "$(BUILD_DIR)/usr/bin/sudobot"
+	chmod 755 "$(BUILD_DIR)/usr/bin/sudobotctl"
+	chmod 755 "$(BUILD_DIR)/usr/bin/ldext"
+	chmod 755 "$(BUILD_DIR)/usr/bin/lsext"
 
 	cp -r "$(COMMON_DIR)/etc" "$(BUILD_DIR)"
 	chmod 600 "$(BUILD_DIR)/etc/sudobot/env"

@@ -29,6 +29,9 @@ cp -a  @PROJECT_DIR@/package.json package.json
 cp -a  @PROJECT_DIR@/LICENSE LICENSE
 cp -a  @PROJECT_DIR@/README.md README.md
 cp -a @PROJECT_DIR@/bin/sudobot bin/sudobot
+cp -a @PROJECT_DIR@/bin/sudobotctl bin/sudobotctl
+cp -a @PROJECT_DIR@/bin/ldext bin/ldext
+cp -a @PROJECT_DIR@/bin/lsext bin/lsext
 cp -ar @TOPDIR@/common/etc etc
 cp -a @TOPDIR@/common/systemd-sudobot.service systemd-sudobot.service
 
@@ -51,7 +54,13 @@ cp -a  LICENSE %{buildroot}/usr/share/sudobot
 cp -a  README.md %{buildroot}/usr/share/sudobot
 
 cp -a bin/sudobot %{buildroot}/usr/bin/sudobot
+cp -a bin/sudobotctl %{buildroot}/usr/bin/sudobotctl
+cp -a bin/ldext %{buildroot}/usr/bin/ldext
+cp -a bin/lsext %{buildroot}/usr/bin/lsext
 chmod 755 %{buildroot}/usr/bin/sudobot
+chmod 755 %{buildroot}/usr/bin/sudobotctl
+chmod 755 %{buildroot}/usr/bin/ldext
+chmod 755 %{buildroot}/usr/bin/lsext
 
 cp -ar etc/sudobot %{buildroot}/etc
 chmod 600 %{buildroot}/etc/sudobot/env
