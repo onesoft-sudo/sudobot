@@ -48,6 +48,9 @@ $(PACKAGE):
 
 	echo "/etc/sudobot/env" >> $(RPM_DIR)/SPECS/sudobot.spec
 	echo "/usr/bin/sudobot" >> $(RPM_DIR)/SPECS/sudobot.spec
+	echo "/usr/bin/sudobotctl" >> $(RPM_DIR)/SPECS/sudobot.spec
+	echo "/usr/bin/ldext" >> $(RPM_DIR)/SPECS/sudobot.spec
+	echo "/usr/bin/lsext" >> $(RPM_DIR)/SPECS/sudobot.spec
 
 	cp "$(RPM_DIR)/SPECS/sudobot.spec" "$(RPM_DIR)/SPECS/sudobot-nodeps.spec"
 
