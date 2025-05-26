@@ -20,6 +20,7 @@ A free and open source Discord bot for moderation purposes.
 
 %build
 rm -rf build config drizzle tsconfig.json package.json LICENSE README.md bin etc systemd-sudobot.service
+mkdir -p bin
 cp -ar @PROJECT_DIR@/build build
 cp -ar @PROJECT_DIR@/config config
 cp -ar @PROJECT_DIR@/drizzle drizzle
@@ -27,7 +28,7 @@ cp -a  @PROJECT_DIR@/tsconfig.json tsconfig.json
 cp -a  @PROJECT_DIR@/package.json package.json
 cp -a  @PROJECT_DIR@/LICENSE LICENSE
 cp -a  @PROJECT_DIR@/README.md README.md
-cp -ar @TOPDIR@/common/bin bin
+cp -a @PROJECT_DIR@/bin/sudobot bin/sudobot
 cp -ar @TOPDIR@/common/etc etc
 cp -a @TOPDIR@/common/systemd-sudobot.service systemd-sudobot.service
 

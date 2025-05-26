@@ -7,10 +7,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
@@ -70,6 +72,8 @@ done
 load_env_socket_file_name() {
     if [ -f "$env_file" ]; then
         local contents=""
+        local socket_file_value
+        local prefix_value
 
         contents="$(cat "$env_file")"
 
@@ -78,8 +82,8 @@ load_env_socket_file_name() {
             return 1
         fi
 
-        local socket_file_value="$(echo "$contents" | grep "SOCKET_FILE" | cut -d'=' -f2- | tr -d '\r\n')"
-        local prefix_value="$(echo "$contents" | grep "SUDO_PREFIX" | cut -d'=' -f2- | tr -d '\r\n')"
+        socket_file_value="$(echo "$contents" | grep "SOCKET_FILE" | cut -d'=' -f2- | tr -d '\r\n')"
+        prefix_value="$(echo "$contents" | grep "SUDO_PREFIX" | cut -d'=' -f2- | tr -d '\r\n')"
 
         if [ -z "$socket_file_value" ]; then
             echo "$prefix_value/sudobot.sock"

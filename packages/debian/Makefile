@@ -22,7 +22,8 @@ $(PACKAGE):
 	chmod 755 "$(BUILD_DIR)/DEBIAN/postinst"
 	chmod 755 "$(BUILD_DIR)/DEBIAN/prerm"
 	
-	cp -r "$(COMMON_DIR)/bin" "$(BUILD_DIR)/usr"
+	mkdir -p "$(BUILD_DIR)/usr/bin"
+	cp -a "$(PROJECT_DIR)/bin/sudobot" "$(BUILD_DIR)/usr/bin/sudobot"
 	chmod 755 "$(BUILD_DIR)/usr/bin/sudobot"
 
 	cp -r "$(COMMON_DIR)/etc" "$(BUILD_DIR)"
