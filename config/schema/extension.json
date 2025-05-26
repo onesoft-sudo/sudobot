@@ -41,10 +41,47 @@
         "readmeFileName": {
             "type": "string",
             "default": "README.md"
+        },
+        "package_data": {
+            "type": "object",
+            "properties": {
+                "version": {
+                    "type": "string"
+                },
+                "author": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "name",
+                                "email"
+                            ],
+                            "additionalProperties": false
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "version"
+            ],
+            "additionalProperties": false
         }
     },
     "required": [
-        "id"
+        "name",
+        "id",
+        "package_data"
     ],
     "additionalProperties": false,
     "$schema": "http://json-schema.org/draft-07/schema#"

@@ -57,6 +57,14 @@ class InterProcessCommunicationService extends Service {
     private readonly extensionManager!: ExtensionManager;
 
     public initializeSocket() {
+        if (process.platform === "win32" || process.platform === "cygwin") {
+            this.application.logger.warn(
+                "Inter-process communication is not supported on Windows or Cygwin."
+            );
+
+            return;
+        }
+
         const socketPath =
             process.env.SOCKET_FILE ??
             (process.getuid

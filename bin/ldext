@@ -24,7 +24,14 @@ dir="$(dirname "$0")"
 env_file="$(dirname "$dir")/.env"
 me="$(basename "$0")"
 
-socket_file="/run/sudobot.sock"
+if [ -n "$(id -u sudobot 2>/dev/null)" ]; then
+    if [ "$(id -u)" != "$(id -u sudobot)" ]; then
+        echo "$me: warning: You are not running this script as the 'sudobot' user. This may cause permission issues." >&2
+        echo "$me: It is recommended to run this script as the 'sudobot' user." >&2
+    fi
+fi
+
+socket_file="/run/user/$(id -u)/sudobot.sock"
 
 if ! command -v nc >/dev/null 2>&1; then
     echo "$me: netcat is not installed" >&2
@@ -100,14 +107,7 @@ load_env_socket_file_name() {
             return 1
         fi
 
-        local socket_file_value="$(echo "$contents" | grep "SOCKET_FILE" | cut -d'=' -f2- | tr -d '\r\n')"
-        local prefix_value="$(echo "$contents" | grep "SUDO_PREFIX" | cut -d'=' -f2- | tr -d '\r\n')"
-
-        if [ -z "$socket_file_value" ]; then
-            echo "$prefix_value/sudobot.sock"
-            return 0
-        fi
-
+        local socket_file_value="$(echo "$contents" | grep -E "^SOCKET_FILE" | cut -d'=' -f2- | tr -d '\r\n')"
         echo "$socket_file_value"
     fi
 

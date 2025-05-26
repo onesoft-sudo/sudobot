@@ -311,6 +311,10 @@
                                             "masskick": {
                                                 "type": "integer",
                                                 "default": 5
+                                            },
+                                            "reaction_clear": {
+                                                "type": "integer",
+                                                "default": 0
                                             }
                                         },
                                         "additionalProperties": false,
@@ -1752,6 +1756,7 @@
                                                                     "message_delete",
                                                                     "message_update",
                                                                     "message_delete_bulk",
+                                                                    "message_reaction_clear",
                                                                     "member_ban_add",
                                                                     "member_mass_ban",
                                                                     "member_mass_unban",
@@ -1768,7 +1773,11 @@
                                                                     "member_role_modification",
                                                                     "system_automod_rule_moderation",
                                                                     "system_user_message_save",
-                                                                    "raid_alert"
+                                                                    "raid_alert",
+                                                                    "member_nickname_modification",
+                                                                    "guild_verification_attempt",
+                                                                    "guild_verification_success",
+                                                                    "guild_verification_not_enough_info"
                                                                 ]
                                                             },
                                                             "minItems": 1
@@ -2156,12 +2165,43 @@
                                         "type": "string",
                                         "enum": [
                                             "channel_interaction",
-                                            "dm_interaction"
+                                            "dm_interaction",
+                                            "channel_static_interaction"
                                         ],
                                         "default": "dm_interaction"
                                     },
                                     "channel": {
                                         "$ref": "#/additionalProperties/anyOf/0/anyOf/1/properties/commands/properties/channels/properties/list/items"
+                                    },
+                                    "message_id_internal": {
+                                        "$ref": "#/additionalProperties/anyOf/0/anyOf/1/properties/commands/properties/channels/properties/list/items"
+                                    },
+                                    "alt_detection": {
+                                        "type": "object",
+                                        "properties": {
+                                            "enabled": {
+                                                "type": "boolean",
+                                                "default": false
+                                            },
+                                            "actions": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "moderationActions": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "$ref": "#/additionalProperties/anyOf/0/anyOf/1/properties/antispam/properties/actions/items"
+                                                        },
+                                                        "default": []
+                                                    },
+                                                    "failVerification": {
+                                                        "type": "boolean",
+                                                        "default": false
+                                                    }
+                                                },
+                                                "additionalProperties": false
+                                            }
+                                        },
+                                        "additionalProperties": false
                                     }
                                 },
                                 "required": [
