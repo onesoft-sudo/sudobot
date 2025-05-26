@@ -1,0 +1,94 @@
+---
+title: "What's new in v11.0 Elegant Eclairs?"
+short_name: "What's new in v11.0?"
+description: "SudoBot v11.0 Elegant Eclairs is a major release with a bunch of new features, fixes and improvements! Read the changes below!"
+openGraph:
+    type: "article"
+    authors:
+        - Ar Rakin
+    images:
+        - url: https://docs.sudobot.onesoftnet.eu.org/sudobot-v11.png
+          height: 515
+          width: 1344
+---
+
+import Callout from "@/components/Alerts/Callout";
+import BlogPageFooter from "@/components/MDX/BlogPageFooter";
+import { Authors } from "@/data/authors";
+import sudobot11 from "@/images/sudobot-v11.png";
+import { DISCORD_URL } from "@/utils/links";
+
+# Introducing SudoBot v11.0 Elegant Eclairs 🍫
+
+<ImageWithSkeleton
+    src={sudobot11.src}
+    alt="SudoBot 11 Branding"
+    width={sudobot11.width}
+    height={sudobot11.height}
+    blurDataURL={sudobot11.blurDataURL}
+    style={{ width: "100%", transform: "scale(0.7)" }}
+    placeholder="blur"
+/>
+
+Hello to all the Superusers out there! We are happy to announce the release of SudoBot v11.0 Elegant Eclairs 🍫 <br />
+This is a major release with a bunch of new features, bug fixes and improvements.
+Here is a list of changes in this release:
+
+## New Features & Improvements
+
+- **API Components v2**: SudoBot now uses the new Discord API Components v2, which is a new components system that allows for more beautiful, flexible and powerful components.
+- **Discord.js v14.19.3**: SudoBot now uses Discord.js v14.19.3, which supports a whole bunch of new API features.
+- **Windows Support**: SudoBot now has experimental support for Windows. While we do not recommend running SudoBot on Windows, it is now possible to run SudoBot on Windows with some limitations.
+- **BlazeBuild v2**: SudoBot now uses BlazeBuild v2, which is a new build system that allows for faster and more efficient builds. It also supports Windows builds, which is a great addition for Windows users.
+- **Packages for Linux systems**: SudoBot now provides packages for Linux systems, which makes it easier to install and run SudoBot on Linux.
+  You can find the packages in the [GitHub releases page](https://github.com/onesoft-sudo/sudobot/releases/latest).
+  We plan to provide package repositories for Debian/Ubuntu, Fedora/CentOS/RHEL in the future, so you can easily install SudoBot using your package manager directly.
+  For now, we do provide `.deb` and `.rpm` packages for Debian/Ubuntu and Fedora/CentOS/RHEL respectively.
+- **Integration with systemd**: We have always and still use `pm2` as the primary process manager. However, in this version we have added support for running SudoBot as a systemd service unit.
+  That means, it is now even easier to run SudoBot on Linux systems. The Linux packages already include a systemd service unit file, so you can easily manage SudoBot using systemd.
+- **Daemonization with `sudobotctl`**: We have introduced a new command line tool for Linux systems, called `sudobotctl`, which allows you to manage SudoBot easily.
+  You can use it to start, stop, restart and check the status of SudoBot. It also supports running SudoBot as a daemon, which means you can run SudoBot in the background without having to keep the terminal open.
+  However, if your Linux distribution supports systemd, we recommend using the systemd service unit file instead of `sudobotctl` for managing SudoBot.
+  This tool is also used as a backbone for the backwards-compatible SysV-init style init script, found in `/etc/init.d/sudobot`.
+- **More Command-line Tools**: For managing extensions more easily, we have added `ldext` and `lsext` commands to load and list extensions respectively.
+  These commands are useful for managing extensions without having to restart the bot.
+
+## Bug Fixes
+
+- **Discord.js Regression**: Since we have upgraded to Discord.js v14.19.3, it has fixed a regression that caused some components of the bot to not work properly.
+
+## Deprecations & Upgrades
+
+- **Node.js v22**: We have deprecated Node.js versions older than v22.0.0. SudoBot now requires Node.js v22.0.0 or higher to run. We recommend using Node.js v24.0.0 or higher for the best performance and stability.
+- **Bun &lt; v1.2**: We have deprecated Bun versions older than v1.2.
+- **TypeScript v5.8.3**: The minimum TypeScript version required to compile SudoBot is now v5.8.3.
+
+## Breaking Changes
+
+- **Extension system rewrite**: We have introduced an experimental rewrite of the extension system, which makes it easy to manage extensions. This is a major change and we are still working on it, so please report any issues you find.
+
+## Changes that affect Developers
+
+- **`pnpm` as the default package manager**: SudoBot now uses `pnpm` as the default package manager instead of `bun`. This does not mean you cannot use `bun` to run SudoBot, however.
+- **BlazeBuild v2**: BlazeBuild v2 has a slightly different build script syntax and configuration. If you are using BlazeBuild to build your extensions, you will need to update your build scripts and configuration to work with BlazeBuild v2.
+  In the updated versions, most of that work is already done for you.
+
+## How to update?
+
+SudoBot v11.0 is **NOT** backwards compatible with v10.0. You can update your bot by running the following command if you use Git:
+
+```bash
+git pull origin main
+```
+
+If you don't use Git, you can download the latest release from the
+[GitHub releases page](https://github.com/onesoft-sudo/sudobot/releases/latest).
+
+## Join our Discord server
+
+If you have any questions or need help with the update, feel free to join our [Discord server](https://sudobot.online/discord).
+
+<BlogPageFooter
+    author={Authors.AR_RAKIN}
+    postedAt="2025-05-26T22:00:00+06:00"
+/>
