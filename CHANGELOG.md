@@ -2,6 +2,11 @@
 
 ### 26-05-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot
+  * **fix:** rebuild packages    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
   * **feat(bin):** add sudobotctl    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
@@ -17,6 +22,10 @@
 
 ### 26-05-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v10.58.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v10.57.19 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
