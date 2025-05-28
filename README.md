@@ -134,4 +134,4 @@ SudoBot is licensed under the [GNU Affero General Public License v3.0](https://g
     The dashboard of SudoBot. Note that the dashboard is not complete yet.
 -   **Old site**: https://sudobot-dashboard-6c7506h5v-osn.vercel.app/
 
-Copyright © 2022-2024 OSN and all the contributors of SudoBot.
+Copyright © 2022-2025 OSN and all the contributors of SudoBot.
