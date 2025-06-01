@@ -15,7 +15,7 @@
     "@heroui/react": "^2.7.8",
     "@mdx-js/loader": "^3.0.1",
     "@mdx-js/react": "^3.0.1",
-    "@mui/material": "^6.0.1",
+    "@mui/material": "^7.1.0",
     "@next/mdx": "^14.2.5",
     "@types/mdx": "^2.0.13",
     "date-fns": "^4.1.0",
