@@ -100,7 +100,7 @@ Please refer to the [Project Management Page](https://github.com/orgs/onesoft-su
 
 ### Mailing Lists
 
-If you prefer communicating over emails or mailing lists, you can send your message at <sudobot@onesoftnet.eu.org>, which is a mailing list specifically for discussions, bug reports and questions about SudoBot.
+If you prefer communicating over emails or mailing lists, you can send your message at <sudobot@lists.onesoftnet.eu.org>, which is a mailing list specifically for discussions, bug reports and questions about SudoBot.
 For more information about this mailing list, check out the [list info](https://lists.onesoftnet.eu.org/mailman/listinfo/sudobot) page. 
 Mail archives for this mailing list can be found [here](https://lists.onesoftnet.eu.org/pipermail/sudobot).
 
