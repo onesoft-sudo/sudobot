@@ -122,10 +122,25 @@ class InterProcessCommunicationService extends Service {
         });
 
         try {
-            await server.listen(socketPath, () => {
-                this.application.logger.info(
-                    `IPC socket listening at ${socketPath}`
-                );
+            await new Promise<void>((resolve, reject) => {
+                server.listen(socketPath, (error) => {
+                    if (error) {
+                        reject(error);
+                        return;
+                    }
+                    
+                    this.application.logger.info(
+                        `IPC socket listening at ${socketPath}`
+                    );
+
+                    resolve();
+                });
+
+                server.once("error", error => {
+                    if (error) {
+                        reject(error);
+                    }
+                });
             });
         }
         catch (error) {
