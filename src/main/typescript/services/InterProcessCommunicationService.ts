@@ -56,7 +56,7 @@ class InterProcessCommunicationService extends Service {
     @Inject("extensionManager")
     private readonly extensionManager!: ExtensionManager;
 
-    public initializeSocket() {
+    public async initializeSocket() {
         if (process.platform === "win32" || process.platform === "cygwin") {
             this.application.logger.warn(
                 "Inter-process communication is not supported on Windows or Cygwin."
