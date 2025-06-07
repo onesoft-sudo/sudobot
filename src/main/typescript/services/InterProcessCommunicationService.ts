@@ -123,7 +123,7 @@ class InterProcessCommunicationService extends Service {
 
         try {
             await new Promise<void>((resolve, reject) => {
-                server.listen(socketPath, (error) => {
+                server.listen(socketPath, (error?: Error) => {
                     if (error) {
                         reject(error);
                         return;
