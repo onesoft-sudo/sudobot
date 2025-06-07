@@ -1,7 +1,76 @@
 # Changelog
 
+### 07-06-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **fix:** type errors    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **fix:** ipc promise handling    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **fix:** invalid use of await    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **fix:** IPC errors    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+
+### 05-06-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore:** update readme    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+
+### 01-06-2025 - [[dependabot[bot]](mailto:49699333+dependabot[bot]@users.noreply.github.com)]
+
+  * **deps(dev):** bump @types/node from 22.15.21 to 22.15.29 in /docs    
+      
+    **Bumps [@types/node](https:** //github.com/DefinitelyTyped/DefinitelyTyped/tree/HEAD/types/node) from 22.15.21 to 22.15.29.  
+    **- [Release notes](https:** //github.com/DefinitelyTyped/DefinitelyTyped/releases)  
+    **- [Commits](https:** //github.com/DefinitelyTyped/DefinitelyTyped/commits/HEAD/types/node)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  "@types/node"  
+    **  dependency-version:**  22.15.29  
+    **  dependency-type:**  direct:development  
+    **  update-type:**  version-update:semver-patch  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+  * **deps(dev):** bump @types/node from 22.15.21 to 22.15.29    
+      
+    **Bumps [@types/node](https:** //github.com/DefinitelyTyped/DefinitelyTyped/tree/HEAD/types/node) from 22.15.21 to 22.15.29.  
+    **- [Release notes](https:** //github.com/DefinitelyTyped/DefinitelyTyped/releases)  
+    **- [Commits](https:** //github.com/DefinitelyTyped/DefinitelyTyped/commits/HEAD/types/node)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  "@types/node"  
+    **  dependency-version:**  22.15.29  
+    **  dependency-type:**  direct:development  
+    **  update-type:**  version-update:semver-patch  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+
+### 28-05-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore:** update readme copyright years    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+
 ### 26-05-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **docs:** rebuild
+  * **docs:** fix pnpm dependency issues    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore:** update version details    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
   * feat!: version 11.0.0    
       
     **BREAKING CHANGE:**  The changes made in the extension manager makes this a breaking change.  
@@ -41,6 +110,10 @@
 
 ### 26-05-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v11.0.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v10.59.0 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
