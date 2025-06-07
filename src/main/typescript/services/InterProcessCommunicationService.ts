@@ -121,11 +121,16 @@ class InterProcessCommunicationService extends Service {
             }
         });
 
-        server.listen(socketPath, () => {
-            this.application.logger.info(
-                `IPC socket listening at ${socketPath}`
-            );
-        });
+        try {
+            await server.listen(socketPath, () => {
+                this.application.logger.info(
+                    `IPC socket listening at ${socketPath}`
+                );
+            });
+        }
+        catch (error) {
+            this.application.logger.error("Error occurred: ", error);
+        }
     }
 
     private handleRequest(request: IPCRequest): Awaitable<IPCResponse> {
