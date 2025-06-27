@@ -1,5 +1,61 @@
 # Changelog
 
+### 27-06-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **fix:** type errors    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **fix:** modstats command not being correctly registered    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+
+### 11-06-2025 - [[dependabot[bot]](mailto:49699333+dependabot[bot]@users.noreply.github.com)]
+
+  * **deps:** bump the npm_and_yarn group across 2 directories with 2 updates    
+      
+    **Bumps the npm_and_yarn group with 1 update in the /docs directory:**  [brace-expansion](https://github.com/juliangruber/brace-expansion).  
+    **Bumps the npm_and_yarn group with 2 updates in the / directory:**  [brace-expansion](https://github.com/juliangruber/brace-expansion) and [pm2](https://github.com/Unitech/pm2).  
+      
+      
+    Updates `brace-expansion` from 1.1.11 to 1.1.12  
+    **- [Release notes](https:** //github.com/juliangruber/brace-expansion/releases)  
+    **- [Commits](https:** //github.com/juliangruber/brace-expansion/compare/1.1.11...v1.1.12)  
+      
+    Updates `brace-expansion` from 1.1.11 to 1.1.12  
+    **- [Release notes](https:** //github.com/juliangruber/brace-expansion/releases)  
+    **- [Commits](https:** //github.com/juliangruber/brace-expansion/compare/1.1.11...v1.1.12)  
+      
+    Updates `pm2` from 6.0.6 to 6.0.7  
+    **- [Release notes](https:** //github.com/Unitech/pm2/releases)  
+    **- [Changelog](https:** //github.com/Unitech/pm2/blob/master/CHANGELOG.md)  
+    **- [Commits](https:** //github.com/Unitech/pm2/compare/v6.0.6...v6.0.7)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  brace-expansion  
+    **  dependency-version:**  1.1.12  
+    **  dependency-type:**  indirect  
+    **  dependency-group:**  npm_and_yarn  
+    **- dependency-name:**  brace-expansion  
+    **  dependency-version:**  1.1.12  
+    **  dependency-type:**  indirect  
+    **  dependency-group:**  npm_and_yarn  
+    **- dependency-name:**  pm2  
+    **  dependency-version:**  6.0.7  
+    **  dependency-type:**  direct:production  
+    **  dependency-group:**  npm_and_yarn  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+
+### 07-06-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.0.4 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 07-06-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
   * **fix:** type errors    
