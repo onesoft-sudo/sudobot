@@ -19,7 +19,7 @@
 
 import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import UserArgument from "@framework/arguments/UserArgument";
-import { Command } from "@framework/commands/Command";
+import { type Buildable, Command } from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
@@ -51,6 +51,15 @@ export default class ModStatsCommand extends Command {
 
     @Inject()
     protected readonly infractionManager!: InfractionManager;
+
+    public override build(): Buildable[] {
+        return [
+            this.buildChatInput()
+                .addUserOption(option =>
+                    option.setName("user").setDescription("The target user.")
+                )
+        ];
+    }
 
     public override async execute(context: Context, args: ModStatsCommandArgs): Promise<void> {
         const user = args.user ?? context.user;
