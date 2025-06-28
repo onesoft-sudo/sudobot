@@ -38,7 +38,7 @@ class ChannelLockManager extends Service {
             "Connect",
             "UseApplicationCommands",
             "CreatePublicThreads",
-            "CreatePrivateThreads
+            "CreatePrivateThreads"
         ].includes(permission);
     }
 
