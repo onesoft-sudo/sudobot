@@ -36,7 +36,9 @@ class ChannelLockManager extends Service {
             "AddReactions",
             "Speak",
             "Connect",
-            "UseApplicationCommands"
+            "UseApplicationCommands",
+            "CreatePublicThreads",
+            "CreatePrivateThreads
         ].includes(permission);
     }
 
@@ -84,7 +86,9 @@ class ChannelLockManager extends Service {
                 AddReactions: false,
                 Speak: false,
                 Connect: false,
-                UseApplicationCommands: false
+                UseApplicationCommands: false,
+                CreatePublicThreads: false,
+                CreatePrivateThreads: false,
             });
         } catch (error) {
             this.application.logger.error(error);
@@ -178,7 +182,15 @@ class ChannelLockManager extends Service {
                 UseApplicationCommands: this.overwritePermissions(
                     channelLock.permissions,
                     "UseApplicationCommands"
-                )
+                ),
+                CreatePublicThreads: this.overwritePermissions(
+                    channelLock.permissions,
+                    "CreatePublicThreads"
+                ),
+                CreatePrivateThreads: this.overwritePermissions(
+                    channelLock.permissions,
+                    "CreatePrivateThreads"
+                ),
             });
         } catch (error) {
             this.application.logger.error(error);
@@ -252,7 +264,9 @@ class ChannelLockManager extends Service {
                     AddReactions: false,
                     Speak: false,
                     Connect: false,
-                    UseApplicationCommands: false
+                    UseApplicationCommands: false,
+                    CreatePublicThreads: false,
+                    CreatePrivateThreads: false,
                 });
             } catch (error) {
                 this.application.logger.error(error);
@@ -356,7 +370,15 @@ class ChannelLockManager extends Service {
                     UseApplicationCommands: this.overwritePermissions(
                         channelLock.permissions,
                         "UseApplicationCommands"
-                    )
+                    ),
+                    CreatePublicThreads: this.overwritePermissions(
+                        channelLock.permissions,
+                        "CreatePublicThreads"
+                    ),
+                    CreatePrivateThreads: this.overwritePermissions(
+                        channelLock.permissions,
+                        "CreatePrivateThreads"
+                    ),
                 });
             } catch (error) {
                 this.application.logger.error(error);
