@@ -68,7 +68,7 @@ class HttpCatCommand extends Command {
 
     public override async execute(context: Context, args: HttpCatCommandArgs): Promise<void> {
         const { status } = args;
-        const url = `https://http.cat/${status}`;
+        const url = `https://http.cat/${status}.jpg`;
 
         try {
             await axios.get(url);
