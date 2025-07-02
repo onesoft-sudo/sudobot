@@ -26,11 +26,11 @@ import type Context from "@framework/commands/Context";
 import axios from "axios";
 
 type HttpDogCommandArgs = {
-    status: number;
+    code: number;
 };
 
 @ArgumentSchema.Definition({
-    names: ["status"],
+    names: ["code"],
     types: [IntegerArgument],
     optional: false,
     errorMessages: [
@@ -67,8 +67,8 @@ class HttpDogCommand extends Command {
     }
 
     public override async execute(context: Context, args: HttpDogCommandArgs): Promise<void> {
-        const { status } = args;
-        const url = `https://http.dog/${status}.jpg`;
+        const { code } = args;
+        const url = `https://http.dog/${code}.jpg`;
 
         try {
             await axios.get(url);
