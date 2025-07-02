@@ -26,11 +26,11 @@ import type Context from "@framework/commands/Context";
 import axios from "axios";
 
 type HttpCatCommandArgs = {
-    status: number;
+    code: number;
 };
 
 @ArgumentSchema.Definition({
-    names: ["status"],
+    names: ["code"],
     types: [IntegerArgument],
     optional: false,
     errorMessages: [
@@ -67,8 +67,8 @@ class HttpCatCommand extends Command {
     }
 
     public override async execute(context: Context, args: HttpCatCommandArgs): Promise<void> {
-        const { status } = args;
-        const url = `https://http.cat/${status}.jpg`;
+        const { code } = args;
+        const url = `https://http.cat/${code}.jpg`;
 
         try {
             await axios.get(url);
