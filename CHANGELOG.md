@@ -1,5 +1,26 @@
 # Changelog
 
+### 02-07-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **fix:** httpcat command    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+
+### 28-06-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.1.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v11.0.8 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v11.0.7 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 28-06-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
   * **fix:** unterminated strings    
@@ -16,17 +37,6 @@
   * **fix:** reword api error strings    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
-
-### 28-06-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
-
-  * **release:** v11.0.8 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-  * **release:** v11.0.7 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
 
 ### 27-06-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
