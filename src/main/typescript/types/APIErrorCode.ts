@@ -18,10 +18,11 @@
  */
 
 export enum APIErrorCode {
-    Success,
-    InvalidCredentials,
-    AccountDisabled,
-    GuildNotFound,
-    Unauthorized,
-    RestrictedGuildAccess
+    Success = "SUCCESS",
+    AuthFailed = "AUTH_FAILED",
+    AccountDisabled = "ACCOUNT_DISABLED",
+    GuildNotFound = "GUILD_NOT_FOUND",
+    Unauthorized = "UNAUTHORIZED",
+    RestrictedGuildAccess = "RESTRICTED_GUILD_ACCESS",
+    Unknown = "UNKNOWN_ERROR"
 }

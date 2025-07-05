@@ -61,7 +61,7 @@ class AuthController extends Controller {
                 body: {
                     success: false,
                     message: "Invalid credentials",
-                    code: APIErrorCode.InvalidCredentials
+                    code: APIErrorCode.AuthFailed
                 }
             });
         }
@@ -76,7 +76,8 @@ class AuthController extends Controller {
                 status: 403,
                 body: {
                     success: false,
-                    message: "This account is disabled. Please contact an administrator.",
+                    message:
+                        "This account is disabled. Please contact an administrator.",
                     code: APIErrorCode.AccountDisabled
                 }
             });
@@ -94,13 +95,17 @@ class AuthController extends Controller {
             );
         }
 
-        const guilds: APIGuild[] = [];
+        const guilds: Pick<APIGuild, "id" | "name" | "icon">[] = [];
 
         for (const guildId of user.guilds) {
             const guild = this.application.client.guilds.cache.get(guildId);
 
             if (guild) {
-                guilds.push(guild.toJSON() as APIGuild);
+                guilds.push({
+                    id: guild.id,
+                    name: guild.name,
+                    icon: guild.icon
+                });
             }
         }
 
@@ -132,7 +137,10 @@ class AuthController extends Controller {
         if (!code) {
             return new Response({
                 status: 400,
-                body: { error: "Invalid request", code: APIErrorCode.InvalidCredentials }
+                body: {
+                    error: "Invalid request",
+                    code: APIErrorCode.AuthFailed
+                }
             });
         }
 
@@ -146,16 +154,24 @@ class AuthController extends Controller {
                 scope: "identify guilds"
             }).toString();
 
-            const tokenResponse = await undici.request("https://discord.com/api/oauth2/token", {
-                method: "POST",
-                body,
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
+            const tokenResponse = await undici.request(
+                "https://discord.com/api/oauth2/token",
+                {
+                    method: "POST",
+                    body,
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    }
                 }
-            });
+            );
 
-            if (tokenResponse.statusCode > 299 || tokenResponse.statusCode < 200) {
-                throw new Error(`Failed to get token: ${tokenResponse.statusCode}`);
+            if (
+                tokenResponse.statusCode > 299 ||
+                tokenResponse.statusCode < 200
+            ) {
+                throw new Error(
+                    `Failed to get token: ${tokenResponse.statusCode}`
+                );
             }
 
             const oauthData = await tokenResponse.body.json();
@@ -164,19 +180,33 @@ class AuthController extends Controller {
                 throw new Error("Invalid token response");
             }
 
-            const { access_token, token_type } = oauthData as Record<string, string>;
-            const userResponse = await undici.request("https://discord.com/api/users/@me", {
-                method: "GET",
-                headers: {
-                    Authorization: `${token_type} ${access_token}`
+            const { access_token, token_type } = oauthData as Record<
+                string,
+                string
+            >;
+            const userResponse = await undici.request(
+                "https://discord.com/api/users/@me",
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `${token_type} ${access_token}`
+                    }
                 }
-            });
+            );
 
-            if (userResponse.statusCode > 299 || userResponse.statusCode < 200) {
-                throw new Error(`Failed to get user info: ${userResponse.statusCode}`);
+            if (
+                userResponse.statusCode > 299 ||
+                userResponse.statusCode < 200
+            ) {
+                throw new Error(
+                    `Failed to get user info: ${userResponse.statusCode}`
+                );
             }
 
-            const userData = (await userResponse.body.json()) as Record<string, string>;
+            const userData = (await userResponse.body.json()) as Record<
+                string,
+                string
+            >;
 
             if (typeof userData !== "object" || !userData) {
                 throw new Error("Invalid user response");
@@ -201,7 +231,7 @@ class AuthController extends Controller {
                     status: 400,
                     body: {
                         error: "We're unable to log you in.",
-                        code: APIErrorCode.InvalidCredentials,
+                        code: APIErrorCode.AuthFailed,
                         success: false
                     }
                 });
@@ -241,7 +271,7 @@ class AuthController extends Controller {
             status: 403,
             body: {
                 error: "We're unable to log you in.",
-                code: APIErrorCode.InvalidCredentials,
+                code: APIErrorCode.AuthFailed,
                 success: false
             }
         });
