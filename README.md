@@ -85,7 +85,6 @@ Thanks to all the active and indirect contributors!
 -   [cookieauth](https://github.com/cookieauth)
 -   [dicoderin](https://github.com/dicoderin)
 -   [GuynnR](https://github.com/GuynnR)
--   Hana (A Discord User)
 -   [Kars](https://github.com/kars1996)
 -   [killerclaws12](https://github.com/killerclaws12)
 -   [MonzterDev](https://github.com/MonzterDev)
