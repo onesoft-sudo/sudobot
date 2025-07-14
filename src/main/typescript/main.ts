@@ -22,10 +22,15 @@ import "module-alias/register";
 import "reflect-metadata";
 
 import Application from "@framework/app/Application";
+import { Logger } from "@framework/log/Logger";
 import { isDevelopmentMode } from "@framework/utils/utils";
+import { setEnvData } from "@main/env/env";
 import { version } from "@root/package.json";
+import type { DotenvParseOutput } from "dotenv";
 import path from "path";
 import DiscordKernel from "./core/DiscordKernel";
+
+const logger = new Logger("preboot", true);
 
 async function main() {
     if (isDevelopmentMode()) {
@@ -33,6 +38,48 @@ async function main() {
     }
 
     Application.setupGlobals();
+
+    if (process.send) {
+        await new Promise<void>((resolve, reject) => {
+            process.once("message", message => {
+                const messageData =
+                    message && typeof message === "object"
+                        ? (message as {
+                              type: string;
+                              data?: unknown;
+                          })
+                        : null;
+
+                if (messageData?.type === "SECRETS") {
+                    const data = messageData?.data as DotenvParseOutput;
+
+                    if (!data) {
+                        process.send?.({ type: "SECRETS_ACK" });
+                        resolve();
+                        return;
+                    }
+
+                    setEnvData({
+                        ...process.env,
+                        ...data
+                    } as unknown as Record<string, string | undefined>);
+
+                    for (const key in data) {
+                        process.env[key] = data[key];
+                    }
+
+                    logger.success("Successfully loaded environment data");
+                    process.send?.({ type: "SECRETS_ACK" });
+                    resolve();
+                    return;
+                }
+
+                reject(new Error("Invalid IPC message received"));
+            });
+
+            process.send?.({ type: "READY" });
+        });
+    }
 
     const rootDirectoryPath = path.resolve(__dirname);
     const projectRootDirectoryPath = path.resolve(__dirname, "../../..");
