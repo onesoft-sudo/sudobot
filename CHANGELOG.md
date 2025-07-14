@@ -1,7 +1,67 @@
 # Changelog
 
+### 14-07-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot
+  * **feat:** lightweight process manager    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 12-07-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore:** update 0007_verification_guilds.sql    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **chore:** update journal    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **deps(dev):** bump prettier from 3.5.3 to 3.6.2 in /blazebuild    
+      
+      
+  * **chore:** update readme    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+
+### 07-07-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **chore:** update todo file    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **chore:** update readme    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **deps:** bump glob from 11.0.2 to 11.0.3 in /blazebuild (#348)    
+      
+      
+  * **deps:** bump next from 14.2.29 to 14.2.30 in /docs in the npm_and_yarn group across 1 directory (#346)    
+      
+      
+
+### 07-07-2025 - [[dependabot[bot]](mailto:49699333+dependabot[bot]@users.noreply.github.com)]
+
+  * **deps:** bump glob from 11.0.2 to 11.0.3 in /blazebuild    
+      
+    **Bumps [glob](https:** //github.com/isaacs/node-glob) from 11.0.2 to 11.0.3.  
+    **- [Changelog](https:** //github.com/isaacs/node-glob/blob/main/changelog.md)  
+    **- [Commits](https:** //github.com/isaacs/node-glob/compare/v11.0.2...v11.0.3)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  glob  
+    **  dependency-version:**  11.0.3  
+    **  dependency-type:**  direct:production  
+    **  update-type:**  version-update:semver-patch  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+
 ### 02-07-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v11.1.3 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v11.1.2 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
@@ -22,6 +82,25 @@
   * **fix:** httpcat command    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+
+### 01-07-2025 - [[dependabot[bot]](mailto:49699333+dependabot[bot]@users.noreply.github.com)]
+
+  * **deps(dev):** bump prettier from 3.5.3 to 3.6.2 in /blazebuild    
+      
+    **Bumps [prettier](https:** //github.com/prettier/prettier) from 3.5.3 to 3.6.2.  
+    **- [Release notes](https:** //github.com/prettier/prettier/releases)  
+    **- [Changelog](https:** //github.com/prettier/prettier/blob/main/CHANGELOG.md)  
+    **- [Commits](https:** //github.com/prettier/prettier/compare/3.5.3...3.6.2)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  prettier  
+    **  dependency-version:**  3.6.2  
+    **  dependency-type:**  direct:development  
+    **  update-type:**  version-update:semver-minor  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
 
 ### 28-06-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
@@ -71,6 +150,28 @@
   * **fix:** modstats command not being correctly registered    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+
+### 15-06-2025 - [[dependabot[bot]](mailto:49699333+dependabot[bot]@users.noreply.github.com)]
+
+  * **deps:** bump next in /docs in the npm_and_yarn group across 1 directory    
+      
+    **Bumps the npm_and_yarn group with 1 update in the /docs directory:**  [next](https://github.com/vercel/next.js).  
+      
+      
+    Updates `next` from 14.2.29 to 14.2.30  
+    **- [Release notes](https:** //github.com/vercel/next.js/releases)  
+    **- [Changelog](https:** //github.com/vercel/next.js/blob/canary/release.js)  
+    **- [Commits](https:** //github.com/vercel/next.js/compare/v14.2.29...v14.2.30)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  next  
+    **  dependency-version:**  14.2.30  
+    **  dependency-type:**  direct:production  
+    **  dependency-group:**  npm_and_yarn  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
 
 ### 11-06-2025 - [[dependabot[bot]](mailto:49699333+dependabot[bot]@users.noreply.github.com)]
 
