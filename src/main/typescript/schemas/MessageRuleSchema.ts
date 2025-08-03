@@ -142,7 +142,7 @@ export const NSFWFilter = z
                 porn: z.number().min(0).max(1).default(0.35),
                 sexy: z.number().min(0).max(1).default(0.8)
             })
-            .default({})
+            .prefault({})
     })
     .describe("Experimental. Use at your own risk.");
 

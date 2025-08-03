@@ -47,7 +47,8 @@ class ConfigController extends Controller {
 
         if (!request.user?.guilds.includes(guild.id)) {
             return this.response(403, {
-                message: "You do not have permission to view this guild's configuration."
+                message:
+                    "You do not have permission to view this guild's configuration."
             });
         }
 
@@ -71,7 +72,8 @@ class ConfigController extends Controller {
         if (!request.user?.guilds.includes(guild.id)) {
             return this.response(403, {
                 success: false,
-                message: "You do not have permission to update this guild's configuration."
+                message:
+                    "You do not have permission to update this guild's configuration."
             });
         }
 
@@ -100,7 +102,13 @@ class ConfigController extends Controller {
             return this.response(400, {
                 success: false,
                 message: "Invalid configuration provided.",
-                errors: error instanceof ZodError ? error.errors : undefined
+                errors:
+                    error instanceof ZodError
+                        ? {
+                              message: error.message,
+                              issues: error.issues
+                          }
+                        : undefined
             });
         }
 

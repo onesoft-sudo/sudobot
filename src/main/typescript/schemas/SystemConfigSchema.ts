@@ -25,7 +25,9 @@ type ApplicationActivityType = keyof typeof ActivityType;
 export const SystemConfigSchema = z.object({
     $schema: z.string().optional(),
     sync_emojis: z.boolean().default(true),
-    emoji_resolve_strategy: z.enum(["both", "home_guild", "application"]).default("both"),
+    emoji_resolve_strategy: z
+        .enum(["both", "home_guild", "application"])
+        .default("both"),
     system_admins: z.array(z.string()).default([]),
     snippets: z
         .object({
@@ -59,9 +61,11 @@ export const SystemConfigSchema = z.object({
             global_disabled: z.array(z.string()).default([]),
             system_banned_users: z.array(z.string()).default([])
         })
-        .default({}),
+        .prefault({}),
     enable_file_filter: z.boolean().default(false),
-    command_permission_mode: z.enum(["ignore", "overwrite", "check"]).default("overwrite"),
+    command_permission_mode: z
+        .enum(["ignore", "overwrite", "check"])
+        .default("overwrite"),
     api: z
         .object({
             enabled: z.boolean().default(true),
@@ -75,15 +79,16 @@ export const SystemConfigSchema = z.object({
                     "error"
                 ])
                 .default("operational"),
-            server_status_description: z.string().optional(),
-            server_status_started_at: z.string().pipe(z.coerce.date()).or(z.date()).optional()
+            server_status_description: z.string().optional()
         })
-        .default({}),
+        .prefault({}),
     extensions: z
         .object({
-            default_mode: z.enum(["enable_all", "disable_all"]).default("enable_all")
+            default_mode: z
+                .enum(["enable_all", "disable_all"])
+                .default("enable_all")
         })
-        .default({}),
+        .prefault({}),
     log_server: z
         .object({
             enabled: z.boolean().default(false),
@@ -93,7 +98,7 @@ export const SystemConfigSchema = z.object({
     logging: z
         .object({
             enabled: z.boolean().default(false),
-            webhook_url: z.string().url()
+            webhook_url: z.url()
         })
         .optional(),
     statistics: z

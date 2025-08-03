@@ -40,7 +40,9 @@ export const AIAutoModSchema = z.object({
             unsubstantial: z.number().int().default(7)
         })
         .optional(),
-    exception_regex_patterns: z.array(z.string().or(z.tuple([z.string(), z.string()]))).default([]),
+    exception_regex_patterns: z
+        .array(z.string().or(z.tuple([z.string(), z.string()])))
+        .default([]),
     evaluate_after_attempts: z.number().int().default(-1),
     evaluation_cache_expires_in: z.number().int().default(3_000),
     actions: z.array(ModerationActionSchema).default([]),
@@ -55,7 +57,7 @@ export const AIAutoModSchema = z.object({
                         .or(z.literal("*")),
                     z.array(ModerationActionSchema)
                 )
-                .default({
+                .prefault({
                     12: [
                         {
                             type: "mute",

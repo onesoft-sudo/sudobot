@@ -1,4 +1,5 @@
 {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
     "properties": {
         "main": {
@@ -39,8 +40,8 @@
             "type": "string"
         },
         "readmeFileName": {
-            "type": "string",
-            "default": "README.md"
+            "default": "README.md",
+            "type": "string"
         },
         "package_data": {
             "type": "object",
@@ -81,8 +82,8 @@
     "required": [
         "name",
         "id",
+        "readmeFileName",
         "package_data"
     ],
-    "additionalProperties": false,
-    "$schema": "http://json-schema.org/draft-07/schema#"
+    "additionalProperties": false
 }

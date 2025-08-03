@@ -1,45 +1,50 @@
 {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
     "properties": {
         "$schema": {
             "type": "string"
         },
         "sync_emojis": {
-            "type": "boolean",
-            "default": true
+            "default": true,
+            "type": "boolean"
         },
         "emoji_resolve_strategy": {
+            "default": "both",
             "type": "string",
             "enum": [
                 "both",
                 "home_guild",
                 "application"
-            ],
-            "default": "both"
+            ]
         },
         "system_admins": {
+            "default": [],
             "type": "array",
             "items": {
                 "type": "string"
-            },
-            "default": []
+            }
         },
         "snippets": {
             "type": "object",
             "properties": {
                 "save_attachments": {
-                    "type": "boolean",
-                    "default": false
+                    "default": false,
+                    "type": "boolean"
                 }
             },
             "additionalProperties": false
         },
         "restart_exit_code": {
+            "default": 1,
             "type": "integer",
-            "default": 1
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
         },
         "trust_proxies": {
-            "type": "integer"
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
         },
         "presence": {
             "type": "object",
@@ -80,68 +85,78 @@
             "type": "object",
             "properties": {
                 "mention_prefix": {
-                    "type": "boolean",
-                    "default": true
+                    "default": true,
+                    "type": "boolean"
                 },
                 "groups": {
+                    "default": {},
                     "type": "object",
+                    "propertyNames": {
+                        "type": "string"
+                    },
                     "additionalProperties": {
                         "type": "array",
                         "items": {
                             "type": "string"
                         }
-                    },
-                    "default": {}
+                    }
                 },
                 "register_application_commands_on_boot": {
+                    "default": "auto_global",
                     "type": "string",
                     "enum": [
                         "always_global",
                         "guild",
                         "none",
                         "auto_global"
-                    ],
-                    "default": "auto_global"
+                    ]
                 },
                 "global_disabled": {
+                    "default": [],
                     "type": "array",
                     "items": {
                         "type": "string"
-                    },
-                    "default": []
+                    }
                 },
                 "system_banned_users": {
+                    "default": [],
                     "type": "array",
                     "items": {
                         "type": "string"
-                    },
-                    "default": []
+                    }
                 }
             },
-            "additionalProperties": false,
-            "default": {}
+            "required": [
+                "mention_prefix",
+                "groups",
+                "register_application_commands_on_boot",
+                "global_disabled",
+                "system_banned_users"
+            ],
+            "additionalProperties": false
         },
         "enable_file_filter": {
-            "type": "boolean",
-            "default": false
+            "default": false,
+            "type": "boolean"
         },
         "command_permission_mode": {
+            "default": "overwrite",
             "type": "string",
             "enum": [
                 "ignore",
                 "overwrite",
                 "check"
-            ],
-            "default": "overwrite"
+            ]
         },
         "api": {
             "type": "object",
             "properties": {
                 "enabled": {
-                    "type": "boolean",
-                    "default": true
+                    "default": true,
+                    "type": "boolean"
                 },
                 "server_status": {
+                    "default": "operational",
                     "type": "string",
                     "enum": [
                         "operational",
@@ -150,70 +165,59 @@
                         "major_outage",
                         "maintenance",
                         "error"
-                    ],
-                    "default": "operational"
+                    ]
                 },
                 "server_status_description": {
                     "type": "string"
-                },
-                "server_status_started_at": {
-                    "anyOf": [
-                        {
-                            "allOf": [
-                                {
-                                    "type": "string"
-                                },
-                                {
-                                    "type": "string",
-                                    "format": "date-time"
-                                }
-                            ]
-                        },
-                        {
-                            "type": "string",
-                            "format": "date-time"
-                        }
-                    ]
                 }
             },
-            "additionalProperties": false,
-            "default": {}
+            "required": [
+                "enabled",
+                "server_status"
+            ],
+            "additionalProperties": false
         },
         "extensions": {
             "type": "object",
             "properties": {
                 "default_mode": {
+                    "default": "enable_all",
                     "type": "string",
                     "enum": [
                         "enable_all",
                         "disable_all"
-                    ],
-                    "default": "enable_all"
+                    ]
                 }
             },
-            "additionalProperties": false,
-            "default": {}
+            "required": [
+                "default_mode"
+            ],
+            "additionalProperties": false
         },
         "log_server": {
             "type": "object",
             "properties": {
                 "enabled": {
-                    "type": "boolean",
-                    "default": false
+                    "default": false,
+                    "type": "boolean"
                 },
                 "auto_start": {
-                    "type": "boolean",
-                    "default": false
+                    "default": false,
+                    "type": "boolean"
                 }
             },
+            "required": [
+                "enabled",
+                "auto_start"
+            ],
             "additionalProperties": false
         },
         "logging": {
             "type": "object",
             "properties": {
                 "enabled": {
-                    "type": "boolean",
-                    "default": false
+                    "default": false,
+                    "type": "boolean"
                 },
                 "webhook_url": {
                     "type": "string",
@@ -221,6 +225,7 @@
                 }
             },
             "required": [
+                "enabled",
                 "webhook_url"
             ],
             "additionalProperties": false
@@ -229,27 +234,46 @@
             "type": "object",
             "properties": {
                 "enabled": {
-                    "type": "boolean",
-                    "default": false
+                    "default": false,
+                    "type": "boolean"
                 },
                 "sync_delay": {
+                    "default": 60000,
                     "type": "integer",
-                    "default": 60000
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
                 }
             },
+            "required": [
+                "enabled",
+                "sync_delay"
+            ],
             "additionalProperties": false
         },
         "infractions": {
             "type": "object",
             "properties": {
                 "store_attachments": {
-                    "type": "boolean",
-                    "default": true
+                    "default": true,
+                    "type": "boolean"
                 }
             },
+            "required": [
+                "store_attachments"
+            ],
             "additionalProperties": false
         }
     },
-    "additionalProperties": false,
-    "$schema": "http://json-schema.org/draft-07/schema#"
+    "required": [
+        "sync_emojis",
+        "emoji_resolve_strategy",
+        "system_admins",
+        "restart_exit_code",
+        "commands",
+        "enable_file_filter",
+        "command_permission_mode",
+        "api",
+        "extensions"
+    ],
+    "additionalProperties": false
 }

@@ -38,7 +38,10 @@ class SpamModerationService
     extends Service
     implements MessageAutoModServiceContract, HasEventListeners
 {
-    private readonly cache = new Collection<`${Snowflake}_${Snowflake}`, Cache>();
+    private readonly cache = new Collection<
+        `${Snowflake}_${Snowflake}`,
+        Cache
+    >();
 
     @Inject("configManager")
     private readonly configurationManager!: ConfigurationManager;
@@ -82,11 +85,11 @@ class SpamModerationService
             return;
         }
 
-        const includes = config.channels.list.includes(message.channelId);
+        const includes = config.channels?.list.includes(message.channelId);
 
         if (
-            (config.channels.mode === "exclude" && includes) ||
-            (config.channels.mode === "include" && !includes)
+            (config.channels?.mode === "exclude" && includes) ||
+            (config.channels?.mode === "include" && !includes)
         ) {
             return;
         }
@@ -105,7 +108,9 @@ class SpamModerationService
         }
 
         const config = this.configFor(message.guildId!)!;
-        const cache = this.cache.get(`${message.guildId!}_${message.author.id}`) ?? ({} as Cache);
+        const cache =
+            this.cache.get(`${message.guildId!}_${message.author.id}`) ??
+            ({} as Cache);
 
         cache.timestamps ??= [];
         cache.timestamps.push(Date.now());
@@ -113,9 +118,12 @@ class SpamModerationService
         if (!cache.timeout) {
             cache.timeout = setTimeout(() => {
                 const delayedInfo =
-                    this.cache.get(`${message.guildId!}_${message.author.id}`) ?? ({} as Cache);
+                    this.cache.get(
+                        `${message.guildId!}_${message.author.id}`
+                    ) ?? ({} as Cache);
                 const timestamps = delayedInfo.timestamps.filter(
-                    timestamp => (config?.timeframe ?? 0) + timestamp >= Date.now()
+                    timestamp =>
+                        (config?.timeframe ?? 0) + timestamp >= Date.now()
                 );
 
                 if (timestamps.length >= (config?.limit ?? 0)) {
@@ -133,13 +141,21 @@ class SpamModerationService
         const config = this.configFor(message.guildId!)!;
         const actions = config.actions.map(action => ({
             ...action,
-            reason: "reason" in action && action.reason ? "Spam detected" : undefined
+            reason:
+                "reason" in action && action.reason
+                    ? "Spam detected"
+                    : undefined
         }));
 
-        await this.moderationActionService.takeActions(message.guild!, message.member!, actions, {
-            channel: message.channel as TextChannel,
-            message
-        });
+        await this.moderationActionService.takeActions(
+            message.guild!,
+            message.member!,
+            actions,
+            {
+                channel: message.channel as TextChannel,
+                message
+            }
+        );
     }
 }
 

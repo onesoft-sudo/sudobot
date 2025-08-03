@@ -19,6 +19,6 @@
 
 import { z } from "zod";
 
-export const zSnowflake = z.custom<string>(data => {
-    return typeof data === "string" && /^\d{16,22}$/.test(data);
-});
+export const zSnowflake = z
+    .string()
+    .regex(/^\d{16,22}$/, "Not a valid snowflake");

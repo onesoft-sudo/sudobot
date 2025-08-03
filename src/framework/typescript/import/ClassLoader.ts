@@ -59,7 +59,10 @@ class ClassLoader {
         return Container.getInstance();
     }
 
-    private async iterateDirectoryRecursively(root: string, rootArray?: string[]) {
+    private async iterateDirectoryRecursively(
+        root: string,
+        rootArray?: string[]
+    ) {
         const filesAndDirectories = await readdir(root);
         const files: string[] = [];
 
@@ -68,7 +71,10 @@ class ClassLoader {
             const stat = await lstat(filepath);
 
             if (stat.isDirectory()) {
-                await this.iterateDirectoryRecursively(filepath, rootArray ?? files);
+                await this.iterateDirectoryRecursively(
+                    filepath,
+                    rootArray ?? files
+                );
                 continue;
             }
 
@@ -80,7 +86,9 @@ class ClassLoader {
 
     public static getSystemClassLoader() {
         if (!this.instance) {
-            this.instance = new ClassLoader(Container.getInstance().resolveByClass(Application));
+            this.instance = new ClassLoader(
+                Container.getInstance().resolveByClass(Application)
+            );
         }
 
         return this.instance;
@@ -138,13 +146,18 @@ class ClassLoader {
     }
 
     public async loadClass(resolvable: File | string): Promise<Class<unknown>> {
-        const classPath = typeof resolvable === "string" ? resolvable : resolvable.path;
+        const classPath =
+            typeof resolvable === "string" ? resolvable : resolvable.path;
 
         if (!classPath.endsWith(".ts") && !classPath.endsWith(".js")) {
-            throw new InvalidClassFileError("Class file must be a TypeScript or JavaScript file");
+            throw new InvalidClassFileError(
+                "Class file must be a TypeScript or JavaScript file"
+            );
         }
 
-        const { default: classObject } = (await import(classPath)) as DefaultExport<Class<unknown>>;
+        const { default: classObject } = (await import(
+            classPath
+        )) as DefaultExport<Class<unknown>>;
 
         if (!classObject) {
             throw new NoClassDefFoundError("No class definition found in file");
@@ -153,12 +166,17 @@ class ClassLoader {
         return classObject;
     }
 
-    public async loadClassesFromDirectory(directory: string): Promise<Array<Class<unknown>>> {
+    public async loadClassesFromDirectory(
+        directory: string
+    ): Promise<Array<Class<unknown>>> {
         const classFiles = await this.iterateDirectoryRecursively(directory);
         const results = [];
 
         for (const file of classFiles) {
-            if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
+            if (
+                (!file.endsWith(".ts") && !file.endsWith(".js")) ||
+                file.endsWith(".d.ts")
+            ) {
                 continue;
             }
 
@@ -177,7 +195,10 @@ class ClassLoader {
         );
 
         for (const file of controllerFiles) {
-            if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
+            if (
+                (!file.endsWith(".ts") && !file.endsWith(".js")) ||
+                file.endsWith(".d.ts")
+            ) {
                 continue;
             }
 
@@ -186,20 +207,30 @@ class ClassLoader {
     }
 
     public async loadController(filepath: string, router: Router) {
-        const { default: ControllerClass } = (await import(filepath)) as DefaultExport<
-            Class<Controller, [Application]>
-        >;
-        const controller = Container.getInstance().resolveByClass(ControllerClass);
+        const { default: ControllerClass } = (await import(
+            filepath
+        )) as DefaultExport<Class<Controller, [Application]>>;
+        const controller =
+            Container.getInstance().resolveByClass(ControllerClass);
         this.loadEventsFromMetadata(controller, true);
-        this.application.service("apiServer").loadController(controller, ControllerClass, router);
-        this.application.logger.info("Loaded Controller: ", ControllerClass.name);
+        this.application
+            .service("apiServer")
+            .loadController(controller, ControllerClass, router);
+        this.application.logger.info(
+            "Loaded Controller: ",
+            ControllerClass.name
+        );
     }
 
     public async loadEvents(directory = path.resolve(__dirname, "../events")) {
-        const eventListenerFiles = await this.iterateDirectoryRecursively(directory);
+        const eventListenerFiles =
+            await this.iterateDirectoryRecursively(directory);
 
         for (const file of eventListenerFiles) {
-            if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
+            if (
+                (!file.endsWith(".ts") && !file.endsWith(".js")) ||
+                file.endsWith(".d.ts")
+            ) {
                 continue;
             }
 
@@ -208,9 +239,9 @@ class ClassLoader {
     }
 
     public async loadEvent(filepath: string) {
-        const { default: EventListenerClass } = (await import(filepath)) as DefaultExport<
-            Class<EventListener, [Application]>
-        >;
+        const { default: EventListenerClass } = (await import(
+            filepath
+        )) as DefaultExport<Class<EventListener, [Application]>>;
         const listener = this.getContainer().resolveByClass(EventListenerClass);
         await listener.onInitialize?.();
         this.application
@@ -219,11 +250,17 @@ class ClassLoader {
         this.application.logger.info("Loaded Event: ", listener.name);
     }
 
-    public async loadPermissions(directory = path.resolve(__dirname, "../permissions")) {
-        const eventListenerFiles = await this.iterateDirectoryRecursively(directory);
+    public async loadPermissions(
+        directory = path.resolve(__dirname, "../permissions")
+    ) {
+        const eventListenerFiles =
+            await this.iterateDirectoryRecursively(directory);
 
         for (const file of eventListenerFiles) {
-            if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
+            if (
+                (!file.endsWith(".ts") && !file.endsWith(".js")) ||
+                file.endsWith(".d.ts")
+            ) {
                 continue;
             }
 
@@ -232,23 +269,30 @@ class ClassLoader {
     }
 
     public async loadPermission(filepath: string) {
-        const { default: PermissionClass } = (await import(filepath)) as DefaultExport<
-            typeof Permission
-        >;
+        const { default: PermissionClass } = (await import(
+            filepath
+        )) as DefaultExport<typeof Permission>;
         const permission = await PermissionClass.getInstance<Permission>();
         this.application.serviceManager
             .getServiceByName("permissionManager")
             .loadPermission(permission);
-        this.application.logger.info("Loaded Permission Handler: ", permission.toString());
+        this.application.logger.info(
+            "Loaded Permission Handler: ",
+            permission.toString()
+        );
     }
 
     public async loadServicesFromDirectory(
         servicesDirectory = path.resolve(__dirname, "../services")
     ) {
-        const serviceFiles = await this.iterateDirectoryRecursively(servicesDirectory);
+        const serviceFiles =
+            await this.iterateDirectoryRecursively(servicesDirectory);
 
         for (const file of serviceFiles) {
-            if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
+            if (
+                (!file.endsWith(".ts") && !file.endsWith(".js")) ||
+                file.endsWith(".d.ts")
+            ) {
                 continue;
             }
 
@@ -257,15 +301,21 @@ class ClassLoader {
     }
 
     private get configManager() {
-        return this.application.service("configManager") as ConfigurationManagerServiceInterface;
+        return this.application.service(
+            "configManager"
+        ) as ConfigurationManagerServiceInterface;
     }
 
     private get commandManager() {
-        return this.application.service("commandManager") as CommandManagerServiceInterface;
+        return this.application.service(
+            "commandManager"
+        ) as CommandManagerServiceInterface;
     }
 
     public flattenCommandGroups() {
-        const groups = this.configManager.systemConfig.commands.groups as Record<string, string[]>;
+        const groups = this.configManager.systemConfig.commands
+            .groups as Record<string, string[]>;
+
         const groupNames = Object.keys(groups);
 
         if (groupNames.length === 0) {
@@ -288,12 +338,16 @@ class ClassLoader {
         loadMetadata: boolean = true,
         filter?: (path: string, name: string) => Awaitable<boolean>
     ) {
-        const commandFiles = await this.iterateDirectoryRecursively(commandsDirectory);
+        const commandFiles =
+            await this.iterateDirectoryRecursively(commandsDirectory);
         const groups = this.flattenCommandGroups();
         const commandManager = this.commandManager;
 
         for (const file of commandFiles) {
-            if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
+            if (
+                (!file.endsWith(".ts") && !file.endsWith(".js")) ||
+                file.endsWith(".d.ts")
+            ) {
                 continue;
             }
 
@@ -311,10 +365,16 @@ class ClassLoader {
         groups: Record<string, string> | null = null,
         commandManager: CommandManagerServiceInterface = this.commandManager
     ) {
-        const { default: CommandClass } = (await import(filepath)) as DefaultExport<
-            Class<Command, [Application]>
-        >;
-        await this.loadCommandClass(CommandClass, filepath, loadMetadata, groups, commandManager);
+        const { default: CommandClass } = (await import(
+            filepath
+        )) as DefaultExport<Class<Command, [Application]>>;
+        await this.loadCommandClass(
+            CommandClass,
+            filepath,
+            loadMetadata,
+            groups,
+            commandManager
+        );
     }
 
     public async loadCommandClass(
@@ -324,7 +384,10 @@ class ClassLoader {
         groups: Record<string, string> | null = null,
         commandManager: CommandManagerServiceInterface = this.commandManager
     ) {
-        const canBind = Reflect.hasMetadata("di:can-bind", CommandClass.prototype as object);
+        const canBind = Reflect.hasMetadata(
+            "di:can-bind",
+            CommandClass.prototype as object
+        );
         const command = canBind
             ? this.getContainer().resolveByClass(CommandClass)
             : new CommandClass(this.application);
@@ -342,16 +405,26 @@ class ClassLoader {
         }
 
         const defaultGroup = filepath ? basename(dirname(filepath)) : undefined;
-        await commandManager.addCommand(command, loadMetadata, groups, defaultGroup);
+        await commandManager.addCommand(
+            command,
+            loadMetadata,
+            groups,
+            defaultGroup
+        );
         this.application.logger.info("Loaded Command: ", command.name);
     }
 
-    public async loadQueueClasses(directory = path.resolve(__dirname, "../../queues")) {
+    public async loadQueueClasses(
+        directory = path.resolve(__dirname, "../../queues")
+    ) {
         this.application.service("queueService").onBeforeQueueRegister();
         const queueFiles = await this.iterateDirectoryRecursively(directory);
 
         for (const file of queueFiles) {
-            if ((!file.endsWith(".ts") && !file.endsWith(".js")) || file.endsWith(".d.ts")) {
+            if (
+                (!file.endsWith(".ts") && !file.endsWith(".js")) ||
+                file.endsWith(".d.ts")
+            ) {
                 continue;
             }
 
@@ -360,7 +433,9 @@ class ClassLoader {
     }
 
     public async loadQueueClass(filepath: string) {
-        const { default: QueueClass } = (await import(filepath)) as DefaultExport<typeof Queue>;
+        const { default: QueueClass } = (await import(
+            filepath
+        )) as DefaultExport<typeof Queue>;
         this.application.service("queueService").register(QueueClass);
         this.application.logger.info("Loaded Queue: ", QueueClass.uniqueName);
     }
@@ -369,7 +444,9 @@ class ClassLoader {
         const finalObject = accessConstructor ? object.constructor : object;
         const metadata =
             Symbol.metadata in finalObject
-                ? (finalObject[Symbol.metadata] as { eventListeners?: EventListenerInfo[] })
+                ? (finalObject[Symbol.metadata] as {
+                      eventListeners?: EventListenerInfo[];
+                  })
                 : {
                       eventListeners: Reflect.getMetadata(
                           "event_listeners",
@@ -378,7 +455,8 @@ class ClassLoader {
                   };
 
         const handlerData =
-            this.eventHandlers.get(object) ?? ({} as Record<keyof ClientEvents, AnyFunction[]>);
+            this.eventHandlers.get(object) ??
+            ({} as Record<keyof ClientEvents, AnyFunction[]>);
 
         for (const listenerInfo of metadata.eventListeners ?? []) {
             const callback = object[
@@ -388,7 +466,9 @@ class ClassLoader {
             handlerData[listenerInfo.event] ??= [] as AnyFunction[];
             handlerData[listenerInfo.event].push(handler);
 
-            this.application.getClient().addEventListener(listenerInfo.event, handler);
+            this.application
+                .getClient()
+                .addEventListener(listenerInfo.event, handler);
         }
 
         this.eventHandlers.set(object, handlerData);
@@ -402,16 +482,21 @@ class ClassLoader {
 
     public unloadEventsFromMetadata(object: object) {
         const handlerData =
-            this.eventHandlers.get(object) ?? ({} as Record<keyof ClientEvents, AnyFunction[]>);
+            this.eventHandlers.get(object) ??
+            ({} as Record<keyof ClientEvents, AnyFunction[]>);
         let count = 0;
 
         for (const event in handlerData) {
-            for (const callback of handlerData[event as keyof typeof handlerData]) {
+            for (const callback of handlerData[
+                event as keyof typeof handlerData
+            ]) {
                 this.application
                     .getClient()
                     .removeEventListener(
                         event as keyof ClientEvents,
-                        callback as (...args: ClientEvents[keyof ClientEvents]) => unknown
+                        callback as (
+                            ...args: ClientEvents[keyof ClientEvents]
+                        ) => unknown
                     );
             }
 

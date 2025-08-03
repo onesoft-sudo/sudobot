@@ -36,13 +36,12 @@ class MainController extends Controller {
 
     @Action("GET", "/status")
     public status(request: Request) {
-        const { server_status, server_status_description, server_status_started_at } =
-            this.configManager.systemConfig.api;
+        const { server_status, server_status_description } =
+            this.configManager.systemConfig.api || {};
 
         return {
             status: server_status,
             description: server_status_description,
-            started: server_status_started_at ?? new Date(Date.now() + process.uptime() / 1000),
             ip: request.ip
         };
     }

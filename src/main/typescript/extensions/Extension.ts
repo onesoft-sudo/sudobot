@@ -40,7 +40,7 @@ export const ExtensionMetadataSchema = z.object({
     resources: z.string().optional(),
     name: z.string(),
     description: z.string().optional(),
-    id: z.string({ required_error: "Extension ID is required" }),
+    id: z.string({ error: "Extension ID is required" }),
     icon: z.string().optional(),
     readmeFileName: z.string().default("README.md"),
     package_data: z.object({
@@ -137,13 +137,13 @@ export abstract class Extension {
         return [];
     }
 
-    public initialize(): Awaitable<void> { }
-    public cleanup(): Awaitable<void> { }
+    public initialize(): Awaitable<void> {}
+    public cleanup(): Awaitable<void> {}
 
     public guildConfig(): Awaitable<
         | {
-            [K in PropertyKey]: ZodSchema<unknown>;
-        }
+              [K in PropertyKey]: ZodSchema<unknown>;
+          }
         | null
     > {
         return null;
@@ -151,8 +151,8 @@ export abstract class Extension {
 
     public systemConfig(): Awaitable<
         | {
-            [K in PropertyKey]: ZodSchema<unknown>;
-        }
+              [K in PropertyKey]: ZodSchema<unknown>;
+          }
         | null
     > {
         return null;
@@ -172,7 +172,9 @@ export abstract class Extension {
         }
 
         for (const service of services) {
-            this.serviceManager.loadServiceClass(service).catch(this.application.logger.error);
+            this.serviceManager
+                .loadServiceClass(service)
+                .catch(this.application.logger.error);
         }
     }
 }

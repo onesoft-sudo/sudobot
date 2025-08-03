@@ -29,7 +29,9 @@ export const EnvironmentVariableSchema = z.object({
     JWT_ISSUER: z.string().default("SudoBot"),
     HOME_GUILD_ID: z.string(),
     SUDO_ENV: z.enum(["dev", "prod"]).optional(),
-    NODE_ENV: z.enum(["dev", "prod", "development", "production", "test"]).default("production"),
+    NODE_ENV: z
+        .enum(["dev", "prod", "development", "production", "test"])
+        .default("production"),
     DEBUG: z.enum(["1", "0"]).optional(),
     BASE_SERVER_URL: z.string().optional(),
     DISCORD_OAUTH2_REDIRECT_URI: z.string().optional(),
@@ -50,7 +52,9 @@ export const EnvironmentVariableSchema = z.object({
     CAT_API_TOKEN: z.string().optional(),
     DOG_API_TOKEN: z.string().optional(),
     SYSTEM_API_URL: z.string().optional(),
-    EMOJI_RESOLVE_STRATEGY: z.enum(["both", "home_guild", "application"]).optional(),
+    EMOJI_RESOLVE_STRATEGY: z
+        .enum(["both", "home_guild", "application"])
+        .optional(),
     HTTP_USER_AGENT: z
         .string()
         .optional()
@@ -72,8 +76,10 @@ export const EnvironmentVariableSchema = z.object({
     DISCORD_INTENTS: z.string().optional(),
     MODIFICATIONS_PUBLIC_URL: z.string().optional(),
     HIDE_MODIFICATIONS_URL_NOTICE: z.literal("1").optional(),
-    DM_LOGS_WEBHOOK_URL: z.string().url().optional(),
+    DM_LOGS_WEBHOOK_URL: z.url().optional(),
     SOCKET_FILE: z.string().optional()
 });
 
-export type EnvironmentVariableRecord = z.infer<typeof EnvironmentVariableSchema>;
+export type EnvironmentVariableRecord = z.infer<
+    typeof EnvironmentVariableSchema
+>;

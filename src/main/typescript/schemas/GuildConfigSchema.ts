@@ -43,14 +43,16 @@ export const GuildConfigSchema = z.object({
     commands: z
         .object({
             mention_prefix: z.boolean().default(true),
-            moderation_command_behavior: z.enum(["delete", "default"]).default("default"),
+            moderation_command_behavior: z
+                .enum(["delete", "default"])
+                .default("default"),
             rerun_on_edit: z.boolean().default(false),
             channels: z
                 .object({
                     list: z.array(zSnowflake).default([]),
                     mode: z.enum(["exclude", "include"]).default("exclude")
                 })
-                .default({}),
+                .prefault({}),
             disabled_commands: z.array(z.string()).default([]),
             respond_on_precondition_fail: z.boolean().default(true),
             ratelimiting: z
@@ -69,12 +71,12 @@ export const GuildConfigSchema = z.object({
                                 block_duration: z.number().int().default(1_000)
                             })
                         )
-                        .default({})
+                        .prefault({})
                 })
                 .optional(),
             troll_command_immune_users: z.array(zSnowflake).default([])
         })
-        .default({}),
+        .prefault({}),
     permissions: z
         .object({
             invincible: z
@@ -85,12 +87,19 @@ export const GuildConfigSchema = z.object({
                 .optional(),
             mode: PermissionModeSchema.default("discord").optional(),
             check_discord_permissions: z
-                .enum(["always", "during_automod", "during_manual_actions", "never"])
+                .enum([
+                    "always",
+                    "during_automod",
+                    "during_manual_actions",
+                    "never"
+                ])
                 .default("always"),
-            command_permission_mode: z.enum(["ignore", "overwrite", "check"]).optional()
+            command_permission_mode: z
+                .enum(["ignore", "overwrite", "check"])
+                .optional()
         })
         .optional()
-        .default({}),
+        .prefault({}),
     echoing: z
         .object({
             allow_mentions: z.boolean().default(true)
@@ -106,19 +115,32 @@ export const GuildConfigSchema = z.object({
     infractions: z
         .object({
             send_ids_to_user: z.boolean().default(false),
-            dm_fallback: z.enum(["none", "create_channel", "create_thread"]).default("none"),
+            dm_fallback: z
+                .enum(["none", "create_channel", "create_thread"])
+                .default("none"),
             dm_fallback_parent_channel: zSnowflake.optional(),
-            dm_fallback_channel_expires_in: z.number().int().optional().default(604800000), // 1 week
+            dm_fallback_channel_expires_in: z
+                .number()
+                .int()
+                .optional()
+                .default(604800000), // 1 week
             reason_templates: z
                 .record(
                     z.string().regex(/^[A-Za-z0-9_-]+$/i),
-                    z.string().min(1, "Reason template must be at least 1 character long")
+                    z
+                        .string()
+                        .min(
+                            1,
+                            "Reason template must be at least 1 character long"
+                        )
                 )
                 .describe(
                     "A record of reason templates. The key is the name of the template, and the value is the template itself."
                 )
                 .default({}),
-            reason_template_placeholder_wrapper: z.string().default("{{%name%}}"),
+            reason_template_placeholder_wrapper: z
+                .string()
+                .default("{{%name%}}"),
             points: z
                 .object({
                     warning: z.number().int().default(1),
@@ -137,9 +159,9 @@ export const GuildConfigSchema = z.object({
                     masskick: z.number().int().default(5),
                     reaction_clear: z.number().int().default(0)
                 })
-                .default({})
+                .prefault({})
         })
-        .default({}),
+        .prefault({}),
     antispam: z
         .object({
             enabled: z.boolean().optional().default(false),
@@ -150,7 +172,7 @@ export const GuildConfigSchema = z.object({
                     list: z.array(zSnowflake).default([]),
                     mode: z.enum(["exclude", "include"]).default("exclude")
                 })
-                .default({}),
+                .prefault({}),
             actions: z.array(ModerationActionSchema)
         })
         .optional(),
@@ -232,7 +254,11 @@ export const GuildConfigSchema = z.object({
                 .int()
                 .optional(),
             method: z
-                .enum(["channel_interaction", "dm_interaction", "channel_static_interaction"])
+                .enum([
+                    "channel_interaction",
+                    "dm_interaction",
+                    "channel_static_interaction"
+                ])
                 .default("dm_interaction"),
             channel: zSnowflake.optional(),
             message_id_internal: zSnowflake.optional(),
@@ -241,8 +267,13 @@ export const GuildConfigSchema = z.object({
                     enabled: z.boolean().optional().default(false),
                     actions: z
                         .object({
-                            moderationActions: z.array(ModerationActionSchema).default([]),
-                            failVerification: z.boolean().optional().default(false)
+                            moderationActions: z
+                                .array(ModerationActionSchema)
+                                .default([]),
+                            failVerification: z
+                                .boolean()
+                                .optional()
+                                .default(false)
                         })
                         .optional()
                 })
@@ -281,7 +312,10 @@ export const GuildConfigSchema = z.object({
                     enabled: z.boolean().optional().default(false),
                     label: z.string().optional().default("Say Hi"),
                     emoji: z.string().optional().default("👋"),
-                    reply: z.string().optional().default(":acc: said hi to you!"),
+                    reply: z
+                        .string()
+                        .optional()
+                        .default(":acc: said hi to you!"),
                     expire_after: z
                         .number()
                         .int()
@@ -311,13 +345,23 @@ export const GuildConfigSchema = z.object({
             users: z.array(zSnowflake).default([]),
             roles: z.array(zSnowflake).default([]),
             permissions: z.array(z.string()).default([]),
-            permission_level: z.number().int().min(-1).max(100).default(-1).optional(),
+            permission_level: z
+                .number()
+                .int()
+                .min(-1)
+                .max(100)
+                .default(-1)
+                .optional(),
             action_required_permissions: z
                 .object({
                     ban: z.array(z.string()).default(["BanMembers"]),
                     kick: z.array(z.string()).default(["KickMembers"]),
-                    mute: z.array(z.string()).default(["or", "ModerateMembers", "ManageMessages"]),
-                    warn: z.array(z.string()).default(["or", "ModerateMembers", "ManageMessages"]),
+                    mute: z
+                        .array(z.string())
+                        .default(["or", "ModerateMembers", "ManageMessages"]),
+                    warn: z
+                        .array(z.string())
+                        .default(["or", "ModerateMembers", "ManageMessages"]),
                     ignore: z
                         .array(z.string())
                         .default([
@@ -328,7 +372,7 @@ export const GuildConfigSchema = z.object({
                             "KickMembers"
                         ])
                 })
-                .default({})
+                .prefault({})
         })
         .optional(),
     bump_reminder: z

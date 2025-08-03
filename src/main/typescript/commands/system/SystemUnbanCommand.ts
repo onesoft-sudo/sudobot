@@ -38,7 +38,8 @@ type SystemUnbanCommandArgs = {
 })
 class SystemUnbanCommand extends Command {
     public override readonly name = "sysunban";
-    public override readonly description: string = "Unban a user from the system.";
+    public override readonly description: string =
+        "Unban a user from the system.";
     public override readonly defer = true;
     public override readonly aliases = ["systemunban"];
     public override readonly usage = ["<user: User>"];
@@ -50,7 +51,10 @@ class SystemUnbanCommand extends Command {
     public override build(): Buildable[] {
         return [
             this.buildChatInput().addUserOption(option =>
-                option.setName("user").setDescription("The user to unban").setRequired(true)
+                option
+                    .setName("user")
+                    .setDescription("The user to unban")
+                    .setRequired(true)
             )
         ];
     }
@@ -59,16 +63,24 @@ class SystemUnbanCommand extends Command {
         context: Context,
         { user }: SystemUnbanCommandArgs
     ): Promise<void> {
-        const index = this.configManager.systemConfig.commands.system_banned_users.indexOf(user.id);
+        const index =
+            this.configManager.systemConfig.commands?.system_banned_users.indexOf(
+                user.id
+            );
 
         if (index === -1) {
             await context.error(`User **${user.username}** is not banned!`);
             return;
         }
 
-        this.configManager.systemConfig.commands.system_banned_users.splice(index, 1);
+        this.configManager.systemConfig.commands?.system_banned_users.splice(
+            index,
+            1
+        );
         await this.configManager.write({ guild: false, system: true });
-        await context.success(`User **${user.username}** has been unbanned from the system.`);
+        await context.success(
+            `User **${user.username}** has been unbanned from the system.`
+        );
     }
 }
 

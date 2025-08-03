@@ -38,7 +38,8 @@ type SystemBanCommandArgs = {
 })
 class SystemBanCommand extends Command {
     public override readonly name = "sysban";
-    public override readonly description: string = "Ban a user from the system.";
+    public override readonly description: string =
+        "Ban a user from the system.";
     public override readonly defer = true;
     public override readonly aliases = ["systemban"];
     public override readonly usage = ["<user: User>"];
@@ -50,25 +51,41 @@ class SystemBanCommand extends Command {
     public override build(): Buildable[] {
         return [
             this.buildChatInput().addUserOption(option =>
-                option.setName("user").setDescription("The user to ban").setRequired(true)
+                option
+                    .setName("user")
+                    .setDescription("The user to ban")
+                    .setRequired(true)
             )
         ];
     }
 
-    public override async execute(context: Context, { user }: SystemBanCommandArgs): Promise<void> {
+    public override async execute(
+        context: Context,
+        { user }: SystemBanCommandArgs
+    ): Promise<void> {
         if (user.id === context.userId) {
             await context.error("You cannot ban yourself from the system.");
             return;
         }
 
-        if (this.configManager.systemConfig.commands.system_banned_users.includes(user.id)) {
-            await context.error(`User **${user.username}** is already banned from the system.`);
+        if (
+            this.configManager.systemConfig.commands?.system_banned_users.includes(
+                user.id
+            )
+        ) {
+            await context.error(
+                `User **${user.username}** is already banned from the system.`
+            );
             return;
         }
 
-        this.configManager.systemConfig.commands.system_banned_users.push(user.id);
+        this.configManager.systemConfig.commands?.system_banned_users.push(
+            user.id
+        );
         await this.configManager.write({ guild: false, system: true });
-        await context.success(`User **${user.username}** has been banned from the system.`);
+        await context.success(
+            `User **${user.username}** has been banned from the system.`
+        );
     }
 }
 

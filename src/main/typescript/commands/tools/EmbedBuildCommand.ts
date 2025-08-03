@@ -24,7 +24,11 @@ import { Command } from "@framework/commands/Command";
 import type InteractionContext from "@framework/commands/InteractionContext";
 import type LegacyContext from "@framework/commands/LegacyContext";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
-import { type ChatInputCommandInteraction, EmbedBuilder, type GuildBasedChannel } from "discord.js";
+import {
+    type ChatInputCommandInteraction,
+    EmbedBuilder,
+    type GuildBasedChannel
+} from "discord.js";
 import JSON5 from "json5";
 import { z } from "zod";
 
@@ -85,7 +89,8 @@ type EmbedBuildCommandArgs = {
 })
 class EmbedBuildCommand extends Command {
     public override readonly name: string = "embed::build";
-    public override readonly description: string = "Generate an embed from a schema.";
+    public override readonly description: string =
+        "Generate an embed from a schema.";
     public override readonly usage = ["<schema: String>"];
     public override readonly permissions = [
         PermissionFlags.ManageGuild,
@@ -94,7 +99,9 @@ class EmbedBuildCommand extends Command {
     public override readonly permissionCheckingMode = "or";
 
     public override async execute(
-        context: LegacyContext | InteractionContext<ChatInputCommandInteraction>,
+        context:
+            | LegacyContext
+            | InteractionContext<ChatInputCommandInteraction>,
         args: EmbedBuildCommandArgs
     ) {
         await context.defer({
@@ -104,14 +111,16 @@ class EmbedBuildCommand extends Command {
         let embed: EmbedBuilder;
 
         try {
-            const parsed = await EmbedZodSchema.parseAsync(JSON5.parse(args.schema));
+            const parsed = await EmbedZodSchema.parseAsync(
+                JSON5.parse(args.schema)
+            );
             embed = new EmbedBuilder(parsed);
         } catch (error) {
             this.application.logger.debug(error);
 
             if (error instanceof z.ZodError) {
                 await context.error(
-                    `Invalid embed schema: ${error.errors.map(e => e.message).join(", ")}`
+                    `Invalid embed schema: ${error.issues.map(e => e.message).join(", ")}`
                 );
             } else {
                 await context.error("Invalid schema provided.");
@@ -121,11 +130,14 @@ class EmbedBuildCommand extends Command {
         }
 
         const channel = context.isChatInput()
-            ? ((context.options.getChannel("channel") as GuildBasedChannel) ?? context.channel)
+            ? ((context.options.getChannel("channel") as GuildBasedChannel) ??
+              context.channel)
             : context.channel;
 
         if (!channel?.isTextBased()) {
-            await context.error("This command can only be used in text channels.");
+            await context.error(
+                "This command can only be used in text channels."
+            );
             return;
         }
 
