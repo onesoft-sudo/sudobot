@@ -512,7 +512,14 @@ class VerificationService extends Service {
             });
     }
 
-    public async isProxy(ip: string) {
+    public async isProxy(
+        ip: string,
+        config: { vpn_proxy_check_enabled: boolean }
+    ) {
+        if (!config.vpn_proxy_check_enabled) {
+            return false;
+        }
+
         const env = getEnvData();
         const response = await getAxiosClient().get(
             `https://proxycheck.io/v2/${encodeURIComponent(ip)}?vpn=1&asn=1` +
@@ -702,7 +709,7 @@ class VerificationService extends Service {
     ) {
         const config = this.configFor(guildId);
         const proxyCheck = config?.vpn_proxy_check_enabled
-            ? await this.isProxy(ip)
+            ? await this.isProxy(ip, config)
             : false;
         let error: string | undefined;
         let reason: string | undefined;
