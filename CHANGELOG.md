@@ -1,5 +1,19 @@
 # Changelog
 
+### 22-08-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **feat(verification):** add a config switch to control VPN checks    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 03-08-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.3.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 03-08-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
   * **feat:** move to zod 4 and update deps    
