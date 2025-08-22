@@ -17,7 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { Buildable } from "@framework/commands/Command";
+import type { Buildable, SubcommandMeta } from "@framework/commands/Command";
 import { Command } from "@framework/commands/Command";
 import type InteractionContext from "@framework/commands/InteractionContext";
 import type LegacyContext from "@framework/commands/LegacyContext";
@@ -38,7 +38,14 @@ class ManageRoleCommand extends Command {
     public override readonly aliases = ["manageroles"];
     public override readonly subcommands = ["add", "remove"];
     public override readonly permissions = [PermissionFlags.Administrator];
-    public override readonly subcommandMeta = {};
+    public override readonly subcommandMeta: Record<string, SubcommandMeta> = {
+        add: {
+            description: "Bulk-add roles to members"
+        },
+        remove: {
+            description: "Bulk-remove roles from members"
+        }
+    };
 
     public override build(): Buildable[] {
         return [
