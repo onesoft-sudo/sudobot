@@ -2,9 +2,28 @@
 
 ### 22-08-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **fix(verification):** vpn checks    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(debug):** vpn checks    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(debug):** vpn checks    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
   * **feat(verification):** add a config switch to control VPN checks    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 22-08-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.4.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 03-08-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
