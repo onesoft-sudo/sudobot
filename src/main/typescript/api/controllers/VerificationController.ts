@@ -51,7 +51,10 @@ class VerificationController extends Controller {
 
             return response.data.success as boolean;
         } catch (error) {
-            this.application.logger.error("Failed to verify captcha token: ", error);
+            this.application.logger.error(
+                "Failed to verify captcha token: ",
+                error
+            );
             return false;
         }
     }
@@ -71,16 +74,21 @@ class VerificationController extends Controller {
             return this.response(404, { error: "Guild not found." });
         }
 
-        const entry = await this.application.database.query.verificationEntries.findFirst({
-            where: and(
-                eq(verificationEntries.guildId, guildId),
-                eq(verificationEntries.token, token),
-                eq(verificationEntries.userId, userId)
-            )
-        });
+        const entry =
+            await this.application.database.query.verificationEntries.findFirst(
+                {
+                    where: and(
+                        eq(verificationEntries.guildId, guildId),
+                        eq(verificationEntries.token, token),
+                        eq(verificationEntries.userId, userId)
+                    )
+                }
+            );
 
         if (!entry) {
-            return this.response(404, { error: "Verification entry not found." });
+            return this.response(404, {
+                error: "Verification entry not found."
+            });
         }
 
         return {
@@ -108,7 +116,13 @@ class VerificationController extends Controller {
             return this.response(400, { error: "Missing IP address." });
         }
 
-        if (await this.verificationService.isProxy(ip)) {
+        if (
+            await this.verificationService.isProxy(ip, {
+                vpn_proxy_check_enabled:
+                    !!this.configManager.config[guildId]?.member_verification
+                        ?.vpn_proxy_check_enabled
+            })
+        ) {
             return this.response(400, {
                 error: "You seem to be using a VPN or proxy. Please disable it, reload this page and try again."
             });
@@ -136,7 +150,10 @@ class VerificationController extends Controller {
             captchaToken: z.string(),
             token: z.string(),
             fingerprints: z.array(
-                z.tuple([z.number().min(0).max(AltFingerprintType._COUNT), z.string()])
+                z.tuple([
+                    z.number().min(0).max(AltFingerprintType._COUNT),
+                    z.string()
+                ])
             ),
             frontend_token: z.string(),
             ip: z.string()
@@ -144,9 +161,11 @@ class VerificationController extends Controller {
     )
     public async verifyMember(request: Request) {
         const { guildId, userId } = request.params;
-        const { captchaToken, token, frontend_token, ip } = request.parsedBody ?? {};
+        const { captchaToken, token, frontend_token, ip } =
+            request.parsedBody ?? {};
         const fingerprints =
-            request.parsedBody?.fingerprints && Array.isArray(request.parsedBody?.fingerprints)
+            request.parsedBody?.fingerprints &&
+            Array.isArray(request.parsedBody?.fingerprints)
                 ? Object.fromEntries(request.parsedBody?.fingerprints)
                 : undefined;
 
