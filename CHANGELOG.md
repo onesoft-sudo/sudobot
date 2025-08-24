@@ -1,5 +1,30 @@
 # Changelog
 
+### 24-08-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **fix(framework:command):** command disabled check for guild configuration    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+
+### 22-08-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.5.1 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v11.5.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v11.4.1 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v11.4.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 22-08-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
   * merge branch 'main' of github.com:onesoft-sudo/sudobot
@@ -26,21 +51,6 @@
   * **feat(verification):** add a config switch to control VPN checks    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
-      
-
-### 22-08-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
-
-  * **release:** v11.5.0 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-  * **release:** v11.4.1 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
-      
-  * **release:** v11.4.0 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 03-08-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
