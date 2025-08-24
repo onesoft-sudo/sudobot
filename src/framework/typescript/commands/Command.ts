@@ -373,8 +373,8 @@ abstract class Command<
                 guildId &&
                 (
                     configManager.config[guildId]?.commands
-                        .disabled_commands as string[]
-                ).includes(name)
+                        ?.disabled_commands as string[]
+                )?.includes(name)
             )
         );
     }
