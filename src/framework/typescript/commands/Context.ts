@@ -179,11 +179,9 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
     ): Promise<InteractionCallbackResponse | undefined>;
 
     public async defer(
-        options:
-            | (InteractionDeferReplyOptions & {
-                  withResponse?: false | undefined;
-              })
-            | undefined
+        options?: InteractionDeferReplyOptions & {
+            withResponse?: false | undefined;
+        }
     ): Promise<InteractionResponse<BooleanCache<CacheType>> | undefined>;
 
     public async defer(
