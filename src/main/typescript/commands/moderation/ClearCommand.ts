@@ -21,13 +21,19 @@ import { ArgumentSchema } from "@framework/arguments/ArgumentTypes";
 import IntegerArgument from "@framework/arguments/IntegerArgument";
 import { ErrorType } from "@framework/arguments/InvalidArgumentError";
 import UserArgument from "@framework/arguments/UserArgument";
-import { Buildable, Command, CommandMessage } from "@framework/commands/Command";
+import {
+    Buildable,
+    Command,
+    CommandMessage
+} from "@framework/commands/Command";
 import Context from "@framework/commands/Context";
 import { Inject } from "@framework/container/Inject";
 import { GatewayEventListener } from "@framework/events/GatewayEventListener";
 import { PermissionFlags } from "@framework/permissions/PermissionFlag";
 import {
     Message,
+    MessageFlags,
+    Snowflake,
     User,
     type Awaitable,
     type GuildTextBasedChannel,
@@ -49,7 +55,8 @@ type ClearCommandArgs = {
     errorMessages: [
         {
             ...UserArgument.defaultErrors,
-            [ErrorType.Required]: "You must specify a message count or a user to clear messages.",
+            [ErrorType.Required]:
+                "You must specify a message count or a user to clear messages.",
             [ErrorType.InvalidRange]: "Message count must be between 1 and 100."
         }
     ],
@@ -90,10 +97,15 @@ class ClearCommand extends Command {
     public override readonly detailedDescription =
         "Clear messages from a channel. You can specify a user to clear messages from, or a message count.";
     public override readonly permissions = [PermissionFlags.ManageMessages];
-    public override readonly defer = true;
-    public override readonly usage = ["<count: Integer>", "<user: User> [count: Integer]"];
+    public override readonly usage = [
+        "<count: Integer>",
+        "<user: User> [count: Integer]"
+    ];
 
-    public static readonly filters: Record<string, (message: Message) => Awaitable<boolean>> = {
+    public static readonly filters: Record<
+        string,
+        (message: Message) => Awaitable<boolean>
+    > = {
         bot: message => message.author.bot,
         user: message => !message.author.bot,
         not_pinned: message => !message.pinned,
@@ -111,7 +123,9 @@ class ClearCommand extends Command {
     public override build(): Buildable[] {
         return [
             this.buildChatInput()
-                .addUserOption(option => option.setName("user").setDescription("The target user"))
+                .addUserOption(option =>
+                    option.setName("user").setDescription("The target user")
+                )
                 .addIntegerOption(option =>
                     option
                         .setName("count")
@@ -145,7 +159,10 @@ class ClearCommand extends Command {
 
     @GatewayEventListener("interactionCreate")
     public async onInteractionCreate(interaction: Interaction): Promise<void> {
-        if (!interaction.isAutocomplete() || interaction.commandName !== "clear") {
+        if (
+            !interaction.isAutocomplete() ||
+            interaction.commandName !== "clear"
+        ) {
             return;
         }
 
@@ -165,7 +182,9 @@ class ClearCommand extends Command {
             return;
         }
 
-        await interaction.respond(relevantFilters).catch(this.application.logger.error);
+        await interaction
+            .respond(relevantFilters)
+            .catch(this.application.logger.error);
     }
 
     public override async execute(
@@ -175,17 +194,27 @@ class ClearCommand extends Command {
         const { user, count } = args;
 
         if (!user && !count) {
-            await context.error("You must specify a message count or a user to clear messages.");
+            await context.error(
+                "You must specify a message count or a user to clear messages."
+            );
+
             return;
         }
 
         if (context.isLegacy()) {
-            await context.deleteOriginalMessage().catch(this.application.logger.error);
+            await context
+                .deleteOriginalMessage()
+                .catch(this.application.logger.error);
         }
 
         const filters = [];
+        let responseId: Snowflake | undefined;
 
         if (context.isChatInput()) {
+            const { resource } = (await context.defer({
+                withResponse: true,
+                flags: [MessageFlags.Ephemeral]
+            }))!;
             const filterString = context.options.getString("filters") ?? "";
             const filterArray = filterString.split(",").filter(Boolean);
 
@@ -197,6 +226,8 @@ class ClearCommand extends Command {
                     return;
                 }
             }
+
+            responseId = resource?.message?.id;
         }
 
         const result = await this.infractionManager.createClearMessages({
@@ -204,20 +235,29 @@ class ClearCommand extends Command {
             moderator: context.user,
             user,
             count,
-            channel: ((context.isChatInput() ? context.options.getChannel("channel") : undefined) ??
-                context.channel) as GuildTextBasedChannel,
+            channel: ((context.isChatInput()
+                ? context.options.getChannel("channel")
+                : undefined) ?? context.channel) as GuildTextBasedChannel,
             reason: context.isChatInput()
                 ? (context.options.getString("reason") ?? undefined)
                 : undefined,
             respond: true,
             filters,
-            attachments: context.isLegacy() ? [...context.attachments.values()] : []
+            attachments: context.isLegacy()
+                ? [...context.attachments.values()]
+                : [],
+            beforeId: responseId
         });
 
         if (result.status === "failed") {
-            await context.error(result.errorDescription ?? "Failed to perform this action.");
+            await context.error(
+                result.errorDescription ?? "Failed to perform this action."
+            );
+
             return;
         }
+
+        await context.success("Operation successful.");
     }
 }
 

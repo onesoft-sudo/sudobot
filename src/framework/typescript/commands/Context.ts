@@ -22,15 +22,19 @@ import type { SystemConfig } from "@main/schemas/SystemConfigSchema";
 import type {
     APIEmbed,
     Attachment,
+    BooleanCache,
+    CacheType,
     ChatInputCommandInteraction,
     ContextMenuCommandInteraction,
     EmbedBuilder,
     Guild,
     GuildMember,
     GuildTextBasedChannel,
+    InteractionCallbackResponse,
     InteractionDeferReplyOptions,
     InteractionEditReplyOptions,
     InteractionReplyOptions,
+    InteractionResponse,
     MessageContextMenuCommandInteraction,
     MessageCreateOptions,
     Snowflake,
@@ -95,7 +99,9 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
     }
 
     public get config(): GuildConfig | undefined {
-        return Application.current().service("configManager").config[this.guildId];
+        return Application.current().service("configManager").config[
+            this.guildId
+        ];
     }
 
     public get systemConfig(): SystemConfig {
@@ -135,15 +141,20 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
         return this.type === ContextType.UserContextMenu;
     }
 
-    public reply(options: Parameters<this["commandMessage"]["reply"]>[0]): Promise<Message> {
-        const optionsToPass = options as unknown as MessageCreateOptions & InteractionReplyOptions;
+    public reply(
+        options: Parameters<this["commandMessage"]["reply"]>[0]
+    ): Promise<Message> {
+        const optionsToPass = options as unknown as MessageCreateOptions &
+            InteractionReplyOptions;
 
         if (this.commandMessage instanceof Message) {
             return this.commandMessage.reply(optionsToPass);
         }
 
         if (this.commandMessage.deferred) {
-            return this.commandMessage.editReply(optionsToPass as InteractionEditReplyOptions);
+            return this.commandMessage.editReply(
+                optionsToPass as InteractionEditReplyOptions
+            );
         }
 
         return this.commandMessage.reply(
@@ -163,9 +174,27 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
         return this.reply({ embeds });
     }
 
-    public async defer(options?: InteractionDeferReplyOptions) {
+    public async defer(
+        options: InteractionDeferReplyOptions & { withResponse: true }
+    ): Promise<InteractionCallbackResponse | undefined>;
+
+    public async defer(
+        options:
+            | (InteractionDeferReplyOptions & {
+                  withResponse?: false | undefined;
+              })
+            | undefined
+    ): Promise<InteractionResponse<BooleanCache<CacheType>> | undefined>;
+
+    public async defer(
+        options?: InteractionDeferReplyOptions
+    ): Promise<
+        | InteractionCallbackResponse
+        | InteractionResponse<BooleanCache<CacheType>>
+        | undefined
+    > {
         if (this.commandMessage instanceof Message) {
-            return;
+            return undefined;
         }
 
         return this.commandMessage.deferReply(options);
@@ -175,29 +204,37 @@ abstract class Context<T extends CommandMessage = CommandMessage> {
         return emoji(Application.current(), name);
     }
 
-    public async error(options: Parameters<this["commandMessage"]["reply"]>[0]) {
+    public async error(
+        options: Parameters<this["commandMessage"]["reply"]>[0]
+    ) {
         return this.reply(
             typeof options === "string"
                 ? `${this.emoji("error") ?? ""} ${options}`
                 : {
-                      ...(options as unknown as MessageCreateOptions & InteractionReplyOptions),
+                      ...(options as unknown as MessageCreateOptions &
+                          InteractionReplyOptions),
                       ephemeral: true,
                       content: `${this.emoji("error")} ${
-                          (options as MessageCreateOptions).content ?? "An error has occurred."
+                          (options as MessageCreateOptions).content ??
+                          "An error has occurred."
                       }`
                   }
         );
     }
 
-    public async success(options: Parameters<this["commandMessage"]["reply"]>[0]) {
+    public async success(
+        options: Parameters<this["commandMessage"]["reply"]>[0]
+    ) {
         const args =
             typeof options === "string"
                 ? `${this.emoji("check") ?? ""} ${options}`
                 : {
-                      ...(options as unknown as MessageCreateOptions & InteractionReplyOptions),
+                      ...(options as unknown as MessageCreateOptions &
+                          InteractionReplyOptions),
                       ephemeral: true,
                       content: `${this.emoji("check")} ${
-                          (options as MessageCreateOptions).content ?? "Operation successful."
+                          (options as MessageCreateOptions).content ??
+                          "Operation successful."
                       }`
                   };
         return this.reply(args);
