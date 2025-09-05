@@ -2,9 +2,9 @@ name: Deploy to Staging Environment
 
 on:
  workflow_call:
- push:
-   branches:
-     - dev
+# push:
+#   branches:
+#     - dev
 
 permissions:
   deployments: write
