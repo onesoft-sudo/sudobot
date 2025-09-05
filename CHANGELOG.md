@@ -1,5 +1,114 @@
 # Changelog
 
+### 05-09-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **feat(automod):** finalize addition of early member message scanning    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **feat:** early member message inspection service [1/2]    
+      
+    This commit modifies the migrations, therefore a database migration  
+    is required.  
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **chore(vscode):** turn off inlay hints    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 02-09-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **docs:** update nextjs to 14.2.32    
+      
+    **Signed-off-by:**  GitHub <noreply@github.com>  
+      
+  * **ci:** bump codecov/codecov-action from 4.5.0 to 5.5.0 (#350)    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **ci:** bump actions/download-artifact from 4 to 5 (#351)    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **ci:** bump actions/checkout from 4 to 5 (#352)    
+      
+      
+  * **deps(dev):** bump @types/glob from 8.1.0 to 9.0.0 in /blazebuild (#353)    
+      
+      
+
+### 02-09-2025 - [[dependabot[bot]](mailto:49699333+dependabot[bot]@users.noreply.github.com)]
+
+  * **deps(dev):** bump @types/glob from 8.1.0 to 9.0.0 in /blazebuild    
+      
+    **Bumps [@types/glob](https:** //github.com/DefinitelyTyped/DefinitelyTyped/tree/HEAD/types/glob) from 8.1.0 to 9.0.0.  
+    **- [Release notes](https:** //github.com/DefinitelyTyped/DefinitelyTyped/releases)  
+    **- [Commits](https:** //github.com/DefinitelyTyped/DefinitelyTyped/commits/HEAD/types/glob)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  "@types/glob"  
+    **  dependency-version:**  9.0.0  
+    **  dependency-type:**  direct:development  
+    **  update-type:**  version-update:semver-major  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+  * **ci:** bump actions/checkout from 4 to 5    
+      
+    **Bumps [actions/checkout](https:** //github.com/actions/checkout) from 4 to 5.  
+    **- [Release notes](https:** //github.com/actions/checkout/releases)  
+    **- [Changelog](https:** //github.com/actions/checkout/blob/main/CHANGELOG.md)  
+    **- [Commits](https:** //github.com/actions/checkout/compare/v4...v5)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  actions/checkout  
+    **  dependency-version:**  '5'  
+    **  dependency-type:**  direct:production  
+    **  update-type:**  version-update:semver-major  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+  * **ci:** bump actions/download-artifact from 4 to 5    
+      
+    **Bumps [actions/download-artifact](https:** //github.com/actions/download-artifact) from 4 to 5.  
+    **- [Release notes](https:** //github.com/actions/download-artifact/releases)  
+    **- [Commits](https:** //github.com/actions/download-artifact/compare/v4...v5)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  actions/download-artifact  
+    **  dependency-version:**  '5'  
+    **  dependency-type:**  direct:production  
+    **  update-type:**  version-update:semver-major  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+  * **ci:** bump codecov/codecov-action from 4.5.0 to 5.5.0    
+      
+    **Bumps [codecov/codecov-action](https:** //github.com/codecov/codecov-action) from 4.5.0 to 5.5.0.  
+    **- [Release notes](https:** //github.com/codecov/codecov-action/releases)  
+    **- [Changelog](https:** //github.com/codecov/codecov-action/blob/main/CHANGELOG.md)  
+    **- [Commits](https:** //github.com/codecov/codecov-action/compare/v4.5.0...v5.5.0)  
+      
+    ---  
+    **updated-dependencies:**   
+    **- dependency-name:**  codecov/codecov-action  
+    **  dependency-version:**  5.5.0  
+    **  dependency-type:**  direct:production  
+    **  update-type:**  version-update:semver-major  
+    ...  
+      
+    **Signed-off-by:**  dependabot[bot] <support@github.com>  
+
+### 26-08-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.5.4 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 26-08-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
   * **fix(framework):** incorrect function overload signature    
