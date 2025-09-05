@@ -1,5 +1,27 @@
 # Changelog
 
+### 05-09-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
+
+  * **fix(paxmod):** missing api key error    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * **chore:** debug logs    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+
+### 05-09-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.8.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+  * **release:** v11.7.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
+
 ### 05-09-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
   * merge: branch 'main' of github.com:onesoft-sudo/sudobot    
@@ -30,13 +52,6 @@
   * **chore(vscode):** turn off inlay hints    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
-      
-
-### 05-09-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
-
-  * **release:** v11.7.0 [skip ci]    
-      
-    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 02-09-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
