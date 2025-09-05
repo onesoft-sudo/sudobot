@@ -64,6 +64,7 @@ import {
     ButtonBuilder,
     ButtonStyle,
     Collection,
+    GuildBasedChannel,
     GuildMember,
     Message,
     MessageCreateOptions,
@@ -2041,6 +2042,21 @@ class AuditLoggingService extends Service {
                             {
                                 name: "Summary",
                                 value: categorySummary || italic("Not available")
+                            },
+                            {
+                                name: "User",
+                                value: userInfo(member.user),
+                                inline: true
+                            },
+                            {
+                                name: "Message",
+                                value: messageInfo(message),
+                                inline: true
+                            },
+                            {
+                                name: "Channel",
+                                value: channelInfo(message.channel as GuildBasedChannel),
+                                inline: true
                             }
                         ]
                     },
@@ -2053,6 +2069,11 @@ class AuditLoggingService extends Service {
                         description: message.content,
                         timestamp: message.createdAt.toISOString()
                     }
+                ],
+                components: [
+                    new ActionRowBuilder<ButtonBuilder>().addComponents(
+                        new ButtonBuilder().setStyle(ButtonStyle.Link).setURL(message.url).setLabel("Context")
+                    )
                 ]
             },
             eventType: LogEventType.SystemUserMessageSave
