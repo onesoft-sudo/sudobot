@@ -171,8 +171,8 @@ jobs:
             ./sudobot-release-darwin.tar.gz
             ${{ steps.linux_package.outputs.files }}
 
-  deploy-staging:
-    needs: [build, release]
-    if: github.repository_owner == 'onesoft-sudo'
-    uses: ./.github/workflows/staging.yml
-    secrets: inherit
+#  deploy-staging:
+#    needs: [build, release]
+#    if: github.repository_owner == 'onesoft-sudo'
+#    uses: ./.github/workflows/staging.yml
+#    secrets: inherit
