@@ -17,6 +17,7 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { Inject } from "@framework/container/Inject";
 import { Override } from "@framework/decorators/Override";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
@@ -25,6 +26,9 @@ import {
     earlyMessageInspectionEntries,
     EarlyMessageInspectionEntryCreatePayload
 } from "@main/models/EarlyMessageInspectionEntry";
+import { LogEventType } from "@main/schemas/LoggingSchema";
+import type AuditLoggingService from "@main/services/AuditLoggingService";
+import type ConfigurationManager from "@main/services/ConfigurationManager";
 import { getAxiosClient } from "@main/utils/axios";
 import { type Awaitable, Collection, GuildMember, Message, type PartialMessage, type Snowflake } from "discord.js";
 import { and, eq, inArray, sql } from "drizzle-orm";
@@ -33,6 +37,12 @@ import { and, eq, inArray, sql } from "drizzle-orm";
 class EarlyMessageInspectionService extends Service implements HasEventListeners {
     private readonly updateQueue = new Collection<`${Snowflake}::${Snowflake}`, number>();
     private readonly deleteQueue: Array<`${Snowflake}::${Snowflake}`> = [];
+
+    @Inject("configManager")
+    private readonly configManager!: ConfigurationManager;
+
+    @Inject("auditLoggingService")
+    private readonly auditLoggingService!: AuditLoggingService;
 
     public override boot() {
         setInterval(() => {
@@ -122,7 +132,7 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
 
     @Override
     public onGuildMemberAdd(member: GuildMember): Awaitable<void> {
-        if (member.user.bot) {
+        if (member.user.bot || !this.configManager.config[member.guild.id]?.early_message_inspection?.enabled) {
             return;
         }
 
@@ -131,7 +141,7 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
 
     @Override
     public onGuildMemberRemove(member: GuildMember): Awaitable<void> {
-        if (member.user.bot) {
+        if (member.user.bot || !this.configManager.config[member.guild.id]?.early_message_inspection?.enabled) {
             return;
         }
 
@@ -141,20 +151,46 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
 
     @Override
     public async onMessageCreate(message: Message<boolean>): Promise<void> {
-        if (!message.inGuild() || message.author.bot) {
+        if (
+            !message.inGuild() ||
+            message.author.bot ||
+            !message.member ||
+            !this.configManager.config[message.guildId]?.early_message_inspection?.enabled
+        ) {
             return;
         }
 
         const count = await this.getMessageCount(message.guildId, message.author.id);
+        const maxCount =
+            this.configManager.config[message.guildId]?.early_message_inspection?.inspect_member_messages_until_count ??
+            10;
 
         if (count === null) {
             return;
         }
 
+        if (count > maxCount) {
+            this.updateQueue.delete(`${message.guildId}::${message.author.id}`);
+            this.application.database.drizzle
+                .delete(earlyMessageInspectionEntries)
+                .where(
+                    and(
+                        eq(earlyMessageInspectionEntries.guildId, message.guildId),
+                        eq(earlyMessageInspectionEntries.userId, message.author.id)
+                    )
+                );
+
+            return;
+        }
+
         const result = await this.paxmodModerateText(message.content);
 
-        if (result.success && result.flagged) {
-            //
+        if (result.success && result.flagged && result.data) {
+            await this.auditLoggingService.emitLogEvent(message.guildId, LogEventType.EarlyMessageInspection, {
+                data: result.data,
+                member: message.member,
+                message
+            });
         }
 
         this.updateQueue.set(`${message.guildId}::${message.author.id}`, count + 1);
@@ -166,14 +202,47 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
         _oldMessage: Message<boolean> | PartialMessage,
         message: Message<boolean>
     ): Promise<void> {
-        if (!message.inGuild() || message.author.bot || !message.content) {
+        if (
+            !message.inGuild() ||
+            message.author.bot ||
+            !message.content ||
+            !message.member ||
+            !this.configManager.config[message.guildId]?.early_message_inspection?.enabled
+        ) {
             return;
         }
 
         const count = await this.getMessageCount(message.guildId, message.author.id);
+        const maxCount =
+            this.configManager.config[message.guildId]?.early_message_inspection?.inspect_member_messages_until_count ??
+            10;
 
         if (count === null) {
             return;
+        }
+
+        if (count > maxCount) {
+            this.updateQueue.delete(`${message.guildId}::${message.author.id}`);
+            this.application.database.drizzle
+                .delete(earlyMessageInspectionEntries)
+                .where(
+                    and(
+                        eq(earlyMessageInspectionEntries.guildId, message.guildId),
+                        eq(earlyMessageInspectionEntries.userId, message.author.id)
+                    )
+                );
+
+            return;
+        }
+
+        const result = await this.paxmodModerateText(message.content);
+
+        if (result.success && result.flagged && result.data) {
+            await this.auditLoggingService.emitLogEvent(message.guildId, LogEventType.EarlyMessageInspection, {
+                data: result.data,
+                member: message.member,
+                message
+            });
         }
 
         this.application.logger.debug(`Now: ${count} (not changed)`);
