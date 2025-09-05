@@ -32,7 +32,7 @@ import type AuditLoggingService from "@main/services/AuditLoggingService";
 import type ConfigurationManager from "@main/services/ConfigurationManager";
 import { getAxiosClient } from "@main/utils/axios";
 import { type Awaitable, Collection, GuildMember, Message, type PartialMessage, type Snowflake } from "discord.js";
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { and, eq, or, sql } from "drizzle-orm";
 
 @Name("earlyMessageInspectionService")
 class EarlyMessageInspectionService extends Service implements HasEventListeners {
@@ -84,25 +84,21 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
                 const deleteQueue = this.deleteQueue;
                 this.deleteQueue.length = 0;
 
-                const guildIds = [];
-                const userIds = [];
+                const conditions = [];
 
                 for (const key of deleteQueue) {
                     const [guildId, userId] = key.split("::");
 
-                    guildIds.push(guildId);
-                    userIds.push(userId);
+                    conditions.push(
+                        and(
+                            eq(earlyMessageInspectionEntries.guildId, guildId),
+                            eq(earlyMessageInspectionEntries.userId, userId)
+                        )
+                    );
                 }
 
-                if (userIds.length && guildIds.length) {
-                    this.application.database.drizzle
-                        .delete(earlyMessageInspectionEntries)
-                        .where(
-                            and(
-                                inArray(earlyMessageInspectionEntries.guildId, guildIds),
-                                inArray(earlyMessageInspectionEntries.userId, userIds)
-                            )
-                        );
+                if (conditions.length) {
+                    this.application.database.drizzle.delete(earlyMessageInspectionEntries).where(or(...conditions));
                 }
             }
         }, 120_000);
@@ -167,7 +163,11 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
             10;
 
         if (count === null) {
-            this.application.logger.debug(EarlyMessageInspectionService.name, "No entries for this member");
+            this.application.logger.debug(
+                EarlyMessageInspectionService.name,
+                "No entries for this member: ",
+                message.author.id
+            );
             return;
         }
 
@@ -182,7 +182,11 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
                     )
                 );
 
-            this.application.logger.debug(EarlyMessageInspectionService.name, "Max messages reached, removing entry");
+            this.application.logger.debug(
+                EarlyMessageInspectionService.name,
+                "Max messages reached, removing entry:",
+                message.author.id
+            );
             return;
         }
 
@@ -198,7 +202,7 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
         }
 
         this.updateQueue.set(`${message.guildId}::${message.author.id}`, count + 1);
-        this.application.logger.debug(`Now: ${count + 1}`);
+        this.application.logger.debug(EarlyMessageInspectionService.name, `Now: ${count + 1}`);
     }
 
     @Override
@@ -249,7 +253,7 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
             });
         }
 
-        this.application.logger.debug(`Now: ${count} (not changed)`);
+        this.application.logger.debug(EarlyMessageInspectionService.name, `Now: ${count} (not changed)`);
     }
 
     private async paxmodModerateText(text: string) {
