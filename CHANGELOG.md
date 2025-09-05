@@ -2,6 +2,20 @@
 
 ### 05-09-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
+  * **feat(automod):** use paxmod API for early member message scanning    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+  * **ci:** disable push trigger for dev branch in staging.yml    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+  * **ci:** disable staging deploy    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
   * **feat(automod):** finalize addition of early member message scanning    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
@@ -16,6 +30,13 @@
   * **chore(vscode):** turn off inlay hints    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@onesoftnet.eu.org>  
+      
+
+### 05-09-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
+
+  * **release:** v11.7.0 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
       
 
 ### 02-09-2025 - [[Ar Rakin](mailto:rakinar2@onesoftnet.eu.org)]
