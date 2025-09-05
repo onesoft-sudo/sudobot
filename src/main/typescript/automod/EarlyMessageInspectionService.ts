@@ -25,6 +25,7 @@ import {
     earlyMessageInspectionEntries,
     EarlyMessageInspectionEntryCreatePayload
 } from "@main/models/EarlyMessageInspectionEntry";
+import { getAxiosClient } from "@main/utils/axios";
 import { type Awaitable, Collection, GuildMember, Message, type PartialMessage, type Snowflake } from "discord.js";
 import { and, eq, inArray, sql } from "drizzle-orm";
 
@@ -150,6 +151,12 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
             return;
         }
 
+        const result = await this.paxmodModerateText(message.content);
+
+        if (result.success && result.flagged) {
+            //
+        }
+
         this.updateQueue.set(`${message.guildId}::${message.author.id}`, count + 1);
         this.application.logger.debug(`Now: ${count + 1}`);
     }
@@ -159,7 +166,7 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
         _oldMessage: Message<boolean> | PartialMessage,
         message: Message<boolean>
     ): Promise<void> {
-        if (!message.inGuild() || message.author.bot) {
+        if (!message.inGuild() || message.author.bot || !message.content) {
             return;
         }
 
@@ -171,9 +178,37 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
 
         this.application.logger.debug(`Now: ${count} (not changed)`);
     }
+
+    private async paxmodModerateText(text: string) {
+        try {
+            const response = await getAxiosClient().post<PaxmodModerateTextResponse>(
+                "https://www.paxmod.com/api/v1/text",
+                {
+                    message: text
+                }
+            );
+
+            if (response.data.status !== "success") {
+                return { success: false, flagged: false };
+            }
+
+            if (response.data.result !== "flagged" && !response.data.content_moderation?.flagged) {
+                return { success: true, flagged: false };
+            }
+
+            return {
+                success: true,
+                flagged: true,
+                data: response.data
+            };
+        } catch (error) {
+            this.application.logger.error(error);
+            return { success: false, flagged: false };
+        }
+    }
 }
 
-type PaxmodModerateTextSuccessResponse = {
+export type PaxmodModerateTextSuccessResponse = {
     status: "success";
     id: string;
     service: string;
@@ -183,8 +218,8 @@ type PaxmodModerateTextSuccessResponse = {
         timestamp: string;
     };
     result: "flagged" | "not_flagged";
-    reason: string;
-    content_moderation: {
+    reason?: string;
+    content_moderation?: {
         flagged: boolean;
         categories: Record<
             string,

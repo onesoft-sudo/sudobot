@@ -3,7 +3,6 @@
         "incremental": true,
         "target": "ES2022",
         "module": "CommonJS",
-        "baseUrl": ".",
         "types": ["node", "bun"],
         "lib": ["ES2022", "Decorators", "DOM"],
         "resolveJsonModule": true,
@@ -30,7 +29,8 @@
             "@blazebuild/*": ["./blazebuild/src/main/typescript/*"],
             "@main/*": ["./src/main/typescript/*"],
             "@framework/*": ["./src/framework/typescript/*"],
-            "@root/*": ["./*"]
+            "@root/*": ["./*"],
+            "*": ["./*"]
         }
     },
     "include": ["src/main/typescript/types/global/globals.d.ts", "src/**/*.ts"],
