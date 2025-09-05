@@ -113,15 +113,6 @@
     },
     "typescript.preferences.importModuleSpecifier": "non-relative",
     "eslint.useFlatConfig": true,
-    "editor.inlayHints.enabled": "on",
-    "typescript.inlayHints.enumMemberValues.enabled": true,
-    "typescript.inlayHints.parameterNames.enabled": "all",
-    "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
-    "typescript.inlayHints.parameterNames.suppressWhenArgumentMatchesName": true,
-    "typescript.inlayHints.parameterTypes.enabled": true,
-    "typescript.inlayHints.variableTypes.enabled": true,
-    "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
-    "typescript.inlayHints.variableTypes.suppressWhenTypeMatchesName": true,
     "todo-tree.tree.showBadges": true,
     "files.exclude": {
         "**/.git/objects/**": true
