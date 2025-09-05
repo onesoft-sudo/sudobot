@@ -166,6 +166,7 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
             10;
 
         if (count === null) {
+            this.application.logger.debug(EarlyMessageInspectionService.name, "No entries for this member");
             return;
         }
 
@@ -180,10 +181,12 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
                     )
                 );
 
+            this.application.logger.debug(EarlyMessageInspectionService.name, "Max messages reached, removing entry");
             return;
         }
 
         const result = await this.paxmodModerateText(message.content);
+        this.application.logger.debug(EarlyMessageInspectionService.name, "Paxmod response", result.data);
 
         if (result.success && result.flagged && result.data) {
             await this.auditLoggingService.emitLogEvent(message.guildId, LogEventType.EarlyMessageInspection, {
