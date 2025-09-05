@@ -22,6 +22,7 @@ import { Override } from "@framework/decorators/Override";
 import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import { HasEventListeners } from "@framework/types/HasEventListeners";
+import { getEnvData } from "@main/env/env";
 import {
     earlyMessageInspectionEntries,
     EarlyMessageInspectionEntryCreatePayload
@@ -257,6 +258,11 @@ class EarlyMessageInspectionService extends Service implements HasEventListeners
                 "https://www.paxmod.com/api/v1/text",
                 {
                     message: text
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${getEnvData().PAXMOD_API_KEY}`
+                    }
                 }
             );
 
