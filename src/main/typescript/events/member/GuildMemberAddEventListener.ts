@@ -21,6 +21,7 @@ import { Inject } from "@framework/container/Inject";
 import EventListener from "@framework/events/EventListener";
 import { Events } from "@framework/types/ClientEvents";
 import type AntiMemberJoinService from "@main/automod/AntiMemberJoinService";
+import EarlyMessageInspectionService from "@main/automod/EarlyMessageInspectionService";
 import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
 import type InfractionManager from "@main/services/InfractionManager";
@@ -38,12 +39,16 @@ class GuildMemberAddEventListener extends EventListener<Events.GuildMemberAdd> {
     @Inject("antiMemberJoinService")
     protected readonly antiMemberJoinService!: AntiMemberJoinService;
 
+    @Inject("earlyMessageInspectionService")
+    protected readonly earlyMessageInspectionService!: EarlyMessageInspectionService;
+
     public override async execute(member: GuildMember): Promise<void> {
         this.auditLoggingService
             .emitLogEvent(member.guild.id, LogEventType.GuildMemberAdd, member)
             .catch(this.application.logger.error);
         await this.antiMemberJoinService.onGuildMemberAdd(member);
         this.infractionManager.reapplyMuteIfNeeded(member).catch(this.application.logger.error);
+        await this.earlyMessageInspectionService.onGuildMemberAdd(member);
     }
 }
 

@@ -31,6 +31,6 @@ export function getEnvData(): EnvironmentVariableRecord {
     return envData;
 }
 
-export function setEnvData(data: Record<string,string|undefined>): void {
+export function setEnvData(data: Record<string, string | undefined>): void {
     envData = EnvironmentVariableSchema.parse(data);
 }

@@ -23,11 +23,7 @@ import { Name } from "@framework/services/Name";
 import { Service } from "@framework/services/Service";
 import type { ClientEvents } from "@framework/types/ClientEvents";
 import { getEnvData } from "@main/env/env";
-import {
-    Extension,
-    ExtensionMetadataSchema,
-    type ExtensionMetadataType
-} from "@main/extensions/Extension";
+import { Extension, ExtensionMetadataSchema, type ExtensionMetadataType } from "@main/extensions/Extension";
 import { ExtensionInfo } from "@main/extensions/ExtensionInfo";
 import { Snowflake } from "discord.js";
 import { Response } from "express";
@@ -85,16 +81,12 @@ const guildIdResolvers = [
     },
     {
         events: ["channelCreate", "channelDelete", "channelUpdate", "channelPinsUpdate"],
-        resolver: ([data]: ClientEvents[
-            | "channelCreate"
-            | "channelDelete"
-            | "channelUpdate"
-            | "channelPinsUpdate"]) => (data.isDMBased() ? undefined : data.guildId)
+        resolver: ([data]: ClientEvents["channelCreate" | "channelDelete" | "channelUpdate" | "channelPinsUpdate"]) =>
+            data.isDMBased() ? undefined : data.guildId
     },
     {
         events: ["emojiCreate", "emojiDelete", "emojiUpdate"],
-        resolver: ([data]: ClientEvents["emojiCreate" | "emojiDelete" | "emojiUpdate"]) =>
-            data?.guild?.id ?? undefined
+        resolver: ([data]: ClientEvents["emojiCreate" | "emojiDelete" | "emojiUpdate"]) => data?.guild?.id ?? undefined
     },
     {
         events: ["messageReactionAdd", "messageReactionRemove", "messageReactionRemoveEmoji"],
@@ -109,10 +101,8 @@ const guildIdResolvers = [
     },
     {
         events: ["guildAuditLogEntryCreate", "guildMembersChunk", "threadListSync"],
-        resolver: ([, data]: ClientEvents[
-            | "guildAuditLogEntryCreate"
-            | "guildMembersChunk"
-            | "threadListSync"]) => data.id ?? undefined
+        resolver: ([, data]: ClientEvents["guildAuditLogEntryCreate" | "guildMembersChunk" | "threadListSync"]) =>
+            data.id ?? undefined
     },
     {
         events: [
@@ -170,8 +160,7 @@ const guildIdResolvers = [
     },
     {
         events: ["guildScheduledEventUpdate"],
-        resolver: ([data]: ClientEvents["guildScheduledEventUpdate"]) =>
-            data?.guild?.id ?? data?.guildId ?? undefined
+        resolver: ([data]: ClientEvents["guildScheduledEventUpdate"]) => data?.guild?.id ?? data?.guildId ?? undefined
     },
     {
         events: [
@@ -213,8 +202,7 @@ const guildIdResolvers = [
     },
     {
         events: ["typingStart", "webhookUpdate"],
-        resolver: ([data]: ClientEvents["typingStart" | "webhookUpdate"]) =>
-            data.guild?.id ?? undefined
+        resolver: ([data]: ClientEvents["typingStart" | "webhookUpdate"]) => data.guild?.id ?? undefined
     },
     {
         events: ["command"],
@@ -228,6 +216,7 @@ const guildIdResolvers = [
             "warn",
             "invalidated",
             "ready",
+            "clientReady",
             "shardReady",
             "shardDisconnect",
             "shardError",
@@ -249,10 +238,7 @@ function getGuildIdResolversMap() {
     for (const guildIdResolver of guildIdResolvers) {
         for (const event of guildIdResolver.events) {
             if (map.has(event)) {
-                Application.current().logger.warn(
-                    "Overlapping Guild ID Resolvers detected: ",
-                    event
-                );
+                Application.current().logger.warn("Overlapping Guild ID Resolvers detected: ", event);
                 Application.current().logger.warn(
                     "This seems to be an internal bug. Please report this issue to the developers."
                 );
@@ -334,9 +320,7 @@ export default class ExtensionManager extends Service {
             const packageFile = path.join(extensionDirectory, "package.json");
 
             if (!existsSync(packageFile)) {
-                this.application.logger.error(
-                    `Extension ${extensionName} does not have a "package.json" file!`
-                );
+                this.application.logger.error(`Extension ${extensionName} does not have a "package.json" file!`);
 
                 continue;
             }
@@ -344,17 +328,13 @@ export default class ExtensionManager extends Service {
             const metadataFile = path.join(extensionDirectory, "extension.json");
 
             if (!existsSync(metadataFile)) {
-                this.application.logger.error(
-                    `Extension ${extensionName} does not have a "extension.json" file!`
-                );
+                this.application.logger.error(`Extension ${extensionName} does not have a "extension.json" file!`);
 
                 continue;
             }
 
             try {
-                const packageData = JSON.parse(
-                    await fs.readFile(packageFile, { encoding: "utf-8" })
-                );
+                const packageData = JSON.parse(await fs.readFile(packageFile, { encoding: "utf-8" }));
                 const { version } = packageData;
 
                 const parseResult = ExtensionMetadataSchema.safeParse({
@@ -363,9 +343,7 @@ export default class ExtensionManager extends Service {
                 });
 
                 if (!parseResult.success) {
-                    this.application.logger.error(
-                        `Error parsing extension metadata for extension ${extensionName}`
-                    );
+                    this.application.logger.error(`Error parsing extension metadata for extension ${extensionName}`);
                     this.application.logger.error(parseResult.error);
                     continue;
                 }
@@ -409,15 +387,9 @@ export default class ExtensionManager extends Service {
                     }
 
                     if (process.platform === "win32") {
-                        await fs.cp(
-                            loadingTypeScript ? bunTsconfigPath : nodeTsconfigPath,
-                            tsconfigPath
-                        );
+                        await fs.cp(loadingTypeScript ? bunTsconfigPath : nodeTsconfigPath, tsconfigPath);
                     } else {
-                        await fs.symlink(
-                            loadingTypeScript ? bunTsconfigPath : nodeTsconfigPath,
-                            tsconfigPath
-                        );
+                        await fs.symlink(loadingTypeScript ? bunTsconfigPath : nodeTsconfigPath, tsconfigPath);
                     }
                 }
 
@@ -433,11 +405,7 @@ export default class ExtensionManager extends Service {
                 this.extensions.set(initializer.id, initializer);
                 this.logger.info(`Loaded extension: ${id} (${extensionName})`);
             } catch (error) {
-                this.application.logger.error(
-                    "Error occurred while trying to load extension",
-                    extensionName,
-                    error
-                );
+                this.application.logger.error("Error occurred while trying to load extension", extensionName, error);
             }
         }
 
@@ -481,17 +449,11 @@ export default class ExtensionManager extends Service {
             await extension.register();
             this.extensions.set(extension.id, extension);
 
-            this.logger.info(
-                `Loaded extension: ${extension.id} (${extension.name} ${extension.version})`
-            );
+            this.logger.info(`Loaded extension: ${extension.id} (${extension.name} ${extension.version})`);
 
             return { extension };
         } catch (error) {
-            this.application.logger.error(
-                "Error occurred while trying to load extension",
-                filePath,
-                error
-            );
+            this.application.logger.error("Error occurred while trying to load extension", filePath, error);
 
             return { error };
         }
@@ -510,11 +472,7 @@ export default class ExtensionManager extends Service {
         meta: ExtensionMetadataType;
         version: string;
     }) {
-        this.application.logger.debug(
-            "Attempting to load extension initializer: ",
-            extensionName,
-            extensionId
-        );
+        this.application.logger.debug("Attempting to load extension initializer: ", extensionName, extensionId);
         const {
             default: ExtensionClass
         }: {
@@ -563,9 +521,7 @@ export default class ExtensionManager extends Service {
     }
 
     public async loadEvent(extensionId: string, filePath: string) {
-        const {
-            default: Event
-        }: { default: new (application: Application) => EventListener<keyof ClientEvents> } =
+        const { default: Event }: { default: new (application: Application) => EventListener<keyof ClientEvents> } =
             await import(filePath);
         this.loadEventClass(extensionId, Event);
     }
@@ -578,10 +534,7 @@ export default class ExtensionManager extends Service {
         this.application.container.resolveProperties(Event, event);
         this.application
             .getClient()
-            .addEventListener(
-                event.name,
-                this.wrapHandler(extensionId, event.name, event.execute.bind(event))
-            );
+            .addEventListener(event.name, this.wrapHandler(extensionId, event.name, event.execute.bind(event)));
     }
 
     public wrapHandler<K extends keyof ClientEvents>(
@@ -591,14 +544,10 @@ export default class ExtensionManager extends Service {
         bail?: boolean
     ) {
         return async (...args: ClientEvents[K]) => {
-            const guildId: Snowflake | null | undefined =
-                this.guildIdResolvers.get(eventName)?.(args);
+            const guildId: Snowflake | null | undefined = this.guildIdResolvers.get(eventName)?.(args);
 
             if (guildId === undefined) {
-                this.application.logger.error(
-                    "Invalid event or failed to fetch guild: ",
-                    eventName
-                );
+                this.application.logger.error("Invalid event or failed to fetch guild: ", eventName);
                 return;
             }
 
@@ -627,8 +576,7 @@ export default class ExtensionManager extends Service {
     public isEnabled(extensionId: string, guildId: Snowflake) {
         const { disabled_extensions, enabled } =
             this.application.getService(ConfigurationManager).config[guildId]?.extensions ?? {};
-        const { default_mode } =
-            this.application.getService(ConfigurationManager).systemConfig.extensions ?? {};
+        const { default_mode } = this.application.getService(ConfigurationManager).systemConfig.extensions ?? {};
         this.application.logger.debug(default_mode, enabled);
         return (
             (enabled === undefined ? default_mode === "enable_all" : enabled) &&
@@ -712,9 +660,7 @@ export default class ExtensionManager extends Service {
                             return;
                         }
 
-                        const percentCompleted = Math.floor(
-                            (progressEvent.loaded / progressEvent.total) * 100
-                        );
+                        const percentCompleted = Math.floor((progressEvent.loaded / progressEvent.total) * 100);
 
                         await this.writeStream(stream, `${percentCompleted}\n`);
                     }
@@ -732,10 +678,7 @@ export default class ExtensionManager extends Service {
                 await rm(filePath, { force: true });
             } catch (error) {
                 this.application.logger.error(error);
-                await this.writeStream(
-                    stream,
-                    `W: Failed to clean download caches for extension: ${id}\n`
-                );
+                await this.writeStream(stream, `W: Failed to clean download caches for extension: ${id}\n`);
             }
         } catch (error) {
             this.application.logger.error(error);
@@ -751,14 +694,8 @@ export default class ExtensionManager extends Service {
             return;
         }
 
-        await this.writeStream(
-            stream,
-            `Preparing to unpack ${extension.name} (${extension.version})...\n`
-        );
-        const extensionTmpDirectory = systemPrefix(
-            `tmp/${extension.id}-${extension.version}`,
-            true
-        );
+        await this.writeStream(stream, `Preparing to unpack ${extension.name} (${extension.version})...\n`);
+        const extensionTmpDirectory = systemPrefix(`tmp/${extension.id}-${extension.version}`, true);
         await this.writeStream(stream, `Unpacking ${extension.name} (${extension.version})...\n`);
 
         try {
@@ -792,10 +729,7 @@ export default class ExtensionManager extends Service {
             await rm(extensionTmpDirectory, { force: true, recursive: true });
         } catch (error) {
             this.application.logger.error(error);
-            await this.writeStream(
-                stream,
-                `W: Failed to clean up temporary files for extension: ${extension.id}\n`
-            );
+            await this.writeStream(stream, `W: Failed to clean up temporary files for extension: ${extension.id}\n`);
         }
 
         // TODO: Load extension automatically

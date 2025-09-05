@@ -149,20 +149,16 @@ class AIAutoModeration extends Service {
             return null;
         }
 
-        const config =
-            this.application.service("configManager").config[message.guildId]?.ai_automod;
+        const config = this.application.service("configManager").config[message.guildId]?.ai_automod;
 
         if (!config?.enabled) {
             return;
         }
 
         if (!(await this.shouldModerate(message.member ?? message))) {
-            this.application.logger.debug(
-                "AI moderation is disabled for this user",
-                message.author.id
-            );
+            this.application.logger.debug("AI moderation is disabled for this user", message.author.id);
 
-            return false;
+            return;
         }
 
         for (const pattern of config.exception_regex_patterns) {
@@ -171,9 +167,7 @@ class AIAutoModeration extends Service {
             const regex = new RegExp(regexPattern, regexFlags);
 
             if (regex.test(message.content)) {
-                this.application.logger.debug(
-                    "This message matches an exception pattern, ignoring"
-                );
+                this.application.logger.debug("This message matches an exception pattern, ignoring");
 
                 return;
             }
@@ -190,11 +184,7 @@ class AIAutoModeration extends Service {
 
     private queueModeration(message: Message<true>, event: "create" | "update") {
         this.queuedMessages.set(`${message.id}_${event}`, message);
-        this.application.logger.debug(
-            "Queued message for moderation: ",
-            message.id,
-            message.author.username
-        );
+        this.application.logger.debug("Queued message for moderation: ", message.id, message.author.username);
 
         if (this.queuedMessages.size > AIAutoModeration.RATE_LIMIT_QUEUE_SIZE) {
             this.setQueueTimeout();
@@ -214,10 +204,7 @@ class AIAutoModeration extends Service {
 
         this.queueTimeout ??= setTimeout(() => {
             this.application.logger.debug("Processing next 10 messages in queue");
-            const limit = Math.min(
-                this.queuedMessages.size,
-                AIAutoModeration.RATE_LIMIT_QUEUE_SIZE
-            );
+            const limit = Math.min(this.queuedMessages.size, AIAutoModeration.RATE_LIMIT_QUEUE_SIZE);
             let i = 0;
 
             for (const [key, message] of this.queuedMessages) {
@@ -231,9 +218,7 @@ class AIAutoModeration extends Service {
             }
 
             if (this.queuedMessages.size) {
-                this.application.logger.debug(
-                    "Queue still has messages, setting another timeout recursively"
-                );
+                this.application.logger.debug("Queue still has messages, setting another timeout recursively");
 
                 this.counter++;
                 this.setQueueTimeout();
@@ -244,8 +229,7 @@ class AIAutoModeration extends Service {
     }
 
     private async processModerationQueue(message: Message<true>) {
-        const config =
-            this.application.service("configManager").config[message.guildId]?.ai_automod;
+        const config = this.application.service("configManager").config[message.guildId]?.ai_automod;
 
         if (!config?.enabled) {
             return;
@@ -277,11 +261,7 @@ class AIAutoModeration extends Service {
 
         const response = await this.analyzeComment(message.content);
 
-        if (
-            !response ||
-            !response.attributeScores ||
-            typeof response.attributeScores !== "object"
-        ) {
+        if (!response || !response.attributeScores || typeof response.attributeScores !== "object") {
             return;
         }
 
@@ -338,9 +318,7 @@ class AIAutoModeration extends Service {
             score >= config.max_single_score ||
             (individualScores &&
                 Object.keys(result).some(
-                    key =>
-                        result[key as keyof typeof result] >=
-                        individualScores[key as keyof typeof result]
+                    key => result[key as keyof typeof result] >= individualScores[key as keyof typeof result]
                 ))
         ) {
             existingRecord.timestamp = Date.now();

@@ -21,11 +21,8 @@ import { Inject } from "@framework/container/Inject";
 import EventListener from "@framework/events/EventListener";
 import { Events } from "@framework/types/ClientEvents";
 import { fetchUser } from "@framework/utils/entities";
-import {
-    InfractionDeliveryStatus,
-    infractions,
-    InfractionType
-} from "@main/models/Infraction";
+import EarlyMessageInspectionService from "@main/automod/EarlyMessageInspectionService";
+import { InfractionDeliveryStatus, infractions, InfractionType } from "@main/models/Infraction";
 import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
 import type InfractionManager from "@main/services/InfractionManager";
@@ -40,7 +37,10 @@ class GuildMemberRemoveEventListener extends EventListener<Events.GuildMemberRem
     @Inject("infractionManager")
     protected readonly infractionManager!: InfractionManager;
 
-    public override execute(member: GuildMember): void {
+    @Inject("earlyMessageInspectionService")
+    protected readonly earlyMessageInspectionService!: EarlyMessageInspectionService;
+
+    public override async execute(member: GuildMember): Promise<void> {
         if (member.id === this.application.client.user?.id) {
             return;
         }
@@ -54,16 +54,12 @@ class GuildMemberRemoveEventListener extends EventListener<Events.GuildMemberRem
 
                 const log = logs.entries.find(
                     entry =>
-                        (entry.target?.id ?? entry.targetId) === member.id &&
-                        Date.now() - entry.createdTimestamp < 3000
+                        (entry.target?.id ?? entry.targetId) === member.id && Date.now() - entry.createdTimestamp < 3000
                 );
 
                 const executorId = log?.executor?.id ?? log?.executorId;
 
-                if (
-                    log &&
-                    (!executorId || executorId !== this.client.user?.id)
-                ) {
+                if (log && (!executorId || executorId !== this.client.user?.id)) {
                     const [infraction] = await this.application.database.drizzle
                         .insert(infractions)
                         .values({
@@ -72,47 +68,34 @@ class GuildMemberRemoveEventListener extends EventListener<Events.GuildMemberRem
                             moderatorId: executorId ?? "0",
                             type: InfractionType.Kick,
                             reason: log.reason ?? undefined,
-                            deliveryStatus:
-                                InfractionDeliveryStatus.NotDelivered
+                            deliveryStatus: InfractionDeliveryStatus.NotDelivered
                         })
                         .returning({ id: infractions.id });
 
                     this.auditLoggingService
-                        .emitLogEvent(
-                            member.guild.id,
-                            LogEventType.GuildMemberKick,
-                            {
-                                member,
-                                moderator:
-                                    log.executor && log.executor instanceof User
-                                        ? log.executor
-                                        : executorId
-                                          ? ((await fetchUser(
-                                                this.client,
-                                                executorId
-                                            )) ?? undefined)
-                                          : undefined,
-                                reason: log.reason ?? undefined,
-                                infractionId: infraction.id
-                            }
-                        )
+                        .emitLogEvent(member.guild.id, LogEventType.GuildMemberKick, {
+                            member,
+                            moderator:
+                                log.executor && log.executor instanceof User
+                                    ? log.executor
+                                    : executorId
+                                      ? ((await fetchUser(this.client, executorId)) ?? undefined)
+                                      : undefined,
+                            reason: log.reason ?? undefined,
+                            infractionId: infraction.id
+                        })
                         .catch(this.application.logger.error);
                 }
 
                 this.auditLoggingService
-                    .emitLogEvent(
-                        member.guild.id,
-                        LogEventType.GuildMemberRemove,
-                        member
-                    )
+                    .emitLogEvent(member.guild.id, LogEventType.GuildMemberRemove, member)
                     .catch(this.application.logger.error);
             } catch (error) {
-                this.application.logger.error(
-                    "An error occurred while processing the GuildMemberRemove event",
-                    error
-                );
+                this.application.logger.error("An error occurred while processing the GuildMemberRemove event", error);
             }
         }, 2500);
+
+        await this.earlyMessageInspectionService.onGuildMemberRemove(member);
     }
 }
 

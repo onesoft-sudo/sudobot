@@ -1,1 +1,0 @@
-ALTER TABLE "infractions" ADD COLUMN IF NOT EXISTS "attachments" text[] DEFAULT '{}' NOT NULL;--> statement-breakpoint

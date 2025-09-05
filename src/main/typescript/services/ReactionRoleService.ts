@@ -42,7 +42,7 @@ class ReactionRoleService extends Service implements HasEventListeners {
     @Inject("permissionManager")
     private readonly permissionManagerService!: PermissionManagerService;
 
-    @GatewayEventListener("ready")
+    @GatewayEventListener("clientReady")
     public async onReady(client: Client<true>) {
         this.application.logger.debug("Syncing reaction roles...");
 
@@ -92,10 +92,7 @@ class ReactionRoleService extends Service implements HasEventListeners {
             info.timestamps.push(Date.now());
         }
 
-        const { aborted, member, reactionRole } = await this.processRequest(
-            data,
-            data.t === "MESSAGE_REACTION_ADD"
-        );
+        const { aborted, member, reactionRole } = await this.processRequest(data, data.t === "MESSAGE_REACTION_ADD");
 
         if (aborted) {
             this.application.logger.debug("Request aborted");
@@ -169,9 +166,7 @@ class ReactionRoleService extends Service implements HasEventListeners {
             return { aborted: true };
         }
 
-        const entry = this.reactionRoleEntries.get(
-            `${guildId}_${channelId}_${messageId}_${emoji.id ?? emoji.name}`
-        );
+        const entry = this.reactionRoleEntries.get(`${guildId}_${channelId}_${messageId}_${emoji.id ?? emoji.name}`);
 
         if (!entry) {
             this.application.logger.debug("Reaction role entry not found, ignoring");
@@ -205,10 +200,7 @@ class ReactionRoleService extends Service implements HasEventListeners {
                 return await this.removeReactionAndAbort(data);
             }
 
-            if (
-                !member.permissions.has("Administrator") &&
-                entry.blacklistedUsers.includes(member.user.id)
-            ) {
+            if (!member.permissions.has("Administrator") && entry.blacklistedUsers.includes(member.user.id)) {
                 this.application.logger.debug("User is blacklisted");
                 return await this.removeReactionAndAbort(data);
             }
@@ -225,9 +217,7 @@ class ReactionRoleService extends Service implements HasEventListeners {
                     const level = await manager.getMemberLevel(member);
 
                     if (level < entry.level) {
-                        this.application.logger.debug(
-                            "Member does not have the required permission level"
-                        );
+                        this.application.logger.debug("Member does not have the required permission level");
 
                         return await this.removeReactionAndAbort(data);
                     }
@@ -264,9 +254,7 @@ class ReactionRoleService extends Service implements HasEventListeners {
             for (const reaction of reactionsToRemove) {
                 const isBuiltIn = !/^\d+$/.test(reaction);
                 const emoji = !isBuiltIn
-                    ? this.client.emojis.cache.find(
-                          e => e.id === reaction || e.identifier === reaction
-                      )
+                    ? this.client.emojis.cache.find(e => e.id === reaction || e.identifier === reaction)
                     : null;
 
                 if (!isBuiltIn && !emoji) {

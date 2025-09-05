@@ -20,6 +20,7 @@
 import { Inject } from "@framework/container/Inject";
 import EventListener from "@framework/events/EventListener";
 import type AIAutoModeration from "@main/automod/AIAutoModeration";
+import EarlyMessageInspectionService from "@main/automod/EarlyMessageInspectionService";
 import type RuleModerationService from "@main/automod/RuleModerationService";
 import { LogEventType } from "@main/schemas/LoggingSchema";
 import type AuditLoggingService from "@main/services/AuditLoggingService";
@@ -37,6 +38,9 @@ class MessageUpdateEventListener extends EventListener<Events.MessageUpdate> {
     @Inject("aiAutoModeration")
     private readonly aiAutoModeration!: AIAutoModeration;
 
+    @Inject("earlyMessageInspectionService")
+    private readonly earlyMessageInspectionService!: EarlyMessageInspectionService;
+
     public override async execute(
         oldMessage: OmitPartialGroupDMChannel<Message | PartialMessage>,
         newMessage: OmitPartialGroupDMChannel<Message>
@@ -51,19 +55,12 @@ class MessageUpdateEventListener extends EventListener<Events.MessageUpdate> {
         }
 
         this.auditLoggingService
-            .emitLogEvent(
-                newMessage.guildId,
-                LogEventType.MessageUpdate,
-                oldMessage as Message<true>,
-                newMessage
-            )
+            .emitLogEvent(newMessage.guildId, LogEventType.MessageUpdate, oldMessage as Message<true>, newMessage)
             .catch(this.application.logger.error);
 
-        if (
-            oldMessage.content !== newMessage.content ||
-            oldMessage.embeds.length !== newMessage.embeds.length
-        ) {
+        if (oldMessage.content !== newMessage.content || oldMessage.embeds.length !== newMessage.embeds.length) {
             await this.ruleModerationService.onMessageCreate(newMessage);
+            await this.earlyMessageInspectionService.onMessageUpdate(oldMessage, newMessage);
         }
 
         await this.aiAutoModeration.onMessageUpdate(oldMessage, newMessage);

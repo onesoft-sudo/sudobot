@@ -33,10 +33,7 @@ class Client<R extends boolean = boolean> extends BaseClient<R> {
     }
 
     public async getHomeGuild() {
-        return (
-            this.guilds.cache.get(process.env.HOME_GUILD_ID) ??
-            (await this.guilds.fetch(process.env.HOME_GUILD_ID))
-        );
+        return this.guilds.cache.get(process.env.HOME_GUILD_ID) ?? (await this.guilds.fetch(process.env.HOME_GUILD_ID));
     }
 }
 

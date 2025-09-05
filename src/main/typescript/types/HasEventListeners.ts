@@ -17,11 +17,11 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { ClientEvents } from "discord.js";
+import type { ClientEvents } from "@main/types/CustomClientEvents";
 
 export interface HasEventListeners {
     onRaw?(data: unknown): unknown;
-    onReady?(...args: ClientEvents["ready"]): unknown;
+    onReady?(...args: ClientEvents["clientReady"]): unknown;
 
     onMessageCreate?(...args: ClientEvents["messageCreate"]): unknown;
     onMessageUpdate?(...args: ClientEvents["messageUpdate"]): unknown;

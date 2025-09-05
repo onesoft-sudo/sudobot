@@ -22,6 +22,7 @@ import EventListener from "@framework/events/EventListener";
 import type { Logger } from "@framework/log/Logger";
 import { Events } from "@framework/types/ClientEvents";
 import type AIAutoModeration from "@main/automod/AIAutoModeration";
+import EarlyMessageInspectionService from "@main/automod/EarlyMessageInspectionService";
 import type TriggerService from "@main/automod/TriggerService";
 import { getEnvData } from "@main/env/env";
 import type AFKService from "@main/services/AFKService";
@@ -47,6 +48,9 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
     @Inject("spamModerationService")
     private readonly spamModerationService!: SpamModerationService;
 
+    @Inject("earlyMessageInspectionService")
+    private readonly earlyMessageInspectionService!: EarlyMessageInspectionService;
+
     @Inject("triggerService")
     private readonly triggerService!: TriggerService;
 
@@ -65,7 +69,8 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
             this.ruleModerationService.onMessageCreate.bind(this.ruleModerationService),
             this.spamModerationService.onMessageCreate.bind(this.spamModerationService),
             this.aiAutoModeration.onMessageCreate.bind(this.aiAutoModeration),
-            this.triggerService.onMessageCreate.bind(this.triggerService)
+            this.triggerService.onMessageCreate.bind(this.triggerService),
+            this.earlyMessageInspectionService.onMessageCreate.bind(this.earlyMessageInspectionService)
         );
     }
 
@@ -77,11 +82,7 @@ class MessageCreateEventListener extends EventListener<Events.MessageCreate> {
         const env = getEnvData();
 
         if (!message.inGuild()) {
-            if (
-                message.channel.type !== ChannelType.DM ||
-                !env.DM_LOGS_WEBHOOK_URL ||
-                message.author.bot
-            ) {
+            if (message.channel.type !== ChannelType.DM || !env.DM_LOGS_WEBHOOK_URL || message.author.bot) {
                 return;
             }
 

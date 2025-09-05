@@ -1,6 +1,6 @@
 {
     "editorconfig": true,
-    "printWidth": 80,
+    "printWidth": 120,
     "trailingComma": "none",
     "jsxBracketSameLine": false,
     "arrowParens": "avoid",

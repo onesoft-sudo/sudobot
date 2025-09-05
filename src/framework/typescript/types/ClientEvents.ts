@@ -17,19 +17,14 @@
  * along with SudoBot. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type {
-    Channel,
-    ClientEvents as DiscordClientEvents,
-    Message,
-    PartialGroupDMChannel
-} from "discord.js";
+import type { Channel, Client, ClientEvents as DiscordClientEvents, Message, PartialGroupDMChannel } from "discord.js";
 
 declare global {
-    // FIXME
     interface ClientEvents extends DiscordClientEvents {
         normalMessageCreate: [message: Message];
         normalMessageUpdate: [oldMessage: Message, newMessage: Message];
         normalMessageDelete: [message: Message];
+        clientReady: [client: Client<true>];
         raw: [data: { t: string; d: unknown }];
     }
 }
@@ -86,7 +81,7 @@ enum Events {
     MessageReactionRemoveEmoji = "messageReactionRemoveEmoji",
     MessageUpdate = "messageUpdate",
     PresenceUpdate = "presenceUpdate",
-    Ready = "ready",
+    Ready = "clientReady",
     RoleCreate = "roleCreate",
     RoleDelete = "roleDelete",
     RoleUpdate = "roleUpdate",

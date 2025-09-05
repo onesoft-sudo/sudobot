@@ -77,7 +77,8 @@ export const EnvironmentVariableSchema = z.object({
     MODIFICATIONS_PUBLIC_URL: z.string().optional(),
     HIDE_MODIFICATIONS_URL_NOTICE: z.literal("1").optional(),
     DM_LOGS_WEBHOOK_URL: z.url().optional(),
-    SOCKET_FILE: z.string().optional()
+    SOCKET_FILE: z.string().optional(),
+    PAXMOD_API_KEY: z.string().optional()
 });
 
 export type EnvironmentVariableRecord = z.infer<

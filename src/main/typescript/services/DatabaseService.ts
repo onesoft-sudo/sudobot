@@ -25,6 +25,7 @@ import { getEnvData } from "@main/env/env";
 import * as AFKEntrySchemas from "@main/models/AFKEntry";
 import * as ChannelLockSchemas from "@main/models/ChannelLock";
 import * as CommandPermissionOverwriteSchemas from "@main/models/CommandPermissionOverwrite";
+import * as EarlyMessageInspectionEntrySchemas from "@main/models/EarlyMessageInspectionEntry";
 import * as InfractionSchemas from "@main/models/Infraction";
 import * as MuteRecordSchemas from "@main/models/MuteRecord";
 import * as PermissionLevelSchemas from "@main/models/PermissionLevel";
@@ -72,7 +73,8 @@ class DatabaseService extends Service {
             ...SnippetSchemas,
             ...UserSchemas,
             ...VerificationEntrySchemas,
-            ...VerificationRecordSchemas
+            ...VerificationRecordSchemas,
+            ...EarlyMessageInspectionEntrySchemas
         };
     }
 
@@ -81,7 +83,7 @@ class DatabaseService extends Service {
         await this.drizzle.execute(sql`SELECT 1`);
     }
 
-    public get query() {
+    public get query(): typeof this.drizzle.query {
         return this.drizzle.query;
     }
 }

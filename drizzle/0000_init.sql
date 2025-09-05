@@ -1,34 +1,10 @@
-DO $$ BEGIN
- CREATE TYPE "public"."command_permission_overwrite_action" AS ENUM('Allow', 'Deny');
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- CREATE TYPE "public"."infraction_delivery_status" AS ENUM('Success', 'Failed', 'Fallback', 'NotDelivered');
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- CREATE TYPE "public"."infraction_type" AS ENUM('Ban', 'Kick', 'Mute', 'Warning', 'MassBan', 'MassKick', 'Unban', 'Unmute', 'BulkDeleteMessage', 'Timeout', 'TimeoutRemove', 'Bean', 'Note', 'Role', 'ModMessage', 'Shot');
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- CREATE TYPE "public"."permission_logic_mode" AS ENUM('And', 'Or');
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- CREATE TYPE "public"."verification_method" AS ENUM('discord', 'github', 'google', 'email');
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "afk_entries" (
+CREATE TYPE "public"."command_permission_overwrite_action" AS ENUM('Allow', 'Deny');--> statement-breakpoint
+CREATE TYPE "public"."infraction_delivery_status" AS ENUM('Success', 'Failed', 'Fallback', 'NotDelivered');--> statement-breakpoint
+CREATE TYPE "public"."infraction_type" AS ENUM('Ban', 'Kick', 'Mute', 'Warning', 'MassBan', 'MassKick', 'Unban', 'Unmute', 'BulkDeleteMessage', 'Timeout', 'TimeoutRemove', 'Bean', 'Note', 'Role', 'ModMessage', 'Shot', 'ReactionClear');--> statement-breakpoint
+CREATE TYPE "public"."permission_logic_mode" AS ENUM('And', 'Or');--> statement-breakpoint
+CREATE TYPE "public"."verification_status" AS ENUM('pending', 'discord_authorized');--> statement-breakpoint
+CREATE TYPE "public"."verification_method" AS ENUM('channel_interaction', 'dm_interaction', 'channel_static_interaction');--> statement-breakpoint
+CREATE TABLE "afk_entries" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"reason" varchar,
 	"user_id" varchar NOT NULL,
@@ -40,7 +16,16 @@ CREATE TABLE IF NOT EXISTS "afk_entries" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "channel_locks" (
+CREATE TABLE "alt_fingerprints" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"user_id" varchar NOT NULL,
+	"fingerprint" varchar NOT NULL,
+	"type" integer NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "channel_locks" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"guild_id" varchar NOT NULL,
 	"channel_id" varchar NOT NULL,
@@ -49,7 +34,7 @@ CREATE TABLE IF NOT EXISTS "channel_locks" (
 	"updated_at" timestamp with time zone DEFAULT now()
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "command_permission_overwrites" (
+CREATE TABLE "command_permission_overwrites" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"guild_id" varchar NOT NULL,
 	"commands" text[] DEFAULT '{}' NOT NULL,
@@ -65,7 +50,16 @@ CREATE TABLE IF NOT EXISTS "command_permission_overwrites" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "infractions" (
+CREATE TABLE "early_message_inspection_entries" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"user_id" varchar NOT NULL,
+	"guild_id" varchar NOT NULL,
+	"message_count" integer DEFAULT 0 NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "infractions" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"type" "infraction_type" NOT NULL,
 	"user_id" varchar NOT NULL,
@@ -75,12 +69,13 @@ CREATE TABLE IF NOT EXISTS "infractions" (
 	"expires_at" timestamp with time zone,
 	"metadata" json,
 	"delivery_status" "infraction_delivery_status" DEFAULT 'Success' NOT NULL,
+	"attachments" text[] DEFAULT '{}' NOT NULL,
 	"queue_id" integer,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "mute_records" (
+CREATE TABLE "mute_records" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"member_id" varchar NOT NULL,
 	"guild_id" varchar NOT NULL,
@@ -89,7 +84,7 @@ CREATE TABLE IF NOT EXISTS "mute_records" (
 	"updated_at" timestamp with time zone DEFAULT now()
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "permission_levels" (
+CREATE TABLE "permission_levels" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"guild_id" varchar NOT NULL,
 	"level" integer NOT NULL,
@@ -102,7 +97,7 @@ CREATE TABLE IF NOT EXISTS "permission_levels" (
 	"updated_at" timestamp with time zone DEFAULT now()
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "permission_overwrites" (
+CREATE TABLE "permission_overwrites" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" text,
 	"guild_id" varchar NOT NULL,
@@ -117,7 +112,7 @@ CREATE TABLE IF NOT EXISTS "permission_overwrites" (
 	"updated_at" timestamp with time zone DEFAULT now()
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "queues" (
+CREATE TABLE "queues" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" varchar NOT NULL,
 	"guild_id" varchar NOT NULL,
@@ -131,7 +126,7 @@ CREATE TABLE IF NOT EXISTS "queues" (
 	"runs_at" timestamp with time zone
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "reaction_roles" (
+CREATE TABLE "reaction_roles" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"emoji" varchar,
 	"is_built_in_emoji" boolean DEFAULT false NOT NULL,
@@ -148,7 +143,7 @@ CREATE TABLE IF NOT EXISTS "reaction_roles" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "snippets" (
+CREATE TABLE "snippets" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" varchar,
 	"user_id" varchar NOT NULL,
@@ -167,7 +162,7 @@ CREATE TABLE IF NOT EXISTS "snippets" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "users" (
+CREATE TABLE "users" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" varchar,
 	"username" varchar NOT NULL,
@@ -185,27 +180,26 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "verification_entries" (
+CREATE TABLE "verification_entries" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" varchar NOT NULL,
 	"guild_id" varchar NOT NULL,
 	"code" varchar NOT NULL,
 	"attempts" integer DEFAULT 0 NOT NULL,
 	"metadata" json DEFAULT '{}'::json NOT NULL,
-	"expires_at" timestamp with time zone NOT NULL,
+	"method" "verification_method" NOT NULL,
+	"status" "verification_status" DEFAULT 'pending' NOT NULL,
+	"guild_ids" text[] DEFAULT '{}' NOT NULL,
+	"expires_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "verification_entries_code_unique" UNIQUE("code")
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "verification_records" (
+CREATE TABLE "verification_records" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"guild_id" varchar NOT NULL,
 	"user_id" varchar NOT NULL,
-	"discord_id" varchar,
-	"github_id" varchar,
-	"google_id" varchar,
-	"email" varchar,
 	"method" "verification_method" NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
