@@ -2,6 +2,11 @@
 
 ### 06-09-2025 - [[Ar Rakin](mailto:rakinar2@osndevs.org)]
 
+  * merge: branch 'main' of github.com:onesoft-sudo/sudobot
+  * **fix(audit:logs):** allow specific mentions    
+      
+    **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
+      
   * **fix:** use correct info functions    
       
     **Signed-off-by:**  Ar Rakin <rakinar2@osndevs.org>  
@@ -29,6 +34,10 @@
 
 ### 06-09-2025 - [[Conventional Release Action](mailto:rakinar2@onesoftnet.eu.org)]
 
+  * **release:** v11.10.3 [skip ci]    
+      
+    **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
+      
   * **release:** v11.10.1 [skip ci]    
       
     **Signed-off-by:**  Conventional Release Action <rakinar2@onesoftnet.eu.org>  
